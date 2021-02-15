@@ -15,14 +15,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    [Flags]
-    internal enum SinkType
-    {
-        None = 0,
-        Console = 1,
-        All = 0xff
-    }
-
     class Program
     {
         private static Command GenerateApiKeyCommand() =>
