@@ -44,7 +44,7 @@ jobs:
       # Public Windows Build Pool
       ${{ if eq(parameters.osGroup, 'Windows') }}:
         ${{ if eq(variables['System.TeamProject'], 'public') }}:
-          name: Hosted VS2019
+          vmImage: windows-2019
 
         ${{ if ne(variables['System.TeamProject'], 'public') }}:
           name: NetCoreInternal-Pool
