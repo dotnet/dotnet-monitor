@@ -1,0 +1,74 @@
+trigger: none
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+    - master
+    - release/*
+    - internal/release/*
+  paths:
+    exclude:
+    - documentation/*
+    - '*.md'
+    - THIRD-PARTY-NOTICES.TXT
+    - LICENSE.TXT
+
+variables:
+  - name: _TeamName
+    value: DotNetCore
+  
+  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+    # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
+    - group: DotNet-Diagnostics-SDL-Params
+
+stages:
+  - stage: build
+    displayName: Build dotnet-monitor
+    jobs:
+    - template: /eng/build.yml
+      parameters:
+        name: windows
+        displayName: Build
+        osGroup: Windows
+        configuration: Release
+        platform: x64
+    # This registers the build with BAR.
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+      - template: /eng/common/templates/job/publish-build-assets.yml
+        parameters:
+          configuration: Release
+          dependsOn:
+          - Windows
+          publishUsingPipelines: true
+          pool:
+            name: NetCoreInternal-Pool
+            queue: buildpool.windows.10.amd64.vs2017
+  # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
+  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+    - template: /eng/common/templates/post-build/post-build.yml
+      parameters:
+        # This is to enable SDL runs part of Post-Build Validation Stage.
+        # as well as NuGet, SourceLink, and signing validation.
+        # The variables get imported from group dotnet-diagnostics-sdl-params
+        publishingInfraVersion: 3
+        enableSourceLinkValidation: true
+        enableSigningValidation: true
+        enableSymbolValidation: false
+        enableNugetValidation: true
+        publishInstallersAndChecksums: true
+        SDLValidationParameters:
+          enable: true
+          continueOnError: true
+          params: ' -SourceToolsList @("policheck","credscan")
+          -TsaInstanceURL $(_TsaInstanceURL)
+          -TsaProjectName $(_TsaProjectName)
+          -TsaNotificationEmail $(_TsaNotificationEmail)
+          -TsaCodebaseAdmin $(_TsaCodebaseAdmin)
+          -TsaBugAreaPath $(_TsaBugAreaPath)
+          -TsaIterationPath $(_TsaIterationPath)
+          -TsaRepositoryName "dotnet-monitor"
+          -TsaCodebaseName "dotnet-monitor"
+          -TsaPublish $True'
+          artifactNames:
+          - 'Packages'
