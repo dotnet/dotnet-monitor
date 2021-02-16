@@ -71,8 +71,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth)
         {
-            AddressBindingResults bindingResults = new AddressBindingResults();
-
             return Host.CreateDefaultBuilder()
                 .UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
@@ -168,7 +166,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.ConfigureEgress(context.Configuration);
                     services.ConfigureMetrics(context.Configuration);
                     services.AddSingleton<ExperimentalToolLogger>();
-                    services.AddSingleton<AddressBindingResults>(bindingResults);
                 })
                 .ConfigureLogging(builder =>
                 {
@@ -177,7 +174,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureKestrel((context, options) =>
+                    AddressBindingResults bindingResults = new AddressBindingResults();
+                    webBuilder.ConfigureServices(services =>
+                    {
+                        services.AddSingleton(bindingResults);
+                    })
+                    .ConfigureKestrel((context, options) =>
                     {
                         //Note our priorities for hosting urls don't match the default behavior.
                         //Default Kestrel behavior priority
@@ -220,7 +222,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             catch (Exception ex)
                             {
                                 // Record the exception; it will be logged later through ILogger.
-                                bindingResults.Errors.Add(new AddressBindingResult(ex.Message, ex));
+                                bindingResults.Errors.Add(new AddressBindingResult(url, ex));
                                 continue;
                             }
 
@@ -252,9 +254,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             {
                                 // This binding failure is typically due to missing default certificate.
                                 // Record the exception; it will be logged later through ILogger.
-                                bindingResults.Errors.Add(new AddressBindingResult(
-                                    $"Unable to bind to {url}. Dotnet-monitor functionality will be limited.",
-                                    ex));
+                                bindingResults.Errors.Add(new AddressBindingResult(url, ex));
                             }
                         }
                     })

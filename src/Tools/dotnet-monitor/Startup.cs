@@ -98,14 +98,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // first opportunity to log anything through ILogger (a dedicated HostedService
             // could be written for this, but there is no guarantee that service would run
             // after the GenericWebHostServer is instantiated but before it is started).
-            // Additionally, Startup.Configure is called before KestrelServer is started
-            // by the GenericWebHostServer, so there is no duplication of logging errors.
             foreach (AddressBindingResult result in bindingResults.Errors)
             {
-                logger.LogError(result.Exception, result.Message);
+                logger.UnableToBindToAddress(result.Url, result.Exception);
             }
 
             // If we end up not binding any ports, Kestrel defaults to port 5000. Make sure we don't attempt this.
+            // Startup.Configure is called before KestrelServer is started
+            // by the GenericWebHostServer, so there is no duplication of logging errors
+            // and Kestrel does not bind to default ports.
             if (!bindingResults.AnyBoundPorts)
             {
                 // This is logged by GenericWebHostServer.StartAsync

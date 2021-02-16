@@ -17,13 +17,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
     internal sealed class AddressBindingResult
     {
-        public readonly string Message;
+        public readonly string Url;
 
         public readonly Exception Exception;
 
-        public AddressBindingResult(string message, Exception exception)
+        public AddressBindingResult(string Url, Exception exception)
         {
-            Message = message;
+            this.Url = Url;
             Exception = exception;
         }
     }
