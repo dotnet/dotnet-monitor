@@ -81,6 +81,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: "Provider {providerType}: Saved stream to {path}");
 
+        private static readonly Action<ILogger, Exception> _noAuthentication =
+            LoggerMessage.Define(
+                eventId: new EventId(13, "NoAuthentication"),
+                logLevel: LogLevel.Warning,
+                formatString: "WARNING: Authentication has been disabled. This can pose a security risk and is not intended for production environments.");
+
+        private static readonly Action<ILogger, Exception> _insecureAuthenticationConfiguration =
+            LoggerMessage.Define(
+                eventId: new EventId(14, "InsecureAutheticationConfiguration"),
+                logLevel: LogLevel.Warning,
+                formatString: "WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.");
+
+        private static readonly Action<ILogger, string, Exception> _unableToBindToAddress =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(15, "UnableToBindToAddress"),
+                logLevel: LogLevel.Error,
+                formatString: "Unable to bind to {url}. Dotnet-monitor functionality will be limited.");
+
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
             _egressProviderAdded(logger, providerName, null);
@@ -154,6 +172,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EgressProviderSavedStream(this ILogger logger, string providerName, string path)
         {
             _egressProviderSavedStream(logger, providerName, path, null);
+        }
+
+        public static void NoAuthentication(this ILogger logger)
+        {
+            _noAuthentication(logger, null);
+        }
+
+        public static void InsecureAuthenticationConfiguration(this ILogger logger)
+        {
+            _insecureAuthenticationConfiguration(logger, null);
+        }
+
+        public static void UnableToBindToAddress(this ILogger logger, string url, Exception ex)
+        {
+            _unableToBindToAddress(logger, url, ex);
         }
 
         private static string Redact(string value)

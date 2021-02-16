@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.RestServer;
 using Microsoft.Diagnostics.Monitoring.RestServer.Controllers;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +18,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
-using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -84,13 +84,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public void Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
-            ExperimentalToolLogger logger,
-            IAuthOptions options)
+            ExperimentalToolLogger exprLogger,
+            IAuthOptions options,
+            AddressBindingResults bindingResults,
+            ILogger<Startup> logger)
         {
-            logger.LogExperimentMessage();
+            exprLogger.LogExperimentMessage();
+
+            // These errors are populated before Startup.Configure is called because
+            // the KestrelServer class is configured as a prerequisite of
+            // GenericWebHostServer being instantiated. The GenericWebHostServer invokes
+            // Startup.Configure as part of its StartAsync method. This method is the 
+            // first opportunity to log anything through ILogger (a dedicated HostedService
+            // could be written for this, but there is no guarantee that service would run
+            // after the GenericWebHostServer is instantiated but before it is started).
+            foreach (AddressBindingResult result in bindingResults.Errors)
+            {
+                logger.UnableToBindToAddress(result.Url, result.Exception);
+            }
+
+            // If we end up not binding any ports, Kestrel defaults to port 5000. Make sure we don't attempt this.
+            // Startup.Configure is called before KestrelServer is started
+            // by the GenericWebHostServer, so there is no duplication of logging errors
+            // and Kestrel does not bind to default ports.
+            if (!bindingResults.AnyBoundPorts)
+            {
+                // This is logged by GenericWebHostServer.StartAsync
+                throw new MonitoringException("Unable to bind any urls.");
+            }
+
             if (options.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth)
             {
-                logger.LogNoAuthMessage();
+                logger.NoAuthentication();
             }
             else
             {
@@ -98,11 +123,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 string hostingUrl = Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
                 string[] urls = ConfigurationHelper.SplitValue(hostingUrl);
-                foreach(BindingAddress address in urls.Select(BindingAddress.Parse))
+                foreach (string url in urls)
                 {
+                    BindingAddress address = null;
+                    try
+                    {
+                        address = BindingAddress.Parse(url);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+
                     if (string.Equals(Uri.UriSchemeHttp, address.Scheme, StringComparison.OrdinalIgnoreCase))
                     {
-                        logger.LogInsecureAuthMessage();
+                        logger.InsecureAuthenticationConfiguration();
                         break;
                     }
                 }
