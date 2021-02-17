@@ -24,7 +24,9 @@ jobs:
     artifacts:
       publish:
         logs: true
-        manifests: true
+        ${{ if ne(variables['System.TeamProject'], 'public') }}:
+          artifacts: true
+          manifests: true
 
     pool:
       # Public Linux Build Pool
@@ -64,6 +66,7 @@ jobs:
 
     variables: 
     - ${{ insert }}: ${{ parameters.variables }}
+    - _BuildConfig: ${{ parameters.configuration }}
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
     - _SignType: test
