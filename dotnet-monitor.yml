@@ -28,7 +28,7 @@ stages:
     jobs:
     - template: /eng/build.yml
       parameters:
-        name: windows
+        name: Windows
         displayName: Build
         osGroup: Windows
         configuration: Release
@@ -71,4 +71,4 @@ stages:
           -TsaCodebaseName "dotnet-monitor"
           -TsaPublish $True'
           artifactNames:
-          - 'Packages'
+          - 'PackageArtifacts'
