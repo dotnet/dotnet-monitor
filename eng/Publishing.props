@@ -54,18 +54,9 @@
     <ItemGroup>
       <_CommonArtifactData Include="NonShipping=true" Condition="'%(PackageFile.IsShipping)' != 'true'" />
     </ItemGroup>
-    <ItemGroup>
-      <_PackageArtifactData Include="@(_CommonArtifactData)" />
-      <!-- Setting Category to Other will upload to installers blob feed. -->
-      <!-- Feed configuration categories are uppercase and case sensitive in PublishArtifactsInManifest task. -->
-      <_PackageArtifactData Include="Category=OTHER" />
-    </ItemGroup>
 
     <!-- Capture each blob item to upload to blob feed -->
     <ItemGroup>
-      <_BlobItem Include="%(PackageFile.FullPath)">
-        <ManifestArtifactData>@(_PackageArtifactData)</ManifestArtifactData>
-      </_BlobItem>
       <_BlobItem Include="$(_ChecksumFilePath)" Condition="Exists('$(_ChecksumFilePath)')">
         <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
       </_BlobItem>
