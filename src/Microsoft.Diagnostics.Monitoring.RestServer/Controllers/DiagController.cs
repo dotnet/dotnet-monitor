@@ -65,7 +65,11 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                 IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
                 foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(HttpContext.RequestAborted))
                 {
-                    processesIdentifiers.Add(Models.ProcessIdentifier.FromProcessInfo(p));
+                    processesIdentifiers.Add(new Models.ProcessIdentifier()
+                    {
+                        Pid = p.EndpointInfo.ProcessId,
+                        Uid = p.EndpointInfo.RuntimeInstanceCookie
+                    });
                 }
                 _logger.WrittenToHttpStream();
                 return new ActionResult<IEnumerable<Models.ProcessIdentifier>>(processesIdentifiers);

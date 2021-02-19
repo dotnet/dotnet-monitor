@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <COMPlus_EnableDiagnostics>0</COMPlus_EnableDiagnostics>
+    </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>

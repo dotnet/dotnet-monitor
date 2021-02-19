@@ -3,29 +3,28 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
 {
-    [DataContract]
     public class ProcessInfo
     {
-        [DataMember(Name = "pid")]
+        [JsonPropertyName("pid")]
         public int Pid { get; set; }
 
-        [DataMember(Name = "uid")]
+        [JsonPropertyName("uid")]
         public Guid Uid { get; set; }
 
-        [DataMember(Name = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; private set; }
 
-        [DataMember(Name = "commandLine")]
+        [JsonPropertyName("commandLine")]
         public string CommandLine { get; private set; }
 
-        [DataMember(Name = "os")]
+        [JsonPropertyName("operatingSystem")]
         public string OperatingSystem { get; private set; }
 
-        [DataMember(Name = "architecture")]
+        [JsonPropertyName("processArchitecture")]
         public string ProcessArchitecture { get; private set; }
 
         internal static ProcessInfo FromProcessInfo(IProcessInfo processInfo)

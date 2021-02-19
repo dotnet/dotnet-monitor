@@ -3,21 +3,20 @@
 // See the LICENSE file in the project root for more information.
 
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
 {
-    [DataContract]
     public class EventPipeConfiguration
-
     {
-        [DataMember(Name = "providers", IsRequired = true)]
+        [JsonPropertyName("providers")]
+        [Required]
         public EventPipeProvider[] Providers { get; set; }
 
-        [DataMember(Name = "requestRundown")]
+        [JsonPropertyName("requestRundown")]
         public bool RequestRundown { get; set; } = true;
 
-        [DataMember(Name = "bufferSizeInMB")]
+        [JsonPropertyName("bufferSizeInMB")]
         [Range(1, 1024)]
         public int BufferSizeInMB { get; set; } = 256;
     }

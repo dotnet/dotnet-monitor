@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    public class DotNetHost
+    public partial class DotNetHost
     {
         public static string HostExePath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
             (RuntimeInformation.ProcessArchitecture == Architecture.X86 ?

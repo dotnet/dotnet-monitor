@@ -3,26 +3,20 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+#if UNITTEST
+namespace Microsoft.Diagnostics.Monitoring.UnitTests.Models
+#else
 namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
+#endif
 {
-    [DataContract]
     public class ProcessIdentifier
     {
-        [DataMember(Name = "pid")]
+        [JsonPropertyName("pid")]
         public int Pid { get; set; }
 
-        [DataMember(Name = "uid")]
+        [JsonPropertyName("uid")]
         public Guid Uid { get; set; }
-
-        internal static ProcessIdentifier FromProcessInfo(IProcessInfo processInfo)
-        {
-            return new ProcessIdentifier()
-            {
-                Pid = processInfo.EndpointInfo.ProcessId,
-                Uid = processInfo.EndpointInfo.RuntimeInstanceCookie
-            };
-        }
     }
 }

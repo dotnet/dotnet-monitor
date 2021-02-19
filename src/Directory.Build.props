@@ -9,7 +9,6 @@
     <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DebugSymbols>true</DebugSymbols>
-    <BundledToolsPath>$(ArtifactsDir)bundledtools/</BundledToolsPath>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
   </PropertyGroup>
 

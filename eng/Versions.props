@@ -8,9 +8,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <!-- Runtime versions to test -->
-    <MicrosoftNETCoreApp31Version>3.1.12</MicrosoftNETCoreApp31Version>
+    <MicrosoftNETCoreApp31Version>3.1.13</MicrosoftNETCoreApp31Version>
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
-    <MicrosoftNETCoreApp50Version>5.0.3</MicrosoftNETCoreApp50Version>
+    <MicrosoftNETCoreApp50Version>5.0.4</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
   </PropertyGroup>
   <PropertyGroup>
