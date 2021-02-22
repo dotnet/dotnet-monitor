@@ -7,8 +7,8 @@ using System.Runtime.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
 {
-    [DataContract(Name = "Process")]
-    public class ProcessIdentifierModel
+    [DataContract]
+    public class ProcessIdentifier
     {
         [DataMember(Name = "pid")]
         public int Pid { get; set; }
@@ -16,9 +16,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
         [DataMember(Name = "uid")]
         public Guid Uid { get; set; }
 
-        internal static ProcessIdentifierModel FromProcessInfo(IProcessInfo processInfo)
+        internal static ProcessIdentifier FromProcessInfo(IProcessInfo processInfo)
         {
-            return new ProcessIdentifierModel()
+            return new ProcessIdentifier()
             {
                 Pid = processInfo.EndpointInfo.ProcessId,
                 Uid = processInfo.EndpointInfo.RuntimeInstanceCookie

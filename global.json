@@ -1,6 +1,16 @@
 {
   "tools": {
-    "dotnet": "5.0.100"
+    "dotnet": "5.0.103",
+    "runtimes": {
+      "dotnet/x64": [
+        "$(MicrosoftNETCoreApp31Version)",
+        "$(MicrosoftNETCoreApp50Version)"
+      ],
+      "dotnet/x86": [
+        "$(MicrosoftNETCoreApp31Version)",
+        "$(MicrosoftNETCoreApp50Version)"
+      ]
+    }
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "2.0.1",

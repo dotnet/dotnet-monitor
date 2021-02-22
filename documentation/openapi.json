@@ -1,0 +1,760 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "dotnet-monitor",
+    "version": "1.0"
+  },
+  "paths": {
+    "/processes": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Get the list of accessible processes.",
+        "operationId": "GetProcesses",
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProcessIdentifier"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/processes/{processKey}": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Get information about the specified process.",
+        "operationId": "GetProcessInfo",
+        "parameters": [
+          {
+            "name": "processKey",
+            "in": "path",
+            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
+              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie."
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/processes/{processKey}/env": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Get the environment block of the specified process.",
+        "operationId": "GetProcessEnvironment",
+        "parameters": [
+          {
+            "name": "processKey",
+            "in": "path",
+            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
+              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie."
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dump/{processKey}": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Capture a dump of a process.",
+        "operationId": "CaptureDump",
+        "parameters": [
+          {
+            "name": "processKey",
+            "in": "path",
+            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
+              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "The type of dump to capture.",
+            "schema": {
+              "$ref": "#/components/schemas/DumpType"
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the dump is saved.",
+            "schema": {
+              "type": "string",
+              "description": "The egress provider to which the dump is saved.",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gcdump/{processKey}": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Capture a GC dump of a process.",
+        "operationId": "CaptureGcDump",
+        "parameters": [
+          {
+            "name": "processKey",
+            "in": "path",
+            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
+              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the GC dump is saved.",
+            "schema": {
+              "type": "string",
+              "description": "The egress provider to which the GC dump is saved.",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trace/{processKey}": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Capture a trace of a process.",
+        "operationId": "CaptureTrace",
+        "parameters": [
+          {
+            "name": "processKey",
+            "in": "path",
+            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
+              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "profile",
+            "in": "query",
+            "description": "The profiles enabled for the trace session.",
+            "schema": {
+              "$ref": "#/components/schemas/TraceProfile"
+            }
+          },
+          {
+            "name": "durationSeconds",
+            "in": "query",
+            "description": "The duration of the trace session (in seconds).",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": -1,
+              "type": "integer",
+              "description": "The duration of the trace session (in seconds).",
+              "format": "int32",
+              "default": 30
+            }
+          },
+          {
+            "name": "metricsIntervalSeconds",
+            "in": "query",
+            "description": "The reporting interval (in seconds) for event counters.",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "description": "The reporting interval (in seconds) for event counters.",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the trace is saved.",
+            "schema": {
+              "type": "string",
+              "description": "The egress provider to which the trace is saved.",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Capture a trace of a process.",
+        "operationId": "CaptureTraceCustom",
+        "parameters": [
+          {
+            "name": "processKey",
+            "in": "path",
+            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
+              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "durationSeconds",
+            "in": "query",
+            "description": "The duration of the trace session (in seconds).",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": -1,
+              "type": "integer",
+              "description": "The duration of the trace session (in seconds).",
+              "format": "int32",
+              "default": 30
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the trace is saved.",
+            "schema": {
+              "type": "string",
+              "description": "The egress provider to which the trace is saved.",
+              "nullable": true
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The trace configuration describing which events to capture.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventPipeConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventPipeConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventPipeConfiguration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logs/{processKey}": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Capture a stream of logs from a process.",
+        "operationId": "CaptureLogs",
+        "parameters": [
+          {
+            "name": "processKey",
+            "in": "path",
+            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              ],
+              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "durationSeconds",
+            "in": "query",
+            "description": "The duration of the trace session (in seconds).",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": -1,
+              "type": "integer",
+              "description": "The duration of the trace session (in seconds).",
+              "format": "int32",
+              "default": 30
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "description": "The level of the logs to capture.",
+            "schema": {
+              "$ref": "#/components/schemas/LogLevel"
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the trace is saved.",
+            "schema": {
+              "type": "string",
+              "description": "The egress provider to which the trace is saved.",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics": {
+      "get": {
+        "tags": [
+          "Metrics"
+        ],
+        "summary": "Get a list of the current backlog of metrics for a process in the Prometheus exposition format.",
+        "operationId": "GetMetrics",
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain; version=0.0.4": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "ProcessIdentifier": {
+        "type": "object",
+        "properties": {
+          "pid": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "uid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProcessInfo": {
+        "type": "object",
+        "properties": {
+          "pid": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "uid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "commandLine": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "operatingSystem": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "processArchitecture": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DumpType": {
+        "enum": [
+          "Full",
+          "Mini",
+          "WithHeap",
+          "Triage"
+        ],
+        "type": "string"
+      },
+      "TraceProfile": {
+        "enum": [
+          "Cpu",
+          "Http",
+          "Logs",
+          "Metrics"
+        ],
+        "type": "string"
+      },
+      "EventLevel": {
+        "enum": [
+          "LogAlways",
+          "Critical",
+          "Error",
+          "Warning",
+          "Informational",
+          "Verbose"
+        ],
+        "type": "string"
+      },
+      "EventPipeProvider": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "keywords": {
+            "type": "string",
+            "nullable": true
+          },
+          "eventLevel": {
+            "$ref": "#/components/schemas/EventLevel"
+          },
+          "arguments": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventPipeConfiguration": {
+        "type": "object",
+        "properties": {
+          "providers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventPipeProvider"
+            },
+            "nullable": true
+          },
+          "requestRundown": {
+            "type": "boolean"
+          },
+          "bufferSizeInMB": {
+            "maximum": 1024,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LogLevel": {
+        "enum": [
+          "Trace",
+          "Debug",
+          "Information",
+          "Warning",
+          "Error",
+          "Critical",
+          "None"
+        ],
+        "type": "string"
+      }
+    },
+    "responses": {
+      "BadRequestResponse": {
+        "description": "Bad Request",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidationProblemDetails"
+            }
+          }
+        }
+      },
+      "UnauthorizedResponse": {
+        "description": "Unauthorized",
+        "headers": {
+          "WWW_Authenticate": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

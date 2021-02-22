@@ -9,6 +9,8 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         public const string ApplicationJson = "application/json";
         public const string ApplicationNdJson = "application/x-ndjson";
         public const string ApplicationOctectStream = "application/octet-stream";
+        public const string ApplicationProblemJson = "application/problem+json";
         public const string TextEventStream = "text/event-stream";
+        public const string TextPlain_v0_0_4 = "text/plain; version=0.0.4";
     }
 }

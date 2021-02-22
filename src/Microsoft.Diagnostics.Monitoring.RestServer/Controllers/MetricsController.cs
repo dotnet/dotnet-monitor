@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
 {
     [Route("")]
     [ApiController]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public class MetricsController : ControllerBase
     {
         private const string ArtifactType_Metrics = "metrics";
@@ -29,8 +31,13 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             _metricsOptions = metricsOptions.Value;
         }
 
-        [HttpGet("metrics")]
-        public ActionResult Metrics()
+        /// <summary>
+        /// Get a list of the current backlog of metrics for a process in the Prometheus exposition format.
+        /// </summary>
+        [HttpGet("metrics", Name = nameof(GetMetrics))]
+        [Produces(ContentTypes.TextPlain_v0_0_4)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public ActionResult GetMetrics()
         {
             return this.InvokeService(() =>
             {
@@ -46,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                     {
                         await _metricsStore.MetricsStore.SnapshotMetrics(outputStream, token);
                     },
-                    "text/plain; version=0.0.4",
+                    ContentTypes.TextPlain_v0_0_4,
                     null,
                     scope);
             }, _logger);

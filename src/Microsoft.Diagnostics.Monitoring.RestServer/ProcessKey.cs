@@ -8,16 +8,16 @@ using System.Globalization;
 
 namespace Microsoft.Diagnostics.Monitoring
 {
-    [TypeConverter(typeof(ProcessFilterTypeConverter))]
-    public struct ProcessFilter
+    [TypeConverter(typeof(ProcessKeyTypeConverter))]
+    public struct ProcessKey
     {
-        public ProcessFilter(int processId)
+        public ProcessKey(int processId)
         {
             ProcessId = processId;
             RuntimeInstanceCookie = null;
         }
 
-        public ProcessFilter(Guid runtimeInstanceCookie)
+        public ProcessKey(Guid runtimeInstanceCookie)
         {
             ProcessId = null;
             RuntimeInstanceCookie = runtimeInstanceCookie;
@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring
         public Guid? RuntimeInstanceCookie { get; }
     }
 
-    internal class ProcessFilterTypeConverter : TypeConverter
+    internal class ProcessKeyTypeConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring
             {
                 throw new ArgumentNullException(nameof(sourceType));
             }
-            return sourceType == typeof(string) || sourceType == typeof(ProcessFilter);
+            return sourceType == typeof(string) || sourceType == typeof(ProcessKey);
         }
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
@@ -49,14 +49,14 @@ namespace Microsoft.Diagnostics.Monitoring
                 }
                 else if (Guid.TryParse(valueString, out Guid cookie))
                 {
-                    return new ProcessFilter(cookie);
+                    return new ProcessKey(cookie);
                 }
                 else if (int.TryParse(valueString, out int processId))
                 {
-                    return new ProcessFilter(processId);
+                    return new ProcessKey(processId);
                 }
             }
-            else if (value is ProcessFilter identifier)
+            else if (value is ProcessKey identifier)
             {
                 return identifier;
             }

@@ -7,11 +7,12 @@ using System.Runtime.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
 {
-    [DataContract(Name = "EventPipeConfiguration")]
-    public class EventPipeConfigurationModel
+    [DataContract]
+    public class EventPipeConfiguration
+
     {
         [DataMember(Name = "providers", IsRequired = true)]
-        public EventPipeProviderModel[] Providers { get; set; }
+        public EventPipeProvider[] Providers { get; set; }
 
         [DataMember(Name = "requestRundown")]
         public bool RequestRundown { get; set; } = true;

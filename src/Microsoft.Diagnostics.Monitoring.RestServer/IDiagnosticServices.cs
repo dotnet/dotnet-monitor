@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
     {
         Task<IEnumerable<IProcessInfo>> GetProcessesAsync(CancellationToken token);
 
-        Task<IProcessInfo> GetProcessAsync(ProcessFilter? filter, CancellationToken token);
+        Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token);
 
         Task<Stream> GetDump(IProcessInfo pi, DumpType mode, CancellationToken token);
     }

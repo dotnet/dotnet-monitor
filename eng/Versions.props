@@ -1,9 +1,17 @@
 <Project>
   <PropertyGroup>
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
-    <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
     <VersionPrefix>5.0.0</VersionPrefix>
+    <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
+    <PreReleaseVersionIteration>4</PreReleaseVersionIteration>
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- Runtime versions to test -->
+    <MicrosoftNETCoreApp31Version>3.1.12</MicrosoftNETCoreApp31Version>
+    <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
+    <MicrosoftNETCoreApp50Version>5.0.3</MicrosoftNETCoreApp50Version>
+    <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
   </PropertyGroup>
   <PropertyGroup>
     <!-- Opt-in/out repo features -->
@@ -19,11 +27,12 @@
     <MicrosoftBclHashCodeVersion>1.1.0</MicrosoftBclHashCodeVersion>
     <MicrosoftExtensionsConfigurationKeyPerFileVersion>5.0.2</MicrosoftExtensionsConfigurationKeyPerFileVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>5.0.0</MicrosoftExtensionsLoggingConsoleVersion>
-    <!-- We use a newer version of LoggingEventSource due to a bug in an older version-->
-    <MicrosoftExtensionsLoggingEventSourceVersion>3.1.4</MicrosoftExtensionsLoggingEventSourceVersion>
+    <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
     <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
-    <!-- dotnet-monitor references -->
+    <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21126.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21126.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <!-- Third-party references -->
+    <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
   </PropertyGroup>
 </Project>

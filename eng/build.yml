@@ -98,6 +98,7 @@ jobs:
     - script: >-
         $(Build.SourcesDirectory)/build$(scriptExt)
         -ci
+        -test
         -c ${{ parameters.configuration }}
         -platform ${{ parameters.platform }}
         -prepareMachine
@@ -106,17 +107,15 @@ jobs:
       displayName: Build
       condition: succeeded()
 
-    # TODO: When there's actual tests to run, add a -test to the parameter above.
-    #       a better idea might be to run these in helix.
     # # Publish test results to Azure Pipelines
-    # - task: PublishTestResults@2
-    #   inputs:
-    #     testResultsFormat: xUnit
-    #     testResultsFiles: '**/*UnitTests*.xml' 
-    #     searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
-    #     failTaskOnFailedTests: true
-    #     testRunTitle: 'Tests ${{ parameters.name }}'
-    #     publishRunAttachments: true
-    #     mergeTestResults: true
-    #     buildConfiguration: ${{ parameters.name }}
-    #   continueOnError: true
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: xUnit
+        testResultsFiles: '**/*UnitTests*.xml' 
+        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
+        failTaskOnFailedTests: true
+        testRunTitle: 'Tests ${{ parameters.name }}'
+        publishRunAttachments: true
+        mergeTestResults: true
+        buildConfiguration: ${{ parameters.name }}
+      continueOnError: true
