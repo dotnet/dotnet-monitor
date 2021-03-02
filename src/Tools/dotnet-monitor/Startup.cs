@@ -56,10 +56,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     result.ContentTypes.Add(ContentTypes.ApplicationProblemJson);
                     return result;
                 };
-
-                // Suppress the automatic mapping of 4XX status codes to the ProblemDetails type.
-                // The tool uses ValidationProblemDetails and explicitly handles exceptions with this type.
-                options.SuppressMapClientErrors = true;
             });
 
             services.Configure<BrotliCompressionProviderOptions>(options =>

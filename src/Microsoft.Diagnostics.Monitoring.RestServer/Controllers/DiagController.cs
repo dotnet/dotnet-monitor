@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -28,8 +27,11 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
     [ApiController]
     [HostRestriction]
     [Authorize(Policy = AuthConstants.PolicyName)]
+#if NETCOREAPP3_1_OR_GREATER
+    [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
+#endif
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public class DiagController : ControllerBase
     {
         private const string ArtifactType_Dump = "dump";
