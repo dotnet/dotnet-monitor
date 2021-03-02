@@ -4,7 +4,7 @@ This repository contains the source code for dotnet-monitor, a diagnostic tool
 
 ## Building the Repository
 
-See [building instructions](documentation/building.md/windows-instructions.md) in our documentation directory.
+See [building instructions](documentation/building.md) in our documentation directory.
 
 ## Reporting security issues and security bugs
 
