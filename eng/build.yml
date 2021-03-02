@@ -119,3 +119,4 @@ jobs:
         mergeTestResults: true
         buildConfiguration: ${{ parameters.name }}
       continueOnError: true
+      condition: succeededOrFailed()

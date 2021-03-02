@@ -50,7 +50,8 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
             using FileStream stream = GenerateDocument();
             using StreamReader reader = new StreamReader(stream);
 
-            string baselineContent = File.ReadAllText(OpenApiBaselinePath);
+            // Renormalize line endings due to git checkout normalizing to the operating system preference.
+            string baselineContent = File.ReadAllText(OpenApiBaselinePath).Replace("\r\n", "\n");
             string generatedContent = reader.ReadToEnd();
 
             Assert.True(
