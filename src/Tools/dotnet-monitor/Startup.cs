@@ -35,10 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public void ConfigureServices(IServiceCollection services)
         {
             // AddControllers is sufficient because the tool does not use Razor nor Views.
-            services.AddControllers(options =>
-            {
-                options.EnableEndpointRouting = false;
-            })
+            services.AddControllers()
             .AddJsonOptions(options =>
             {
                 // Allow serialization of enum values into strings rather than numbers.

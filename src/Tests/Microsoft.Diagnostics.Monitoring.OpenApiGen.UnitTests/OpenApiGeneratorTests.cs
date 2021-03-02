@@ -24,13 +24,13 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         private const string OpenApiBaselineName = "openapi.json";
         private const string OpenApiGenName = "Microsoft.Diagnostics.Monitoring.OpenApiGen";
 
-        private static string CurrentExecutingAssemblyPath =>
+        private static readonly string CurrentExecutingAssemblyPath =
             Assembly.GetExecutingAssembly().Location;
 
-        private static string OpenApiBaselinePath =>
+        private static readonly string OpenApiBaselinePath =
             Path.Combine(Path.GetDirectoryName(CurrentExecutingAssemblyPath), OpenApiBaselineName);
 
-        private static string OpenApiGenPath =>
+        private static readonly string OpenApiGenPath =
             CurrentExecutingAssemblyPath.Replace(Assembly.GetExecutingAssembly().GetName().Name, OpenApiGenName);
 
         private readonly ITestOutputHelper _outputHelper;
