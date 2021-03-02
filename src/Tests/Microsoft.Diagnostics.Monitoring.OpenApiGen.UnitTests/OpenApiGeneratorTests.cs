@@ -50,10 +50,8 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
             using FileStream stream = GenerateDocument();
             using StreamReader reader = new StreamReader(stream);
 
-            // Normalize line endings; should figure out why the generator switches
-            // between CRLF ("\r\n") and LF ("\n").
-            string baselineContent = File.ReadAllText(OpenApiBaselinePath).Replace("\r\n", "\n");
-            string generatedContent = reader.ReadToEnd().Replace("\r\n", "\n");
+            string baselineContent = File.ReadAllText(OpenApiBaselinePath);
+            string generatedContent = reader.ReadToEnd();
 
             Assert.True(
                 string.Equals(baselineContent, generatedContent, StringComparison.Ordinal),

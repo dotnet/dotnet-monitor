@@ -10,7 +10,9 @@ using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
 {
@@ -55,7 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
 
                         options.DocumentFilter<BadRequestResponseDocumentFilter>();
                         options.DocumentFilter<UnauthorizedResponseDocumentFilter>();
+
                         options.OperationFilter<BadRequestResponseOperationFilter>();
+                        options.OperationFilter<RemoveFailureContentTypesOperationFilter>();
                         options.OperationFilter<UnauthorizedResponseOperationFilter>();
 
                         var documentationFile = $"{typeof(DiagController).Assembly.GetName().Name}.xml";
@@ -70,13 +74,13 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 .GetRequiredService<ISwaggerProvider>()
                 .GetSwagger("v1");
 
-            using FileStream outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
-            using StreamWriter outputWriter = new StreamWriter(outputStream);
-
             // Serialize the document to the file
+            using StringWriter outputWriter = new StringWriter(CultureInfo.InvariantCulture);
             document.SerializeAsV3(new OpenApiJsonWriter(outputWriter));
-
             outputWriter.Flush();
+
+            // Normalize line endings before writing
+            File.WriteAllText(outputPath, outputWriter.ToString().Replace("\r\n", "\n"));
         }
     }
 }
