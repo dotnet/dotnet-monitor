@@ -7,8 +7,8 @@ To clone, build and test the repo on Windows:
 cd $HOME
 git clone https://github.com/dotnet/dotnet-monitor
 cd dotnet-monitor
-./build.sh
-./test.sh
+.\Build.cmd
+.\Test.cmd
 ```
 
 
