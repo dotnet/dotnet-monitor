@@ -23,11 +23,18 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <!--
+      AspNetCore references use version ranges in order to allow package references to this
+      RestServer package to use newer versions but not reference anything newer than .NET Core 2.1
+    -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="[$(MicrosoftAspNetCoreMvcVersion),2.2.0)" />
     <PackageReference Include="Microsoft.Bcl.HashCode" Version="$(MicrosoftBclHashCodeVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore" Version="$(MicrosoftAspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="$(MicrosoftAspNetCoreHttpsPolicyVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(MicrosoftAspNetCoreMvcVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="$(MicrosoftAspNetCoreResponseCompressionVersion)" />
+    <!--
+      Upgraded packages to avoid insecure versions; these are not directly referenced by the code.
+    -->
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="[$(MicrosoftAspNetCoreHttpVersion),2.2.0)" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="[$(MicrosoftAspNetCoreServerKestrelCoreVersion),2.2.0)" />
+    <PackageReference Include="System.IO.Pipelines" Version="$(SystemIOPipelinesVersion)" />
   </ItemGroup>
 
   <ItemGroup>
