@@ -9,8 +9,9 @@ using Microsoft.Diagnostics.Monitoring.RestServer.Validation;
 
 namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
 {
-    [DataContract(Name = "EventPipeProvider")]
-    public class EventPipeProviderModel
+    [DataContract]
+    public class EventPipeProvider
+
     {
         [DataMember(Name = "name", IsRequired = true)]
         public string Name { get; set; }

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using Microsoft.Diagnostics.Monitoring.RestServer.Models;
 using Microsoft.Diagnostics.Monitoring.RestServer.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +27,11 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
     [ApiController]
     [HostRestriction]
     [Authorize(Policy = AuthConstants.PolicyName)]
+#if NETCOREAPP3_1_OR_GREATER
+    [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
+#endif
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public class DiagController : ControllerBase
     {
         private const string ArtifactType_Dump = "dump";
@@ -35,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         private const string ArtifactType_Logs = "logs";
         private const string ArtifactType_Trace = "trace";
 
-        private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics;
+        private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
         private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);
         private static readonly MediaTypeHeaderValue EventStreamHeader = new MediaTypeHeaderValue(ContentTypes.TextEventStream);
 
@@ -48,39 +52,56 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
         }
 
-        [HttpGet("processes")]
-        public Task<ActionResult<IEnumerable<ProcessIdentifierModel>>> GetProcesses()
+        /// <summary>
+        /// Get the list of accessible processes.
+        /// </summary>
+        [HttpGet("processes", Name = nameof(GetProcesses))]
+        [Produces(ContentTypes.ApplicationJson, ContentTypes.ApplicationProblemJson)]
+        [ProducesResponseType(typeof(IEnumerable<Models.ProcessIdentifier>), StatusCodes.Status200OK)]
+        public Task<ActionResult<IEnumerable<Models.ProcessIdentifier>>> GetProcesses()
         {
             return this.InvokeService(async () =>
             {
-                IList<ProcessIdentifierModel> processesIdentifiers = new List<ProcessIdentifierModel>();
+                IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
                 foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(HttpContext.RequestAborted))
                 {
-                    processesIdentifiers.Add(ProcessIdentifierModel.FromProcessInfo(p));
+                    processesIdentifiers.Add(Models.ProcessIdentifier.FromProcessInfo(p));
                 }
                 _logger.WrittenToHttpStream();
-                return new ActionResult<IEnumerable<ProcessIdentifierModel>>(processesIdentifiers);
+                return new ActionResult<IEnumerable<Models.ProcessIdentifier>>(processesIdentifiers);
             }, _logger);
         }
 
-        [HttpGet("processes/{processFilter}")]
-        public Task<ActionResult<ProcessModel>> GetProcess(
-            ProcessFilter processFilter)
+        /// <summary>
+        /// Get information about the specified process.
+        /// </summary>
+        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        [HttpGet("processes/{processKey}", Name = nameof(GetProcessInfo))]
+        [Produces(ContentTypes.ApplicationJson, ContentTypes.ApplicationProblemJson)]
+        [ProducesResponseType(typeof(Models.ProcessInfo), StatusCodes.Status200OK)]
+        public Task<ActionResult<Models.ProcessInfo>> GetProcessInfo(
+            ProcessKey processKey)
         {
-            return InvokeForProcess<ProcessModel>(processInfo =>
+            return InvokeForProcess<Models.ProcessInfo>(processInfo =>
             {
-                ProcessModel processModel = ProcessModel.FromProcessInfo(processInfo);
+                Models.ProcessInfo processModel = Models.ProcessInfo.FromProcessInfo(processInfo);
 
                 _logger.WrittenToHttpStream();
 
                 return processModel;
             },
-            processFilter);
+            processKey);
         }
 
-        [HttpGet("processes/{processFilter}/env")]
+        /// <summary>
+        /// Get the environment block of the specified process.
+        /// </summary>
+        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        [HttpGet("processes/{processKey}/env", Name = nameof(GetProcessEnvironment))]
+        [Produces(ContentTypes.ApplicationJson, ContentTypes.ApplicationProblemJson)]
+        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status200OK)]
         public Task<ActionResult<Dictionary<string, string>>> GetProcessEnvironment(
-            ProcessFilter processFilter)
+            ProcessKey processKey)
         {
             return InvokeForProcess<Dictionary<string, string>>(processInfo =>
             {
@@ -99,14 +120,27 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                     throw new InvalidOperationException("Unable to get process environment.");
                 }
             },
-            processFilter);
+            processKey);
         }
 
-        [HttpGet("dump/{processFilter?}")]
-        public Task<ActionResult> GetDump(
-            ProcessFilter? processFilter,
-            [FromQuery] DumpType type = DumpType.WithHeap,
-            [FromQuery] string egressProvider = null)
+        /// <summary>
+        /// Capture a dump of a process.
+        /// </summary>
+        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="type">The type of dump to capture.</param>
+        /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
+        /// <returns></returns>
+        [HttpGet("dump/{processKey?}", Name = nameof(CaptureDump))]
+        [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
+        // FileResult is the closest representation of the output so that the OpenAPI document correctly
+        // describes the result as a binary file.
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        public Task<ActionResult> CaptureDump(
+            ProcessKey? processKey,
+            [FromQuery]
+            DumpType type = DumpType.WithHeap,
+            [FromQuery]
+            string egressProvider = null)
         {
             return InvokeForProcess(async processInfo =>
             {
@@ -137,13 +171,24 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                         ContentTypes.ApplicationOctectStream,
                         scope);
                 }
-            }, processFilter, ArtifactType_Dump);
+            }, processKey, ArtifactType_Dump);
         }
 
-        [HttpGet("gcdump/{processFilter?}")]
-        public Task<ActionResult> GetGcDump(
-            ProcessFilter? processFilter,
-            [FromQuery] string egressProvider = null)
+        /// <summary>
+        /// Capture a GC dump of a process.
+        /// </summary>
+        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
+        /// <returns></returns>
+        [HttpGet("gcdump/{processKey?}", Name = nameof(CaptureGcDump))]
+        [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
+        // FileResult is the closest representation of the output so that the OpenAPI document correctly
+        // describes the result as a binary file.
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        public Task<ActionResult> CaptureGcDump(
+            ProcessKey? processKey,
+            [FromQuery]
+            string egressProvider = null)
         {
             return InvokeForProcess(processInfo =>
             {
@@ -175,35 +220,51 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                     fileName,
                     ContentTypes.ApplicationOctectStream,
                     processInfo.EndpointInfo);
-            }, processFilter, ArtifactType_GCDump);
+            }, processKey, ArtifactType_GCDump);
         }
 
-        [HttpGet("trace/{processFilter?}")]
-        public Task<ActionResult> Trace(
-            ProcessFilter? processFilter,
-            [FromQuery]TraceProfile profile = DefaultTraceProfiles,
-            [FromQuery][Range(-1, int.MaxValue)] int durationSeconds = 30,
-            [FromQuery][Range(1, int.MaxValue)] int metricsIntervalSeconds = 1,
-            [FromQuery] string egressProvider = null)
+        /// <summary>
+        /// Capture a trace of a process.
+        /// </summary>
+        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="profile">The profiles enabled for the trace session.</param>
+        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
+        /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
+        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
+        [HttpGet("trace/{processKey?}", Name = nameof(CaptureTrace))]
+        [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
+        // FileResult is the closest representation of the output so that the OpenAPI document correctly
+        // describes the result as a binary file.
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        public Task<ActionResult> CaptureTrace(
+            ProcessKey? processKey,
+            [FromQuery]
+            Models.TraceProfile profile = DefaultTraceProfiles,
+            [FromQuery][Range(-1, int.MaxValue)]
+            int durationSeconds = 30,
+            [FromQuery][Range(1, int.MaxValue)]
+            int metricsIntervalSeconds = 1,
+            [FromQuery]
+            string egressProvider = null)
         {
             return InvokeForProcess(processInfo =>
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
                 var configurations = new List<MonitoringSourceConfiguration>();
-                if (profile.HasFlag(TraceProfile.Cpu))
+                if (profile.HasFlag(Models.TraceProfile.Cpu))
                 {
                     configurations.Add(new CpuProfileConfiguration());
                 }
-                if (profile.HasFlag(TraceProfile.Http))
+                if (profile.HasFlag(Models.TraceProfile.Http))
                 {
                     configurations.Add(new HttpRequestSourceConfiguration());
                 }
-                if (profile.HasFlag(TraceProfile.Logs))
+                if (profile.HasFlag(Models.TraceProfile.Logs))
                 {
                     configurations.Add(new LoggingSourceConfiguration());
                 }
-                if (profile.HasFlag(TraceProfile.Metrics))
+                if (profile.HasFlag(Models.TraceProfile.Metrics))
                 {
                     configurations.Add(new MetricSourceConfiguration(metricsIntervalSeconds, Enumerable.Empty<string>()));
                 }
@@ -211,15 +272,29 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                 var aggregateConfiguration = new AggregateSourceConfiguration(configurations.ToArray());
 
                 return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
-            }, processFilter, ArtifactType_Trace);
+            }, processKey, ArtifactType_Trace);
         }
 
-        [HttpPost("trace/{processFilter?}")]
-        public Task<ActionResult> TraceCustomConfiguration(
-            ProcessFilter? processFilter,
-            [FromBody][Required] EventPipeConfigurationModel configuration,
-            [FromQuery][Range(-1, int.MaxValue)] int durationSeconds = 30,
-            [FromQuery] string egressProvider = null)
+        /// <summary>
+        /// Capture a trace of a process.
+        /// </summary>
+        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="configuration">The trace configuration describing which events to capture.</param>
+        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
+        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
+        [HttpPost("trace/{processKey?}", Name = nameof(CaptureTraceCustom))]
+        [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
+        // FileResult is the closest representation of the output so that the OpenAPI document correctly
+        // describes the result as a binary file.
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        public Task<ActionResult> CaptureTraceCustom(
+            ProcessKey? processKey,
+            [FromBody][Required]
+            Models.EventPipeConfiguration configuration,
+            [FromQuery][Range(-1, int.MaxValue)]
+            int durationSeconds = 30,
+            [FromQuery]
+            string egressProvider = null)
         {
             return InvokeForProcess(processInfo =>
             {
@@ -227,7 +302,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
 
                 var providers = new List<EventPipeProvider>();
 
-                foreach (EventPipeProviderModel providerModel in configuration.Providers)
+                foreach (Models.EventPipeProvider providerModel in configuration.Providers)
                 {
                     if (!IntegerOrHexStringAttribute.TryParse(providerModel.Keywords, out long keywords, out string parseError))
                     {
@@ -248,16 +323,27 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                     bufferSizeInMB: configuration.BufferSizeInMB);
 
                 return StartTrace(processInfo, traceConfiguration, duration, egressProvider);
-            }, processFilter, ArtifactType_Trace);
+            }, processKey, ArtifactType_Trace);
         }
 
-        [HttpGet("logs/{processFilter?}")]
-        [Produces(ContentTypes.TextEventStream, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJson)]
-        public Task<ActionResult> Logs(
-            ProcessFilter? processFilter,
-            [FromQuery][Range(-1, int.MaxValue)] int durationSeconds = 30,
-            [FromQuery] LogLevel level = LogLevel.Debug,
-            [FromQuery] string egressProvider = null)
+        /// <summary>
+        /// Capture a stream of logs from a process.
+        /// </summary>
+        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
+        /// <param name="level">The level of the logs to capture.</param>
+        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
+        [HttpGet("logs/{processKey?}", Name = nameof(CaptureLogs))]
+        [Produces(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream, ContentTypes.ApplicationProblemJson)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public Task<ActionResult> CaptureLogs(
+            ProcessKey? processKey,
+            [FromQuery][Range(-1, int.MaxValue)]
+            int durationSeconds = 30,
+            [FromQuery]
+            LogLevel level = LogLevel.Debug,
+            [FromQuery]
+            string egressProvider = null)
         {
             return InvokeForProcess(processInfo =>
             {
@@ -298,7 +384,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                     contentType,
                     processInfo.EndpointInfo,
                     format != LogFormat.EventStream);
-            }, processFilter, ArtifactType_Logs);
+            }, processKey, ArtifactType_Logs);
         }
 
         private ActionResult StartTrace(
@@ -449,27 +535,27 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             };
         }
 
-        private Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessFilter? filter, string artifactType = null)
+        private Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string artifactType = null)
         {
             Func<IProcessInfo, Task<ActionResult>> asyncFunc =
                 processInfo => Task.FromResult(func(processInfo));
 
-            return InvokeForProcess(asyncFunc, filter, artifactType);
+            return InvokeForProcess(asyncFunc, processKey, artifactType);
         }
 
-        private async Task<ActionResult> InvokeForProcess(Func<IProcessInfo, Task<ActionResult>> func, ProcessFilter? filter, string artifactType)
+        private async Task<ActionResult> InvokeForProcess(Func<IProcessInfo, Task<ActionResult>> func, ProcessKey? processKey, string artifactType)
         {
-            ActionResult<object> result = await InvokeForProcess<object>(async processInfo => await func(processInfo), filter, artifactType);
+            ActionResult<object> result = await InvokeForProcess<object>(async processInfo => await func(processInfo), processKey, artifactType);
 
             return result.Result;
         }
 
-        private Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, ActionResult<T>> func, ProcessFilter? filter, string artifactType = null)
+        private Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, ActionResult<T>> func, ProcessKey? processKey, string artifactType = null)
         {
-            return InvokeForProcess(processInfo => Task.FromResult(func(processInfo)), filter, artifactType);
+            return InvokeForProcess(processInfo => Task.FromResult(func(processInfo)), processKey, artifactType);
         }
 
-        private async Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, Task<ActionResult<T>>> func, ProcessFilter? filter, string artifactType = null)
+        private async Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, Task<ActionResult<T>>> func, ProcessKey? processKey, string artifactType = null)
         {
             IDisposable artifactTypeRegistration = null;
             if (!string.IsNullOrEmpty(artifactType))
@@ -483,7 +569,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             {
                 return await this.InvokeService(async () =>
                 {
-                    IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(filter, HttpContext.RequestAborted);
+                    IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, HttpContext.RequestAborted);
 
                     KeyValueLogScope processInfoScope = new KeyValueLogScope();
                     processInfoScope.AddEndpointInfo(processInfo.EndpointInfo);

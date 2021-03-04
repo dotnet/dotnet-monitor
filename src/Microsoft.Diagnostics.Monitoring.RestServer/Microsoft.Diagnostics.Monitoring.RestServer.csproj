@@ -8,14 +8,9 @@
     <IsPackable>true</IsPackable>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
-    <!-- Do not ship this package until ready to be consumed. -->
-    <IsShipping>false</IsShipping>
     <OutputType>Library</OutputType>
-    <!-- Version information -->
-    <VersionPrefix>5.0.0</VersionPrefix>
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +34,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="dotnet-monitor" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
   </ItemGroup>
 
 </Project>

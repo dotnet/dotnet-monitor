@@ -7,8 +7,8 @@ using System.Runtime.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
 {
-    [DataContract(Name = "Process")]
-    public class ProcessModel
+    [DataContract]
+    public class ProcessInfo
     {
         [DataMember(Name = "pid")]
         public int Pid { get; set; }
@@ -28,9 +28,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
         [DataMember(Name = "architecture")]
         public string ProcessArchitecture { get; private set; }
 
-        internal static ProcessModel FromProcessInfo(IProcessInfo processInfo)
+        internal static ProcessInfo FromProcessInfo(IProcessInfo processInfo)
         {
-            return new ProcessModel()
+            return new ProcessInfo()
             {
                 CommandLine = processInfo.CommandLine,
                 Name = processInfo.ProcessName,

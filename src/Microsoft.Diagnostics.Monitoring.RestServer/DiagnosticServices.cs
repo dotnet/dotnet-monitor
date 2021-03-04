@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         private const string ProcessOperatingSystemWindowsValue = "windows";
 
         // A Docker container's entrypoint process ID is 1
-        private static readonly ProcessFilter DockerEntrypointProcessFilter = new ProcessFilter(1);
+        private static readonly ProcessKey DockerEntrypointProcessFilter = new ProcessKey(1);
 
         // The amount of time to wait when checking if the docker entrypoint process is a .NET process
         // with a diagnostics transport connection.
@@ -105,15 +105,15 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             }
         }
 
-        public async Task<IProcessInfo> GetProcessAsync(ProcessFilter? filter, CancellationToken token)
+        public async Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token)
         {
             var endpointInfos = await _endpointInfoSource.GetEndpointInfoAsync(token);
 
-            if (filter.HasValue)
+            if (processKey.HasValue)
             {
                 return await GetSingleProcessInfoAsync(
                     endpointInfos,
-                    filter);
+                    processKey);
             }
 
             // Short-circuit for when running in a Docker container.
@@ -140,22 +140,22 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
             return await GetSingleProcessInfoAsync(
                 endpointInfos,
-                filter: null);
+                processKey: null);
         }
 
-        private async Task<IProcessInfo> GetSingleProcessInfoAsync(IEnumerable<IEndpointInfo> endpointInfos, ProcessFilter? filter)
+        private async Task<IProcessInfo> GetSingleProcessInfoAsync(IEnumerable<IEndpointInfo> endpointInfos, ProcessKey? processKey)
         {
-            if (filter.HasValue)
+            if (processKey.HasValue)
             {
-                if (filter.Value.RuntimeInstanceCookie.HasValue)
+                if (processKey.Value.RuntimeInstanceCookie.HasValue)
                 {
-                    Guid cookie = filter.Value.RuntimeInstanceCookie.Value;
+                    Guid cookie = processKey.Value.RuntimeInstanceCookie.Value;
                     endpointInfos = endpointInfos.Where(info => info.RuntimeInstanceCookie == cookie);
                 }
 
-                if (filter.Value.ProcessId.HasValue)
+                if (processKey.Value.ProcessId.HasValue)
                 {
-                    int pid = filter.Value.ProcessId.Value;
+                    int pid = processKey.Value.ProcessId.Value;
                     endpointInfos = endpointInfos.Where(info => info.ProcessId == pid);
                 }
             }

@@ -1,6 +1,16 @@
 {
   "tools": {
-    "dotnet": "6.0.100-preview.1.21103.13"
+    "dotnet": "6.0.100-preview.1.21103.13",
+    "runtimes": {
+      "dotnet/x64": [
+        "$(MicrosoftNETCoreApp31Version)",
+        "$(MicrosoftNETCoreApp50Version)"
+      ],
+      "dotnet/x86": [
+        "$(MicrosoftNETCoreApp31Version)",
+        "$(MicrosoftNETCoreApp50Version)"
+      ]
+    }
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "2.0.1",

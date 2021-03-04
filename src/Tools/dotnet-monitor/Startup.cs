@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -33,14 +34,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(options =>
-                {
-                    options.Filters.Add(new ProducesAttribute("application/json"));
-
-                    options.EnableEndpointRouting = false;
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .AddApplicationPart(typeof(DiagController).Assembly);
+            // AddControllers is sufficient because the tool does not use Razor nor Views.
+            services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                // Allow serialization of enum values into strings rather than numbers.
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Latest)
+            .AddApplicationPart(typeof(DiagController).Assembly);
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -48,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     var details = new ValidationProblemDetails(context.ModelState);
                     var result = new BadRequestObjectResult(details);
-                    result.ContentTypes.Add("application/problem+json");
+                    result.ContentTypes.Add(ContentTypes.ApplicationProblemJson);
                     return result;
                 };
             });
@@ -61,7 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddResponseCompression(configureOptions =>
             {
                 configureOptions.Providers.Add<BrotliCompressionProvider>();
-                configureOptions.MimeTypes = new List<string> { "application/octet-stream" };
+                configureOptions.MimeTypes = new List<string> { ContentTypes.ApplicationOctectStream };
             });
 
             // This is needed to allow the StreamingLogger to synchronously write to the output stream.
@@ -152,6 +154,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseHsts();
             }
 
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -163,7 +167,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             app.UseResponseCompression();
-            app.UseMvc();
+
+            app.UseEndpoints(builder =>
+            {
+                builder.MapControllers();
+            });
         }
     }
 }
