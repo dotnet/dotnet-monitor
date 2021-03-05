@@ -93,11 +93,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: "WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.");
 
-        private static readonly Action<ILogger, string, Exception> _unableToBindToAddress =
+        private static readonly Action<ILogger, string, Exception> _unableToListenToAddress =
             LoggerMessage.Define<string>(
-                eventId: new EventId(15, "UnableToBindToAddress"),
+                eventId: new EventId(15, "UnableToListenToAddress"),
                 logLevel: LogLevel.Error,
-                formatString: "Unable to bind to {url}. Dotnet-monitor functionality will be limited.");
+                formatString: "Unable to listen to {url}. Dotnet-monitor functionality will be limited.");
+
+        private static readonly Action<ILogger, string, Exception> _boundDefaultAddress =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(16, "BoundDefaultAddress"),
+                logLevel: LogLevel.Debug,
+                formatString: "Bound default address: {address}");
+
+        private static readonly Action<ILogger, string, Exception> _boundMetricsAddress =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(17, "BoundMetricsAddress"),
+                logLevel: LogLevel.Debug,
+                formatString: "Bound metrics address: {address}");
 
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
@@ -184,9 +196,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _insecureAuthenticationConfiguration(logger, null);
         }
 
-        public static void UnableToBindToAddress(this ILogger logger, string url, Exception ex)
+        public static void UnableToListenToAddress(this ILogger logger, string address, Exception ex)
         {
-            _unableToBindToAddress(logger, url, ex);
+            _unableToListenToAddress(logger, address, ex);
+        }
+
+        public static void BoundDefaultAddress(this ILogger logger, string address)
+        {
+            _boundDefaultAddress(logger, address, null);
+        }
+
+        public static void BoundMetricsAddress(this ILogger logger, string address)
+        {
+            _boundMetricsAddress(logger, address, null);
         }
 
         private static string Redact(string value)

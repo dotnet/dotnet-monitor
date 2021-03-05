@@ -169,10 +169,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    AddressBindingResults bindingResults = new AddressBindingResults();
+                    AddressListenResults listenResults = new AddressListenResults();
                     webBuilder.ConfigureServices(services =>
                     {
-                        services.AddSingleton(bindingResults);
+                        services.AddSingleton(listenResults);
                     })
                     .ConfigureKestrel((context, options) =>
                     {
@@ -193,63 +193,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         var metricsOptions = new MetricsOptions();
                         context.Configuration.Bind(MetricsOptions.ConfigurationKey, metricsOptions);
 
-                        if (metricsOptions.Enabled)
-                        {
-                            metricUrls = ProcessMetricUrls(metricUrls, metricsOptions);
-                            urls = urls.Concat(metricUrls).ToArray();
-                        }
-
                         //Workaround for lack of default certificate. See https://github.com/dotnet/aspnetcore/issues/28120
                         options.Configure(context.Configuration.GetSection("Kestrel")).Load();
-
-                        bindingResults.AnyBoundPorts = false;
 
                         //By default, we bind to https for sensitive data (such as dumps and traces) and bind http for
                         //non-sensitive data such as metrics. We may be missing a certificate for https binding. We want to continue with the
                         //http binding in that scenario.
                         foreach (string url in urls)
                         {
-                            BindingAddress address = null;
-                            try
+                            if (ListenToAddress(options, url, listenResults))
                             {
-                                address = BindingAddress.Parse(url);
+                                listenResults.AddressesCount++;
                             }
-                            catch (Exception ex)
-                            {
-                                // Record the exception; it will be logged later through ILogger.
-                                bindingResults.Errors.Add(new AddressBindingResult(url, ex));
-                                continue;
-                            }
+                        }
 
-                            Action<ListenOptions> configureListenOptions = (listenOptions) =>
+                        if (metricsOptions.Enabled)
+                        {
+                            foreach (string url in ProcessMetricUrls(metricUrls, metricsOptions))
                             {
-                                if (address.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+                                if (ListenToAddress(options, url, listenResults))
                                 {
-                                    listenOptions.UseHttps();
+                                    listenResults.MetricAddressesCount++;
                                 }
-                            };
-
-                            try
-                            {
-                                if (address.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    options.ListenLocalhost(address.Port, configureListenOptions);
-                                }
-                                else if (IPAddress.TryParse(address.Host, out IPAddress ipAddress))
-                                {
-                                    options.Listen(ipAddress, address.Port, configureListenOptions);
-                                }
-                                else
-                                {
-                                    options.ListenAnyIP(address.Port, configureListenOptions);
-                                }
-                                bindingResults.AnyBoundPorts = true;
-                            }
-                            catch (InvalidOperationException ex)
-                            {
-                                // This binding failure is typically due to missing default certificate.
-                                // Record the exception; it will be logged later through ILogger.
-                                bindingResults.Errors.Add(new AddressBindingResult(url, ex));
                             }
                         }
                     })
@@ -291,6 +256,54 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             return metricUrls;
+        }
+
+        private static bool ListenToAddress(KestrelServerOptions options, string url, AddressListenResults listenResults)
+        {
+            BindingAddress address = null;
+            try
+            {
+                address = BindingAddress.Parse(url);
+            }
+            catch (Exception ex)
+            {
+                // Record the exception; it will be logged later through ILogger.
+                listenResults.Errors.Add(new AddressListenResult(url, ex));
+                return false;
+            }
+
+            Action<ListenOptions> configureListenOptions = (listenOptions) =>
+            {
+                if (address.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+                {
+                    listenOptions.UseHttps();
+                }
+            };
+
+            try
+            {
+                if (address.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.ListenLocalhost(address.Port, configureListenOptions);
+                }
+                else if (IPAddress.TryParse(address.Host, out IPAddress ipAddress))
+                {
+                    options.Listen(ipAddress, address.Port, configureListenOptions);
+                }
+                else
+                {
+                    options.ListenAnyIP(address.Port, configureListenOptions);
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                // This binding failure is typically due to missing default certificate.
+                // Record the exception; it will be logged later through ILogger.
+                listenResults.Errors.Add(new AddressListenResult(url, ex));
+                return false;
+            }
+
+            return true;
         }
 
         private static void ConfigureMetricsEndpoint(IConfigurationBuilder builder, bool enableMetrics, string[] metricEndpoints)
