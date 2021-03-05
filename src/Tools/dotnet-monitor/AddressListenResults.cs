@@ -7,21 +7,25 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class AddressBindingResults
+    internal sealed class AddressListenResults
     {
-        public IList<AddressBindingResult> Errors { get; }
-            = new List<AddressBindingResult>();
+        public IList<AddressListenResult> Errors { get; }
+            = new List<AddressListenResult>();
 
-        public bool AnyBoundPorts { get; set; }
+        public bool AnyAddresses => (AddressesCount + MetricAddressesCount) > 0;
+
+        public int MetricAddressesCount { get; set; }
+
+        public int AddressesCount { get; set; }
     }
 
-    internal sealed class AddressBindingResult
+    internal sealed class AddressListenResult
     {
         public readonly string Url;
 
         public readonly Exception Exception;
 
-        public AddressBindingResult(string Url, Exception exception)
+        public AddressListenResult(string Url, Exception exception)
         {
             this.Url = Url;
             Exception = exception;

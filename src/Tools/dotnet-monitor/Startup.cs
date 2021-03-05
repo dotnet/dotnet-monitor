@@ -4,7 +4,9 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -17,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 
@@ -85,10 +88,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
             IApplicationBuilder app,
+            IHostApplicationLifetime lifetime,
             IWebHostEnvironment env,
             ExperimentalToolLogger exprLogger,
             IAuthOptions options,
-            AddressBindingResults bindingResults,
+            AddressListenResults listenResults,
             ILogger<Startup> logger)
         {
             exprLogger.LogExperimentMessage();
@@ -100,20 +104,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // first opportunity to log anything through ILogger (a dedicated HostedService
             // could be written for this, but there is no guarantee that service would run
             // after the GenericWebHostServer is instantiated but before it is started).
-            foreach (AddressBindingResult result in bindingResults.Errors)
+            foreach (AddressListenResult result in listenResults.Errors)
             {
-                logger.UnableToBindToAddress(result.Url, result.Exception);
+                logger.UnableToListenToAddress(result.Url, result.Exception);
             }
 
-            // If we end up not binding any ports, Kestrel defaults to port 5000. Make sure we don't attempt this.
+            // If we end up not listening on any ports, Kestrel defaults to port 5000. Make sure we don't attempt this.
             // Startup.Configure is called before KestrelServer is started
             // by the GenericWebHostServer, so there is no duplication of logging errors
             // and Kestrel does not bind to default ports.
-            if (!bindingResults.AnyBoundPorts)
+            if (!listenResults.AnyAddresses)
             {
                 // This is logged by GenericWebHostServer.StartAsync
                 throw new MonitoringException("Unable to bind any urls.");
             }
+
+            lifetime.ApplicationStarted.Register(() => LogBoundAddresses(app.ServerFeatures, listenResults, logger));
 
             if (options.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth)
             {
@@ -172,6 +178,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 builder.MapControllers();
             });
+        }
+
+        private static void LogBoundAddresses(IFeatureCollection features, AddressListenResults results, ILogger logger)
+        {
+            IServerAddressesFeature serverAddresses = features.Get<IServerAddressesFeature>();
+            Debug.Assert(serverAddresses.Addresses.Count == results.AddressesCount + results.MetricAddressesCount);
+
+            // This logging allows the tool to differentiate which addresses
+            // are default address and which are metrics addresses.
+            int urlCount = results.AddressesCount;
+            foreach (string serverAddress in serverAddresses.Addresses)
+            {
+                if (urlCount > 0)
+                {
+                    logger.BoundDefaultAddress(serverAddress);
+                    urlCount--;
+                }
+                else
+                {
+                    logger.BoundMetricsAddress(serverAddress);
+                }
+            }
         }
     }
 }
