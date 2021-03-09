@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 
@@ -19,9 +18,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
     {
         private sealed class HostConstraint : IActionConstraint
         {
-            private readonly int?[] _restrictedPorts;
+            private readonly int[] _restrictedPorts;
 
-            public HostConstraint(int?[] restrictedPorts)
+            public HostConstraint(int[] restrictedPorts)
             {
                 _restrictedPorts = restrictedPorts;
             }
@@ -38,8 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
         public IActionConstraint CreateInstance(IServiceProvider services)
         {
-            var metricsOptions = services.GetRequiredService<IOptions<MetricsOptions>>();
-            return new HostConstraint(metricsOptions.Value.Enabled ? metricsOptions.Value.Ports : Array.Empty<int?>());
+            return new HostConstraint(services.GetRequiredService<IUrlPortsProvider>().MetricsPorts.ToArray());
         }
     }
 }
