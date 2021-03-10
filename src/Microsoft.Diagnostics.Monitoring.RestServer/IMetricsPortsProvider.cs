@@ -7,9 +7,9 @@ using System.Collections.Generic;
 namespace Microsoft.Diagnostics.Monitoring.RestServer
 {
     /// <summary>
-    /// Provides port information about the URLs the were successfully bound.
+    /// Provides port information about the metrics URLs that were successfully bound.
     /// </summary>
-    internal interface IUrlPortsProvider
+    internal interface IMetricsPortsProvider
     {
         /// <summary>
         /// Get the ports of the metrics URLs.

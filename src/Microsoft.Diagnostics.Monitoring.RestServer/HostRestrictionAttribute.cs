@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
         public IActionConstraint CreateInstance(IServiceProvider services)
         {
-            return new HostConstraint(services.GetRequiredService<IUrlPortsProvider>().MetricsPorts.ToArray());
+            return new HostConstraint(services.GetRequiredService<IMetricsPortsProvider>().MetricsPorts.ToArray());
         }
     }
 }

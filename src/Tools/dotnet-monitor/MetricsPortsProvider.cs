@@ -12,12 +12,12 @@ using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal class UrlPortsProvider : IUrlPortsProvider
+    internal class MetricsPortsProvider : IMetricsPortsProvider
     {
         private readonly AddressListenResults _results;
         private readonly IServerAddressesFeature _serverAddresses;
 
-        public UrlPortsProvider(AddressListenResults results, IServer server)
+        public MetricsPortsProvider(AddressListenResults results, IServer server)
         {
             _results = results;
             _serverAddresses = server.Features.Get<IServerAddressesFeature>();

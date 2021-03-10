@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 services.AddHostedService<MetricsService>();
             }
 
-            services.AddSingleton<IUrlPortsProvider, UrlPortsProvider>();
+            services.AddSingleton<IMetricsPortsProvider, MetricsPortsProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
