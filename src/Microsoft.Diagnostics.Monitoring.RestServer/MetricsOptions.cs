@@ -2,9 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
-using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.RestServer
@@ -19,35 +16,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
     {
         public const string ConfigurationKey = "Metrics";
 
-        private readonly Lazy<int?[]> _ports;
-        
-        public MetricsOptions()
-        {
-            _ports = new Lazy<int?[]>(() =>
-                {
-                    string[] endpoints = ConfigurationHelper.SplitValue(Endpoints);
-                    int?[] ports = new int?[endpoints.Length];
-                    for(int i = 0; i < endpoints.Length; i++)
-                    {
-                        //We cannot use Uri[Builder], since we are sometimes parsing invalid hostnames
-                        try
-                        {
-                            UriHelper.FromAbsolute(endpoints[i], out _, out HostString host, out _, out _, out _);
-                            ports[i] = host.Port;
-                        }
-                        catch (FormatException)
-                        {
-                        }
-                    }
-                    return ports;
-                });
-        }
-
         public bool Enabled { get; set; }
         
         public string Endpoints { get; set; }
-
-        public int?[] Ports => _ports.Value;
 
         public int UpdateIntervalSeconds { get; set; }
 

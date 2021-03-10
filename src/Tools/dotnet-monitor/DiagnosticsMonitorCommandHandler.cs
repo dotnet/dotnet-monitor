@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.RestServer;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +16,6 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -199,24 +197,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //By default, we bind to https for sensitive data (such as dumps and traces) and bind http for
                         //non-sensitive data such as metrics. We may be missing a certificate for https binding. We want to continue with the
                         //http binding in that scenario.
-                        foreach (string url in urls)
-                        {
-                            if (ListenToAddress(options, url, listenResults))
-                            {
-                                listenResults.AddressesCount++;
-                            }
-                        }
+                        metricUrls = metricsOptions.Enabled ?
+                            ProcessMetricUrls(metricUrls, metricsOptions) :
+                            Array.Empty<string>();
 
-                        if (metricsOptions.Enabled)
-                        {
-                            foreach (string url in ProcessMetricUrls(metricUrls, metricsOptions))
-                            {
-                                if (ListenToAddress(options, url, listenResults))
-                                {
-                                    listenResults.MetricAddressesCount++;
-                                }
-                            }
-                        }
+                        listenResults.Listen(options, urls, metricUrls);
                     })
                     .UseStartup<Startup>();
                 });
@@ -256,54 +241,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             return metricUrls;
-        }
-
-        private static bool ListenToAddress(KestrelServerOptions options, string url, AddressListenResults listenResults)
-        {
-            BindingAddress address = null;
-            try
-            {
-                address = BindingAddress.Parse(url);
-            }
-            catch (Exception ex)
-            {
-                // Record the exception; it will be logged later through ILogger.
-                listenResults.Errors.Add(new AddressListenResult(url, ex));
-                return false;
-            }
-
-            Action<ListenOptions> configureListenOptions = (listenOptions) =>
-            {
-                if (address.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
-                {
-                    listenOptions.UseHttps();
-                }
-            };
-
-            try
-            {
-                if (address.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase))
-                {
-                    options.ListenLocalhost(address.Port, configureListenOptions);
-                }
-                else if (IPAddress.TryParse(address.Host, out IPAddress ipAddress))
-                {
-                    options.Listen(ipAddress, address.Port, configureListenOptions);
-                }
-                else
-                {
-                    options.ListenAnyIP(address.Port, configureListenOptions);
-                }
-            }
-            catch (InvalidOperationException ex)
-            {
-                // This binding failure is typically due to missing default certificate.
-                // Record the exception; it will be logged later through ILogger.
-                listenResults.Errors.Add(new AddressListenResult(url, ex));
-                return false;
-            }
-
-            return true;
         }
 
         private static void ConfigureMetricsEndpoint(IConfigurationBuilder builder, bool enableMetrics, string[] metricEndpoints)

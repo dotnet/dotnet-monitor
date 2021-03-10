@@ -19,7 +19,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 
@@ -83,6 +82,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 services.AddSingleton<MetricsStoreService>();
                 services.AddHostedService<MetricsService>();
             }
+
+            services.AddSingleton<IMetricsPortsProvider, MetricsPortsProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -183,22 +184,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static void LogBoundAddresses(IFeatureCollection features, AddressListenResults results, ILogger logger)
         {
             IServerAddressesFeature serverAddresses = features.Get<IServerAddressesFeature>();
-            Debug.Assert(serverAddresses.Addresses.Count == results.AddressesCount + results.MetricAddressesCount);
 
             // This logging allows the tool to differentiate which addresses
             // are default address and which are metrics addresses.
-            int urlCount = results.AddressesCount;
-            foreach (string serverAddress in serverAddresses.Addresses)
+
+            foreach (string defaultAddress in results.GetDefaultAddresses(serverAddresses))
             {
-                if (urlCount > 0)
-                {
-                    logger.BoundDefaultAddress(serverAddress);
-                    urlCount--;
-                }
-                else
-                {
-                    logger.BoundMetricsAddress(serverAddress);
-                }
+                logger.BoundDefaultAddress(defaultAddress);
+            }
+
+            foreach (string metricAddress in results.GetMetricsAddresses(serverAddresses))
+            {
+                logger.BoundMetricsAddress(metricAddress);
             }
         }
     }
