@@ -13,8 +13,13 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
 
-  <ItemGroup>
+
+  <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
     <PackageReference Include="Microsoft.Diagnostics.Monitoring.EventPipe" Version="$(MicrosoftDiagnosticsMonitoringEventPipeVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' != ''">
+    <ProjectReference Include="$(DIAGNOSTICS_REPO_ROOT)\src\Microsoft.Diagnostics.Monitoring.EventPipe\Microsoft.Diagnostics.Monitoring.EventPipe.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
@@ -36,5 +41,4 @@
     <InternalsVisibleTo Include="dotnet-monitor" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
   </ItemGroup>
-
 </Project>

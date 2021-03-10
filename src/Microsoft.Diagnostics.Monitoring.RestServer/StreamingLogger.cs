@@ -19,9 +19,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
     {
         private readonly Stream _outputStream;
         private readonly LogFormat _format;
-        private readonly LogLevel _logLevel;
+        private readonly LogLevel? _logLevel;
 
-        public StreamingLoggerProvider(Stream outputStream, LogFormat logFormat, LogLevel logLevel = LogLevel.Debug)
+        public StreamingLoggerProvider(Stream outputStream, LogFormat logFormat, LogLevel? logLevel)
         {
             _outputStream = outputStream;
             _format = logFormat;
@@ -44,9 +44,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         private readonly Stream _outputStream;
         private readonly string _categoryName;
         private readonly LogFormat _logFormat;
-        private readonly LogLevel _logLevel;
+        private readonly LogLevel? _logLevel;
 
-        public StreamingLogger(string category, Stream outputStream, LogFormat format, LogLevel logLevel)
+        public StreamingLogger(string category, Stream outputStream, LogFormat format, LogLevel? logLevel)
         {
             _outputStream = outputStream;
             _categoryName = category;
@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             return null;
         }
 
-        public bool IsEnabled(LogLevel logLevel) => logLevel <= _logLevel;
+        public bool IsEnabled(LogLevel logLevel) => (_logLevel == null) ? true : logLevel <= _logLevel.Value;
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {

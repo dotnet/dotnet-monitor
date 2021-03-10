@@ -341,7 +341,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
-            LogLevel level = LogLevel.Debug,
+            LogLevel? level = null,
             [FromQuery]
             string egressProvider = null)
         {
@@ -364,11 +364,21 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
 
                     loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, level));
 
-                    var settings = new EventLogsPipelineSettings
+                    var settings = new EventLogsPipelineSettings()
                     {
-                        Duration = duration,
-                        LogLevel = level,
+                        Duration = duration
                     };
+
+                    //If the user does not explicitly specify a log level, we will use the apps defaults for .net 5.
+                    //Otherwise, we use the log level specified by the query.
+                    if ((!level.HasValue) && (processInfo.EndpointInfo.RuntimeInstanceCookie != Guid.Empty))
+                    {
+                        settings.UseAppFilters = true;
+                    }
+                    else
+                    {
+                        settings.LogLevel = level.GetValueOrDefault(LogLevel.Warning);
+                    }
 
                     var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
 
