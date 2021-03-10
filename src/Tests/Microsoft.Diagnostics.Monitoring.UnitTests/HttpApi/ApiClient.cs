@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information
 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +12,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
@@ -61,6 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
+                    ValidateContentType(response, ContentTypes.ApplicationJson);
                     return await ReadContentEnumerableAsync<Models.ProcessIdentifier>(response);
                 case HttpStatusCode.Unauthorized:
                 case HttpStatusCode.NotFound:
@@ -99,7 +103,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
+                    ValidateContentType(response, ContentTypes.TextPlain);
                     return await response.Content.ReadAsStringAsync();
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response);
                 case HttpStatusCode.Unauthorized:
                     ThrowIfNotSuccess(response);
                     break;
@@ -117,20 +125,27 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             return await GetMetricsAsync(timeoutSource.Token);
         }
 
-        private static async Task<T> ReadContentAsync<T>(HttpResponseMessage response)
+        private static async Task<T> ReadContentAsync<T>(HttpResponseMessage responseMessage)
         {
-            using Stream contentStream = await response.Content.ReadAsStreamAsync();
+            using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync();
             return await JsonSerializer.DeserializeAsync<T>(contentStream);
         }
 
-        private static Task<List<T>> ReadContentEnumerableAsync<T>(HttpResponseMessage response)
+        private static Task<List<T>> ReadContentEnumerableAsync<T>(HttpResponseMessage responseMessage)
         {
-            return ReadContentAsync<List<T>>(response);
+            return ReadContentAsync<List<T>>(responseMessage);
         }
 
         private static Exception CreateUnexpectedStatusCodeException(HttpStatusCode statusCode)
         {
             return new ApiStatusCodeException($"Unexpected status code {statusCode}", statusCode);
+        }
+
+        private static async Task<ValidationProblemDetailsException> CreateValidationProblemDetailsExceptionAsync(HttpResponseMessage responseMessage)
+        {
+            return new ValidationProblemDetailsException(
+                await ReadContentAsync<ValidationProblemDetails>(responseMessage),
+                responseMessage.StatusCode);
         }
 
         private static void ThrowIfNotSuccess(HttpResponseMessage responseMessage)
@@ -143,6 +158,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             {
                 throw new ApiStatusCodeException(ex.Message, responseMessage.StatusCode);
             }
+        }
+
+        private void ValidateContentType(HttpResponseMessage responseMessage, string expectedMediaType)
+        {
+            Assert.Equal(expectedMediaType, responseMessage.Content.Headers.ContentType?.MediaType);
         }
 
         private void WriteRequestMessage(HttpRequestMessage requestMessage)

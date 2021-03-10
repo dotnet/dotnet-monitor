@@ -85,7 +85,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// <summary>
         /// Determines whether authentication is disabled when starting dotnet-monitor.
         /// </summary>
-        public bool NoAuthentication { get; set; }
+        public bool DisableAuthentication { get; set; }
+
+        /// <summary>
+        /// Determines whether metrics are disabled when starting dotnet-monitor.
+        /// </summary>
+        public bool DisableMetrics => DisableMetricsViaCommandLine;
+
+        /// <summary>
+        /// Determines whether metrics are disabled via the command line when starting dotnet-monitor.
+        /// </summary>
+        public bool DisableMetricsViaCommandLine { get; set; }
 
         public DotNetMonitorRunner(ITestOutputHelper outputHelper)
         {
@@ -107,14 +117,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         {
             IList<string> argsList = new List<string>();
             argsList.Add("collect");
+            
             argsList.Add("--urls");
             argsList.Add("http://127.0.0.1:0");
-            argsList.Add("--metricUrls");
-            argsList.Add("http://127.0.0.1:0");
-            if (NoAuthentication)
+
+            if (DisableMetricsViaCommandLine)
+            {
+                argsList.Add("--metrics:false");
+            }
+            else
+            {
+                argsList.Add("--metricUrls");
+                argsList.Add("http://127.0.0.1:0");
+            }
+
+            if (DisableAuthentication)
             {
                 argsList.Add("--no-auth");
             }
+
             string args = string.Join(" ", argsList);
 
             _outputHelper.WriteLine("Monitor Path: {0}", DotNetMonitorPath);
@@ -141,7 +162,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             // Write some diagnostic information provided by stdout
             _outputHelper.WriteLine("Default Address: {0}", await DefaultAddressTask);
-            _outputHelper.WriteLine("Metrics Address: {0}", await MetricsAddressTask);
+
+            if (!DisableMetrics)
+            {
+                _outputHelper.WriteLine("Metrics Address: {0}", await MetricsAddressTask);
+            }
 
             await _startedSource.Task;
         }

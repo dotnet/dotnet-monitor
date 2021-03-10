@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
 using System;
@@ -80,10 +81,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Tests that turning off authentication allows access to all routes without authentication.
         /// </summary>
         [Fact]
-        public async Task NoAuthenticationTest()
+        public async Task DisableAuthenticationTest()
         {
             await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
-            toolRunner.NoAuthentication = true;
+            toolRunner.DisableAuthentication = true;
             await toolRunner.StartAsync(DefaultStartTimeout);
 
             using ApiClient client = new ApiClient(_outputHelper, await toolRunner.DefaultAddressTask);
@@ -95,6 +96,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             // Check that /metrics does not challenge for authentication
             var metrics = await client.GetMetricsAsync(DefaultApiTimeout);
             Assert.NotNull(metrics);
+        }
+
+        /// <summary>
+        /// Tests that turning off metrics via the command line will have the /metrics route not serve metrics.
+        /// </summary>
+        [Fact]
+        public async Task DisableMetricsViaCommandLineTest()
+        {
+            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            toolRunner.DisableMetricsViaCommandLine = true;
+            await toolRunner.StartAsync(DefaultStartTimeout);
+
+            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.DefaultAddressTask);
+
+            // Check that /metrics does not serve metrics
+            var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
+                () => client.GetMetricsAsync(DefaultApiTimeout));
+            Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
+            Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }
     }
 }
