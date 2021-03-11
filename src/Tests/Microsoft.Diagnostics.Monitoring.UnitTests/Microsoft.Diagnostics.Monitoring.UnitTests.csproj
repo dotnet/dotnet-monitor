@@ -1,9 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
