@@ -1,0 +1,30 @@
+﻿<Project>
+
+  <!-- 
+    DotNetHostGeneratedFileName, GenerateDotNetHostSourceFile, and InjectDotNetHostSourceFile are used for injecting the value of the
+    Microsoft.NETCore.App version into csharp code so that it can be used by testing harnesses for running tests under a specific
+    runtime version. This specifically allows tests to run on a version of the runtime besides whatever was included with Arcade's SDK.
+   -->
+
+  <PropertyGroup>
+    <DotNetHostGeneratedFileName>$(IntermediateOutputPath)/$(TargetFramework)/DotNetHost.g.cs</DotNetHostGeneratedFileName>
+    <DARCRuntimeVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftNETCoreApp31Version)</DARCRuntimeVersion>
+    <DARCRuntimeVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftNETCoreApp50Version)</DARCRuntimeVersion>
+  </PropertyGroup>
+
+  <Target Name="GenerateDotNetHostSourceFile" Inputs="$(VersionsPropsPath)" Outputs="$(DotNetHostGeneratedFileName)">
+    <PropertyGroup>
+      <TemplateContent>$([System.IO.File]::ReadAllText('DotNetHost.cs.template'))</TemplateContent>
+      <TransformedContent>$(TemplateContent.Replace('$DARCRuntimeVersion$', '$(DARCRuntimeVersion)'))</TransformedContent>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(DotNetHostGeneratedFileName)" Overwrite="true" Lines="$(TransformedContent)" WriteOnlyWhenDifferent="true" />
+  </Target>
+
+  <Target Name="InjectDotNetHostSourceFile" BeforeTargets="BeforeCompile" DependsOnTargets="GenerateDotNetHostSourceFile">
+    <ItemGroup>
+      <FileWrites Include="$(DotNetHostGeneratedFileName)" />
+      <Compile Include="$(DotNetHostGeneratedFileName)" />
+    </ItemGroup>
+  </Target>
+
+</Project>
