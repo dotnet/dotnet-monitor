@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 // On Windows, named pipe connection will block until the named pipe is ready to connect so no need to block here
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    // On Unux, we wait until the socket is created.
+                    // On Unix, we wait until the socket is created.
                     while (true)
                     {
                         var matchingFiles = Directory.GetFiles(Path.GetTempPath(), $"dotnet-diagnostic-{_process.Id}-*-socket");
