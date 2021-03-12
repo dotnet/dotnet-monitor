@@ -4,7 +4,11 @@
 
 using System.Collections.Generic;
 
+#if UNITTEST
+namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
+#else
 namespace Microsoft.Diagnostics.Monitoring.RestServer
+#endif
 {
     /// <summary>
     /// Configuration for prometheus metric collection and retrieval.
@@ -14,19 +18,17 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
     /// </summary>
     public class MetricsOptions
     {
-        public const string ConfigurationKey = "Metrics";
-
-        public bool Enabled { get; set; }
+        public bool? Enabled { get; set; }
         
         public string Endpoints { get; set; }
 
-        public int UpdateIntervalSeconds { get; set; }
+        public int? UpdateIntervalSeconds { get; set; }
 
-        public int MetricCount { get; set; }
+        public int? MetricCount { get; set; }
 
-        public bool IncludeDefaultProviders { get; set; } = true;
+        public bool? IncludeDefaultProviders { get; set; }
 
-        public bool AllowInsecureChannelForCustomMetrics { get; set; } = false;
+        public bool? AllowInsecureChannelForCustomMetrics { get; set; }
 
         public List<MetricProvider> Providers { get; set; } = new List<MetricProvider>(0);
     }

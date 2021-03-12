@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,6 +52,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         // Task that processes the stdout of dotnet-monitor for significant events.
         private Task<Task> _processStandardOutputTask;
 
+        private readonly string _runnerTmpPath =
+            Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
+
         /// <summary>
         /// The path of the currently executing assembly.
         /// </summary>
@@ -73,14 +77,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 .Replace(CurrentTargetFrameworkFolderName, "netcoreapp3.1");
 
         /// <summary>
-        /// Task that completes with the bound address of the default URL.
+        /// Sets configuration values via environment variables.
         /// </summary>
-        public Task<string> DefaultAddressTask => _defaultAddressSource.Task;
-
-        /// <summary>
-        /// Task that completes with the bound address of the metrics URL.
-        /// </summary>
-        public Task<string> MetricsAddressTask => _metricsAddressSource.Task;
+        public RootOptions ConfigurationFromEnvironment { get; }
+            = new RootOptions();
 
         /// <summary>
         /// Determines whether authentication is disabled when starting dotnet-monitor.
@@ -88,14 +88,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         public bool DisableAuthentication { get; set; }
 
         /// <summary>
-        /// Determines whether metrics are disabled when starting dotnet-monitor.
-        /// </summary>
-        public bool DisableMetrics => DisableMetricsViaCommandLine;
-
-        /// <summary>
         /// Determines whether metrics are disabled via the command line when starting dotnet-monitor.
         /// </summary>
         public bool DisableMetricsViaCommandLine { get; set; }
+
+        private string SharedConfigDirectoryPath =>
+            Path.Combine(_runnerTmpPath, "SharedConfig");
+
+        private string UserConfigDirectoryPath =>
+            Path.Combine(_runnerTmpPath, "UserConfig");
+
+        private string UserSettingsFilePath =>
+            Path.Combine(UserConfigDirectoryPath, "settings.json");
 
         public DotNetMonitorRunner(ITestOutputHelper outputHelper)
         {
@@ -108,6 +112,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 () => ProcessStandardOutputAsync(_cancellation.Token),
                 _cancellation.Token,
                 TaskCreationOptions.RunContinuationsAsynchronously);
+
+            Directory.CreateDirectory(SharedConfigDirectoryPath);
+            Directory.CreateDirectory(UserConfigDirectoryPath);
         }
 
         /// <summary>
@@ -138,8 +145,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             string args = string.Join(" ", argsList);
 
-            _outputHelper.WriteLine("Monitor Path: {0}", DotNetMonitorPath);
-            _outputHelper.WriteLine("Monitor Args: {0}", args);
+            _outputHelper.WriteLine("Monitor: Path: {0}", DotNetMonitorPath);
+            _outputHelper.WriteLine("Monitor: Args: {0}", args);
 
             _runner.EntryAssemblyPath = DotNetMonitorPath;
             _runner.Arguments = args;
@@ -150,23 +157,37 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             _runner.SetEnvironmentVariable("Logging__Console__FormatterName", "json");
             // Enable Debug on Startup class to get lifetime and address events
             _runner.SetEnvironmentVariable("Logging__LogLevel__Microsoft.Diagnostics.Tools.Monitor.Startup", "Debug");
+            
+            // Override the shared config directory
+            _runner.SetEnvironmentVariable("DotnetMonitor_SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
+            // Override the user config directory
+            _runner.SetEnvironmentVariable("DotnetMonitor_UserConfigDirectoryOverride", UserConfigDirectoryPath);
+
+            // Set configuration via environment variables
+            var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration();
+            if (configurationViaEnvironment.Count > 0)
+            {
+                _outputHelper.WriteLine("Monitor: Environment Configuration:");
+                // Set additional environment variables from configuration
+                foreach (var variable in configurationViaEnvironment)
+                {
+                    _outputHelper.WriteLine("Monitor: - {0} = {1}", variable.Key, variable.Value);
+                    _runner.SetEnvironmentVariable(variable.Key, variable.Value);
+                }
+            }
+
+            _outputHelper.WriteLine("Monitor: User Settings Path: {0}", UserSettingsFilePath);
 
             // Start running dotnet-monitor
             await _runner.StartAsync(token);
+
+            _outputHelper.WriteLine("Monitor: Process ID: {0}", _runner.ProcessId);
 
             // Cancel the completion sources if cancellation is requested
             using var _ = token.Register(() => Cancel(token));
 
             // Start processing stdout
             _processStandardOutputTask.Start();
-
-            // Write some diagnostic information provided by stdout
-            _outputHelper.WriteLine("Default Address: {0}", await DefaultAddressTask);
-
-            if (!DisableMetrics)
-            {
-                _outputHelper.WriteLine("Metrics Address: {0}", await MetricsAddressTask);
-            }
 
             await _startedSource.Task;
         }
@@ -196,7 +217,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             // Wait for it to exit
             int exitCode = await _runner.WaitForExitAsync(CancellationToken.None).SafeAwait(-1);
-            _outputHelper.WriteLine("Monitor Exit Code: {0}", exitCode);
+            _outputHelper.WriteLine("Monitor: Exit Code: {0}", exitCode);
 
             // Cancel any remaining tasks
             _cancellation.Cancel();
@@ -204,10 +225,85 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             // Wait for stdout processing to finish
             await _processStandardOutputTask.Unwrap().SafeAwait();
 
+            try
+            {
+                Directory.Delete(_runnerTmpPath, recursive: true);
+            }
+            catch (Exception ex)
+            {
+                _outputHelper.WriteLine("Monitor: Unable to delete '{0}': {1}", _runnerTmpPath, ex);
+            }
+
             // Dispose cancellation registrations
             _cancellationRegistration.Dispose();
 
             _cancellation.Dispose();
+        }
+
+        public Task<string> GetDefaultAddressAsync(CancellationToken token)
+        {
+            return GetCompletionSourceResultAsync(_defaultAddressSource, token);
+        }
+
+        public async Task<string> GetDefaultAddressAsync(TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new CancellationTokenSource(timeout);
+            return await GetDefaultAddressAsync(cancellation.Token);
+        }
+
+        public Task<string> GetMetricsAddressAsync(CancellationToken token)
+        {
+            return GetCompletionSourceResultAsync(_metricsAddressSource, token);
+        }
+
+        public async Task<string> GetMetricsAddressAsync(TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new CancellationTokenSource(timeout);
+            return await GetMetricsAddressAsync(cancellation.Token);
+        }
+
+        public void WriteKeyPerValueConfiguration(RootOptions options)
+        {
+            foreach (KeyValuePair<string, string> entry in options.ToKeyPerFileConfiguration())
+            {
+                File.WriteAllText(
+                    Path.Combine(SharedConfigDirectoryPath, entry.Key),
+                    entry.Value);
+
+                _outputHelper.WriteLine("Monitor: Wrote {0} key-per-file.", entry.Key);
+            }
+        }
+
+        public async Task WriteUserSettingsAsync(RootOptions options, CancellationToken token)
+        {
+            using FileStream stream = new FileStream(UserSettingsFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+
+            JsonSerializerOptions serializerOptions = new JsonSerializerOptions()
+            {
+                IgnoreNullValues = true
+            };
+
+            await JsonSerializer.SerializeAsync(stream, options, serializerOptions);
+
+            _outputHelper.WriteLine("Monitor: Wrote user settings.");
+        }
+
+        public async Task WriteUserSettingsAsync(RootOptions options, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new CancellationTokenSource(timeout);
+            await WriteUserSettingsAsync(options, cancellation.Token);
+        }
+
+        private static async Task<T> GetCompletionSourceResultAsync<T>(TaskCompletionSource<T> source, CancellationToken token)
+        {
+            TaskCompletionSource<T> cancellationSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var _ = token.Register(() => cancellationSource.TrySetCanceled(token));
+
+            Task<T> completedTask = await Task.WhenAny(
+                source.Task,
+                cancellationSource.Task);
+
+            return await completedTask;
         }
 
         private async Task ProcessStandardOutputAsync(CancellationToken token)
@@ -268,12 +364,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 case 16: // Bound default address: {address}
                     if (logEvent.State.TryGetValue("address", out string defaultAddress))
                     {
+                        _outputHelper.WriteLine("Monitor: Default Address: {0}", defaultAddress);
                         _defaultAddressSource.SetResult(defaultAddress);
                     }
                     break;
                 case 17: // Bound metrics address: {address}
                     if (logEvent.State.TryGetValue("address", out string metricsAddress))
                     {
+                        _outputHelper.WriteLine("Monitor: Metrics Address: {0}", metricsAddress);
                         _metricsAddressSource.SetResult(metricsAddress);
                     }
                     break;

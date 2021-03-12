@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         {
             return this.InvokeService(() =>
             {
-                if (!_metricsOptions.Enabled)
+                if (!_metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled))
                 {
                     throw new InvalidOperationException("Metrics was not enabled");
                 }

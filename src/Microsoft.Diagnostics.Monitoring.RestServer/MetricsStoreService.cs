@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         public MetricsStoreService(
             IOptions<MetricsOptions> options)
         {
-            MetricsStore = new MetricsStore(options.Value.MetricCount);
+            MetricsStore = new MetricsStore(options.Value.MetricCount.GetValueOrDefault(MetricsOptionsDefaults.MetricCount));
         }
 
         public void Dispose()

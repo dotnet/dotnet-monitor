@@ -10,7 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\CorsConfiguration.cs" Link="Options\CorsConfiguration.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptions.cs" Link="Options\MetricsOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Auth\ApiAuthenticationOptions.cs" Link="Options\ApiAuthenticationOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortOptions.cs" Link="Options\DiagnosticPortOptions.cs" />
   </ItemGroup>
 
   <ItemGroup>

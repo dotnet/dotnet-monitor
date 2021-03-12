@@ -28,7 +28,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public FilteredEndpointInfoSource(IOptions<DiagnosticPortOptions> portOptions)
         {
             _portOptions = portOptions.Value;
-            switch (_portOptions.ConnectionMode)
+
+            DiagnosticPortConnectionMode connectionMode = _portOptions.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode);
+
+            switch (connectionMode)
             {
                 case DiagnosticPortConnectionMode.Connect:
                     _source = new ClientEndpointInfoSource();
@@ -37,7 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     _source = new ServerEndpointInfoSource(_portOptions.EndpointName);
                     break;
                 default:
-                    throw new InvalidOperationException($"Unhandled connection mode: {_portOptions.ConnectionMode}");
+                    throw new InvalidOperationException($"Unhandled connection mode: {connectionMode}");
             }
 
             // Filter out the current process based on the connection mode.
@@ -61,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 // If connecting to runtime instances, filter self out. In listening mode, it's likely
                 // that multiple processes have the same PID in multi-container scenarios.
-                if (DiagnosticPortConnectionMode.Connect == portOptions.Value.ConnectionMode)
+                if (DiagnosticPortConnectionMode.Connect == connectionMode)
                 {
                     _processIdToFilterOut = pid;
                 }

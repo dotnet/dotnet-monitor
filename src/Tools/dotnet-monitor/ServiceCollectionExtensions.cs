@@ -15,12 +15,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<MetricsOptions>(services, configuration, MetricsOptions.ConfigurationKey);
+            return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics);
         }
 
         public static IServiceCollection ConfigureApiKeyConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<ApiAuthenticationOptions>(services, configuration, ApiAuthenticationOptions.ConfigurationKey);
+            return ConfigureOptions<ApiAuthenticationOptions>(services, configuration, ConfigurationKeys.ApiAuthentication);
         }
 
         private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class

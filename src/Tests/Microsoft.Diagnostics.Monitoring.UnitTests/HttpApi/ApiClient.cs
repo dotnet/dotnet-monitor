@@ -55,10 +55,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
 
-            WriteRequestMessage(request);
-
             using HttpResponseMessage response = await _httpClient.SendAsync(request, token);
 
+            WriteRequestMessage(request);
             WriteResponseMessage(response);
 
             switch (response.StatusCode)
@@ -94,10 +93,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.TextPlain);
 
-            WriteRequestMessage(request);
-
             using HttpResponseMessage response = await _httpClient.SendAsync(request, token);
 
+            WriteRequestMessage(request);
             WriteResponseMessage(response);
 
             switch (response.StatusCode)
