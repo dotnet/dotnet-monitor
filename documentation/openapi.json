@@ -676,11 +676,13 @@
         "type": "string"
       },
       "EventPipeProvider": {
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "keywords": {
             "type": "string",
@@ -700,14 +702,16 @@
         "additionalProperties": false
       },
       "EventPipeConfiguration": {
+        "required": [
+          "providers"
+        ],
         "type": "object",
         "properties": {
           "providers": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/EventPipeProvider"
-            },
-            "nullable": true
+            }
           },
           "requestRundown": {
             "type": "boolean"

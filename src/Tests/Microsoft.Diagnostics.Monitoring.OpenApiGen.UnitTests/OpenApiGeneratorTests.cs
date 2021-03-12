@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -45,9 +47,9 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         /// is the same that is generated from the dotnet-monitor binaries.
         /// </summary>
         [Fact]
-        public void BaselineDifferenceTest()
+        public async Task BaselineDifferenceTest()
         {
-            using FileStream stream = GenerateDocument();
+            using FileStream stream = await GenerateDocumentAsync();
             using StreamReader reader = new StreamReader(stream);
 
             // Renormalize line endings due to git checkout normalizing to the operating system preference.
@@ -74,46 +76,43 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         /// Test that the generated OpenAPI document is valid.
         /// </summary>
         [Fact]
-        public void GeneratedIsValidTest()
+        public async Task GeneratedIsValidTest()
         {
-            using FileStream stream = GenerateDocument();
+            using FileStream stream = await GenerateDocumentAsync();
 
             ValidateDocument(stream);
         }
 
-        private FileStream GenerateDocument()
+        private async Task<FileStream> GenerateDocumentAsync()
         {
             string path = Path.GetTempFileName();
 
             _outputHelper.WriteLine($"OpenAPI Document: {path}");
 
-            Process process = new Process();
-            process.StartInfo.FileName = DotNetHost.HostExePath;
-            process.StartInfo.Arguments = $"{OpenApiGenPath} {path}";
-            process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
+            DotNetRunner runner = new DotNetRunner();
+            runner.EntryAssemblyPath = OpenApiGenPath;
+            runner.Arguments = path;
 
-            Assert.True(process.Start());
-            Assert.True(process.WaitForExit(GenerationTimemoutMs));
+            using CancellationTokenSource cancellation = new CancellationTokenSource(GenerationTimemoutMs);
+
+            await runner.StartAsync(cancellation.Token);
+
+            int exitCode = await runner.WaitForExitAsync(cancellation.Token);
 
             string line;
             _outputHelper.WriteLine("Standard Output:");
-            while (null != (line = process.StandardOutput.ReadLine()))
+            while (null != (line = runner.StandardOutput.ReadLine()))
             {
                 _outputHelper.WriteLine(line);
             }
 
             _outputHelper.WriteLine("Standard Error:");
-            while (null != (line = process.StandardError.ReadLine()))
+            while (null != (line = runner.StandardError.ReadLine()))
             {
                 _outputHelper.WriteLine(line);
             }
 
-            _outputHelper.WriteLine($"Exit Code: {process.ExitCode}");
-
-            Assert.Equal(0, process.ExitCode);
+            Assert.Equal(0, exitCode);
 
             return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.DeleteOnClose);
         }
