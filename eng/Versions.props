@@ -7,6 +7,12 @@
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
   </PropertyGroup>
   <PropertyGroup>
+    <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
+    project references for command line builds. They should match the values in the diagnostics repo. -->
+    <MicrosoftBclAsyncInterfacesVersion>1.1.0</MicrosoftBclAsyncInterfacesVersion>
+    <MicrosoftDiagnosticsTracingTraceEventVersion>2.0.64</MicrosoftDiagnosticsTracingTraceEventVersion>
+    <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
+    <SystemTextJsonVersion>4.7.1</SystemTextJsonVersion>
     <!-- Runtime versions to test -->
     <MicrosoftNETCoreApp31Version>3.1.12</MicrosoftNETCoreApp31Version>
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>

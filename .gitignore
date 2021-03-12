@@ -128,3 +128,4 @@ StressLog.txt
 *.binlog
 *.pubxml
 **/.idea/
+/dotnet-monitor.dev.sln
