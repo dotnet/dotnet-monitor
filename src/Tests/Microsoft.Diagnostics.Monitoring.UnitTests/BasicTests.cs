@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,20 +34,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.DefaultAddressTask);
+            using ApiClient client = new ApiClient(await toolRunner.DefaultAddressTask);
 
             // Any authenticated route on the default address should 401 Unauthenticated
 
-            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+            var apiException = await Assert.ThrowsAsync<ApiException>(
                 () => client.GetProcessesAsync(DefaultApiTimeout));
-            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
+            Assert.Equal(StatusCodes.Status401Unauthorized, apiException.StatusCode);
 
             // TODO: Verify other routes (e.g. /dump, /trace, /logs) also 401 Unauthenticated
 
             // Metrics should not throw on the default address
 
-            var metrics = await client.GetMetricsAsync(DefaultApiTimeout);
-            Assert.NotNull(metrics);
+            await client.GetMetricsAsync(DefaultApiTimeout);
         }
 
         /// <summary>
@@ -63,18 +60,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.MetricsAddressTask);
+            using ApiClient client = new ApiClient(await toolRunner.MetricsAddressTask);
 
             // Any non-metrics route on the metrics address should 404 Not Found
-            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+            var apiException = await Assert.ThrowsAsync<ApiException>(
                 () => client.GetProcessesAsync(DefaultApiTimeout));
-            Assert.Equal(HttpStatusCode.NotFound, statusCodeException.StatusCode);
+            Assert.Equal(StatusCodes.Status404NotFound, apiException.StatusCode);
 
             // TODO: Verify other routes (e.g. /dump, /trace, /logs) also 404 Not Found
 
             // Metrics should not throw on the metrics address
-            var metrics = await client.GetMetricsAsync(DefaultApiTimeout);
-            Assert.NotNull(metrics);
+            await client.GetMetricsAsync(DefaultApiTimeout);
         }
 
         /// <summary>
@@ -87,15 +83,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.DisableAuthentication = true;
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.DefaultAddressTask);
+            using ApiClient client = new ApiClient(await toolRunner.DefaultAddressTask);
 
             // Check that /processes does not challenge for authentication
             var processes = await client.GetProcessesAsync(DefaultApiTimeout);
             Assert.NotNull(processes);
 
             // Check that /metrics does not challenge for authentication
-            var metrics = await client.GetMetricsAsync(DefaultApiTimeout);
-            Assert.NotNull(metrics);
+            await client.GetMetricsAsync(DefaultApiTimeout);
         }
 
         /// <summary>
@@ -108,13 +103,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.DisableMetricsViaCommandLine = true;
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.DefaultAddressTask);
+            using ApiClient client = new ApiClient(await toolRunner.DefaultAddressTask);
 
             // Check that /metrics does not serve metrics
-            var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
+            var apiException = await Assert.ThrowsAsync<ApiException<ValidationProblemDetails>>(
                 () => client.GetMetricsAsync(DefaultApiTimeout));
-            Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
-            Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
+            Assert.Equal(StatusCodes.Status400BadRequest, apiException.StatusCode);
+            Assert.Equal(StatusCodes.Status400BadRequest, apiException.Result.Status);
         }
     }
 }

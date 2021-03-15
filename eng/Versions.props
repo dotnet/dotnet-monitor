@@ -30,6 +30,7 @@
     <MicrosoftAspNetCoreMvcVersion>2.1.3</MicrosoftAspNetCoreMvcVersion>
     <MicrosoftAspNetCoreServerKestrelCoreVersion>2.1.7</MicrosoftAspNetCoreServerKestrelCoreVersion>
     <MicrosoftBclHashCodeVersion>1.1.0</MicrosoftBclHashCodeVersion>
+    <MicrosoftExtensionsApiDescriptionClientVersion>3.0.0</MicrosoftExtensionsApiDescriptionClientVersion>
     <MicrosoftExtensionsConfigurationKeyPerFileVersion>5.0.2</MicrosoftExtensionsConfigurationKeyPerFileVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>5.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
@@ -39,6 +40,8 @@
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21162.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21162.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- Third-party references -->
+    <NewtonsoftJsonVersion>12.0.2</NewtonsoftJsonVersion>
+    <NSwagApiDescriptionClientVersion>13.0.5</NSwagApiDescriptionClientVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
   </PropertyGroup>
 </Project>

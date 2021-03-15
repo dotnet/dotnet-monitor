@@ -10,14 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
+    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.UnitTests.ApiClient\Microsoft.Diagnostics.Monitoring.UnitTests.ApiClient.csproj" />
   </ItemGroup>
 
 </Project>
