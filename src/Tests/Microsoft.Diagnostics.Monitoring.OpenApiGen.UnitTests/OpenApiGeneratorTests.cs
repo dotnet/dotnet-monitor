@@ -56,9 +56,22 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
             string baselineContent = File.ReadAllText(OpenApiBaselinePath).Replace("\r\n", "\n");
             string generatedContent = reader.ReadToEnd();
 
-            Assert.True(
-                string.Equals(baselineContent, generatedContent, StringComparison.Ordinal),
-                "The generated OpenAPI description is different than the documented baseline.");
+            bool equal = string.Equals(baselineContent, generatedContent, StringComparison.Ordinal);
+            if (!equal)
+            {
+                var baseline = baselineContent.Split('\n');
+                var generated = generatedContent.Split('\n');
+                //Help with some of the diffs, especially since VS autoformats json files
+                for (int i = 0; i < Math.Min(baseline.Length, generated.Length); i++)
+                {
+                    if (!string.Equals(baseline[i], generated[i], StringComparison.Ordinal))
+                    {
+                        _outputHelper.WriteLine(@$"Mismatch content on line {i + 1}:{Environment.NewLine}{baseline[i]}{Environment.NewLine}{generated[i]}");
+                        break;
+                    }
+                }
+            }
+            Assert.True(equal, "The generated OpenAPI description is different than the documented baseline.");
         }
 
         /// <summary>

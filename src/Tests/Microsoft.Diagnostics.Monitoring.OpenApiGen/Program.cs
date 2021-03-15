@@ -57,9 +57,11 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
 
                         options.DocumentFilter<BadRequestResponseDocumentFilter>();
                         options.DocumentFilter<UnauthorizedResponseDocumentFilter>();
+                        options.DocumentFilter<TooManyRequestsResponseDocumentFilter>();
 
                         options.OperationFilter<BadRequestResponseOperationFilter>();
                         options.OperationFilter<RemoveFailureContentTypesOperationFilter>();
+                        options.OperationFilter<TooManyRequestsResponseOperationFilter>();
                         options.OperationFilter<UnauthorizedResponseOperationFilter>();
 
                         var documentationFile = $"{typeof(DiagController).Assembly.GetName().Name}.xml";

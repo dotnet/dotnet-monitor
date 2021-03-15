@@ -8,5 +8,6 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
     {
         public static readonly string BadRequestResponse = nameof(BadRequestResponse);
         public static readonly string UnauthorizedResponse = nameof(UnauthorizedResponse);
+        public static readonly string TooManyRequestsResponse = nameof(TooManyRequestsResponse);
     }
 }

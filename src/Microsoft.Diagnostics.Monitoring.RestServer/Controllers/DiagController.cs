@@ -138,7 +138,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
+        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [RequestLimit(MaxConcurrency = 1)]
         public Task<ActionResult> CaptureDump(
             ProcessKey? processKey,
             [FromQuery]
@@ -188,7 +190,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
+        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [RequestLimit(MaxConcurrency = 1)]
         public Task<ActionResult> CaptureGcDump(
             ProcessKey? processKey,
             [FromQuery]
@@ -239,7 +243,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
+        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureTrace(
             ProcessKey? processKey,
             [FromQuery]
@@ -290,7 +296,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
+        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureTraceCustom(
             ProcessKey? processKey,
             [FromBody][Required]
@@ -339,7 +347,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
         [HttpGet("logs/{processKey?}", Name = nameof(CaptureLogs))]
         [Produces(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream, ContentTypes.ApplicationProblemJson)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureLogs(
             ProcessKey? processKey,
             [FromQuery][Range(-1, int.MaxValue)]

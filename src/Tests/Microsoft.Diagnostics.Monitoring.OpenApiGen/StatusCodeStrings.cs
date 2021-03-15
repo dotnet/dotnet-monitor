@@ -11,5 +11,6 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
     {
         public static readonly string Status400BadRequest = StatusCodes.Status400BadRequest.ToString(CultureInfo.InvariantCulture);
         public static readonly string Status401Unauthorized = StatusCodes.Status401Unauthorized.ToString(CultureInfo.InvariantCulture);
+        public static readonly string Status429TooManyRequests = StatusCodes.Status429TooManyRequests.ToString(CultureInfo.InvariantCulture);
     }
 }

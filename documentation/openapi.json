@@ -188,6 +188,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
           "200": {
             "description": "Success",
             "content": {
@@ -247,6 +250,9 @@
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
             "description": "Success",
@@ -342,6 +348,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
           "200": {
             "description": "Success",
             "content": {
@@ -434,6 +443,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
           "200": {
             "description": "Success",
             "content": {
@@ -514,6 +526,9 @@
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
             "description": "Success",
@@ -758,6 +773,9 @@
             }
           }
         }
+      },
+      "TooManyRequestsResponse": {
+        "description": "TooManyRequests"
       }
     }
   }
