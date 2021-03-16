@@ -39,6 +39,12 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
                 logLevel: LogLevel.Information,
                 formatString: "Written to HTTP stream.");
 
+        private static readonly Action<ILogger, int, int, Exception> _throttledEndpoint =
+            LoggerMessage.Define<int, int>(
+                 eventId: new EventId(6, "ThrottledEndpoint"),
+                logLevel: LogLevel.Warning,
+                formatString: "Request limit for endpoint reached. Limit: {limit}, oustanding requests: {requests}");
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -57,6 +63,11 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         public static void EgressedArtifact(this ILogger logger, string location)
         {
             _egressedArtifact(logger, location, null);
+        }
+
+        public static void ThrottledEndpoint(this ILogger logger, int limit, int requests)
+        {
+            _throttledEndpoint(logger, limit, requests, null);
         }
 
         public static void WrittenToHttpStream(this ILogger logger)

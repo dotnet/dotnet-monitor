@@ -175,6 +175,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             app.UseResponseCompression();
 
+            //Note this must be after UseRouting but before UseEndpoints
+            app.UseMiddleware<Throttling>();
+
             app.UseEndpoints(builder =>
             {
                 builder.MapControllers();
