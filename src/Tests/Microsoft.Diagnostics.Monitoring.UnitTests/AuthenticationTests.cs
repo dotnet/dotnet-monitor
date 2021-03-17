@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// that the key can be rotated wihtout shutting down dotnet-monitor.
         /// </summary>
         [Fact]
-        public async Task ApiKeyRotationTest()
+        public async Task ApiKeyAuthenticationSchemeTest()
         {
             const string AlgorithmName = "SHA256";
 
@@ -178,6 +178,30 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             // Check that /processes does not challenge for authentication
             processes = await client.GetProcessesAsync(DefaultApiTimeout);
+            Assert.NotNull(processes);
+        }
+
+        /// <summary>
+        /// Tests that Negotiate authentication can be used for authentication.
+        /// </summary>
+        [Fact]
+        public async Task NegotiateAuthenticationSchemeTest()
+        {
+            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            await toolRunner.StartAsync(DefaultStartTimeout);
+
+            // Create HttpClient and HttpClientHandler that uses the current
+            // user's credentials from the test process. Since dotnet-monitor
+            // is launched by the test process, the usage of these credentials
+            // should authenticate correctly.
+            using HttpClientHandler handler = new HttpClientHandler();
+            handler.Credentials = CredentialCache.DefaultCredentials;
+            using HttpClient httpClient = new HttpClient(handler);
+
+            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout), httpClient);
+
+            // Check that /processes does not challenge for authentication
+            var processes = await client.GetProcessesAsync(DefaultApiTimeout);
             Assert.NotNull(processes);
         }
 
