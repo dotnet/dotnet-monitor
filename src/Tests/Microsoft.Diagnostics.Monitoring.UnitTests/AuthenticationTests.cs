@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
@@ -193,16 +194,29 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             // Create HttpClient and HttpClientHandler that uses the current
             // user's credentials from the test process. Since dotnet-monitor
             // is launched by the test process, the usage of these credentials
-            // should authenticate correctly.
+            // should authenticate correctly (except when elevated, which the
+            // tool will deny authorization).
             using HttpClientHandler handler = new HttpClientHandler();
             handler.Credentials = CredentialCache.DefaultCredentials;
             using HttpClient httpClient = new HttpClient(handler);
 
             using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout), httpClient);
 
-            // Check that /processes does not challenge for authentication
-            var processes = await client.GetProcessesAsync(DefaultApiTimeout);
-            Assert.NotNull(processes);
+            // TODO: Split test into elevated vs non-elevated tests and skip
+            // when not running in the corresponding context. Possibly unelevate
+            // dotnet-monitor when running tests elevated.
+            if (EnvironmentInformation.IsElevated)
+            {
+                var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                    () => client.GetProcessesAsync(DefaultApiTimeout));
+                Assert.Equal(HttpStatusCode.Forbidden, statusCodeException.StatusCode);
+            }
+            else
+            {
+                // Check that /processes does not challenge for authentication
+                var processes = await client.GetProcessesAsync(DefaultApiTimeout);
+                Assert.NotNull(processes);
+            }
         }
 
         private static byte[] GenerateApiKey()
