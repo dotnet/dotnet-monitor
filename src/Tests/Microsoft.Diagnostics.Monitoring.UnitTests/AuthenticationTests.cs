@@ -157,6 +157,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 attempts++;
                 _outputHelper.WriteLine("Waiting for key rotation (attempt #{0}).", attempts);
 
+                await Task.Delay(TimeSpan.FromSeconds(3));
+
                 try
                 {
                     await client.GetProcessesAsync(DefaultApiTimeout);
@@ -165,8 +167,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 {
                     break;
                 }
-
-                await Task.Delay(TimeSpan.FromSeconds(3));
 
                 Assert.True(attempts < 10);
             }
