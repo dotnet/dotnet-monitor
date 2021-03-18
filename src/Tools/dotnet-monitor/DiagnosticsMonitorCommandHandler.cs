@@ -27,10 +27,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
         private const string ProductFolderName = "dotnet-monitor";
+
+        // Allows tests to override the shared configuration directory so there
+        // is better control and access of what is visible during test.
         private const string SharedConfigDirectoryOverrideEnvironmentVariable
-            = ConfigPrefix + "SharedConfigDirectoryOverride";
+            = "DotnetMonitorTestSettings__SharedConfigDirectoryOverride";
+
+        // Allows tests to override the user configuration directory so there
+        // is better control and access of what is visible during test.
         private const string UserConfigDirectoryOverrideEnvironmentVariable
-            = ConfigPrefix + "UserConfigDirectoryOverride";
+            = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
 
         // Location where shared dotnet-monitor configuration is stored.
         // Windows: "%ProgramData%\dotnet-monitor

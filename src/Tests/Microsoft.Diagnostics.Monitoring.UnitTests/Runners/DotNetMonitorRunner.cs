@@ -157,9 +157,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             _runner.SetEnvironmentVariable("Logging__LogLevel__Microsoft.Diagnostics.Tools.Monitor.Startup", "Debug");
             
             // Override the shared config directory
-            _runner.SetEnvironmentVariable("DotnetMonitor_SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
+            _runner.SetEnvironmentVariable("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
             // Override the user config directory
-            _runner.SetEnvironmentVariable("DotnetMonitor_UserConfigDirectoryOverride", UserConfigDirectoryPath);
+            _runner.SetEnvironmentVariable("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
 
             // Set configuration via environment variables
             var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration();
