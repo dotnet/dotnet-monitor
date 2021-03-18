@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
     {
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            OpenApiResponse tooManyRequests = new OpenApiResponse();
+            OpenApiResponse tooManyRequests = new();
             tooManyRequests.Description = "TooManyRequests";
 
             swaggerDoc.Components.Responses.Add(

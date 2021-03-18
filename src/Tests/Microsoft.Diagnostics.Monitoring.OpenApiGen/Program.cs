@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 .GetSwagger("v1");
 
             // Serialize the document to the file
-            using StringWriter outputWriter = new StringWriter(CultureInfo.InvariantCulture);
+            using StringWriter outputWriter = new(CultureInfo.InvariantCulture);
             document.SerializeAsV3(new OpenApiJsonWriter(outputWriter));
             outputWriter.Flush();
 

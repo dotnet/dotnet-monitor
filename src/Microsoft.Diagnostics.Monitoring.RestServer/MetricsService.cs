@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
                     {
                         //In the dotnet-monitor case, custom metrics are additive to the default counters.
                         var eventPipeCounterGroups = new List<EventPipeCounterGroup>();
-                        if (options.IncludeDefaultProviders)
+                        if (options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders))
                         {
                             eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.SystemRuntimeEventSourceName });
                             eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.MicrosoftAspNetCoreHostingEventSourceName });
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
                     {
                         CounterGroups = counterGroups,
                         Duration = Timeout.InfiniteTimeSpan,
-                        RefreshInterval = TimeSpan.FromSeconds(options.UpdateIntervalSeconds)
+                        RefreshInterval = TimeSpan.FromSeconds(options.UpdateIntervalSeconds.GetValueOrDefault(MetricsOptionsDefaults.UpdateIntervalSeconds))
                     }, loggers: new[] { new MetricsLogger(_store.MetricsStore) });
 
                     using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, optionsTokenSource.Token);

@@ -50,15 +50,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// </summary>
         public async Task<IEnumerable<Models.ProcessIdentifier>> GetProcessesAsync(CancellationToken token)
         {
-            Uri uri = new Uri($"{_baseUrl}/processes", UriKind.Absolute);
+            Uri uri = new($"{_baseUrl}/processes", UriKind.Absolute);
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
-
-            WriteRequestMessage(request);
 
             using HttpResponseMessage response = await _httpClient.SendAsync(request, token);
 
+            WriteRequestMessage(request);
             WriteResponseMessage(response);
 
             switch (response.StatusCode)
@@ -80,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// </summary>
         public async Task<IEnumerable<Models.ProcessIdentifier>> GetProcessesAsync(TimeSpan timeout)
         {
-            using CancellationTokenSource timeoutSource = new CancellationTokenSource(timeout);
+            using CancellationTokenSource timeoutSource = new(timeout);
             return await GetProcessesAsync(timeoutSource.Token);
         }
 
@@ -89,15 +88,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// </summary>
         public async Task<string> GetMetricsAsync(CancellationToken token)
         {
-            Uri uri = new Uri($"{_baseUrl}/metrics", UriKind.Absolute);
+            Uri uri = new($"{_baseUrl}/metrics", UriKind.Absolute);
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.TextPlain);
-
-            WriteRequestMessage(request);
 
             using HttpResponseMessage response = await _httpClient.SendAsync(request, token);
 
+            WriteRequestMessage(request);
             WriteResponseMessage(response);
 
             switch (response.StatusCode)
@@ -121,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// </summary>
         public async Task<string> GetMetricsAsync(TimeSpan timeout)
         {
-            using CancellationTokenSource timeoutSource = new CancellationTokenSource(timeout);
+            using CancellationTokenSource timeoutSource = new(timeout);
             return await GetMetricsAsync(timeoutSource.Token);
         }
 

@@ -12,8 +12,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     /// </summary>
     internal class EgressOptions
     {
-        public const string ConfigurationKey = "Egress";
-
         /// <summary>
         /// Mapping of egress provider names to egress provider implementations.
         /// </summary>

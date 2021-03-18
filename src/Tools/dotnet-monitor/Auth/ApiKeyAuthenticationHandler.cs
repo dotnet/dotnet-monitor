@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             var authenticationOptions = new ApiAuthenticationOptions();
             IConfiguration configService = Context.RequestServices.GetRequiredService<IConfiguration>();
-            configService.Bind(ApiAuthenticationOptions.ConfigurationKey, authenticationOptions);
+            configService.Bind(ConfigurationKeys.ApiAuthentication, authenticationOptions);
             string apiKeyHash = authenticationOptions.ApiKeyHash;
             if (apiKeyHash == null)
             {

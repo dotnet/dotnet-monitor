@@ -14,10 +14,10 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
     {
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            OpenApiHeader authenticateHeader = new OpenApiHeader();
+            OpenApiHeader authenticateHeader = new();
             authenticateHeader.Schema = new OpenApiSchema() { Type = "string" };
 
-            OpenApiResponse unauthorizedResponse = new OpenApiResponse();
+            OpenApiResponse unauthorizedResponse = new();
             unauthorizedResponse.Description = "Unauthorized";
             unauthorizedResponse.Headers.Add("WWW_Authenticate", authenticateHeader);
 

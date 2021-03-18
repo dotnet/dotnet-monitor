@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         public async Task BaselineDifferenceTest()
         {
             using FileStream stream = await GenerateDocumentAsync();
-            using StreamReader reader = new StreamReader(stream);
+            using StreamReader reader = new(stream);
 
             // Renormalize line endings due to git checkout normalizing to the operating system preference.
             string baselineContent = File.ReadAllText(OpenApiBaselinePath).Replace("\r\n", "\n");
@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         [Fact]
         public void BaselineIsValidTest()
         {
-            using FileStream stream = new FileStream(OpenApiBaselinePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using FileStream stream = new(OpenApiBaselinePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
             ValidateDocument(stream);
         }
@@ -102,11 +102,11 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
 
             _outputHelper.WriteLine($"OpenAPI Document: {path}");
 
-            DotNetRunner runner = new DotNetRunner();
+            DotNetRunner runner = new();
             runner.EntryAssemblyPath = OpenApiGenPath;
             runner.Arguments = path;
 
-            using CancellationTokenSource cancellation = new CancellationTokenSource(GenerationTimemoutMs);
+            using CancellationTokenSource cancellation = new(GenerationTimemoutMs);
 
             await runner.StartAsync(cancellation.Token);
 
@@ -132,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
 
         private static void ValidateDocument(FileStream stream)
         {
-            OpenApiStreamReader reader = new OpenApiStreamReader();
+            OpenApiStreamReader reader = new();
             OpenApiDocument document = reader.Read(stream, out OpenApiDiagnostic diagnostic);
             Assert.Empty(diagnostic.Errors);
 

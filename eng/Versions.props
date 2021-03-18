@@ -35,6 +35,7 @@
     <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
     <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
     <SystemIOPipelinesVersion>4.5.1</SystemIOPipelinesVersion>
+    <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21167.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21167.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>

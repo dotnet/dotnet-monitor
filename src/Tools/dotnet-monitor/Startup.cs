@@ -76,8 +76,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             });
 
             var metricsOptions = new MetricsOptions();
-            Configuration.Bind(MetricsOptions.ConfigurationKey, metricsOptions);
-            if (metricsOptions.Enabled)
+            Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
+            if (metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled))
             {
                 services.AddSingleton<MetricsStoreService>();
                 services.AddHostedService<MetricsService>();
