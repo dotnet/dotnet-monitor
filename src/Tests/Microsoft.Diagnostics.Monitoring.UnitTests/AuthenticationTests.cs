@@ -10,10 +10,12 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Extensions;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests
 {
@@ -185,9 +187,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Tests that Negotiate authentication can be used for authentication.
         /// </summary>
-        [Fact]
+        [SkippableFact]
         public async Task NegotiateAuthenticationSchemeTest()
         {
+            Skip.IfNotPlatform(OSPlatform.Windows);
+
             await using DotNetMonitorRunner toolRunner = new(_outputHelper);
             await toolRunner.StartAsync(DefaultStartTimeout);
 
