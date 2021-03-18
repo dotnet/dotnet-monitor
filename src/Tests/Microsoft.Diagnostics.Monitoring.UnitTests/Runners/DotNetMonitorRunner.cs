@@ -20,8 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
     /// </summary>
     internal sealed class DotNetMonitorRunner : IAsyncDisposable
     {
-        private readonly CancellationTokenSource _cancellation =
-            new CancellationTokenSource();
+        private readonly CancellationTokenSource _cancellation = new();
         
         // Cancellation registration used to unregister that cancellation callback
         // that cancels the TaskCompletionSource<T> fields.
@@ -29,15 +28,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         // Completion source containing the bound address of the default URL (e.g. provided by --urls argument)
         private readonly TaskCompletionSource<string> _defaultAddressSource =
-            new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         // Completion source containing the bound address of the metrics URL (e.g. provided by --metricUrls argument)
         private readonly TaskCompletionSource<string> _metricsAddressSource =
-            new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
         
         // Completion source signaled when dotnet-monitor is running
         private readonly TaskCompletionSource<string> _startedSource =
-            new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -45,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         // that corresponds to the target framework of the assembly in which
         // DorNetRunner exists. This allows for testing dotnet-monitor on all framework
         // versions of .NET Core 3.1 and higher, thus explicitly testing roll-forward.
-        private readonly DotNetRunner _runner = new DotNetRunner();
+        private readonly DotNetRunner _runner = new();
 
         private bool _isDisposed;
 
@@ -79,8 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// <summary>
         /// Sets configuration values via environment variables.
         /// </summary>
-        public RootOptions ConfigurationFromEnvironment { get; }
-            = new RootOptions();
+        public RootOptions ConfigurationFromEnvironment { get; } = new();
 
         /// <summary>
         /// Determines whether authentication is disabled when starting dotnet-monitor.
@@ -122,7 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// </summary>
         public async Task StartAsync(CancellationToken token)
         {
-            IList<string> argsList = new List<string>();
+            List<string> argsList = new();
             argsList.Add("collect");
             
             argsList.Add("--urls");
@@ -194,7 +192,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public async Task StartAsync(TimeSpan timeout)
         {
-            using CancellationTokenSource timeoutSource = new CancellationTokenSource(timeout);
+            using CancellationTokenSource timeoutSource = new(timeout);
             await StartAsync(timeoutSource.Token);
         }
 
@@ -247,7 +245,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public async Task<string> GetDefaultAddressAsync(TimeSpan timeout)
         {
-            using CancellationTokenSource cancellation = new CancellationTokenSource(timeout);
+            using CancellationTokenSource cancellation = new(timeout);
             return await GetDefaultAddressAsync(cancellation.Token);
         }
 
@@ -258,7 +256,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public async Task<string> GetMetricsAddressAsync(TimeSpan timeout)
         {
-            using CancellationTokenSource cancellation = new CancellationTokenSource(timeout);
+            using CancellationTokenSource cancellation = new(timeout);
             return await GetMetricsAddressAsync(cancellation.Token);
         }
 
@@ -276,9 +274,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public async Task WriteUserSettingsAsync(RootOptions options, CancellationToken token)
         {
-            using FileStream stream = new FileStream(UserSettingsFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+            using FileStream stream = new(UserSettingsFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
 
-            JsonSerializerOptions serializerOptions = new JsonSerializerOptions()
+            JsonSerializerOptions serializerOptions = new()
             {
                 IgnoreNullValues = true
             };
@@ -290,13 +288,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public async Task WriteUserSettingsAsync(RootOptions options, TimeSpan timeout)
         {
-            using CancellationTokenSource cancellation = new CancellationTokenSource(timeout);
+            using CancellationTokenSource cancellation = new(timeout);
             await WriteUserSettingsAsync(options, cancellation.Token);
         }
 
         private static async Task<T> GetCompletionSourceResultAsync<T>(TaskCompletionSource<T> source, CancellationToken token)
         {
-            TaskCompletionSource<T> cancellationSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<T> cancellationSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
             using var _ = token.Register(() => cancellationSource.TrySetCanceled(token));
 
             Task<T> completedTask = await Task.WhenAny(
@@ -310,7 +308,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         {
             try
             {
-                TaskCompletionSource<string> cancellationTaskSource = new TaskCompletionSource<string>();
+                TaskCompletionSource<string> cancellationTaskSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
                 using var _ = token.Register(() => cancellationTaskSource.TrySetCanceled(token));
 
                 while (true)

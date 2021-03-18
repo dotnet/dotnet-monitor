@@ -121,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             if (!_process.HasExited)
             {
-                var cancellationSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+                TaskCompletionSource<object> cancellationSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
                 using IDisposable _ = token.Register(() => cancellationSource.TrySetCanceled(token));
 
                 Task completedTask = await Task.WhenAny(

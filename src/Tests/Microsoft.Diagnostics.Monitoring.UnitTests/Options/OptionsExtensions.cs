@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
         /// </remarks>
         public static IDictionary<string, string> ToEnvironmentConfiguration(this RootOptions options)
         {
-            Dictionary<string, string> variables = new Dictionary<string, string>();
+            Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
             MapObject(options, "DotNetMonitor_", variables);
             return variables;
         }
@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
         /// </remarks>
         public static IDictionary<string, string> ToKeyPerFileConfiguration(this RootOptions options)
         {
-            Dictionary<string, string> variables = new Dictionary<string, string>();
+            Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
             MapObject(options, string.Empty, variables);
             return variables;
         }
@@ -136,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 
         private static string ToHexString(byte[] data)
         {
-            StringBuilder builder = new StringBuilder(2 * data.Length);
+            StringBuilder builder = new(2 * data.Length);
             foreach (byte b in data)
             {
                 builder.Append(b.ToString("X2", CultureInfo.InvariantCulture));

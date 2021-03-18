@@ -39,11 +39,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task DefaultAddressTest()
         {
-            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
             
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
 
             // Any authenticated route on the default address should 401 Unauthenticated
 
@@ -66,11 +66,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task MetricsAddressTest()
         {
-            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
 
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetMetricsAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetMetricsAddressAsync(DefaultAddressTimeout));
 
             // Any non-metrics route on the metrics address should 404 Not Found
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
@@ -90,11 +90,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task DisableAuthenticationTest()
         {
-            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
             toolRunner.DisableAuthentication = true;
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
 
             // Check that /processes does not challenge for authentication
             var processes = await client.GetProcessesAsync(DefaultApiTimeout);
@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             const string AlgorithmName = "SHA256";
 
-            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
 
             _outputHelper.WriteLine("Generating API key.");
 
@@ -130,11 +130,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             await toolRunner.StartAsync(DefaultStartTimeout);
 
             // Create HttpClient with default request headers
-            using HttpClient httpClient = new HttpClient();
+            using HttpClient httpClient = new();
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(ApiKeyScheme, Convert.ToBase64String(apiKey));
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout), httpClient);
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout), httpClient);
 
             // Check that /processes does not challenge for authentication
             var processes = await client.GetProcessesAsync(DefaultApiTimeout);
@@ -188,7 +188,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task NegotiateAuthenticationSchemeTest()
         {
-            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
             await toolRunner.StartAsync(DefaultStartTimeout);
 
             // Create HttpClient and HttpClientHandler that uses the current
@@ -196,11 +196,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             // is launched by the test process, the usage of these credentials
             // should authenticate correctly (except when elevated, which the
             // tool will deny authorization).
-            using HttpClientHandler handler = new HttpClientHandler();
+            using HttpClientHandler handler = new();
             handler.Credentials = CredentialCache.DefaultCredentials;
-            using HttpClient httpClient = new HttpClient(handler);
+            using HttpClient httpClient = new(handler);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout), httpClient);
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout), httpClient);
 
             // TODO: Split test into elevated vs non-elevated tests and skip
             // when not running in the corresponding context. Possibly unelevate
@@ -223,7 +223,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             byte[] apiKey = new byte[32]; // 256 bits
 
-            using var rngProvider = new RNGCryptoServiceProvider();
+            using RNGCryptoServiceProvider rngProvider = new();
             rngProvider.GetBytes(apiKey);
 
             return apiKey;

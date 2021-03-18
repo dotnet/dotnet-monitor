@@ -10,8 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public static class EnvironmentInformation
     {
-        private static readonly Lazy<bool> _isElevatedLazy =
-            new Lazy<bool>(GetIsElevated);
+        private static readonly Lazy<bool> _isElevatedLazy = new(GetIsElevated);
 
         public static bool IsElevated => _isElevatedLazy.Value;
 
@@ -20,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
-                WindowsPrincipal principal = new WindowsPrincipal(currentUser);
+                WindowsPrincipal principal = new(currentUser);
                 return principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
 

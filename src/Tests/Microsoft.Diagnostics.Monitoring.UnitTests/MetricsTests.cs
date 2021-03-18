@@ -34,11 +34,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task DisableMetricsViaCommandLineTest()
         {
-            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
             toolRunner.DisableMetricsViaCommandLine = true;
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
@@ -53,14 +53,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task DisableMetricsViaEnvironmentTest()
         {
-            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
-            toolRunner.ConfigurationFromEnvironment.Metrics = new MetricsOptions()
+            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
+            toolRunner.ConfigurationFromEnvironment.Metrics = new()
             {
                 Enabled = false
             };
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task DisableMetricsViaSettingsTest()
         {
-            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
 
             await toolRunner.WriteUserSettingsAsync(new RootOptions()
             {
@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task DisableMetricsViaKeyPerFileTest()
         {
-            await using DotNetMonitorRunner toolRunner = new DotNetMonitorRunner(_outputHelper);
+            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
 
             toolRunner.WriteKeyPerValueConfiguration(new RootOptions()
             {
@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             await toolRunner.StartAsync(DefaultStartTimeout);
 
-            using ApiClient client = new ApiClient(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(

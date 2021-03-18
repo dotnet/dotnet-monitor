@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
     {
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            OpenApiResponse unauthorizedResponse = new OpenApiResponse();
+            OpenApiResponse unauthorizedResponse = new();
             unauthorizedResponse.Description = "Bad Request";
             unauthorizedResponse.Content.Add(
                 ContentTypes.ApplicationProblemJson,
