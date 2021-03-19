@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
+    <PackageReference Include="xunit.core" Version="$(XunitCoreVersion)" />
   </ItemGroup>
 
   <Import Project="GenerateDotNetHost.targets" />
