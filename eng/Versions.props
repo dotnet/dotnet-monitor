@@ -41,6 +41,6 @@
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21167.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- Third-party references -->
     <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
-    <XunitCoreVersion>2.4.1</XunitCoreVersion>
+    <XunitSkippableFactVersion>1.4.13</XunitSkippableFactVersion>
   </PropertyGroup>
 </Project>

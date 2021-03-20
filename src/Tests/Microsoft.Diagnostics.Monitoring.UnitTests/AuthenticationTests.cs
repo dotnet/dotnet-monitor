@@ -190,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [SkippableFact]
         public async Task NegotiateAuthenticationSchemeTest()
         {
-            Skip.IfNotPlatform(OSPlatform.Windows);
+            Skip.IfNot(RuntimeInformation.IsOSPlatform(OSPlatform.Windows));
 
             await using DotNetMonitorRunner toolRunner = new(_outputHelper);
             await toolRunner.StartAsync(DefaultStartTimeout);
