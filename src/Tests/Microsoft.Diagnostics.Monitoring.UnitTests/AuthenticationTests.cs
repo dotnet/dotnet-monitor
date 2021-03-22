@@ -19,9 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 {
     public class AuthenticationTests
     {
-        private static readonly TimeSpan DefaultAddressTimeout = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan DefaultApiTimeout = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan DefaultStartTimeout = TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
 
         private const string ApiKeyScheme = "MonitorApiKey";
 
@@ -41,21 +39,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             await using DotNetMonitorRunner toolRunner = new(_outputHelper);
             
-            await toolRunner.StartAsync(DefaultStartTimeout);
+            await toolRunner.StartAsync(DefaultTimeout);
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout));
 
             // Any authenticated route on the default address should 401 Unauthenticated
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => client.GetProcessesAsync(DefaultApiTimeout));
+                () => client.GetProcessesAsync(DefaultTimeout));
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
 
             // TODO: Verify other routes (e.g. /dump, /trace, /logs) also 401 Unauthenticated
 
             // Metrics should not throw on the default address
 
-            var metrics = await client.GetMetricsAsync(DefaultApiTimeout);
+            var metrics = await client.GetMetricsAsync(DefaultTimeout);
             Assert.NotNull(metrics);
         }
 
@@ -68,19 +66,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             await using DotNetMonitorRunner toolRunner = new(_outputHelper);
 
-            await toolRunner.StartAsync(DefaultStartTimeout);
+            await toolRunner.StartAsync(DefaultTimeout);
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetMetricsAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetMetricsAddressAsync(DefaultTimeout));
 
             // Any non-metrics route on the metrics address should 404 Not Found
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => client.GetProcessesAsync(DefaultApiTimeout));
+                () => client.GetProcessesAsync(DefaultTimeout));
             Assert.Equal(HttpStatusCode.NotFound, statusCodeException.StatusCode);
 
             // TODO: Verify other routes (e.g. /dump, /trace, /logs) also 404 Not Found
 
             // Metrics should not throw on the metrics address
-            var metrics = await client.GetMetricsAsync(DefaultApiTimeout);
+            var metrics = await client.GetMetricsAsync(DefaultTimeout);
             Assert.NotNull(metrics);
         }
 
@@ -92,16 +90,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             await using DotNetMonitorRunner toolRunner = new(_outputHelper);
             toolRunner.DisableAuthentication = true;
-            await toolRunner.StartAsync(DefaultStartTimeout);
+            await toolRunner.StartAsync(DefaultTimeout);
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout));
 
             // Check that /processes does not challenge for authentication
-            var processes = await client.GetProcessesAsync(DefaultApiTimeout);
+            var processes = await client.GetProcessesAsync(DefaultTimeout);
             Assert.NotNull(processes);
 
             // Check that /metrics does not challenge for authentication
-            var metrics = await client.GetMetricsAsync(DefaultApiTimeout);
+            var metrics = await client.GetMetricsAsync(DefaultTimeout);
             Assert.NotNull(metrics);
         }
 
@@ -127,17 +125,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.WriteKeyPerValueConfiguration(options);
 
             // Start dotnet-monitor
-            await toolRunner.StartAsync(DefaultStartTimeout);
+            await toolRunner.StartAsync(DefaultTimeout);
 
             // Create HttpClient with default request headers
             using HttpClient httpClient = new();
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(ApiKeyScheme, Convert.ToBase64String(apiKey));
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout), httpClient);
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout), httpClient);
 
             // Check that /processes does not challenge for authentication
-            var processes = await client.GetProcessesAsync(DefaultApiTimeout);
+            var processes = await client.GetProcessesAsync(DefaultTimeout);
             Assert.NotNull(processes);
 
             _outputHelper.WriteLine("Rotating API key.");
@@ -161,7 +159,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
                 try
                 {
-                    await client.GetProcessesAsync(DefaultApiTimeout);
+                    await client.GetProcessesAsync(DefaultTimeout);
                 }
                 catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
                 {
@@ -178,7 +176,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 new AuthenticationHeaderValue(ApiKeyScheme, Convert.ToBase64String(apiKey2));
 
             // Check that /processes does not challenge for authentication
-            processes = await client.GetProcessesAsync(DefaultApiTimeout);
+            processes = await client.GetProcessesAsync(DefaultTimeout);
             Assert.NotNull(processes);
         }
 
@@ -189,7 +187,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         public async Task NegotiateAuthenticationSchemeTest()
         {
             await using DotNetMonitorRunner toolRunner = new(_outputHelper);
-            await toolRunner.StartAsync(DefaultStartTimeout);
+            await toolRunner.StartAsync(DefaultTimeout);
 
             // Create HttpClient and HttpClientHandler that uses the current
             // user's credentials from the test process. Since dotnet-monitor
@@ -200,7 +198,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             handler.Credentials = CredentialCache.DefaultCredentials;
             using HttpClient httpClient = new(handler);
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout), httpClient);
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout), httpClient);
 
             // TODO: Split test into elevated vs non-elevated tests and skip
             // when not running in the corresponding context. Possibly unelevate
@@ -208,13 +206,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             if (EnvironmentInformation.IsElevated)
             {
                 var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                    () => client.GetProcessesAsync(DefaultApiTimeout));
+                    () => client.GetProcessesAsync(DefaultTimeout));
                 Assert.Equal(HttpStatusCode.Forbidden, statusCodeException.StatusCode);
             }
             else
             {
                 // Check that /processes does not challenge for authentication
-                var processes = await client.GetProcessesAsync(DefaultApiTimeout);
+                var processes = await client.GetProcessesAsync(DefaultTimeout);
                 Assert.NotNull(processes);
             }
         }
