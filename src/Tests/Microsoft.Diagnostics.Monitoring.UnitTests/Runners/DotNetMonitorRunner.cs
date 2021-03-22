@@ -51,6 +51,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         // Task that processes the stdout of dotnet-monitor for significant events.
         private Task<Task> _processStandardOutputTask;
 
+        private List<string> _stdOutLines = new();
+
         private readonly string _runnerTmpPath =
             Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
 
@@ -214,14 +216,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             _runner.ForceClose();
 
             // Wait for it to exit
-            int exitCode = await _runner.WaitForExitAsync(CancellationToken.None).SafeAwait(-1);
+            int exitCode = await _runner.WaitForExitAsync(CancellationToken.None).SafeAwait(_outputHelper, -1);
             _outputHelper.WriteLine("Monitor: Exit Code: {0}", exitCode);
 
             // Cancel any remaining tasks
             _cancellation.Cancel();
 
             // Wait for stdout processing to finish
-            await _processStandardOutputTask.Unwrap().SafeAwait();
+            await _processStandardOutputTask.Unwrap().SafeAwait(_outputHelper);
+
+            _outputHelper.WriteLine("Monitor: Standard Output Begin");
+            foreach (string line in _stdOutLines)
+            {
+                _outputHelper.WriteLine("Monitor: {0}", line);
+            }
+            _outputHelper.WriteLine("Monitor: Standard Output End");
 
             try
             {
@@ -321,6 +330,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
                     if (null == line)
                         break;
+
+                    _stdOutLines.Add(line);
 
                     LogEvent logEvent = JsonSerializer.Deserialize<LogEvent>(line);
 
