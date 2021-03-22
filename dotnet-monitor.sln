@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.UnitTests\Microsoft.Diagnostics.Monitoring.UnitTests.csproj", "{04427BC9-8F54-4633-9BBB-6661715BD271}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.UnitTestApp", "src\Tests\Microsoft.Diagnostics.Monitoring.UnitTestApp\Microsoft.Diagnostics.Monitoring.UnitTestApp.csproj", "{DC672D2F-3A21-40BD-B495-660850EBC5F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{04427BC9-8F54-4633-9BBB-6661715BD271}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04427BC9-8F54-4633-9BBB-6661715BD271}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04427BC9-8F54-4633-9BBB-6661715BD271}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC672D2F-3A21-40BD-B495-660850EBC5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC672D2F-3A21-40BD-B495-660850EBC5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC672D2F-3A21-40BD-B495-660850EBC5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC672D2F-3A21-40BD-B495-660850EBC5F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{5AB5A4B4-3A13-4D42-B42C-B9193E60F426} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{FCEC25E0-9EE1-416E-A7C4-2898E5640157} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{04427BC9-8F54-4633-9BBB-6661715BD271} = {C7568468-1C79-4944-8136-18812A7F9EA7}
+		{DC672D2F-3A21-40BD-B495-660850EBC5F7} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46465737-C938-44FC-BE1A-4CE139EBB5E0}

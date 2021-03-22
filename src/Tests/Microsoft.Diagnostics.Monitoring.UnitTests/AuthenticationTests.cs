@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task DefaultAddressTest()
         {
-            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorRunner toolRunner = new(_outputHelper);
             
             await toolRunner.StartAsync(DefaultTimeout);
 
@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task MetricsAddressTest()
         {
-            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorRunner toolRunner = new(_outputHelper);
 
             await toolRunner.StartAsync(DefaultTimeout);
 
@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task DisableAuthenticationTest()
         {
-            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorRunner toolRunner = new(_outputHelper);
             toolRunner.DisableAuthentication = true;
             await toolRunner.StartAsync(DefaultTimeout);
 
@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             const string AlgorithmName = "SHA256";
 
-            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorRunner toolRunner = new(_outputHelper);
 
             _outputHelper.WriteLine("Generating API key.");
 
@@ -190,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             Skip.IfNot(RuntimeInformation.IsOSPlatform(OSPlatform.Windows));
 
-            await using DotNetMonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorRunner toolRunner = new(_outputHelper);
             await toolRunner.StartAsync(DefaultTimeout);
 
             // Create HttpClient and HttpClientHandler that uses the current

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -55,23 +56,23 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
 
-            using HttpResponseMessage response = await _httpClient.SendAsync(request, token);
-
-            WriteRequestMessage(request);
-            WriteResponseMessage(response);
+            using HttpResponseMessage response = await SendAndLogAsync(request, token).ConfigureAwait(false);
 
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
                     ValidateContentType(response, ContentTypes.ApplicationJson);
-                    return await ReadContentEnumerableAsync<Models.ProcessIdentifier>(response);
+                    return await ReadContentEnumerableAsync<Models.ProcessIdentifier>(response).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
                 case HttpStatusCode.Unauthorized:
                 case HttpStatusCode.NotFound:
                     ThrowIfNotSuccess(response);
                     break;
             }
 
-            throw CreateUnexpectedStatusCodeException(response.StatusCode);
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -80,7 +81,67 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         public async Task<IEnumerable<Models.ProcessIdentifier>> GetProcessesAsync(TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            return await GetProcessesAsync(timeoutSource.Token);
+            return await GetProcessesAsync(timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get /processes/{pid}
+        /// </summary>
+        public Task<Models.ProcessInfo> GetProcessAsync(int pid, CancellationToken token)
+        {
+            return GetProcessAsync(pid.ToString(CultureInfo.InvariantCulture), token);
+        }
+
+        /// <summary>
+        /// Get /processes/{pid}
+        /// </summary>
+        public async Task<Models.ProcessInfo> GetProcessAsync(int pid, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await GetProcessAsync(pid, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get /processes/{uid}
+        /// </summary>
+        public Task<Models.ProcessInfo> GetProcessAsync(Guid uid, CancellationToken token)
+        {
+            return GetProcessAsync(uid.ToString("D"), token);
+        }
+
+        /// <summary>
+        /// Get /processes/{uid}
+        /// </summary>
+        public async Task<Models.ProcessInfo> GetProcessAsync(Guid uid, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await GetProcessAsync(uid, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        private async Task<Models.ProcessInfo> GetProcessAsync(string processKey, CancellationToken token)
+        {
+            Uri uri = new($"{_baseUrl}/processes/{processKey}", UriKind.Absolute);
+
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
+
+            using HttpResponseMessage response = await SendAndLogAsync(request, token).ConfigureAwait(false);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(response, ContentTypes.ApplicationJson);
+                    return await ReadContentAsync<Models.ProcessInfo>(response).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -93,25 +154,22 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.TextPlain);
 
-            using HttpResponseMessage response = await _httpClient.SendAsync(request, token);
-
-            WriteRequestMessage(request);
-            WriteResponseMessage(response);
+            using HttpResponseMessage response = await SendAndLogAsync(request, token).ConfigureAwait(false);
 
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
                     ValidateContentType(response, ContentTypes.TextPlain);
-                    return await response.Content.ReadAsStringAsync();
+                    return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(response, ContentTypes.ApplicationProblemJson);
-                    throw await CreateValidationProblemDetailsExceptionAsync(response);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
                 case HttpStatusCode.Unauthorized:
                     ThrowIfNotSuccess(response);
                     break;
             }
 
-            throw CreateUnexpectedStatusCodeException(response.StatusCode);
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -120,13 +178,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         public async Task<string> GetMetricsAsync(TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            return await GetMetricsAsync(timeoutSource.Token);
+            return await GetMetricsAsync(timeoutSource.Token).ConfigureAwait(false);
         }
 
         private static async Task<T> ReadContentAsync<T>(HttpResponseMessage responseMessage)
         {
-            using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<T>(contentStream);
+            using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            return await JsonSerializer.DeserializeAsync<T>(contentStream).ConfigureAwait(false);
         }
 
         private static Task<List<T>> ReadContentEnumerableAsync<T>(HttpResponseMessage responseMessage)
@@ -134,15 +192,33 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             return ReadContentAsync<List<T>>(responseMessage);
         }
 
-        private static Exception CreateUnexpectedStatusCodeException(HttpStatusCode statusCode)
+        private async Task<HttpResponseMessage> SendAndLogAsync(HttpRequestMessage request, CancellationToken token)
         {
-            return new ApiStatusCodeException($"Unexpected status code {statusCode}", statusCode);
+            HttpResponseMessage response;
+            try
+            {
+                response = await _httpClient.SendAsync(request, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                _outputHelper.WriteLine("-> {0}", request.ToString());
+            }
+
+            _outputHelper.WriteLine("<- {0}", response.ToString());
+
+            return response;
+        }
+
+        private static async Task<Exception> CreateUnexpectedStatusCodeExceptionAsync(HttpResponseMessage response)
+        {
+            string content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return new ApiStatusCodeException($"Unexpected status code {response.StatusCode}. Response content: {content}", response.StatusCode);
         }
 
         private static async Task<ValidationProblemDetailsException> CreateValidationProblemDetailsExceptionAsync(HttpResponseMessage responseMessage)
         {
             return new ValidationProblemDetailsException(
-                await ReadContentAsync<ValidationProblemDetails>(responseMessage),
+                await ReadContentAsync<ValidationProblemDetails>(responseMessage).ConfigureAwait(false),
                 responseMessage.StatusCode);
         }
 
@@ -161,16 +237,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         private void ValidateContentType(HttpResponseMessage responseMessage, string expectedMediaType)
         {
             Assert.Equal(expectedMediaType, responseMessage.Content.Headers.ContentType?.MediaType);
-        }
-
-        private void WriteRequestMessage(HttpRequestMessage requestMessage)
-        {
-            _outputHelper.WriteLine("-> {0}", requestMessage.ToString());
-        }
-
-        private void WriteResponseMessage(HttpResponseMessage responseMessage)
-        {
-            _outputHelper.WriteLine("<- {0}", responseMessage.ToString());
         }
     }
 }

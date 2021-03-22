@@ -5,7 +5,11 @@
 using System;
 using System.Text.Json.Serialization;
 
+#if UNITTEST
+namespace Microsoft.Diagnostics.Monitoring.UnitTests.Models
+#else
 namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
+#endif
 {
     public class ProcessInfo
     {
@@ -16,28 +20,15 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
         public Guid Uid { get; set; }
 
         [JsonPropertyName("name")]
-        public string Name { get; private set; }
+        public string Name { get; internal set; }
 
         [JsonPropertyName("commandLine")]
-        public string CommandLine { get; private set; }
+        public string CommandLine { get; internal set; }
 
         [JsonPropertyName("operatingSystem")]
-        public string OperatingSystem { get; private set; }
+        public string OperatingSystem { get; internal set; }
 
         [JsonPropertyName("processArchitecture")]
-        public string ProcessArchitecture { get; private set; }
-
-        internal static ProcessInfo FromProcessInfo(IProcessInfo processInfo)
-        {
-            return new ProcessInfo()
-            {
-                CommandLine = processInfo.CommandLine,
-                Name = processInfo.ProcessName,
-                OperatingSystem = processInfo.OperatingSystem,
-                ProcessArchitecture = processInfo.ProcessArchitecture,
-                Pid = processInfo.EndpointInfo.ProcessId,
-                Uid = processInfo.EndpointInfo.RuntimeInstanceCookie
-            };
-        }
+        public string ProcessArchitecture { get; internal set; }
     }
 }

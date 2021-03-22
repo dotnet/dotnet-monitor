@@ -46,6 +46,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public StreamReader StandardError => _process.StandardError;
 
         /// <summary>
+        /// Gets a <see cref="StreamWriter"/> that writes to stdin.
+        /// </summary>
+        public StreamWriter StandardInput => _process.StandardInput;
+
+        /// <summary>
         /// Gets a <see cref="StreamReader"/> that reads stdout.
         /// </summary>
         public StreamReader StandardOutput => _process.StandardOutput;
@@ -61,6 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             _process.StartInfo.FileName = DotNetHost.HostExePath;
             _process.StartInfo.UseShellExecute = false;
             _process.StartInfo.RedirectStandardError = true;
+            _process.StartInfo.RedirectStandardInput = true;
             _process.StartInfo.RedirectStandardOutput = true;
 
             _exitedSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -103,11 +109,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     // On Unix, we wait until the socket is created.
                     while (true)
                     {
+                        token.ThrowIfCancellationRequested();
+
                         var matchingFiles = Directory.GetFiles(Path.GetTempPath(), $"dotnet-diagnostic-{_process.Id}-*-socket");
                         if (matchingFiles.Length > 0)
                         {
                             break;
                         }
+
                         await Task.Delay(TimeSpan.FromMilliseconds(100));
                     }
                 }
