@@ -17,9 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 {
     public class MetricsTests
     {
-        private static readonly TimeSpan DefaultAddressTimeout = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan DefaultApiTimeout = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan DefaultStartTimeout = TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -36,13 +34,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             await using DotNetMonitorRunner toolRunner = new(_outputHelper);
             toolRunner.DisableMetricsViaCommandLine = true;
-            await toolRunner.StartAsync(DefaultStartTimeout);
+            await toolRunner.StartAsync(DefaultTimeout);
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout));
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => client.GetMetricsAsync(DefaultApiTimeout));
+                () => client.GetMetricsAsync(DefaultTimeout));
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }
@@ -58,13 +56,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             {
                 Enabled = false
             };
-            await toolRunner.StartAsync(DefaultStartTimeout);
+            await toolRunner.StartAsync(DefaultTimeout);
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout));
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => client.GetMetricsAsync(DefaultApiTimeout));
+                () => client.GetMetricsAsync(DefaultTimeout));
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }
@@ -85,13 +83,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 }
             }, Timeout.InfiniteTimeSpan);
 
-            await toolRunner.StartAsync(DefaultStartTimeout);
+            await toolRunner.StartAsync(DefaultTimeout);
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout));
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => client.GetMetricsAsync(DefaultApiTimeout));
+                () => client.GetMetricsAsync(DefaultTimeout));
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }
@@ -112,13 +110,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 }
             });
 
-            await toolRunner.StartAsync(DefaultStartTimeout);
+            await toolRunner.StartAsync(DefaultTimeout);
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultAddressTimeout));
+            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout));
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => client.GetMetricsAsync(DefaultApiTimeout));
+                () => client.GetMetricsAsync(DefaultTimeout));
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }
