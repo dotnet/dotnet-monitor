@@ -217,7 +217,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //non-sensitive data such as metrics. We may be missing a certificate for https binding. We want to continue with the
                         //http binding in that scenario.
                         metricUrls = metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ?
-                            ProcessMetricUrls(metricUrls, metricsOptions) :
+                            ProcessMetricUrls(metricUrls, metricsOptions, listenResults) :
                             Array.Empty<string>();
 
                         listenResults.Listen(options, urls, metricUrls);
@@ -226,7 +226,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 });
         }
 
-        private static string[] ProcessMetricUrls(string[] metricUrls, MetricsOptions metricsOptions)
+        private static string[] ProcessMetricUrls(string[] metricUrls, MetricsOptions metricsOptions, AddressListenResults results)
         {
             string metricUrlFromConfig = metricsOptions.Endpoints;
             if (!string.IsNullOrEmpty(metricUrlFromConfig))
@@ -255,6 +255,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             ":",
                             metricUrl.Port.ToString(System.Globalization.CultureInfo.InvariantCulture),
                             metricUrl.PathBase);
+
+                        results.Warnings.Add($"Upgraded {metricUrl} to {metricUrls[i]} due to custom metrics. To host custom metrics over http " +
+                            $"set {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics))} to {true}");
                     }
                 }
             }

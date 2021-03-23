@@ -98,6 +98,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             exprLogger.LogExperimentMessage();
 
+            foreach (string warning in listenResults.Warnings)
+            {
+                logger.LogWarning(warning);
+            }
+
             // These errors are populated before Startup.Configure is called because
             // the KestrelServer class is configured as a prerequisite of
             // GenericWebHostServer being instantiated. The GenericWebHostServer invokes
