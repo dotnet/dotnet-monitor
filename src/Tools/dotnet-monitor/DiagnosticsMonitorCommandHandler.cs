@@ -87,6 +87,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
+                    ConfigureStorageDefaults(builder);
+
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
 
                     builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
@@ -174,6 +176,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                     services.ConfigureEgress(context.Configuration);
                     services.ConfigureMetrics(context.Configuration);
+                    services.ConfigureStorage(context.Configuration);
                     services.AddSingleton<ExperimentalToolLogger>();
                 })
                 .ConfigureLogging(builder =>
@@ -257,6 +260,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             return metricUrls;
+        }
+
+        private static void ConfigureStorageDefaults(IConfigurationBuilder builder)
+        {
+            builder.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                {ConfigurationHelper.MakeKey(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
+            });
         }
 
         private static void ConfigureMetricsEndpoint(IConfigurationBuilder builder, bool enableMetrics, string[] metricEndpoints)

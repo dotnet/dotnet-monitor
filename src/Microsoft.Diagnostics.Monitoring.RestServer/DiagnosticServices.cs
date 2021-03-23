@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Monitoring.RestServer
 {
@@ -33,10 +34,12 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
         private readonly IEndpointInfoSourceInternal _endpointInfoSource;
         private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
+        private readonly StorageOptions _storageOptions;
 
-        public DiagnosticServices(IEndpointInfoSource endpointInfoSource)
+        public DiagnosticServices(IEndpointInfoSource endpointInfoSource, IOptions<StorageOptions> storageOptions)
         {
             _endpointInfoSource = (IEndpointInfoSourceInternal)endpointInfoSource;
+            _storageOptions = storageOptions.Value;
         }
 
         public async Task<IEnumerable<IProcessInfo>> GetProcessesAsync(CancellationToken token)
@@ -67,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
         public async Task<Stream> GetDump(IProcessInfo pi, DumpType mode, CancellationToken token)
         {
-            string dumpFilePath = Path.Combine(Path.GetTempPath(), FormattableString.Invariant($"{Guid.NewGuid()}_{pi.EndpointInfo.ProcessId}"));
+            string dumpFilePath = Path.Combine(_storageOptions.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{pi.EndpointInfo.ProcessId}"));
             NETCore.Client.DumpType dumpType = MapDumpType(mode);
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
