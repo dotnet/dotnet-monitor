@@ -4,13 +4,14 @@ parameters:
   displayName: ''
   osGroup: Windows
   configuration: Release
-  platform: x64
   # Additional variables
   variables: {}
   # Optional: Job timeout
   timeoutInMinutes: 180
   # Depends on 
   dependsOn: ''
+  # Flag to determine if files should be signed and published
+  signAndPublishArtifacts: false
 
 jobs:
 - template: /eng/common/templates/job/job.yml
@@ -23,16 +24,17 @@ jobs:
     helixRepo: dotnet/dotnet-monitor
     artifacts:
       publish:
-        logs: true
-        ${{ if ne(variables['System.TeamProject'], 'public') }}:
-          artifacts: true
-          manifests: true
+        logs:
+          name: Logs_${{ parameters.osGroup }}_${{ parameters.configuration }}
+        ${{ if and(ne(variables['System.TeamProject'], 'public'), eq(parameters.signAndPublishArtifacts, 'true')) }}:
+          artifacts:
+            name: Artifacts_${{ parameters.osGroup }}_${{ parameters.configuration }}
 
     pool:
       # Public Linux Build Pool
       ${{ if in(parameters.osGroup, 'Linux', 'Linux-musl') }}:
         ${{ if eq(variables['System.TeamProject'], 'public') }}:
-          vmImage: ubuntu-16.04
+          vmImage: ubuntu-20.04
 
         # Official Build Linux Pool
         ${{ if ne(variables['System.TeamProject'], 'public') }}:
@@ -55,7 +57,7 @@ jobs:
     ${{ if eq(parameters.osGroup, 'Linux') }}:
       container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-359e48e-20200313130914
 
-    ${{ if eq(parameters.osGroup, 'Linux-musl') }}:
+    ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.9-WithNode-20200602002639-0fc54a3
 
     ${{ if ne(parameters.dependsOn, '') }}:
@@ -64,22 +66,24 @@ jobs:
     workspace:
       clean: all
 
-    variables: 
+    variables:
     - ${{ insert }}: ${{ parameters.variables }}
     - _BuildConfig: ${{ parameters.configuration }}
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
     - _SignType: test
     - _InternalBuildArgs: ''
+    - _InternalSignArgs: ''
     - _InternalPublishArgs: ''
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-      - _SignType: real
       - _InternalBuildArgs: >-
-          -pack -sign
-          /p:DotNetSignType=$(_SignType)
+          -pack
           /p:TeamName=$(_TeamName)
           /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
-      - _InternalPublishArgs: -publish /p:DotNetPublishUsingPipelines=true
+      - ${{ if eq(parameters.signAndPublishArtifacts, 'true') }}:
+        - _SignType: real
+        - _InternalSignArgs: -sign /p:DotNetSignType=$(_SignType)
+        - _InternalPublishArgs: -publish /p:DotNetPublishUsingPipelines=true
 
     # Only enable publishing in non-public, non PR scenarios.
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
@@ -99,16 +103,17 @@ jobs:
         $(Build.SourcesDirectory)/build$(scriptExt)
         -ci
         -test
-        -c ${{ parameters.configuration }}
-        -platform ${{ parameters.platform }}
+        -configuration ${{ parameters.configuration }}
         -prepareMachine
         $(_InternalBuildArgs)
+        $(_InternalSignArgs)
         $(_InternalPublishArgs)
-      displayName: Build
+      displayName: Build and Test
       condition: succeeded()
 
     # # Publish test results to Azure Pipelines
     - task: PublishTestResults@2
+      displayName: Publish Test Results
       inputs:
         testResultsFormat: xUnit
         testResultsFiles: '**/*UnitTests*.xml' 
