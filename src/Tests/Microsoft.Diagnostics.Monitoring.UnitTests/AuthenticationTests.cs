@@ -15,7 +15,6 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Extensions;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests
 {

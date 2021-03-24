@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             {
                 try
                 {
-                    await task;
+                    await task.ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             {
                 try
                 {
-                    return await task;
+                    return await task.ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
