@@ -23,23 +23,71 @@ variables:
     - group: DotNet-Diagnostics-SDL-Params
 
 stages:
-  - stage: build
-    displayName: Build dotnet-monitor
+  - stage: Build
     jobs:
     - template: /eng/build.yml
       parameters:
-        name: Windows
-        displayName: Build
+        name: WindowsDebug
+        displayName: Windows Debug
+        osGroup: Windows
+        configuration: Debug
+    - template: /eng/build.yml
+      parameters:
+        name: WindowsRelease
+        displayName: Windows Release
         osGroup: Windows
         configuration: Release
-        platform: x64
+        signAndPublishArtifacts: true
+    - template: /eng/build.yml
+      parameters:
+        name: CentOSDebug
+        displayName: CentOS Debug
+        osGroup: Linux
+        configuration: Debug
+    - template: /eng/build.yml
+      parameters:
+        name: CentOSRelease
+        displayName: CentOS Release
+        osGroup: Linux
+        configuration: Release
+    - template: /eng/build.yml
+      parameters:
+        name: AlpineDebug
+        displayName: Alpine Debug
+        osGroup: Linux_Musl
+        configuration: Debug
+    - template: /eng/build.yml
+      parameters:
+        name: AlpineRelease
+        displayName: Alpine Release
+        osGroup: Linux_Musl
+        configuration: Release
+    - template: /eng/build.yml
+      parameters:
+        name: MacOSDebug
+        displayName: MacOS Debug
+        osGroup: MacOS
+        configuration: Debug
+    - template: /eng/build.yml
+      parameters:
+        name: MacOSRelease
+        displayName: MacOS Release
+        osGroup: MacOS
+        configuration: Release
     # This registers the build with BAR.
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - template: /eng/common/templates/job/publish-build-assets.yml
         parameters:
           configuration: Release
           dependsOn:
-          - Windows
+          - WindowsDebug
+          - WindowsRelease
+          - CentOSDebug
+          - CentOSRelease
+          - AlpineDebug
+          - AlpineRelease
+          - MacOSDebug
+          - MacOSRelease
           publishUsingPipelines: true
           pool:
             name: NetCoreInternal-Pool
