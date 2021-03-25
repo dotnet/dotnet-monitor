@@ -42,8 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.DisableMetricsViaCommandLine = true;
             await toolRunner.StartAsync(DefaultTimeout);
 
-            using HttpClient httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(await toolRunner.GetDefaultAddressAsync(DefaultTimeout), UriKind.Absolute);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Check that /metrics does not serve metrics
@@ -66,8 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             };
             await toolRunner.StartAsync(DefaultTimeout);
 
-            using HttpClient httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(await toolRunner.GetDefaultAddressAsync(DefaultTimeout), UriKind.Absolute);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Check that /metrics does not serve metrics
@@ -95,8 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             await toolRunner.StartAsync(DefaultTimeout);
 
-            using HttpClient httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(await toolRunner.GetDefaultAddressAsync(DefaultTimeout), UriKind.Absolute);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
             ApiClient client = new(_outputHelper, httpClient);
 
             // Check that /metrics does not serve metrics
@@ -124,8 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             await toolRunner.StartAsync(DefaultTimeout);
 
-            using HttpClient httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(await toolRunner.GetDefaultAddressAsync(DefaultTimeout), UriKind.Absolute);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Check that /metrics does not serve metrics

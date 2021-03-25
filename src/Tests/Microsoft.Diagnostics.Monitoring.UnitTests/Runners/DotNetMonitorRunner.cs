@@ -1,6 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
@@ -243,21 +243,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             return GetCompletionSourceResultAsync(_defaultAddressSource, token);
         }
 
-        public async Task<string> GetDefaultAddressAsync(TimeSpan timeout)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-            return await GetDefaultAddressAsync(cancellation.Token);
-        }
-
         public Task<string> GetMetricsAddressAsync(CancellationToken token)
         {
             return GetCompletionSourceResultAsync(_metricsAddressSource, token);
-        }
-
-        public async Task<string> GetMetricsAddressAsync(TimeSpan timeout)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-            return await GetMetricsAddressAsync(cancellation.Token);
         }
 
         public void WriteKeyPerValueConfiguration(RootOptions options)

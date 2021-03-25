@@ -47,8 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             
             await toolRunner.StartAsync(DefaultTimeout);
 
-            using HttpClient httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(await toolRunner.GetDefaultAddressAsync(DefaultTimeout), UriKind.Absolute);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Any authenticated route on the default address should 401 Unauthenticated
@@ -76,8 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             await toolRunner.StartAsync(DefaultTimeout);
 
-            using HttpClient httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(await toolRunner.GetMetricsAddressAsync(DefaultTimeout), UriKind.Absolute);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientMetricsAddressAsync(_httpClientFactory, DefaultTimeout);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Any non-metrics route on the metrics address should 404 Not Found
@@ -102,8 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.DisableAuthentication = true;
             await toolRunner.StartAsync(DefaultTimeout);
 
-            using HttpClient httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(await toolRunner.GetDefaultAddressAsync(DefaultTimeout), UriKind.Absolute);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Check that /processes does not challenge for authentication
@@ -140,8 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             await toolRunner.StartAsync(DefaultTimeout);
 
             // Create HttpClient with default request headers
-            using HttpClient httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(await toolRunner.GetDefaultAddressAsync(DefaultTimeout), UriKind.Absolute);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(ApiKeyScheme, Convert.ToBase64String(apiKey));
             ApiClient apiClient = new(_outputHelper, httpClient);
@@ -208,8 +204,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             // is launched by the test process, the usage of these credentials
             // should authenticate correctly (except when elevated, which the
             // tool will deny authorization).
-            using HttpClient httpClient = _httpClientFactory.CreateClient(ServiceProviderFixture.HttpClientName_DefaultCredentials);
-            httpClient.BaseAddress = new Uri(await toolRunner.GetDefaultAddressAsync(DefaultTimeout), UriKind.Absolute);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
             ApiClient client = new(_outputHelper, httpClient);
 
             // TODO: Split test into elevated vs non-elevated tests and skip
