@@ -4,19 +4,19 @@
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>166610c56ff732093f0145a2911d4f6c40b786da</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21172.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21174.3">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>17ac1332f825e66c0fac11104f0099c72963a591</Sha>
+      <Sha>f87d943011ac4fe51fb78757a8e9715650a8d8f8</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21172.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21174.3">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>17ac1332f825e66c0fac11104f0099c72963a591</Sha>
+      <Sha>f87d943011ac4fe51fb78757a8e9715650a8d8f8</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.21167.3">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.21175.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>0ca849f0b71866b007fedaaa938cee63f8d056a6</Sha>
+      <Sha>12a2bc501ce756c9522588d88583c0256297bd70</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

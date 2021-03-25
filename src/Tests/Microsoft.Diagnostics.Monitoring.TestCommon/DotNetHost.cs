@@ -9,9 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     public partial class DotNetHost
     {
         public static string HostExePath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            (RuntimeInformation.ProcessArchitecture == Architecture.X86 ?
-                @"..\..\..\..\..\.dotnet\x86\dotnet.exe" :
-                @"..\..\..\..\..\.dotnet\dotnet.exe") :
+            @"..\..\..\..\..\.dotnet\dotnet.exe" :
             "../../../../../.dotnet/dotnet";
     }
 }

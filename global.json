@@ -2,11 +2,11 @@
   "tools": {
     "dotnet": "6.0.100-preview.2.21155.3",
     "runtimes": {
-      "dotnet/x64": [
-        "$(MicrosoftNETCoreApp31Version)",
-        "$(MicrosoftNETCoreApp50Version)"
+      "aspnetcore": [
+        "$(MicrosoftAspNetCoreApp31Version)",
+        "$(MicrosoftAspNetCoreApp50Version)"
       ],
-      "dotnet/x86": [
+      "dotnet": [
         "$(MicrosoftNETCoreApp31Version)",
         "$(MicrosoftNETCoreApp50Version)"
       ]
@@ -14,6 +14,6 @@
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "2.0.1",
-    "Microsoft.DotNet.Arcade.Sdk": "6.0.0-beta.21167.3"
+    "Microsoft.DotNet.Arcade.Sdk": "6.0.0-beta.21175.1"
   }
 }

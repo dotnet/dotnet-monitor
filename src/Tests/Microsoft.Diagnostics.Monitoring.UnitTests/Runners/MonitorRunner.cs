@@ -209,21 +209,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             return GetCompletionSourceResultAsync(_defaultAddressSource, token);
         }
 
-        public async Task<string> GetDefaultAddressAsync(TimeSpan timeout)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-            return await GetDefaultAddressAsync(cancellation.Token).ConfigureAwait(false);
-        }
-
         public Task<string> GetMetricsAddressAsync(CancellationToken token)
         {
             return GetCompletionSourceResultAsync(_metricsAddressSource, token);
-        }
-
-        public async Task<string> GetMetricsAddressAsync(TimeSpan timeout)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-            return await GetMetricsAddressAsync(cancellation.Token).ConfigureAwait(false);
         }
 
         public void WriteKeyPerValueConfiguration(RootOptions options)
