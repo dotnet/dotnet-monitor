@@ -40,21 +40,30 @@
         -->
       <_BlobGroupPreReleaseLabel Condition="'$(_BlobGroupPreRelease)' != ''">$(_BlobGroupPreRelease.Split('.')[0])</_BlobGroupPreReleaseLabel>
       <_BlobGroupPreReleaseIteration Condition="'$(_BlobGroupPreRelease)' != ''">$(_BlobGroupPreRelease.Split('.')[1])</_BlobGroupPreReleaseIteration>
-
-      <!--
-        Calculate release name based on version parts and blob group build quality.
-        Daily: use 'daily'
-        Prerelease: 'preview' and '1' -> 'preview.1'
-        Release: use 'release'
-        -->
-      <_BlobGroupReleaseName  Condition="'$(BlobGroupBuildQuality)' == 'daily'">daily</_BlobGroupReleaseName>
-      <_BlobGroupReleaseName  Condition="'$(BlobGroupBuildQuality)' == 'prerelease'">$(_BlobGroupPreReleaseLabel).$(_BlobGroupPreReleaseIteration)</_BlobGroupReleaseName>
-      <_BlobGroupReleaseName  Condition="'$(BlobGroupBuildQuality)' == 'release'">release</_BlobGroupReleaseName>
-
+    </PropertyGroup>
+    <!-- These are the valid BlobGroupBuildQuality values. -->
+    <ItemGroup>
+      <_BlobGroupBuildQualityName Include="daily" ReleaseName="daily" />
+      <_BlobGroupBuildQualityName Include="prerelease" ReleaseName="$(_BlobGroupPreReleaseLabel).$(_BlobGroupPreReleaseIteration)" />
+      <_BlobGroupBuildQualityName Include="release" ReleaseName="release" />
+    </ItemGroup>
+    <!-- Select the blob group build quality based on the specified property. -->
+    <ItemGroup>
+      <_SelectedBlobGroupQualityName Include="@(_BlobGroupBuildQualityName)" Condition="'%(Identity)' == '$(BlobGroupBuildQuality)'" />
+    </ItemGroup>
+    <PropertyGroup>
       <!-- Extract major and minor version fields from version number. -->
       <_BlobGroupVersionMajor>$(_BlobGroupVersion.Split('.')[0])</_BlobGroupVersionMajor>
       <_BlobGroupVersionMinor>$(_BlobGroupVersion.Split('.')[1])</_BlobGroupVersionMinor>
-
+      <!-- Get release name from blob group build quality. -->
+      <_BlobGroupReleaseName>@(_SelectedBlobGroupQualityName->'%(ReleaseName)')</_BlobGroupReleaseName>
+    </PropertyGroup>
+    <!-- Validate the selected and calculated values. -->
+    <Error Text="BlobGroupBuildQuality must be set to a valid value: @(_BlobGroupBuildQualityName, ', ')" Condition="'@(_SelectedBlobGroupQualityName)' == ''" />
+    <Error Text="Unable to calculate _BlobGroupVersionMajor" Condition="'$(_BlobGroupVersionMajor)' == ''" />
+    <Error Text="Unable to calculate _BlobGroupVersionMinor" Condition="'$(_BlobGroupVersionMinor)' == ''" />
+    <Error Text="Unable to calculate _BlobGroupReleaseName" Condition="'$(_BlobGroupReleaseName)' == ''" />
+    <PropertyGroup>
       <!--
         Combine all parts to create blob group name. For example (with BlobGroupPrefix = 'monitor'):
         Daily: '5.0.0-preview.1.12345' -> 'monitor5.0/daily'
