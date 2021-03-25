@@ -204,7 +204,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             // is launched by the test process, the usage of these credentials
             // should authenticate correctly (except when elevated, which the
             // tool will deny authorization).
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout, ServiceProviderFixture.HttpClientName_DefaultCredentials);
             ApiClient client = new(_outputHelper, httpClient);
 
             // TODO: Split test into elevated vs non-elevated tests and skip
