@@ -17,32 +17,16 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 {
-    internal sealed class ApiClient : IDisposable
+    internal sealed class ApiClient
     {
-        private readonly string _baseUrl;
-        private readonly bool _disposeHttpClient;
         private readonly HttpClient _httpClient;
         private readonly ITestOutputHelper _outputHelper;
 
-        public ApiClient(ITestOutputHelper outputHelper, string baseUrl)
-            : this(outputHelper, baseUrl, new HttpClient())
-        {
-            _disposeHttpClient = true;
-        }
 
-        public ApiClient(ITestOutputHelper outputHelper, string baseUrl, HttpClient httpClient)
+        public ApiClient(ITestOutputHelper outputHelper, HttpClient httpClient)
         {
-            _baseUrl = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl));
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
-        }
-
-        public void Dispose()
-        {
-            if (_disposeHttpClient)
-            {
-                _httpClient.Dispose();
-            }
         }
 
         /// <summary>
@@ -50,9 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// </summary>
         public async Task<IEnumerable<Models.ProcessIdentifier>> GetProcessesAsync(CancellationToken token)
         {
-            Uri uri = new($"{_baseUrl}/processes", UriKind.Absolute);
-
-            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            using HttpRequestMessage request = new(HttpMethod.Get, "/processes");
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
 
             using HttpResponseMessage response = await _httpClient.SendAsync(request, token);
@@ -88,9 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// </summary>
         public async Task<string> GetMetricsAsync(CancellationToken token)
         {
-            Uri uri = new($"{_baseUrl}/metrics", UriKind.Absolute);
-
-            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            using HttpRequestMessage request = new(HttpMethod.Get, "/metrics");
             request.Headers.Add(HeaderNames.Accept, ContentTypes.TextPlain);
 
             using HttpResponseMessage response = await _httpClient.SendAsync(request, token);
