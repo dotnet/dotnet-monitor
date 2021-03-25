@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.RestServer;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -111,6 +112,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: "Bound metrics address: {address}");
 
+        private static readonly Action<ILogger, Exception> _metricUrlsUpdated =
+            LoggerMessage.Define(
+                eventId: new EventId(18, "MetricUrlsUpdated"),
+                logLevel: LogLevel.Warning,
+                formatString: $"Metric bindings changed. To host custom metrics over http set {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics))} to {true}");
+
+        private static readonly Action<ILogger, string, string, Exception> _metricUrlUpdated =
+            LoggerMessage.Define<string, string>(
+                eventId: new EventId(19, "MetricUrlUpdated"),
+                logLevel: LogLevel.Warning,
+                formatString: "Updated {originalUrl} to {newUrl} due to custom metrics.");
+
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
             _egressProviderAdded(logger, providerName, null);
@@ -209,6 +222,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void BoundMetricsAddress(this ILogger logger, string address)
         {
             _boundMetricsAddress(logger, address, null);
+        }
+
+        public static void MetricUrlUpdated(this ILogger logger, string originalUrl, string newUrl)
+        {
+            _metricUrlUpdated(logger, originalUrl, newUrl, null);
+        }
+
+        public static void MetricUrlsUpdated(this ILogger logger)
+        {
+            _metricUrlsUpdated(logger, null);
         }
 
         private static string Redact(string value)

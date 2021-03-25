@@ -248,6 +248,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //Upgrade http to https by default.
                     if (metricUrl.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase))
                     {
+                        string originalUrl = metricUrls[i];
                         //Based on BindAddress.ToString
                         metricUrls[i] = string.Concat(Uri.UriSchemeHttps.ToLowerInvariant(),
                             Uri.SchemeDelimiter,
@@ -256,8 +257,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             metricUrl.Port.ToString(System.Globalization.CultureInfo.InvariantCulture),
                             metricUrl.PathBase);
 
-                        results.Warnings.Add($"Upgraded {metricUrl} to {metricUrls[i]} due to custom metrics. To host custom metrics over http " +
-                            $"set {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics))} to {true}");
+                        results.BindingChanges.Add(new UrlBindingChange { OriginalUrl = originalUrl, NewUrl = metricUrls[i] });
                     }
                 }
             }

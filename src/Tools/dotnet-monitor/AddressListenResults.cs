@@ -27,8 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public IList<AddressListenResult> Errors { get; }
             = new List<AddressListenResult>();
 
-        //CONSIDER Should these be more structured?
-        public IList<string> Warnings { get; } = new List<string>();
+        public IList<UrlBindingChange> BindingChanges { get; } = new List<UrlBindingChange>();
 
         public bool AnyAddresses => (_defaultAddressCount + _metricsAddressCount) > 0;
 
