@@ -2,11 +2,11 @@
   "tools": {
     "dotnet": "6.0.100-preview.2.21155.3",
     "runtimes": {
-      "dotnet/x64": [
-        "$(MicrosoftNETCoreApp31Version)",
-        "$(MicrosoftNETCoreApp50Version)"
+      "aspnetcore": [
+        "$(MicrosoftAspNetCoreApp31Version)",
+        "$(MicrosoftAspNetCoreApp50Version)"
       ],
-      "dotnet/x86": [
+      "dotnet": [
         "$(MicrosoftNETCoreApp31Version)",
         "$(MicrosoftNETCoreApp50Version)"
       ]
