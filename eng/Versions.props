@@ -5,6 +5,13 @@
     <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
     <PreReleaseVersionIteration>4</PreReleaseVersionIteration>
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
+    <!--
+      Build quality notion for blob group naming, similar to aka.ms channel build quality in Arcade:
+      - 'daily': sets the blob group release name to 'daily' so a release type does not have to be assigned.
+      - 'prerelease': allows the blob group release name to use prerelease version information.
+      - 'release': sets the blob group release name to 'release'.
+    -->
+    <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
   </PropertyGroup>
   <PropertyGroup>
     <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
