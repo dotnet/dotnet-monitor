@@ -87,6 +87,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
+                    ConfigureStorageDefaults(builder);
+
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
 
                     builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
@@ -174,6 +176,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                     services.ConfigureEgress(context.Configuration);
                     services.ConfigureMetrics(context.Configuration);
+                    services.ConfigureStorage(context.Configuration);
                     services.AddSingleton<ExperimentalToolLogger>();
                 })
                 .ConfigureLogging(builder =>
@@ -214,7 +217,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //non-sensitive data such as metrics. We may be missing a certificate for https binding. We want to continue with the
                         //http binding in that scenario.
                         metricUrls = metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ?
-                            ProcessMetricUrls(metricUrls, metricsOptions) :
+                            ProcessMetricUrls(metricUrls, metricsOptions, listenResults) :
                             Array.Empty<string>();
 
                         listenResults.Listen(options, urls, metricUrls);
@@ -223,7 +226,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 });
         }
 
-        private static string[] ProcessMetricUrls(string[] metricUrls, MetricsOptions metricsOptions)
+        private static string[] ProcessMetricUrls(string[] metricUrls, MetricsOptions metricsOptions, AddressListenResults results)
         {
             string metricUrlFromConfig = metricsOptions.Endpoints;
             if (!string.IsNullOrEmpty(metricUrlFromConfig))
@@ -245,6 +248,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //Upgrade http to https by default.
                     if (metricUrl.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase))
                     {
+                        string originalUrl = metricUrls[i];
                         //Based on BindAddress.ToString
                         metricUrls[i] = string.Concat(Uri.UriSchemeHttps.ToLowerInvariant(),
                             Uri.SchemeDelimiter,
@@ -252,11 +256,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             ":",
                             metricUrl.Port.ToString(System.Globalization.CultureInfo.InvariantCulture),
                             metricUrl.PathBase);
+
+                        results.BindingChanges.Add(new UrlBindingChange { OriginalUrl = originalUrl, NewUrl = metricUrls[i] });
                     }
                 }
             }
 
             return metricUrls;
+        }
+
+        private static void ConfigureStorageDefaults(IConfigurationBuilder builder)
+        {
+            builder.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                {ConfigurationHelper.MakeKey(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
+            });
         }
 
         private static void ConfigureMetricsEndpoint(IConfigurationBuilder builder, bool enableMetrics, string[] metricEndpoints)

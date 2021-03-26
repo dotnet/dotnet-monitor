@@ -23,6 +23,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return ConfigureOptions<ApiAuthenticationOptions>(services, configuration, ConfigurationKeys.ApiAuthentication);
         }
 
+        public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
+        }
+
         private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class
         {
             return services.Configure<T>(configuration.GetSection(key));
