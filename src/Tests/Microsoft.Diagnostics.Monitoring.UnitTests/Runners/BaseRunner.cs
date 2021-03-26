@@ -35,9 +35,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         private readonly ITestOutputHelper _outputHelper;
 
-        // Task that processes the stdout of dotnet-monitor for significant events.
-        private Task<Task> _processStandardOutputTask;
-
         private readonly DotNetRunner _runner = new();
 
         // Completion source signaled when the process is running
@@ -50,6 +47,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         protected StreamWriter StandardInput => _runner.StandardInput;
 
+        private List<Task> _joinableTasks = new();
+
         protected BaseRunner(RunnerOptions options)
         {
             _enableDiagnostics = options.EnableDiagnostics;
@@ -61,11 +60,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             CancellationToken token = _cancellation.Token;
             _cancellationRegistration = token.Register(() => OnCancel(token));
-
-            _processStandardOutputTask = new Task<Task>(
-                () => ProcessStandardOutputAsync(token),
-                token,
-                TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         /// <summary>
@@ -98,8 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             // Cancel the completion sources if cancellation is requested
             using var _ = token.Register(() => OnCancel(token));
 
-            // Start processing stdout
-            _processStandardOutputTask.Start();
+            _joinableTasks.Add(ProcessStandardOutputAsync(_cancellation.Token));
 
             await _startedSource.Task.ConfigureAwait(false);
         }
@@ -142,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             OnCancel(_cancellation.Token);
 
             // Wait for stdout processing to finish
-            await _processStandardOutputTask.Unwrap().SafeAwait(outputHelper).ConfigureAwait(false);
+            await Task.WhenAll(_joinableTasks).SafeAwait(outputHelper).ConfigureAwait(false);
 
             LogLine("Begin Standard Output");
             foreach (string line in _stdOutLines)
@@ -213,22 +206,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         {
             try
             {
-                TaskCompletionSource<string> cancellationTaskSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-                using var _ = token.Register(() => cancellationTaskSource.TrySetCanceled(token));
-
-                while (true)
+                await foreach (string line in _runner.StandardOutput.ReadLinesAsync(token))
                 {
-                    // ReadLineAsync does not have cancellation
-                    string line = await Task.WhenAny(
-                        _runner.StandardOutput.ReadLineAsync(),
-                        cancellationTaskSource.Task)
-                        .Unwrap().ConfigureAwait(false);
-
-                    if (null == line)
-                        break;
-
-                    _stdOutLines.Add(line);
-
                     OnStandardOutputLine(line);
                 }
             }

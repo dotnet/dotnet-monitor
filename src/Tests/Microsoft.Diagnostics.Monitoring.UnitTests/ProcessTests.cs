@@ -3,14 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.UnitTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
@@ -18,14 +21,17 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests
 {
+    [Collection(DefaultCollectionFixture.Name)]
     public class ProcessTests
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
 
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
-        public ProcessTests(ITestOutputHelper outputHelper)
+        public ProcessTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
+            _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
         }
 
@@ -67,7 +73,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout));
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
+            ApiClient apiClient = new(_outputHelper, httpClient);
 
             int appProcessId;
             await using (AppRunner appRunner = new(_outputHelper))
@@ -81,7 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
                 await appRunner.SendStartScenarioAsync(DefaultTimeout);
 
-                await VerifyProcessAsync(client, await client.GetProcessesAsync(DefaultTimeout), appProcessId);
+                await VerifyProcessAsync(apiClient, await apiClient.GetProcessesAsync(DefaultTimeout), appProcessId);
 
                 await EndSpinWaitScenarioAsync(appRunner);
             }
@@ -89,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             await Task.Delay(TimeSpan.FromSeconds(1));
 
             // Verify app is no longer reported
-            IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesAsync(DefaultTimeout);
+            IEnumerable<ProcessIdentifier> identifiers = await apiClient.GetProcessesAsync(DefaultTimeout);
             Assert.NotNull(identifiers);
             ProcessIdentifier identifier = identifiers.FirstOrDefault(p => p.Pid == appProcessId);
             Assert.Null(identifier);
@@ -131,7 +138,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.DisableAuthentication = true;
             await toolRunner.StartAsync(DefaultTimeout);
 
-            using ApiClient client = new(_outputHelper, await toolRunner.GetDefaultAddressAsync(DefaultTimeout));
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
+            ApiClient apiClient = new(_outputHelper, httpClient);
 
             const int appCount = 3;
             int[] processIds = new int[appCount];
@@ -158,13 +166,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 await Task.Delay(TimeSpan.FromSeconds(1));
 
                 // Query for process identifiers
-                identifiers = await client.GetProcessesAsync(DefaultTimeout);
+                identifiers = await apiClient.GetProcessesAsync(DefaultTimeout);
                 Assert.NotNull(identifiers);
 
                 // Verify each app instance is reported and shut them down.
                 foreach (AppRunner runner in appRunners)
                 {
-                    await VerifyProcessAsync(client, identifiers, runner.ProcessId);
+                    await VerifyProcessAsync(apiClient, identifiers, runner.ProcessId);
 
                     await EndSpinWaitScenarioAsync(runner);
                 }
@@ -177,7 +185,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             await Task.Delay(TimeSpan.FromSeconds(1));
 
             // Query for process identifiers
-            identifiers = await client.GetProcessesAsync(DefaultTimeout);
+            identifiers = await apiClient.GetProcessesAsync(DefaultTimeout);
             Assert.NotNull(identifiers);
 
             // Verify none of the apps are reported

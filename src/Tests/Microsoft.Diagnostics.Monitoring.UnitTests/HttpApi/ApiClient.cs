@@ -102,9 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 
         private async Task<Models.ProcessInfo> GetProcessAsync(string processKey, CancellationToken token)
         {
-            Uri uri = new($"{_baseUrl}/processes/{processKey}", UriKind.Absolute);
-
-            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/processes/{processKey}");
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
 
             using HttpResponseMessage response = await SendAndLogAsync(request, token).ConfigureAwait(false);

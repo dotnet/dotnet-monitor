@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 {
-    internal static class DotNetMonitorRunnerExtensions
+    internal static class MonitorRunnerExtensions
     {
         /// <summary>
         /// Creates a <see cref="HttpClient"/> over the default address of the <paramref name="runner"/>.
         /// </summary>
-        public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this DotNetMonitorRunner runner, IHttpClientFactory factory, TimeSpan timeout)
+        public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorRunner runner, IHttpClientFactory factory, TimeSpan timeout)
         {
             return CreateHttpClientDefaultAddressAsync(runner, factory, timeout, Extensions.Options.Options.DefaultName);
         }
@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// <summary>
         /// Creates a named <see cref="HttpClient"/> over the default address of the <paramref name="runner"/>.
         /// </summary>
-        public static async Task<HttpClient> CreateHttpClientDefaultAddressAsync(this DotNetMonitorRunner runner, IHttpClientFactory factory, TimeSpan timeout, string name)
+        public static async Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorRunner runner, IHttpClientFactory factory, TimeSpan timeout, string name)
         {
             HttpClient client = factory.CreateClient(name);
 
@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// <summary>
         /// Creates a <see cref="HttpClient"/> over the metrics address of the <paramref name="runner"/>.
         /// </summary>
-        public static async Task<HttpClient> CreateHttpClientMetricsAddressAsync(this DotNetMonitorRunner runner, IHttpClientFactory factory, TimeSpan timeout)
+        public static async Task<HttpClient> CreateHttpClientMetricsAddressAsync(this MonitorRunner runner, IHttpClientFactory factory, TimeSpan timeout)
         {
             HttpClient client = factory.CreateClient();
 
