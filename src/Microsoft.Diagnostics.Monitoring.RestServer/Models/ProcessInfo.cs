@@ -20,15 +20,15 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
         public Guid Uid { get; set; }
 
         [JsonPropertyName("name")]
-        public string Name { get; internal set; }
+        public string Name { get; set; }
 
         [JsonPropertyName("commandLine")]
-        public string CommandLine { get; internal set; }
+        public string CommandLine { get; set; }
 
         [JsonPropertyName("operatingSystem")]
-        public string OperatingSystem { get; internal set; }
+        public string OperatingSystem { get; set; }
 
         [JsonPropertyName("processArchitecture")]
-        public string ProcessArchitecture { get; internal set; }
+        public string ProcessArchitecture { get; set; }
     }
 }

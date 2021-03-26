@@ -5,7 +5,6 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading;
@@ -18,9 +17,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
     /// <summary>
     /// Runner for running the unit test application.
     /// </summary>
-    internal sealed class AppRunner : BaseRunner
+    internal sealed class AppRunner : IAsyncDisposable
     {
+        private readonly LoggingRunnerAdapter _adapter;
+
+        private readonly ITestOutputHelper _outputHelper;
+
+        private readonly TaskCompletionSource<string> _readySource =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        private readonly DotNetRunner _runner = new();
+
         private TaskCompletionSource<object> _currentCommandSource;
+
+        private bool _isDiposed;
 
         /// <summary>
         /// The path of the currently executing assembly.
@@ -49,28 +59,51 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// </summary>
         public string DiagnosticPortPath { get; set; }
 
+        public int ProcessId => _runner.ProcessId;
+
         /// <summary>
         /// Name of the scenario to run in the application.
         /// </summary>
         public string ScenarioName { get; set; }
 
         public AppRunner(ITestOutputHelper outputHelper, int appId = 1)
-            : base(CreateRunnerOptions(outputHelper, appId))
         {
+            _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
+
+            _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
+            _adapter.StandardOutputCallback = StandardOutputCallback;
         }
 
-        protected override IEnumerable<string> GetProcessArguments()
+        public async ValueTask DisposeAsync()
         {
-            List<string> argsList = new();
+            lock (_adapter)
+            {
+                if (_isDiposed)
+                {
+                    return;
+                }
+                _isDiposed = true;
+            }
 
-            argsList.Add(ScenarioName);
+            await _adapter.DisposeAsync().ConfigureAwait(false);
 
-            return argsList;
+            CancelCompletionSources(CancellationToken.None);
+
+            _runner.Dispose();
         }
 
-        protected override IDictionary<string, string> GetProcessEnvironment()
+        public async Task StartAsync(CancellationToken token)
         {
-            IDictionary<string, string> environment = base.GetProcessEnvironment();
+            if (string.IsNullOrEmpty(ScenarioName))
+            {
+                throw new ArgumentNullException(nameof(ScenarioName));
+            }
+
+            _runner.EntrypointAssemblyPath = AppPath;
+            _runner.Arguments = ScenarioName;
+
+            // Enable diagnostics in case it is disabled via inheriting test environment.
+            _adapter.Environment.Add("COMPlus_EnableDiagnostics", "1");
 
             if (ConnectionMode == DiagnosticPortConnectionMode.Connect)
             {
@@ -79,15 +112,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                     throw new ArgumentNullException(nameof(DiagnosticPortPath));
                 }
 
-                environment.Add("DOTNET_DiagnosticPorts", DiagnosticPortPath);
+                _adapter.Environment.Add("DOTNET_DiagnosticPorts", DiagnosticPortPath);
             }
 
-            return environment;
+            await _adapter.StartAsync(token).ConfigureAwait(false);
+
+            using IDisposable _ = token.Register(() => CancelCompletionSources(token));
+
+            await _readySource.Task;
         }
 
-        protected override void OnStandardOutputLine(string line)
+        private void CancelCompletionSources(CancellationToken token)
         {
-            LogEvent logEvent = JsonSerializer.Deserialize<LogEvent>(line);
+            _readySource.TrySetCanceled(token);
+        }
+
+        private void StandardOutputCallback(string line)
+        {
+            ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
 
             switch (logEvent.Category)
             {
@@ -102,27 +144,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             return SendCommandAsync(TestAppScenarios.Commands.EndScenario, token);
         }
 
-        public async Task SendEndScenarioAsync(TimeSpan timeout)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-            await EndScenarioAsync(cancellation.Token).ConfigureAwait(false);
-        }
-
         public async Task SendCommandAsync(string command, CancellationToken token)
         {
             Assert.Null(_currentCommandSource);
             _currentCommandSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-            StandardInput.WriteLine(command);
+            _runner.StandardInput.WriteLine(command);
 
-            await GetCompletionSourceResultAsync(_currentCommandSource, token).ConfigureAwait(false);
+            await _currentCommandSource.GetAsync(token).ConfigureAwait(false);
 
             _currentCommandSource = null;
-        }
-
-        public async Task SendCommandAsync(string command, TimeSpan timeout)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-            await SendCommandAsync(command, cancellation.Token).ConfigureAwait(false);
         }
 
         public Task StartScenarioAsync(CancellationToken token)
@@ -130,37 +160,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             return SendCommandAsync(TestAppScenarios.Commands.StartScenario, token);
         }
 
-        public async Task SendStartScenarioAsync(TimeSpan timeout)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-            await StartScenarioAsync(cancellation.Token).ConfigureAwait(false);
-        }
-
-        private static RunnerOptions CreateRunnerOptions(ITestOutputHelper outputHelper, int appId)
-        {
-            if (null == outputHelper)
-            {
-                throw new ArgumentNullException(nameof(outputHelper));
-            }
-
-            return new RunnerOptions()
-            {
-                EnableDiagnostics = true,
-                EntrypointAssemblyPath = AppPath,
-                LogPrefix = FormattableString.Invariant($"App{appId}"),
-                OutputHelper = outputHelper,
-                WaitForDiagnosticPipe = true
-            };
-        }
-
-        private void HandleProgramEvent(LogEvent logEvent)
+        private void HandleProgramEvent(ConsoleLogEvent logEvent)
         {
             switch (logEvent.EventId)
             {
-                case 1: // ScenarioReady
-                    Assert.True(TrySetStarted());
+                case 1: // ScenarioState
+                    Assert.True(logEvent.State.TryGetValue("state", out TestAppScenarios.SenarioState state));
+                    switch (state)
+                    {
+                        case TestAppScenarios.SenarioState.Ready:
+                            Assert.True(_readySource.TrySetResult(null));
+                            break;
+                    }
                     break;
-                case 5: // ReceivedCommand
+                case 2: // ReceivedCommand
                     Assert.NotNull(_currentCommandSource);
                     Assert.True(logEvent.State.TryGetValue("expected", out bool expected));
                     if (expected)

@@ -12,9 +12,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public const string StartScenario = nameof(StartScenario);
         }
 
-        public static class SpinWait
+        public enum SenarioState
         {
-            public const string Name = nameof(SpinWait);
+            Waiting,
+            Ready,
+            Executing,
+            Finished
+        }
+
+        public static class AsyncWait
+        {
+            public const string Name = nameof(AsyncWait);
 
             public static class Commands
             {

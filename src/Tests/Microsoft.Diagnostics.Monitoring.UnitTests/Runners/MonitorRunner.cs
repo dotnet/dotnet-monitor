@@ -19,8 +19,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
     /// <summary>
     /// Runner for the dotnet-monitor tool.
     /// </summary>
-    internal sealed class MonitorRunner : BaseRunner
+    internal sealed class MonitorRunner : IAsyncDisposable
     {
+        private readonly LoggingRunnerAdapter _adapter;
+
         // Completion source containing the bound address of the default URL (e.g. provided by --urls argument)
         private readonly TaskCompletionSource<string> _defaultAddressSource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -29,8 +31,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         private readonly TaskCompletionSource<string> _metricsAddressSource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+        private readonly ITestOutputHelper _outputHelper;
+
+        private readonly TaskCompletionSource<string> _readySource =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        private readonly DotNetRunner _runner = new();
+
         private readonly string _runnerTmpPath =
             Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
+
+        private bool _isDiposed;
 
         /// <summary>
         /// The path of the currently executing assembly.
@@ -92,21 +103,44 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             Path.Combine(UserConfigDirectoryPath, "settings.json");
 
         public MonitorRunner(ITestOutputHelper outputHelper)
-            : base(CreateRunnerOptions(outputHelper))
         {
+            _outputHelper = new PrefixedOutputHelper(outputHelper, "[Monitor] ");
+
+            _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
+            _adapter.StandardOutputCallback = StandardOutputCallback;
+
             Directory.CreateDirectory(SharedConfigDirectoryPath);
             Directory.CreateDirectory(UserConfigDirectoryPath);
         }
 
-        protected override void OnCancel(CancellationToken token)
+        public async ValueTask DisposeAsync()
         {
-            _defaultAddressSource.TrySetCanceled(token);
-            _metricsAddressSource.TrySetCanceled(token);
+            lock (_adapter)
+            {
+                if (_isDiposed)
+                {
+                    return;
+                }
+                _isDiposed = true;
+            }
 
-            base.OnCancel(token);
+            await _adapter.DisposeAsync().ConfigureAwait(false);
+
+            CancelCompletionSources(CancellationToken.None);
+
+            _runner.Dispose();
+
+            try
+            {
+                Directory.Delete(_runnerTmpPath, recursive: true);
+            }
+            catch (Exception ex)
+            {
+                _outputHelper.WriteLine("Unable to delete '{0}': {1}", _runnerTmpPath, ex);
+            }
         }
 
-        protected override IEnumerable<string> GetProcessArguments()
+        public async Task StartAsync(CancellationToken token)
         {
             List<string> argsList = new();
 
@@ -140,58 +174,51 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 argsList.Add("--no-auth");
             }
 
-            return argsList;
-        }
+            _runner.EntrypointAssemblyPath = DotNetMonitorPath;
+            _runner.Arguments = string.Join(" ", argsList);
 
-        protected override IDictionary<string, string> GetProcessEnvironment()
-        {
-            IDictionary<string, string> environment = base.GetProcessEnvironment();
-
+            // Disable diagnostics on tool
+            _adapter.Environment.Add("COMPlus_EnableDiagnostics", "0");
             // Console output in JSON for easy parsing
-            environment.Add("Logging__Console__FormatterName", "json");
+            _adapter.Environment.Add("Logging__Console__FormatterName", "json");
             // Enable Debug on Startup class to get lifetime and address events
-            environment.Add("Logging__LogLevel__Microsoft.Diagnostics.Tools.Monitor.Startup", "Debug");
+            _adapter.Environment.Add("Logging__LogLevel__Microsoft.Diagnostics.Tools.Monitor.Startup", "Debug");
 
             // Override the shared config directory
-            environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
+            _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
             // Override the user config directory
-            environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
+            _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
 
             // Set configuration via environment variables
             var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration();
             if (configurationViaEnvironment.Count > 0)
             {
-                LogLine("Environment Configuration:");
                 // Set additional environment variables from configuration
                 foreach (var variable in configurationViaEnvironment)
                 {
-                    LogLine("- {0} = {1}", variable.Key, variable.Value);
-                    environment.Add(variable.Key, variable.Value);
+                    _adapter.Environment.Add(variable.Key, variable.Value);
                 }
             }
 
-            LogLine("User Settings Path: {0}", UserSettingsFilePath);
+            _outputHelper.WriteLine("User Settings Path: {0}", UserSettingsFilePath);
 
-            return environment;
+            await _adapter.StartAsync(token);
+
+            using IDisposable _ = token.Register(() => CancelCompletionSources(token));
+
+            await _readySource.Task;
         }
 
-        protected override void OnDispose()
+        private void CancelCompletionSources(CancellationToken token)
         {
-            try
-            {
-                Directory.Delete(_runnerTmpPath, recursive: true);
-            }
-            catch (Exception ex)
-            {
-                LogLine("Unable to delete '{0}': {1}", _runnerTmpPath, ex);
-            }
-
-            base.OnDispose();
+            _defaultAddressSource.TrySetCanceled(token);
+            _metricsAddressSource.TrySetCanceled(token);
+            _readySource.TrySetCanceled(token);
         }
 
-        protected override void OnStandardOutputLine(string line)
+        private void StandardOutputCallback(string line)
         {
-            LogEvent logEvent = JsonSerializer.Deserialize<LogEvent>(line);
+            ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
 
             switch (logEvent.Category)
             {
@@ -206,12 +233,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public Task<string> GetDefaultAddressAsync(CancellationToken token)
         {
-            return GetCompletionSourceResultAsync(_defaultAddressSource, token);
+            return _defaultAddressSource.GetAsync(token);
         }
 
         public Task<string> GetMetricsAddressAsync(CancellationToken token)
         {
-            return GetCompletionSourceResultAsync(_metricsAddressSource, token);
+            return _metricsAddressSource.GetAsync(token);
         }
 
         public void WriteKeyPerValueConfiguration(RootOptions options)
@@ -222,7 +249,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                     Path.Combine(SharedConfigDirectoryPath, entry.Key),
                     entry.Value);
 
-                LogLine("Wrote {0} key-per-file.", entry.Key);
+                _outputHelper.WriteLine("Wrote {0} key-per-file.", entry.Key);
             }
         }
 
@@ -237,7 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
 
-            LogLine("Wrote user settings.");
+            _outputHelper.WriteLine("Wrote user settings.");
         }
 
         public async Task WriteUserSettingsAsync(RootOptions options, TimeSpan timeout)
@@ -246,22 +273,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             await WriteUserSettingsAsync(options, cancellation.Token).ConfigureAwait(false);
         }
 
-        private static RunnerOptions CreateRunnerOptions(ITestOutputHelper outputHelper)
-        {
-            if (null == outputHelper)
-            {
-                throw new ArgumentNullException(nameof(outputHelper));
-            }
-
-            return new RunnerOptions()
-            {
-                EntrypointAssemblyPath = DotNetMonitorPath,
-                LogPrefix = "Monitor",
-                OutputHelper = outputHelper
-            };
-        }
-
-        private void HandleLifetimeEvent(LogEvent logEvent)
+        private void HandleLifetimeEvent(ConsoleLogEvent logEvent)
         {
             // Lifetime events do not have unique EventIds, thus use the format
             // string to differentiate the individual events.
@@ -270,27 +282,27 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 switch (format)
                 {
                     case "Application started. Press Ctrl+C to shut down.":
-                        Assert.True(TrySetStarted());
+                        Assert.True(_readySource.TrySetResult(null));
                         break;
                 }
             }
         }
 
-        private void HandleStartupEvent(LogEvent logEvent)
+        private void HandleStartupEvent(ConsoleLogEvent logEvent)
         {
             switch (logEvent.EventId)
             {
                 case 16: // Bound default address: {address}
                     if (logEvent.State.TryGetValue("address", out string defaultAddress))
                     {
-                        LogLine("Default Address: {0}", defaultAddress);
+                        _outputHelper.WriteLine("Default Address: {0}", defaultAddress);
                         Assert.True(_defaultAddressSource.TrySetResult(defaultAddress));
                     }
                     break;
                 case 17: // Bound metrics address: {address}
                     if (logEvent.State.TryGetValue("address", out string metricsAddress))
                     {
-                        LogLine("Metrics Address: {0}", metricsAddress);
+                        _outputHelper.WriteLine("Metrics Address: {0}", metricsAddress);
                         Assert.True(_metricsAddressSource.TrySetResult(metricsAddress));
                     }
                     break;

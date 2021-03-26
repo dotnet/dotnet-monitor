@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
+using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -24,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
     [Collection(DefaultCollectionFixture.Name)]
     public class ProcessTests
     {
-        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(15);
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
@@ -71,8 +73,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.DisableAuthentication = true;
             await toolRunner.StartAsync(DefaultTimeout);
 
-            await Task.Delay(TimeSpan.FromSeconds(1));
-
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, DefaultTimeout);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             {
                 appRunner.ConnectionMode = appConnectionMode;
                 appRunner.DiagnosticPortPath = diagnosticPortPath;
-                appRunner.ScenarioName = TestAppScenarios.SpinWait.Name;
+                appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
                 await appRunner.StartAsync(DefaultTimeout);
 
                 appProcessId = appRunner.ProcessId;
@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 await EndSpinWaitScenarioAsync(appRunner);
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            await WaitUntilDiagnosticPipeClosed(DefaultTimeout, appProcessId);
 
             // Verify app is no longer reported
             IEnumerable<ProcessIdentifier> identifiers = await apiClient.GetProcessesAsync(DefaultTimeout);
@@ -154,7 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     AppRunner runner = new(_outputHelper, appId: i + 1);
                     runner.ConnectionMode = appConnectionMode;
                     runner.DiagnosticPortPath = diagnosticPortPath;
-                    runner.ScenarioName = TestAppScenarios.SpinWait.Name;
+                    runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
                     await runner.StartAsync(DefaultTimeout);
 
                     await runner.SendStartScenarioAsync(DefaultTimeout);
@@ -162,8 +162,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     appRunners[i] = runner;
                     processIds[i] = runner.ProcessId;
                 }
-
-                await Task.Delay(TimeSpan.FromSeconds(1));
 
                 // Query for process identifiers
                 identifiers = await apiClient.GetProcessesAsync(DefaultTimeout);
@@ -182,7 +180,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 await appRunners.DisposeItemsAsync();
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            await WaitUntilDiagnosticPipeClosed(DefaultTimeout, processIds);
 
             // Query for process identifiers
             identifiers = await apiClient.GetProcessesAsync(DefaultTimeout);
@@ -222,7 +220,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// </summary>
         private static async Task EndSpinWaitScenarioAsync(AppRunner runner)
         {
-            await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.Continue, DefaultTimeout);
+            await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue, DefaultTimeout);
 
             await runner.SendEndScenarioAsync(DefaultTimeout);
         }
@@ -246,6 +244,22 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 string fileName = Guid.NewGuid().ToString("D");
                 diagnosticPortPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                     fileName : Path.Combine(Path.GetTempPath(), fileName);
+            }
+        }
+
+        private async Task WaitUntilDiagnosticPipeClosed(TimeSpan timeout, params int[] pids)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+
+            while (true)
+            {
+                // If none of the specified processes have diagnostic pipes, then break the loop
+                if (!DiagnosticsClient.GetPublishedProcesses().Intersect(pids).Any())
+                {
+                    break;
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(100), cancellation.Token);
             }
         }
     }

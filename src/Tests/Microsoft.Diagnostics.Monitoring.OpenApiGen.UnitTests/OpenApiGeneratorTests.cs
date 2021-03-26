@@ -9,7 +9,6 @@ using Microsoft.OpenApi.Readers;
 using Microsoft.OpenApi.Validations;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -21,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
 {
     public class OpenApiGeneratorTests
     {
-        private const int GenerationTimemoutMs = 30_000;
+        private static readonly TimeSpan GenerationTimemout = TimeSpan.FromSeconds(30);
 
         private const string OpenApiBaselineName = "openapi.json";
         private const string OpenApiGenName = "Microsoft.Diagnostics.Monitoring.OpenApiGen";
@@ -100,30 +99,17 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         {
             string path = Path.GetTempFileName();
 
-            _outputHelper.WriteLine($"OpenAPI Document: {path}");
-
             DotNetRunner runner = new();
-            runner.EntryAssemblyPath = OpenApiGenPath;
+            runner.EntrypointAssemblyPath = OpenApiGenPath;
             runner.Arguments = path;
 
-            using CancellationTokenSource cancellation = new(GenerationTimemoutMs);
+            await using LoggingRunnerAdapter adapter = new(_outputHelper, runner);
 
-            await runner.StartAsync(cancellation.Token);
+            using CancellationTokenSource cancellation = new(GenerationTimemout);
 
-            int exitCode = await runner.WaitForExitAsync(cancellation.Token);
+            await adapter.StartAsync(cancellation.Token);
 
-            string line;
-            _outputHelper.WriteLine("Standard Output:");
-            while (null != (line = runner.StandardOutput.ReadLine()))
-            {
-                _outputHelper.WriteLine(line);
-            }
-
-            _outputHelper.WriteLine("Standard Error:");
-            while (null != (line = runner.StandardError.ReadLine()))
-            {
-                _outputHelper.WriteLine(line);
-            }
+            int exitCode = await adapter.WaitForExitAsync(cancellation.Token);
 
             Assert.Equal(0, exitCode);
 

@@ -12,33 +12,24 @@ using System.Threading.Tasks;
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     /// <summary>
-    /// Spin waits on thread to generate high CPU usage until it receives the Continue command.
+    /// Async waits until it receives the Continue command.
     /// </summary>
-    internal class SpinWaitScenario
+    internal class AsyncWaitScenario
     {
         public static Command Command()
         {
-            Command command = new(TestAppScenarios.SpinWait.Name);
+            Command command = new(TestAppScenarios.AsyncWait.Name);
             command.Handler = CommandHandler.Create((Func<CancellationToken, Task<int>>)ExecuteAsync);
             return command;
         }
 
         public static Task<int> ExecuteAsync(CancellationToken token)
         {
-            return Program.RunScenarioAsync(logger =>
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
             {
-                Task commandTask = Program.WaitForCommandAsync(TestAppScenarios.SpinWait.Commands.Continue, logger);
-                
-                while (true)
-                {
-                    token.ThrowIfCancellationRequested();
-                    if (commandTask.IsCompleted)
-                    {
-                        break;
-                    }
-                }
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue, logger);
 
-                return Task.FromResult(0);
+                return 0;
             }, token);
         }
     }

@@ -44,5 +44,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             return client;
         }
+
+        public static async Task StartAsync(this MonitorRunner runner, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+            await runner.StartAsync(cancellation.Token);
+        }
     }
 }
