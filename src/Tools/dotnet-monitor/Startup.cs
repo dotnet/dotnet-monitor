@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -97,6 +98,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             ILogger<Startup> logger)
         {
             exprLogger.LogExperimentMessage();
+
+            if (listenResults.BindingChanges.Any())
+            {
+                logger.MetricUrlsUpdated();
+            }
+
+            foreach (UrlBindingChange bindingUpgrade in listenResults.BindingChanges)
+            {
+                logger.MetricUrlUpdated(bindingUpgrade.OriginalUrl, bindingUpgrade.NewUrl);
+            }
 
             // These errors are populated before Startup.Configure is called because
             // the KestrelServer class is configured as a prerequisite of
