@@ -2,6 +2,29 @@
 <Project>
   <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
   
+  <!--
+    Set InformationalVersion to only include the original version prefix and any prerelease suffix.
+    It will be updated later with commit hash information. Without this setting to the original
+    version prefix, the version would include a patch number that is computed from the build number,
+    which makes it difficult to trace back to the exact release version. This information is also
+    used when invoking the global version option for tools using System.CommandLine.
+  -->
+  <PropertyGroup>
+    <InformationalVersion>$(_OriginalVersionPrefix)</InformationalVersion>
+    <InformationalVersion Condition="'$(VersionSuffix)' != ''">$(InformationalVersion)-$(VersionSuffix)</InformationalVersion>
+  </PropertyGroup>
+
+  <!--
+    Set PackageVersion to only include the original version prefix and any prerelease suffix.
+    Without this setting to the original version prefix, the version would include a patch number
+    that is computed from the build number, which makes it difficult to trace back to the exact
+    release version. Only set this if PackageVersion was not explicitly set.
+  -->
+  <PropertyGroup Condition="'$(PackageVersion)' == ''">
+    <PackageVersion>$(_OriginalVersionPrefix)</PackageVersion>
+    <PackageVersion Condition="'$(VersionSuffix)' != ''">$(PackageVersion)-$(VersionSuffix)</PackageVersion>
+  </PropertyGroup>
+
   <!-- Work around https://github.com/dotnet/sourcelink/issues/572
   Remove once we build using an SDK that contains https://github.com/dotnet/sdk/pull/10613 -->
   <PropertyGroup>
