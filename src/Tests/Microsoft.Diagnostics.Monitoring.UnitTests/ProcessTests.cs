@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
                 await VerifyProcessAsync(apiClient, await apiClient.GetProcessesAsync(DefaultTimeout), appProcessId);
 
-                await EndSpinWaitScenarioAsync(appRunner);
+                await EndAsyncWaitScenarioAsync(appRunner);
 
                 // This gives the app time to send out any remaining stdout/stderr messages,
                 // exit properly, and delete its diagnostic pipe.
@@ -186,7 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 {
                     await VerifyProcessAsync(apiClient, identifiers, runner.ProcessId);
 
-                    await EndSpinWaitScenarioAsync(runner);
+                    await EndAsyncWaitScenarioAsync(runner);
                 }
 
                 // This gives apps time to send out any remaining stdout/stderr messages,
@@ -241,9 +241,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         }
 
         /// <summary>
-        /// Has the SpinWait scenario end.
+        /// Have the AsyncWait scenario end.
         /// </summary>
-        private static async Task EndSpinWaitScenarioAsync(AppRunner runner)
+        private static async Task EndAsyncWaitScenarioAsync(AppRunner runner)
         {
             await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue, DefaultTimeout);
 

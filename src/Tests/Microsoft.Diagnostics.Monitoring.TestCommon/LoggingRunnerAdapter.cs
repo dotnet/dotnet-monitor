@@ -25,9 +25,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public Dictionary<string, string> Environment { get; } = new();
 
-        public Action<string> StandardErrorCallback { get; set; }
+        public event Action<string> ReceivedStandardErrorLine;
 
-        public Action<string> StandardOutputCallback { get; set; }
+        public event Action<string> ReceivedStandardOutputLine;
 
         public LoggingRunnerAdapter(ITestOutputHelper outputHelper, DotNetRunner runner)
         {
@@ -91,8 +91,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             await _runner.StartAsync(token).ConfigureAwait(false);
             _outputHelper.WriteLine("Process ID: {0}", _runner.ProcessId);
 
-            _standardErrorTask = ReadLinesAsync(_runner.StandardError, _standardErrorLines, StandardErrorCallback, _cancellation.Token);
-            _standardOutputTask = ReadLinesAsync(_runner.StandardOutput, _standardOutputLines, StandardOutputCallback, _cancellation.Token);
+            _standardErrorTask = ReadLinesAsync(_runner.StandardError, _standardErrorLines, ReceivedStandardErrorLine, _cancellation.Token);
+            _standardOutputTask = ReadLinesAsync(_runner.StandardOutput, _standardOutputLines, ReceivedStandardOutputLine, _cancellation.Token);
         }
 
         public async Task<int> WaitForExitAsync(CancellationToken token)
@@ -108,10 +108,23 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         private static async Task ReadLinesAsync(StreamReader reader, List<string> lines, Action<string> callback, CancellationToken token)
         {
+            // Closing the reader to cancel the async await will dispose the underlying stream.
+            // Technically, this means the reader/stream cannot be used after cancelling reading of lines
+            // from the process, but this is probably okay since the adapter is already logging each line
+            // and providing a callback to callers to read each line. It's unlikely the reader/stream will
+            // be accessed after this adapter is diposed.
+            using var _ = token.Register(() => reader.Close());
+
             try
             {
-                await foreach (string line in reader.ReadLinesAsync(token))
+                while (true)
                 {
+                    // ReadLineAsync does not have cancellation
+                    string line = await reader.ReadLineAsync().ConfigureAwait(false);
+
+                    if (null == line)
+                        break;
+
                     lines.Add(line);
                     callback?.Invoke(line);
                 }

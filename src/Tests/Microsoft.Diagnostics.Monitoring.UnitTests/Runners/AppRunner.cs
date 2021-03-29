@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
-            _adapter.StandardOutputCallback = StandardOutputCallback;
+            _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
         }
 
         public async ValueTask DisposeAsync()
@@ -84,6 +84,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 }
                 _isDiposed = true;
             }
+
+            _adapter.ReceivedStandardOutputLine -= StandardOutputCallback;
 
             await _adapter.DisposeAsync().ConfigureAwait(false);
 

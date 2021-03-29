@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             _outputHelper = new PrefixedOutputHelper(outputHelper, "[Monitor] ");
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
-            _adapter.StandardOutputCallback = StandardOutputCallback;
+            _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
 
             Directory.CreateDirectory(SharedConfigDirectoryPath);
             Directory.CreateDirectory(UserConfigDirectoryPath);
@@ -123,6 +123,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 }
                 _isDiposed = true;
             }
+
+            _adapter.ReceivedStandardOutputLine -= StandardOutputCallback;
 
             await _adapter.DisposeAsync().ConfigureAwait(false);
 
