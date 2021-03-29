@@ -46,7 +46,6 @@
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21175.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21175.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
-    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.0-preview.21175.1</MicrosoftDiagnosticsNETCoreClientVersion>
     <!-- Third-party references -->
     <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
     <XunitSkippableFactVersion>1.4.13</XunitSkippableFactVersion>

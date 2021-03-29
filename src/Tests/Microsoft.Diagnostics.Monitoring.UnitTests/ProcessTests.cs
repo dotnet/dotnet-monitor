@@ -8,7 +8,6 @@ using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
-using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -16,7 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -27,6 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
     public class ProcessTests
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(15);
+        private static readonly TimeSpan ExceptionTimeout = TimeSpan.FromSeconds(5);
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
@@ -77,7 +76,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             int appProcessId;
-            await using (AppRunner appRunner = new(_outputHelper))
+            AppRunner appRunner = new(_outputHelper);
+            try
             {
                 appRunner.ConnectionMode = appConnectionMode;
                 appRunner.DiagnosticPortPath = diagnosticPortPath;
@@ -91,9 +91,23 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 await VerifyProcessAsync(apiClient, await apiClient.GetProcessesAsync(DefaultTimeout), appProcessId);
 
                 await EndSpinWaitScenarioAsync(appRunner);
-            }
 
-            await WaitUntilDiagnosticPipeClosed(DefaultTimeout, appProcessId);
+                // This gives the app time to send out any remaining stdout/stderr messages,
+                // exit properly, and delete its diagnostic pipe.
+                await appRunner.WaitForExitAsync(DefaultTimeout);
+            }
+            catch (Exception)
+            {
+                // If an exception is thrown, give app some time to send out any remaining
+                // stdout/stderr messages.
+                await Task.Delay(ExceptionTimeout);
+
+                throw;
+            }
+            finally
+            {
+                await appRunner.DisposeAsync();
+            }
 
             // Verify app is no longer reported
             IEnumerable<ProcessIdentifier> identifiers = await apiClient.GetProcessesAsync(DefaultTimeout);
@@ -174,13 +188,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
                     await EndSpinWaitScenarioAsync(runner);
                 }
+
+                // This gives apps time to send out any remaining stdout/stderr messages,
+                // exit properly, and delete their diagnostic pipes.
+                await Task.WhenAll(appRunners.Select(r => r.WaitForExitAsync(DefaultTimeout)))
+                    .ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                // If an exception is thrown, give apps some time to send out any remaining
+                // stdout/stderr messages.
+                await Task.Delay(ExceptionTimeout);
+
+                throw;
             }
             finally
             {
                 await appRunners.DisposeItemsAsync();
             }
-
-            await WaitUntilDiagnosticPipeClosed(DefaultTimeout, processIds);
 
             // Query for process identifiers
             identifiers = await apiClient.GetProcessesAsync(DefaultTimeout);
@@ -244,22 +269,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 string fileName = Guid.NewGuid().ToString("D");
                 diagnosticPortPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                     fileName : Path.Combine(Path.GetTempPath(), fileName);
-            }
-        }
-
-        private async Task WaitUntilDiagnosticPipeClosed(TimeSpan timeout, params int[] pids)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-
-            while (true)
-            {
-                // If none of the specified processes have diagnostic pipes, then break the loop
-                if (!DiagnosticsClient.GetPublishedProcesses().Intersect(pids).Any())
-                {
-                    break;
-                }
-
-                await Task.Delay(TimeSpan.FromMilliseconds(100), cancellation.Token);
             }
         }
     }

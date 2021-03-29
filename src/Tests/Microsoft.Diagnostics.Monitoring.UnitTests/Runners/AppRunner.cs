@@ -122,6 +122,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             await _readySource.Task;
         }
 
+        public Task<int> WaitForExitAsync(CancellationToken token)
+        {
+            return _adapter.WaitForExitAsync(token);
+        }
+
         private void CancelCompletionSources(CancellationToken token)
         {
             _readySource.TrySetCanceled(token);

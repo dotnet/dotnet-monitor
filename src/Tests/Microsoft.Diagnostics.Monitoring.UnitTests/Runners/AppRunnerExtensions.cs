@@ -33,5 +33,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             using CancellationTokenSource cancellation = new(timeout);
             await runner.StartAsync(cancellation.Token).ConfigureAwait(false);
         }
+
+        public static async Task WaitForExitAsync(this AppRunner runner, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+            await runner.WaitForExitAsync(cancellation.Token).ConfigureAwait(false);
+        }
     }
 }
