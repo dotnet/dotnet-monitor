@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="..\..\..\documentation\schema.json" Link="schema.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NJsonSchema" Version="10.3.11" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.UnitTests\Microsoft.Diagnostics.Monitoring.UnitTests.csproj" />
+    </ItemGroup>
+
+</Project>

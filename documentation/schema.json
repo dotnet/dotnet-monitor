@@ -1,0 +1,274 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://www.github.com/dotnet/dotnet-monitor",
+  "title": "DotnetMonitorConfiguration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "ApiAuthentication": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/ApiAuthenticationOptions"
+        }
+      ]
+    },
+    "CorsConfiguration": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/CorsConfiguration"
+        }
+      ]
+    },
+    "DiagnosticPort": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/DiagnosticPortOptions"
+        }
+      ]
+    },
+    "Egress": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/EgressOptions"
+        }
+      ]
+    },
+    "Metrics": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/MetricsOptions"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "ApiAuthenticationOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ApiKeyHash",
+        "ApiKeyHashType"
+      ],
+      "properties": {
+        "ApiKeyHash": {
+          "type": "string",
+          "description": "API Key in Hashed form. Each byte should be two hex based digits.",
+          "minLength": 64,
+          "pattern": "[0-9a-fA-F]+"
+        },
+        "ApiKeyHashType": {
+          "type": "string",
+          "description": "Type of Hash Algorithm used to computed ApiKeyHash. Typically SHA256.  SHA1 and MD5 are not allowed.",
+          "minLength": 1
+        }
+      }
+    },
+    "CorsConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "AllowedOrigins"
+      ],
+      "properties": {
+        "AllowedOrigins": {
+          "type": "string",
+          "description": "List of allowed cors origins, separated by ;",
+          "minLength": 1
+        }
+      }
+    },
+    "DiagnosticPortOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ConnectionMode": {
+          "description": "In Connect mode, dotnet-monitor connects to the application for diagnostics. In Listen\r\nmode the application connects to dotnet-monitor via EndpointName",
+          "default": "Connect",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/DiagnosticPortConnectionMode"
+            }
+          ]
+        },
+        "EndpointName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "In Listen mode, specifies the name of the named pipe or unix domain socket to use for connecting\r\nto the diagnostic server"
+        },
+        "MaxConnections": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "In Listen mode, the maximum amount of connections to accept.",
+          "format": "int32"
+        }
+      }
+    },
+    "DiagnosticPortConnectionMode": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Connect",
+        "Listen"
+      ],
+      "enum": [
+        "Connect",
+        "Listen"
+      ]
+    },
+    "EgressOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Providers": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces.",
+          "additionalProperties": {
+            "$ref": "#/definitions/EgressProvider"
+          }
+        },
+        "Properties": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Additional properties, such as secrets, that can be referenced by the provider definitions.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "EgressProvider": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The type of provider. Currently this supports fileSystem and azureBlobStorage."
+        }
+      }
+    },
+    "MetricsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Enable or disable metrics collection. Defaults to true.",
+          "default": true
+        },
+        "Endpoints": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Endpoints that expose prometheus metrics. Defaults to http://localhost:52325"
+        },
+        "UpdateIntervalSeconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "How often metrics are collected.",
+          "format": "int32",
+          "default": 10
+        },
+        "MetricCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Amount of data points to store per metric.",
+          "format": "int32",
+          "default": 3
+        },
+        "IncludeDefaultProviders": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Include default providers, such as System.Runtime.",
+          "default": true
+        },
+        "AllowInsecureChannelForCustomMetrics": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "When using custom metrics, the default binding address changes from http to https. Set this to true to enable http.",
+          "default": false
+        },
+        "Providers": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "Providers for custom metrics",
+          "items": {
+            "$ref": "#/definitions/MetricProvider"
+          }
+        }
+      }
+    },
+    "MetricProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ProviderName"
+      ],
+      "properties": {
+        "ProviderName": {
+          "type": "string",
+          "description": "The name of the custom metric provider.",
+          "minLength": 1
+        },
+        "CounterNames": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "Name of custom metric counters.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

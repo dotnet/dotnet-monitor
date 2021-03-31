@@ -12,10 +12,12 @@
   <ItemGroup>
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\CorsConfiguration.cs" Link="Options\CorsConfiguration.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptions.cs" Link="Options\MetricsOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptionsDefaults.cs" Link="Options\MetricsOptionsDefaults.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Auth\ApiAuthenticationOptions.cs" Link="Options\ApiAuthenticationOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortOptions.cs" Link="Options\DiagnosticPortOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortOptionsDefaults.cs" Link="Options\DiagnosticPortOptionsDefaults.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,5 +26,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
   </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests" />
+    </ItemGroup>
 
 </Project>

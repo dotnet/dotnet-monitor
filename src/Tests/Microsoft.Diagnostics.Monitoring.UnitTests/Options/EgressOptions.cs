@@ -4,15 +4,32 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 {
     internal class EgressOptions
     {
-        public Dictionary<string, Dictionary<string, string>> Providers { get; }
+        [Description("Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces.")]
+        public Dictionary<string, EgressProvider> Providers { get; set; }
             = new(StringComparer.OrdinalIgnoreCase);
 
-        public Dictionary<string, string> Properties { get; }
+        [Description("Additional properties, such as secrets, that can be referenced by the provider definitions.")]
+        public Dictionary<string, string> Properties { get; set; }
             = new(StringComparer.OrdinalIgnoreCase);
+    }
+
+    internal class EgressProvider
+    {
+        [Description("The type of provider. Currently this supports fileSystem and azureBlobStorage.")]
+        //TODO This should honor DataMember, but only seems to work with JsonProperty
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
+        public string EgressType { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, string> Properties { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 }
