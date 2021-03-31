@@ -88,7 +88,15 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         {
             return InvokeForProcess<Models.ProcessInfo>(processInfo =>
             {
-                Models.ProcessInfo processModel = Models.ProcessInfo.FromProcessInfo(processInfo);
+                Models.ProcessInfo processModel = new Models.ProcessInfo()
+                {
+                    CommandLine = processInfo.CommandLine,
+                    Name = processInfo.ProcessName,
+                    OperatingSystem = processInfo.OperatingSystem,
+                    ProcessArchitecture = processInfo.ProcessArchitecture,
+                    Pid = processInfo.EndpointInfo.ProcessId,
+                    Uid = processInfo.EndpointInfo.RuntimeInstanceCookie
+                };
 
                 _logger.WrittenToHttpStream();
 
