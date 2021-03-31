@@ -185,14 +185,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 foreach (AppRunner runner in appRunners)
                 {
                     await VerifyProcessAsync(apiClient, identifiers, runner.ProcessId);
-
-                    await EndAsyncWaitScenarioAsync(runner);
                 }
 
                 // This gives apps time to send out any remaining stdout/stderr messages,
                 // exit properly, and delete their diagnostic pipes.
-                await Task.WhenAll(appRunners.Select(r => r.WaitForExitAsync(DefaultTimeout)))
-                    .ConfigureAwait(false);
+                await Task.WhenAll(appRunners.Select(async runner =>
+                    {
+                        await EndAsyncWaitScenarioAsync(runner);
+
+                        await runner.WaitForExitAsync(DefaultTimeout);
+                    }));
             }
             catch (Exception)
             {

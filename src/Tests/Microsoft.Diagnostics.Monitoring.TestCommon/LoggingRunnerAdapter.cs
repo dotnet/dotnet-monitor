@@ -49,10 +49,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             _cancellation.Cancel();
 
             // Shutdown the runner
+            _outputHelper.WriteLine("Stopping...");
             _runner.ForceClose();
 
             // Wait for it to exit
             await WaitForExitAsync(CancellationToken.None).SafeAwait(_outputHelper, -1).ConfigureAwait(false);
+            _outputHelper.WriteLine("Exited");
 
             await _standardErrorTask.SafeAwait(_outputHelper).ConfigureAwait(false);
             await _standardOutputTask.SafeAwait(_outputHelper).ConfigureAwait(false);
