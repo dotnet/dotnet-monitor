@@ -28,7 +28,7 @@
   </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests" />
+        <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
     </ItemGroup>
 
 </Project>

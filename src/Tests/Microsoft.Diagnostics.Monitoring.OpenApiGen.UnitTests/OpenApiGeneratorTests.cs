@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
 {
     public class OpenApiGeneratorTests
     {
-        private static readonly TimeSpan GenerationTimemout = TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan GenerationTimeout = TimeSpan.FromSeconds(30);
 
         private const string OpenApiBaselineName = "openapi.json";
         private const string OpenApiGenName = "Microsoft.Diagnostics.Monitoring.OpenApiGen";
@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
 
             await using LoggingRunnerAdapter adapter = new(_outputHelper, runner);
 
-            using CancellationTokenSource cancellation = new(GenerationTimemout);
+            using CancellationTokenSource cancellation = new(GenerationTimeout);
 
             await adapter.StartAsync(cancellation.Token);
 

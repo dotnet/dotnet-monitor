@@ -4,14 +4,13 @@
 
 using Xunit;
 using Xunit.Abstractions;
-using NJsonSchema;
-using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
 using System.Reflection;
-using NJsonSchema.Generation;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
 {
@@ -20,6 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
         private readonly ITestOutputHelper _outputHelper;
 
         private const string SchemaBaseline = "schema.json";
+        private static readonly TimeSpan GenerationTimeout = TimeSpan.FromSeconds(30);
 
         private static readonly string CurrentExecutingAssemblyPath =
             Assembly.GetExecutingAssembly().Location;
@@ -27,43 +27,54 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
         private static readonly string SchemaBaselinePath =
             Path.Combine(Path.GetDirectoryName(CurrentExecutingAssemblyPath), SchemaBaseline);
 
+        private const string SchemaGeneratorName = "Microsoft.Diagnostics.Monitoring.ConfigurationSchema";
+
+        private static readonly string SchemaGeneratorPath =
+            CurrentExecutingAssemblyPath.Replace(Assembly.GetExecutingAssembly().GetName().Name, SchemaGeneratorName);
+
         public SchemaGenerationTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
 
         [Fact]
-        public void TestGenerateSchema()
+        public async Task TestGenerateSchema()
         {
-            string completeSchema = GenerateSchema();
+            using Stream schema = await GenerateSchema();
+            using var reader = new StreamReader(schema);
+            string completeSchema = await reader.ReadToEndAsync();
             _outputHelper.WriteLine(completeSchema);
         }
 
         [Fact]
         public async Task TestSchemaBaseline()
         {
-            string generatedSchema = GenerateSchema();
+            Stream generatedSchema = await GenerateSchema();
             using StreamReader baseline = new StreamReader(SchemaBaselinePath);
-            using StringReader generated = new StringReader(generatedSchema);
+            using StreamReader generated = new StreamReader(generatedSchema);
             bool equal = await CompareLines(baseline, generated);
             Assert.True(equal, "Generated schema differs from baseline.");
         }
 
-        private string GenerateSchema()
+        private async Task<Stream> GenerateSchema()
         {
-            var settings = new JsonSchemaGeneratorSettings();
+            string tempSchema = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()), ".json");
 
-            JsonSchema schema = JsonSchema.FromType<RootOptions>(settings);
-            schema.Id = @"http://www.github.com/dotnet/dotnet-monitor";
-            schema.Title = "DotnetMonitorConfiguration";
+            DotNetRunner runner = new();
+            runner.EntrypointAssemblyPath = SchemaGeneratorPath;
+            runner.Arguments = tempSchema;
 
-            //HACK Even though Properties is defined as JsonDataExtension, it still emits a property
-            //called 'Properties' into the schema, instead of just specifying additionalProperties.
-            //There is likely a more elegant way to fix this.
-            schema.Definitions[nameof(EgressProvider)].Properties.Remove(nameof(EgressProvider.Properties));
+            await using LoggingRunnerAdapter adapter = new(_outputHelper, runner);
 
-            string schemaPayload = schema.ToJson();
-            return schemaPayload;
+            using CancellationTokenSource cancellation = new(GenerationTimeout);
+
+            await adapter.StartAsync(cancellation.Token);
+
+            int exitCode = await adapter.WaitForExitAsync(cancellation.Token);
+
+            Assert.Equal(0, exitCode);
+
+            return new FileStream(tempSchema, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.DeleteOnClose);
         }
 
         private async Task<bool> CompareLines(TextReader first, TextReader second)

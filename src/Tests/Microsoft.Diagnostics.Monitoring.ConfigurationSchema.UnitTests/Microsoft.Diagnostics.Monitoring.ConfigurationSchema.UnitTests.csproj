@@ -11,11 +11,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NJsonSchema" Version="10.3.11" />
+        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.ConfigurationSchema\Microsoft.Diagnostics.Monitoring.ConfigurationSchema.csproj">
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+        </ProjectReference>
+        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.UnitTests\Microsoft.Diagnostics.Monitoring.UnitTests.csproj" />
-    </ItemGroup>
-
 </Project>

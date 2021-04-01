@@ -97,7 +97,7 @@
       "additionalProperties": false,
       "properties": {
         "ConnectionMode": {
-          "description": "In Connect mode, dotnet-monitor connects to the application for diagnostics. In Listen\r\nmode the application connects to dotnet-monitor via EndpointName",
+          "description": "In Connect mode, dotnet-monitor connects to the application for diagnostics. In Listen\nmode the application connects to dotnet-monitor via EndpointName",
           "default": "Connect",
           "oneOf": [
             {
@@ -113,7 +113,7 @@
             "null",
             "string"
           ],
-          "description": "In Listen mode, specifies the name of the named pipe or unix domain socket to use for connecting\r\nto the diagnostic server"
+          "description": "In Listen mode, specifies the name of the named pipe or unix domain socket to use for connecting\nto the diagnostic server"
         },
         "MaxConnections": {
           "type": [

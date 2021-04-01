@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.UnitTests\Microsoft.Diagnostics.Monitoring.UnitTests.csproj" />
+    </ItemGroup>
+
+</Project>

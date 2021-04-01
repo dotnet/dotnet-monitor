@@ -2,7 +2,7 @@
 <RunSettings>
   <RunConfiguration>
     <EnvironmentVariables>
-      <COMPlus_EnableDiagnostics>1</COMPlus_EnableDiagnostics>
+      <COMPlus_EnableDiagnostics>0</COMPlus_EnableDiagnostics>
     </EnvironmentVariables>
   </RunConfiguration>
 </RunSettings>
