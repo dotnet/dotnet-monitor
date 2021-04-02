@@ -191,8 +191,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Tests that Negotiate authentication can be used for authentication.
         /// </summary>
-        [Fact]
-        [PlatformSpecific(TestPlatforms.Windows)]
+        [ConditionalFact(typeof(TestConditions), nameof(TestConditions.IsWindows))]
         public async Task NegotiateAuthenticationSchemeTest()
         {
             await using MonitorRunner toolRunner = new(_outputHelper);
