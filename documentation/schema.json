@@ -3,9 +3,10 @@
   "id": "https://www.github.com/dotnet/dotnet-monitor",
   "title": "DotnetMonitorConfiguration",
   "type": "object",
-  "additionalProperties": false,
+  "additionalProperties": {},
   "properties": {
     "ApiAuthentication": {
+      "default": {},
       "oneOf": [
         {
           "type": "null"
@@ -16,6 +17,7 @@
       ]
     },
     "CorsConfiguration": {
+      "default": {},
       "oneOf": [
         {
           "type": "null"
@@ -26,6 +28,7 @@
       ]
     },
     "DiagnosticPort": {
+      "default": {},
       "oneOf": [
         {
           "type": "null"
@@ -36,6 +39,7 @@
       ]
     },
     "Egress": {
+      "default": {},
       "oneOf": [
         {
           "type": "null"
@@ -46,6 +50,7 @@
       ]
     },
     "Metrics": {
+      "default": {},
       "oneOf": [
         {
           "type": "null"
@@ -56,6 +61,7 @@
       ]
     },
     "Storage": {
+      "default": {},
       "oneOf": [
         {
           "type": "null"
@@ -157,6 +163,7 @@
             "object"
           ],
           "description": "Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces.",
+          "default": {},
           "additionalProperties": {
             "$ref": "#/definitions/EgressProvider"
           }
@@ -167,6 +174,7 @@
             "object"
           ],
           "description": "Additional properties, such as secrets, that can be referenced by the provider definitions.",
+          "default": {},
           "additionalProperties": {
             "type": "string"
           }
