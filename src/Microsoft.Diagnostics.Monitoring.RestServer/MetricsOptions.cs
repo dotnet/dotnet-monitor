@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
@@ -18,24 +20,40 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
     /// </summary>
     public class MetricsOptions
     {
+        [Display(Description = "Enable or disable metrics collection.")]
+        [DefaultValue(MetricsOptionsDefaults.Enabled)]
         public bool? Enabled { get; set; }
-        
+
+        [Display(Description = "Endpoints that expose prometheus metrics. Defaults to http://localhost:52325.")]
         public string Endpoints { get; set; }
 
+        [DefaultValue(MetricsOptionsDefaults.UpdateIntervalSeconds)]
+        [Display(Description = "How often metrics are collected.")]
         public int? UpdateIntervalSeconds { get; set; }
 
+        [DefaultValue(MetricsOptionsDefaults.MetricCount)]
+        [Display(Description = "Amount of data points to store per metric.")]
         public int? MetricCount { get; set; }
 
+        [DefaultValue(MetricsOptionsDefaults.IncludeDefaultProviders)]
+        [Display(Description = "Include default providers: System.Runtime, Microsoft.AspNetCore.Hosting, and Grpc.AspNetCore.Server.")]
         public bool? IncludeDefaultProviders { get; set; }
 
+        [DefaultValue(MetricsOptionsDefaults.AllowInsecureChannelForCustomMetrics)]
+        [Display(Description = "When using custom metrics, the default binding address changes from http to https. Set this to true to enable http.")]
         public bool? AllowInsecureChannelForCustomMetrics { get; set; }
 
+        [Display(Description = "Providers for custom metrics.")]
         public List<MetricProvider> Providers { get; set; } = new List<MetricProvider>(0);
     }
 
     public class MetricProvider
     {
+        [Display(Description = "The name of the custom metrics provider.")]
+        [Required]
         public string ProviderName { get; set; }
+
+        [Display(Description = "Name of custom metrics counters.")]
         public List<string> CounterNames { get; set; } = new List<string>(0);
     }
 }

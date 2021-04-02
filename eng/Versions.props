@@ -49,6 +49,7 @@
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21201.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21201.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- Third-party references -->
+    <NJsonSchemaVersion>10.3.11</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
   </PropertyGroup>
 </Project>
