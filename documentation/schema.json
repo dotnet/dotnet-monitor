@@ -54,6 +54,16 @@
           "$ref": "#/definitions/MetricsOptions"
         }
       ]
+    },
+    "Storage": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/StorageOptions"
+        }
+      ]
     }
   },
   "definitions": {
@@ -97,7 +107,7 @@
       "additionalProperties": false,
       "properties": {
         "ConnectionMode": {
-          "description": "In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen'\nmode, the application connects to dotnet-monitor via EndpointName.",
+          "description": "In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen' mode, the application connects to dotnet-monitor via EndpointName.",
           "default": "Connect",
           "oneOf": [
             {
@@ -113,7 +123,7 @@
             "null",
             "string"
           ],
-          "description": "In 'Listen' mode, specifies the name of the named pipe or unix domain socket to use for connecting\nto the diagnostic server."
+          "description": "In 'Listen' mode, specifies the name of the named pipe or unix domain socket to use for connecting to the diagnostic server."
         },
         "MaxConnections": {
           "type": [
@@ -267,6 +277,19 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "StorageOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "DumpTempFolder": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The location for temporary dump files. Defaults to the temp folder."
         }
       }
     }

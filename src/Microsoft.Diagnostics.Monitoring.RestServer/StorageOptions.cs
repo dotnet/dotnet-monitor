@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 {
     internal class StorageOptions
     {
+        [Display(Description = "The location for temporary dump files. Defaults to the temp folder.")]
         public string DumpTempFolder {get; set; }
     }
 }

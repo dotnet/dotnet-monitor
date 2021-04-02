@@ -15,5 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
         public EgressOptions Egress { get; set; }
 
         public MetricsOptions Metrics { get; set; }
+
+        public StorageOptions Storage { get; set; }
     }
 }

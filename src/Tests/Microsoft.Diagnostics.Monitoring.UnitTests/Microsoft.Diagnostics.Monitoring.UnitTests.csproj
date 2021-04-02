@@ -15,6 +15,7 @@
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptionsDefaults.cs" Link="Options\MetricsOptionsDefaults.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\StorageOptions.cs" Link="Options\StorageOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Auth\ApiAuthenticationOptions.cs" Link="Options\ApiAuthenticationOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortOptions.cs" Link="Options\DiagnosticPortOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortOptionsDefaults.cs" Link="Options\DiagnosticPortOptionsDefaults.cs" />

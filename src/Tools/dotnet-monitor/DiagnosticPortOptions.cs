@@ -15,13 +15,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     public class DiagnosticPortOptions
     {
-        [Display(Description = @"In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen'
-mode, the application connects to dotnet-monitor via " + nameof(EndpointName) + ".")]
+        [Display(Description = @"In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen' mode, the application connects to dotnet-monitor via " + nameof(EndpointName) + ".")]
         [DefaultValue(DiagnosticPortOptionsDefaults.ConnectionMode)]
         public DiagnosticPortConnectionMode? ConnectionMode { get; set; }
 
-        [Display(Description = @"In 'Listen' mode, specifies the name of the named pipe or unix domain socket to use for connecting
-to the diagnostic server.")]
+        [Display(Description = @"In 'Listen' mode, specifies the name of the named pipe or unix domain socket to use for connecting to the diagnostic server.")]
         public string EndpointName { get; set; }
 
         [Display(Description = @"In 'Listen' mode, the maximum amount of connections to accept.")]
