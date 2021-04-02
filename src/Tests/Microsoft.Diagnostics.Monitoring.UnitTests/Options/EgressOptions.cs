@@ -13,18 +13,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 {
     internal class EgressOptions
     {
-        [Description("Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces.")]
+        [Display(Description = "Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces.")]
         public Dictionary<string, EgressProvider> Providers { get; set; }
             = new(StringComparer.OrdinalIgnoreCase);
 
-        [Description("Additional properties, such as secrets, that can be referenced by the provider definitions.")]
+        [Display(Description = "Additional properties, such as secrets, that can be referenced by the provider definitions.")]
         public Dictionary<string, string> Properties { get; set; }
             = new(StringComparer.OrdinalIgnoreCase);
     }
 
     internal class EgressProvider
     {
-        [Description("The type of provider. Currently this supports fileSystem and azureBlobStorage.")]
+        [Display(Description = "The type of provider. Currently this supports 'fileSystem' and 'azureBlobStorage'.")]
         //TODO This should honor DataMember, but only seems to work with JsonProperty
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
         public string EgressType { get; set; }

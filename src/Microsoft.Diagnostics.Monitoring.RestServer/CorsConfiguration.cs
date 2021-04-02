@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 {
     public class CorsConfiguration
     {
-        [Description("List of allowed cors origins, separated by ;")]
+        [Display(Description = "List of allowed CORS origins, separated by semicolons.")]
         [Required]
         public string AllowedOrigins { get; set; }
 

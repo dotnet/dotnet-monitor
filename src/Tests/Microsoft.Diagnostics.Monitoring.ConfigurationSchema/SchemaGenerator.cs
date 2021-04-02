@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         {
             var settings = new JsonSchemaGeneratorSettings();
             JsonSchema schema = JsonSchema.FromType<RootOptions>(settings);
-            schema.Id = @"http://www.github.com/dotnet/dotnet-monitor";
+            schema.Id = @"https://www.github.com/dotnet/dotnet-monitor";
             schema.Title = "DotnetMonitorConfiguration";
 
             //HACK Even though Properties is defined as JsonDataExtension, it still emits a property
