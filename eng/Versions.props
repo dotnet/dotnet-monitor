@@ -43,11 +43,12 @@
     <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
     <SystemIOPipelinesVersion>4.5.1</SystemIOPipelinesVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
+    <!-- dotnet/arcade references -->
+    <MicrosoftDotNetXUnitExtensionsVersion>6.0.0-beta.21181.6</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21181.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21181.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- Third-party references -->
     <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
-    <XunitSkippableFactVersion>1.4.13</XunitSkippableFactVersion>
   </PropertyGroup>
 </Project>

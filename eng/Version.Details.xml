@@ -12,6 +12,10 @@
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>267e8c4b4c22fb1384150e4b3052f3c4c7e19cfd</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="6.0.0-beta.21181.6">
+      <Uri>https://github.com/dotnet/arcade</Uri>
+      <Sha>e9cdc025014eb2030075303211fdb5af254e278c</Sha>
+    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.21181.6">
