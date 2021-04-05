@@ -43,6 +43,7 @@
     <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
     <SystemIOPipelinesVersion>4.5.1</SystemIOPipelinesVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
+    <SystemTextEncodingsWebVersion>4.7.2</SystemTextEncodingsWebVersion>
     <!-- dotnet/arcade references -->
     <MicrosoftDotNetXUnitExtensionsVersion>6.0.0-beta.21203.1</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/diagnostics references -->
