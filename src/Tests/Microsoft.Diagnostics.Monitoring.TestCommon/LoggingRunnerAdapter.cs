@@ -19,11 +19,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         private readonly List<string> _standardErrorLines = new();
         private readonly List<string> _standardOutputLines = new();
 
+        private int? _exitCode;
         private bool _isDiposed;
+        private int? _processId;
         private Task _standardErrorTask;
         private Task _standardOutputTask;
 
         public Dictionary<string, string> Environment { get; } = new();
+
+        public int ExitCode => _exitCode.HasValue ?
+            _exitCode.Value : throw new InvalidOperationException("Must call WaitForExitAsync before getting exit code.");
+
+        public int ProcessId => _processId.HasValue ?
+            _processId.Value : throw new InvalidOperationException("Process was not started.");
 
         public event Action<string> ReceivedStandardErrorLine;
 
@@ -54,7 +62,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             // Wait for it to exit
             await WaitForExitAsync(CancellationToken.None).SafeAwait(_outputHelper, -1).ConfigureAwait(false);
-            _outputHelper.WriteLine("Exited");
 
             await _standardErrorTask.SafeAwait(_outputHelper).ConfigureAwait(false);
             await _standardOutputTask.SafeAwait(_outputHelper).ConfigureAwait(false);
@@ -64,14 +71,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             {
                 _outputHelper.WriteLine(line);
             }
-            _outputHelper.WriteLine("End Standard Output:");
+            _outputHelper.WriteLine("End Standard Output");
 
             _outputHelper.WriteLine("Begin Standard Error:");
             foreach (string line in _standardErrorLines)
             {
                 _outputHelper.WriteLine(line);
             }
-            _outputHelper.WriteLine("End Standard Error:");
+            _outputHelper.WriteLine("End Standard Error");
 
             _cancellation.Dispose();
         }
@@ -91,6 +98,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             _outputHelper.WriteLine("Starting...");
             await _runner.StartAsync(token).ConfigureAwait(false);
+
+            _processId = _runner.ProcessId;
             _outputHelper.WriteLine("Process ID: {0}", _runner.ProcessId);
 
             _standardErrorTask = ReadLinesAsync(_runner.StandardError, _standardErrorLines, ReceivedStandardErrorLine, _cancellation.Token);
@@ -99,12 +108,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public async Task<int> WaitForExitAsync(CancellationToken token)
         {
-            if (!_runner.HasExited)
+            if (_runner.HasExited)
+            {
+                _outputHelper.WriteLine("Already exited.");
+            }
+            else
             {
                 _outputHelper.WriteLine("Waiting for exit...");
                 await _runner.WaitForExitAsync(token).ConfigureAwait(false);
-                _outputHelper.WriteLine("Exit Code: {0}", _runner.ExitCode);
             }
+            _exitCode = _runner.ExitCode;
+            _outputHelper.WriteLine("Exit Code: {0}", _runner.ExitCode);
             return _runner.ExitCode;
         }
 
