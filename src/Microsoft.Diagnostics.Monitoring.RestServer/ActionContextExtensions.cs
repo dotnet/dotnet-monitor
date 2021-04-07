@@ -26,8 +26,10 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             }
             else
             {
-                ActionResult result = new BadRequestObjectResult(ex.ToProblemDetails((int)HttpStatusCode.BadRequest));
-
+                BadRequestObjectResult result = new BadRequestObjectResult(ex.ToProblemDetails((int)HttpStatusCode.BadRequest));
+                // Need to manually add this here because this ObjectResult is not processed by the filter pipeline,
+                // which would look up the applicable content types and apply them before executing the result.
+                result.ContentTypes.Add(ContentTypes.ApplicationProblemJson);
                 return result.ExecuteResultAsync(context);
             }
         }

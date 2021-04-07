@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// Get a list of the current backlog of metrics for a process in the Prometheus exposition format.
         /// </summary>
         [HttpGet("metrics", Name = nameof(GetMetrics))]
-        [Produces(ContentTypes.TextPlain_v0_0_4, ContentTypes.ApplicationProblemJson)]
+        [ProducesWithProblemDetails(ContentTypes.TextPlain_v0_0_4)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public ActionResult GetMetrics()
         {
