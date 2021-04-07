@@ -92,13 +92,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IApplicationBuilder app,
             IHostApplicationLifetime lifetime,
             IWebHostEnvironment env,
-            ExperimentalToolLogger exprLogger,
             IAuthOptions options,
             AddressListenResults listenResults,
             ILogger<Startup> logger)
         {
-            exprLogger.LogExperimentMessage();
-
             if (listenResults.BindingChanges.Any())
             {
                 logger.MetricUrlsUpdated();
