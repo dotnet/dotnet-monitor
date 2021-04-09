@@ -4,13 +4,13 @@
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>166610c56ff732093f0145a2911d4f6c40b786da</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21207.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21208.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>f6adbdf5a43991d718d100e624f303f7b7ca7552</Sha>
+      <Sha>f8e50b3a2d647b841380dc0b12805e8912e7f8ec</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21207.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21208.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>f6adbdf5a43991d718d100e624f303f7b7ca7552</Sha>
+      <Sha>f8e50b3a2d647b841380dc0b12805e8912e7f8ec</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="6.0.0-beta.21207.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
