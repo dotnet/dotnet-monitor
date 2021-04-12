@@ -21,6 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
         public string Keywords { get; set; } = "0x" + EventKeywords.All.ToString("X");
 
         [JsonPropertyName("eventLevel")]
+        [EnumDataType(typeof(EventLevel))]
         public EventLevel EventLevel { get; set; } = EventLevel.Verbose;
 
         [JsonPropertyName("arguments")]
