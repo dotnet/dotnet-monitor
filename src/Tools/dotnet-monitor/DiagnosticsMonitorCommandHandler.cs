@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Monitoring.RestServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -69,12 +70,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth).Build();
             try
             {
-                await host.RunAsync(token);
+                await host.StartAsync(token);
+
+                await host.WaitForShutdownAsync(token);
             }
             catch (MonitoringException)
             {
                 // It is the responsibility of throwers to ensure that the exceptions are logged.
                 return -1;
+            }
+            catch (OptionsValidationException ex)
+            {
+                host.Services.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger(typeof(DiagnosticsMonitorCommandHandler))
+                    .OptionsValidationFailure(ex);
+                return -1;
+            }
+            finally
+            {
+                if (host is IAsyncDisposable asyncDisposable)
+                {
+                    await asyncDisposable.DisposeAsync();
+                }
+                else
+                {
+                    host.Dispose();
+                }
             }
             return 0;
         }

@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.RestServer;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -124,6 +125,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: "Updated {originalUrl} to {newUrl} due to custom metrics.");
 
+        private static readonly Action<ILogger, string, Exception> _optionsValidationFalure =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(20, "OptionsValidationFailure"),
+                logLevel: LogLevel.Critical,
+                formatString: "{failure}");
+
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
             _egressProviderAdded(logger, providerName, null);
@@ -232,6 +239,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void MetricUrlsUpdated(this ILogger logger)
         {
             _metricUrlsUpdated(logger, null);
+        }
+
+        public static void OptionsValidationFailure(this ILogger logger, OptionsValidationException exception)
+        {
+            foreach (string failure in exception.Failures)
+                _optionsValidationFalure(logger, failure, null);
         }
 
         private static string Redact(string value)
