@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
     public class EventPipeConfiguration
     {
         [JsonPropertyName("providers")]
-        [Required]
+        [Required, MinLength(1)]
         public EventPipeProvider[] Providers { get; set; }
 
         [JsonPropertyName("requestRundown")]

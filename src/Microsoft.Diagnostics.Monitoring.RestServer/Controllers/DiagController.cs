@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// Get the list of accessible processes.
         /// </summary>
         [HttpGet("processes", Name = nameof(GetProcesses))]
-        [Produces(ContentTypes.ApplicationJson, ContentTypes.ApplicationProblemJson)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(IEnumerable<Models.ProcessIdentifier>), StatusCodes.Status200OK)]
         public Task<ActionResult<IEnumerable<Models.ProcessIdentifier>>> GetProcesses()
         {
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// </summary>
         /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
         [HttpGet("processes/{processKey}", Name = nameof(GetProcessInfo))]
-        [Produces(ContentTypes.ApplicationJson, ContentTypes.ApplicationProblemJson)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Models.ProcessInfo), StatusCodes.Status200OK)]
         public Task<ActionResult<Models.ProcessInfo>> GetProcessInfo(
             ProcessKey processKey)
@@ -110,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// </summary>
         /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
         [HttpGet("processes/{processKey}/env", Name = nameof(GetProcessEnvironment))]
-        [Produces(ContentTypes.ApplicationJson, ContentTypes.ApplicationProblemJson)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status200OK)]
         public Task<ActionResult<Dictionary<string, string>>> GetProcessEnvironment(
             ProcessKey processKey)
@@ -143,7 +143,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
         /// <returns></returns>
         [HttpGet("dump/{processKey?}", Name = nameof(CaptureDump))]
-        [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
@@ -169,7 +169,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                     _logger.WrittenToHttpStream();
                     //Compression is done automatically by the response
                     //Chunking is done because the result has no content-length
-                    return File(dumpStream, ContentTypes.ApplicationOctectStream, dumpFileName);
+                    return File(dumpStream, ContentTypes.ApplicationOctetStream, dumpFileName);
                 }
                 else
                 {
@@ -182,7 +182,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                         egressProvider,
                         dumpFileName,
                         processInfo.EndpointInfo,
-                        ContentTypes.ApplicationOctectStream,
+                        ContentTypes.ApplicationOctetStream,
                         scope);
                 }
             }, processKey, ArtifactType_Dump);
@@ -195,7 +195,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
         /// <returns></returns>
         [HttpGet("gcdump/{processKey?}", Name = nameof(CaptureGcDump))]
-        [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
@@ -234,7 +234,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                     egressProvider,
                     ConvertFastSerializeAction(action),
                     fileName,
-                    ContentTypes.ApplicationOctectStream,
+                    ContentTypes.ApplicationOctetStream,
                     processInfo.EndpointInfo);
             }, processKey, ArtifactType_GCDump);
         }
@@ -248,7 +248,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
         [HttpGet("trace/{processKey?}", Name = nameof(CaptureTrace))]
-        [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
@@ -301,7 +301,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
         [HttpPost("trace/{processKey?}", Name = nameof(CaptureTraceCustom))]
-        [Produces(ContentTypes.ApplicationOctectStream, ContentTypes.ApplicationProblemJson)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
@@ -354,7 +354,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <param name="level">The level of the logs to capture.</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
         [HttpGet("logs/{processKey?}", Name = nameof(CaptureLogs))]
-        [Produces(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream, ContentTypes.ApplicationProblemJson)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
@@ -452,7 +452,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                 egressProvider,
                 action,
                 fileName,
-                ContentTypes.ApplicationOctectStream,
+                ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);
         }
 

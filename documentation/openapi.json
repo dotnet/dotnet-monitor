@@ -719,6 +719,7 @@
         "type": "object",
         "properties": {
           "providers": {
+            "minItems": 1,
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/EventPipeProvider"

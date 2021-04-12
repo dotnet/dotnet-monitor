@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddResponseCompression(configureOptions =>
             {
                 configureOptions.Providers.Add<BrotliCompressionProvider>();
-                configureOptions.MimeTypes = new List<string> { ContentTypes.ApplicationOctectStream };
+                configureOptions.MimeTypes = new List<string> { ContentTypes.ApplicationOctetStream };
             });
 
             // This is needed to allow the StreamingLogger to synchronously write to the output stream.
