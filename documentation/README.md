@@ -13,7 +13,7 @@ When running a dotnet application differences in diverse local and production en
     - [Running in a kubernetes cluster](#)
 - [API Endpoints](#)
     - [OpenAPI document](./openapi.json)
-    - [`/processes`](#)
+    - [`/processes`](./api/processes.md)
     - [`/dump`](#)
     - [`/gcdump`](#)
     - [`/trace`](#)
