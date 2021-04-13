@@ -27,11 +27,8 @@ namespace DiagnosticsReleaseTool.Impl
                 // TODO: We may want to inject a logger.
                 new NugetLayoutWorker(stagingPath: null),
                 new SymbolPackageLayoutWorker(stagingPath: null),
-                new ZipLayoutWorker(
-                    shouldHandleFileFunc: DiagnosticsRepoHelpers.IsBundledToolArchive,
-                    getRelativePathFromZipAndInnerFileFunc: DiagnosticsRepoHelpers.GetToolPublishRelativePath,
-                    getMetadataForInnerFileFunc: DiagnosticsRepoHelpers.GetMetadataForToolFile,
-                    stagingPath: null
+                new SkipLayoutWorker(
+                    shouldHandleFileFunc: DiagnosticsRepoHelpers.IsDockerUtilityFile
                 )
             };
 
