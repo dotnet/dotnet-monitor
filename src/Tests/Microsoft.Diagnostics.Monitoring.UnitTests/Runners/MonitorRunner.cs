@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -105,6 +106,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         public MonitorRunner(ITestOutputHelper outputHelper)
         {
             _outputHelper = new PrefixedOutputHelper(outputHelper, "[Monitor] ");
+
+            // Must tell runner this is an ASP.NET Core app so that it can choose
+            // the correct ASP.NET Core version (which can be different than the .NET
+            // version, especially for prereleases).
+            _runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
@@ -261,7 +267,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             JsonSerializerOptions serializerOptions = new()
             {
+#if NET6_0_OR_GREATER
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+#else
                 IgnoreNullValues = true
+#endif
             };
 
             await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
