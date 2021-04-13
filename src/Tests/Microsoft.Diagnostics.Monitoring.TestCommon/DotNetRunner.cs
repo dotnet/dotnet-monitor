@@ -47,6 +47,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public int ExitCode => _process.ExitCode;
 
         /// <summary>
+        /// The framework reference of the app to run.
+        /// </summary>
+        public DotNetFrameworkReference FrameworkReference { get; set; } = DotNetFrameworkReference.Microsoft_NetCore_App;
+
+        /// <summary>
         /// Determines if the process has exited.
         /// </summary>
         public bool HasExited => _process.HasExited;
@@ -104,7 +109,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// </summary>
         public async Task StartAsync(CancellationToken token)
         {
-            _process.StartInfo.Arguments = $"--fx-version {DotNetHost.CurrentRuntimeVersion} \"{EntrypointAssemblyPath}\" {Arguments}";
+            string frameworkVersion;
+            switch (FrameworkReference)
+            {
+                case DotNetFrameworkReference.Microsoft_AspNetCore_App:
+                    frameworkVersion = DotNetHost.CurrentAspNetCoreVersion;
+                    break;
+                case DotNetFrameworkReference.Microsoft_NetCore_App:
+                    frameworkVersion = DotNetHost.CurrentNetCoreVersion;
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unsupported framework reference: {FrameworkReference}");
+            }
+
+            _process.StartInfo.Arguments = $"--fx-version {frameworkVersion} \"{EntrypointAssemblyPath}\" {Arguments}";
 
             if (!_process.Start())
             {

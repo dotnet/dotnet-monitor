@@ -1,5 +1,5 @@
 <Project>
-  <PropertyGroup>
+  <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>5.0.0</VersionPrefix>
     <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
@@ -13,24 +13,38 @@
     -->
     <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
   </PropertyGroup>
-  <PropertyGroup>
-    <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
-    project references for command line builds. They should match the values in the diagnostics repo. -->
-    <MicrosoftBclAsyncInterfacesVersion>1.1.0</MicrosoftBclAsyncInterfacesVersion>
-    <MicrosoftDiagnosticsTracingTraceEventVersion>2.0.64</MicrosoftDiagnosticsTracingTraceEventVersion>
-    <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
-    <SystemTextJsonVersion>4.7.1</SystemTextJsonVersion>
-    <!-- Runtime versions to test -->
+  <PropertyGroup Label="Arcade">
+    <UsingToolXliff>false</UsingToolXliff>
+    <UsingToolNetFrameworkReferenceAssemblies>false</UsingToolNetFrameworkReferenceAssemblies>
+  </PropertyGroup>
+  <!--
+    These versions should ONLY be updated by automation.
+
+    DO NOT UPDATE THESE MANUALLY. Use the `darc` command line tool to update this file so it stays in sync with
+    Version.Details.xml.
+
+    See https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md for instructions on using darc.
+  -->
+  <PropertyGroup Label="Automated">
+    <!-- dotnet/arcade references -->
+    <MicrosoftDotNetXUnitExtensionsVersion>6.0.0-beta.21209.17</MicrosoftDotNetXUnitExtensionsVersion>
+    <!-- dotnet/aspnetcore references -->
+    <MicrosoftAspNetCoreAppRefVersion>6.0.0-preview.4.21211.1</MicrosoftAspNetCoreAppRefVersion>
+    <!-- dotnet/diagnostics references -->
+    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21209.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21209.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <!-- dotnet/runtime references -->
+    <MicrosoftNETCoreAppRuntimewinx64Version>6.0.0-preview.4.21211.7</MicrosoftNETCoreAppRuntimewinx64Version>
+  </PropertyGroup>
+  <PropertyGroup Label="Runtime Versions">
     <MicrosoftNETCoreApp31Version>3.1.13</MicrosoftNETCoreApp31Version>
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
     <MicrosoftNETCoreApp50Version>5.0.4</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
+    <MicrosoftNETCoreApp60Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp60Version>
+    <MicrosoftAspNetCoreApp60Version>$(MicrosoftAspNetCoreAppRefVersion)</MicrosoftAspNetCoreApp60Version>
   </PropertyGroup>
-  <PropertyGroup>
-    <!-- Opt-in/out repo features -->
-    <UsingToolXliff>false</UsingToolXliff>
-    <UsingToolNetFrameworkReferenceAssemblies>false</UsingToolNetFrameworkReferenceAssemblies>
-    <!-- Other libs -->
+  <PropertyGroup Label="Manual">
     <AzureStorageBlobsVersion>12.6.0</AzureStorageBlobsVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>3.1.10</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
     <MicrosoftAspNetCoreHttpVersion>2.1.22</MicrosoftAspNetCoreHttpVersion>
@@ -44,13 +58,16 @@
     <SystemIOPipelinesVersion>4.5.1</SystemIOPipelinesVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
     <SystemTextEncodingsWebVersion>4.7.2</SystemTextEncodingsWebVersion>
-    <!-- dotnet/arcade references -->
-    <MicrosoftDotNetXUnitExtensionsVersion>6.0.0-beta.21209.17</MicrosoftDotNetXUnitExtensionsVersion>
-    <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21209.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21209.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- Third-party references -->
     <NJsonSchemaVersion>10.3.11</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="Dev Workflow">
+    <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
+         project references for command line builds. They should match the values in the diagnostics repo. -->
+    <MicrosoftBclAsyncInterfacesVersion>1.1.0</MicrosoftBclAsyncInterfacesVersion>
+    <MicrosoftDiagnosticsTracingTraceEventVersion>2.0.64</MicrosoftDiagnosticsTracingTraceEventVersion>
+    <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
+    <SystemTextJsonVersion>4.7.1</SystemTextJsonVersion>
   </PropertyGroup>
 </Project>

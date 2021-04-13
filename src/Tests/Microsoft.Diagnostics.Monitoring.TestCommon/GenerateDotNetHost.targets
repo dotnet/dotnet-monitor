@@ -8,14 +8,19 @@
 
   <PropertyGroup>
     <DotNetHostGeneratedFileName>$(IntermediateOutputPath)/$(TargetFramework)/DotNetHost.g.cs</DotNetHostGeneratedFileName>
-    <DARCRuntimeVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftNETCoreApp31Version)</DARCRuntimeVersion>
-    <DARCRuntimeVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftNETCoreApp50Version)</DARCRuntimeVersion>
+    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftNETCoreApp31Version)</NetCoreAppVersion>
+    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftNETCoreApp50Version)</NetCoreAppVersion>
+    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net6.0'">$(MicrosoftNETCoreApp60Version)</NetCoreAppVersion>
+    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftAspNetCoreApp31Version)</AspNetCoreAppVersion>
+    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftAspNetCoreApp50Version)</AspNetCoreAppVersion>
+    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net6.0'">$(MicrosoftAspNetCoreApp60Version)</AspNetCoreAppVersion>
   </PropertyGroup>
 
   <Target Name="GenerateDotNetHostSourceFile" Inputs="$(VersionsPropsPath)" Outputs="$(DotNetHostGeneratedFileName)">
     <PropertyGroup>
       <TemplateContent>$([System.IO.File]::ReadAllText('DotNetHost.cs.template'))</TemplateContent>
-      <TransformedContent>$(TemplateContent.Replace('$DARCRuntimeVersion$', '$(DARCRuntimeVersion)'))</TransformedContent>
+      <TransformedContent>$(TemplateContent.Replace('$MicrosoftNetCoreAppVersion$', '$(NetCoreAppVersion)'))</TransformedContent>
+      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreAppVersion$', '$(AspNetCoreAppVersion)'))</TransformedContent>
     </PropertyGroup>
     <WriteLinesToFile File="$(DotNetHostGeneratedFileName)" Overwrite="true" Lines="$(TransformedContent)" WriteOnlyWhenDifferent="true" />
   </Target>
