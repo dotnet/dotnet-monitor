@@ -35,51 +35,28 @@ function Get-ReleaseNotes()
     }
 }
 
-function Get-DownloadLinksAndChecksums($manifest)
+function Get-ReleasedPackages ($manifest)
 {
+    if ($manifest.NugetAssets.Length -eq 0)
+    {
+        return ""
+    }
 
-    $linkTable = "<details>`n"
-    $linkTable += "<summary>Packages released to NuGet</summary>`n`n"
+    $releasedAssetTable = "`n`n<details>`n"
+    $releasedAssetTable += "<summary>Packages released to NuGet</summary>`n`n"
 
     foreach ($nugetPackage in $manifest.NugetAssets)
     {
         $packageName = Split-Path $nugetPackage.PublishRelativePath -Leaf
-        $linkTable += "- ``" + $packageName  + "```n"
+        $releasedAssetTable += "- ``" + $packageName  + "```n"
     }
 
-    $linkTable += "</details>`n`n"
+    $releasedAssetTable += "</details>`n`n"
 
-    $filePublishData = @{}
-    $manifest.PublishInstructions | %{ $filePublishData.Add($_.FilePath, $_) }
-
-    $sortedTools = $manifest.ToolBundleAssets | Sort-Object -Property @{ Expression = "Rid" }, @{ Expression = "ToolName" }
-
-    $linkTable += "<details>`n"
-    $linkTable += "<summary>Global Tools - Single File Links</summary>`n`n"
-    $linkTable += "*Note*: All Windows assets are signed with a trusted Microsoft Authenticode Certificate. To verify `
-        integrity for Linux and macOS assets check the CSV in the assets section of the release for their SHA512 hashes.`n"
-    $linkTable += "| Tool | Platform | Download Link |`n"
-    $linkTable += "|:---:|:---:|:---:|`n"
-
-    $checksumCsv = "`"ToolName`",`"Rid`",`"DownloadLink`",`"Sha512`"`n"
-
-    foreach ($toolBundle in $sortedTools)
-    {
-        $hash = $filePublishData[$toolBundle.PublishedPath].Sha512
-        $name = $toolBundle.ToolName
-        $rid = $toolBundle.Rid
-
-        $link = "https://download.visualstudio.microsoft.com/download/pr/" + $filePublishData[$toolBundle.PublishedPath].PublishUrlSubPath
-        $linkTable += "| $name | $rid | [Download]($link) |`n";
-
-        $checksumCsv += "`"$name`",`"$rid`",`"$link`",`"$hash`"`n"
-    }
-
-    $linkTable += "</details>`n"
-    return $linkTable, $checksumCsv
+    return $releasedAssetTable
 }
 
-function Post-GithubRelease($manifest, [string]$releaseBody, [string]$checksumCsvBody)
+function Post-GithubRelease($manifest, [string]$releaseBody)
 {
     $extractionPath = New-TemporaryFile | % { Remove-Item $_; New-Item -ItemType Directory -Path $_ }
     $zipPath = Join-Path $extractionPath "ghcli.zip"
@@ -119,25 +96,17 @@ function Post-GithubRelease($manifest, [string]$releaseBody, [string]$checksumCs
     }
 
     $releaseNotes = "release_notes.md"
-    $csvManifest = "checksums.csv"
 
     Set-Content -Path $releaseNotes -Value $releaseBody
-    Set-Content -Path $csvManifest -Value $checksumCsvBody
 
     if (-Not (Test-Path $releaseNotes)) {
         Write-Error "Unable to find release notes"
     }
 
-    if (-Not (Test-Path $csvManifest)) {
-        Write-Error "Unable to find release notes"
-    }
-
     $releaseNotes = $(Get-ChildItem $releaseNotes).FullName
-    $csvManifest = $(Get-ChildItem $csvManifest).FullName
     & $ghTool release create $TagName `
-        "`"$csvManifest#File Links And Checksums CSV`"" `
         --repo "`"$GhOrganization/$GhRepository`"" `
-        --title "`"Diagnostics Release - $TagName`"" `
+        --title "`"Dotnet-Monitor Release - $TagName`"" `
         --notes-file "`"$releaseNotes`"" `
         --target $manifest.Commit `
         ($extraParameters -join ' ')
@@ -178,11 +147,8 @@ if ($manifestSize -gt 500)
 }
 
 $manifestJson = Get-Content -Raw -Path $ManifestPath | ConvertFrom-Json
-$linkCollection, $checksumCsvContent = Get-DownloadLinksAndChecksums $manifestJson
-
 $releaseNotesText = Get-ReleaseNotes
-$releaseNotesText += "`n`n" + $linkCollection
+$releaseNotesText += Get-ReleasedPackages $manifestJson
 
 Post-GithubRelease -manifest $manifestJson `
                 -releaseBody $releaseNotesText `
-                -checksumCsvBody $checksumCsvContent
