@@ -1,6 +1,6 @@
 # Processes - Get Environment
 
-Gets the environment block of a specified process.
+Gets the environment block of a specified process. Only supported for .NET 5+ applications.
 
 ```http
 GET https://localhost:52323/processes/{pid}/env
@@ -11,6 +11,8 @@ or
 ```http
 GET https://localhost:52323/processes/{uid}/env
 ```
+
+> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## URI Parameters
 
@@ -29,7 +31,7 @@ Allowed schemes:
 - `MonitorApiKey`
 - `Negotiate` (Windows only, running as unelevated)
 
-See [Authentication](authentication.md) for further information.
+See [Authentication](./../authentication.md) for further information.
 
 ## Responses
 
@@ -37,7 +39,7 @@ See [Authentication](authentication.md) for further information.
 |---|---|---|---|
 | 200 OK | map (of string) | The environment block of the specified process. | `application/json` |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
-| 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](authentication.md) for further information. | |
+| 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples
 
@@ -88,3 +90,9 @@ Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
     "windir": "C:\\WINDOWS"
 }
 ```
+
+## Additional Notes
+
+### When to use `pid` vs `uid`
+
+See [Process ID `pid` vs Unique ID `uid`](pidvsuid.md) for clarification on when it is best to use either parameter.
