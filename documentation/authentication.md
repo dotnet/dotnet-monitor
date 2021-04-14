@@ -2,6 +2,10 @@
 
 Authenticated requests to `dotnet-monitor` help protect sensitive diagnostic artifacts from unauthorized users and lower privileged processes. `dotnet-monitor` can be configured to use either [Windows Authentication](#windows-authentication) or via an [API Key](#api-key-authentication). It is possible, although strongly not recommended, to [disable authentication](#disabling-authentication).
 
+> **NOTE:** Authentication is not performed on requests to the metrics endpoint (by default, http://localhost:52325).
+
+The recommended configuration for `dotnet-monitor` is to use [API Key Authentication](#api-key-authentication) over a channel [secured with TLS](./enabling-ssl.md).
+
 ## Windows Authentication
 We only recommend using Windows Authentication if you're running `dotnet-monitor` as a local development tool on Windows; for all other environments using an [API Key](#api-key-authentication) is recommended.
 
@@ -12,7 +16,7 @@ Windows authentication doesn't require explicit configuration and is enabled aut
 ## API Key Authentication
 An API Key is the recommended authentication mechanism for `dotnet-monitor`. To enable it, you will need to generate a secret key, update the configuration of `dotnet monitor`, and then specify the API Key in the Authorization header on all requests to `dotnet-monitor`.
 
-> **NOTE:** API Key Authentication should only be used when [TLS is enabled](#) to protect the key while in transit.
+> **NOTE:** API Key Authentication should only be used when [TLS is enabled](#) to protect the key while in transit. `dotnet-monitor` will emit a warning if authentication is enabled over an insecure transport medium.
 
 ### Generating an API Key
 
@@ -29,6 +33,8 @@ Authorization: MonitorApiKey Uf6Yq8ZGkcn+ltq2QLHxuXpKA6/Q5VH5Mb5aSIJBxRc=
 ApiKeyHash: CB233C3BE9F650146CFCA81D7AA608E3A3865D7313016DFA02DAF82A2505C683
 ApiKeyHashType: SHA256
 ```
+
+The API Key is hashed using the SHA256 algorithm when using the `generatekey` command, but other [secure hash implementations](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hashalgorithm.create?view=net-5.0#System_Security_Cryptography_HashAlgorithm_Create_System_String) (such as SHA384 and SHA512) are also supported; due to collision problems the SHA1 and MD5 algorithms are not permitted.
 
 > NOTE: The generated API Key should be secured at rest. We recommend using a tool such as a password manager to save it.
 
@@ -131,7 +137,7 @@ curl.exe -H "Authorization: MonitorApiKey Uf6Yq8ZGkcn+ltq2QLHxuXpKA6/Q5VH5Mb5aSI
 
 ## Disabling Authentication
 
-Disabling authentication could enable lower privileged processes to exfiltrate sensitive information, such as the full contents of memory, from any .NET Core application running within the same boundary. You should only disable authentication when you have evaluated and mitigated the security implications of running `dotnet-monitor` unauthenticated.
+Disabling authentication could enable lower privileged processes to exfiltrate sensitive information, such as the full contents of memory, from any .NET application running within the same boundary. You should only disable authentication when you have evaluated and mitigated the security implications of running `dotnet-monitor` unauthenticated.
 
 Authentication can be turned off by specifying the `--no-auth` option to `dotnet-monitor` at startup:
 ```powershell
