@@ -113,13 +113,41 @@ jobs:
 
     # # Publish test results to Azure Pipelines
     - task: PublishTestResults@2
-      displayName: Publish Test Results
+      displayName: Publish Test Results (Core 3.1)
       inputs:
         testResultsFormat: xUnit
-        testResultsFiles: '**/*UnitTests*.xml' 
+        testResultsFiles: '**/*UnitTests*netcoreapp3.1*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
-        testRunTitle: 'Tests ${{ parameters.name }}'
+        testRunTitle: '${{ parameters.name }} Core 3.1'
+        publishRunAttachments: true
+        mergeTestResults: true
+        buildConfiguration: ${{ parameters.name }}
+      continueOnError: true
+      condition: succeededOrFailed()
+    
+    - task: PublishTestResults@2
+      displayName: Publish Test Results (NET 5.0)
+      inputs:
+        testResultsFormat: xUnit
+        testResultsFiles: '**/*UnitTests*net5.0*.xml' 
+        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
+        failTaskOnFailedTests: true
+        testRunTitle: '${{ parameters.name }} NET 5.0'
+        publishRunAttachments: true
+        mergeTestResults: true
+        buildConfiguration: ${{ parameters.name }}
+      continueOnError: true
+      condition: succeededOrFailed()
+    
+    - task: PublishTestResults@2
+      displayName: Publish Test Results (NET 6.0)
+      inputs:
+        testResultsFormat: xUnit
+        testResultsFiles: '**/*UnitTests*net6.0*.xml' 
+        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
+        failTaskOnFailedTests: true
+        testRunTitle: '${{ parameters.name }} NET 6.0'
         publishRunAttachments: true
         mergeTestResults: true
         buildConfiguration: ${{ parameters.name }}
