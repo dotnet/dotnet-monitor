@@ -22,10 +22,10 @@ When running a dotnet application differences in diverse local and production en
     - [`/logs`](#)
 - [Configuration](#)
     - [JSON Schema](./schema.json)
-
 - [Authentication](./authentication.md)
-    - [API Key Authentication (Recommended)](./authentication.md#api-key-authentication)
-    - [Windows Auth](./authentication.md#windows-authentication)    
+    - [API Key (Recommended)](./authentication.md#api-key-authentication)
+    - [Windows](./authentication.md#windows-authentication)    
 - [Egress Providers](#)
+- [Troubleshooting](#)
 - [Clone, build, and test the repo](./building.md)
 - [Official Build Instructions](./official-build-instructions.md)

@@ -12,13 +12,13 @@ The `dotnet-monitor` global tool requires a .NET 3.1 or newer SDK installed as a
 The latest public preview of `dotnet-monitor` is available on Nuget. You can download the latest version using the following command:
 
 ```cmd
-dotnet tool install -g dotnet-monitor --version 5.0.0-preview.4
+dotnet tool install -g dotnet-monitor --version 5.0.0-preview.4.*
 ```
 
 If you already have `dotnet-monitor` installed and want to update:
 
 ```cmd
-dotnet tool update -g dotnet-monitor --version 5.0.0-preview.4
+dotnet tool update -g dotnet-monitor --version 5.0.0-preview.4.*
 ```
 
 ### Container image
