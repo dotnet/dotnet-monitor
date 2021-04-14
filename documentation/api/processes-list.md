@@ -5,13 +5,21 @@ Lists the processes that are available from which diagnostic information can be 
 GET https://localhost:52323/processes
 ```
 
+## Authentication
+
+Allowed schemes:
+- `MonitorApiKey`
+- `Negotiate` (Windows only, running as unelevated)
+
+See [Authentication](authentication.md) for further information.
+
 ## Responses
 
-| Name | Type | Description |
-|---|---|---|
-| 200 OK | [ProcessIdentifier](definitions.md#ProcessIdentifier)[] | An array of process identifier objects. |
-| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) |  |
-| 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](authentication.md) for further information. |
+| Name | Type | Description | Content Type |
+|---|---|---|---|
+| 200 OK | [ProcessIdentifier](definitions.md#ProcessIdentifier)[] | An array of process identifier objects. | `application/json` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](authentication.md) for further information. | |
 
 ## Examples
 

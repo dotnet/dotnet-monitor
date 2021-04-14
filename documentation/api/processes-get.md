@@ -23,13 +23,21 @@ See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about
 
 Either `pid` or `uid` are required, but not both.
 
+## Authentication
+
+Allowed schemes:
+- `MonitorApiKey`
+- `Negotiate` (Windows only, running as unelevated)
+
+See [Authentication](authentication.md) for further information.
+
 ## Responses
 
-| Name | Type | Description |
-|---|---|---|
-| 200 OK | [ProcessInfo](definitions.md#ProcessInfo) | The detailed information about the specified process. |
-| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) |  |
-| 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](authentication.md) for further information. |
+| Name | Type | Description | Content Type |
+|---|---|---|---|
+| 200 OK | [ProcessInfo](definitions.md#ProcessInfo) | The detailed information about the specified process. | `application/json` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](authentication.md) for further information. | |
 
 ## Examples
 
