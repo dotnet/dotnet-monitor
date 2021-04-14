@@ -119,7 +119,7 @@ jobs:
         testResultsFiles: '**/*UnitTests*netcoreapp3.1*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
-        testRunTitle: '${{ parameters.name }} Core 3.1'
+        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} Core 3.1'
         publishRunAttachments: true
         mergeTestResults: true
         buildConfiguration: ${{ parameters.name }}
@@ -133,7 +133,7 @@ jobs:
         testResultsFiles: '**/*UnitTests*net5.0*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
-        testRunTitle: '${{ parameters.name }} NET 5.0'
+        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} NET 5.0'
         publishRunAttachments: true
         mergeTestResults: true
         buildConfiguration: ${{ parameters.name }}
@@ -147,7 +147,7 @@ jobs:
         testResultsFiles: '**/*UnitTests*net6.0*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
-        testRunTitle: '${{ parameters.name }} NET 6.0'
+        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} NET 6.0'
         publishRunAttachments: true
         mergeTestResults: true
         buildConfiguration: ${{ parameters.name }}
