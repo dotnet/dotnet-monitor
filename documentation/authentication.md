@@ -26,9 +26,9 @@ The API Key you use to secure `dotnet-monitor` should be a 32-byte cryptographic
 dotnet-monitor generatekey
 ```
 
-The output from this command will display the API Key formatted as an authentication header along with its hash and associated hashing algorithm. You will need to store the `ApiKeyHash` and `ApiKeyHashType` in the configuration for `dotnet-monitor` and use the authorication header value when making requests to the `dotnet-monitor` HTTPS endpoint.
+The output from this command will display the API Key formatted as an authentication header along with its hash and associated hashing algorithm. You will need to store the `ApiKeyHash` and `ApiKeyHashType` in the configuration for `dotnet-monitor` and use the authorization header value when making requests to the `dotnet-monitor` HTTPS endpoint.
 
-```
+```yaml
 Authorization: MonitorApiKey Uf6Yq8ZGkcn+ltq2QLHxuXpKA6/Q5VH5Mb5aSIJBxRc=
 ApiKeyHash: CB233C3BE9F650146CFCA81D7AA608E3A3865D7313016DFA02DAF82A2505C683
 ApiKeyHashType: SHA256
@@ -40,11 +40,11 @@ The API Key is hashed using the SHA256 algorithm when using the `generatekey` co
 
 ### Configuring dotnet-monitor to use an API Key
 
-Using the `generatekey` command does not automatically update the configuration of `dotnet-monitor` to use the new key. You can update the configuration of `dotnet-monitor` via settings file, environemt variable of kubernetes secrets.
+Using the `generatekey` command does not automatically update the configuration of `dotnet-monitor` to use the new key. You can update the configuration of `dotnet-monitor` via settings file, environment variable or Kubernetes secrets.
 
 If you're running on Windows, you can save these settings to `%USERPROFILE%\.dotnet-monitor\settings.json`. If you're on other operating systems, you can save this file to `$XDG_CONFIG_HOME/dotnet-monitor/settings.json`.
 
-> **NOTE:** If `$XDG_CONFIG_HOME` isn't defined, dotnet-monitor will fall back to looking at `$HOME/.config/dotnet-monitor/settings.json`
+> **NOTE:** If `$XDG_CONFIG_HOME` isn't defined, `dotnet-monitor` will fall back to looking at `$HOME/.config/dotnet-monitor/settings.json`
 
 ```json
 {
@@ -65,14 +65,14 @@ DotnetMonitor_ApiAuthentication__ApiKeyHashType="SHA256"
 > **NOTE:** When you use environment variables to configure the API Key hash, you must restart `dotnet-monitor` for the changes to take effect.
 
 ### Configuring an API Key in a Kubernetes Cluster
-If you're running in Kubernetes, we recommend creating secrets and mounting them into container via a deployment manifest. You can use this `kubectl` command to either create or rotate the API Key.
+If you're running in Kubernetes, we recommend creating secrets and mounting them into the `dotnet-monitor` sidecar container via a deployment manifest. You can use this `kubectl` command to either create or rotate the API Key.
 
 ```sh
 kubectl create secret generic apikey \
-	--from-literal=ApiAuthentication__ApiKeyHash=$hash \
+  --from-literal=ApiAuthentication__ApiKeyHash=$hash \
   --from-literal=ApiAuthentication__ApiKeyHashType=SHA256 \
-	--dry-run=client -o yaml \
-	| kubectl apply -f -
+  --dry-run=client -o yaml \
+  | kubectl apply -f -
 ```
 
 Mount the secret as a file into `/etc/dotnet-monitor` in the deployment manifest for your application (abbreviated for clarity). `dotnet-monitor` only supports automatic key rotations for secrets mounted as volumes. For other kinds of secrets, the `dotnet-monitor` process must be restarted for the new key to take effect. 
@@ -122,7 +122,7 @@ echo "ApiKeyHashType: SHA256"
 ```
 
 ## Authenticating requests
-When using Windows Authentication, your browser will automatically handle the Windows authentication challenge. If you are using an API Key, you must specify it via the authentication header.
+When using Windows Authentication, your browser will automatically handle the Windows authentication challenge. If you are using an API Key, you must specify it via the `Authorization` header.
 
 ```sh
 curl -H "Authorization: MonitorApiKey Uf6Yq8ZGkcn+ltq2QLHxuXpKA6/Q5VH5Mb5aSIJBxRc=" https://localhost:52323/processes
