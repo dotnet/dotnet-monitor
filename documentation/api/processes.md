@@ -1,5 +1,7 @@
-Processes
-================
+# Processes
+
+Operations for obtaining information about discovered processes.
+
 | Operation | Description |
 |---|---|
 | [Get Process](processes-get.md) | Gets detailed information about a specified process. |
