@@ -70,6 +70,7 @@ If you're running in Kubernetes, we recommend creating secrets and mounting them
 ```sh
 kubectl create secret generic apikey \
 	--from-literal=ApiAuthentication__ApiKeyHash=$hash \
+  --from-literal=ApiAuthentication__ApiKeyHashType=SHA256 \
 	--dry-run=client -o yaml \
 	| kubectl apply -f -
 ```
