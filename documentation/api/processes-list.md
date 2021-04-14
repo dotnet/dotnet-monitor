@@ -9,8 +9,8 @@ GET https://localhost:52323/processes
 
 | Name | Type | Description |
 |---|---|---|
-| 200 OK | [ProcessIdentifier](#ProcessIdentifier)[] | An array of process identifier objects. |
-| 400 Bad Request | ValidationProblemDetails |  |
+| 200 OK | [ProcessIdentifier](definitions.md#ProcessIdentifier)[] | An array of process identifier objects. |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) |  |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](authentication.md) for further information. |
 
 ## Examples
@@ -19,6 +19,7 @@ GET https://localhost:52323/processes
 
 ```http
 GET https://localhost:52323/processes
+Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 ### Sample Response
@@ -39,16 +40,3 @@ GET https://localhost:52323/processes
     }
 ]
 ```
-
-## Definitions
-
-### ProcessIdentifier
-
-Object with process identifying information. The properties on this object describe indentifying aspects for a found process; these values can be used in other API calls to perform operations on specific processes.
-
-| Name | Type | Description |
-|---|---|---|
-| `pid` | int | The ID of the process. |
-| `uid` | guid | `.NET 5+` A value that uniquely identifies a runtime instance within a process.<br/>`.NET Core 3.1` A 'null' value: `00000000-0000-0000-0000-000000000000` |
-
-The `uid` property is useful for uniquely identifying a process when it is running in an environment where the process ID may not be unique (e.g. multiple containers within a Kubernetes pod will have entrypoint processes with process ID 1).
