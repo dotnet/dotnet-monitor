@@ -181,7 +181,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
                     ValidateContentType(response, ContentTypes.ApplicationJson);
                     return await ReadContentAsync<Dictionary<string, string>>(response).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
-                    //ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
                 case HttpStatusCode.Unauthorized:
                 case HttpStatusCode.NotFound:
