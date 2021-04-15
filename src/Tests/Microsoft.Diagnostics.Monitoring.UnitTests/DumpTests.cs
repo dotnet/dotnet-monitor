@@ -105,24 +105,30 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
             }
-            catch (ApiStatusCodeException ex) when (IsSegFaultOnOSX(appRunner, ex.StatusCode))
+            catch (ApiStatusCodeException) when (IsSegFaultOnMacOSX(appRunner))
+            {
+                // This segfault causes the HTTP request to fail (500) because the diagnostics connection is terminated.
+
+                // Don't fail the test if the test app segfaults due to calling the dump commmand.
+                _outputHelper.WriteLine("WARNING: Test app segfaulted while producing dump type '{0}'.", type);
+
+                return;
+            }
+            catch (TaskCanceledException) when (IsSegFaultOnMacOSX(appRunner))
             {
                 // Don't fail the test if the test app segfaults due to calling the dump commmand.
                 _outputHelper.WriteLine("WARNING: Test app segfaulted while producing dump type '{0}'.", type);
+
                 return;
             }
             Assert.Equal(0, appRunner.ExitCode);
         }
 
-        private static bool IsSegFaultOnOSX(AppRunner runner, HttpStatusCode? statusCode)
+        private static bool IsSegFaultOnMacOSX(AppRunner runner)
         {
             // Requesting a dump of a dotnet process on OSX sometimes causes the process to segfault.
-            // It returns an exit code of 139 (128 + 11), which indicates SIGSEGV. This causes the
-            // HTTP request to fail (500) because the diagnostics connection is terminated.
-            return RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-                && runner.ExitCode == 139
-                && statusCode.HasValue
-                && statusCode.Value == HttpStatusCode.InternalServerError;
+            // It returns an exit code of 139 (128 + 11), which indicates SIGSEGV.
+            return RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && runner.ExitCode == 139;
         }
     }
 }
