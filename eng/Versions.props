@@ -34,7 +34,7 @@
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21214.2</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21214.2</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
-    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-preview.4.21213.3</VSRedistCommonNetCoreSharedFrameworkx6460Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-preview.4.21214.9</VSRedistCommonNetCoreSharedFrameworkx6460Version>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftNETCoreApp31Version>3.1.13</MicrosoftNETCoreApp31Version>
