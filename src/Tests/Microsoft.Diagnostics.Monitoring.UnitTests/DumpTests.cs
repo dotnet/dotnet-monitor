@@ -71,64 +71,38 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 appRunner.Environment.Add("COMPlus_DbgEnableElfDumpOnMacOS", "1");
             }
 
-            try
+            await appRunner.ExecuteAsync(async () =>
             {
-                await appRunner.ExecuteAsync(async () =>
+                ProcessInfo processInfo = await apiClient.GetProcessAsync(appRunner.ProcessId);
+                Assert.NotNull(processInfo);
+
+                using ResponseStreamHolder holder = await apiClient.CaptureDumpAsync(appRunner.ProcessId, type);
+                Assert.NotNull(holder);
+
+                const int bufferLength = 10240; // 10k buffer
+                long total = await ArrayPool<byte>.Shared.RentAndReturnAsync(bufferLength, async buffer =>
                 {
-                    ProcessInfo processInfo = await apiClient.GetProcessAsync(appRunner.ProcessId);
-                    Assert.NotNull(processInfo);
+                    using CancellationTokenSource cancellation = new(TestTimeouts.HttpApi);
 
-                    using ResponseStreamHolder holder = await apiClient.CaptureDumpAsync(appRunner.ProcessId, type);
-                    Assert.NotNull(holder);
-
-                    const int bufferLength = 10240; // 10k buffer
-                    long total = await ArrayPool<byte>.Shared.RentAndReturnAsync(bufferLength, async buffer =>
+                    int read;
+                    long total = 0;
+                    while (0 != (read = await holder.Stream.ReadAsync(buffer, 0, buffer.Length, cancellation.Token)))
                     {
-                        using CancellationTokenSource cancellation = new(TestTimeouts.HttpApi);
-
-                        int read;
-                        long total = 0;
-                        while (0 != (read = await holder.Stream.ReadAsync(buffer, 0, buffer.Length, cancellation.Token)))
-                        {
-                            total += read;
-                        }
-                        return total;
-                    });
-
-                    _outputHelper.WriteLine("Dump Size: {0} bytes", total);
-                    // Dumps should have at least 10k of data (this is an arbitrary threshold).
-                    // CONSIDER: Is there a better lightweight way to check if the dump is viable?
-                    // e.g. install dotnet-dump and do a brief analysis; or check the header on the
-                    // file content.
-                    Assert.True(total > 10_000);
-
-                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                        total += read;
+                    }
+                    return total;
                 });
-            }
-            catch (ApiStatusCodeException) when (IsSegFaultOnMacOSX(appRunner))
-            {
-                // This segfault causes the HTTP request to fail (500) because the diagnostics connection is terminated.
 
-                // Don't fail the test if the test app segfaults due to calling the dump commmand.
-                _outputHelper.WriteLine("WARNING: Test app segfaulted while producing dump type '{0}'.", type);
+                _outputHelper.WriteLine("Dump Size: {0} bytes", total);
+                // Dumps should have at least 10k of data (this is an arbitrary threshold).
+                // CONSIDER: Is there a better lightweight way to check if the dump is viable?
+                // e.g. install dotnet-dump and do a brief analysis; or check the header on the
+                // file content.
+                Assert.True(total > 10_000);
 
-                return;
-            }
-            catch (TaskCanceledException) when (IsSegFaultOnMacOSX(appRunner))
-            {
-                // Don't fail the test if the test app segfaults due to calling the dump commmand.
-                _outputHelper.WriteLine("WARNING: Test app segfaulted while producing dump type '{0}'.", type);
-
-                return;
-            }
+                await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            });
             Assert.Equal(0, appRunner.ExitCode);
-        }
-
-        private static bool IsSegFaultOnMacOSX(AppRunner runner)
-        {
-            // Requesting a dump of a dotnet process on OSX sometimes causes the process to segfault.
-            // It returns an exit code of 139 (128 + 11), which indicates SIGSEGV.
-            return RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && runner.ExitCode == 139;
         }
     }
 }

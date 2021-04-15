@@ -21,6 +21,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major < 5)
                     return false;
 
+                // MacOS dumps inconsistently segfault the runtime on .NET 5: https://github.com/dotnet/dotnet-monitor/issues/174
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major == 5)
+                    return false;
+
                 return true;
             }
         }
