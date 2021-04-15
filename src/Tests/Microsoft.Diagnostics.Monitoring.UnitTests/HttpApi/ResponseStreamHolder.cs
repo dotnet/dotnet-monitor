@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 {
+    /// <summary>
+    /// Holds a <see cref="System.IO.Stream"/> from a <see cref="HttpResponseMessage"/> to
+    /// ensure that the message and stream are disposed together.
+    /// </summary>
     internal class ResponseStreamHolder : IDisposable
     {
         private readonly HttpResponseMessage _response;
@@ -22,14 +26,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 
         public void Dispose()
         {
+            // The response disposes the stream when disposed.
             _response.Dispose();
         }
 
-        public static async Task<ResponseStreamHolder> CreateAsync(HttpResponseMessage response)
+        public static async Task<ResponseStreamHolder> CreateAsync(DisposableBox<HttpResponseMessage> responseBox)
         {
-            ResponseStreamHolder holder = new(response);
-            holder.Stream = await response.Content.ReadAsStreamAsync();
-            return holder;
+            using DisposableBox<ResponseStreamHolder> holderBox = new(new(responseBox.Release()));
+            holderBox.Value.Stream = await holderBox.Value._response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            return holderBox.Release();
         }
     }
 }

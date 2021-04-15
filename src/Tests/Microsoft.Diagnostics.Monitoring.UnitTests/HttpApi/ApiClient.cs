@@ -178,7 +178,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             {
                 case HttpStatusCode.OK:
                     ValidateContentType(responseBox.Value, ContentTypes.ApplicationOctetStream);
-                    return await responseBox.GetAndReleaseAsync(ResponseStreamHolder.CreateAsync).ConfigureAwait(false);
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
