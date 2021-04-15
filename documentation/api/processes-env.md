@@ -1,6 +1,6 @@
 # Processes - Get Environment
 
-Gets the environment block of a specified process. Only supported for .NET 5+ applications.
+Gets the environment block of a specified process.
 
 ```http
 GET https://localhost:52323/processes/{pid}/env
@@ -90,6 +90,14 @@ Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
     "windir": "C:\\WINDOWS"
 }
 ```
+
+## Supported Runtimes
+
+| Operating System | Runtime Version |
+|---|---|
+| Windows | .NET 5+ |
+| Linux | .NET 5+ |
+| MacOS | .NET 5+ |
 
 ## Additional Notes
 

@@ -50,3 +50,11 @@ Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
     }
 ]
 ```
+
+## Supported Runtimes
+
+| Operating System | Runtime Version |
+|---|---|
+| Windows | .NET Core 3.1, .NET 5+ |
+| Linux | .NET Core 3.1, .NET 5+ |
+| MacOS | .NET Core 3.1, .NET 5+ |
