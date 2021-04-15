@@ -11,12 +11,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Default timeout for HTTP API calls
         /// </summary>
-        public static readonly TimeSpan HttpApi = TimeSpan.FromSeconds(15);
+        public static readonly TimeSpan HttpApi = TimeSpan.FromSeconds(30);
 
         /// <summary>
         /// Default timeout for sending commands from the test to a process.
         /// </summary>
-        public static readonly TimeSpan SendCommand = TimeSpan.FromSeconds(15);
+        public static readonly TimeSpan SendCommand = TimeSpan.FromSeconds(30);
 
         /// <summary>
         /// Default timeout for starting an executable.
