@@ -54,9 +54,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.ConnectionMode = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
-            await toolRunner.StartAsync(TestTimeouts.StartProcess);
+            await toolRunner.StartAsync();
 
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, TestTimeouts.HttpApi);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             AppRunner appRunner = new(_outputHelper);
@@ -69,14 +69,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             await appRunner.ExecuteAsync(async () =>
             {
-                await VerifyProcessAsync(apiClient, await apiClient.GetProcessesAsync(TestTimeouts.HttpApi), appRunner.ProcessId, expectedEnvVarValue);
+                await VerifyProcessAsync(apiClient, await apiClient.GetProcessesAsync(), appRunner.ProcessId, expectedEnvVarValue);
 
-                await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue, TestTimeouts.SendCommand);
+                await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
             Assert.Equal(0, appRunner.ExitCode);
 
             // Verify app is no longer reported
-            IEnumerable<ProcessIdentifier> identifiers = await apiClient.GetProcessesAsync(TestTimeouts.HttpApi);
+            IEnumerable<ProcessIdentifier> identifiers = await apiClient.GetProcessesAsync();
             Assert.NotNull(identifiers);
             ProcessIdentifier identifier = identifiers.FirstOrDefault(p => p.Pid == appRunner.ProcessId);
             Assert.Null(identifier);
@@ -101,9 +101,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.ConnectionMode = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
-            await toolRunner.StartAsync(TestTimeouts.StartProcess);
+            await toolRunner.StartAsync();
 
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, TestTimeouts.HttpApi);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             const int appCount = 3;
@@ -123,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             await appRunners.ExecuteAsync(async () =>
             {
                 // Query for process identifiers
-                identifiers = await apiClient.GetProcessesAsync(TestTimeouts.HttpApi);
+                identifiers = await apiClient.GetProcessesAsync();
                 Assert.NotNull(identifiers);
 
                 // Verify each app instance is reported and shut them down.
@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
                     await VerifyProcessAsync(apiClient, identifiers, runner.ProcessId, expectedEnvVarValue);
 
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue, TestTimeouts.SendCommand);
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 }
             });
 
@@ -143,7 +143,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             }
 
             // Query for process identifiers
-            identifiers = await apiClient.GetProcessesAsync(TestTimeouts.HttpApi);
+            identifiers = await apiClient.GetProcessesAsync();
             Assert.NotNull(identifiers);
 
             // Verify none of the apps are reported
@@ -162,18 +162,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             ProcessIdentifier identifier = identifiers.FirstOrDefault(p => p.Pid == processId);
             Assert.NotNull(identifier);
 
-            ProcessInfo info = await client.GetProcessAsync(identifier.Pid, TestTimeouts.HttpApi);
+            ProcessInfo info = await client.GetProcessAsync(identifier.Pid);
             Assert.NotNull(info);
             Assert.Equal(identifier.Pid, info.Pid);
 
 #if NET5_0_OR_GREATER
             // Currently, the runtime instance identifier is only provided for .NET 5 and higher
-            info = await client.GetProcessAsync(identifier.Uid, TestTimeouts.HttpApi);
+            info = await client.GetProcessAsync(identifier.Uid);
             Assert.NotNull(info);
             Assert.Equal(identifier.Pid, info.Pid);
             Assert.Equal(identifier.Uid, info.Uid);
 
-            Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(processId, TestTimeouts.HttpApi);
+            Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(processId);
             Assert.NotNull(env);
             Assert.NotEmpty(env);
             Assert.True(env.TryGetValue(ExpectedEnvVarName, out string actualEnvVarValue));
@@ -181,7 +181,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 #else
             // .NET Core 3.1 and earlier do not support getting the environment block
             ValidationProblemDetailsException validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => client.GetProcessEnvironmentAsync(processId, TestTimeouts.HttpApi));
+                () => client.GetProcessEnvironmentAsync(processId));
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
 #endif

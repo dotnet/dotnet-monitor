@@ -81,10 +81,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             }
         }
 
+        public static Task SendEndScenarioAsync(this AppRunner runner)
+        {
+            return runner.SendEndScenarioAsync(TestTimeouts.SendCommand);
+        }
+
         public static async Task SendEndScenarioAsync(this AppRunner runner, TimeSpan timeout)
         {
             using CancellationTokenSource cancellation = new(timeout);
             await runner.EndScenarioAsync(cancellation.Token).ConfigureAwait(false);
+        }
+
+        public static Task SendCommandAsync(this AppRunner runner, string command)
+        {
+            return runner.SendCommandAsync(command, TestTimeouts.SendCommand);
         }
 
         public static async Task SendCommandAsync(this AppRunner runner, string command, TimeSpan timeout)
@@ -93,16 +103,31 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             await runner.SendCommandAsync(command, cancellation.Token).ConfigureAwait(false);
         }
 
+        public static Task SendStartScenarioAsync(this AppRunner runner)
+        {
+            return runner.SendStartScenarioAsync(TestTimeouts.SendCommand);
+        }
+
         public static async Task SendStartScenarioAsync(this AppRunner runner, TimeSpan timeout)
         {
             using CancellationTokenSource cancellation = new(timeout);
             await runner.StartScenarioAsync(cancellation.Token).ConfigureAwait(false);
         }
 
+        public static Task StartAsync(this AppRunner runner)
+        {
+            return runner.StartAsync(TestTimeouts.StartProcess);
+        }
+
         public static async Task StartAsync(this AppRunner runner, TimeSpan timeout)
         {
             using CancellationTokenSource cancellation = new(timeout);
             await runner.StartAsync(cancellation.Token).ConfigureAwait(false);
+        }
+
+        public static Task<int> WaitForExitAsync(this AppRunner runner)
+        {
+            return runner.WaitForExitAsync(TestTimeouts.WaitForExit);
         }
 
         public static async Task<int> WaitForExitAsync(this AppRunner runner, TimeSpan timeout)

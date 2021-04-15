@@ -42,22 +42,22 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             await using MonitorRunner toolRunner = new(_outputHelper);
             
-            await toolRunner.StartAsync(TestTimeouts.StartProcess);
+            await toolRunner.StartAsync();
 
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, TestTimeouts.HttpApi);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Any authenticated route on the default address should 401 Unauthenticated
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync(TestTimeouts.HttpApi));
+                () => apiClient.GetProcessesAsync());
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
 
             // TODO: Verify other routes (e.g. /dump, /trace, /logs) also 401 Unauthenticated
 
             // Metrics should not throw on the default address
 
-            var metrics = await apiClient.GetMetricsAsync(TestTimeouts.HttpApi);
+            var metrics = await apiClient.GetMetricsAsync();
             Assert.NotNull(metrics);
         }
 
@@ -70,20 +70,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             await using MonitorRunner toolRunner = new(_outputHelper);
 
-            await toolRunner.StartAsync(TestTimeouts.StartProcess);
+            await toolRunner.StartAsync();
 
-            using HttpClient httpClient = await toolRunner.CreateHttpClientMetricsAddressAsync(_httpClientFactory, TestTimeouts.HttpApi);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientMetricsAddressAsync(_httpClientFactory);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Any non-metrics route on the metrics address should 404 Not Found
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync(TestTimeouts.HttpApi));
+                () => apiClient.GetProcessesAsync());
             Assert.Equal(HttpStatusCode.NotFound, statusCodeException.StatusCode);
 
             // TODO: Verify other routes (e.g. /dump, /trace, /logs) also 404 Not Found
 
             // Metrics should not throw on the metrics address
-            var metrics = await apiClient.GetMetricsAsync(TestTimeouts.HttpApi);
+            var metrics = await apiClient.GetMetricsAsync();
             Assert.NotNull(metrics);
         }
 
@@ -95,17 +95,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             await using MonitorRunner toolRunner = new(_outputHelper);
             toolRunner.DisableAuthentication = true;
-            await toolRunner.StartAsync(TestTimeouts.StartProcess);
+            await toolRunner.StartAsync();
 
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, TestTimeouts.HttpApi);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Check that /processes does not challenge for authentication
-            var processes = await apiClient.GetProcessesAsync(TestTimeouts.HttpApi);
+            var processes = await apiClient.GetProcessesAsync();
             Assert.NotNull(processes);
 
             // Check that /metrics does not challenge for authentication
-            var metrics = await apiClient.GetMetricsAsync(TestTimeouts.HttpApi);
+            var metrics = await apiClient.GetMetricsAsync();
             Assert.NotNull(metrics);
         }
 
@@ -131,16 +131,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.WriteKeyPerValueConfiguration(options);
 
             // Start dotnet-monitor
-            await toolRunner.StartAsync(TestTimeouts.StartProcess);
+            await toolRunner.StartAsync();
 
             // Create HttpClient with default request headers
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, TestTimeouts.HttpApi);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(ApiKeyScheme, Convert.ToBase64String(apiKey));
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             // Check that /processes does not challenge for authentication
-            var processes = await apiClient.GetProcessesAsync(TestTimeouts.HttpApi);
+            var processes = await apiClient.GetProcessesAsync();
             Assert.NotNull(processes);
 
             _outputHelper.WriteLine("Rotating API key.");
@@ -164,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
                 try
                 {
-                    await apiClient.GetProcessesAsync(TestTimeouts.HttpApi);
+                    await apiClient.GetProcessesAsync();
                 }
                 catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
                 {
@@ -181,7 +181,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 new AuthenticationHeaderValue(ApiKeyScheme, Convert.ToBase64String(apiKey2));
 
             // Check that /processes does not challenge for authentication
-            processes = await apiClient.GetProcessesAsync(TestTimeouts.HttpApi);
+            processes = await apiClient.GetProcessesAsync();
             Assert.NotNull(processes);
         }
 
@@ -192,14 +192,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         public async Task NegotiateAuthenticationSchemeTest()
         {
             await using MonitorRunner toolRunner = new(_outputHelper);
-            await toolRunner.StartAsync(TestTimeouts.StartProcess);
+            await toolRunner.StartAsync();
 
             // Create HttpClient and HttpClientHandler that uses the current
             // user's credentials from the test process. Since dotnet-monitor
             // is launched by the test process, the usage of these credentials
             // should authenticate correctly (except when elevated, which the
             // tool will deny authorization).
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, TestTimeouts.HttpApi, ServiceProviderFixture.HttpClientName_DefaultCredentials);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, ServiceProviderFixture.HttpClientName_DefaultCredentials);
             ApiClient client = new(_outputHelper, httpClient);
 
             // TODO: Split test into elevated vs non-elevated tests and skip
@@ -208,13 +208,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             if (EnvironmentInformation.IsElevated)
             {
                 var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                    () => client.GetProcessesAsync(TestTimeouts.HttpApi));
+                    () => client.GetProcessesAsync());
                 Assert.Equal(HttpStatusCode.Forbidden, statusCodeException.StatusCode);
             }
             else
             {
                 // Check that /processes does not challenge for authentication
-                var processes = await client.GetProcessesAsync(TestTimeouts.HttpApi);
+                var processes = await client.GetProcessesAsync();
                 Assert.NotNull(processes);
             }
         }

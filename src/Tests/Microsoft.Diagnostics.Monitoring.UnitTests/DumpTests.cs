@@ -55,9 +55,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             toolRunner.ConnectionMode = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
-            await toolRunner.StartAsync(TestTimeouts.StartProcess);
+            await toolRunner.StartAsync();
 
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, TestTimeouts.HttpApi);
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             ApiClient apiClient = new(_outputHelper, httpClient);
             
             AppRunner appRunner = new(_outputHelper);
@@ -75,10 +75,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             {
                 await appRunner.ExecuteAsync(async () =>
                 {
-                    ProcessInfo processInfo = await apiClient.GetProcessAsync(appRunner.ProcessId, TestTimeouts.HttpApi);
+                    ProcessInfo processInfo = await apiClient.GetProcessAsync(appRunner.ProcessId);
                     Assert.NotNull(processInfo);
 
-                    using ApiStreamHolder holder = await apiClient.CaptureDumpAsync(appRunner.ProcessId, type, CancellationToken.None);
+                    using ApiStreamHolder holder = await apiClient.CaptureDumpAsync(appRunner.ProcessId, type);
                     Assert.NotNull(holder);
 
                     const int bufferLength = 10240; // 10k buffer
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     // file content.
                     Assert.True(total > 10_000);
 
-                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue, TestTimeouts.SendCommand);
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
             }
             catch (ApiStatusCodeException ex) when (IsSegFaultOnOSX(appRunner, ex.StatusCode))

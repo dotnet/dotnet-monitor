@@ -62,15 +62,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// GET /processes
-        /// </summary>
-        public async Task<IEnumerable<Models.ProcessIdentifier>> GetProcessesAsync(TimeSpan timeout)
-        {
-            using CancellationTokenSource timeoutSource = new(timeout);
-            return await GetProcessesAsync(timeoutSource.Token).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Get /processes/{pid}
         /// </summary>
         public Task<Models.ProcessInfo> GetProcessAsync(int pid, CancellationToken token)
@@ -79,29 +70,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{pid}
-        /// </summary>
-        public async Task<Models.ProcessInfo> GetProcessAsync(int pid, TimeSpan timeout)
-        {
-            using CancellationTokenSource timeoutSource = new(timeout);
-            return await GetProcessAsync(pid, timeoutSource.Token).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Get /processes/{uid}
         /// </summary>
         public Task<Models.ProcessInfo> GetProcessAsync(Guid uid, CancellationToken token)
         {
             return GetProcessAsync(uid.ToString("D"), token);
-        }
-
-        /// <summary>
-        /// Get /processes/{uid}
-        /// </summary>
-        public async Task<Models.ProcessInfo> GetProcessAsync(Guid uid, TimeSpan timeout)
-        {
-            using CancellationTokenSource timeoutSource = new(timeout);
-            return await GetProcessAsync(uid, timeoutSource.Token).ConfigureAwait(false);
         }
 
         private async Task<Models.ProcessInfo> GetProcessAsync(string processKey, CancellationToken token)
@@ -140,29 +113,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{pid}/env
-        /// </summary>
-        public async Task<Dictionary<string, string>> GetProcessEnvironmentAsync(int pid, TimeSpan timeout)
-        {
-            using CancellationTokenSource timeoutSource = new(timeout);
-            return await GetProcessEnvironmentAsync(pid, timeoutSource.Token).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Get /processes/{uid}/env
         /// </summary>
         public Task<Dictionary<string, string>> GetProcessEnvironmentAsync(Guid uid, CancellationToken token)
         {
             return GetProcessEnvironmentAsync(uid.ToString("D"), token);
-        }
-
-        /// <summary>
-        /// Get /processes/{uid}/env
-        /// </summary>
-        public async Task<Dictionary<string, string>> GetProcessEnvironmentAsync(Guid uid, TimeSpan timeout)
-        {
-            using CancellationTokenSource timeoutSource = new(timeout);
-            return await GetProcessEnvironmentAsync(uid, timeoutSource.Token).ConfigureAwait(false);
         }
 
         private async Task<Dictionary<string, string>> GetProcessEnvironmentAsync(string processKey, CancellationToken token)
@@ -261,15 +216,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             }
 
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// GET /metrics
-        /// </summary>
-        public async Task<string> GetMetricsAsync(TimeSpan timeout)
-        {
-            using CancellationTokenSource timeoutSource = new(timeout);
-            return await GetMetricsAsync(timeoutSource.Token).ConfigureAwait(false);
         }
 
         private static async Task<T> ReadContentAsync<T>(HttpResponseMessage responseMessage)
