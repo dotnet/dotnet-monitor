@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     ProcessInfo processInfo = await apiClient.GetProcessAsync(appRunner.ProcessId);
                     Assert.NotNull(processInfo);
 
-                    using ApiStreamHolder holder = await apiClient.CaptureDumpAsync(appRunner.ProcessId, type);
+                    using ResponseStreamHolder holder = await apiClient.CaptureDumpAsync(appRunner.ProcessId, type);
                     Assert.NotNull(holder);
 
                     const int bufferLength = 10240; // 10k buffer

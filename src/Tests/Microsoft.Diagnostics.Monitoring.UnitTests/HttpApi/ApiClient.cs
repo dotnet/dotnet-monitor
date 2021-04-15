@@ -150,7 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// Get /dump/{pid}?type={dumpType}
         /// </summary>
-        public Task<ApiStreamHolder> CaptureDumpAsync(int pid, DumpType dumpType, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureDumpAsync(int pid, DumpType dumpType, CancellationToken token)
         {
             return CaptureDumpAsync(pid.ToString(CultureInfo.InvariantCulture), dumpType, token);
         }
@@ -158,12 +158,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// Get /dump/{uid}?type={dumpType}
         /// </summary>
-        public Task<ApiStreamHolder> CaptureDumpAsync(Guid uid, DumpType dumpType, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureDumpAsync(Guid uid, DumpType dumpType, CancellationToken token)
         {
             return CaptureDumpAsync(uid.ToString("D"), dumpType, token);
         }
 
-        private async Task<ApiStreamHolder> CaptureDumpAsync(string processKey, DumpType dumpType, CancellationToken token)
+        private async Task<ResponseStreamHolder> CaptureDumpAsync(string processKey, DumpType dumpType, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, $"/dump/{processKey}?type={dumpType.ToString("G")}");
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationOctetStream);
@@ -178,7 +178,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             {
                 case HttpStatusCode.OK:
                     ValidateContentType(responseBox.Value, ContentTypes.ApplicationOctetStream);
-                    return await responseBox.GetAndReleaseAsync(ApiStreamHolder.CreateAsync).ConfigureAwait(false);
+                    return await responseBox.GetAndReleaseAsync(ResponseStreamHolder.CreateAsync).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);

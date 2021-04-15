@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 {
-    internal class ApiStreamHolder : IDisposable
+    internal class ResponseStreamHolder : IDisposable
     {
         private readonly HttpResponseMessage _response;
 
         public Stream Stream { get; private set; }
 
-        private ApiStreamHolder(HttpResponseMessage response)
+        private ResponseStreamHolder(HttpResponseMessage response)
         {
             _response = response ?? throw new ArgumentNullException(nameof(response));
         }
@@ -23,12 +23,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         public void Dispose()
         {
             _response.Dispose();
-            Stream?.Dispose();
         }
 
-        public static async Task<ApiStreamHolder> CreateAsync(HttpResponseMessage response)
+        public static async Task<ResponseStreamHolder> CreateAsync(HttpResponseMessage response)
         {
-            ApiStreamHolder holder = new(response);
+            ResponseStreamHolder holder = new(response);
             holder.Stream = await response.Content.ReadAsStreamAsync();
             return holder;
         }

@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// Get /dump/{pid}?type={dumpType}
         /// </summary>
-        public static Task<ApiStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType)
+        public static Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType)
         {
             return client.CaptureDumpAsync(pid, dumpType, TestTimeouts.HttpApi);
         }
@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// Get /dump/{pid}?type={dumpType}
         /// </summary>
-        public static async Task<ApiStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType, TimeSpan timeout)
+        public static async Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
             return await client.CaptureDumpAsync(pid, dumpType, timeoutSource.Token);
@@ -117,7 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// Get /dump/{uid}?type={dumpType}
         /// </summary>
-        public static Task<ApiStreamHolder> CaptureDumpAsync(this ApiClient client, Guid uid, DumpType dumpType)
+        public static Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, Guid uid, DumpType dumpType)
         {
             return client.CaptureDumpAsync(uid, dumpType, TestTimeouts.HttpApi);
         }
@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// Get /dump/{uid}?type={dumpType}
         /// </summary>
-        public static async Task<ApiStreamHolder> CaptureDumpAsync(this ApiClient client, Guid uid, DumpType dumpType, TimeSpan timeout)
+        public static async Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, Guid uid, DumpType dumpType, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
             return await client.CaptureDumpAsync(uid, dumpType, timeoutSource.Token);
