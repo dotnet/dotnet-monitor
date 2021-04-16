@@ -2,22 +2,24 @@
 
 Captures a managed dump of a specified process without using a debugger.
 
+> **WARNING**: Capturing a dump of the process suspends the entire process while the dump is collected.
+
 ## HTTP Route
 
 ```http
-GET https://localhost:52323/dump/{pid}?type={type}
+GET /dump/{pid}?type={type} HTTP/1.1
 ```
 
 or 
 
 ```http
-GET https://localhost:52323/dump/{uid}?type={type}
+GET /dump/{uid}?type={type} HTTP/1.1
 ```
 
 or
 
 ```http
-GET https://localhost:52323/dump?type={type}
+GET /dump?type={type} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -56,20 +58,28 @@ See [Authentication](./../authentication.md) for further information.
 ### Sample Request
 
 ```http
-GET https://localhost:52323/dump/21632?type=Full
+GET /dump/21632?type=Full HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 or
 
 ```http
-GET https://localhost:52323/dump/cd4da319-fa9e-4987-ac4e-e57b2aac248b?type=Full
+GET /dump/cd4da319-fa9e-4987-ac4e-e57b2aac248b?type=Full HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 ### Sample Response
 
-The managed dump containing all memory of the process is returned as the response body.
+The managed dump containing all memory of the process, chunk encoded, is returned as the response body.
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Transfer-Encoding: chunked
+```
 
 ## Supported Runtimes
 

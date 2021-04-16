@@ -11,19 +11,19 @@ Captures a GC dump of a specified process. These dumps are useful for several sc
 ## HTTP Route
 
 ```http
-GET https://localhost:52323/gcdump/{pid}
+GET /gcdump/{pid} HTTP/1.1
 ```
 
 or 
 
 ```http
-GET https://localhost:52323/gcdump/{uid}
+GET /gcdump/{uid} HTTP/1.1
 ```
 
 or
 
 ```http
-GET https://localhost:52323/gcdump
+GET /gcdump HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -61,20 +61,28 @@ See [Authentication](./../authentication.md) for further information.
 ### Sample Request
 
 ```http
-GET https://localhost:52323/gcdump/21632
+GET /gcdump/21632 HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 or
 
 ```http
-GET https://localhost:52323/gcdump/cd4da319-fa9e-4987-ac4e-e57b2aac248b
+GET /gcdump/cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 ### Sample Response
 
-The GC dump is returned as the response body.
+The GC dump, chunk encoded, is returned as the response body.
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Transfer-Encoding: chunked
+```
 
 ## Supported Runtimes
 
