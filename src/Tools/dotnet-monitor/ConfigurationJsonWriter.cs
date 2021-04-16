@@ -40,21 +40,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             _writer.WriteStartObject();
 
-            ProcessSection(configuration, WebHostDefaults.ServerUrlsKey);
-            IConfigurationSection kestrel = ProcessSection(configuration, "Kestrel", includeChildSections: false);
+            ProcessChildSection(configuration, WebHostDefaults.ServerUrlsKey);
+            IConfigurationSection kestrel = ProcessChildSection(configuration, "Kestrel", includeChildSections: false);
             if (kestrel != null)
             {
                 _writer.WriteStartObject();
-                IConfigurationSection certificates = ProcessSection(kestrel, "Certificates", includeChildSections: false);
+                IConfigurationSection certificates = ProcessChildSection(kestrel, "Certificates", includeChildSections: false);
                 if (certificates != null)
                 {
                     _writer.WriteStartObject();
-                    IConfigurationSection defaultCert = ProcessSection(certificates, "Default", includeChildSections: false);
+                    IConfigurationSection defaultCert = ProcessChildSection(certificates, "Default", includeChildSections: false);
                     if (defaultCert != null)
                     {
                         _writer.WriteStartObject();
-                        ProcessSection(defaultCert, "Path", includeChildSections: false);
-                        ProcessSection(defaultCert, "Password", includeChildSections: false, redact: !full);
+                        ProcessChildSection(defaultCert, "Path", includeChildSections: false);
+                        ProcessChildSection(defaultCert, "Password", includeChildSections: false, redact: !full);
                         _writer.WriteEndObject();
                     }
                     _writer.WriteEndObject();
@@ -63,34 +63,34 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             //No sensitive information
-            ProcessSection(configuration, ConfigurationKeys.CorsConfiguration, includeChildSections: true);
-            ProcessSection(configuration, ConfigurationKeys.DiagnosticPort, includeChildSections: true);
-            ProcessSection(configuration, ConfigurationKeys.Metrics, includeChildSections: true);
-            ProcessSection(configuration, ConfigurationKeys.Storage, includeChildSections: true);
+            ProcessChildSection(configuration, ConfigurationKeys.CorsConfiguration, includeChildSections: true);
+            ProcessChildSection(configuration, ConfigurationKeys.DiagnosticPort, includeChildSections: true);
+            ProcessChildSection(configuration, ConfigurationKeys.Metrics, includeChildSections: true);
+            ProcessChildSection(configuration, ConfigurationKeys.Storage, includeChildSections: true);
 
             if (full)
             {
-                ProcessSection(configuration, ConfigurationKeys.ApiAuthentication, includeChildSections: true);
-                ProcessSection(configuration, ConfigurationKeys.Egress, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.ApiAuthentication, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.Egress, includeChildSections: true);
             }
             else
             {
                 //Do not emit ApiKeyHash
-                IConfigurationSection authSection = ProcessSection(configuration, ConfigurationKeys.ApiAuthentication, includeChildSections: false);
+                IConfigurationSection authSection = ProcessChildSection(configuration, ConfigurationKeys.ApiAuthentication, includeChildSections: false);
                 if (authSection != null)
                 {
                     _writer.WriteStartObject();
-                    ProcessSection(authSection, nameof(ApiAuthenticationOptions.ApiKeyHash), includeChildSections: false, redact: true);
-                    ProcessSection(authSection, nameof(ApiAuthenticationOptions.ApiKeyHashType), includeChildSections: false, redact: false);
+                    ProcessChildSection(authSection, nameof(ApiAuthenticationOptions.ApiKeyHash), includeChildSections: false, redact: true);
+                    ProcessChildSection(authSection, nameof(ApiAuthenticationOptions.ApiKeyHashType), includeChildSections: false, redact: false);
                     _writer.WriteEndObject();
                 }
 
-                IConfigurationSection egress = ProcessSection(configuration, ConfigurationKeys.Egress, includeChildSections: false);
+                IConfigurationSection egress = ProcessChildSection(configuration, ConfigurationKeys.Egress, includeChildSections: false);
                 if (egress != null)
                 {
                     _writer.WriteStartObject();
                     //Redact all the properties since they could include secrets such as storage keys
-                    ProcessSection(egress, nameof(EgressOptions.Properties), includeChildSections: true, redact: true);
+                    ProcessChildSection(egress, nameof(EgressOptions.Properties), includeChildSections: true, redact: true);
                     WriteProviders(egress);
                     _writer.WriteEndObject();
                 }
@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private void WriteProviders(IConfiguration egress)
         {
-            IConfigurationSection providers = ProcessSection(egress, nameof(EgressOptions.Providers), includeChildSections: false);
+            IConfigurationSection providers = ProcessChildSection(egress, nameof(EgressOptions.Providers), includeChildSections: false);
             if (providers != null)
             {
                 Func<IConfigurationSection, string, bool> matchesProvider = (configSection, providerName) =>
@@ -120,23 +120,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //Emit well known properties.
                     if (egressProperties.Any(child => matchesProvider(child, EgressProviderTypes.AzureBlobStorage)))
                     {
-                        ProcessSection(provider, nameof(EgressConfigureOptions.CommonEgressProviderOptions.Type), includeChildSections: false);
-                        ProcessSection(provider, nameof(AzureBlobEgressProviderOptions.AccountUri), includeChildSections: false);
-                        ProcessSection(provider, nameof(AzureBlobEgressProviderOptions.BlobPrefix), includeChildSections: false);
-                        ProcessSection(provider, nameof(AzureBlobEgressProviderOptions.ContainerName), includeChildSections: false);
-                        ProcessSection(provider, nameof(AzureBlobEgressProviderOptions.CopyBufferSize), includeChildSections: false);
-                        ProcessSection(provider, nameof(AzureBlobEgressProviderOptions.SharedAccessSignature), includeChildSections: false, redact: true);
-                        ProcessSection(provider, nameof(AzureBlobEgressProviderOptions.AccountKey), includeChildSections: false, redact: true);
-                        ProcessSection(provider, nameof(AzureBlobEgressFactory.ConfigurationOptions.SharedAccessSignatureName), includeChildSections: false, redact: false);
-                        ProcessSection(provider, nameof(AzureBlobEgressFactory.ConfigurationOptions.AccountKeyName), includeChildSections: false, redact: false);
+                        ProcessChildSection(provider, nameof(EgressConfigureOptions.CommonEgressProviderOptions.Type), includeChildSections: false);
+                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.AccountUri), includeChildSections: false);
+                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.BlobPrefix), includeChildSections: false);
+                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.ContainerName), includeChildSections: false);
+                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.CopyBufferSize), includeChildSections: false);
+                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.SharedAccessSignature), includeChildSections: false, redact: true);
+                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.AccountKey), includeChildSections: false, redact: true);
+                        ProcessChildSection(provider, nameof(AzureBlobEgressFactory.ConfigurationOptions.SharedAccessSignatureName), includeChildSections: false, redact: false);
+                        ProcessChildSection(provider, nameof(AzureBlobEgressFactory.ConfigurationOptions.AccountKeyName), includeChildSections: false, redact: false);
                     }
                     //Matches filesystem provider type.
                     else if (egressProperties.Any(child => matchesProvider(child, EgressProviderTypes.FileSystem)))
                     {
-                        ProcessSection(provider, nameof(EgressConfigureOptions.CommonEgressProviderOptions.Type), includeChildSections: false);
-                        ProcessSection(provider, nameof(FileSystemEgressProviderOptions.DirectoryPath), includeChildSections: false);
-                        ProcessSection(provider, nameof(FileSystemEgressProviderOptions.IntermediateDirectoryPath), includeChildSections: false);
-                        ProcessSection(provider, nameof(FileSystemEgressProviderOptions.CopyBufferSize), includeChildSections: false);
+                        ProcessChildSection(provider, nameof(EgressConfigureOptions.CommonEgressProviderOptions.Type), includeChildSections: false);
+                        ProcessChildSection(provider, nameof(FileSystemEgressProviderOptions.DirectoryPath), includeChildSections: false);
+                        ProcessChildSection(provider, nameof(FileSystemEgressProviderOptions.IntermediateDirectoryPath), includeChildSections: false);
+                        ProcessChildSection(provider, nameof(FileSystemEgressProviderOptions.CopyBufferSize), includeChildSections: false);
                     }
                     else
                     {
@@ -159,7 +159,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private IConfigurationSection ProcessSection(IConfiguration parentSection, string key, bool includeChildSections = true, bool redact = false)
+        private IConfigurationSection ProcessChildSection(IConfiguration parentSection, string key, bool includeChildSections = true, bool redact = false)
         {
             IConfigurationSection section = parentSection.GetSection(key);
             if (!section.Exists())
@@ -180,6 +180,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             IEnumerable<IConfigurationSection> children = section.GetChildren();
 
+            //If we do not traverse the child sections, the caller is responsible for creating the value
             if (includeChildSections && children.Any())
             {
                 _writer.WriteStartObject();
