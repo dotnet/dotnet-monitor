@@ -17,7 +17,7 @@ When running a dotnet application differences in diverse local and production en
     - [`/processes`](./api/processes.md)
     - [`/dump`](#)
     - [`/gcdump`](#)
-    - [`/trace`](#)
+    - [`/trace`](./api/trace.md)
     - [`/metrics`](#)
     - [`/logs`](#)
 - [Configuration](#)

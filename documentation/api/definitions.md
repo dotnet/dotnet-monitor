@@ -1,5 +1,42 @@
 # Definitions
 
+## EventProvider
+
+Object describing which events to capture from a single event provider with keywords and event levels.
+
+| Name | Type | Description |
+|---|---|---|
+| Name | string | The name of the provider from which to capture events. See [Well-known Event Providers](https://docs.microsoft.com/dotnet/core/diagnostics/well-known-event-providers) for commonly used event providers. |
+| Keywords | string | Keyword flags used to enable groups of events. Keyword flags are provider specific. May be specified as a 'stringified' integer or a hexadecimal-encoded integer starting with `0x`. |
+| EventLevel | [EventLevel](https://docs.microsoft.com/dotnet/api/system.diagnostics.tracing.eventlevel) | The level of the events to collect. |
+| Arguments | map (of string) | Additional arguments to the event provider. Names and values are event provider specific. |
+
+## EventProvidersConfiguration
+
+Object describing the list of event providers, keywords, event levels, and additional parameters for capturing a trace.
+
+| Name | Type | Description |
+|---|---|---|
+| Providers | [EventProvider](#EventProvider)[] | List of event providers from which to capture events. At least one event provider must be specified. |
+| RequestRundown | bool | The runtime may provide additional type information for certain types of events after the trace session is ended. This additional information is known as rundown events. Without this information, some events may not be parsable into useful information. Default is `true`. |
+| BufferSizeInMB | int | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Default is `256`. Min is `1`. Max is `1024`. |
+
+### Example
+
+```json
+{
+    "Providers": [{
+        "Name": "Microsoft-DotNETCore-SampleProfiler",
+        "EventLevel": "Informational"
+    },{
+        "Name": "Microsoft-Windows-DotNETRuntime",
+        "EventLevel": "Informational",
+        "Keywords": "0x14C14FCCBD"
+    }],
+    "BufferSizeInMB": 1024
+}
+```
+
 ## ProcessIdentifier
 
 Object with process identifying information. The properties on this object describe indentifying aspects for a found process; these values can be used in other API calls to perform operations on specific processes.
@@ -49,6 +86,17 @@ The `uid` property is useful for uniquely identifying a process when it is runni
     "processArchitecture": "x64"
 }
 ```
+
+## TraceProfile
+
+Enumeration that describes the type of diagnostic trace to capture. Each profile represents a list of event providers, event levels, and keywords.
+
+| Name | Description |
+|---|---|
+| `Cpu` | Tracks CPU usage and general .NET runtime information. |
+| `Http` | Tracks ASP[]().NET request handling and HttpClient requests. |
+| `Logs` | Tracks log events emitted at the `Debug` [log level](https://docs.microsoft.com/dotnet/api/system.diagnostics.tracing.eventlevel) or higher. |
+| `Metrics` | Tracks [event counters](https://docs.microsoft.com/en-us/dotnet/core/diagnostics/available-counters) from the `System.Runtime`, `Microsoft.AspNetCore.Hosting`, and `Grpc.AspNetCore.Server` event sources. |
 
 ## ValidationProblemDetails
 
