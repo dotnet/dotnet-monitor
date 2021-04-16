@@ -1,5 +1,16 @@
 # Definitions
 
+## DumpType
+
+Enumeration that describes the type of information to capture in a managed dump.
+
+| Name | Description |
+|---|---|
+| `Mini` | A small dump containing module lists, thread lists, exception information, and all stacks. |
+| `Full` | The largest dump containing all memory including the module images. |
+| `Triage` | A small dump containing only stacks for each thread. |
+| `WithHeap` | A large and relatively comprehensive dump containing module lists, thread lists, all stacks, exception information, handle information, and all memory except for mapped images. |
+
 ## EventProvider
 
 Object describing which events to capture from a single event provider with keywords and event levels.

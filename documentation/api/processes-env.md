@@ -2,6 +2,8 @@
 
 Gets the environment block of a specified process.
 
+## HTTP Route
+
 ```http
 GET /processes/{pid}/env HTTP/1.1
 ```
