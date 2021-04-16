@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth)
         {
             //CONSIDER The console logger uses the standard AddConsole, and therefore disregards IConsole.
-            using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth).Build();
+            using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, configOnly: false).Build();
             try
             {
                 await host.StartAsync(token);
@@ -100,10 +100,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return 0;
         }
 
-        public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth)
+        public Task<int> ShowConfig(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, ConfigDisplayLevel level)
         {
-            return Host.CreateDefaultBuilder()
-                .UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
+            IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, configOnly: true).Build();
+            IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
+            using ConfigurationJsonWriter writer = new ConfigurationJsonWriter(Console.OpenStandardOutput());
+            writer.Write(configuration, full: level == ConfigDisplayLevel.Full);
+
+            return Task.FromResult(0);
+        }
+
+        public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool configOnly)
+        {
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+                hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
@@ -134,75 +144,82 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ConfigPrefix);
-                })
-                .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
+                });
+
+                if (!configOnly)
                 {
-                    //TODO Many of these service additions should be done through extension methods
-
-                    AuthOptions authenticationOptions = new AuthOptions(noAuth ? KeyAuthenticationMode.NoAuth : KeyAuthenticationMode.StoredKey);
-                    services.AddSingleton<IAuthOptions>(authenticationOptions);
-
-                    List<string> authSchemas = null;
-                    if (authenticationOptions.EnableKeyAuth)
+                    hostBuilder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                     {
-                        //Add support for Authentication and Authorization.
-                        AuthenticationBuilder authBuilder = services.AddAuthentication(options =>
-                        {
-                            options.DefaultAuthenticateScheme = AuthConstants.ApiKeySchema;
-                            options.DefaultChallengeScheme = AuthConstants.ApiKeySchema;
-                        })
-                        .AddScheme<ApiKeyAuthenticationHandlerOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
+                        //TODO Many of these service additions should be done through extension methods
 
-                        authSchemas = new List<string> { AuthConstants.ApiKeySchema };
+                        AuthOptions authenticationOptions = new AuthOptions(noAuth ? KeyAuthenticationMode.NoAuth : KeyAuthenticationMode.StoredKey);
+                        services.AddSingleton<IAuthOptions>(authenticationOptions);
 
-                        if (authenticationOptions.EnableNegotiate)
-                        {
-                            //On Windows add Negotiate package. This will use NTLM to perform Windows Authentication.
-                            authBuilder.AddNegotiate();
-                            authSchemas.Add(AuthConstants.NegotiateSchema);
-                        }
-                    }
-
-                    //Apply Authorization Policy for NTLM. Without Authorization, any user with a valid login/password will be authorized. We only
-                    //want to authorize the same user that is running dotnet-monitor, at least for now.
-                    //Note this policy applies to both Authorization schemas.
-                    services.AddAuthorization(authOptions =>
-                    {
+                        List<string> authSchemas = null;
                         if (authenticationOptions.EnableKeyAuth)
                         {
-                            authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
+                            //Add support for Authentication and Authorization.
+                            AuthenticationBuilder authBuilder = services.AddAuthentication(options =>
                             {
-                                builder.AddRequirements(new AuthorizedUserRequirement());
-                                builder.RequireAuthenticatedUser();
-                                builder.AddAuthenticationSchemes(authSchemas.ToArray());
+                                options.DefaultAuthenticateScheme = AuthConstants.ApiKeySchema;
+                                options.DefaultChallengeScheme = AuthConstants.ApiKeySchema;
+                            })
+                            .AddScheme<ApiKeyAuthenticationHandlerOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
 
-                            });
+                            authSchemas = new List<string> { AuthConstants.ApiKeySchema };
+
+                            if (authenticationOptions.EnableNegotiate)
+                            {
+                                //On Windows add Negotiate package. This will use NTLM to perform Windows Authentication.
+                                authBuilder.AddNegotiate();
+                                authSchemas.Add(AuthConstants.NegotiateSchema);
+                            }
                         }
-                        else
+
+                        //Apply Authorization Policy for NTLM. Without Authorization, any user with a valid login/password will be authorized. We only
+                        //want to authorize the same user that is running dotnet-monitor, at least for now.
+                        //Note this policy applies to both Authorization schemas.
+                        services.AddAuthorization(authOptions =>
                         {
-                            authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
+                            if (authenticationOptions.EnableKeyAuth)
                             {
-                                builder.RequireAssertion((_) => true);
-                            });
+                                authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
+                                {
+                                    builder.AddRequirements(new AuthorizedUserRequirement());
+                                    builder.RequireAuthenticatedUser();
+                                    builder.AddAuthenticationSchemes(authSchemas.ToArray());
+
+                                });
+                            }
+                            else
+                            {
+                                authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
+                                {
+                                    builder.RequireAssertion((_) => true);
+                                });
+                            }
+                        });
+
+                        if (authenticationOptions.EnableKeyAuth)
+                        {
+                            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
                         }
+
+                        services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
+                        services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
+
+                        services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
+                        services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
+                        services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
+                        services.ConfigureEgress(context.Configuration);
+                        services.ConfigureMetrics(context.Configuration);
+                        services.ConfigureStorage(context.Configuration);
                     });
+                }
 
-                    if (authenticationOptions.EnableKeyAuth)
-                    {
-                        services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
-                    }
-
-                    services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
-                    services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
-
-                    services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
-                    services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
-                    services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
-                    services.ConfigureEgress(context.Configuration);
-                    services.ConfigureMetrics(context.Configuration);
-                    services.ConfigureStorage(context.Configuration);
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
+                //Note this is necessary for config only because Kestrel configuration
+                //is not added until WebHostDefaults are added.
+                hostBuilder.ConfigureWebHostDefaults(webBuilder =>
                 {
                     AddressListenResults listenResults = new AddressListenResults();
                     webBuilder.ConfigureServices(services =>
@@ -242,6 +259,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     })
                     .UseStartup<Startup>();
                 });
+            return hostBuilder;
         }
 
         private static string[] ProcessMetricUrls(string[] metricUrls, MetricsOptions metricsOptions, AddressListenResults results)
@@ -287,7 +305,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationHelper.MakeKey(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
+                {ConfigurationPath.Combine(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
             });
         }
 
@@ -295,12 +313,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.Endpoints)), string.Join(';', metricEndpoints)},
-                {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)), enableMetrics.ToString()},
-                {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.UpdateIntervalSeconds)), MetricsOptionsDefaults.UpdateIntervalSeconds.ToString()},
-                {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.MetricCount)), MetricsOptionsDefaults.MetricCount.ToString()},
-                {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()},
-                {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics)), MetricsOptionsDefaults.AllowInsecureChannelForCustomMetrics.ToString()}
+                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Endpoints)), string.Join(';', metricEndpoints)},
+                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)), enableMetrics.ToString()},
+                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.UpdateIntervalSeconds)), MetricsOptionsDefaults.UpdateIntervalSeconds.ToString()},
+                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.MetricCount)), MetricsOptionsDefaults.MetricCount.ToString()},
+                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()},
+                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics)), MetricsOptionsDefaults.AllowInsecureChannelForCustomMetrics.ToString()}
             });
         }
 
@@ -309,8 +327,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             DiagnosticPortConnectionMode connectionMode = string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationHelper.MakeKey(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
-                {ConfigurationHelper.MakeKey(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
+                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
+                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
             });
         }
 

@@ -35,6 +35,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth()
               };
 
+        private static Command ConfigCommand() =>
+              new Command(
+                  name: "config",
+                  description: "Configuration related commands for dotnet-monitor.")
+              {
+                new Command(
+                  name: "show",
+                  description: "Shows configuration, as if dotnet-monitor collect was executed with these parameters.")
+                {
+                        // Handler
+                        CommandHandler.Create(Delegate.CreateDelegate(typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, ConfigDisplayLevel, Task<int>>),
+                            new DiagnosticsMonitorCommandHandler(), nameof(DiagnosticsMonitorCommandHandler.ShowConfig))),
+                        Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), ConfigLevel()
+                }
+            };
+
         private static Option Urls() =>
             new Option(
                 aliases: new[] { "-u", "--urls" },
@@ -76,6 +92,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 Argument = new Argument<bool>(name: "noAuth", getDefaultValue: () => false)
             };
 
+        private static Option ConfigLevel() =>
+            new Option(
+                alias: "--level",
+                description: "Configuration level. Unredacted configuration can show sensitive information.")
+            {
+                Argument = new Argument<ConfigDisplayLevel>(name: "level", getDefaultValue: () => ConfigDisplayLevel.Redacted)
+            };
+
         private static string GetDefaultMetricsEndpoint()
         {
             string endpoint = "http://localhost:52325";
@@ -91,10 +115,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             var parser = new CommandLineBuilder()
                 .AddCommand(CollectCommand())
+                .AddCommand(ConfigCommand())
                 .AddCommand(GenerateApiKeyCommand())
                 .UseDefaults()
                 .Build();
             return parser.InvokeAsync(args);
         }
+    }
+    internal enum ConfigDisplayLevel
+    {
+        Redacted,
+        Full,
     }
 }
