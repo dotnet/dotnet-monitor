@@ -2,6 +2,8 @@
 
 Gets detailed information about a specified process.
 
+## HTTP Route
+
 ```http
 GET https://localhost:52323/processes/{pid}
 ```

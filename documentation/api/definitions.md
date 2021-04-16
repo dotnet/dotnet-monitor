@@ -1,5 +1,16 @@
 # Definitions
 
+## DumpType
+
+Enumeration that describes the type of information to capture in a managed dump.
+
+| Name | Description |
+|---|---|
+| `Mini` | A small dump containing module lists, thread lists, exception information, and all stacks. |
+| `Full` | The largest dump containing all memory including the module images. |
+| `Triage` | A small dump containing only stacks for each thread. |
+| `WithHeap` | A large and relatively comprehensive dump containing module lists, thread lists, all stacks, exception information, handle information, and all memory except for mapped images. |
+
 ## ProcessIdentifier
 
 Object with process identifying information. The properties on this object describe indentifying aspects for a found process; these values can be used in other API calls to perform operations on specific processes.

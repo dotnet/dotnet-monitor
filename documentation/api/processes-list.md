@@ -1,6 +1,9 @@
 # Processes - List
 
 Lists the processes that are available from which diagnostic information can be obtained.
+
+## HTTP Route
+
 ```http
 GET https://localhost:52323/processes
 ```
