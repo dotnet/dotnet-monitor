@@ -3,13 +3,13 @@
 Gets the environment block of a specified process.
 
 ```http
-GET https://localhost:52323/processes/{pid}/env
+GET /processes/{pid}/env HTTP/1.1
 ```
 
 or 
 
 ```http
-GET https://localhost:52323/processes/{uid}/env
+GET /processes/{uid}/env HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -46,20 +46,25 @@ See [Authentication](./../authentication.md) for further information.
 ### Sample Request
 
 ```http
-GET https://localhost:52323/processes/21632/env
+GET /processes/21632/env HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 or
 
 ```http
-GET https://localhost:52323/processes/cd4da319-fa9e-4987-ac4e-e57b2aac248b/env
+GET /processes/cd4da319-fa9e-4987-ac4e-e57b2aac248b/env HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 ### Sample Response
 
-```json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
 {
     "ALLUSERSPROFILE": "C:\\ProgramData",
     "APPDATA": "C:\\Users\\user\\AppData\\Roaming",

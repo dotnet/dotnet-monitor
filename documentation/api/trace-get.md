@@ -5,19 +5,19 @@ Captures a diagnostic trace of a process based on a predefined set of trace prof
 ## HTTP Route
 
 ```http
-GET https://localhost:52323/trace/{pid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}
+GET /trace/{pid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds} HTTP/1.1
 ```
 
 or 
 
 ```http
-GET https://localhost:52323/trace/{uid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}
+GET /trace/{uid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds} HTTP/1.1
 ```
 
 or
 
 ```http
-GET https://localhost:52323/trace?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}
+GET /trace?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -60,20 +60,28 @@ See [Authentication](./../authentication.md) for further information.
 ### Sample Request
 
 ```http
-GET https://localhost:52323/trace/21632?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5
+GET /trace/21632?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 or
 
 ```http
-GET https://localhost:52323/trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5
+GET /trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 ### Sample Response
 
-The 1 minute trace with http request handling and metric information is returned as the response body.
+The 1 minute trace with http request handling and metric information, chunk encoded, is returned as the response body.
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Transfer-Encoding: chunked
+```
 
 ## Supported Runtimes
 

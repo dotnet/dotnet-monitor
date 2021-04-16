@@ -2,7 +2,7 @@
 
 Lists the processes that are available from which diagnostic information can be obtained.
 ```http
-GET https://localhost:52323/processes
+GET /processes HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -28,13 +28,17 @@ See [Authentication](./../authentication.md) for further information.
 ### Sample Request
 
 ```http
-GET https://localhost:52323/processes
+GET /processes HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 ### Sample Response
 
-```json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
 [
     {
         "pid": 15000,

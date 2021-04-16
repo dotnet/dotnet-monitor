@@ -5,19 +5,19 @@ Captures a diagnostic trace of a process using the given set of event providers 
 ## HTTP Route
 
 ```http
-POST https://localhost:52323/trace/{pid}?durationSeconds={durationSeconds}
+POST /trace/{pid}?durationSeconds={durationSeconds} HTTP/1.1
 ```
 
 or 
 
 ```http
-POST https://localhost:52323/trace/{uid}?durationSeconds={durationSeconds}
+POST /trace/{uid}?durationSeconds={durationSeconds} HTTP/1.1
 ```
 
 or
 
 ```http
-POST https://localhost:52323/trace?durationSeconds={durationSeconds}
+POST /trace?durationSeconds={durationSeconds} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -64,10 +64,11 @@ The expected content type is `application/json`.
 ### Sample Request
 
 ```http
-POST https://localhost:52323/trace/21632?durationSeconds=60
+POST /trace/21632?durationSeconds=60 HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 Content-Type: application/json
-Content:
+
 {
     "Providers": [{
         "Name": "Microsoft-DotNETCore-SampleProfiler",
@@ -84,10 +85,11 @@ Content:
 or
 
 ```http
-POST https://localhost:52323/trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?durationSeconds=60
+POST /trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?durationSeconds=60 HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 Content-Type: application/json
-Content:
+
 {
     "Providers": [{
         "Name": "Microsoft-DotNETCore-SampleProfiler",
@@ -103,7 +105,13 @@ Content:
 
 ### Sample Response
 
-The 1 minute trace with CPU information is returned as the response body.
+The 1 minute trace with CPU information, chunk encoded, is returned as the response body.
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Transfer-Encoding: chunked
+```
 
 ## Supported Runtimes
 

@@ -3,13 +3,13 @@
 Gets detailed information about a specified process.
 
 ```http
-GET https://localhost:52323/processes/{pid}
+GET /processes/{pid} HTTP/1.1
 ```
 
 or 
 
 ```http
-GET https://localhost:52323/processes/{uid}
+GET /processes/{uid} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -46,20 +46,25 @@ See [Authentication](./../authentication.md) for further information.
 ### Sample Request
 
 ```http
-GET https://localhost:52323/processes/21632
+GET /processes/21632 HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 or
 
 ```http
-GET https://localhost:52323/processes/cd4da319-fa9e-4987-ac4e-e57b2aac248b
+GET /processes/cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
+Host: localhost:52323
 Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
 ```
 
 ### Sample Response
 
-```json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
 {
     "pid": 21632,
     "uid": "cd4da319-fa9e-4987-ac4e-e57b2aac248b",
