@@ -8,7 +8,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class AuthOptions : IAuthOptions
     {
-        public bool EnableNegotiate => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        public bool EnableNegotiate => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && KeyAuthenticationMode != KeyAuthenticationMode.NoAuth;
 
         public KeyAuthenticationMode KeyAuthenticationMode { get; }
 

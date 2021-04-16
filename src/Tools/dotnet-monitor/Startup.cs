@@ -21,6 +21,8 @@ using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -130,6 +132,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             lifetime.ApplicationStarted.Register(() => LogBoundAddresses(app.ServerFeatures, listenResults, logger));
 
+            LogElevatedPermissions(options, logger);
+
             if (options.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth)
             {
                 logger.NoAuthentication();
@@ -208,6 +212,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 logger.BoundMetricsAddress(metricAddress);
             }
+        }
+
+        private static void LogElevatedPermissions(IAuthOptions options, ILogger logger)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(currentUser);
+                if (principal.IsInRole(WindowsBuiltInRole.Administrator))
+                {
+                    logger.RunningElevated();
+                    // In the future this will need to be modified when ephemeral keys are setup
+                    if (options.EnableNegotiate)
+                    {
+                        logger.DisabledNegotiateWhileElevated();
+                    }
+                }
+            }
+
+            // in the future we should check that we aren't running root on linux (out of scope for now)
         }
     }
 }
