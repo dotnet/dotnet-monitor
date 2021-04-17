@@ -22,9 +22,9 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>53fe29e220fc0db05eafd5c6bc6c8fb9ee7cec7c</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-preview.4.21215.16">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-preview.5.21216.10">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>2d6e985887068528980b5037b945232f35ef8019</Sha>
+      <Sha>62e157b94276bf6e607546b0a46b283f7a6a9b92</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-preview.4.21215.13">
       <Uri>https://github.com/dotnet/runtime</Uri>
