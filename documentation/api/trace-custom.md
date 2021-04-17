@@ -30,7 +30,7 @@ POST /trace?durationSeconds={durationSeconds} HTTP/1.1
 | `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `durationSeconds` | query | false | int | The duration of the trace operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about these parameters.
+See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid` and `uid` parameters.
 
 If neither `pid` nor `uid` are specified, a trace of the [default process](defaultprocess.md) will be captured. Attempting to capture a trace of the default process when the default process cannot be resolved will fail.
 

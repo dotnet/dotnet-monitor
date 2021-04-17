@@ -23,7 +23,7 @@ GET /processes/{uid} HTTP/1.1
 | `pid` | path | true | int | The ID of the process. |
 | `uid` | path | true | guid | A value that uniquely identifies a runtime instance within a process. |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about these parameters.
+See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid` and `uid` parameters.
 
 Either `pid` or `uid` are required, but not both.
 

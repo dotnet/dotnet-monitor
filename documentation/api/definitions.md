@@ -48,6 +48,56 @@ Object describing the list of event providers, keywords, event levels, and addit
 }
 ```
 
+## LogEntry
+
+Object describing a log entry from a target process.
+
+| Name | Type | Description |
+|---|---|---|
+| `Arguments` | map (of object) | The arguments of the format string of the log entry, including an entry for the original format string. |
+| `Category` | string | The category of the log entry. |
+| `EventId` | string | The event name of the EventId of the log entry. |
+| `Exception` | string | If an exception is logged, this property contains the formatted message of the log entry. |
+| `LogLevel` | string | The [LogLevel](#LogLevel) of the log entry. |
+| `Message` | string | If an exception is NOT logged, this property contains the formatted message of the log entry. |
+| `Scopes` | map (of object) | The scope information associated with the log entry. |
+
+### Example
+
+If an application logged the following message:
+
+```cs
+ILogger<MyNamespace.MyClass> logger = loggerFactory.CreateLogger<MyNamespace.MyClass>();
+logger.LogError(new EventId(7, "FailedAfterRetries"), "Failed to get resource after {attempts} attempts.", 5);
+```
+
+The above message would be reported as:
+
+```json
+{
+    "LogLevel": "Error",
+    "EventId": "FailedAfterRetries",
+    "Category": "MyNamespace.MyClass",
+    "Message": "Failed to get resource after 5 attempts.",
+    "Scopes": {
+        "RequestId": "8000000a-0004-fc00-b63f-84710c7967bb",
+        "RequestPath": "/",
+        "ActionId": "9524e18b-1bac-4d4c-88d7-68a753258b1c",
+        "ActionName": "/Index"
+    },
+    "Arguments": {
+        "attempts": "5",
+        "{OriginalFormat}": "Failed to get resource after {attempts} attempts."
+    }
+}
+```
+
+## LogLevel
+
+Enumeration that defines logging severity levels.
+
+See [LogLevel](https://docs.microsoft.com/dotnet/api/microsoft.extensions.logging.loglevel) documentation.
+
 ## ProcessIdentifier
 
 Object with process identifying information. The properties on this object describe indentifying aspects for a found process; these values can be used in other API calls to perform operations on specific processes.
