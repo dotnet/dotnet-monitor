@@ -132,6 +132,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Critical,
                 formatString: "{failure}");
 
+        private static readonly Action<ILogger, Exception> _runningElevated =
+            LoggerMessage.Define(
+                eventId: new EventId(21, "RunningElevated"),
+                logLevel: LogLevel.Warning,
+                formatString: "The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes)");
+
+        private static readonly Action<ILogger, Exception> _disabledNegotiateWhileElevated =
+            LoggerMessage.Define(
+                eventId: new EventId(22, "DisabledNegotiateWhileElevated"),
+                logLevel: LogLevel.Warning,
+                formatString: "Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions.");
+
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
             _egressProviderAdded(logger, providerName, null);
@@ -246,6 +258,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             foreach (string failure in exception.Failures)
                 _optionsValidationFalure(logger, failure, null);
+        }
+
+        public static void RunningElevated(this ILogger logger)
+        {
+            _runningElevated(logger, null);
+        }
+
+        public static void DisabledNegotiateWhileElevated(this ILogger logger)
+        {
+            _disabledNegotiateWhileElevated(logger, null);
         }
 
         private static string Redact(string value)
