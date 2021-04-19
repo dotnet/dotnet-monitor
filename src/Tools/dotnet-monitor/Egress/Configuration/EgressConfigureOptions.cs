@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         /// <summary>
         /// Configuration options to all egress providers.
         /// </summary>
-        private class CommonEgressProviderOptions
+        internal class CommonEgressProviderOptions
         {
             /// <summary>
             /// The type of the egress provider.

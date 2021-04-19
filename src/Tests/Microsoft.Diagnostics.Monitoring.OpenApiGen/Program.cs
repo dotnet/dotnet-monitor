@@ -47,7 +47,8 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                     metricUrls: Array.Empty<string>(),
                     metrics: true,
                     diagnosticPort: null,
-                    noAuth: false)
+                    noAuth: false,
+                    configOnly: false)
                 .ConfigureServices(services =>
                 {
                     services.AddSwaggerGen(options =>

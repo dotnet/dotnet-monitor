@@ -12,11 +12,6 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         private static readonly char[] ValueSeparatorArray = new char[] { ValueSeparator };
         private static readonly string ValueSeparatorString = ValueSeparator.ToString();
 
-        public static string MakeKey(string parent, string child)
-        {
-            return FormattableString.Invariant($"{parent}:{child}");
-        }
-
         public static string[] SplitValue(string value)
         {
             return value.Split(ValueSeparatorArray, StringSplitOptions.RemoveEmptyEntries);
