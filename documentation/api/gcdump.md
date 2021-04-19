@@ -35,7 +35,7 @@ GET /gcdump HTTP/1.1
 | `pid` | path | false | int | The ID of the process. |
 | `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about these parameters.
+See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid` and `uid` parameters.
 
 If neither `pid` nor `uid` are specified, a GC dump of the [default process](defaultprocess.md) will be captured. Attempting to capture a GC dump of the default process when the default process cannot be resolved will fail.
 

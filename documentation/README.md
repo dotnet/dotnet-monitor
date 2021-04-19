@@ -19,7 +19,7 @@ When running a dotnet application differences in diverse local and production en
     - [`/gcdump`](./api/gcdump.md)
     - [`/trace`](./api/trace.md)
     - [`/metrics`](#)
-    - [`/logs`](#)
+    - [`/logs`](./api/logs.md)
 - [Configuration](#)
     - [JSON Schema](./schema.json)
 - [Authentication](./authentication.md)

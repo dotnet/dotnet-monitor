@@ -32,7 +32,7 @@ GET /dump?type={type} HTTP/1.1
 | `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `type` | query | false | [DumpType](definitions.md#DumpType) | The type of dump to capture. Default value is `WithHeap` |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about these parameters.
+See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid` and `uid` parameters.
 
 If neither `pid` nor `uid` are specified, a dump of the [default process](defaultprocess.md) will be captured. Attempting to capture a dump of the default process when the default process cannot be resolved will fail.
 
