@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.RestServer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -117,7 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             LoggerMessage.Define(
                 eventId: new EventId(18, "MetricUrlsUpdated"),
                 logLevel: LogLevel.Warning,
-                formatString: $"Metric bindings changed. To host custom metrics over http set {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics))} to {true}");
+                formatString: $"Metric bindings changed. To host custom metrics over http set {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics))} to {true}");
 
         private static readonly Action<ILogger, string, string, Exception> _metricUrlUpdated =
             LoggerMessage.Define<string, string>(

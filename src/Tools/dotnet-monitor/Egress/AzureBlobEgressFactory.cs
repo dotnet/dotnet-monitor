@@ -151,7 +151,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         /// <summary>
         /// Egress provider options for Azure blob storage with additional options.
         /// </summary>
-        private class ConfigurationOptions : AzureBlobEgressProviderOptions
+        internal class ConfigurationOptions : AzureBlobEgressProviderOptions
         {
             /// <summary>
             /// The name of the account key used to look up the value from the <see cref="EgressOptions.Properties"/> map.
