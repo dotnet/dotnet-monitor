@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Tools.Common;
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Invocation;
@@ -32,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
               {
                 // Handler
                 CommandHandler.Create<CancellationToken, IConsole, string[], string[], bool, string, bool>(new DiagnosticsMonitorCommandHandler().Start),
-                Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth()
+                SharedOptions()
               };
 
         private static Command ConfigCommand() =>
@@ -47,10 +48,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         // Handler
                         CommandHandler.Create(Delegate.CreateDelegate(typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, ConfigDisplayLevel, Task<int>>),
                             new DiagnosticsMonitorCommandHandler(), nameof(DiagnosticsMonitorCommandHandler.ShowConfig))),
-                        Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), ConfigLevel()
+                        SharedOptions(), ConfigLevel()
                 }
             };
 
+        private static IEnumerable<Option> SharedOptions() => new Option[]
+        {
+            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth()
+        };
+        
         private static Option Urls() =>
             new Option(
                 aliases: new[] { "-u", "--urls" },

@@ -165,7 +165,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             if (!section.Exists())
             {
                 _writer.WritePropertyName(key);
-                _writer.WriteStringValue("NOT PRESENT");
+                _writer.WriteStringValue(":NOT PRESENT:");
                 return null;
             }
 
@@ -196,7 +196,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     if (redact)
                     {
-                        _writer.WriteStringValue("REDACTED");
+                        _writer.WriteStringValue(":REDACTED:");
                     }
                     else
                     {
