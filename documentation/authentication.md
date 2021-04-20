@@ -134,6 +134,11 @@ If using PowerShell, be sure to use `curl.exe`, as `curl` is an alias for `Invok
 curl.exe -H "Authorization: MonitorApiKey Uf6Yq8ZGkcn+ltq2QLHxuXpKA6/Q5VH5Mb5aSIJBxRc=" https://localhost:52323/processes
 ```
 
+To use Windows authentication with PowerShell, you can specify the `--negotiate` flag
+```powershell
+curl.exe --negotiate https://localhost:52323/processes -u $(whoami)
+```
+
 
 
 ## Disabling Authentication
