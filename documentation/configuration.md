@@ -263,4 +263,61 @@ In addition to enabling custom providers, `dotnet-monitor` also allows you to di
 
 ## Egress Configuration
 
-// TODO
+### Azure blob storage egress provider
+
+| Name | Type | Description |
+|---|---|---|
+| type | string | Must be 'azureBlobStorage'.|
+| accountUri | string | The URI of the Azure blob storage account.|
+| containerName | string | The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.|
+| blobPrefix | string | Optional path prefix for the artifacts to egress.|
+| copyBufferSize | string | The buffer size to use when copying data from the original artifact to the blob stream.|
+| accountKey | string | The account key used to access the Azure blob storage account.|
+| sharedAccessSignature | string | The shared access signature (SAS) used to access the azure blob storage account.|
+| accountKeyName | string | Name of the property in the Properties section that will contain the account key.|
+| sharedAccessSignatureName | string | Name of the property in the Properties section that will contain the SAS token.|
+
+### Example azureBlobStorage provider
+
+```json
+{
+    "Egress": {
+        "Providers": {
+            "monitorBlob": {
+                "type": "azureBlobStorage",
+                "accountUri": "https://exampleaccount.blob.core.windows.net",
+                "containerName": "dotnet-monitor",
+                "blobPrefix": "artifacts",
+                "accountKeyName": "MonitorBlobAccountKey"
+            }
+        },
+        "Properties": {
+            "MonitorBlobAccountKey": "accountKey"
+        }
+    }
+}
+```
+
+### Filesystem egress provider
+
+| Name | Type | Description |
+|---|---|---|
+| type | string | Must be 'fileSystem'|
+| directoryPath | string | The directory path to which the stream data will be egressed.|
+| intermediateDirectoryPath | string | The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in 'directoryPath'.|
+
+### Example fileSystem provider
+
+```json
+{
+    "Egress": {
+        "Providers": {
+            "monitorFile": {
+                "type": "fileSystem",
+                "directoryPath": "/artifacts",
+                "intermediateDirectoryPath": "/intermediateArtifacts"
+            }
+        }
+    }
+}
+```
