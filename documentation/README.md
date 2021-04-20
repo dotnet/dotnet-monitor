@@ -20,7 +20,7 @@ When running a dotnet application differences in diverse local and production en
     - [`/trace`](./api/trace.md)
     - [`/metrics`](./api/metrics.md)
     - [`/logs`](./api/logs.md)
-- [Configuration](#)
+- [Configuration](./configuration.md)
     - [JSON Schema](./schema.json)
 - [Authentication](./authentication.md)
     - [API Key (Recommended)](./authentication.md#api-key-authentication)
