@@ -28,6 +28,10 @@ GET /gcdump HTTP/1.1
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
+## Host Address
+
+The default host address for these routes is `https://localhost:52323`. This route is only available on the addresses configured via the `--urls` command line parameter and the `DOTNETMONITOR_URLS` environment variable.
+
 ## URI Parameters
 
 | Name | In | Required | Type | Description |
@@ -41,11 +45,11 @@ If neither `pid` nor `uid` are specified, a GC dump of the [default process](def
 
 ## Authentication
 
+Authentication is enforced for this route. See [Authentication](./../authentication.md) for further information.
+
 Allowed schemes:
 - `MonitorApiKey`
 - `Negotiate` (Windows only, running as unelevated)
-
-See [Authentication](./../authentication.md) for further information.
 
 ## Responses
 
