@@ -83,7 +83,7 @@ Once you've added the `$schema` property, you should started support for complet
 
 ## View  merged configuration
 
-`dotnet monitor` includes a diagnostic command that allows to output the the resulting configuration after merging the configuration from all the various sources.
+`dotnet monitor` includes a diagnostic command that allows you to output the the resulting configuration after merging the configuration from all the various sources.
 
 To view the merged configuration, run the following command:
 
@@ -135,7 +135,7 @@ The output of command should resemble the following JSON object:
 
 ### Connection Mode
 
-It is possible to change this behavior and have .NET processes connect to .NET monitor. This allow you to monitor a process from start and collect traces for events such assembly load events that primarily occur at process startup and weren't possible to collect previously.
+It is possible to change this behavior and have .NET processes connect to `dotnet monitor`. This allow you to monitor a process from start and collect traces for events such assembly load events that primarily occur at process startup and weren't possible to collect previously.
 
 ```json
   "DiagnosticPort": {
@@ -144,7 +144,7 @@ It is possible to change this behavior and have .NET processes connect to .NET m
   }
 ```
 
-When `dotnet monitor` is in `Listen`, you have to configure .NET processes to connect to `dotnet monitor`. You can do so specifying the appropriate environment variable on your .NET process
+When `dotnet monitor` is in `Listen` mode, you have to configure .NET processes to connect to `dotnet monitor`. You can do so specifying the appropriate environment variable on your .NET process
 
 ```powershell
 $env:DOTNET_DiagnosticPorts="dotnet-monitor-pipe,suspend"
@@ -152,7 +152,7 @@ $env:DOTNET_DiagnosticPorts="dotnet-monitor-pipe,suspend"
 
 #### Maximum connection
 
-When operating in `Listen` mode, you can also specify the maximum number of Incoming connections for `dotnet monitor` to accept via the following configuration:
+When operating in `Listen` mode, you can also specify the maximum number of incoming connections for `dotnet monitor` to accept via the following configuration:
 
 ```json
   "DiagnosticPort": {
@@ -184,7 +184,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 
 ### Metrics Urls
 
-In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it also binds to metric urls that only expose the `/metrics` endpoint. Unlike the other endpoints, the metrics urls do not require authentication. Unless you enable collection of custom providers that may contain sensitive business logic, it is generally consider safe to expose metrics endpoints. 
+In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it also binds to metric urls that only expose the `/metrics` endpoint. Unlike the other endpoints, the metrics urls do not require authentication. Unless you enable collection of custom providers that may contain sensitive business logic, it is generally considered safe to expose metrics endpoints. 
 
 Metrics urls can configured via the command line:
 
@@ -251,7 +251,7 @@ In the default configuration, enabling of custom metrics changes the default bin
 
 ### Disable default providers
 
-In addition to enabling custom providers, `dotnet monitor` also allows you to disable to collection of the default providers. You can do so via the following configuration:
+In addition to enabling custom providers, `dotnet monitor` also allows you to disable collection of the default providers. You can do so via the following configuration:
 
 ```json
 {
