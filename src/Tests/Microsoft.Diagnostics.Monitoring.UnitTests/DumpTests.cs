@@ -9,9 +9,9 @@ using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Buffers;
-using System.Net;
+using Microsoft.FileFormats;
+using Microsoft.FileFormats.ELF;
+using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -79,30 +79,56 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 using ResponseStreamHolder holder = await apiClient.CaptureDumpAsync(appRunner.ProcessId, type);
                 Assert.NotNull(holder);
 
-                const int bufferLength = 10240; // 10k buffer
-                long total = await ArrayPool<byte>.Shared.RentAndReturnAsync(bufferLength, async buffer =>
+                byte[] headerBuffer = new byte[64];
+
+                // Read enough to deserialize the header.
+                int read;
+                int total = 0;
+                using CancellationTokenSource cancellation = new(TestTimeouts.HttpApi);
+                while (total < headerBuffer.Length && 0 != (read = await holder.Stream.ReadAsync(headerBuffer, total, headerBuffer.Length - total, cancellation.Token)))
                 {
-                    using CancellationTokenSource cancellation = new(TestTimeouts.HttpApi);
+                    total += read;
+                }
+                Assert.Equal(headerBuffer.Length, total);
 
-                    int read;
-                    long total = 0;
-                    while (0 != (read = await holder.Stream.ReadAsync(buffer, 0, buffer.Length, cancellation.Token)))
-                    {
-                        total += read;
-                    }
-                    return total;
-                });
+                // Read header and validate
+                using MemoryStream headerStream = new(headerBuffer);
 
-                _outputHelper.WriteLine("Dump Size: {0} bytes", total);
-                // Dumps should have at least 10k of data (this is an arbitrary threshold).
-                // CONSIDER: Is there a better lightweight way to check if the dump is viable?
-                // e.g. install dotnet-dump and do a brief analysis; or check the header on the
-                // file content.
-                Assert.True(total > 10_000);
+                StreamAddressSpace dumpAddressSpace = new(headerStream);
+                Reader dumpReader = new(dumpAddressSpace);
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    MinidumpHeader header = dumpReader.Read<MinidumpHeader>(0);
+                    // Validate Signature
+                    Assert.True(header.IsSignatureValid.Check());
+                }
+                else
+                {
+                    ELFHeader header = dumpReader.Read<ELFHeader>(0);
+                    // Validate Signature
+                    Assert.True(header.IsIdentMagicValid.Check());
+                    // Validate ELF file is a core dump
+                    Assert.Equal(ELFHeaderType.Core, header.Type);
+                }
 
                 await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
             Assert.Equal(0, appRunner.ExitCode);
+        }
+
+        private class MinidumpHeader : TStruct
+        {
+            public uint Signature = 0;
+            public uint Version = 0;
+            public uint NumberOfStreams = 0;
+            public uint StreamDirectoryRva = 0;
+            public uint CheckSum = 0;
+            public uint TimeDateStamp = 0;
+            public ulong Flags = 0;
+
+            // 50,4D,44,4D = PMDM
+            public ValidationRule IsSignatureValid => new ValidationRule("Invalid Signature", () => Signature == 0x504D444DU);
         }
     }
 }
