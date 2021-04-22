@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.RestServer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -117,7 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             LoggerMessage.Define(
                 eventId: new EventId(18, "MetricUrlsUpdated"),
                 logLevel: LogLevel.Warning,
-                formatString: $"Metric bindings changed. To host custom metrics over http set {ConfigurationHelper.MakeKey(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics))} to {true}");
+                formatString: $"Metric bindings changed. To host custom metrics over http set {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics))} to {true}");
 
         private static readonly Action<ILogger, string, string, Exception> _metricUrlUpdated =
             LoggerMessage.Define<string, string>(
@@ -130,6 +131,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: new EventId(20, "OptionsValidationFailure"),
                 logLevel: LogLevel.Critical,
                 formatString: "{failure}");
+
+        private static readonly Action<ILogger, Exception> _runningElevated =
+            LoggerMessage.Define(
+                eventId: new EventId(21, "RunningElevated"),
+                logLevel: LogLevel.Warning,
+                formatString: "The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes)");
+
+        private static readonly Action<ILogger, Exception> _disabledNegotiateWhileElevated =
+            LoggerMessage.Define(
+                eventId: new EventId(22, "DisabledNegotiateWhileElevated"),
+                logLevel: LogLevel.Warning,
+                formatString: "Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions.");
 
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
@@ -245,6 +258,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             foreach (string failure in exception.Failures)
                 _optionsValidationFalure(logger, failure, null);
+        }
+
+        public static void RunningElevated(this ILogger logger)
+        {
+            _runningElevated(logger, null);
+        }
+
+        public static void DisabledNegotiateWhileElevated(this ILogger logger)
+        {
+            _disabledNegotiateWhileElevated(logger, null);
         }
 
         private static string Redact(string value)
