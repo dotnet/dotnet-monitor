@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             }
         }
 
-        public async Task<Stream> GetDump(IProcessInfo pi, DumpType mode, CancellationToken token)
+        public async Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token)
         {
             string dumpFilePath = Path.Combine(_storageOptions.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{pi.EndpointInfo.ProcessId}"));
             NETCore.Client.DumpType dumpType = MapDumpType(mode);
@@ -91,18 +91,18 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             return new AutoDeleteFileStream(dumpFilePath);
         }
 
-        private static NETCore.Client.DumpType MapDumpType(DumpType dumpType)
+        private static DumpType MapDumpType(Models.DumpType dumpType)
         {
             switch (dumpType)
             {
-                case DumpType.Full:
-                    return NETCore.Client.DumpType.Full;
-                case DumpType.WithHeap:
-                    return NETCore.Client.DumpType.WithHeap;
-                case DumpType.Triage:
-                    return NETCore.Client.DumpType.Triage;
-                case DumpType.Mini:
-                    return NETCore.Client.DumpType.Normal;
+                case Models.DumpType.Full:
+                    return DumpType.Full;
+                case Models.DumpType.WithHeap:
+                    return DumpType.WithHeap;
+                case Models.DumpType.Triage:
+                    return DumpType.Triage;
+                case Models.DumpType.Mini:
+                    return DumpType.Normal;
                 default:
                     throw new ArgumentException("Unexpected dumpType", nameof(dumpType));
             }

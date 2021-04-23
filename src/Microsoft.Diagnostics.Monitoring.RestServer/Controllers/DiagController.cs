@@ -152,7 +152,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         public Task<ActionResult> CaptureDump(
             ProcessKey? processKey,
             [FromQuery]
-            DumpType type = DumpType.WithHeap,
+            Models.DumpType type = Models.DumpType.WithHeap,
             [FromQuery]
             string egressProvider = null)
         {

@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
         Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token);
 
-        Task<Stream> GetDump(IProcessInfo pi, DumpType mode, CancellationToken token);
+        Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token);
     }
 
 
@@ -35,13 +35,5 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         public string ProcessArchitecture { get; }
 
         string ProcessName { get; }
-    }
-
-    public enum DumpType
-    {
-        Full = 1,
-        Mini,
-        WithHeap,
-        Triage
     }
 }

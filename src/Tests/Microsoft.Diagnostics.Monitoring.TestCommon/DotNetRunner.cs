@@ -113,10 +113,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             switch (FrameworkReference)
             {
                 case DotNetFrameworkReference.Microsoft_AspNetCore_App:
-                    frameworkVersion = DotNetHost.CurrentAspNetCoreVersion;
+                    frameworkVersion = DotNetHost.CurrentAspNetCoreVersionString;
                     break;
                 case DotNetFrameworkReference.Microsoft_NetCore_App:
-                    frameworkVersion = DotNetHost.CurrentNetCoreVersion;
+                    frameworkVersion = DotNetHost.CurrentNetCoreVersionString;
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported framework reference: {FrameworkReference}");

@@ -8,7 +8,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public partial class DotNetHost
     {
-        public static readonly string CurrentAspNetCoreVersion = "$MicrosoftAspNetCoreAppVersion$";
-        public static readonly string CurrentNetCoreVersion = "$MicrosoftNetCoreAppVersion$";
+        public static readonly string CurrentAspNetCoreVersionString = "$MicrosoftAspNetCoreAppVersion$";
+        public static readonly string CurrentNetCoreVersionString = "$MicrosoftNetCoreAppVersion$";
     }
 }
