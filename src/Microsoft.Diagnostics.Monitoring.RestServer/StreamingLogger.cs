@@ -84,40 +84,47 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             //CONSIDER Should we cache up the loggers and writers?
             using (var jsonWriter = new Utf8JsonWriter(outputStream, new JsonWriterOptions { Indented = false }))
             {
+                // Matches the format of JSONConsoleFormatter
+
                 jsonWriter.WriteStartObject();
+                // TODO: Write timestamp as string
+                //jsonWriter.WriteString("Timestamp", DateTime.UtcNow.ToString());
                 jsonWriter.WriteString("LogLevel", logLevel.ToString());
-                jsonWriter.WriteString("EventId", eventId.ToString());
+                jsonWriter.WriteNumber("EventId", eventId.Id);
                 jsonWriter.WriteString("Category", _categoryName);
+                jsonWriter.WriteString("Message", formatter(state, exception));
                 if (exception != null)
                 {
-                    jsonWriter.WriteString("Exception", formatter(state, exception));
-                }
-                else
-                {
-                    jsonWriter.WriteString("Message", formatter(state, exception));
+                    jsonWriter.WriteString("Exception", exception.ToString());
                 }
 
-                //Write out scope data
-                jsonWriter.WriteStartObject("Scopes");
-                foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
-                {
-                    foreach (KeyValuePair<string, object> scopeValue in scope)
-                    {
-                        WriteKeyValuePair(jsonWriter, scopeValue);
-                    }
-                }
-                jsonWriter.WriteEndObject();
-
-                //Write out structured data
-                jsonWriter.WriteStartObject("Arguments");
+                // Write out state
                 if (state is IEnumerable<KeyValuePair<string, object>> values)
                 {
+                    jsonWriter.WriteStartObject("State");
+                    jsonWriter.WriteString("Message", state.ToString());
                     foreach (KeyValuePair<string, object> arg in values)
                     {
                         WriteKeyValuePair(jsonWriter, arg);
                     }
+                    jsonWriter.WriteEndObject();
                 }
-                jsonWriter.WriteEndObject();
+
+                // Write out scopes
+                if (_scopes.HasScopes)
+                {
+                    jsonWriter.WriteStartArray("Scopes");
+                    foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
+                    {
+                        jsonWriter.WriteStartObject();
+                        foreach (KeyValuePair<string, object> scopeValue in scope)
+                        {
+                            WriteKeyValuePair(jsonWriter, scopeValue);
+                        }
+                        jsonWriter.WriteEndObject();
+                    }
+                    jsonWriter.WriteEndArray();
+                }
 
                 jsonWriter.WriteEndObject();
                 jsonWriter.Flush();
