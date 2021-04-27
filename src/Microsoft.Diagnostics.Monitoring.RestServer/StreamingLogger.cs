@@ -84,40 +84,50 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             //CONSIDER Should we cache up the loggers and writers?
             using (var jsonWriter = new Utf8JsonWriter(outputStream, new JsonWriterOptions { Indented = false }))
             {
+                // Matches the format of JsonConsoleFormatter
+
                 jsonWriter.WriteStartObject();
+                // TODO: Write timestamp as string
+                //jsonWriter.WriteString("Timestamp", DateTime.UtcNow.ToString());
                 jsonWriter.WriteString("LogLevel", logLevel.ToString());
-                jsonWriter.WriteString("EventId", eventId.ToString());
+                jsonWriter.WriteNumber("EventId", eventId.Id);
+                // EventId.Name is optional; use empty string if it is null as this
+                // works better with analytic platforms such as Azure Monitor.
+                jsonWriter.WriteString("EventName", eventId.Name ?? string.Empty);
                 jsonWriter.WriteString("Category", _categoryName);
+                jsonWriter.WriteString("Message", formatter(state, exception));
                 if (exception != null)
                 {
-                    jsonWriter.WriteString("Exception", formatter(state, exception));
-                }
-                else
-                {
-                    jsonWriter.WriteString("Message", formatter(state, exception));
+                    jsonWriter.WriteString("Exception", exception.ToString());
                 }
 
-                //Write out scope data
-                jsonWriter.WriteStartObject("Scopes");
-                foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
-                {
-                    foreach (KeyValuePair<string, object> scopeValue in scope)
-                    {
-                        WriteKeyValuePair(jsonWriter, scopeValue);
-                    }
-                }
-                jsonWriter.WriteEndObject();
-
-                //Write out structured data
-                jsonWriter.WriteStartObject("Arguments");
+                // Write out state
                 if (state is IEnumerable<KeyValuePair<string, object>> values)
                 {
+                    jsonWriter.WriteStartObject("State");
+                    jsonWriter.WriteString("Message", state.ToString());
                     foreach (KeyValuePair<string, object> arg in values)
                     {
                         WriteKeyValuePair(jsonWriter, arg);
                     }
+                    jsonWriter.WriteEndObject();
                 }
-                jsonWriter.WriteEndObject();
+
+                // Write out scopes
+                if (_scopes.HasScopes)
+                {
+                    jsonWriter.WriteStartArray("Scopes");
+                    foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
+                    {
+                        jsonWriter.WriteStartObject();
+                        foreach (KeyValuePair<string, object> scopeValue in scope)
+                        {
+                            WriteKeyValuePair(jsonWriter, scopeValue);
+                        }
+                        jsonWriter.WriteEndObject();
+                    }
+                    jsonWriter.WriteEndArray();
+                }
 
                 jsonWriter.WriteEndObject();
                 jsonWriter.Flush();
@@ -131,12 +141,15 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         {
             Stream outputStream = _outputStream;
 
+            // Matches the format of SimpleConsoleFormatter as much as possible
+
             using var writer = new StreamWriter(outputStream, Encoding.UTF8, 1024, leaveOpen: true) { NewLine = "\n" };
 
             //event: eventName (if exists)
             //data: level category[eventId]
             //data: message
             //data: => scope1, scope2 => scope3, scope4
+            //data: exception (if exists)
             //\n
             
             if (!string.IsNullOrEmpty(eventId.Name))
@@ -154,6 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             writer.Write("data: ");
             writer.WriteLine(formatter(state, exception));
 
+            // Scopes
             bool firstScope = true;
             foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
             {
@@ -184,6 +198,14 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             {
                 writer.WriteLine();
             }
+
+            // Exception
+            if (null != exception)
+            {
+                writer.Write("data: ");
+                writer.WriteLine(exception.ToString().Replace(Environment.NewLine, $"{Environment.NewLine}data: "));
+            }
+
             writer.WriteLine();
         }
 
