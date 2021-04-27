@@ -12,19 +12,20 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
 {
     internal sealed class Program
     {
-        private static readonly OpenApiSchema Int32Schema =
-            new OpenApiSchema() { Type = "integer", Format = "int32" };
-        private static readonly OpenApiSchema GuidSchema =
-            new OpenApiSchema() { Type = "string", Format = "uuid" };
+        private static readonly OpenApiSchema ProcessKey_Int32Schema =
+            new OpenApiSchema() { Type = "integer", Format = "int32", Description = "The ID of the process." };
+        private static readonly OpenApiSchema ProcessKey_GuidSchema =
+            new OpenApiSchema() { Type = "string", Format = "uuid", Description = "The runtime instance cookie of the runtime." };
+        private static readonly OpenApiSchema ProcessKey_StringSchema =
+            new OpenApiSchema() { Type = "string", Description = "The name of the process." };
 
         private static Func<OpenApiSchema> CreateProcessKeySchema =>
-            () => new OpenApiSchema() { OneOf = { Int32Schema, GuidSchema } };
+            () => new OpenApiSchema() { OneOf = { ProcessKey_Int32Schema, ProcessKey_GuidSchema, ProcessKey_StringSchema } };
 
         public static void Main(string[] args)
         {

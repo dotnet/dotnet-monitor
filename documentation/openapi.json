@@ -46,20 +46,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie."
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name."
             }
           }
         ],
@@ -94,20 +100,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie."
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name."
             }
           }
         ],
@@ -145,20 +157,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
@@ -216,20 +234,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
@@ -279,20 +303,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
@@ -374,20 +404,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
@@ -471,20 +507,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
@@ -623,6 +665,10 @@
           "uid": {
             "type": "string",
             "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
