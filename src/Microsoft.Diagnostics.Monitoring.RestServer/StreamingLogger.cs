@@ -91,6 +91,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
                 //jsonWriter.WriteString("Timestamp", DateTime.UtcNow.ToString());
                 jsonWriter.WriteString("LogLevel", logLevel.ToString());
                 jsonWriter.WriteNumber("EventId", eventId.Id);
+                // EventId.Name is optional; use empty string if it is null as this
+                // works better with analytic platforms such as Azure Monitor.
+                jsonWriter.WriteString("EventName", eventId.Name ?? string.Empty);
                 jsonWriter.WriteString("Category", _categoryName);
                 jsonWriter.WriteString("Message", formatter(state, exception));
                 if (exception != null)
