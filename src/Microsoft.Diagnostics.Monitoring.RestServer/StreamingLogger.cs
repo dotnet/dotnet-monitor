@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             //CONSIDER Should we cache up the loggers and writers?
             using (var jsonWriter = new Utf8JsonWriter(outputStream, new JsonWriterOptions { Indented = false }))
             {
-                // Matches the format of JSONConsoleFormatter
+                // Matches the format of JsonConsoleFormatter
 
                 jsonWriter.WriteStartObject();
                 // TODO: Write timestamp as string
@@ -141,12 +141,15 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         {
             Stream outputStream = _outputStream;
 
+            // Matches the format of SimpleConsoleFormatter as much as possible
+
             using var writer = new StreamWriter(outputStream, Encoding.UTF8, 1024, leaveOpen: true) { NewLine = "\n" };
 
             //event: eventName (if exists)
             //data: level category[eventId]
             //data: message
             //data: => scope1, scope2 => scope3, scope4
+            //data: exception (if exists)
             //\n
             
             if (!string.IsNullOrEmpty(eventId.Name))
@@ -164,6 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             writer.Write("data: ");
             writer.WriteLine(formatter(state, exception));
 
+            // Scopes
             bool firstScope = true;
             foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
             {
@@ -194,6 +198,14 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             {
                 writer.WriteLine();
             }
+
+            // Exception
+            if (null != exception)
+            {
+                writer.Write("data: ");
+                writer.WriteLine(exception.ToString().Replace(Environment.NewLine, $"{Environment.NewLine}data: "));
+            }
+
             writer.WriteLine();
         }
 
