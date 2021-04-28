@@ -106,6 +106,7 @@ Object with process identifying information. The properties on this object descr
 |---|---|---|
 | `pid` | int | The ID of the process. |
 | `uid` | guid | `.NET 5+` A value that uniquely identifies a runtime instance within a process.<br/>`.NET Core 3.1` An empty value: `00000000-0000-0000-0000-000000000000` |
+| `name` | string | (Preview 5+) The name of the process. |
 
 The `uid` property is useful for uniquely identifying a process when it is running in an environment where the process ID may not be unique (e.g. multiple containers within a Kubernetes pod will have entrypoint processes with process ID 1).
 

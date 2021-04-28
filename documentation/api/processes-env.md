@@ -14,6 +14,12 @@ or
 GET /processes/{uid}/env HTTP/1.1
 ```
 
+or (Preview 5+)
+
+```http
+GET /processes/{name}/env HTTP/1.1
+```
+
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
@@ -26,10 +32,11 @@ The default host address for these routes is `https://localhost:52323`. This rou
 |---|---|---|---|---|
 | `pid` | path | true | int | The ID of the process. |
 | `uid` | path | true | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | path | false | string | (Preview 5+) The name of the process. |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid` and `uid` parameters.
+See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
-Either `pid` or `uid` are required, but not both.
+One of `pid`, `uid`, or `name` are required, but not all.
 
 ## Authentication
 
