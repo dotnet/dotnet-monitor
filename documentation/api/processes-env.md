@@ -32,7 +32,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 |---|---|---|---|---|
 | `pid` | path | true | int | The ID of the process. |
 | `uid` | path | true | guid | A value that uniquely identifies a runtime instance within a process. |
-| `name` | path | false | string | The name of the process. |
+| `name` | path | true | string | The name of the process. |
 
 See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
