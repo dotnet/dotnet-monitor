@@ -87,8 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
                 // Matches the format of JsonConsoleFormatter
 
                 jsonWriter.WriteStartObject();
-                // TODO: Write timestamp as string
-                //jsonWriter.WriteString("Timestamp", DateTime.UtcNow.ToString());
+                jsonWriter.WriteString("Timestamp", (state is IStateWithTimestamp stateWithTimestamp) ? FormatTimestamp(stateWithTimestamp): string.Empty);
                 jsonWriter.WriteString("LogLevel", logLevel.ToString());
                 jsonWriter.WriteNumber("EventId", eventId.Id);
                 // EventId.Name is optional; use empty string if it is null as this
@@ -147,11 +146,12 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
             //event: eventName (if exists)
             //data: level category[eventId]
+            //data: timestamp
             //data: message
             //data: => scope1, scope2 => scope3, scope4
             //data: exception (if exists)
             //\n
-            
+
             if (!string.IsNullOrEmpty(eventId.Name))
             {
                 writer.Write("event: ");
@@ -164,6 +164,13 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             writer.Write('[');
             writer.Write(eventId.Id);
             writer.WriteLine(']');
+            if (state is IStateWithTimestamp stateWithTimestamp)
+            {
+                writer.Write("data: ");
+                writer.Write(FormatTimestamp(stateWithTimestamp));
+                writer.WriteLine();
+            }
+
             writer.Write("data: ");
             writer.WriteLine(formatter(state, exception));
 
@@ -203,10 +210,17 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             if (null != exception)
             {
                 writer.Write("data: ");
-                writer.WriteLine(exception.ToString().Replace(Environment.NewLine, $"{Environment.NewLine}data: "));
+                writer.WriteLine(exception.ToString().Replace(Environment.NewLine, $"{writer.NewLine}data: "));
             }
 
             writer.WriteLine();
+        }
+
+        private static string FormatTimestamp(IStateWithTimestamp stateWithTimestamp)
+        {
+            // "u" Universal time with sortable format, "yyyy'-'MM'-'dd HH':'mm':'ss'Z'" 1999-10-31 10:00:00Z
+            // based on ISO 8601.
+            return stateWithTimestamp.Timestamp.ToUniversalTime().ToString("u");
         }
 
         private static void WriteKeyValuePair(Utf8JsonWriter jsonWriter, KeyValuePair<string, object> kvp)
