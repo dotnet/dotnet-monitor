@@ -20,7 +20,7 @@ or
 GET /gcdump/{uid} HTTP/1.1
 ```
 
-or (Preview 5+)
+or
 
 ```http
 GET /gcdump/{name} HTTP/1.1
@@ -44,7 +44,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 |---|---|---|---|---|
 | `pid` | path | false | int | The ID of the process. |
 | `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
-| `name` | path | false | string | (Preview 5+) The name of the process. |
+| `name` | path | false | string | The name of the process. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected GC dump. When not specified, the GC dump is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
 See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.

@@ -14,7 +14,7 @@ or
 GET /processes/{uid} HTTP/1.1
 ```
 
-or (Preview 5+)
+or
 
 ```http
 GET /processes/{name} HTTP/1.1
@@ -32,7 +32,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 |---|---|---|---|---|
 | `pid` | path | true | int | The ID of the process. |
 | `uid` | path | true | guid | A value that uniquely identifies a runtime instance within a process. |
-| `name` | path | false | string | (Preview 5+) The name of the process. |
+| `name` | path | false | string | The name of the process. |
 
 See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
