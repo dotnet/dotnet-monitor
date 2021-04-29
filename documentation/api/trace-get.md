@@ -17,6 +17,12 @@ GET /trace/{uid}?profile={profile}&durationSeconds={durationSeconds}&metricsInte
 or
 
 ```http
+GET /trace/{name}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds} HTTP/1.1
+```
+
+or
+
+```http
 GET /trace?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds} HTTP/1.1
 ```
 
@@ -32,14 +38,15 @@ The default host address for these routes is `https://localhost:52323`. This rou
 |---|---|---|---|---|
 | `pid` | path | false | int | The ID of the process. |
 | `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | path | false | string | The name of the process. |
 | `profile` | query | false | [TraceProfile](definitions.md#TraceProfile) | The name of the profile(s) used to collect events. See [TraceProfile](definitions.md#TraceProfile) for details on the list of event providers, levels, and keywords each profile represents. Multiple profiles may be specified by separating them with commas. Default is `Cpu,Http,Metrics` |
 | `durationSeconds` | query | false | int | The duration of the trace operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `metricsIntervalSeconds` | query | false | int | The interval (in seconds) at which metrics are collected. Only applicable for the `Metrics` profile. Default is `1`. Min is `1`. Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected trace. When not specified, the trace is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid` and `uid` parameters.
+See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
-If neither `pid` nor `uid` are specified, a trace of the [default process](defaultprocess.md) will be captured. Attempting to capture a trace of the default process when the default process cannot be resolved will fail.
+If none of `pid`, `uid`, or `name` are specified, a trace of the [default process](defaultprocess.md) will be captured. Attempting to capture a trace of the default process when the default process cannot be resolved will fail.
 
 ## Authentication
 

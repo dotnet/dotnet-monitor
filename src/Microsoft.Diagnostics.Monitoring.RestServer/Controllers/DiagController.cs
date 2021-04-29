@@ -68,7 +68,8 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                     processesIdentifiers.Add(new Models.ProcessIdentifier()
                     {
                         Pid = p.EndpointInfo.ProcessId,
-                        Uid = p.EndpointInfo.RuntimeInstanceCookie
+                        Uid = p.EndpointInfo.RuntimeInstanceCookie,
+                        Name = p.ProcessName
                     });
                 }
                 _logger.WrittenToHttpStream();
@@ -79,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Get information about the specified process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         [HttpGet("processes/{processKey}", Name = nameof(GetProcessInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Models.ProcessInfo), StatusCodes.Status200OK)]
@@ -108,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Get the environment block of the specified process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         [HttpGet("processes/{processKey}/env", Name = nameof(GetProcessEnvironment))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status200OK)]
@@ -138,7 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a dump of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="type">The type of dump to capture.</param>
         /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
         /// <returns></returns>
@@ -191,7 +192,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a GC dump of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
         /// <returns></returns>
         [HttpGet("gcdump/{processKey?}", Name = nameof(CaptureGcDump))]
@@ -242,7 +243,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a trace of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="profile">The profiles enabled for the trace session.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
@@ -296,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a trace of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="configuration">The trace configuration describing which events to capture.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
@@ -349,7 +350,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a stream of logs from a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="level">The level of the logs to capture.</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>

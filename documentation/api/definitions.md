@@ -104,10 +104,13 @@ Object with process identifying information. The properties on this object descr
 
 | Name | Type | Description |
 |---|---|---|
+| `name` | string | The name of the process. |
 | `pid` | int | The ID of the process. |
 | `uid` | guid | `.NET 5+` A value that uniquely identifies a runtime instance within a process.<br/>`.NET Core 3.1` An empty value: `00000000-0000-0000-0000-000000000000` |
 
 The `uid` property is useful for uniquely identifying a process when it is running in an environment where the process ID may not be unique (e.g. multiple containers within a Kubernetes pod will have entrypoint processes with process ID 1).
+
+The `name` property may not be a unique identifier if the application was built as a [framework-dependent executable](https://docs.microsoft.com/en-us/dotnet/core/deploying/#publish-framework-dependent). In this case, the name of the process is likely to be either `dotnet.exe` (Windows) or `dotnet` (non-Windows). Framework-dependent executables rely on a shared framework installation, which uses the `dotnet.exe` or `dotnet` executable to run the application.
 
 ### Example
 

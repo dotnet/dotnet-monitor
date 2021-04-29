@@ -50,6 +50,12 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
                 IList<Task<ProcessInfo>> processInfoTasks = new List<Task<ProcessInfo>>();
                 foreach (IEndpointInfo endpointInfo in await _endpointInfoSource.GetEndpointInfoAsync(token))
                 {
+                    // CONSIDER: Can this processing be pushed into the IEndpointInfoSource implementation and cached
+                    // so that extended process information doesn't have to be recalculated for every call. This would be
+                    // useful for:
+                    // - .NET Core 3.1 processes, which require issuing a brief event pipe session to get the process commmand
+                    //   line information and parse out the process name
+                    // - Caching entrypoint information (when that becomes available).
                     processInfoTasks.Add(ProcessInfo.FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token));
                 }
 
@@ -110,12 +116,12 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
         public async Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token)
         {
-            var endpointInfos = await _endpointInfoSource.GetEndpointInfoAsync(token);
+            var processInfos = await GetProcessesAsync(token);
 
             if (processKey.HasValue)
             {
-                return await GetSingleProcessInfoAsync(
-                    endpointInfos,
+                return GetSingleProcessInfo(
+                    processInfos,
                     processKey);
             }
 
@@ -124,8 +130,8 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             {
                 try
                 {
-                    IProcessInfo processInfo = await GetSingleProcessInfoAsync(
-                        endpointInfos,
+                    IProcessInfo processInfo = GetSingleProcessInfo(
+                        processInfos,
                         DockerEntrypointProcessFilter);
 
                     using var timeoutSource = new CancellationTokenSource(DockerEntrypointWaitTimeout);
@@ -141,41 +147,47 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
                 }
             }
 
-            return await GetSingleProcessInfoAsync(
-                endpointInfos,
+            return GetSingleProcessInfo(
+                processInfos,
                 processKey: null);
         }
 
-        private async Task<IProcessInfo> GetSingleProcessInfoAsync(IEnumerable<IEndpointInfo> endpointInfos, ProcessKey? processKey)
+        private IProcessInfo GetSingleProcessInfo(IEnumerable<IProcessInfo> processInfos, ProcessKey? processKey)
         {
             if (processKey.HasValue)
             {
                 if (processKey.Value.RuntimeInstanceCookie.HasValue)
                 {
                     Guid cookie = processKey.Value.RuntimeInstanceCookie.Value;
-                    endpointInfos = endpointInfos.Where(info => info.RuntimeInstanceCookie == cookie);
+                    processInfos = processInfos.Where(info => info.EndpointInfo.RuntimeInstanceCookie == cookie);
                 }
 
                 if (processKey.Value.ProcessId.HasValue)
                 {
                     int pid = processKey.Value.ProcessId.Value;
-                    endpointInfos = endpointInfos.Where(info => info.ProcessId == pid);
+                    processInfos = processInfos.Where(info => info.EndpointInfo.ProcessId == pid);
+                }
+
+                string processName = processKey.Value.ProcessName;
+                if (!string.IsNullOrEmpty(processName))
+                {
+                    processInfos = processInfos.Where(info => string.Equals(info.ProcessName, processName, StringComparison.OrdinalIgnoreCase));
                 }
             }
 
-            IEndpointInfo[] endpointInfoArray = endpointInfos.ToArray();
-            switch (endpointInfoArray.Length)
+            IProcessInfo[] processInfosArray = processInfos.ToArray();
+            switch (processInfosArray.Length)
             {
                 case 0:
                     throw new ArgumentException("Unable to discover a target process.");
                 case 1:
-                    return await ProcessInfo.FromEndpointInfoAsync(endpointInfoArray[0]);
+                    return processInfosArray[0];
                 default:
 #if DEBUG
-                    IEndpointInfo endpointInfo = endpointInfoArray.FirstOrDefault(info => string.Equals(Process.GetProcessById(info.ProcessId).ProcessName, "iisexpress", StringComparison.OrdinalIgnoreCase));
-                    if (endpointInfo != null)
+                    IProcessInfo processInfo = processInfosArray.FirstOrDefault(info => string.Equals(Process.GetProcessById(info.EndpointInfo.ProcessId).ProcessName, "iisexpress", StringComparison.OrdinalIgnoreCase));
+                    if (processInfo != null)
                     {
-                        return await ProcessInfo.FromEndpointInfoAsync(endpointInfo);
+                        return processInfo;
                     }
 #endif
                     throw new ArgumentException("Unable to select a single target process because multiple target processes have been discovered.");
