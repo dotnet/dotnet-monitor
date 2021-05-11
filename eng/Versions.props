@@ -39,9 +39,9 @@
     <MicrosoftFileFormatsVersion>1.0.215101</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
-    <MicrosoftNETCoreApp31Version>3.1.13</MicrosoftNETCoreApp31Version>
+    <MicrosoftNETCoreApp31Version>3.1.15</MicrosoftNETCoreApp31Version>
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
-    <MicrosoftNETCoreApp50Version>5.0.4</MicrosoftNETCoreApp50Version>
+    <MicrosoftNETCoreApp50Version>5.0.6</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
     <MicrosoftNETCoreApp60Version>$(VSRedistCommonNetCoreSharedFrameworkx6460Version)</MicrosoftNETCoreApp60Version>
     <MicrosoftAspNetCoreApp60Version>$(VSRedistCommonAspNetCoreSharedFrameworkx6460Version)</MicrosoftAspNetCoreApp60Version>
