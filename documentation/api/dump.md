@@ -7,25 +7,25 @@ Captures a managed dump of a specified process without using a debugger.
 ## HTTP Route
 
 ```http
-GET /dump/{pid}?type={type} HTTP/1.1
+GET /dump/{pid}?type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or 
 
 ```http
-GET /dump/{uid}?type={type} HTTP/1.1
+GET /dump/{uid}?type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
 
 ```http
-GET /dump/{name}?type={type} HTTP/1.1
+GET /dump/{name}?type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
 
 ```http
-GET /dump?type={type} HTTP/1.1
+GET /dump?type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
