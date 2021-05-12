@@ -281,7 +281,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                 }
                 if (profile.HasFlag(Models.TraceProfile.Logs))
                 {
-                    configurations.Add(new LoggingSourceConfiguration());
+                    configurations.Add(new LoggingSourceConfiguration(useAppFilters: true));
                 }
                 if (profile.HasFlag(Models.TraceProfile.Metrics))
                 {
