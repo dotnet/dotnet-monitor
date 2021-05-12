@@ -281,7 +281,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                 }
                 if (profile.HasFlag(Models.TraceProfile.Logs))
                 {
-                    configurations.Add(new LoggingSourceConfiguration());
+                    configurations.Add(new LoggingSourceConfiguration(useAppFilters: true));
                 }
                 if (profile.HasFlag(Models.TraceProfile.Metrics))
                 {
@@ -392,15 +392,14 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                         Duration = duration
                     };
 
-                    //If the user does not explicitly specify a log level, we will use the apps defaults for .net 5.
-                    //Otherwise, we use the log level specified by the query.
-                    if ((!level.HasValue) && (processInfo.EndpointInfo.RuntimeInstanceCookie != Guid.Empty))
+                    // Use log level query parameter if specified, otherwise use application-defined filters.
+                    if (level.HasValue)
                     {
-                        settings.UseAppFilters = true;
+                        settings.LogLevel = level.Value;
                     }
                     else
                     {
-                        settings.LogLevel = level.GetValueOrDefault(LogLevel.Warning);
+                        settings.UseAppFilters = true;
                     }
 
                     var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
