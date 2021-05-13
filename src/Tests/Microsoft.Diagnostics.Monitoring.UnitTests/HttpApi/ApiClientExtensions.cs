@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -129,6 +130,40 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         {
             using CancellationTokenSource timeoutSource = new(timeout);
             return await client.CaptureDumpAsync(uid, dumpType, timeoutSource.Token);
+        }
+
+        /// <summary>
+        /// GET /logs/{pid}?level={logLevel}&durationSeconds={duration}
+        /// </summary>
+        public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel)
+        {
+            return client.CaptureLogsAsync(pid, duration, logLevel, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// GET /logs/{pid}?level={logLevel}&durationSeconds={duration}
+        /// </summary>
+        public static async Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.CaptureLogsAsync(pid, duration, logLevel, timeoutSource.Token);
+        }
+
+        /// <summary>
+        /// POST /logs/{pid}?durationSeconds={duration}
+        /// </summary>
+        public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogsConfiguration configuration)
+        {
+            return client.CaptureLogsAsync(pid, duration, configuration, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// POST /logs/{pid}?durationSeconds={duration}
+        /// </summary>
+        public static async Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogsConfiguration configuration, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.CaptureLogsAsync(pid, duration, configuration, timeoutSource.Token);
         }
 
         /// <summary>

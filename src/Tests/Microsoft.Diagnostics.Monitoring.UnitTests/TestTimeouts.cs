@@ -27,5 +27,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Default timeout for waiting for an executable to exit.
         /// </summary>
         public static readonly TimeSpan WaitForExit = TimeSpan.FromSeconds(15);
+
+        /// <summary>
+        /// Default logs collection duration.
+        /// </summary>
+        public static readonly TimeSpan LogsDuration = TimeSpan.FromSeconds(10);
     }
 }

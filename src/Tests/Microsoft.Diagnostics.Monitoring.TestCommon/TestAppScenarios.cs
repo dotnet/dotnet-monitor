@@ -29,5 +29,22 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string Continue = nameof(Continue);
             }
         }
+
+        public static class Logger
+        {
+            public const string Name = nameof(Logger);
+
+            public static class Categories
+            {
+                public const string LoggerCategory1 = nameof(LoggerCategory1);
+                public const string LoggerCategory2 = nameof(LoggerCategory2);
+                public const string LoggerCategory3 = nameof(LoggerCategory3);
+            }
+
+            public static class Commands
+            {
+                public const string StartLogging = nameof(StartLogging);
+            }
+        }
     }
 }
