@@ -356,9 +356,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// Capture a stream of logs from a process.
         /// </summary>
         /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
-        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
+        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="level">The level of the logs to capture.</param>
-        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
+        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpGet("logs/{processKey?}", Name = nameof(CaptureLogs))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
@@ -401,9 +401,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// Capture a stream of logs from a process.
         /// </summary>
         /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
-        /// <param name="configuration"></param>
-        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
-        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
+        /// <param name="configuration">The logs configuration describing which logs to capture.</param>
+        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
+        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpPost("logs/{processKey?}", Name = nameof(CaptureLogsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
