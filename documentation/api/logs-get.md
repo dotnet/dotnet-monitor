@@ -1,6 +1,6 @@
 # Logs - Get
 
-Captures log statements that are logged to the [ILogger<> infrastructure](https://docs.microsoft.com/aspnet/core/fundamentals/logging) within a specified process.
+Captures log statements that are logged to the [ILogger<> infrastructure](https://docs.microsoft.com/aspnet/core/fundamentals/logging) within a specified process. By default, logs are collected at the levels as specified by the [application-defined configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/#configure-logging).
 
 > **NOTE:** The [`LoggingEventSource`](https://docs.microsoft.com/aspnet/core/fundamentals/logging#event-source) provider must be enabled in the process in order to capture logs.
 
@@ -41,7 +41,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `pid` | path | false | int | The ID of the process. |
 | `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `name` | path | false | string | The name of the process. |
-| `level` | query | false | [LogLevel](definitions.md#LogLevel) | The name of the log level at which log events are collected. For .NET Core 3.1, the default is `Warning`. For .NET 5+, logs are collected at the levels configured by the application for each logging category; this can be overriden by setting `level`, which will fallback to collecting all categories at or above the specified level. |
+| `level` | query | false | [LogLevel](definitions.md#LogLevel) | The name of the log level at which log events are collected. If not specified, logs are collected levels as specified by the [application-defined configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/#configure-logging). |
 | `durationSeconds` | query | false | int | The duration of the log collection operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected logs. When not specified, the logs are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
