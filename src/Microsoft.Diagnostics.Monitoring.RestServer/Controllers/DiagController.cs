@@ -15,6 +15,7 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -281,7 +282,11 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                 }
                 if (profile.HasFlag(Models.TraceProfile.Logs))
                 {
-                    configurations.Add(new LoggingSourceConfiguration(useAppFilters: true));
+                    configurations.Add(new LoggingSourceConfiguration(
+                        LogLevel.Trace,
+                        LogMessageType.FormattedMessage | LogMessageType.JsonMessage,
+                        filterSpecs: null,
+                        useAppFilters: true));
                 }
                 if (profile.HasFlag(Models.TraceProfile.Metrics))
                 {
@@ -396,10 +401,11 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                     if (level.HasValue)
                     {
                         settings.LogLevel = level.Value;
+                        settings.UseAppFilters = false;
                     }
                     else
                     {
-                        settings.UseAppFilters = true;
+                        Debug.Assert(settings.UseAppFilters, "Expected UseAppFilters settings to have a default value of true.");
                     }
 
                     var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
