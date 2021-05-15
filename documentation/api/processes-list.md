@@ -37,7 +37,7 @@ Allowed schemes:
 ```http
 GET /processes HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 ### Sample Response
