@@ -356,9 +356,9 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// Capture a stream of logs from a process.
         /// </summary>
         /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
-        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
+        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="level">The level of the logs to capture.</param>
-        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
+        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpGet("logs/{processKey?}", Name = nameof(CaptureLogs))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
@@ -377,51 +377,60 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
-                LogFormat format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
-                if (format == LogFormat.None)
+                var settings = new EventLogsPipelineSettings()
                 {
-                    return this.NotAcceptable();
-                }
-
-                string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
-                string contentType = format == LogFormat.EventStream ? ContentTypes.TextEventStream : ContentTypes.ApplicationNdJson;
-
-                Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-                {
-                    using var loggerFactory = new LoggerFactory();
-
-                    loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, level));
-
-                    var settings = new EventLogsPipelineSettings()
-                    {
-                        Duration = duration
-                    };
-
-                    // Use log level query parameter if specified, otherwise use application-defined filters.
-                    if (level.HasValue)
-                    {
-                        settings.LogLevel = level.Value;
-                        settings.UseAppFilters = false;
-                    }
-                    else
-                    {
-                        Debug.Assert(settings.UseAppFilters, "Expected UseAppFilters settings to have a default value of true.");
-                    }
-
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                    await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
-                    await pipeline.RunAsync(token);
+                    Duration = duration
                 };
 
-                return Result(
-                    ArtifactType_Logs,
-                    egressProvider,
-                    action,
-                    fileName,
-                    contentType,
-                    processInfo.EndpointInfo,
-                    format != LogFormat.EventStream);
+                // Use log level query parameter if specified, otherwise use application-defined filters.
+                if (level.HasValue)
+                {
+                    settings.LogLevel = level.Value;
+                    settings.UseAppFilters = false;
+                }
+                else
+                {
+                    settings.UseAppFilters = true;
+                }
+
+                return StartLogs(processInfo, settings, egressProvider);
+            }, processKey, ArtifactType_Logs);
+        }
+
+        /// <summary>
+        /// Capture a stream of logs from a process.
+        /// </summary>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
+        /// <param name="configuration">The logs configuration describing which logs to capture.</param>
+        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
+        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
+        [HttpPost("logs/{processKey?}", Name = nameof(CaptureLogsCustom))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [RequestLimit(MaxConcurrency = 3)]
+        public Task<ActionResult> CaptureLogsCustom(
+            ProcessKey? processKey,
+            [FromBody]
+            Models.LogsConfiguration configuration,
+            [FromQuery][Range(-1, int.MaxValue)]
+            int durationSeconds = 30,
+            [FromQuery]
+            string egressProvider = null)
+        {
+            return InvokeForProcess(processInfo =>
+            {
+                TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
+
+                var settings = new EventLogsPipelineSettings()
+                {
+                    Duration = duration,
+                    FilterSpecs = configuration.FilterSpecs,
+                    LogLevel = configuration.LogLevel,
+                    UseAppFilters = configuration.UseAppFilters
+                };
+
+                return StartLogs(processInfo, settings, egressProvider);
             }, processKey, ArtifactType_Logs);
         }
 
@@ -460,6 +469,42 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                 fileName,
                 ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);
+        }
+
+        private ActionResult StartLogs(
+            IProcessInfo processInfo,
+            EventLogsPipelineSettings settings,
+            string egressProvider)
+        {
+            LogFormat format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
+            if (format == LogFormat.None)
+            {
+                return this.NotAcceptable();
+            }
+
+            string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
+            string contentType = format == LogFormat.EventStream ? ContentTypes.TextEventStream : ContentTypes.ApplicationNdJson;
+
+            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
+            {
+                using var loggerFactory = new LoggerFactory();
+
+                loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
+
+                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
+
+                await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
+                await pipeline.RunAsync(token);
+            };
+
+            return Result(
+                ArtifactType_Logs,
+                egressProvider,
+                action,
+                fileName,
+                contentType,
+                processInfo.EndpointInfo,
+                format != LogFormat.EventStream);
         }
 
         private static TimeSpan ConvertSecondsToTimeSpan(int durationSeconds)

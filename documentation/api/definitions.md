@@ -98,6 +98,29 @@ Enumeration that defines logging severity levels.
 
 See [LogLevel](https://docs.microsoft.com/dotnet/api/microsoft.extensions.logging.loglevel) documentation.
 
+## LogsConfiguration
+
+Object describing the default log level and filtering specifications for collecting logs.
+
+| Name | Type | Description |
+|---|---|---|
+| `logLevel` | [LogLevel](#LogLevel) | The default log level at which logs are collected. Default is `Warning`. |
+| `filterSpecs` | map (of [LogLevel](#LogLevel) or `null`) | A mapping of logger categories and the levels at which those categories should be collected. If level is set to `null`, collect category at the default level set in the `logLevel` property. |
+| `useAppFilters` | bool | Collect logs for the categories and at the levels as specified by the [application-defined configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/#configure-logging). Default is `true`. |
+
+### Example
+
+The following configuration will collect logs for the Microsoft.AspNetCore.Hosting category at the Information level or higher.
+
+```json
+{
+    "filterSpecs": {
+        "Microsoft.AspNetCore.Hosting": "Information"
+    },
+    "useAppFilters": false
+}
+```
+
 ## ProcessIdentifier
 
 Object with process identifying information. The properties on this object describe indentifying aspects for a found process; these values can be used in other API calls to perform operations on specific processes.
