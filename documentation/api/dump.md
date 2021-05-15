@@ -72,7 +72,7 @@ Allowed schemes:
 ```http
 GET /dump/21632?type=Full HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 or
@@ -80,7 +80,7 @@ or
 ```http
 GET /dump/cd4da319-fa9e-4987-ac4e-e57b2aac248b?type=Full HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 ### Sample Response

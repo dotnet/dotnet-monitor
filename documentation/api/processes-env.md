@@ -61,7 +61,7 @@ Allowed schemes:
 ```http
 GET /processes/21632/env HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 or
@@ -69,7 +69,7 @@ or
 ```http
 GET /processes/cd4da319-fa9e-4987-ac4e-e57b2aac248b/env HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 ### Sample Response
