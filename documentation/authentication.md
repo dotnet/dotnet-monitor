@@ -29,8 +29,8 @@ dotnet-monitor generatekey
 The output from this command will display the API Key formatted as an authentication header along with its hash and associated hashing algorithm. You will need to store the `ApiKeyHash` and `ApiKeyHashType` in the configuration for `dotnet monitor` and use the authorization header value when making requests to the `dotnet monitor` HTTPS endpoint.
 
 ```yaml
-Authorization: MonitorApiKey Uf6Yq8ZGkcn+ltq2QLHxuXpKA6/Q5VH5Mb5aSIJBxRc=
-ApiKeyHash: CB233C3BE9F650146CFCA81D7AA608E3A3865D7313016DFA02DAF82A2505C683
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+ApiKeyHash: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 ApiKeyHashType: SHA256
 ```
 
@@ -125,13 +125,13 @@ echo "ApiKeyHashType: SHA256"
 When using Windows Authentication, your browser will automatically handle the Windows authentication challenge. If you are using an API Key, you must specify it via the `Authorization` header.
 
 ```sh
-curl -H "Authorization: MonitorApiKey Uf6Yq8ZGkcn+ltq2QLHxuXpKA6/Q5VH5Mb5aSIJBxRc=" https://localhost:52323/processes
+curl -H "Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=" https://localhost:52323/processes
 ```
 
 If using PowerShell, be sure to use `curl.exe`, as `curl` is an alias for `Invoke-WebRequest` that does not accept the same parameters.
 
 ```powershell
-curl.exe -H "Authorization: MonitorApiKey Uf6Yq8ZGkcn+ltq2QLHxuXpKA6/Q5VH5Mb5aSIJBxRc=" https://localhost:52323/processes
+curl.exe -H "Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=" https://localhost:52323/processes
 ```
 
 To use Windows authentication with PowerShell, you can specify the `--negotiate` flag

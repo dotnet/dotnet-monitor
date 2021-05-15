@@ -74,7 +74,7 @@ Allowed schemes:
 ```http
 GET /trace/21632?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 or
@@ -82,7 +82,7 @@ or
 ```http
 GET /trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 ### Sample Response
