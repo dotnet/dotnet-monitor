@@ -79,7 +79,7 @@ The expected content type is `application/json`.
 ```http
 POST /logs/21632?durationSeconds=60 HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 
 {
     "filterSpecs": {
@@ -95,7 +95,7 @@ or
 ```http
 POST /logs/cd4da319-fa9e-4987-ac4e-e57b2aac248b?durationSeconds=60 HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey QmFzZTY0RW5jb2RlZERvdG5ldE1vbml0b3JBcGlLZXk=
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 
 {
     "filterSpecs": {
