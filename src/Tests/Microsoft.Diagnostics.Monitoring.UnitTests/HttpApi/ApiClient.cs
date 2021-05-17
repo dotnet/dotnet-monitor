@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,9 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -193,6 +196,90 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
+        /// GET /logs/{pid}?level={logLevel}&durationSeconds={duration}
+        /// </summary>
+        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
+        {
+            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, logLevel, token);
+        }
+
+        /// <summary>
+        /// GET /logs/{uid}?level={logLevel}&durationSeconds={duration}
+        /// </summary>
+        public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
+        {
+            return CaptureLogsAsync(uid.ToString("D"), duration, logLevel, token);
+        }
+
+        private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
+        {
+            return CaptureLogsAsync(
+                HttpMethod.Get,
+                CreateLogsUriString(processKey, duration, logLevel),
+                content: null,
+                token);
+        }
+
+        /// <summary>
+        /// POST /logs/{pid}?durationSeconds={duration}
+        /// </summary>
+        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
+        {
+            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, configuration, token);
+        }
+
+        /// <summary>
+        /// POST /logs/{uid}?durationSeconds={duration}
+        /// </summary>
+        public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
+        {
+            return CaptureLogsAsync(uid.ToString("D"), duration, configuration, token);
+        }
+
+        private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
+        {
+            JsonSerializerOptions options = new();
+            options.Converters.Add(new JsonStringEnumConverter());
+            string json = JsonSerializer.Serialize(configuration, options);
+
+            return CaptureLogsAsync(
+                HttpMethod.Post,
+                CreateLogsUriString(processKey, duration, logLevel: null),
+                new StringContent(json, Encoding.UTF8, ContentTypes.ApplicationJson),
+                token);
+        }
+
+        private async Task<ResponseStreamHolder> CaptureLogsAsync(HttpMethod method, string uri, HttpContent content, CancellationToken token)
+        {
+            using HttpRequestMessage request = new(method, uri);
+            request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationNDJson);
+            request.Content = content;
+
+            using DisposableBox<HttpResponseMessage> responseBox = new(
+                await SendAndLogAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token).ConfigureAwait(false));
+
+            switch (responseBox.Value.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationNDJson);
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                case HttpStatusCode.TooManyRequests:
+                    ThrowIfNotSuccess(responseBox.Value);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// GET /metrics
         /// </summary>
         public async Task<string> GetMetricsAsync(CancellationToken token)
@@ -274,6 +361,34 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         private void ValidateContentType(HttpResponseMessage responseMessage, string expectedMediaType)
         {
             Assert.Equal(expectedMediaType, responseMessage.Content.Headers.ContentType?.MediaType);
+        }
+
+        private static string CreateLogsUriString(string processKey, TimeSpan duration, LogLevel? logLevel)
+        {
+            StringBuilder routeBuilder = new();
+            routeBuilder.Append("/logs/");
+            routeBuilder.Append(processKey);
+            routeBuilder.Append("?");
+            AppendDuration(routeBuilder, duration);
+            if (logLevel.HasValue)
+            {
+                routeBuilder.Append("&level=");
+                routeBuilder.Append(logLevel.Value.ToString("G"));
+            }
+            return routeBuilder.ToString();
+        }
+
+        private static void AppendDuration(StringBuilder builder, TimeSpan duration)
+        {
+            builder.Append("durationSeconds=");
+            if (Timeout.InfiniteTimeSpan == duration)
+            {
+                builder.Append("-1");
+            }
+            else
+            {
+                builder.Append(Convert.ToInt32(duration.TotalSeconds).ToString(CultureInfo.InvariantCulture));
+            }
         }
     }
 }

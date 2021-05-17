@@ -7,7 +7,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
+#if UNITTEST
+namespace Microsoft.Diagnostics.Monitoring.UnitTests.Models
+#else
 namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
+#endif
 {
     public class LogsConfiguration
     {
