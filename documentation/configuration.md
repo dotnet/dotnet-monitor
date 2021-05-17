@@ -39,7 +39,7 @@ export DotnetMonitor_ApiAuthentication__ApiKeyHashType="SHA256"
 
 #### Kubernetes
 
-When running in Kubernetes, you are able to specify the same configuration via Kubernetes secrets (or configuration maps)
+When running in Kubernetes, you are able to specify the same configuration via Kubernetes secrets.
 
 ```bash
 kubectl create secret generic apikey \
@@ -49,21 +49,69 @@ kubectl create secret generic apikey \
   | kubectl apply -f -
 ```
 
-You can then use a Kubernetes volume mount to supply the secret to the container at runtime
+You can then use a Kubernetes volume mount to supply the secret to the container at runtime.
 
 ```yaml 
 spec:
   volumes:
-  - name: apikey
+  - name: config
     secret:
       secretName: apikey
   containers:
   - name: dotnetmonitoragent
     image: mcr.microsoft.com/dotnet/dotnet-monitor:5.0.0-preview.4
     volumeMounts:
-      - name: apikey
+      - name: config
         mountPath: /etc/dotnet-monitor
 ```
+
+Alternatively, you can also configuration maps to specify configuration to the container at runtime.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-configmap
+data:
+  Metrics__UpdateIntervalSeconds: "10"
+```
+
+You can then use a Kubernetes volume mount to supply the configuration map to the container at runtime
+
+```yaml 
+spec:
+  volumes:
+  - name: config
+    configmap:
+      name: my-configmap
+  containers:
+  - name: dotnetmonitoragent
+    image: mcr.microsoft.com/dotnet/dotnet-monitor:5.0.0-preview.4
+    volumeMounts:
+      - name: config
+        mountPath: /etc/dotnet-monitor
+```
+
+If using multiple configuration maps, secrets, or some combination of both, you need use a [projected volume](https://kubernetes.io/docs/concepts/storage/volumes/#projected) to map serveral volume sources into a single directory
+
+```yaml 
+spec:
+  volumes:
+  - name: config
+    projected:
+      sources:
+        - secret:
+            name: apiKey
+        - configMap:
+            name: my-configmap
+  containers:
+  - name: dotnetmonitoragent
+    image: mcr.microsoft.com/dotnet/dotnet-monitor:5.0.0-preview.4
+    volumeMounts:
+      - name: config
+        mountPath: /etc/dotnet-monitor
+```
+
 
 ## Configuration Schema
 
@@ -235,6 +283,8 @@ Additional metrics providers and counter names to return from this route can be 
   }
 }
 ```
+
+When `CounterNames` are not specified, all the counters associated with the `ProviderName` are collected.
 
 ### Disable default providers
 
