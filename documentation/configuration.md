@@ -285,6 +285,8 @@ Additional metrics providers and counter names to return from this route can be 
 }
 ```
 
+When `CounterNames` are not specified, all the counters associated with the `ProviderName` are collected.
+
 #### Allow insecure channel for custom metrics
 
 In the default configuration, enabling of custom metrics changes the default binding address from `http` to `https` for the metrics urls. To continue egressing custom metric via an endpoint with `http` scheme, you explicit opt-in to it. You can do so via the following configuration:
