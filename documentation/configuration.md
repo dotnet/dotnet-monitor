@@ -284,6 +284,8 @@ Additional metrics providers and counter names to return from this route can be 
 }
 ```
 
+> **Warning:** In the default configuration, custom metrics will be exposed along with all other metrics on an unauthenticated endpoint. If your metrics contains sensitive information, we recommend disabling the [metrics urls](#metrics-urls) and consuming metrics from the authenticated endpoint (`--urls`) instead.
+
 When `CounterNames` are not specified, all the counters associated with the `ProviderName` are collected.
 
 ### Disable default providers
