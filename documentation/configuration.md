@@ -73,15 +73,15 @@ kind: ConfigMap
 metadata:
   name: my-configmap
 data:
-  Metrics__MetricCount: "2"
+  Metrics__UpdateIntervalSeconds: "10"
 ```
 
-You can then use a Kubernetes volument mount to supply the configuration map to the container at runtime
+You can then use a Kubernetes volume mount to supply the configuration map to the container at runtime
 
 ```yaml 
 spec:
   volumes:
-  - name: apikey
+  - name: config
     configmap:
       name: my-configmap
   containers:
