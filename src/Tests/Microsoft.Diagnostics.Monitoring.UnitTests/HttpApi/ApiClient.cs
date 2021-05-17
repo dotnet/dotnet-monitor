@@ -213,20 +213,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 
         private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
         {
-            StringBuilder routeBuilder = new();
-            routeBuilder.Append("/logs/");
-            routeBuilder.Append(processKey);
-            routeBuilder.Append("?");
-            AppendDuration(routeBuilder, duration);
-            if (logLevel.HasValue)
-            {
-                routeBuilder.Append("&level=");
-                routeBuilder.Append(logLevel.Value.ToString("G"));
-            }
-
             return CaptureLogsAsync(
                 HttpMethod.Get,
-                routeBuilder.ToString(),
+                CreateLogsUriString(processKey, duration, logLevel),
                 content: null,
                 token);
         }
@@ -249,19 +238,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 
         private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
         {
-            StringBuilder routeBuilder = new();
-            routeBuilder.Append("/logs/");
-            routeBuilder.Append(processKey);
-            routeBuilder.Append("?");
-            AppendDuration(routeBuilder, duration);
-
             JsonSerializerOptions options = new();
             options.Converters.Add(new JsonStringEnumConverter());
             string json = JsonSerializer.Serialize(configuration, options);
 
             return CaptureLogsAsync(
                 HttpMethod.Post,
-                routeBuilder.ToString(),
+                CreateLogsUriString(processKey, duration, logLevel: null),
                 new StringContent(json, Encoding.UTF8, ContentTypes.ApplicationJson),
                 token);
         }
@@ -378,6 +361,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         private void ValidateContentType(HttpResponseMessage responseMessage, string expectedMediaType)
         {
             Assert.Equal(expectedMediaType, responseMessage.Content.Headers.ContentType?.MediaType);
+        }
+
+        private static string CreateLogsUriString(string processKey, TimeSpan duration, LogLevel? logLevel)
+        {
+            StringBuilder routeBuilder = new();
+            routeBuilder.Append("/logs/");
+            routeBuilder.Append(processKey);
+            routeBuilder.Append("?");
+            AppendDuration(routeBuilder, duration);
+            if (logLevel.HasValue)
+            {
+                routeBuilder.Append("&level=");
+                routeBuilder.Append(logLevel.Value.ToString("G"));
+            }
+            return routeBuilder.ToString();
         }
 
         private static void AppendDuration(StringBuilder builder, TimeSpan duration)

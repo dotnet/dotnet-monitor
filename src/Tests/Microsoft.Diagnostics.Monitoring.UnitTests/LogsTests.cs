@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
@@ -162,12 +163,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.Logger.Name,
                 async (runner, client) =>
                 {
-                    ApiStatusCodeException exception = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                        () => client.CaptureLogsAsync(
-                            runner.ProcessId,
-                            TestTimeouts.LogsDuration,
-                            LogLevel.None));
+                    ValidationProblemDetailsException exception = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
+                        async () =>
+                        {
+                            using ResponseStreamHolder _ = await client.CaptureLogsAsync(
+                                runner.ProcessId,
+                                TestTimeouts.LogsDuration,
+                                LogLevel.None);
+                        });
                     Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
+                    Assert.Equal(StatusCodes.Status400BadRequest, exception.Details.Status);
+
+                    // Allow test app to gracefully exit by continuing the scenario.
+                    await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
                 });
         }
 
@@ -188,12 +196,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.Logger.Name,
                 async (runner, client) =>
                 {
-                    ApiStatusCodeException exception = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                        () => client.CaptureLogsAsync(
-                            runner.ProcessId,
-                            TestTimeouts.LogsDuration,
-                            new LogsConfiguration() { LogLevel = LogLevel.None }));
+                    ValidationProblemDetailsException exception = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
+                        async () =>
+                        {
+                            using ResponseStreamHolder _ = await client.CaptureLogsAsync(
+                                runner.ProcessId,
+                                TestTimeouts.LogsDuration,
+                                new LogsConfiguration() { LogLevel = LogLevel.None });
+                        });
                     Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
+                    Assert.Equal(StatusCodes.Status400BadRequest, exception.Details.Status);
+
+                    // Allow test app to gracefully exit by continuing the scenario.
+                    await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
                 });
         }
 
@@ -205,7 +220,38 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen)]
 #endif
-        public Task LogsUseAppFiltersTest(DiagnosticPortConnectionMode mode)
+        public Task LogsUseAppFiltersViaQueryTest(DiagnosticPortConnectionMode mode)
+        {
+            return ValidateLogsAsync(
+                mode,
+                logLevel: null,
+                async reader =>
+                {
+                    ValidateEntry(Category1DebugEntry, await reader.ReadAsync());
+                    ValidateEntry(Category1InformationEntry, await reader.ReadAsync());
+                    ValidateEntry(Category1WarningEntry, await reader.ReadAsync());
+                    ValidateEntry(Category1ErrorEntry, await reader.ReadAsync());
+                    ValidateEntry(Category1CriticalEntry, await reader.ReadAsync());
+                    ValidateEntry(Category2InformationEntry, await reader.ReadAsync());
+                    ValidateEntry(Category2WarningEntry, await reader.ReadAsync());
+                    ValidateEntry(Category2ErrorEntry, await reader.ReadAsync());
+                    ValidateEntry(Category2CriticalEntry, await reader.ReadAsync());
+                    ValidateEntry(Category3WarningEntry, await reader.ReadAsync());
+                    ValidateEntry(Category3ErrorEntry, await reader.ReadAsync());
+                    ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
+                    Assert.False(await reader.WaitToReadAsync());
+                });
+        }
+
+        /// <summary>
+        /// Test that log events are collected for the categories and levels specified by the application.
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Connect)]
+#if NET5_0_OR_GREATER
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+#endif
+        public Task LogsUseAppFiltersViaBodyTest(DiagnosticPortConnectionMode mode)
         {
             return ValidateLogsAsync(
                 mode,
@@ -319,7 +365,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
         private Task ValidateLogsAsync(
             DiagnosticPortConnectionMode mode,
-            LogLevel logLevel,
+            LogLevel? logLevel,
             Func<ChannelReader<LogEntry>, Task> callback)
         {
             return ScenarioRunner.SingleTarget(
@@ -359,7 +405,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             // application start logging. It would be best if dotnet-monitor could write a console event
             // (at Debug or Trace level) for when the pipeline has started. This would require dotnet-monitor
             // to know when the pipeline started and is waiting for logging data.
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            await Task.Delay(TimeSpan.FromSeconds(3));
 
             // Start logging in the target application
             await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
@@ -389,6 +435,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             JsonSerializerOptions options = new();
             options.Converters.Add(new JsonStringEnumConverter());
 
+            _outputHelper.WriteLine("Begin reading log entries.");
             string line;
             while (null != (line = await reader.ReadLineAsync()))
             {
@@ -402,6 +449,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     _outputHelper.WriteLine("Exception while deserializing log entry: {0}", ex);
                 }
             }
+            _outputHelper.WriteLine("End reading log entries.");
             channel.Writer.Complete();
 
             await callbackTask;
