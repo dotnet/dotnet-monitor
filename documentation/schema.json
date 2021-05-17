@@ -244,14 +244,6 @@
           "description": "Include default providers: System.Runtime, Microsoft.AspNetCore.Hosting, and Grpc.AspNetCore.Server.",
           "default": true
         },
-        "AllowInsecureChannelForCustomMetrics": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "When using custom metrics, the default binding address changes from http to https. Set this to true to enable http.",
-          "default": false
-        },
         "Providers": {
           "type": [
             "array",

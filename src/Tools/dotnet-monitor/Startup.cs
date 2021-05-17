@@ -98,16 +98,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             AddressListenResults listenResults,
             ILogger<Startup> logger)
         {
-            if (listenResults.BindingChanges.Any())
-            {
-                logger.MetricUrlsUpdated();
-            }
-
-            foreach (UrlBindingChange bindingUpgrade in listenResults.BindingChanges)
-            {
-                logger.MetricUrlUpdated(bindingUpgrade.OriginalUrl, bindingUpgrade.NewUrl);
-            }
-
             // These errors are populated before Startup.Configure is called because
             // the KestrelServer class is configured as a prerequisite of
             // GenericWebHostServer being instantiated. The GenericWebHostServer invokes
