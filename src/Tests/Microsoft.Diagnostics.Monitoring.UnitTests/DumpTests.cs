@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FileFormats;
 using Microsoft.FileFormats.ELF;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -103,13 +104,36 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     // Validate Signature
                     Assert.True(header.IsSignatureValid.Check());
                 }
-                else
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    ELFHeaderIdent ident = dumpReader.Read<ELFHeaderIdent>(0);
+                    Assert.True(ident.IsIdentMagicValid.Check());
+                    Assert.True(ident.IsClassValid.Check());
+                    Assert.True(ident.IsDataValid.Check());
+
+                    LayoutManager layoutManager = new();
+                    layoutManager.AddELFTypes(
+                        isBigEndian: ident.Data == ELFData.BigEndian,
+                        is64Bit: ident.Class == ELFClass.Class64);
+                    Reader headerReader = new(dumpAddressSpace, layoutManager);
+
+                    ELFHeader header = headerReader.Read<ELFHeader>(0);
+                    // Validate Signature
+                    Assert.True(header.IsIdentMagicValid.Check());
+                    // Validate ELF file is a core dump
+                    Assert.Equal(ELFHeaderType.Core, header.Type);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
                     ELFHeader header = dumpReader.Read<ELFHeader>(0);
                     // Validate Signature
                     Assert.True(header.IsIdentMagicValid.Check());
                     // Validate ELF file is a core dump
                     Assert.Equal(ELFHeaderType.Core, header.Type);
+                }
+                else
+                {
+                    throw new NotImplementedException("Dump header check not implemented for this OS platform.");
                 }
 
                 await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
