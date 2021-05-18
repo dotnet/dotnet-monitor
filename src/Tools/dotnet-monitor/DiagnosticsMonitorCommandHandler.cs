@@ -251,54 +251,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //By default, we bind to https for sensitive data (such as dumps and traces) and bind http for
                         //non-sensitive data such as metrics. We may be missing a certificate for https binding. We want to continue with the
                         //http binding in that scenario.
-                        metricUrls = metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ?
-                            ProcessMetricUrls(metricUrls, metricsOptions, listenResults) :
-                            Array.Empty<string>();
-
-                        listenResults.Listen(options, urls, metricUrls);
+                        listenResults.Listen(
+                            options,
+                            urls,
+                            metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ? metricUrls : Array.Empty<string>());
                     })
                     .UseStartup<Startup>();
                 });
             return hostBuilder;
-        }
-
-        private static string[] ProcessMetricUrls(string[] metricUrls, MetricsOptions metricsOptions, AddressListenResults results)
-        {
-            string metricUrlFromConfig = metricsOptions.Endpoints;
-            if (!string.IsNullOrEmpty(metricUrlFromConfig))
-            {
-                metricUrls = ConfigurationHelper.SplitValue(metricUrlFromConfig);
-            }
-
-            //If we have custom metrics we want to upgrade the metrics transport channel to https, but
-            //also respect the user's configuration to leave it insecure.
-            if ((metricsOptions.Providers.Count > 0) &&
-                (!metricsOptions.AllowInsecureChannelForCustomMetrics.GetValueOrDefault(false)) &&
-                (metricsOptions.Providers.Any(provider =>
-                    !Monitoring.EventPipe.MonitoringSourceConfiguration.DefaultMetricProviders.Contains(provider.ProviderName, StringComparer.OrdinalIgnoreCase))))
-            {
-                for (int i = 0; i < metricUrls.Length; i++)
-                {
-                    BindingAddress metricUrl = BindingAddress.Parse(metricUrls[i]);
-
-                    //Upgrade http to https by default.
-                    if (metricUrl.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase))
-                    {
-                        string originalUrl = metricUrls[i];
-                        //Based on BindAddress.ToString
-                        metricUrls[i] = string.Concat(Uri.UriSchemeHttps.ToLowerInvariant(),
-                            Uri.SchemeDelimiter,
-                            metricUrl.Host.ToLowerInvariant(),
-                            ":",
-                            metricUrl.Port.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                            metricUrl.PathBase);
-
-                        results.BindingChanges.Add(new UrlBindingChange { OriginalUrl = originalUrl, NewUrl = metricUrls[i] });
-                    }
-                }
-            }
-
-            return metricUrls;
         }
 
         private static void ConfigureStorageDefaults(IConfigurationBuilder builder)
@@ -317,8 +277,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)), enableMetrics.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.UpdateIntervalSeconds)), MetricsOptionsDefaults.UpdateIntervalSeconds.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.MetricCount)), MetricsOptionsDefaults.MetricCount.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics)), MetricsOptionsDefaults.AllowInsecureChannelForCustomMetrics.ToString()}
+                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()}
             });
         }
 

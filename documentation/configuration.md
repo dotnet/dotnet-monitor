@@ -150,7 +150,6 @@ The output of command should resemble the following JSON object:
     "EndpointName": null
   },
   "Metrics": {
-    "AllowInsecureChannelForCustomMetrics": "True",
     "Enabled": "True",
     "Endpoints": "http://*:52325",
     "IncludeDefaultProviders": "True",
@@ -285,19 +284,9 @@ Additional metrics providers and counter names to return from this route can be 
 }
 ```
 
+> **Warning:** In the default configuration, custom metrics will be exposed along with all other metrics on an unauthenticated endpoint. If your metrics contains sensitive information, we recommend disabling the [metrics urls](#metrics-urls) and consuming metrics from the authenticated endpoint (`--urls`) instead.
+
 When `CounterNames` are not specified, all the counters associated with the `ProviderName` are collected.
-
-#### Allow insecure channel for custom metrics
-
-In the default configuration, enabling of custom metrics changes the default binding address from `http` to `https` for the metrics urls. To continue egressing custom metric via an endpoint with `http` scheme, you explicit opt-in to it. You can do so via the following configuration:
-
-```json
-{
-  "Metrics": {
-    "AllowInsecureChannelForCustomMetrics": true
-  }
-}
-```
 
 ### Disable default providers
 

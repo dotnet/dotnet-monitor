@@ -27,8 +27,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public IList<AddressListenResult> Errors { get; }
             = new List<AddressListenResult>();
 
-        public IList<UrlBindingChange> BindingChanges { get; } = new List<UrlBindingChange>();
-
         public bool AnyAddresses => (_defaultAddressCount + _metricsAddressCount) > 0;
 
         public IEnumerable<string> GetDefaultAddresses(IServerAddressesFeature serverAddresses)
