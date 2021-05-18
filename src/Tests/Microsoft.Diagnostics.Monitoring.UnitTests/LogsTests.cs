@@ -560,8 +560,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             return new LogEntry()
             {
                 Category = category,
-                EventId = 1,
-                EventName = "EventIdInformation",
+                EventId = 0,
+                EventName = string.Empty,
                 Exception = null,
                 LogLevel = LogLevel.Information,
                 Message = "Information message with values hello and goodbye.",
@@ -580,17 +580,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             return new LogEntry()
             {
                 Category = category,
-                EventId = 1,
+                EventId = 5,
                 EventName = "EventIdWarning",
                 Exception = null,
                 LogLevel = LogLevel.Warning,
-                Message = "Warning message with values 3.5 and 7.",
+                Message = "'Warning message with custom state.' with 3 state values.",
                 State = new Dictionary<string, string>()
                 {
-                    { "{OriginalFormat}", "Warning message with values {value1} and {value2}." },
-                    { "Message", "Warning message with values 3.5 and 7." },
-                    { "value1", "3.5" },
-                    { "value2", "7" }
+                    { "Message", "'Warning message with custom state.' with 3 state values." },
+                    { "KeyA", "4" },
+                    { "Key2", "p" },
+                    { "KeyZ", "Error" }
                 }
             };
         }

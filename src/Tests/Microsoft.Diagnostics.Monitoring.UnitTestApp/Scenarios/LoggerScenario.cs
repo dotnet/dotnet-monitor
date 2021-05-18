@@ -6,6 +6,8 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Threading;
@@ -80,12 +82,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         private static void LogInformationMessage(ILogger logger)
         {
-            logger.LogInformation(new EventId(1, "EventIdInformation"), "Information message with values {value1} and {value2}.", "hello", "goodbye");
+            logger.LogInformation("Information message with values {value1} and {value2}.", "hello", "goodbye");
         }
 
         private static void LogWarningMessage(ILogger logger)
         {
-            logger.LogWarning(new EventId(1, "EventIdWarning"), "Warning message with values {value1} and {value2}.", 3.5d, 7L);
+            logger.Log(
+                LogLevel.Warning,
+                new EventId(5, "EventIdWarning"),
+                new CustomLogState(
+                    "Warning message with custom state.",
+                    new string[] { "KeyA", "Key2", "KeyZ" },
+                    new object[] { 4, 'p', LogLevel.Error }),
+                null,
+                CustomLogState.Formatter);
         }
 
         private static void LogErrorMessage(ILogger logger)
@@ -102,6 +112,49 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             catch (InvalidOperationException ex)
             {
                 logger.LogCritical(new EventId(1, "EventIdCritical"), ex, "Critical message.");
+            }
+        }
+
+        private readonly struct CustomLogState : IReadOnlyList<KeyValuePair<string, object>>
+        {
+            public static readonly Func<CustomLogState, Exception, string> Formatter = (state, exception) => $"'{state._message}' with {state._keys.Length} state values.";
+
+            private readonly string[] _keys;
+            private readonly string _message;
+            private readonly object[] _values;
+
+            public CustomLogState(string message, string[] keys, object[] values)
+            {
+                _message = message;
+                _keys = keys ?? throw new ArgumentNullException(nameof(keys));
+                _values = values ?? throw new ArgumentNullException(nameof(values));
+                
+                if (_keys.Length != _values.Length)
+                {
+                    throw new ArgumentException($"{nameof(keys)} and {nameof(values)} must have the same length.");
+                }
+            }
+
+            public KeyValuePair<string, object> this[int index] => new KeyValuePair<string, object>(_keys[index], _values[index]);
+
+            public int Count => _keys.Length;
+
+            public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    yield return this[i];
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public override string ToString()
+            {
+                return _message;
             }
         }
     }
