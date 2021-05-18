@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
                 processes = processes.Where(p => processFilterConfig.Filters.All(c => c.MatchFilter(p)));
             }
 
-            return processes;
+            return processes.ToArray();
         }
         public async Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token)
         {

@@ -239,13 +239,10 @@ Match the iisexpress process by name
 
 ```json
 {
-  "DefaultProcess":
-  {
-      "Filters": [
-      {
+  "DefaultProcess": {
+    "Filters": [{
       "Key": "ProcessName",
-      "Value": "iisexpress.exe",
-      "MatchType": "Exact"
+      "Value": "iisexpress"
     }]
   },
 }
@@ -254,13 +251,10 @@ Match the iisexpress process by name
 Match pid 1
 ```json
 {
-  "DefaultProcess":
-  {
-      "Filters": [
-      {
+  "DefaultProcess": {
+    "Filters": [{
       "Key": "ProcessId",
       "Value": "1",
-      "MatchType": "Exact"
     }]
   },
 }

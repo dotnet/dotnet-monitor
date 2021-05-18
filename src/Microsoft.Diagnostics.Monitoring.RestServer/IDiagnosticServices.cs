@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilter, CancellationToken token);
 
         /// <summary>
-        /// Returns back a process based on a key. If no key is specified, the DefaultProcess configuration is used.
+        /// Returns a process based on a key. If no key is specified, the DefaultProcess configuration is used.
         /// </summary>
         /// <remarks>
         /// At the moment, we use this Api for all operations that require a single process, such as metrics or artifact collection urls with no pid.

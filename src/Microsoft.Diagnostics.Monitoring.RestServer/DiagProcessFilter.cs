@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             }
             if (MatchType == DiagProcessFilterMatchType.Contains)
             {
-                return LooseCompare(value);
+                return ContainsCompare(value);
             }
             Debug.Fail("Unexpected match type");
 
@@ -131,7 +131,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             return string.Equals(Value, value, StringComparison.OrdinalIgnoreCase);
         }
 
-        private bool LooseCompare(string value)
+        private bool ContainsCompare(string value)
         {
             return value?.IndexOf(Value, StringComparison.OrdinalIgnoreCase) > -1;
         }

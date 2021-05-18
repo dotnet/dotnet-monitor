@@ -313,7 +313,7 @@
             "array",
             "null"
           ],
-          "description": "Process filters used to determine the process when collecting metrics. All filters must match.",
+          "description": "Process filters used to determine which process to use if one is not explicitly specified. All filters must match.",
           "items": {
             "$ref": "#/definitions/ProcessFilterDescriptor"
           }
@@ -323,6 +323,10 @@
     "ProcessFilterDescriptor": {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "Key",
+        "Value"
+      ],
       "properties": {
         "Key": {
           "description": "The criteria used to compare against the target process.",
@@ -333,14 +337,13 @@
           ]
         },
         "Value": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The value of the criteria used to compare against the target process."
+          "type": "string",
+          "description": "The value of the criteria used to compare against the target process.",
+          "minLength": 1
         },
         "MatchType": {
           "description": "Type of match to use against the process criteria.",
+          "default": "Exact",
           "oneOf": [
             {
               "$ref": "#/definitions/ProcessFilterType"

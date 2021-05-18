@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -35,19 +36,22 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
     public sealed class ProcessFilterOptions
     {
-        [Display(Description = "Process filters used to determine the process when collecting metrics. All filters must match.")]
+        [Display(Description = "Process filters used to determine which process to use if one is not explicitly specified. All filters must match.")]
         public List<ProcessFilterDescriptor> Filters { get; set; } = new List<ProcessFilterDescriptor>(0);
     }
 
     public sealed class ProcessFilterDescriptor
     {
         [Display(Description = "The criteria used to compare against the target process.")]
+        [Required]
         public ProcessFilterKey Key { get;set; }
 
         [Display(Description = "The value of the criteria used to compare against the target process.")]
+        [Required]
         public string Value { get; set; }
 
         [Display(Description = "Type of match to use against the process criteria.")]
-        public ProcessFilterType MatchType { get; set; }
+        [DefaultValue(ProcessFilterType.Exact)]
+        public ProcessFilterType MatchType { get; set; } = ProcessFilterType.Exact;
     }
 }
