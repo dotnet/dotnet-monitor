@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType)
         {
-            return client.CaptureDumpAsync(pid, dumpType, TestTimeouts.HttpApi);
+            return client.CaptureDumpAsync(pid, dumpType, TestTimeouts.DumpTimeout);
         }
 
         /// <summary>

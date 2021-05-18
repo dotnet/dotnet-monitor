@@ -32,5 +32,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Default logs collection duration.
         /// </summary>
         public static readonly TimeSpan LogsDuration = TimeSpan.FromSeconds(10);
+
+        /// <summary>
+        /// Default timeout for dump collection.
+        /// </summary>
+        public static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(1);
     }
 }

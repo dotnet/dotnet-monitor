@@ -13,10 +13,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             get
             {
-                // Linux dumps currently broken by https://github.com/dotnet/diagnostics/issues/2098
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    return false;
-
                 // MacOS supported dumps starting in .NET 5
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major < 5)
                     return false;

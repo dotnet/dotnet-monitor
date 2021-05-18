@@ -9,8 +9,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public partial class DotNetHost
     {
+        // The version is in the Major.Minor.Patch-label format; remove the label
+        // and only parse the Major.Minor.Patch part.
         private static Lazy<Version> s_runtimeVersionLazy =
-            new(() => Version.Parse(CurrentNetCoreVersionString));
+            new(() => Version.Parse(CurrentNetCoreVersionString.Split("-")[0]));
 
         public static Version RuntimeVersion =>
             s_runtimeVersionLazy.Value;

@@ -11,6 +11,8 @@ using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FileFormats;
 using Microsoft.FileFormats.ELF;
+using Microsoft.FileFormats.MachO;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -24,6 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
     [Collection(DefaultCollectionFixture.Name)]
     public class DumpTests
     {
+        private const string EnableElfDumpOnMacOS = "COMPlus_DbgEnableElfDumpOnMacOS";
+
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
@@ -65,10 +69,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
-            // MachO not supported, only ELF: https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            // MachO not supported on .NET 5, only ELF: https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major == 5)
             {
-                appRunner.Environment.Add("COMPlus_DbgEnableElfDumpOnMacOS", "1");
+                appRunner.Environment.Add(EnableElfDumpOnMacOS, "1");
             }
 
             await appRunner.ExecuteAsync(async () =>
@@ -84,7 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 // Read enough to deserialize the header.
                 int read;
                 int total = 0;
-                using CancellationTokenSource cancellation = new(TestTimeouts.HttpApi);
+                using CancellationTokenSource cancellation = new(TestTimeouts.DumpTimeout);
                 while (total < headerBuffer.Length && 0 != (read = await holder.Stream.ReadAsync(headerBuffer, total, headerBuffer.Length - total, cancellation.Token)))
                 {
                     total += read;
@@ -103,13 +107,48 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     // Validate Signature
                     Assert.True(header.IsSignatureValid.Check());
                 }
-                else
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    ELFHeader header = dumpReader.Read<ELFHeader>(0);
+                    ELFHeaderIdent ident = dumpReader.Read<ELFHeaderIdent>(0);
+                    Assert.True(ident.IsIdentMagicValid.Check());
+                    Assert.True(ident.IsClassValid.Check());
+                    Assert.True(ident.IsDataValid.Check());
+
+                    LayoutManager layoutManager = new();
+                    layoutManager.AddELFTypes(
+                        isBigEndian: ident.Data == ELFData.BigEndian,
+                        is64Bit: ident.Class == ELFClass.Class64);
+                    Reader headerReader = new(dumpAddressSpace, layoutManager);
+
+                    ELFHeader header = headerReader.Read<ELFHeader>(0);
                     // Validate Signature
                     Assert.True(header.IsIdentMagicValid.Check());
                     // Validate ELF file is a core dump
                     Assert.Equal(ELFHeaderType.Core, header.Type);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    if (appRunner.Environment.ContainsKey(EnableElfDumpOnMacOS))
+                    {
+                        ELFHeader header = dumpReader.Read<ELFHeader>(0);
+                        // Validate Signature
+                        Assert.True(header.IsIdentMagicValid.Check());
+                        // Validate ELF file is a core dump
+                        Assert.Equal(ELFHeaderType.Core, header.Type);
+                    }
+                    else
+                    {
+                        MachHeader header = dumpReader.Read<MachHeader>(0);
+                        // Validate Signature
+                        Assert.True(header.IsMagicValid.Check());
+                        // Validate MachO file is a core dump
+                        Assert.True(header.IsFileTypeValid.Check());
+                        Assert.Equal(MachHeaderFileType.Core, header.FileType);
+                    }
+                }
+                else
+                {
+                    throw new NotImplementedException("Dump header check not implemented for this OS platform.");
                 }
 
                 await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
