@@ -9,7 +9,7 @@ The metrics are collected from the following providers by default:
 
 All of the counters for each of these providers are collected by default.
 
-> **NOTE:** This route collects metrics only from a single process. If there are no processes or more than one process, the endpoint will not return information. In order to facilitate observing a single process, the tool can be configured to listen for connections from a target process; see [Diagnostic Port Configuration](<../configuration.md#Diagnostic Port Configuration>) for more details.
+> **NOTE:** This route collects metrics only from a single process. If there are no processes or more than one process, the endpoint will not return information. In order to facilitate observing a single process, the tool can be configured to listen for connections from a target process; see [Default Process Configuration](<../configuration.md#Default Process Configuration>) and [Diagnostic Port Configuration](<../configuration.md#Diagnostic Port Configuration>) for more details.
 
 ## HTTP Route
 

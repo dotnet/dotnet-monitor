@@ -216,6 +216,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         services.ConfigureEgress(context.Configuration);
                         services.ConfigureMetrics(context.Configuration);
                         services.ConfigureStorage(context.Configuration);
+                        services.ConfigureDefaultProcess(context.Configuration);
                     });
                 }
 

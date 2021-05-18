@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             return this.InvokeService(async () =>
             {
                 IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
-                foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(HttpContext.RequestAborted))
+                foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(processFilter: null, HttpContext.RequestAborted))
                 {
                     processesIdentifiers.Add(new Models.ProcessIdentifier()
                     {

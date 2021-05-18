@@ -16,8 +16,19 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
     /// </summary>
     internal interface IDiagnosticServices : IDisposable
     {
-        Task<IEnumerable<IProcessInfo>> GetProcessesAsync(CancellationToken token);
+        /// <summary>
+        /// Returns running processes, optionally based on filter criteria.
+        /// </summary>
+        Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilter, CancellationToken token);
 
+        /// <summary>
+        /// Returns back a process based on a key. If no key is specified, the DefaultProcess configuration is used.
+        /// </summary>
+        /// <remarks>
+        /// At the moment, we use this Api for all operations that require a single process, such as metrics or artifact collection urls with no pid.
+        /// In the future, may want to update this to have an overload that also takes a DiagProcessFilter object, if different
+        /// situations allow a different process object.
+        /// </remarks>
         Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token);
 
         Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token);
