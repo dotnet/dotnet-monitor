@@ -31,6 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private readonly ApiAuthenticationOptions _apiAuthOptions;
 
+
         public ApiKeyAuthenticationHandler(
             IOptionsMonitor<ApiKeyAuthenticationHandlerOptions> options,
             IOptionsSnapshot<ApiAuthenticationOptions> apiAuthOptions,
@@ -39,6 +40,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             ISystemClock clock)
             : base(options, loggerFactory, encoder, clock)
         {
+            // AuthenticationHandler<T> implementations are registered as transient services, so its okay to
+            // use IOptionsSnapshot to get the current value of the api authentication options. This also has
+            // the side effect of getting a snapshot of the options rather than getting options that can mutate
+            // (e.g. configuration reload) while attempting to authenticate a particular request.
             _apiAuthOptions = apiAuthOptions.Value;
         }
 
