@@ -142,7 +142,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                     }
 
-                    builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
+                    builder.AddKeyPerFileWithChangeTokenSupport(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ConfigPrefix);
                 });
 
@@ -158,6 +158,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         List<string> authSchemas = null;
                         if (authenticationOptions.EnableKeyAuth)
                         {
+                            services.ConfigureApiKeyConfiguration(context.Configuration);
+
                             //Add support for Authentication and Authorization.
                             AuthenticationBuilder authBuilder = services.AddAuthentication(options =>
                             {

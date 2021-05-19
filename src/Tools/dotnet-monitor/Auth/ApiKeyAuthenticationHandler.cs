@@ -3,17 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.RestServer;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using System;
-using System.Buffers.Text;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -34,9 +29,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             "SHA", "SHA1", "System.Security.Cryptography.SHA1", "System.Security.Cryptography.HashAlgorithm", "MD5", "System.Security.Cryptography.MD5"
         };
 
-        public ApiKeyAuthenticationHandler(IOptionsMonitor<ApiKeyAuthenticationHandlerOptions> options, ILoggerFactory loggerFactory, UrlEncoder encoder, ISystemClock clock)
+        private readonly ApiAuthenticationOptions _apiAuthOptions;
+
+        public ApiKeyAuthenticationHandler(
+            IOptionsMonitor<ApiKeyAuthenticationHandlerOptions> options,
+            IOptionsSnapshot<ApiAuthenticationOptions> apiAuthOptions,
+            ILoggerFactory loggerFactory,
+            UrlEncoder encoder,
+            ISystemClock clock)
             : base(options, loggerFactory, encoder, clock)
         {
+            _apiAuthOptions = apiAuthOptions.Value;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -68,30 +71,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return Task.FromResult(AuthenticateResult.Fail("Invalid Api Key format"));
             }
 
-            //HACK IOptionsMonitor and similiar do not properly update here even though the underlying
-            //configuration is updated. We get the value directly from IConfiguration.
-
-            var authenticationOptions = new ApiAuthenticationOptions();
-            IConfiguration configService = Context.RequestServices.GetRequiredService<IConfiguration>();
-            configService.Bind(ConfigurationKeys.ApiAuthentication, authenticationOptions);
-            string apiKeyHash = authenticationOptions.ApiKeyHash;
+            string apiKeyHash = _apiAuthOptions.ApiKeyHash;
             if (apiKeyHash == null)
             {
                 return Task.FromResult(AuthenticateResult.Fail("Server does not contain Api Key"));
             }
-            if (string.IsNullOrEmpty(authenticationOptions.ApiKeyHashType))
+            if (string.IsNullOrEmpty(_apiAuthOptions.ApiKeyHashType))
             {
                 return Task.FromResult(AuthenticateResult.Fail("Missing hash algorithm"));
             }
-            if (DisallowedHashAlgorithms.Contains(authenticationOptions.ApiKeyHashType, StringComparer.OrdinalIgnoreCase))
+            if (DisallowedHashAlgorithms.Contains(_apiAuthOptions.ApiKeyHashType, StringComparer.OrdinalIgnoreCase))
             {
-                return Task.FromResult(AuthenticateResult.Fail($"Disallowed hash algorithm {authenticationOptions.ApiKeyHashType}"));
+                return Task.FromResult(AuthenticateResult.Fail($"Disallowed hash algorithm {_apiAuthOptions.ApiKeyHashType}"));
             }
 
-            using HashAlgorithm algorithm = HashAlgorithm.Create(authenticationOptions.ApiKeyHashType);
+            using HashAlgorithm algorithm = HashAlgorithm.Create(_apiAuthOptions.ApiKeyHashType);
             if (algorithm == null)
             {
-                return Task.FromResult(AuthenticateResult.Fail($"Invalid hash algorithm {authenticationOptions.ApiKeyHashType}"));
+                return Task.FromResult(AuthenticateResult.Fail($"Invalid hash algorithm {_apiAuthOptions.ApiKeyHashType}"));
             }
 
             byte[] hashedSecret = algorithm.ComputeHash(secret);
