@@ -13,6 +13,7 @@
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\CorsConfiguration.cs" Link="Options\CorsConfiguration.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptions.cs" Link="Options\MetricsOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptionsDefaults.cs" Link="Options\MetricsOptionsDefaults.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\ProcessFilterOptions.cs" Link="Options\ProcessFilterOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\DumpType.cs" Link="Models\DumpType.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\LogsConfiguration.cs" Link="Models\LogsConfiguration.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />

@@ -28,6 +28,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
         }
 
+        public static IServiceCollection ConfigureDefaultProcess(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<ProcessFilterOptions>(services, configuration, ConfigurationKeys.DefaultProcess);
+        }
+
         private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class
         {
             return services.Configure<T>(configuration.GetSection(key));

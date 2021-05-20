@@ -70,6 +70,17 @@
           "$ref": "#/definitions/StorageOptions"
         }
       ]
+    },
+    "DefaultProcess": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/ProcessFilterOptions"
+        }
+      ]
     }
   },
   "definitions": {
@@ -292,6 +303,80 @@
           "description": "The location for temporary dump files. Defaults to the temp folder."
         }
       }
+    },
+    "ProcessFilterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Filters": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "Process filters used to determine which process to use if one is not explicitly specified. All filters must match.",
+          "items": {
+            "$ref": "#/definitions/ProcessFilterDescriptor"
+          }
+        }
+      }
+    },
+    "ProcessFilterDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Key",
+        "Value"
+      ],
+      "properties": {
+        "Key": {
+          "description": "The criteria used to compare against the target process.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ProcessFilterKey"
+            }
+          ]
+        },
+        "Value": {
+          "type": "string",
+          "description": "The value of the criteria used to compare against the target process.",
+          "minLength": 1
+        },
+        "MatchType": {
+          "description": "Type of match to use against the process criteria.",
+          "default": "Exact",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ProcessFilterType"
+            }
+          ]
+        }
+      }
+    },
+    "ProcessFilterKey": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "ProcessId",
+        "ProcessName",
+        "CommandLine"
+      ],
+      "enum": [
+        "ProcessId",
+        "ProcessName",
+        "CommandLine"
+      ]
+    },
+    "ProcessFilterType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Exact",
+        "Contains"
+      ],
+      "enum": [
+        "Exact",
+        "Contains"
+      ]
     }
   }
 }

@@ -223,6 +223,43 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 }
 ```
 
+## Default Process Configuration
+
+Default process configuration is used to determine which process is used for metrics, and in situations where the process is not specified in the query to retrieve an artifact. A process must match all the specified filters.
+
+| Name | Type | Description |
+|---|---|---|
+| Key | string | Specifies which criteria to match on the process. Can be `ProcessId`, `ProcessName`, `CommandLine`. |
+| Value | string | The value to match against the process. |
+| MatchType | string | The type of match to perform. Can be `Exact` or `Contains` for sub-string matching. Both are case-insensitive.|
+
+### Examples
+
+Match the iisexpress process by name
+
+```json
+{
+  "DefaultProcess": {
+    "Filters": [{
+      "Key": "ProcessName",
+      "Value": "iisexpress"
+    }]
+  },
+}
+```
+
+Match pid 1
+```json
+{
+  "DefaultProcess": {
+    "Filters": [{
+      "Key": "ProcessId",
+      "Value": "1",
+    }]
+  },
+}
+```
+
 ## Cross-Origin Resource Sharing (CORS) Configuration
 
 // TODO
