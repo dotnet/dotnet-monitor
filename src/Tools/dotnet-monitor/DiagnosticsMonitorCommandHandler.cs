@@ -166,7 +166,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                                 options.DefaultAuthenticateScheme = AuthConstants.ApiKeySchema;
                                 options.DefaultChallengeScheme = AuthConstants.ApiKeySchema;
                             })
-                            .AddScheme<ApiKeyAuthenticationHandlerOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
+                            .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
 
                             authSchemas = new List<string> { AuthConstants.ApiKeySchema };
 

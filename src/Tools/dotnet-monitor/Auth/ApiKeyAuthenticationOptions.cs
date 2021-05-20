@@ -3,13 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class ApiKeyAuthenticationHandlerOptions : AuthenticationSchemeOptions
+    internal sealed class ApiKeyAuthenticationOptions : AuthenticationSchemeOptions
     {
+        public string HashAlgorithm { get; set; }
+
+        public byte[] HashValue { get; set; }
+
+        public IEnumerable<ValidationResult> ValidationErrors { get; set; }
     }
 }
