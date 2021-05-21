@@ -136,13 +136,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             LoggerMessage.Define<string>(
                 eventId: new EventId(21, "ApiKeyValidationFailure"),
                 logLevel: LogLevel.Warning,
-                formatString: "{validationFailure}");
+                formatString: nameof(ConfigurationKeys.ApiAuthentication) + " settings are invalid: {validationFailure}");
 
         private static readonly Action<ILogger, Exception> _apiKeyAuthenticationOptionsChanged =
             LoggerMessage.Define(
                 eventId: new EventId(22, "ApiKeyAuthenticationOptionsChanged"),
                 logLevel: LogLevel.Information,
-                formatString: "API key authentication settings have changed.");
+                formatString: nameof(ConfigurationKeys.ApiAuthentication) + " settings have changed.");
 
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {

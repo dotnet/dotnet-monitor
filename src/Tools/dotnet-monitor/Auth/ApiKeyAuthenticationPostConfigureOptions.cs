@@ -53,14 +53,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 if (DisallowedHashAlgorithms.Contains(sourceOptions.ApiKeyHashType, StringComparer.OrdinalIgnoreCase))
                 {
-                    errors.Add(new ValidationResult($"API Key hash algorithm '{sourceOptions.ApiKeyHashType}' is not allowed.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHashType) }));
+                    errors.Add(new ValidationResult($"The {nameof(ApiAuthenticationOptions.ApiKeyHashType)} field value '{sourceOptions.ApiKeyHashType}' is not allowed.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHashType) }));
                 }
                 else
                 {
                     using HashAlgorithm algorithm = HashAlgorithm.Create(sourceOptions.ApiKeyHashType);
                     if (null == algorithm)
                     {
-                        errors.Add(new ValidationResult($"API key hash algorithm '{sourceOptions.ApiKeyHashType}' is not supported.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHashType) }));
+                        errors.Add(new ValidationResult($"The {nameof(ApiAuthenticationOptions.ApiKeyHashType)} field value '{sourceOptions.ApiKeyHashType}' is not supported.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHashType) }));
                     }
                 }
             }
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         if (!byte.TryParse(sourceOptions.ApiKeyHash.AsSpan(i, 2), NumberStyles.HexNumber, provider: NumberFormatInfo.InvariantInfo, result: out byte resultByte))
                         {
-                            errors.Add(new ValidationResult($"API key hash could not be decoded as hex string.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHash) }));
+                            errors.Add(new ValidationResult($"The {nameof(ApiAuthenticationOptions.ApiKeyHash)} field could not be decoded as hex string.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHash) }));
                             break;
                         }
                         apiKeyHashBytes[i / 2] = resultByte;
@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 else
                 {
-                    errors.Add(new ValidationResult("API key hash length must be an even number.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHash) }));
+                    errors.Add(new ValidationResult($"The {nameof(ApiAuthenticationOptions.ApiKeyHash)} field value length must be an even number.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHash) }));
                 }
             }
 
