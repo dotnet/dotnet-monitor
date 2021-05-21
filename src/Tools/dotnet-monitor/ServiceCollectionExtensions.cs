@@ -24,9 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Loads and validates ApiAuthenticationOptions into ApiKeyAuthenticationOptions
                 .AddSingleton<IPostConfigureOptions<ApiKeyAuthenticationOptions>, ApiKeyAuthenticationPostConfigureOptions>()
                 // Notifies that ApiKeyAuthenticationOptions is changed when ApiAuthenticationOptions is changed.
-                .AddSingleton<IOptionsChangeTokenSource<ApiKeyAuthenticationOptions>, ApiKeyAuthenticationOptionsChangeTokenSource>()
-                // Add hosted service that monitors for ApiKeyAuthenticationOptions changes and logs validation errors.
-                .AddHostedService<ApiKeyAuthenticationHostedService>();
+                .AddSingleton<IOptionsChangeTokenSource<ApiKeyAuthenticationOptions>, ApiKeyAuthenticationOptionsChangeTokenSource>();
         }
 
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)

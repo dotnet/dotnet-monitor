@@ -96,6 +96,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IWebHostEnvironment env,
             IAuthOptions options,
             AddressListenResults listenResults,
+            ApiKeyAuthenticationOptionsObserver optionsObserver,
             ILogger<Startup> logger)
         {
             // These errors are populated before Startup.Configure is called because
@@ -123,6 +124,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             lifetime.ApplicationStarted.Register(() => LogBoundAddresses(app.ServerFeatures, listenResults, logger));
 
             LogElevatedPermissions(options, logger);
+
+            // Start listening for options changes so they can be logged when changed.
+            optionsObserver.Initialize();
 
             if (options.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth)
             {
