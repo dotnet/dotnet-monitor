@@ -155,6 +155,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         AuthOptions authenticationOptions = new AuthOptions(noAuth ? KeyAuthenticationMode.NoAuth : KeyAuthenticationMode.StoredKey);
                         services.AddSingleton<IAuthOptions>(authenticationOptions);
 
+                        // Although this is only observing API key authentication changes, it does handle
+                        // the case when API key authentication is not enabled. This class could evolve
+                        // to observe other options in the future, at which point it might be good to
+                        // refactor the options observers for each into separate implementations and are
+                        // orchestrated by this single service.
+                        services.AddSingleton<ApiKeyAuthenticationOptionsObserver>();
+
                         List<string> authSchemas = null;
                         if (authenticationOptions.EnableKeyAuth)
                         {
@@ -166,7 +173,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                                 options.DefaultAuthenticateScheme = AuthConstants.ApiKeySchema;
                                 options.DefaultChallengeScheme = AuthConstants.ApiKeySchema;
                             })
-                            .AddScheme<ApiKeyAuthenticationHandlerOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
+                            .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
 
                             authSchemas = new List<string> { AuthConstants.ApiKeySchema };
 

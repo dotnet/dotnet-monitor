@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.RestServer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -132,6 +132,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: "Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions.");
 
+        private static readonly Action<ILogger, string, Exception> _apiKeyValidationFailure =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(21, "ApiKeyValidationFailure"),
+                logLevel: LogLevel.Warning,
+                formatString: nameof(ConfigurationKeys.ApiAuthentication) + " settings are invalid: {validationFailure}");
+
+        private static readonly Action<ILogger, Exception> _apiKeyAuthenticationOptionsChanged =
+            LoggerMessage.Define(
+                eventId: new EventId(22, "ApiKeyAuthenticationOptionsChanged"),
+                logLevel: LogLevel.Information,
+                formatString: nameof(ConfigurationKeys.ApiAuthentication) + " settings have changed.");
+
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
             _egressProviderAdded(logger, providerName, null);
@@ -246,6 +258,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DisabledNegotiateWhileElevated(this ILogger logger)
         {
             _disabledNegotiateWhileElevated(logger, null);
+        }
+
+        public static void ApiKeyValidationFailures(this ILogger logger, IEnumerable<ValidationResult> errors)
+        {
+            foreach (ValidationResult error in errors)
+            {
+                _apiKeyValidationFailure(logger, error.ErrorMessage, null);
+            }
+        }
+
+        public static void ApiKeyAuthenticationOptionsChanged(this ILogger logger)
+        {
+            _apiKeyAuthenticationOptionsChanged(logger, null);
         }
 
         private static string Redact(string value)
