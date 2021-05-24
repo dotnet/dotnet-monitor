@@ -149,7 +149,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the level query parameter.
         /// </summary>
-        [Theory(Skip = "NotSupportedException needs to be handled by pipeline or dotnet-monitor.")]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen)]
@@ -182,7 +182,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the default log level in the request body.
         /// </summary>
-        [Theory(Skip = "NotSupportedException needs to be handled by pipeline or dotnet-monitor.")]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen)]
@@ -470,8 +470,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             Assert.Equal(expected.EventId, actual.EventId);
             
-            // Re-enable after event name bug is fixed in EventLogsPipeline.
-            //Assert.Equal(expected.EventName, actual.EventName);
+            Assert.Equal(expected.EventName, actual.EventName);
 
             if (null == expected.Exception)
             {
