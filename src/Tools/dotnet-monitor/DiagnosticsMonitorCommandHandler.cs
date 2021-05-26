@@ -151,7 +151,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     builder.AddKeyPerFileWithChangeTokenSupport(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ConfigPrefix);
 
-                    if (!noAuth && tempApiKey)
+                    if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {
                         ConfigureTempApiHashKey(builder, authenticationOptions);
                     }
@@ -284,20 +284,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, AuthOptions authenticationOptions)
         {
-            const string DefaultHashAlgorithm = "SHA512";
-            using HashAlgorithm algorithm = HashAlgorithm.Create(DefaultHashAlgorithm);
-            byte[] hashedSecret = algorithm.ComputeHash(authenticationOptions.GeneratedKey);
-            StringBuilder hashedSecretHex = new StringBuilder(hashedSecret.Length * 2);
-            foreach (byte hashByte in hashedSecret)
+            if (authenticationOptions.TemporaryKey != null)
             {
-                hashedSecretHex.AppendFormat("{0:X2}", hashByte);
+                builder.AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHashType)), authenticationOptions.TemporaryKey.HashAlgorithm },
+                    { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHash)), authenticationOptions.TemporaryKey.HashValue },
+                });
             }
-
-            builder.AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHashType)), DefaultHashAlgorithm },
-                { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHash)), hashedSecretHex.ToString() },
-            });
         }
 
         private static void ConfigureStorageDefaults(IConfigurationBuilder builder)

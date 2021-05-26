@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public bool EnableKeyAuth => (KeyAuthenticationMode == KeyAuthenticationMode.StoredKey) ||
                                      (KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey);
         
-        public byte[] GeneratedKey { get; }
+        public GeneratedApiKey TemporaryKey { get; }
 
         public AuthOptions(KeyAuthenticationMode mode)
         {
@@ -25,10 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             
             if (mode == KeyAuthenticationMode.TemporaryKey)
             {
-                byte[] newKey = new byte[32];
-                RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
-                rngCsp.GetBytes(newKey);
-                GeneratedKey = newKey;
+                TemporaryKey = GeneratedApiKey.Create();
             }
         }
     }

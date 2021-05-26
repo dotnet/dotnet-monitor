@@ -22,23 +22,56 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public Task<int> GenerateApiKey(CancellationToken token, IConsole console)
         {
-            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            using HashAlgorithm hashAlgorithm = SHA256.Create();
+            GeneratedApiKey newKey = GeneratedApiKey.Create();
 
-            byte[] secret = new byte[32];
+            console.Out.WriteLine(FormattableString.Invariant($"Authorization: {Monitoring.RestServer.AuthConstants.ApiKeySchema} {newKey.MonitorApiKey}"));
+            console.Out.WriteLine(FormattableString.Invariant($"ApiKeyHash: {newKey.HashValue}"));
+            console.Out.WriteLine(FormattableString.Invariant($"ApiKeyHashType: {newKey.HashAlgorithm}"));
+
+            return Task.FromResult(0);
+        }
+    }
+
+    internal sealed class GeneratedApiKey
+    {
+        private const int KeyLengthBytes = 32;
+
+        public readonly string MonitorApiKey;
+        public readonly string HashAlgorithm;
+        public readonly string HashValue;
+
+        private GeneratedApiKey(string monitorApiKey, string hashAlgorithm, string hashValue)
+        {
+            this.MonitorApiKey = monitorApiKey;
+            this.HashAlgorithm = hashAlgorithm;
+            this.HashValue = hashValue;
+        }
+
+        public static GeneratedApiKey Create()
+        {
+            return GeneratedApiKey.Create("SHA256");
+        }
+
+        private static GeneratedApiKey Create(string hashAlgorithm)
+        {
+            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            using HashAlgorithm hasher = SHA256.Create();
+
+            byte[] secret = new byte[KeyLengthBytes];
             rng.GetBytes(secret);
 
-            byte[] hash = hashAlgorithm.ComputeHash(secret);
+            byte[] hash = hasher.ComputeHash(secret);
+            StringBuilder outHash = new StringBuilder(hash.Length * 2);
 
-            console.Out.WriteLine(FormattableString.Invariant($"Authorization: {Monitoring.RestServer.AuthConstants.ApiKeySchema} {Convert.ToBase64String(secret)}"));
-            console.Out.Write("ApiKeyHash: ");
             foreach (byte b in hash)
             {
-                console.Out.Write(b.ToString("X2"));
+                outHash.AppendFormat("{0:X2}", b);
             }
-            console.Out.WriteLine();
-            console.Out.WriteLine("ApiKeyHashType: SHA256");
-            return Task.FromResult(0);
+
+            string apiKey = Convert.ToBase64String(secret);
+
+            GeneratedApiKey result = new GeneratedApiKey(apiKey, hashAlgorithm, outHash.ToString());
+            return result;
         }
     }
 }

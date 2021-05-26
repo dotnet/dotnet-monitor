@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             using CancellationTokenSource cancellation = new(timeout);
             client.BaseAddress = new Uri(await runner.GetDefaultAddressAsync(cancellation.Token), UriKind.Absolute);
 
-            if (runner.TempApiKey)
+            if (runner.UseTempApiKey)
             {
                 string monitorApiKey = await runner.GetMonitorApiKey(cancellation.Token);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthenticationTests.ApiKeyScheme, monitorApiKey);

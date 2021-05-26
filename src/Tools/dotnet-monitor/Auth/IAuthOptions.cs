@@ -17,6 +17,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         bool EnableNegotiate { get; }
         KeyAuthenticationMode KeyAuthenticationMode { get; }
-        byte[] GeneratedKey { get; }
+        GeneratedApiKey TemporaryKey { get; }
     }
 }

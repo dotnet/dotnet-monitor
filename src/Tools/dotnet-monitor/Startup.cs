@@ -136,7 +136,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 if (options.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                 {
-                    logger.LogTempKey(options.GeneratedKey);
+                    logger.LogTempKey(options.TemporaryKey.MonitorApiKey);
                 }
                 //Auth is enabled and we are binding on http. Make sure we log a warning.
 

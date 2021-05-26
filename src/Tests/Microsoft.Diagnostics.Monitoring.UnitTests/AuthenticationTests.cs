@@ -186,14 +186,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         }
 
         /// <summary>
-        /// Tests that API key authentication can be configured correctly and
-        /// that the key can be rotated wihtout shutting down dotnet-monitor.
+        /// Tests that --temp-apikey flag can be used to generate a key.
         /// </summary>
         [Fact]
-        public async Task TempApiKeyAuthenticationSchemeTest()
+        public async Task TempApiKeyTest()
         {
             await using MonitorRunner toolRunner = new(_outputHelper);
-            toolRunner.TempApiKey = true;
+            toolRunner.UseTempApiKey = true;
 
             _outputHelper.WriteLine("Starting Monitor.");
             await toolRunner.StartAsync();
@@ -207,6 +206,49 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             // Check that /processes is authenticated
             var processes = await apiClient.GetProcessesAsync();
             Assert.NotNull(processes);
+
+            // Test that clearing the Authorization header will result in a 401
+            httpClient.DefaultRequestHeaders.Authorization = null;
+            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                () => apiClient.GetProcessesAsync());
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
+        }
+
+        /// <summary>
+        /// Tests that --temp-apikey will override the ApiAuthentication configuration.
+        /// </summary>
+        [Fact]
+        public async Task TempApiKeyOverridesApiAuthenticationTest()
+        {
+            const string AlgorithmName = "SHA256";
+
+            await using MonitorRunner toolRunner = new(_outputHelper);
+            toolRunner.UseTempApiKey = true;
+
+            // Generate initial API key
+            byte[] apiKey = GenerateApiKey();
+
+            // Set API key via key-per-file
+            RootOptions options = new();
+            options.UseApiKey(AlgorithmName, apiKey);
+            toolRunner.WriteKeyPerValueConfiguration(options);
+
+            _outputHelper.WriteLine("Starting Monitor.");
+            await toolRunner.StartAsync();
+
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            // Check that /processes is authenticated when using the supplied temp key
+            var processes = await apiClient.GetProcessesAsync();
+            Assert.NotNull(processes);
+
+            // Test that setting the Authorization header for the supplied config will result in a 401
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(ApiKeyScheme, Convert.ToBase64String(apiKey));
+            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                () => apiClient.GetProcessesAsync());
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
         /// <summary>

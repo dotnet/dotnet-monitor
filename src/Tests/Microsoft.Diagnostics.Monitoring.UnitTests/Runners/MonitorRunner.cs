@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// <summary>
         /// Determines whether a temporary api key should be generated while starting dotnet-monitor.
         /// </summary>
-        public bool TempApiKey { get; set; }
+        public bool UseTempApiKey { get; set; }
 
         /// <summary>
         /// Determines whether metrics are disabled via the command line when starting dotnet-monitor.
@@ -191,7 +191,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 argsList.Add("--no-auth");
             }
 
-            if (TempApiKey)
+            if (UseTempApiKey)
             {
                 argsList.Add("--temp-apikey");
             }
@@ -262,6 +262,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         {
             return _metricsAddressSource.GetAsync(token);
         }
+
         public Task<string> GetMonitorApiKey(CancellationToken token)
         {
             return _monitorApiKeySource.GetAsync(token);
