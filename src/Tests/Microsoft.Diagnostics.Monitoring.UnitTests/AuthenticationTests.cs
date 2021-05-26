@@ -194,7 +194,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             await using MonitorRunner toolRunner = new(_outputHelper);
             toolRunner.UseTempApiKey = true;
 
-            _outputHelper.WriteLine("Starting Monitor.");
             await toolRunner.StartAsync();
 
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
@@ -233,7 +232,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             options.UseApiKey(AlgorithmName, apiKey);
             toolRunner.WriteKeyPerValueConfiguration(options);
 
-            _outputHelper.WriteLine("Starting Monitor.");
             await toolRunner.StartAsync();
 
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
