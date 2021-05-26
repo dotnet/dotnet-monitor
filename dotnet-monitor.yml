@@ -7,6 +7,7 @@ pr:
     - main
     - release/*
     - internal/release/*
+    - feature/*
 
 variables:
   - name: _TeamName
