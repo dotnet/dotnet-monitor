@@ -18,5 +18,8 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Models
 
         [JsonPropertyName("uid")]
         public Guid Uid { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
     }
 }

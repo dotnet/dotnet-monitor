@@ -7,12 +7,7 @@ pr:
     - main
     - release/*
     - internal/release/*
-  paths:
-    exclude:
-    - documentation/*
-    - '*.md'
-    - THIRD-PARTY-NOTICES.TXT
-    - LICENSE.TXT
+    - feature/*
 
 variables:
   - name: _TeamName

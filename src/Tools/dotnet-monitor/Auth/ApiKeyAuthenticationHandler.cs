@@ -3,18 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.RestServer;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using System;
-using System.Buffers.Text;
-using System.Collections.Generic;
-using System.Globalization;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -27,20 +22,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// <summary>
     /// Authenticates against the ApiKey stored on the server.
     /// </summary>
-    internal sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationHandlerOptions>
+    internal sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
     {
-        private static readonly string[] DisallowedHashAlgorithms = new string[]
-        {
-            "SHA", "SHA1", "System.Security.Cryptography.SHA1", "System.Security.Cryptography.HashAlgorithm", "MD5", "System.Security.Cryptography.MD5"
-        };
+        public const int ApiKeyNumBytes = 32;
 
-        public ApiKeyAuthenticationHandler(IOptionsMonitor<ApiKeyAuthenticationHandlerOptions> options, ILoggerFactory loggerFactory, UrlEncoder encoder, ISystemClock clock)
+        public ApiKeyAuthenticationHandler(
+            IOptionsMonitor<ApiKeyAuthenticationOptions> options,
+            ILoggerFactory loggerFactory,
+            UrlEncoder encoder,
+            ISystemClock clock)
             : base(options, loggerFactory, encoder, clock)
         {
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
+            ApiKeyAuthenticationOptions options = OptionsMonitor.CurrentValue;
+            if (options.ValidationErrors.Any())
+            {
+                Logger.ApiKeyValidationFailures(options.ValidationErrors);
+
+                return Task.FromResult(AuthenticateResult.Fail("API key authentication not configured."));
+            }
+
             //We are expecting a header such as Authorization: <Schema> <key>
             //If this is not present, we will return NoResult and move on to the next authentication handler.
             if (!Request.Headers.TryGetValue(HeaderNames.Authorization, out StringValues values) ||
@@ -51,7 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (!AuthenticationHeaderValue.TryParse(values.First(), out AuthenticationHeaderValue authHeader))
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid authentication header"));
+                return Task.FromResult(AuthenticateResult.Fail("Invalid authentication header."));
             }
 
             if (!string.Equals(authHeader.Scheme, Scheme.Name, StringComparison.OrdinalIgnoreCase))
@@ -61,63 +65,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             //The user is passing a base 64-encoded version of the secret
             //We will be hash this and compare it to the secret in our configuration.
-            byte[] secret = new byte[32];
+            byte[] secret = new byte[ApiKeyAuthenticationHandler.ApiKeyNumBytes];
             Span<byte> span = new Span<byte>(secret);
             if (!Convert.TryFromBase64String(authHeader.Parameter, span, out int bytesWritten) || bytesWritten < 32)
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid Api Key format"));
+                return Task.FromResult(AuthenticateResult.Fail("Invalid API key format."));
             }
 
-            //HACK IOptionsMonitor and similiar do not properly update here even though the underlying
-            //configuration is updated. We get the value directly from IConfiguration.
-
-            var authenticationOptions = new ApiAuthenticationOptions();
-            IConfiguration configService = Context.RequestServices.GetRequiredService<IConfiguration>();
-            configService.Bind(ConfigurationKeys.ApiAuthentication, authenticationOptions);
-            string apiKeyHash = authenticationOptions.ApiKeyHash;
-            if (apiKeyHash == null)
-            {
-                return Task.FromResult(AuthenticateResult.Fail("Server does not contain Api Key"));
-            }
-            if (string.IsNullOrEmpty(authenticationOptions.ApiKeyHashType))
-            {
-                return Task.FromResult(AuthenticateResult.Fail("Missing hash algorithm"));
-            }
-            if (DisallowedHashAlgorithms.Contains(authenticationOptions.ApiKeyHashType, StringComparer.OrdinalIgnoreCase))
-            {
-                return Task.FromResult(AuthenticateResult.Fail($"Disallowed hash algorithm {authenticationOptions.ApiKeyHashType}"));
-            }
-
-            using HashAlgorithm algorithm = HashAlgorithm.Create(authenticationOptions.ApiKeyHashType);
-            if (algorithm == null)
-            {
-                return Task.FromResult(AuthenticateResult.Fail($"Invalid hash algorithm {authenticationOptions.ApiKeyHashType}"));
-            }
+            Debug.Assert(null != options.HashAlgorithm);
+            using HashAlgorithm algorithm = HashAlgorithm.Create(options.HashAlgorithm);
+            Debug.Assert(null != algorithm);
 
             byte[] hashedSecret = algorithm.ComputeHash(secret);
 
-            //ApiKeyHash is represented as a hex string. e.g. AABBCCDDEEFF
-            byte[] apiKeyHashBytes = new byte[apiKeyHash.Length / 2];
-            for (int i = 0; i < apiKeyHash.Length; i += 2)
-            {
-                if (!byte.TryParse(apiKeyHash.AsSpan(i, 2), NumberStyles.HexNumber, provider: NumberFormatInfo.InvariantInfo, result: out byte resultByte))
-                {
-                    return Task.FromResult(AuthenticateResult.Fail("Invalid Api Key hash"));
-                }
-                apiKeyHashBytes[i / 2] = resultByte;
-            }
-
-            if (hashedSecret.SequenceEqual(apiKeyHashBytes))
+            Debug.Assert(null != options.HashValue);
+            if (hashedSecret.SequenceEqual(options.HashValue))
             {
                 return Task.FromResult(AuthenticateResult.Success(
                     new AuthenticationTicket(
                         new ClaimsPrincipal(new[] { new ClaimsIdentity(AuthConstants.ApiKeySchema) }),
                         AuthConstants.ApiKeySchema)));
-
             }
             else
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid Api Key"));
+                return Task.FromResult(AuthenticateResult.Fail("Invalid API key."));
             }
         }
     }

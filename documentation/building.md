@@ -22,4 +22,4 @@ cd dotnet-monitor
 ./test.sh
 ```
 
-If you prefer to use *Visual Studio*, *Visual Studio Code*, or *Visual Studio for Mac*, you can open the `dotnet-monitor` solution at the root of the repo.
+If you prefer to use *Visual Studio*, *Visual Studio Code*, or *Visual Studio for Mac*, you can open the `dotnet monitor` solution at the root of the repo.

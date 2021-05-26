@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
         public Uri AccountUri { get; set; }
 
         /// <summary>
-        /// The acount key used to access the Azure blob storage account.
+        /// The account key used to access the Azure blob storage account.
         /// </summary>
         /// <remarks>
         /// If not provided, <see cref="AzureBlobEgressProviderOptions.SharedAccessSignature"/> must be specified.

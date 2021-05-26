@@ -20,12 +20,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureApiKeyConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<ApiAuthenticationOptions>(services, configuration, ConfigurationKeys.ApiAuthentication);
+            return ConfigureOptions<ApiAuthenticationOptions>(services, configuration, ConfigurationKeys.ApiAuthentication)
+                // Loads and validates ApiAuthenticationOptions into ApiKeyAuthenticationOptions
+                .AddSingleton<IPostConfigureOptions<ApiKeyAuthenticationOptions>, ApiKeyAuthenticationPostConfigureOptions>()
+                // Notifies that ApiKeyAuthenticationOptions is changed when ApiAuthenticationOptions is changed.
+                .AddSingleton<IOptionsChangeTokenSource<ApiKeyAuthenticationOptions>, ApiKeyAuthenticationOptionsChangeTokenSource>();
         }
 
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
+        }
+
+        public static IServiceCollection ConfigureDefaultProcess(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<ProcessFilterOptions>(services, configuration, ConfigurationKeys.DefaultProcess);
         }
 
         private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class

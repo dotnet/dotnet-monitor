@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.RestServer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -114,35 +115,41 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: "Bound metrics address: {address}");
 
-        private static readonly Action<ILogger, Exception> _metricUrlsUpdated =
-            LoggerMessage.Define(
-                eventId: new EventId(18, "MetricUrlsUpdated"),
-                logLevel: LogLevel.Warning,
-                formatString: $"Metric bindings changed. To host custom metrics over http set {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.AllowInsecureChannelForCustomMetrics))} to {true}");
-
-        private static readonly Action<ILogger, string, string, Exception> _metricUrlUpdated =
-            LoggerMessage.Define<string, string>(
-                eventId: new EventId(19, "MetricUrlUpdated"),
-                logLevel: LogLevel.Warning,
-                formatString: "Updated {originalUrl} to {newUrl} due to custom metrics.");
-
         private static readonly Action<ILogger, string, Exception> _optionsValidationFalure =
             LoggerMessage.Define<string>(
-                eventId: new EventId(20, "OptionsValidationFailure"),
+                eventId: new EventId(18, "OptionsValidationFailure"),
                 logLevel: LogLevel.Critical,
                 formatString: "{failure}");
 
         private static readonly Action<ILogger, Exception> _runningElevated =
             LoggerMessage.Define(
-                eventId: new EventId(21, "RunningElevated"),
+                eventId: new EventId(19, "RunningElevated"),
                 logLevel: LogLevel.Warning,
                 formatString: "The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes)");
 
         private static readonly Action<ILogger, Exception> _disabledNegotiateWhileElevated =
             LoggerMessage.Define(
-                eventId: new EventId(22, "DisabledNegotiateWhileElevated"),
+                eventId: new EventId(20, "DisabledNegotiateWhileElevated"),
                 logLevel: LogLevel.Warning,
                 formatString: "Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions.");
+
+        private static readonly Action<ILogger, string, Exception> _apiKeyValidationFailure =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(21, "ApiKeyValidationFailure"),
+                logLevel: LogLevel.Warning,
+                formatString: nameof(ConfigurationKeys.ApiAuthentication) + " settings are invalid: {validationFailure}");
+
+        private static readonly Action<ILogger, Exception> _apiKeyAuthenticationOptionsChanged =
+            LoggerMessage.Define(
+                eventId: new EventId(22, "ApiKeyAuthenticationOptionsChanged"),
+                logLevel: LogLevel.Information,
+                formatString: nameof(ConfigurationKeys.ApiAuthentication) + " settings have changed.");
+
+        private static readonly Action<ILogger, string, string, string, string, Exception> _logTempKey =
+            LoggerMessage.Define<string, string, string, string>(
+                eventId: new EventId(23, "LogTempApiKey"),
+                logLevel: LogLevel.Warning,
+                formatString: "Generated one-time-use ApiKey for dotnet-monitor; use the following header for authorization:{NewLine}{AuthHeaderName}: {AuthScheme} {MonitorApiKey}");
 
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
@@ -244,16 +251,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _boundMetricsAddress(logger, address, null);
         }
 
-        public static void MetricUrlUpdated(this ILogger logger, string originalUrl, string newUrl)
-        {
-            _metricUrlUpdated(logger, originalUrl, newUrl, null);
-        }
-
-        public static void MetricUrlsUpdated(this ILogger logger)
-        {
-            _metricUrlsUpdated(logger, null);
-        }
-
         public static void OptionsValidationFailure(this ILogger logger, OptionsValidationException exception)
         {
             foreach (string failure in exception.Failures)
@@ -268,6 +265,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DisabledNegotiateWhileElevated(this ILogger logger)
         {
             _disabledNegotiateWhileElevated(logger, null);
+        }
+
+        public static void ApiKeyValidationFailures(this ILogger logger, IEnumerable<ValidationResult> errors)
+        {
+            foreach (ValidationResult error in errors)
+            {
+                _apiKeyValidationFailure(logger, error.ErrorMessage, null);
+            }
+        }
+
+        public static void ApiKeyAuthenticationOptionsChanged(this ILogger logger)
+        {
+            _apiKeyAuthenticationOptionsChanged(logger, null);
+        }
+
+        public static void LogTempKey(this ILogger logger, string monitorApiKey)
+        {
+            _logTempKey(logger, Environment.NewLine, HeaderNames.Authorization, Monitoring.RestServer.AuthConstants.ApiKeySchema, monitorApiKey, null);
         }
 
         private static string Redact(string value)

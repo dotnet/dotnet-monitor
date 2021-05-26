@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading;
@@ -59,7 +60,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// </summary>
         public string DiagnosticPortPath { get; set; }
 
-        public int ProcessId => _runner.ProcessId;
+        public Dictionary<string, string> Environment => _adapter.Environment;
+
+        public int ExitCode => _adapter.ExitCode;
+
+        public int ProcessId => _adapter.ProcessId;
 
         /// <summary>
         /// Name of the scenario to run in the application.
@@ -136,13 +141,22 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         private void StandardOutputCallback(string line)
         {
-            ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
-
-            switch (logEvent.Category)
+            try
             {
-                case "Microsoft.Diagnostics.Monitoring.UnitTestApp.Program":
-                    HandleProgramEvent(logEvent);
-                    break;
+                ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
+
+                switch (logEvent.Category)
+                {
+                    case "Microsoft.Diagnostics.Monitoring.UnitTestApp.Program":
+                        HandleProgramEvent(logEvent);
+                        break;
+                }
+            }
+            catch (JsonException)
+            {
+                // Unable to parse the output. These could be lines writen to stdout that are not JSON formatted.
+                // For example, asking dotnet to create a dump will write a message to stdout that is not JSON formatted.
+                _outputHelper.WriteLine("Unable to JSON parse stdout line: {0}", line);
             }
         }
 

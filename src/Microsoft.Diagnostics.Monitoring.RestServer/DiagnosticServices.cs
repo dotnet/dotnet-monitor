@@ -22,34 +22,40 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         // on a Windows operating system.
         private const string ProcessOperatingSystemWindowsValue = "windows";
 
-        // A Docker container's entrypoint process ID is 1
-        private static readonly ProcessKey DockerEntrypointProcessFilter = new ProcessKey(1);
-
-        // The amount of time to wait when checking if the docker entrypoint process is a .NET process
-        // with a diagnostics transport connection.
-        private static readonly TimeSpan DockerEntrypointWaitTimeout = TimeSpan.FromMilliseconds(250);
         // The amount of time to wait before cancelling get additional process information (e.g. getting
         // the process command line if the IEndpointInfo doesn't provide it).
         private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromMilliseconds(500);
 
         private readonly IEndpointInfoSourceInternal _endpointInfoSource;
         private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
-        private readonly StorageOptions _storageOptions;
+        private readonly IOptionsMonitor<StorageOptions> _storageOptions;
+        private readonly IOptionsMonitor<ProcessFilterOptions> _defaultProcessOptions;
 
-        public DiagnosticServices(IEndpointInfoSource endpointInfoSource, IOptions<StorageOptions> storageOptions)
+        public DiagnosticServices(IEndpointInfoSource endpointInfoSource,
+            IOptionsMonitor<StorageOptions> storageOptions,
+            IOptionsMonitor<ProcessFilterOptions> defaultProcessMonitor)
         {
             _endpointInfoSource = (IEndpointInfoSourceInternal)endpointInfoSource;
-            _storageOptions = storageOptions.Value;
+            _storageOptions = storageOptions;
+            _defaultProcessOptions = defaultProcessMonitor;
         }
 
-        public async Task<IEnumerable<IProcessInfo>> GetProcessesAsync(CancellationToken token)
+        public async Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilterConfig, CancellationToken token)
         {
+            IEnumerable<IProcessInfo> processes = null;
+
             try
             {
                 using CancellationTokenSource extendedInfoCancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
                 IList<Task<ProcessInfo>> processInfoTasks = new List<Task<ProcessInfo>>();
                 foreach (IEndpointInfo endpointInfo in await _endpointInfoSource.GetEndpointInfoAsync(token))
                 {
+                    // CONSIDER: Can this processing be pushed into the IEndpointInfoSource implementation and cached
+                    // so that extended process information doesn't have to be recalculated for every call. This would be
+                    // useful for:
+                    // - .NET Core 3.1 processes, which require issuing a brief event pipe session to get the process commmand
+                    //   line information and parse out the process name
+                    // - Caching entrypoint information (when that becomes available).
                     processInfoTasks.Add(ProcessInfo.FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token));
                 }
 
@@ -60,17 +66,23 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
 
                 await Task.WhenAll(processInfoTasks);
 
-                return processInfoTasks.Select(t => t.Result);
+                processes = processInfoTasks.Select(t => t.Result);
             }
             catch (UnauthorizedAccessException)
             {
                 throw new InvalidOperationException("Unable to enumerate processes.");
             }
-        }
 
-        public async Task<Stream> GetDump(IProcessInfo pi, DumpType mode, CancellationToken token)
+            if (processFilterConfig != null)
+            {
+                processes = processes.Where(p => processFilterConfig.Filters.All(c => c.MatchFilter(p)));
+            }
+
+            return processes.ToArray();
+        }
+        public async Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token)
         {
-            string dumpFilePath = Path.Combine(_storageOptions.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{pi.EndpointInfo.ProcessId}"));
+            string dumpFilePath = Path.Combine(_storageOptions.CurrentValue.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{pi.EndpointInfo.ProcessId}"));
             NETCore.Client.DumpType dumpType = MapDumpType(mode);
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -91,93 +103,54 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             return new AutoDeleteFileStream(dumpFilePath);
         }
 
-        private static NETCore.Client.DumpType MapDumpType(DumpType dumpType)
+        private static DumpType MapDumpType(Models.DumpType dumpType)
         {
             switch (dumpType)
             {
-                case DumpType.Full:
-                    return NETCore.Client.DumpType.Full;
-                case DumpType.WithHeap:
-                    return NETCore.Client.DumpType.WithHeap;
-                case DumpType.Triage:
-                    return NETCore.Client.DumpType.Triage;
-                case DumpType.Mini:
-                    return NETCore.Client.DumpType.Normal;
+                case Models.DumpType.Full:
+                    return DumpType.Full;
+                case Models.DumpType.WithHeap:
+                    return DumpType.WithHeap;
+                case Models.DumpType.Triage:
+                    return DumpType.Triage;
+                case Models.DumpType.Mini:
+                    return DumpType.Normal;
                 default:
                     throw new ArgumentException("Unexpected dumpType", nameof(dumpType));
             }
         }
 
-        public async Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token)
+        public Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token)
         {
-            var endpointInfos = await _endpointInfoSource.GetEndpointInfoAsync(token);
-
+            DiagProcessFilter filterOptions = null;
             if (processKey.HasValue)
             {
-                return await GetSingleProcessInfoAsync(
-                    endpointInfos,
-                    processKey);
+                filterOptions = DiagProcessFilter.FromProcessKey(processKey.Value);
             }
-
-            // Short-circuit for when running in a Docker container.
-            if (RuntimeInfo.IsInDockerContainer)
+            else
             {
-                try
-                {
-                    IProcessInfo processInfo = await GetSingleProcessInfoAsync(
-                        endpointInfos,
-                        DockerEntrypointProcessFilter);
-
-                    using var timeoutSource = new CancellationTokenSource(DockerEntrypointWaitTimeout);
-
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-                    await client.WaitForConnectionAsync(timeoutSource.Token);
-
-                    return processInfo;
-                }
-                catch
-                {
-                    // Process ID 1 doesn't exist, didn't advertise in connect mode, or is not a .NET process.
-                }
+                filterOptions = DiagProcessFilter.FromConfiguration(_defaultProcessOptions.CurrentValue);
             }
 
-            return await GetSingleProcessInfoAsync(
-                endpointInfos,
-                processKey: null);
+            return GetProcessAsync(filterOptions, token);
         }
 
-        private async Task<IProcessInfo> GetSingleProcessInfoAsync(IEnumerable<IEndpointInfo> endpointInfos, ProcessKey? processKey)
+        private async Task<IProcessInfo> GetProcessAsync(DiagProcessFilter processFilterConfig, CancellationToken token)
         {
-            if (processKey.HasValue)
+            //Short circuit when we are missing default process config
+            if (!processFilterConfig.Filters.Any())
             {
-                if (processKey.Value.RuntimeInstanceCookie.HasValue)
-                {
-                    Guid cookie = processKey.Value.RuntimeInstanceCookie.Value;
-                    endpointInfos = endpointInfos.Where(info => info.RuntimeInstanceCookie == cookie);
-                }
-
-                if (processKey.Value.ProcessId.HasValue)
-                {
-                    int pid = processKey.Value.ProcessId.Value;
-                    endpointInfos = endpointInfos.Where(info => info.ProcessId == pid);
-                }
+                throw new InvalidOperationException("No default process configuration has been set.");
             }
+            IEnumerable<IProcessInfo> matchingProcesses = await GetProcessesAsync(processFilterConfig, token);
 
-            IEndpointInfo[] endpointInfoArray = endpointInfos.ToArray();
-            switch (endpointInfoArray.Length)
+            switch (matchingProcesses.Count())
             {
                 case 0:
                     throw new ArgumentException("Unable to discover a target process.");
                 case 1:
-                    return await ProcessInfo.FromEndpointInfoAsync(endpointInfoArray[0]);
+                    return matchingProcesses.First();
                 default:
-#if DEBUG
-                    IEndpointInfo endpointInfo = endpointInfoArray.FirstOrDefault(info => string.Equals(Process.GetProcessById(info.ProcessId).ProcessName, "iisexpress", StringComparison.OrdinalIgnoreCase));
-                    if (endpointInfo != null)
-                    {
-                        return await ProcessInfo.FromEndpointInfoAsync(endpointInfo);
-                    }
-#endif
                     throw new ArgumentException("Unable to select a single target process because multiple target processes have been discovered.");
             }
         }

@@ -3,11 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,22 +19,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public Task<int> GenerateApiKey(CancellationToken token, IConsole console)
         {
-            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            using HashAlgorithm hashAlgorithm = SHA256.Create();
+            GeneratedApiKey newKey = GeneratedApiKey.Create();
 
-            byte[] secret = new byte[32];
-            rng.GetBytes(secret);
+            console.Out.WriteLine(FormattableString.Invariant($"Authorization: {Monitoring.RestServer.AuthConstants.ApiKeySchema} {newKey.MonitorApiKey}"));
+            console.Out.WriteLine(FormattableString.Invariant($"ApiKeyHash: {newKey.HashValue}"));
+            console.Out.WriteLine(FormattableString.Invariant($"ApiKeyHashType: {newKey.HashAlgorithm}"));
 
-            byte[] hash = hashAlgorithm.ComputeHash(secret);
-
-            console.Out.WriteLine(FormattableString.Invariant($"Authorization: {Monitoring.RestServer.AuthConstants.ApiKeySchema} {Convert.ToBase64String(secret)}"));
-            console.Out.Write("ApiKeyHash: ");
-            foreach (byte b in hash)
-            {
-                console.Out.Write(b.ToString("X2"));
-            }
-            console.Out.WriteLine();
-            console.Out.WriteLine("ApiKeyHashType: SHA256");
             return Task.FromResult(0);
         }
     }

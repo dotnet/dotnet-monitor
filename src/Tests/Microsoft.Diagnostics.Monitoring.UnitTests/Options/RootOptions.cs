@@ -17,5 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
         public MetricsOptions Metrics { get; set; }
 
         public StorageOptions Storage { get; set; }
+
+        public ProcessFilterOptions DefaultProcess { get; set; }
     }
 }

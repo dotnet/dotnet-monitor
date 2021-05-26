@@ -43,5 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring
         {
             return GetEnumerator();
         }
+
+        public bool HasScopes => _scopes.Count > 0;
     }
 }

@@ -39,10 +39,6 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         [Display(Description = "Include default providers: System.Runtime, Microsoft.AspNetCore.Hosting, and Grpc.AspNetCore.Server.")]
         public bool? IncludeDefaultProviders { get; set; }
 
-        [DefaultValue(MetricsOptionsDefaults.AllowInsecureChannelForCustomMetrics)]
-        [Display(Description = "When using custom metrics, the default binding address changes from http to https. Set this to true to enable http.")]
-        public bool? AllowInsecureChannelForCustomMetrics { get; set; }
-
         [Display(Description = "Providers for custom metrics.")]
         public List<MetricProvider> Providers { get; set; } = new List<MetricProvider>(0);
     }

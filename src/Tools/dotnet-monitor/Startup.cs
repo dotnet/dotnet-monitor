@@ -96,18 +96,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IWebHostEnvironment env,
             IAuthOptions options,
             AddressListenResults listenResults,
+            ApiKeyAuthenticationOptionsObserver optionsObserver,
             ILogger<Startup> logger)
         {
-            if (listenResults.BindingChanges.Any())
-            {
-                logger.MetricUrlsUpdated();
-            }
-
-            foreach (UrlBindingChange bindingUpgrade in listenResults.BindingChanges)
-            {
-                logger.MetricUrlUpdated(bindingUpgrade.OriginalUrl, bindingUpgrade.NewUrl);
-            }
-
             // These errors are populated before Startup.Configure is called because
             // the KestrelServer class is configured as a prerequisite of
             // GenericWebHostServer being instantiated. The GenericWebHostServer invokes
@@ -134,12 +125,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             LogElevatedPermissions(options, logger);
 
+            // Start listening for options changes so they can be logged when changed.
+            optionsObserver.Initialize();
+
             if (options.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth)
             {
                 logger.NoAuthentication();
             }
             else
             {
+                if (options.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
+                {
+                    logger.LogTempKey(options.TemporaryKey.MonitorApiKey);
+                }
                 //Auth is enabled and we are binding on http. Make sure we log a warning.
 
                 string hostingUrl = Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
