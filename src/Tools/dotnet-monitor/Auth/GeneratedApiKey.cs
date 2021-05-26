@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static GeneratedApiKey Create()
         {
-            return GeneratedApiKey.Create("SHA512");
+            return GeneratedApiKey.Create("SHA256");
         }
 
         private static GeneratedApiKey Create(string hashAlgorithm)
