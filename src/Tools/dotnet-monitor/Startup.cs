@@ -134,6 +134,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
             else
             {
+                if (options.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
+                {
+                    logger.LogTempKey(options.GeneratedKey);
+                }
                 //Auth is enabled and we are binding on http. Make sure we log a warning.
 
                 string hostingUrl = Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);

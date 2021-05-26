@@ -19,6 +19,8 @@ using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -113,7 +115,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool configOnly)
         {
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-                hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
+
+            KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
+            AuthOptions authenticationOptions = new AuthOptions(authMode);
+
+            hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
@@ -144,133 +150,154 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     builder.AddKeyPerFileWithChangeTokenSupport(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ConfigPrefix);
+
+                    if (!noAuth && tempApiKey)
+                    {
+                        ConfigureTempApiHashKey(builder, authenticationOptions);
+                    }
                 });
 
-                if (!configOnly)
+            if (!configOnly)
+            {
+                hostBuilder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
-                    hostBuilder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
+                    //TODO Many of these service additions should be done through extension methods
+
+                    services.AddSingleton<IAuthOptions>(authenticationOptions);
+
+                    // Although this is only observing API key authentication changes, it does handle
+                    // the case when API key authentication is not enabled. This class could evolve
+                    // to observe other options in the future, at which point it might be good to
+                    // refactor the options observers for each into separate implementations and are
+                    // orchestrated by this single service.
+                    services.AddSingleton<ApiKeyAuthenticationOptionsObserver>();
+
+                    List<string> authSchemas = null;
+                    if (authenticationOptions.EnableKeyAuth)
                     {
-                        //TODO Many of these service additions should be done through extension methods
+                        services.ConfigureApiKeyConfiguration(context.Configuration);
 
-                        KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
-                        AuthOptions authenticationOptions = new AuthOptions(authMode);
+                        //Add support for Authentication and Authorization.
+                        AuthenticationBuilder authBuilder = services.AddAuthentication(options =>
+                        {
+                            options.DefaultAuthenticateScheme = AuthConstants.ApiKeySchema;
+                            options.DefaultChallengeScheme = AuthConstants.ApiKeySchema;
+                        })
+                        .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
 
-                        services.AddSingleton<IAuthOptions>(authenticationOptions);
+                        authSchemas = new List<string> { AuthConstants.ApiKeySchema };
 
-                        // Although this is only observing API key authentication changes, it does handle
-                        // the case when API key authentication is not enabled. This class could evolve
-                        // to observe other options in the future, at which point it might be good to
-                        // refactor the options observers for each into separate implementations and are
-                        // orchestrated by this single service.
-                        services.AddSingleton<ApiKeyAuthenticationOptionsObserver>();
+                        if (authenticationOptions.EnableNegotiate)
+                        {
+                            //On Windows add Negotiate package. This will use NTLM to perform Windows Authentication.
+                            authBuilder.AddNegotiate();
+                            authSchemas.Add(AuthConstants.NegotiateSchema);
+                        }
+                    }
 
-                        List<string> authSchemas = null;
+                    //Apply Authorization Policy for NTLM. Without Authorization, any user with a valid login/password will be authorized. We only
+                    //want to authorize the same user that is running dotnet-monitor, at least for now.
+                    //Note this policy applies to both Authorization schemas.
+                    services.AddAuthorization(authOptions =>
+                    {
                         if (authenticationOptions.EnableKeyAuth)
                         {
-                            services.ConfigureApiKeyConfiguration(context.Configuration);
-
-                            //Add support for Authentication and Authorization.
-                            AuthenticationBuilder authBuilder = services.AddAuthentication(options =>
+                            authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
                             {
-                                options.DefaultAuthenticateScheme = AuthConstants.ApiKeySchema;
-                                options.DefaultChallengeScheme = AuthConstants.ApiKeySchema;
-                            })
-                            .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
+                                builder.AddRequirements(new AuthorizedUserRequirement());
+                                builder.RequireAuthenticatedUser();
+                                builder.AddAuthenticationSchemes(authSchemas.ToArray());
 
-                            authSchemas = new List<string> { AuthConstants.ApiKeySchema };
-
-                            if (authenticationOptions.EnableNegotiate)
-                            {
-                                //On Windows add Negotiate package. This will use NTLM to perform Windows Authentication.
-                                authBuilder.AddNegotiate();
-                                authSchemas.Add(AuthConstants.NegotiateSchema);
-                            }
+                            });
                         }
-
-                        //Apply Authorization Policy for NTLM. Without Authorization, any user with a valid login/password will be authorized. We only
-                        //want to authorize the same user that is running dotnet-monitor, at least for now.
-                        //Note this policy applies to both Authorization schemas.
-                        services.AddAuthorization(authOptions =>
+                        else
                         {
-                            if (authenticationOptions.EnableKeyAuth)
+                            authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
                             {
-                                authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
-                                {
-                                    builder.AddRequirements(new AuthorizedUserRequirement());
-                                    builder.RequireAuthenticatedUser();
-                                    builder.AddAuthenticationSchemes(authSchemas.ToArray());
-
-                                });
-                            }
-                            else
-                            {
-                                authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
-                                {
-                                    builder.RequireAssertion((_) => true);
-                                });
-                            }
-                        });
-
-                        if (authenticationOptions.EnableKeyAuth)
-                        {
-                            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+                                builder.RequireAssertion((_) => true);
+                            });
                         }
-
-                        services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
-                        services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
-
-                        services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
-                        services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
-                        services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
-                        services.ConfigureEgress(context.Configuration);
-                        services.ConfigureMetrics(context.Configuration);
-                        services.ConfigureStorage(context.Configuration);
-                        services.ConfigureDefaultProcess(context.Configuration);
                     });
-                }
 
-                //Note this is necessary for config only because Kestrel configuration
-                //is not added until WebHostDefaults are added.
-                hostBuilder.ConfigureWebHostDefaults(webBuilder =>
-                {
-                    AddressListenResults listenResults = new AddressListenResults();
-                    webBuilder.ConfigureServices(services =>
+                    if (authenticationOptions.EnableKeyAuth)
                     {
-                        services.AddSingleton(listenResults);
-                    })
-                    .ConfigureKestrel((context, options) =>
-                    {
-                        //Note our priorities for hosting urls don't match the default behavior.
-                        //Default Kestrel behavior priority
-                        //1) ConfigureKestrel settings
-                        //2) Command line arguments (--urls)
-                        //3) Environment variables (ASPNETCORE_URLS, then DOTNETCORE_URLS)
+                        services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+                    }
 
-                        //Our precedence
-                        //1) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
-                        //2) Command line arguments (these have defaults) --urls, --metricUrls
-                        //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
+                    services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
+                    services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
 
-                        string hostingUrl = context.Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
-                        urls = ConfigurationHelper.SplitValue(hostingUrl);
-
-                        var metricsOptions = new MetricsOptions();
-                        context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
-
-                        //Workaround for lack of default certificate. See https://github.com/dotnet/aspnetcore/issues/28120
-                        options.Configure(context.Configuration.GetSection("Kestrel")).Load();
-
-                        //By default, we bind to https for sensitive data (such as dumps and traces) and bind http for
-                        //non-sensitive data such as metrics. We may be missing a certificate for https binding. We want to continue with the
-                        //http binding in that scenario.
-                        listenResults.Listen(
-                            options,
-                            urls,
-                            metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ? metricUrls : Array.Empty<string>());
-                    })
-                    .UseStartup<Startup>();
+                    services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
+                    services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
+                    services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
+                    services.ConfigureEgress(context.Configuration);
+                    services.ConfigureMetrics(context.Configuration);
+                    services.ConfigureStorage(context.Configuration);
+                    services.ConfigureDefaultProcess(context.Configuration);
                 });
+            }
+
+            //Note this is necessary for config only because Kestrel configuration
+            //is not added until WebHostDefaults are added.
+            hostBuilder.ConfigureWebHostDefaults(webBuilder =>
+            {
+                AddressListenResults listenResults = new AddressListenResults();
+                webBuilder.ConfigureServices(services =>
+                {
+                    services.AddSingleton(listenResults);
+                })
+                .ConfigureKestrel((context, options) =>
+                {
+                    //Note our priorities for hosting urls don't match the default behavior.
+                    //Default Kestrel behavior priority
+                    //1) ConfigureKestrel settings
+                    //2) Command line arguments (--urls)
+                    //3) Environment variables (ASPNETCORE_URLS, then DOTNETCORE_URLS)
+
+                    //Our precedence
+                    //1) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
+                    //2) Command line arguments (these have defaults) --urls, --metricUrls
+                    //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
+
+                    string hostingUrl = context.Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
+                    urls = ConfigurationHelper.SplitValue(hostingUrl);
+
+                    var metricsOptions = new MetricsOptions();
+                    context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
+
+                    //Workaround for lack of default certificate. See https://github.com/dotnet/aspnetcore/issues/28120
+                    options.Configure(context.Configuration.GetSection("Kestrel")).Load();
+
+                    //By default, we bind to https for sensitive data (such as dumps and traces) and bind http for
+                    //non-sensitive data such as metrics. We may be missing a certificate for https binding. We want to continue with the
+                    //http binding in that scenario.
+                    listenResults.Listen(
+                        options,
+                        urls,
+                        metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ? metricUrls : Array.Empty<string>());
+                })
+                .UseStartup<Startup>();
+            });
+
             return hostBuilder;
+        }
+
+        private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, AuthOptions authenticationOptions)
+        {
+            const string DefaultHashAlgorithm = "SHA512";
+            using HashAlgorithm algorithm = HashAlgorithm.Create(DefaultHashAlgorithm);
+            byte[] hashedSecret = algorithm.ComputeHash(authenticationOptions.GeneratedKey);
+            StringBuilder hashedSecretHex = new StringBuilder(hashedSecret.Length * 2);
+            foreach (byte hashByte in hashedSecret)
+            {
+                hashedSecretHex.AppendFormat("{0:X2}", hashByte);
+            }
+
+            builder.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHashType)), DefaultHashAlgorithm },
+                { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHash)), hashedSecretHex.ToString() },
+            });
         }
 
         private static void ConfigureStorageDefaults(IConfigurationBuilder builder)
