@@ -4,6 +4,7 @@
 
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,6 +45,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             using CancellationTokenSource cancellation = new(timeout);
             client.BaseAddress = new Uri(await runner.GetDefaultAddressAsync(cancellation.Token), UriKind.Absolute);
+
+            if (runner.TempApiKey)
+            {
+                string monitorApiKey = await runner.GetMonitorApiKey(cancellation.Token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthenticationTests.ApiKeyScheme, monitorApiKey);
+            }
 
             return client;
         }

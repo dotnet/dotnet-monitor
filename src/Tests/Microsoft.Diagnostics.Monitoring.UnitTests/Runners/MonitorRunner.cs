@@ -32,6 +32,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         private readonly TaskCompletionSource<string> _metricsAddressSource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+        // Completion source containing the string representing the base64 encoded MonitorApiKey for accessing the monitor (e.g. provided by --temp-apikey argument)
+        private readonly TaskCompletionSource<string> _monitorApiKeySource =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
         private readonly ITestOutputHelper _outputHelper;
 
         private readonly TaskCompletionSource<string> _readySource =
@@ -88,6 +92,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// Determines whether authentication is disabled when starting dotnet-monitor.
         /// </summary>
         public bool DisableAuthentication { get; set; }
+
+        /// <summary>
+        /// Determines whether a temporary api key should be generated while starting dotnet-monitor.
+        /// </summary>
+        public bool TempApiKey { get; set; }
 
         /// <summary>
         /// Determines whether metrics are disabled via the command line when starting dotnet-monitor.
@@ -182,6 +191,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 argsList.Add("--no-auth");
             }
 
+            if (TempApiKey)
+            {
+                argsList.Add("--temp-apikey");
+            }
+
             _runner.EntrypointAssemblyPath = DotNetMonitorPath;
             _runner.Arguments = string.Join(" ", argsList);
 
@@ -247,6 +261,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         public Task<string> GetMetricsAddressAsync(CancellationToken token)
         {
             return _metricsAddressSource.GetAsync(token);
+        }
+        public Task<string> GetMonitorApiKey(CancellationToken token)
+        {
+            return _monitorApiKeySource.GetAsync(token);
         }
 
         public void WriteKeyPerValueConfiguration(RootOptions options)
@@ -316,6 +334,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                     {
                         _outputHelper.WriteLine("Metrics Address: {0}", metricsAddress);
                         Assert.True(_metricsAddressSource.TrySetResult(metricsAddress));
+                    }
+                    break;
+                case 23:
+                    if (logEvent.State.TryGetValue("MonitorApiKey", out string monitorApiKey))
+                    {
+                        _outputHelper.WriteLine("MonitorApiKey: {0}", monitorApiKey);
+                        Assert.True(_monitorApiKeySource.TrySetResult(monitorApiKey));
                     }
                     break;
             }

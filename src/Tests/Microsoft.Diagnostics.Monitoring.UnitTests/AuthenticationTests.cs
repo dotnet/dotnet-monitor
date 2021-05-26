@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
     [Collection(DefaultCollectionFixture.Name)]
     public class AuthenticationTests
     {
-        private const string ApiKeyScheme = "MonitorApiKey";
+        internal const string ApiKeyScheme = "MonitorApiKey";
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
@@ -182,6 +182,30 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             // Check that /processes does not challenge for authentication
             processes = await apiClient.GetProcessesAsync();
+            Assert.NotNull(processes);
+        }
+
+        /// <summary>
+        /// Tests that API key authentication can be configured correctly and
+        /// that the key can be rotated wihtout shutting down dotnet-monitor.
+        /// </summary>
+        [Fact]
+        public async Task TempApiKeyAuthenticationSchemeTest()
+        {
+            await using MonitorRunner toolRunner = new(_outputHelper);
+            toolRunner.TempApiKey = true;
+
+            _outputHelper.WriteLine("Starting Monitor.");
+            await toolRunner.StartAsync();
+
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            // Assert that the httpClient came back with a populated Authorization header
+            Assert.NotNull(httpClient.DefaultRequestHeaders.Authorization?.Parameter);
+
+            // Check that /processes is authenticated
+            var processes = await apiClient.GetProcessesAsync();
             Assert.NotNull(processes);
         }
 

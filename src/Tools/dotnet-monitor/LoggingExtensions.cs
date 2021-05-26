@@ -149,7 +149,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             LoggerMessage.Define<string, string>(
                 eventId: new EventId(23, "LogTempApiKey"),
                 logLevel: LogLevel.Information,
-                formatString: "Generated one-time-use ApiKey for dotnet-monitor, use the following header for authorization:{0}Authorization: MonitorApiKey{1}");
+                formatString: "Generated one-time-use ApiKey for dotnet-monitor, use the following header for authorization:{0}Authorization: MonitorApiKey {MonitorApiKey}");
 
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
