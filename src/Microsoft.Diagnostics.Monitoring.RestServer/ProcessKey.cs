@@ -14,16 +14,27 @@ namespace Microsoft.Diagnostics.Monitoring
         public ProcessKey(int processId)
         {
             ProcessId = processId;
+            ProcessName = null;
             RuntimeInstanceCookie = null;
         }
 
         public ProcessKey(Guid runtimeInstanceCookie)
         {
             ProcessId = null;
+            ProcessName = null;
             RuntimeInstanceCookie = runtimeInstanceCookie;
         }
 
+        public ProcessKey(string processName)
+        {
+            ProcessId = null;
+            ProcessName = processName;
+            RuntimeInstanceCookie = null;
+        }
+
         public int? ProcessId { get; }
+
+        public string ProcessName { get; }
 
         public Guid? RuntimeInstanceCookie { get; }
     }
@@ -55,6 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring
                 {
                     return new ProcessKey(processId);
                 }
+                return new ProcessKey(valueString);
             }
             else if (value is ProcessKey identifier)
             {

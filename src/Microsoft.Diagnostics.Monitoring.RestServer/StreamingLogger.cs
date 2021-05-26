@@ -84,40 +84,49 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             //CONSIDER Should we cache up the loggers and writers?
             using (var jsonWriter = new Utf8JsonWriter(outputStream, new JsonWriterOptions { Indented = false }))
             {
+                // Matches the format of JsonConsoleFormatter
+
                 jsonWriter.WriteStartObject();
+                jsonWriter.WriteString("Timestamp", (state is IStateWithTimestamp stateWithTimestamp) ? FormatTimestamp(stateWithTimestamp): string.Empty);
                 jsonWriter.WriteString("LogLevel", logLevel.ToString());
-                jsonWriter.WriteString("EventId", eventId.ToString());
+                jsonWriter.WriteNumber("EventId", eventId.Id);
+                // EventId.Name is optional; use empty string if it is null as this
+                // works better with analytic platforms such as Azure Monitor.
+                jsonWriter.WriteString("EventName", eventId.Name ?? string.Empty);
                 jsonWriter.WriteString("Category", _categoryName);
+                jsonWriter.WriteString("Message", formatter(state, exception));
                 if (exception != null)
                 {
-                    jsonWriter.WriteString("Exception", formatter(state, exception));
-                }
-                else
-                {
-                    jsonWriter.WriteString("Message", formatter(state, exception));
+                    jsonWriter.WriteString("Exception", exception.ToString());
                 }
 
-                //Write out scope data
-                jsonWriter.WriteStartObject("Scopes");
-                foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
-                {
-                    foreach (KeyValuePair<string, object> scopeValue in scope)
-                    {
-                        WriteKeyValuePair(jsonWriter, scopeValue);
-                    }
-                }
-                jsonWriter.WriteEndObject();
-
-                //Write out structured data
-                jsonWriter.WriteStartObject("Arguments");
+                // Write out state
                 if (state is IEnumerable<KeyValuePair<string, object>> values)
                 {
+                    jsonWriter.WriteStartObject("State");
+                    jsonWriter.WriteString("Message", state.ToString());
                     foreach (KeyValuePair<string, object> arg in values)
                     {
                         WriteKeyValuePair(jsonWriter, arg);
                     }
+                    jsonWriter.WriteEndObject();
                 }
-                jsonWriter.WriteEndObject();
+
+                // Write out scopes
+                if (_scopes.HasScopes)
+                {
+                    jsonWriter.WriteStartArray("Scopes");
+                    foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
+                    {
+                        jsonWriter.WriteStartObject();
+                        foreach (KeyValuePair<string, object> scopeValue in scope)
+                        {
+                            WriteKeyValuePair(jsonWriter, scopeValue);
+                        }
+                        jsonWriter.WriteEndObject();
+                    }
+                    jsonWriter.WriteEndArray();
+                }
 
                 jsonWriter.WriteEndObject();
                 jsonWriter.Flush();
@@ -131,14 +140,18 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
         {
             Stream outputStream = _outputStream;
 
+            // Matches the format of SimpleConsoleFormatter as much as possible
+
             using var writer = new StreamWriter(outputStream, Encoding.UTF8, 1024, leaveOpen: true) { NewLine = "\n" };
 
             //event: eventName (if exists)
             //data: level category[eventId]
+            //data: timestamp
             //data: message
             //data: => scope1, scope2 => scope3, scope4
+            //data: exception (if exists)
             //\n
-            
+
             if (!string.IsNullOrEmpty(eventId.Name))
             {
                 writer.Write("event: ");
@@ -151,9 +164,17 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             writer.Write('[');
             writer.Write(eventId.Id);
             writer.WriteLine(']');
+            if (state is IStateWithTimestamp stateWithTimestamp)
+            {
+                writer.Write("data: ");
+                writer.Write(FormatTimestamp(stateWithTimestamp));
+                writer.WriteLine();
+            }
+
             writer.Write("data: ");
             writer.WriteLine(formatter(state, exception));
 
+            // Scopes
             bool firstScope = true;
             foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
             {
@@ -184,7 +205,22 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
             {
                 writer.WriteLine();
             }
+
+            // Exception
+            if (null != exception)
+            {
+                writer.Write("data: ");
+                writer.WriteLine(exception.ToString().Replace(Environment.NewLine, $"{writer.NewLine}data: "));
+            }
+
             writer.WriteLine();
+        }
+
+        private static string FormatTimestamp(IStateWithTimestamp stateWithTimestamp)
+        {
+            // "u" Universal time with sortable format, "yyyy'-'MM'-'dd HH':'mm':'ss'Z'" 1999-10-31 10:00:00Z
+            // based on ISO 8601.
+            return stateWithTimestamp.Timestamp.ToUniversalTime().ToString("u");
         }
 
         private static void WriteKeyValuePair(Utf8JsonWriter jsonWriter, KeyValuePair<string, object> kvp)

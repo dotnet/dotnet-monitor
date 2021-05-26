@@ -1,0 +1,116 @@
+# Trace - Get
+
+Captures a diagnostic trace of a process based on a predefined set of trace profiles.
+
+## HTTP Route
+
+```http
+GET /trace/{pid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
+```
+
+or 
+
+```http
+GET /trace/{uid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
+```
+
+or
+
+```http
+GET /trace/{name}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
+```
+
+or
+
+```http
+GET /trace?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
+```
+
+> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+
+## Host Address
+
+The default host address for these routes is `https://localhost:52323`. This route is only available on the addresses configured via the `--urls` command line parameter and the `DOTNETMONITOR_URLS` environment variable.
+
+## URI Parameters
+
+| Name | In | Required | Type | Description |
+|---|---|---|---|---|
+| `pid` | path | false | int | The ID of the process. |
+| `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | path | false | string | The name of the process. |
+| `profile` | query | false | [TraceProfile](definitions.md#TraceProfile) | The name of the profile(s) used to collect events. See [TraceProfile](definitions.md#TraceProfile) for details on the list of event providers, levels, and keywords each profile represents. Multiple profiles may be specified by separating them with commas. Default is `Cpu,Http,Metrics` |
+| `durationSeconds` | query | false | int | The duration of the trace operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
+| `metricsIntervalSeconds` | query | false | int | The interval (in seconds) at which metrics are collected. Only applicable for the `Metrics` profile. Default is `1`. Min is `1`. Max is `2147483647`. |
+| `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected trace. When not specified, the trace is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
+
+See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
+
+If none of `pid`, `uid`, or `name` are specified, a trace of the [default process](defaultprocess.md) will be captured. Attempting to capture a trace of the default process when the default process cannot be resolved will fail.
+
+## Authentication
+
+Authentication is enforced for this route. See [Authentication](./../authentication.md) for further information.
+
+Allowed schemes:
+- `MonitorApiKey`
+- `Negotiate` (Windows only, running as unelevated)
+
+## Responses
+
+| Name | Type | Description | Content Type |
+|---|---|---|---|
+| 200 OK | stream | A trace of the process. | `application/octet-stream` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
+| 429 Too Many Requests | | There are too many trace requests at this time. Try to request a trace at a later time. | |
+
+> **NOTE:** After the expiration of the trace duration, completing the request may take a long time (up to several minutes) for large applications. The runtime needs to send over the type cache for all managed code that was captured in the trace, known as rundown events. Thus, the length of time of the request may take significantly longer than the requested duration.
+
+## Examples
+
+### Sample Request
+
+```http
+GET /trace/21632?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
+Host: localhost:52323
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+```
+
+or
+
+```http
+GET /trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
+Host: localhost:52323
+Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+```
+
+### Sample Response
+
+The 1 minute trace with http request handling and metric information, chunk encoded, is returned as the response body.
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Transfer-Encoding: chunked
+```
+
+## Supported Runtimes
+
+| Operating System | Runtime Version |
+|---|---|
+| Windows | .NET Core 3.1, .NET 5+ |
+| Linux | .NET Core 3.1, .NET 5+ |
+| MacOS | .NET Core 3.1, .NET 5+ |
+
+## Additional Notes
+
+### When to use `pid` vs `uid`
+
+See [Process ID `pid` vs Unique ID `uid`](pidvsuid.md) for clarification on when it is best to use either parameter.
+
+### View the collected `.nettrace` file
+
+On Windows, `.nettrace` files can be viewed in [PerfView](https://github.com/microsoft/perfview) for analysis or in Visual Studio. 
+
+A `.nettrace` files can be converted to another format (e.g. SpeedScope or Chromium) using the [dotnet-trace](https://docs.microsoft.com/dotnet/core/diagnostics/dotnet-trace) tool.

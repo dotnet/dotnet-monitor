@@ -6,4 +6,4 @@
 # but there's no include syntax. At least make sure source and documentation
 # have proper ownership.
 /src/                       @dotnet/dotnet-monitor
-/documentation/             @dotnet/dotnet-monitor
+/documentation/             @dotnet/dotnet-monitor @IEvangelist

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
   </PropertyGroup>
 
@@ -13,6 +13,9 @@
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\CorsConfiguration.cs" Link="Options\CorsConfiguration.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptions.cs" Link="Options\MetricsOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptionsDefaults.cs" Link="Options\MetricsOptionsDefaults.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\ProcessFilterOptions.cs" Link="Options\ProcessFilterOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\DumpType.cs" Link="Models\DumpType.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\LogsConfiguration.cs" Link="Models\LogsConfiguration.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\StorageOptions.cs" Link="Options\StorageOptions.cs" />
@@ -22,14 +25,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.FileFormats" Version="$(MicrosoftFileFormatsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
   </ItemGroup>
 
-    <ItemGroup>
-        <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
-    </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
+  </ItemGroup>
 
 </Project>

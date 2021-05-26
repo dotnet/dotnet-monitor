@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,6 +30,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         // Completion source containing the bound address of the metrics URL (e.g. provided by --metricUrls argument)
         private readonly TaskCompletionSource<string> _metricsAddressSource =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        // Completion source containing the string representing the base64 encoded MonitorApiKey for accessing the monitor (e.g. provided by --temp-apikey argument)
+        private readonly TaskCompletionSource<string> _monitorApiKeySource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private readonly ITestOutputHelper _outputHelper;
@@ -89,6 +94,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         public bool DisableAuthentication { get; set; }
 
         /// <summary>
+        /// Determines whether a temporary api key should be generated while starting dotnet-monitor.
+        /// </summary>
+        public bool UseTempApiKey { get; set; }
+
+        /// <summary>
         /// Determines whether metrics are disabled via the command line when starting dotnet-monitor.
         /// </summary>
         public bool DisableMetricsViaCommandLine { get; set; }
@@ -105,6 +115,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         public MonitorRunner(ITestOutputHelper outputHelper)
         {
             _outputHelper = new PrefixedOutputHelper(outputHelper, "[Monitor] ");
+
+            // Must tell runner this is an ASP.NET Core app so that it can choose
+            // the correct ASP.NET Core version (which can be different than the .NET
+            // version, especially for prereleases).
+            _runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
@@ -176,6 +191,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 argsList.Add("--no-auth");
             }
 
+            if (UseTempApiKey)
+            {
+                argsList.Add("--temp-apikey");
+            }
+
             _runner.EntrypointAssemblyPath = DotNetMonitorPath;
             _runner.Arguments = string.Join(" ", argsList);
 
@@ -243,6 +263,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             return _metricsAddressSource.GetAsync(token);
         }
 
+        public Task<string> GetMonitorApiKey(CancellationToken token)
+        {
+            return _monitorApiKeySource.GetAsync(token);
+        }
+
         public void WriteKeyPerValueConfiguration(RootOptions options)
         {
             foreach (KeyValuePair<string, string> entry in options.ToKeyPerFileConfiguration())
@@ -261,7 +286,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             JsonSerializerOptions serializerOptions = new()
             {
+#if NET6_0_OR_GREATER
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+#else
                 IgnoreNullValues = true
+#endif
             };
 
             await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
@@ -306,6 +335,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                     {
                         _outputHelper.WriteLine("Metrics Address: {0}", metricsAddress);
                         Assert.True(_metricsAddressSource.TrySetResult(metricsAddress));
+                    }
+                    break;
+                case 23:
+                    if (logEvent.State.TryGetValue("MonitorApiKey", out string monitorApiKey))
+                    {
+                        _outputHelper.WriteLine("MonitorApiKey: {0}", monitorApiKey);
+                        Assert.True(_monitorApiKeySource.TrySetResult(monitorApiKey));
                     }
                     break;
             }

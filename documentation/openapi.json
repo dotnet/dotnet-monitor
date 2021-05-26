@@ -46,20 +46,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie."
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name."
             }
           }
         ],
@@ -94,20 +100,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie."
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name."
             }
           }
         ],
@@ -145,20 +157,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
@@ -216,20 +234,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
@@ -279,20 +303,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
@@ -374,20 +404,26 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
@@ -471,32 +507,38 @@
           {
             "name": "processKey",
             "in": "path",
-            "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
             "required": true,
             "schema": {
               "oneOf": [
                 {
                   "type": "integer",
+                  "description": "The ID of the process.",
                   "format": "int32"
                 },
                 {
                   "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
                   "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
                 }
               ],
-              "description": "Value used to identify the target process, either the process ID or the runtime instance cookie.",
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
               "nullable": true
             }
           },
           {
             "name": "durationSeconds",
             "in": "query",
-            "description": "The duration of the trace session (in seconds).",
+            "description": "The duration of the logs session (in seconds).",
             "schema": {
               "maximum": 2147483647,
               "minimum": -1,
               "type": "integer",
-              "description": "The duration of the trace session (in seconds).",
+              "description": "The duration of the logs session (in seconds).",
               "format": "int32",
               "default": 30
             }
@@ -512,14 +554,118 @@
           {
             "name": "egressProvider",
             "in": "query",
-            "description": "The egress provider to which the trace is saved.",
+            "description": "The egress provider to which the logs are saved.",
             "schema": {
               "type": "string",
-              "description": "The egress provider to which the trace is saved.",
+              "description": "The egress provider to which the logs are saved.",
               "nullable": true
             }
           }
         ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Capture a stream of logs from a process.",
+        "operationId": "CaptureLogsCustom",
+        "parameters": [
+          {
+            "name": "processKey",
+            "in": "path",
+            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "The ID of the process.",
+                  "format": "int32"
+                },
+                {
+                  "type": "string",
+                  "description": "The runtime instance cookie of the runtime.",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "description": "The name of the process."
+                }
+              ],
+              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "durationSeconds",
+            "in": "query",
+            "description": "The duration of the logs session (in seconds).",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": -1,
+              "type": "integer",
+              "description": "The duration of the logs session (in seconds).",
+              "format": "int32",
+              "default": 30
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the logs are saved.",
+            "schema": {
+              "type": "string",
+              "description": "The egress provider to which the logs are saved.",
+              "nullable": true
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The logs configuration describing which logs to capture.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogsConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogsConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogsConfiguration"
+              }
+            }
+          }
+        },
         "responses": {
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
@@ -623,6 +769,10 @@
           "uid": {
             "type": "string",
             "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -748,6 +898,30 @@
           "None"
         ],
         "type": "string"
+      },
+      "LogsConfiguration": {
+        "required": [
+          "logLevel"
+        ],
+        "type": "object",
+        "properties": {
+          "logLevel": {
+            "$ref": "#/components/schemas/LogLevel"
+          },
+          "filterSpecs": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LogLevel"
+            },
+            "description": "The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.",
+            "nullable": true
+          },
+          "useAppFilters": {
+            "type": "boolean",
+            "description": "Set to true to collect logs at the application-defined categories and levels."
+          }
+        },
+        "additionalProperties": false
       }
     },
     "responses": {

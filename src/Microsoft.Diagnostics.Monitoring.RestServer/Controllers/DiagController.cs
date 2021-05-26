@@ -15,6 +15,7 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -63,12 +64,13 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             return this.InvokeService(async () =>
             {
                 IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
-                foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(HttpContext.RequestAborted))
+                foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(processFilter: null, HttpContext.RequestAborted))
                 {
                     processesIdentifiers.Add(new Models.ProcessIdentifier()
                     {
                         Pid = p.EndpointInfo.ProcessId,
-                        Uid = p.EndpointInfo.RuntimeInstanceCookie
+                        Uid = p.EndpointInfo.RuntimeInstanceCookie,
+                        Name = p.ProcessName
                     });
                 }
                 _logger.WrittenToHttpStream();
@@ -79,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Get information about the specified process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         [HttpGet("processes/{processKey}", Name = nameof(GetProcessInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Models.ProcessInfo), StatusCodes.Status200OK)]
@@ -108,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Get the environment block of the specified process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         [HttpGet("processes/{processKey}/env", Name = nameof(GetProcessEnvironment))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status200OK)]
@@ -138,7 +140,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a dump of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="type">The type of dump to capture.</param>
         /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
         /// <returns></returns>
@@ -152,7 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         public Task<ActionResult> CaptureDump(
             ProcessKey? processKey,
             [FromQuery]
-            DumpType type = DumpType.WithHeap,
+            Models.DumpType type = Models.DumpType.WithHeap,
             [FromQuery]
             string egressProvider = null)
         {
@@ -191,7 +193,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a GC dump of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
         /// <returns></returns>
         [HttpGet("gcdump/{processKey?}", Name = nameof(CaptureGcDump))]
@@ -242,7 +244,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a trace of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="profile">The profiles enabled for the trace session.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
@@ -280,7 +282,11 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                 }
                 if (profile.HasFlag(Models.TraceProfile.Logs))
                 {
-                    configurations.Add(new LoggingSourceConfiguration());
+                    configurations.Add(new LoggingSourceConfiguration(
+                        LogLevel.Trace,
+                        LogMessageType.FormattedMessage | LogMessageType.JsonMessage,
+                        filterSpecs: null,
+                        useAppFilters: true));
                 }
                 if (profile.HasFlag(Models.TraceProfile.Metrics))
                 {
@@ -296,7 +302,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a trace of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="configuration">The trace configuration describing which events to capture.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
@@ -349,10 +355,10 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
         /// <summary>
         /// Capture a stream of logs from a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID or the runtime instance cookie.</param>
-        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
+        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="level">The level of the logs to capture.</param>
-        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
+        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpGet("logs/{processKey?}", Name = nameof(CaptureLogs))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
@@ -371,51 +377,60 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
-                LogFormat format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
-                if (format == LogFormat.None)
+                var settings = new EventLogsPipelineSettings()
                 {
-                    return this.NotAcceptable();
-                }
-
-                string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
-                string contentType = format == LogFormat.EventStream ? ContentTypes.TextEventStream : ContentTypes.ApplicationNdJson;
-
-                Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-                {
-                    using var loggerFactory = new LoggerFactory();
-
-                    loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, level));
-
-                    var settings = new EventLogsPipelineSettings()
-                    {
-                        Duration = duration
-                    };
-
-                    //If the user does not explicitly specify a log level, we will use the apps defaults for .net 5.
-                    //Otherwise, we use the log level specified by the query.
-                    if ((!level.HasValue) && (processInfo.EndpointInfo.RuntimeInstanceCookie != Guid.Empty))
-                    {
-                        settings.UseAppFilters = true;
-                    }
-                    else
-                    {
-                        settings.LogLevel = level.GetValueOrDefault(LogLevel.Warning);
-                    }
-
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                    await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
-                    await pipeline.RunAsync(token);
+                    Duration = duration
                 };
 
-                return Result(
-                    ArtifactType_Logs,
-                    egressProvider,
-                    action,
-                    fileName,
-                    contentType,
-                    processInfo.EndpointInfo,
-                    format != LogFormat.EventStream);
+                // Use log level query parameter if specified, otherwise use application-defined filters.
+                if (level.HasValue)
+                {
+                    settings.LogLevel = level.Value;
+                    settings.UseAppFilters = false;
+                }
+                else
+                {
+                    settings.UseAppFilters = true;
+                }
+
+                return StartLogs(processInfo, settings, egressProvider);
+            }, processKey, ArtifactType_Logs);
+        }
+
+        /// <summary>
+        /// Capture a stream of logs from a process.
+        /// </summary>
+        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
+        /// <param name="configuration">The logs configuration describing which logs to capture.</param>
+        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
+        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
+        [HttpPost("logs/{processKey?}", Name = nameof(CaptureLogsCustom))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [RequestLimit(MaxConcurrency = 3)]
+        public Task<ActionResult> CaptureLogsCustom(
+            ProcessKey? processKey,
+            [FromBody]
+            Models.LogsConfiguration configuration,
+            [FromQuery][Range(-1, int.MaxValue)]
+            int durationSeconds = 30,
+            [FromQuery]
+            string egressProvider = null)
+        {
+            return InvokeForProcess(processInfo =>
+            {
+                TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
+
+                var settings = new EventLogsPipelineSettings()
+                {
+                    Duration = duration,
+                    FilterSpecs = configuration.FilterSpecs,
+                    LogLevel = configuration.LogLevel,
+                    UseAppFilters = configuration.UseAppFilters
+                };
+
+                return StartLogs(processInfo, settings, egressProvider);
             }, processKey, ArtifactType_Logs);
         }
 
@@ -454,6 +469,42 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
                 fileName,
                 ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);
+        }
+
+        private ActionResult StartLogs(
+            IProcessInfo processInfo,
+            EventLogsPipelineSettings settings,
+            string egressProvider)
+        {
+            LogFormat format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
+            if (format == LogFormat.None)
+            {
+                return this.NotAcceptable();
+            }
+
+            string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
+            string contentType = format == LogFormat.EventStream ? ContentTypes.TextEventStream : ContentTypes.ApplicationNdJson;
+
+            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
+            {
+                using var loggerFactory = new LoggerFactory();
+
+                loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
+
+                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
+
+                await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
+                await pipeline.RunAsync(token);
+            };
+
+            return Result(
+                ArtifactType_Logs,
+                egressProvider,
+                action,
+                fileName,
+                contentType,
+                processInfo.EndpointInfo,
+                format != LogFormat.EventStream);
         }
 
         private static TimeSpan ConvertSecondsToTimeSpan(int durationSeconds)

@@ -32,7 +32,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                   description: "Monitor logs and metrics in a .NET application send the results to a chosen destination.")
               {
                 // Handler
-                CommandHandler.Create<CancellationToken, IConsole, string[], string[], bool, string, bool>(new DiagnosticsMonitorCommandHandler().Start),
+                CommandHandler.Create(Delegate.CreateDelegate(typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, Task<int>>),
+                    new DiagnosticsMonitorCommandHandler(), nameof(DiagnosticsMonitorCommandHandler.Start))),
                 SharedOptions()
               };
 
@@ -46,7 +47,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                   description: "Shows configuration, as if dotnet-monitor collect was executed with these parameters.")
                 {
                         // Handler
-                        CommandHandler.Create(Delegate.CreateDelegate(typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, ConfigDisplayLevel, Task<int>>),
+                        CommandHandler.Create(Delegate.CreateDelegate(typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, ConfigDisplayLevel, Task<int>>),
                             new DiagnosticsMonitorCommandHandler(), nameof(DiagnosticsMonitorCommandHandler.ShowConfig))),
                         SharedOptions(), ConfigLevel()
                 }
@@ -54,7 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static IEnumerable<Option> SharedOptions() => new Option[]
         {
-            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth()
+            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey()
         };
         
         private static Option Urls() =>
@@ -96,6 +97,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 )
             {
                 Argument = new Argument<bool>(name: "noAuth", getDefaultValue: () => false)
+            };
+
+        private static Option TempApiKey() =>
+            new Option(
+                alias: "--temp-apikey",
+                description: "Generates a new MonitorApiKey for each launch of the process."
+                )
+            {
+                Argument = new Argument<bool>(name: "tempApiKey", getDefaultValue: () => false)
             };
 
         private static Option ConfigLevel() =>
