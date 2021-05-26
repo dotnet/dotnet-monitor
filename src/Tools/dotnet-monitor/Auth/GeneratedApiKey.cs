@@ -23,13 +23,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static GeneratedApiKey Create()
         {
-            return GeneratedApiKey.Create("SHA256");
+            return GeneratedApiKey.Create("SHA512");
         }
 
         private static GeneratedApiKey Create(string hashAlgorithm)
         {
             using RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            using HashAlgorithm hasher = SHA256.Create();
+            using HashAlgorithm hasher = System.Security.Cryptography.HashAlgorithm.Create(hashAlgorithm);
 
             byte[] secret = new byte[ApiKeyAuthenticationHandler.ApiKeyNumBytes];
             rng.GetBytes(secret);
