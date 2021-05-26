@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
     [Collection(DefaultCollectionFixture.Name)]
     public class AuthenticationTests
     {
-        private const string ApiKeyScheme = "MonitorApiKey";
+        internal const string ApiKeyScheme = "MonitorApiKey";
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
@@ -183,6 +183,70 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             // Check that /processes does not challenge for authentication
             processes = await apiClient.GetProcessesAsync();
             Assert.NotNull(processes);
+        }
+
+        /// <summary>
+        /// Tests that --temp-apikey flag can be used to generate a key.
+        /// </summary>
+        [Fact]
+        public async Task TempApiKeyTest()
+        {
+            await using MonitorRunner toolRunner = new(_outputHelper);
+            toolRunner.UseTempApiKey = true;
+
+            await toolRunner.StartAsync();
+
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            // Assert that the httpClient came back with a populated Authorization header
+            Assert.NotNull(httpClient.DefaultRequestHeaders.Authorization?.Parameter);
+
+            // Check that /processes is authenticated
+            var processes = await apiClient.GetProcessesAsync();
+            Assert.NotNull(processes);
+
+            // Test that clearing the Authorization header will result in a 401
+            httpClient.DefaultRequestHeaders.Authorization = null;
+            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                () => apiClient.GetProcessesAsync());
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
+        }
+
+        /// <summary>
+        /// Tests that --temp-apikey will override the ApiAuthentication configuration.
+        /// </summary>
+        [Fact]
+        public async Task TempApiKeyOverridesApiAuthenticationTest()
+        {
+            const string AlgorithmName = "SHA256";
+
+            await using MonitorRunner toolRunner = new(_outputHelper);
+            toolRunner.UseTempApiKey = true;
+
+            // Generate initial API key
+            byte[] apiKey = GenerateApiKey();
+
+            // Set API key via key-per-file
+            RootOptions options = new();
+            options.UseApiKey(AlgorithmName, apiKey);
+            toolRunner.WriteKeyPerValueConfiguration(options);
+
+            await toolRunner.StartAsync();
+
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            // Check that /processes is authenticated when using the supplied temp key
+            var processes = await apiClient.GetProcessesAsync();
+            Assert.NotNull(processes);
+
+            // Test that setting the Authorization header for the supplied config will result in a 401
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(ApiKeyScheme, Convert.ToBase64String(apiKey));
+            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                () => apiClient.GetProcessesAsync());
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
         /// <summary>

@@ -24,6 +24,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// </summary>
     internal sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
     {
+        public const int ApiKeyNumBytes = 32;
+
         public ApiKeyAuthenticationHandler(
             IOptionsMonitor<ApiKeyAuthenticationOptions> options,
             ILoggerFactory loggerFactory,
@@ -63,7 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             //The user is passing a base 64-encoded version of the secret
             //We will be hash this and compare it to the secret in our configuration.
-            byte[] secret = new byte[32];
+            byte[] secret = new byte[ApiKeyAuthenticationHandler.ApiKeyNumBytes];
             Span<byte> span = new Span<byte>(secret);
             if (!Convert.TryFromBase64String(authHeader.Parameter, span, out int bytesWritten) || bytesWritten < 32)
             {

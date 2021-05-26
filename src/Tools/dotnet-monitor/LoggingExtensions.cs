@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -144,6 +145,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: nameof(ConfigurationKeys.ApiAuthentication) + " settings have changed.");
 
+        private static readonly Action<ILogger, string, string, string, string, Exception> _logTempKey =
+            LoggerMessage.Define<string, string, string, string>(
+                eventId: new EventId(23, "LogTempApiKey"),
+                logLevel: LogLevel.Warning,
+                formatString: "Generated one-time-use ApiKey for dotnet-monitor; use the following header for authorization:{NewLine}{AuthHeaderName}: {AuthScheme} {MonitorApiKey}");
+
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
             _egressProviderAdded(logger, providerName, null);
@@ -271,6 +278,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ApiKeyAuthenticationOptionsChanged(this ILogger logger)
         {
             _apiKeyAuthenticationOptionsChanged(logger, null);
+        }
+
+        public static void LogTempKey(this ILogger logger, string monitorApiKey)
+        {
+            _logTempKey(logger, Environment.NewLine, HeaderNames.Authorization, Monitoring.RestServer.AuthConstants.ApiKeySchema, monitorApiKey, null);
         }
 
         private static string Redact(string value)
