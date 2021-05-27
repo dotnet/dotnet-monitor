@@ -23,7 +23,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 name: "generatekey",
                 description: "Generate api key and hash for authentication")
             {
-                CommandHandler.Create<CancellationToken, IConsole>(new GenerateApiKeyCommandHandler().GenerateApiKey)
+                CommandHandler.Create<CancellationToken, int, string, IConsole>(new GenerateApiKeyCommandHandler().GenerateApiKey),
+                HashAlgorithm(), KeyLength()
             };
 
         private static Command CollectCommand() =>
@@ -106,6 +107,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 )
             {
                 Argument = new Argument<bool>(name: "tempApiKey", getDefaultValue: () => false)
+            };
+
+        private static Option HashAlgorithm() =>
+            new Option(
+                aliases: new[] { "-h", "--hash-algorithm" },
+                description: "The string representing the hash algorithm used to compute ApiKeyHash store in configuration")
+            {
+                Argument = new Argument<string>(name: "hashAlgorithm", getDefaultValue: () => GeneratedApiKey.DefaultHashAlgorithm)
+            };
+
+        private static Option KeyLength() =>
+            new Option(
+                aliases: new[] { "-l", "--key-length" },
+                description: "The length of the MonitorApiKey in bytes. ")
+            {
+                Argument = new Argument<int>(name: "keyLength", getDefaultValue: () => GeneratedApiKey.DefaultKeyLength)
             };
 
         private static Option ConfigLevel() =>
