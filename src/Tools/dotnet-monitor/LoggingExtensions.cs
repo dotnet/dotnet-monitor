@@ -17,139 +17,139 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             LoggerMessage.Define<string>(
                 eventId: new EventId(1, "EgressProviderAdded"),
                 logLevel: LogLevel.Debug,
-                formatString: "Provider '{providerName}': Added.");
+                formatString: Strings.LogFormatString_EgressProviderAdded);
 
         private static readonly Action<ILogger, string, Exception> _egressProviderInvalidOptions =
             LoggerMessage.Define<string>(
                 eventId: new EventId(2, "EgressProviderInvalidOptions"),
                 logLevel: LogLevel.Error,
-                formatString: "Provider '{providerName}': Invalid options.");
+                formatString: Strings.LogFormatString_EgressProviderInvalidOptions);
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderInvalidType =
             LoggerMessage.Define<string, string>(
                 eventId: new EventId(3, "EgressProviderInvalidType"),
                 logLevel: LogLevel.Error,
-                formatString: "Provider '{providerName}': Type '{providerType}' is not supported.");
+                formatString: Strings.LogFormatString_EgressProviderInvalidType);
 
         private static readonly Action<ILogger, string, Exception> _egressProviderValidatingOptions =
             LoggerMessage.Define<string>(
                 eventId: new EventId(4, "EgressProviderValidatingOptions"),
                 logLevel: LogLevel.Debug,
-                formatString: "Provider '{providerName}': Validating options.");
+                formatString: Strings.LogFormatString_EgressProviderValidatingOptions);
 
         private static readonly Action<ILogger, int, Exception> _egressCopyActionStreamToEgressStream =
             LoggerMessage.Define<int>(
                 eventId: new EventId(5, "EgressCopyActionStreamToEgressStream"),
                 logLevel: LogLevel.Debug,
-                formatString: "Copying action stream to egress stream with buffer size {bufferSize}");
+                formatString: Strings.LogFormatString_EgressCopyActionStreamToEgressStream);
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderOptionsValidationWarning =
             LoggerMessage.Define<string, string>(
                 eventId: new EventId(6, "EgressProviderOptionsValidationWarning"),
                 logLevel: LogLevel.Warning,
-                formatString: "Provider '{providerName}': {validationWarning}");
+                formatString: Strings.LogFormatString_EgressProviderOptionsValidationWarning);
 
         private static readonly Action<ILogger, string, string, string, Exception> _egressProviderOptionValue =
             LoggerMessage.Define<string, string, string>(
                 eventId: new EventId(7, "EgressProviderOptionValue"),
                 logLevel: LogLevel.Debug,
-                formatString: "Provider {providerType}: Provider option {optionName} = {optionValue}");
+                formatString: Strings.LogFormatString_EgressProviderOptionValue);
 
         private static readonly Action<ILogger, string, string, string, Exception> _egressStreamOptionValue =
             LoggerMessage.Define<string, string, string>(
                 eventId: new EventId(8, "EgressStreamOptionValue"),
                 logLevel: LogLevel.Debug,
-                formatString: "Provider {providerType}: Stream option {optionName} = {optionValue}");
+                formatString: Strings.LogFormatString_EgressStreamOptionValue);
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderFileName =
             LoggerMessage.Define<string, string>(
                 eventId: new EventId(9, "EgressProviderFileName"),
                 logLevel: LogLevel.Debug,
-                formatString: "Provider {providerType}: File name = {fileName}");
+                formatString: Strings.LogFormatString_EgressProviderFileName);
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
             LoggerMessage.Define<string, string>(
                 eventId: new EventId(10, "EgressProvideUnableToFindPropertyKey"),
                 logLevel: LogLevel.Warning,
-                formatString: "Provider {providerType}: Unable to find '{keyName}' key in egress properties");
+                formatString: Strings.LogFormatString_EgressProvideUnableToFindPropertyKey);
 
         private static readonly Action<ILogger, string, Exception> _egressProviderInvokeStreamAction =
             LoggerMessage.Define<string>(
                 eventId: new EventId(11, "EgressProviderInvokeStreamAction"),
                 logLevel: LogLevel.Debug,
-                formatString: "Provider {providerType}: Invoking stream action.");
+                formatString: Strings.LogFormatString_EgressProviderInvokeStreamAction);
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderSavedStream =
             LoggerMessage.Define<string, string>(
                 eventId: new EventId(12, "EgressProviderSavedStream"),
                 logLevel: LogLevel.Debug,
-                formatString: "Provider {providerType}: Saved stream to {path}");
+                formatString: Strings.LogFormatString_EgressProviderSavedStream);
 
         private static readonly Action<ILogger, Exception> _noAuthentication =
             LoggerMessage.Define(
                 eventId: new EventId(13, "NoAuthentication"),
                 logLevel: LogLevel.Warning,
-                formatString: "WARNING: Authentication has been disabled. This can pose a security risk and is not intended for production environments.");
+                formatString: Strings.LogFormatString_NoAuthentication);
 
         private static readonly Action<ILogger, Exception> _insecureAuthenticationConfiguration =
             LoggerMessage.Define(
                 eventId: new EventId(14, "InsecureAutheticationConfiguration"),
                 logLevel: LogLevel.Warning,
-                formatString: "WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.");
+                formatString: Strings.LogFormatString_InsecureAutheticationConfiguration);
 
         private static readonly Action<ILogger, string, Exception> _unableToListenToAddress =
             LoggerMessage.Define<string>(
                 eventId: new EventId(15, "UnableToListenToAddress"),
                 logLevel: LogLevel.Error,
-                formatString: "Unable to listen to {url}. Dotnet-monitor functionality will be limited.");
+                formatString: Strings.LogFormatString_UnableToListenToAddress);
 
         private static readonly Action<ILogger, string, Exception> _boundDefaultAddress =
             LoggerMessage.Define<string>(
                 eventId: new EventId(16, "BoundDefaultAddress"),
                 logLevel: LogLevel.Debug,
-                formatString: "Bound default address: {address}");
+                formatString: Strings.LogFormatString_BoundDefaultAddress);
 
         private static readonly Action<ILogger, string, Exception> _boundMetricsAddress =
             LoggerMessage.Define<string>(
                 eventId: new EventId(17, "BoundMetricsAddress"),
                 logLevel: LogLevel.Debug,
-                formatString: "Bound metrics address: {address}");
+                formatString: Strings.LogFormatString_BoundMetricsAddress);
 
         private static readonly Action<ILogger, string, Exception> _optionsValidationFalure =
             LoggerMessage.Define<string>(
                 eventId: new EventId(18, "OptionsValidationFailure"),
                 logLevel: LogLevel.Critical,
-                formatString: "{failure}");
+                formatString: Strings.LogFormatString_OptionsValidationFailure);
 
         private static readonly Action<ILogger, Exception> _runningElevated =
             LoggerMessage.Define(
                 eventId: new EventId(19, "RunningElevated"),
                 logLevel: LogLevel.Warning,
-                formatString: "The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes)");
+                formatString: Strings.LogFormatString_RunningElevated);
 
         private static readonly Action<ILogger, Exception> _disabledNegotiateWhileElevated =
             LoggerMessage.Define(
                 eventId: new EventId(20, "DisabledNegotiateWhileElevated"),
                 logLevel: LogLevel.Warning,
-                formatString: "Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions.");
+                formatString: Strings.LogFormatString_DisabledNegotiateWhileElevated);
 
-        private static readonly Action<ILogger, string, Exception> _apiKeyValidationFailure =
-            LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, string, string, Exception> _apiKeyValidationFailure =
+            LoggerMessage.Define<string, string>(
                 eventId: new EventId(21, "ApiKeyValidationFailure"),
                 logLevel: LogLevel.Warning,
-                formatString: nameof(ConfigurationKeys.ApiAuthentication) + " settings are invalid: {validationFailure}");
+                formatString: Strings.LogFormatString_ApiKeyValidationFailure);
 
-        private static readonly Action<ILogger, Exception> _apiKeyAuthenticationOptionsChanged =
-            LoggerMessage.Define(
+        private static readonly Action<ILogger, string, Exception> _apiKeyAuthenticationOptionsChanged =
+            LoggerMessage.Define<string>(
                 eventId: new EventId(22, "ApiKeyAuthenticationOptionsChanged"),
                 logLevel: LogLevel.Information,
-                formatString: nameof(ConfigurationKeys.ApiAuthentication) + " settings have changed.");
+                formatString: Strings.LogFormatString_ApiKeyAuthenticationOptionsChanged);
 
         private static readonly Action<ILogger, string, string, string, string, Exception> _logTempKey =
             LoggerMessage.Define<string, string, string, string>(
                 eventId: new EventId(23, "LogTempApiKey"),
                 logLevel: LogLevel.Warning,
-                formatString: "Generated one-time-use ApiKey for dotnet-monitor; use the following header for authorization:{NewLine}{AuthHeaderName}: {AuthScheme} {MonitorApiKey}");
+                formatString: Strings.LogFormatString_LogTempApiKey);
 
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
@@ -271,13 +271,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             foreach (ValidationResult error in errors)
             {
-                _apiKeyValidationFailure(logger, error.ErrorMessage, null);
+                _apiKeyValidationFailure(logger, nameof(ConfigurationKeys.ApiAuthentication), error.ErrorMessage, null);
             }
         }
 
         public static void ApiKeyAuthenticationOptionsChanged(this ILogger logger)
         {
-            _apiKeyAuthenticationOptionsChanged(logger, null);
+            _apiKeyAuthenticationOptionsChanged(logger, nameof(ConfigurationKeys.ApiAuthentication), null);
         }
 
         public static void LogTempKey(this ILogger logger, string monitorApiKey)

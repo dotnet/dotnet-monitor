@@ -16,4 +16,5 @@
         </ProjectReference>
         <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
     </ItemGroup>
+
 </Project>

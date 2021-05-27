@@ -4,11 +4,12 @@
         <TargetFrameworks>net6.0</TargetFrameworks>
         <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj">
             
         </ProjectReference>
         <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
     </ItemGroup>
+
 </Project>
