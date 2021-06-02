@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer
                 case ProcessFilterKey.CommandLine:
                     return new DiagProcessFilterEntry
                     {
-                        Criteria = DiagProcessFilterCriteria.ProcessName,
+                        Criteria = DiagProcessFilterCriteria.CommandLine,
                         MatchType = (processFilterDescriptor.MatchType == ProcessFilterType.Exact) ? DiagProcessFilterMatchType.Exact : DiagProcessFilterMatchType.Contains,
                         Value = processFilterDescriptor.Value
                     };
