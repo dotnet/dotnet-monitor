@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.UnitTests\Microsoft.Diagnostics.Monitoring.UnitTests.csproj" />
+        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests.csproj" />
     </ItemGroup>
 
 </Project>
