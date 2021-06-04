@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.RestServer;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -23,15 +24,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             var processKey = new ProcessKey("processName");
             var filter = CreateFilterEntry(processKey);
-            ValidateProcessFilter(filter, DiagProcessFilterCriteria.ProcessName, processKey.ProcessName);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ProcessName, processKey.ProcessName, filter);
 
             processKey = new ProcessKey(Guid.NewGuid());
             filter = CreateFilterEntry(processKey);
-            ValidateProcessFilter(filter, DiagProcessFilterCriteria.RuntimeId, processKey.RuntimeInstanceCookie.Value.ToString("D"));
+            ValidateProcessFilter(DiagProcessFilterCriteria.RuntimeId, processKey.RuntimeInstanceCookie.Value.ToString("D"), filter);
 
             processKey = new ProcessKey(5);
             filter = CreateFilterEntry(processKey);
-            ValidateProcessFilter(filter, DiagProcessFilterCriteria.ProcessId, processKey.ProcessId.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            ValidateProcessFilter(DiagProcessFilterCriteria.ProcessId, processKey.ProcessId.Value.ToString(CultureInfo.InvariantCulture), filter);
         }
 
         [Fact]
@@ -42,6 +43,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 Key = ProcessFilterKey.ProcessId,
                 MatchType = ProcessFilterType.Exact,
                 Value = "5"
+            };
+
+            var filterDescriptorPidContains = new ProcessFilterDescriptor
+            {
+                Key = ProcessFilterKey.ProcessId,
+                MatchType = ProcessFilterType.Contains,
+                Value = "6"
             };
 
             var filterDescriptorName = new ProcessFilterDescriptor
@@ -73,28 +81,32 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             };
 
             var filter = CreateFilterEntry(filterDescriptorPid);
-            ValidateProcessFilter(filter, DiagProcessFilterCriteria.ProcessId, filterDescriptorPid.Value);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ProcessId, filterDescriptorPid.Value, filter);
+
+            //Contains still becomes Exact for ProcessId
+            filter = CreateFilterEntry(filterDescriptorPidContains);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ProcessId, filterDescriptorPidContains.Value, filter);
 
             filter = CreateFilterEntry(filterDescriptorName);
-            ValidateProcessFilter(filter, DiagProcessFilterCriteria.ProcessName, filterDescriptorName.Value);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ProcessName, filterDescriptorName.Value, filter);
 
             filter = CreateFilterEntry(filterDescriptorNameContains);
-            ValidateProcessFilter(filter, DiagProcessFilterCriteria.ProcessName, filterDescriptorNameContains.Value, DiagProcessFilterMatchType.Contains);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ProcessName, filterDescriptorNameContains.Value, DiagProcessFilterMatchType.Contains, filter);
 
             filter = CreateFilterEntry(filterDescriptorCommand);
-            ValidateProcessFilter(filter, DiagProcessFilterCriteria.CommandLine, filterDescriptorCommand.Value);
+            ValidateProcessFilter(DiagProcessFilterCriteria.CommandLine, filterDescriptorCommand.Value, filter);
 
             filter = CreateFilterEntry(filterDescriptorCommandContains);
-            ValidateProcessFilter(filter, DiagProcessFilterCriteria.CommandLine, filterDescriptorCommandContains.Value, DiagProcessFilterMatchType.Contains);
+            ValidateProcessFilter(DiagProcessFilterCriteria.CommandLine, filterDescriptorCommandContains.Value, DiagProcessFilterMatchType.Contains, filter);
 
             //This filter doesn't make any sense but we are just testing that we can combine multiple filters
             var options = CreateOptions(filterDescriptorPid, filterDescriptorName, filterDescriptorNameContains, filterDescriptorCommand, filterDescriptorCommandContains);
 
-            ValidateProcessFilter(options.Filters[0], DiagProcessFilterCriteria.ProcessId, filterDescriptorPid.Value);
-            ValidateProcessFilter(options.Filters[1], DiagProcessFilterCriteria.ProcessName, filterDescriptorName.Value);
-            ValidateProcessFilter(options.Filters[2], DiagProcessFilterCriteria.ProcessName, filterDescriptorNameContains.Value, DiagProcessFilterMatchType.Contains);
-            ValidateProcessFilter(options.Filters[3], DiagProcessFilterCriteria.CommandLine, filterDescriptorCommand.Value);
-            ValidateProcessFilter(options.Filters[4], DiagProcessFilterCriteria.CommandLine, filterDescriptorCommandContains.Value, DiagProcessFilterMatchType.Contains);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ProcessId, filterDescriptorPid.Value, options.Filters[0]);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ProcessName, filterDescriptorName.Value, options.Filters[1]);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ProcessName, filterDescriptorNameContains.Value, DiagProcessFilterMatchType.Contains, options.Filters[2]);
+            ValidateProcessFilter(DiagProcessFilterCriteria.CommandLine, filterDescriptorCommand.Value, options.Filters[3]);
+            ValidateProcessFilter(DiagProcessFilterCriteria.CommandLine, filterDescriptorCommandContains.Value, DiagProcessFilterMatchType.Contains, options.Filters[4]);
         }
 
         [Fact]
@@ -110,21 +122,32 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             {
                 DiagProcessFilterCriteria.ProcessId,
                 DiagProcessFilterCriteria.RuntimeId,
+                DiagProcessFilterCriteria.CommandLine,
                 DiagProcessFilterCriteria.ProcessName,
-                DiagProcessFilterCriteria.CommandLine
-            }.Cast<int>().ToArray();
+            };
 
             Assert.Equal(expectedValues.Length, actualValues.Length);
+            for (int i = 0; i < expectedValues.Length; i++)
+            {
+                Assert.Equal(expectedValues.GetValue(i), actualValues[i]);
+            }
         }
 
-        private static void ValidateProcessFilter(DiagProcessFilterEntry filter,
-            DiagProcessFilterCriteria expectedCriteria,
+        private static void ValidateProcessFilter(DiagProcessFilterCriteria expectedCriteria,
             string expectedvalue,
-            DiagProcessFilterMatchType expectedMatchType = DiagProcessFilterMatchType.Exact)
+            DiagProcessFilterEntry actualFilter)
         {
-            Assert.Equal(expectedvalue, filter.Value);
-            Assert.Equal(expectedCriteria, filter.Criteria);
-            Assert.Equal(expectedMatchType, filter.MatchType);
+            ValidateProcessFilter(expectedCriteria, expectedvalue, DiagProcessFilterMatchType.Exact, actualFilter);
+        }
+
+        private static void ValidateProcessFilter(DiagProcessFilterCriteria expectedCriteria,
+            string expectedvalue,
+            DiagProcessFilterMatchType expectedMatchType,
+            DiagProcessFilterEntry actualFilter)
+        {
+            Assert.Equal(expectedvalue, actualFilter.Value);
+            Assert.Equal(expectedCriteria, actualFilter.Criteria);
+            Assert.Equal(expectedMatchType, actualFilter.MatchType);
         }
 
         private static DiagProcessFilterEntry CreateFilterEntry(ProcessKey processKey)
