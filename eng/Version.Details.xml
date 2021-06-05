@@ -30,9 +30,9 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>d09b931628258850ba0c56d17b3731b72ddf88f5</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-preview.6.21304.1">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-preview.6.21305.1">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>5a1b8223dab2f7954e7f206095ba937e5d237299</Sha>
+      <Sha>00c4a492a5d34547457936be2a56f894ce5eb241</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
