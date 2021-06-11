@@ -47,9 +47,14 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 1. Invoke [build](<#Build Release Branch>) pipeline as needed.
 1. After successful build, test changes from [dotnet-tools](https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json) feed. Images from the `nightly` branch of the `dotnet-docker` repository will be recreated the next day after the successful build of the release branch.
 
-## Release to NuGet.org
+## Release to nuget.org and Add GitHub Release
 
-1. TODO
+1. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105).
+   1. Set BAR_ID from value of the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954).
+   1. Set release notes path to a file share path that contains the release notes for this release.
+1. Approve the sign off step when ready to publish.
+
+The remainder of the release will automatically push NuGet packages to nuget.org, [tag](https://github.com/dotnet/dotnet-monitor/tags) the commit from the build with the release version, and add a new [GitHub release](https://github.com/dotnet/dotnet-monitor/releases).
 
 ## Release Docker Images
 
