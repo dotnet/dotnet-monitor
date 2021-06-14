@@ -286,10 +286,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         private static byte[] GenerateApiKey()
         {
             byte[] apiKey = new byte[32]; // 256 bits
-
-            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            rng.GetBytes(apiKey);
-
+            RandomNumberGenerator.Fill(apiKey);
             return apiKey;
         }
     }
