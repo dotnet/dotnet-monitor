@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const int ApiKeyByteMinLength = 32;
         public const int ApiKeyByteMaxLength = 2048;
         // This is the max length to efficiently encode an ApiKey of the length ApiKeyByteMaxLength.
-        private const int ApiKeyBase64MaxLength = ((ApiKeyByteMaxLength * 8) / 6) + 2;
+        private readonly int ApiKeyBase64MaxLength = System.Buffers.Text.Base64.GetMaxEncodedToUtf8Length(ApiKeyByteMaxLength);
 
         public ApiKeyAuthenticationHandler(
             IOptionsMonitor<ApiKeyAuthenticationOptions> options,
@@ -66,6 +66,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
+            if (authHeader.Parameter == null)
+            {
+                return Task.FromResult(AuthenticateResult.Fail("Invalid API key format."));
+            }
+
             if (authHeader.Parameter.Length > ApiKeyBase64MaxLength)
             {
                 return Task.FromResult(AuthenticateResult.Fail("Invalid API key format."));
@@ -74,7 +79,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Calculate the max length of the base64 encoded value,
             // the rules to decode this are really complex and allow white space in the
             // string which should be ignored, simply calculate the max it can be.
-            int byteLen = (authHeader.Parameter.Length + 1) * 3 / 4;
+            int byteLen = System.Buffers.Text.Base64.GetMaxDecodedFromUtf8Length(authHeader.Parameter.Length);
 
             if (byteLen < ApiKeyByteMinLength)
             {
@@ -85,7 +90,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // We will be hash this and compare it to the secret in our configuration.
             byte[] buffer = new byte[byteLen];
             Span<byte> span = new Span<byte>(buffer);
-            if (!Convert.TryFromBase64String(authHeader.Parameter, span, out int bytesWritten) || bytesWritten < ApiKeyByteMinLength)
+            if (!Convert.TryFromBase64String(authHeader.Parameter, span, out int bytesWritten) || bytesWritten < ApiKeyByteMinLength || bytesWritten > ApiKeyByteMaxLength)
             {
                 return Task.FromResult(AuthenticateResult.Fail("Invalid API key format."));
             }
