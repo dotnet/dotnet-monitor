@@ -287,8 +287,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             byte[] apiKey = new byte[32]; // 256 bits
 
-            using RNGCryptoServiceProvider rngProvider = new();
-            rngProvider.GetBytes(apiKey);
+            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            rng.GetBytes(apiKey);
 
             return apiKey;
         }
