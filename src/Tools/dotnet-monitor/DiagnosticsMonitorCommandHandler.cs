@@ -101,10 +101,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         host.Dispose();
                     }
                 }
-            } catch (FormatException ex)
+            }
+            catch (FormatException ex)
             {
-                TextWriter errorWriter = Console.Error;
-                errorWriter.WriteLine(ex.Message + "\n" + ex.InnerException.Message);
+                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.InnerException.Message);
+
+                return -1;
             }
 
             return 0;
