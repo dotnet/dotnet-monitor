@@ -105,7 +105,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             catch (FormatException ex)
             {
                 Console.Error.WriteLine(ex.Message);
-                Console.Error.WriteLine(ex.InnerException.Message);
+                if (ex.InnerException != null)
+                {
+                    Console.Error.WriteLine(ex.InnerException.Message);
+                }
 
                 return -1;
             }
