@@ -2,7 +2,7 @@
 
 Many of the HTTP routes allow specifying either the process ID `pid` or the unique ID `uid`. Which one to use depends on the target process and the environment in which the process is running.
 
-The `uid` value of a process is guaranteed to be unique, regardless of environment, as long is the application is running on .NET 5+. Applications running on .NET Core 3.1 will have an empty value of `00000000-0000-0000-0000-000000000000` for `uid`.
+The `uid` value of a process is guaranteed to be unique, regardless of environment, as long as the application is running on .NET 5+. Applications running on .NET Core 3.1 will have an empty value of `00000000-0000-0000-0000-000000000000` for `uid`.
 
 Recommendations:
 - For applications running on .NET 5+, use the `uid` parameter. This is especially beneficial when running in Docker or Kubernetes, since containerized .NET applications within the same pod will likely report process IDs of 1.
