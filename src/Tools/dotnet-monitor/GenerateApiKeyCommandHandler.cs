@@ -17,9 +17,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// </summary>
     internal sealed class GenerateApiKeyCommandHandler
     {
-        public Task<int> GenerateApiKey(CancellationToken token, IConsole console)
+        public Task<int> GenerateApiKey(CancellationToken token, int keyLength, string hashAlgorithm, IConsole console)
         {
-            GeneratedApiKey newKey = GeneratedApiKey.Create();
+            if (!HashAlgorithmChecker.IsAllowedAlgorithm(hashAlgorithm))
+            {
+                console.Error.WriteLine(FormattableString.CurrentCulture($"The {nameof(hashAlgorithm)} parameter value '{hashAlgorithm}' is not allowed."));
+                return Task.FromResult(1);
+            }
+
+            if (keyLength < ApiKeyAuthenticationHandler.ApiKeyByteMinLength || keyLength > ApiKeyAuthenticationHandler.ApiKeyByteMaxLength)
+            {
+                console.Error.WriteLine(FormattableString.CurrentCulture($"The {nameof(keyLength)} parameter value '{keyLength}' is not allowed. Must be between {ApiKeyAuthenticationHandler.ApiKeyByteMinLength} and {ApiKeyAuthenticationHandler.ApiKeyByteMaxLength} bytes."));
+                return Task.FromResult(1);
+            }
+
+            GeneratedApiKey newKey = GeneratedApiKey.Create(keyLength, hashAlgorithm);
 
             console.Out.WriteLine(FormattableString.Invariant($"Authorization: {Monitoring.WebApi.AuthConstants.ApiKeySchema} {newKey.MonitorApiKey}"));
             console.Out.WriteLine(FormattableString.Invariant($"ApiKeyHash: {newKey.HashValue}"));

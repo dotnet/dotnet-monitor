@@ -18,53 +18,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class ApiKeyAuthenticationPostConfigureOptions :
         IPostConfigureOptions<ApiKeyAuthenticationOptions>
     {
-        private static readonly string[] DisallowedHashAlgorithms = new string[]
-        {
-            // ------------------   SHA1    ------------------
-            "SHA",
-            "SHA1",
-            "System.Security.Cryptography.SHA1",
-            "System.Security.Cryptography.SHA1Cng",
-            "System.Security.Cryptography.HashAlgorithm",
-            "http://www.w3.org/2000/09/xmldsig#sha1",
-            // These give a KeyedHashAlgorith based on SHA1
-            "System.Security.Cryptography.HMAC",
-            "System.Security.Cryptography.KeyedHashAlgorithm",
-            "HMACSHA1",
-            "System.Security.Cryptography.HMACSHA1",
-            "http://www.w3.org/2000/09/xmldsig#hmac-sha1",
-            
-            // ------------------    MD5    ------------------
-            "MD5",
-            "System.Security.Cryptography.MD5",
-            "System.Security.Cryptography.MD5Cng",
-            "http://www.w3.org/2001/04/xmldsig-more#md5",
-            // These give a KeyedHashAlgorith based on MD5
-            "HMACMD5",
-            "System.Security.Cryptography.HMACMD5",
-            "http://www.w3.org/2001/04/xmldsig-more#hmac-md5",
-            
-            // These are defined in .net framework but currently not supported
-            // supported in .net core. Lets add these to the list for future 
-            // proofing, in the event that support is expanded.
-            // See: https://github.com/dotnet/runtime/blob/01b7e73cd378145264a7cb7a09365b41ed42b240/src/libraries/System.Security.Cryptography.Algorithms/src/System/Security/Cryptography/CryptoConfig.cs#L275
-            // ------------------ RIPEMD160 ------------------
-            "RIPEMD160",
-            "RIPEMD-160",
-            "System.Security.Cryptography.RIPEMD160",
-            "System.Security.Cryptography.RIPEMD160Managed",
-            "http://www.w3.org/2001/04/xmlenc#ripemd160",
-            // These give a KeyedHashAlgorith based on RIPEMD160
-            "HMACRIPEMD160",
-            "System.Security.Cryptography.HMACRIPEMD160",
-            "http://www.w3.org/2001/04/xmldsig-more#hmac-ripemd160",
-            
-            // ------------------  MAC3DES  ------------------
-            // This is .net specific non-crypto hash algorithm, don't allow it
-            "MACTripleDES",
-            "System.Security.Cryptography.MACTripleDES",
-        };
-
         private readonly IOptionsMonitor<ApiAuthenticationOptions> _apiAuthOptions;
 
         public ApiKeyAuthenticationPostConfigureOptions(
@@ -88,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Validate hash algorithm is allowed and is supported.
             if (!string.IsNullOrEmpty(sourceOptions.ApiKeyHashType))
             {
-                if (DisallowedHashAlgorithms.Contains(sourceOptions.ApiKeyHashType, StringComparer.OrdinalIgnoreCase))
+                if (!HashAlgorithmChecker.IsAllowedAlgorithm(sourceOptions.ApiKeyHashType))
                 {
                     errors.Add(new ValidationResult($"The {nameof(ApiAuthenticationOptions.ApiKeyHashType)} field value '{sourceOptions.ApiKeyHashType}' is not allowed.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHashType) }));
                 }
