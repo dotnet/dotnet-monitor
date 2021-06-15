@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{B62728C8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-monitor", "src\Tools\dotnet-monitor\dotnet-monitor.csproj", "{C57F7656-6663-4A3C-BE38-B75C6C57E77D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.RestServer", "src\Microsoft.Diagnostics.Monitoring.RestServer\Microsoft.Diagnostics.Monitoring.RestServer.csproj", "{B54DE8DD-6591-45C2-B9F7-22C4A23A384C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.WebApi", "src\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj", "{B54DE8DD-6591-45C2-B9F7-22C4A23A384C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{B24CD8F2-D809-4DB8-89A1-D45FA9218020}"
 	ProjectSection(SolutionItems) = preProject

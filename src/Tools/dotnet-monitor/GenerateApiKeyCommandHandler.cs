@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             GeneratedApiKey newKey = GeneratedApiKey.Create();
 
-            console.Out.WriteLine(FormattableString.Invariant($"Authorization: {Monitoring.RestServer.AuthConstants.ApiKeySchema} {newKey.MonitorApiKey}"));
+            console.Out.WriteLine(FormattableString.Invariant($"Authorization: {Monitoring.WebApi.AuthConstants.ApiKeySchema} {newKey.MonitorApiKey}"));
             console.Out.WriteLine(FormattableString.Invariant($"ApiKeyHash: {newKey.HashValue}"));
             console.Out.WriteLine(FormattableString.Invariant($"ApiKeyHashType: {newKey.HashAlgorithm}"));
 

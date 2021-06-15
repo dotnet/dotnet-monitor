@@ -10,15 +10,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\CorsConfiguration.cs" Link="Options\CorsConfiguration.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptions.cs" Link="Options\MetricsOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\MetricsOptionsDefaults.cs" Link="Options\MetricsOptionsDefaults.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\ProcessFilterOptions.cs" Link="Options\ProcessFilterOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\DumpType.cs" Link="Models\DumpType.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\LogsConfiguration.cs" Link="Models\LogsConfiguration.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.RestServer\StorageOptions.cs" Link="Options\StorageOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\CorsConfiguration.cs" Link="Options\CorsConfiguration.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\MetricsOptions.cs" Link="Options\MetricsOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\MetricsOptionsDefaults.cs" Link="Options\MetricsOptionsDefaults.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\ProcessFilterOptions.cs" Link="Options\ProcessFilterOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DumpType.cs" Link="Models\DumpType.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\LogsConfiguration.cs" Link="Models\LogsConfiguration.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\StorageOptions.cs" Link="Options\StorageOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Auth\ApiAuthenticationOptions.cs" Link="Options\ApiAuthenticationOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortOptions.cs" Link="Options\DiagnosticPortOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortOptionsDefaults.cs" Link="Options\DiagnosticPortOptionsDefaults.cs" />
