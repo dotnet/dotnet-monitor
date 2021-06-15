@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using System;
+using System.Buffers.Text;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -27,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const int ApiKeyByteMinLength = 32;
         public const int ApiKeyByteMaxLength = 2048;
         // This is the max length to efficiently encode an ApiKey of the length ApiKeyByteMaxLength.
-        private readonly int ApiKeyBase64MaxLength = System.Buffers.Text.Base64.GetMaxEncodedToUtf8Length(ApiKeyByteMaxLength);
+        private readonly int ApiKeyBase64MaxLength = Base64.GetMaxEncodedToUtf8Length(ApiKeyByteMaxLength);
 
         public ApiKeyAuthenticationHandler(
             IOptionsMonitor<ApiKeyAuthenticationOptions> options,
@@ -79,7 +80,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Calculate the max length of the base64 encoded value,
             // the rules to decode this are really complex and allow white space in the
             // string which should be ignored, simply calculate the max it can be.
-            int byteLen = System.Buffers.Text.Base64.GetMaxDecodedFromUtf8Length(authHeader.Parameter.Length);
+            int byteLen = Base64.GetMaxDecodedFromUtf8Length(authHeader.Parameter.Length);
 
             if (byteLen < ApiKeyByteMinLength)
             {
