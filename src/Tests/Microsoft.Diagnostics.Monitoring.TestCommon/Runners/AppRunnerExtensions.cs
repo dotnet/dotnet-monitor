@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 {
-    internal static class AppRunnerExtensions
+    public static class AppRunnerExtensions
     {
         private static readonly TimeSpan ExceptionTimeout = TimeSpan.FromSeconds(5);
 
@@ -19,17 +19,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         {
             try
             {
-                await runner.StartAsync(TestTimeouts.StartProcess);
+                await runner.StartAsync(CommonTestTimeouts.StartProcess);
 
-                await runner.SendStartScenarioAsync(TestTimeouts.SendCommand);
+                await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
 
                 await func();
 
-                await runner.SendEndScenarioAsync(TestTimeouts.SendCommand);
+                await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
 
                 // This gives the app time to send out any remaining stdout/stderr messages,
                 // exit properly, and delete its diagnostic pipe.
-                await runner.WaitForExitAsync(TestTimeouts.WaitForExit);
+                await runner.WaitForExitAsync(CommonTestTimeouts.WaitForExit);
             }
             catch (Exception)
             {
@@ -51,9 +51,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             {
                 foreach (AppRunner runner in runners)
                 {
-                    await runner.StartAsync(TestTimeouts.StartProcess);
+                    await runner.StartAsync(CommonTestTimeouts.StartProcess);
 
-                    await runner.SendStartScenarioAsync(TestTimeouts.SendCommand);
+                    await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
                 }
 
                 await func();
@@ -62,9 +62,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 // exit properly, and delete their diagnostic pipes.
                 await Task.WhenAll(runners.Select(async runner =>
                     {
-                        await runner.SendEndScenarioAsync(TestTimeouts.SendCommand);
+                        await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
 
-                        await runner.WaitForExitAsync(TestTimeouts.WaitForExit);
+                        await runner.WaitForExitAsync(CommonTestTimeouts.WaitForExit);
                     }));
             }
             catch (Exception)
@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public static Task SendEndScenarioAsync(this AppRunner runner)
         {
-            return runner.SendEndScenarioAsync(TestTimeouts.SendCommand);
+            return runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
         }
 
         public static async Task SendEndScenarioAsync(this AppRunner runner, TimeSpan timeout)
@@ -94,7 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public static Task SendCommandAsync(this AppRunner runner, string command)
         {
-            return runner.SendCommandAsync(command, TestTimeouts.SendCommand);
+            return runner.SendCommandAsync(command, CommonTestTimeouts.SendCommand);
         }
 
         public static async Task SendCommandAsync(this AppRunner runner, string command, TimeSpan timeout)
@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public static Task SendStartScenarioAsync(this AppRunner runner)
         {
-            return runner.SendStartScenarioAsync(TestTimeouts.SendCommand);
+            return runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
         }
 
         public static async Task SendStartScenarioAsync(this AppRunner runner, TimeSpan timeout)
@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public static Task StartAsync(this AppRunner runner)
         {
-            return runner.StartAsync(TestTimeouts.StartProcess);
+            return runner.StartAsync(CommonTestTimeouts.StartProcess);
         }
 
         public static async Task StartAsync(this AppRunner runner, TimeSpan timeout)
@@ -127,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public static Task<int> WaitForExitAsync(this AppRunner runner)
         {
-            return runner.WaitForExitAsync(TestTimeouts.WaitForExit);
+            return runner.WaitForExitAsync(CommonTestTimeouts.WaitForExit);
         }
 
         public static async Task<int> WaitForExitAsync(this AppRunner runner, TimeSpan timeout)

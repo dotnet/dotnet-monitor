@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.TestCommon
+namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 {
     public sealed class LoggingRunnerAdapter : IAsyncDisposable
     {

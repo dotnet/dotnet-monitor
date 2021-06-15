@@ -4,8 +4,6 @@
 
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
@@ -24,12 +22,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         [Display(Description = @"In 'Listen' mode, the maximum amount of connections to accept.")]
         public int? MaxConnections { get; set; }
-    }
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum DiagnosticPortConnectionMode
-    {
-        Connect,
-        Listen
     }
 }
