@@ -282,7 +282,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static void LogTempKey(this ILogger logger, string monitorApiKey)
         {
-            _logTempKey(logger, Environment.NewLine, HeaderNames.Authorization, Monitoring.RestServer.AuthConstants.ApiKeySchema, monitorApiKey, null);
+            _logTempKey(logger, Environment.NewLine, HeaderNames.Authorization, Monitoring.WebApi.AuthConstants.ApiKeySchema, monitorApiKey, null);
         }
 
         private static string Redact(string value)

@@ -25,7 +25,7 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <!--
       AspNetCore references use version ranges in order to allow package references to this
-      RestServer package to use newer versions but not reference anything newer than .NET Core 2.1
+      WebApi package to use newer versions but not reference anything newer than .NET Core 2.1
     -->
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="[$(MicrosoftAspNetCoreMvcVersion),2.2.0)" />
     <PackageReference Include="Microsoft.Bcl.HashCode" Version="$(MicrosoftBclHashCodeVersion)" />

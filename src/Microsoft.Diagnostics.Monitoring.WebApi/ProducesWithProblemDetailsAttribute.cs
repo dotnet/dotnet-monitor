@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             if (context.Result is BadRequestObjectResult badRequestResult && badRequestResult.Value is ProblemDetails)
             {
-                badRequestResult.ContentTypes.Add(RestServer.ContentTypes.ApplicationProblemJson);
+                badRequestResult.ContentTypes.Add(WebApi.ContentTypes.ApplicationProblemJson);
             }
             else
             {
