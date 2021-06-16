@@ -121,6 +121,10 @@
     <value>API key authentication not configured.</value>
     <comment>Gets a string similar to "API key authentication not configured.".</comment>
   </data>
+  <data name="ErrorMessage_DiagnosticPortMissingInListenMode" xml:space="preserve">
+    <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
+    <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
+  </data>
   <data name="ErrorMessage_EgressAzureFailedDetailed" xml:space="preserve">
     <value>Azure blob egress failed: {0}</value>
     <comment>Gets the format string for egress failure to Azure blob (with an inner message).
@@ -156,7 +160,7 @@
     <comment>Gets the format string for rejecting a field value.
 2 Format Parameters:
 0. fieldName: The name of the field that failed validation
-1. fieldVale: The value in the field that was rejected</comment>
+1. fieldValue: The value in the field that was rejected</comment>
   </data>
   <data name="ErrorMessage_FieldNotHex" xml:space="preserve">
     <value>The {0} field could not be decoded as hex string.</value>
@@ -182,12 +186,42 @@
     <value>Invalid authentication header.</value>
     <comment>Gets a string similar to "Invalid authentication header.".</comment>
   </data>
+  <data name="ErrorMessage_ParameterNotAllowed" xml:space="preserve">
+    <value>The {0} parameter value '{1}' is not allowed.</value>
+    <comment>Gets the format string for rejecting a parameter value.
+2 Format Parameters:
+0. parameterName: The name of the parameter that failed validation
+1. parameterValue: The value in the parameter that was rejected</comment>
+  </data>
+  <data name="ErrorMessage_ParameterNotAllowedByteRange" xml:space="preserve">
+    <value>The {0} parameter value '{1}' is not allowed. Must be between {2} and {3} bytes long.</value>
+    <comment>Gets the format string for rejecting a parameter value with additional text specifying the required range in bytes.
+4 Format Parameters:
+0. parameterName: The name of the parameter that failed validation
+1. parameterValue: The value in the parameter that was rejected
+2. minBytes: The minimum number of bytes acceptable
+3. maxBytes: The maximum number of bytes acceptable</comment>
+  </data>
   <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
     <value>The {0} field or the {1} field is required.</value>
     <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
 2 Format Parameters:
 0. fieldNameOne: The name of the first field that is missing
 1. fieldNameTwo: The name of the second field that is missing</comment>
+  </data>
+  <data name="ErrorMessage_UnableToBindUrls" xml:space="preserve">
+    <value>Unable to bind any urls.</value>
+    <comment>Gets a string similar to "Unable to bind any urls.".</comment>
+  </data>
+  <data name="ErrorMessage_UnableToParseAddress" xml:space="preserve">
+    <value>Unable to parse address.</value>
+    <comment>Gets a string similar to "Unable to parse address.".</comment>
+  </data>
+  <data name="ErrorMessage_UnhandledConnectionMode" xml:space="preserve">
+    <value>Unhandled connection mode: {0}</value>
+    <comment>Gets the format string for egress provider failure due to missing provider.
+1 Format Parameter:
+0. connectionMode: The provided DiagnosticPortConnectionMode that could not be parsed.</comment>
   </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
@@ -204,6 +238,14 @@
   <data name="HelpDescription_CommandShow" xml:space="preserve">
     <value>Shows configuration, as if dotnet-monitor collect was executed with these parameters.</value>
     <comment>Gets the string to display in help that explains what the 'show' command does.</comment>
+  </data>
+  <data name="HelpDescription_HashAlgorithm" xml:space="preserve">
+    <value>The string representing the hash algorithm used to compute ApiKeyHash store in configuration, typically SHA256.</value>
+    <comment>Gets the string to display in help that explains what the '--hash-algorithm' option does.</comment>
+  </data>
+  <data name="HelpDescription_KeyLength" xml:space="preserve">
+    <value>The length of the MonitorApiKey in bytes.</value>
+    <comment>Gets the string to display in help that explains what the '--key-length' option does.</comment>
   </data>
   <data name="HelpDescription_OptionDiagnosticPort" xml:space="preserve">
     <value>The fully qualified path and filename of the diagnostic port to which runtime instances can connect.</value>
@@ -379,5 +421,13 @@
     <comment>Gets the format string that is printed in the 15:UnableToListenToAddress event.
 1 Format Parameter:
 1. url: The URL that could not have a listener attached to it</comment>
+  </data>
+  <data name="Placeholder_NotPresent" xml:space="preserve">
+    <value>:NOT PRESENT:</value>
+    <comment>Gets a string similar to ":NOT PRESENT:".</comment>
+  </data>
+  <data name="Placeholder_Redacted" xml:space="preserve">
+    <value>:REDACTED:</value>
+    <comment>Gets a string similar to ":REDACTED:".</comment>
   </data>
 </root>

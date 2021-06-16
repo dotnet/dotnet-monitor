@@ -70,6 +70,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to In &apos;Listen&apos; mode, the diagnostic port endpoint name must be specified..
+        /// </summary>
+        internal static string ErrorMessage_DiagnosticPortMissingInListenMode {
+            get {
+                return ResourceManager.GetString("ErrorMessage_DiagnosticPortMissingInListenMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Azure blob egress failed: {0}.
         /// </summary>
         internal static string ErrorMessage_EgressAzureFailedDetailed {
@@ -178,11 +187,56 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} parameter value &apos;{1}&apos; is not allowed..
+        /// </summary>
+        internal static string ErrorMessage_ParameterNotAllowed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ParameterNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} parameter value &apos;{1}&apos; is not allowed. Must be between {2} and {3} bytes long..
+        /// </summary>
+        internal static string ErrorMessage_ParameterNotAllowedByteRange {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ParameterNotAllowedByteRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field or the {1} field is required..
         /// </summary>
         internal static string ErrorMessage_TwoFieldsMissing {
             get {
                 return ResourceManager.GetString("ErrorMessage_TwoFieldsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to bind any urls..
+        /// </summary>
+        internal static string ErrorMessage_UnableToBindUrls {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnableToBindUrls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to parse address..
+        /// </summary>
+        internal static string ErrorMessage_UnableToParseAddress {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnableToParseAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unhandled connection mode: {0}.
+        /// </summary>
+        internal static string ErrorMessage_UnhandledConnectionMode {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnhandledConnectionMode", resourceCulture);
             }
         }
         
@@ -219,6 +273,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string HelpDescription_CommandShow {
             get {
                 return ResourceManager.GetString("HelpDescription_CommandShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The string representing the hash algorithm used to compute ApiKeyHash store in configuration, typically SHA256..
+        /// </summary>
+        internal static string HelpDescription_HashAlgorithm {
+            get {
+                return ResourceManager.GetString("HelpDescription_HashAlgorithm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The length of the MonitorApiKey in bytes..
+        /// </summary>
+        internal static string HelpDescription_KeyLength {
+            get {
+                return ResourceManager.GetString("HelpDescription_KeyLength", resourceCulture);
             }
         }
         
@@ -489,6 +561,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_UnableToListenToAddress {
             get {
                 return ResourceManager.GetString("LogFormatString_UnableToListenToAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to :NOT PRESENT:.
+        /// </summary>
+        internal static string Placeholder_NotPresent {
+            get {
+                return ResourceManager.GetString("Placeholder_NotPresent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to :REDACTED:.
+        /// </summary>
+        internal static string Placeholder_Redacted {
+            get {
+                return ResourceManager.GetString("Placeholder_Redacted", resourceCulture);
             }
         }
     }

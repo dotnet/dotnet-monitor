@@ -180,7 +180,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             // String returned for a process field when its value could not be retrieved. This is the same
             // value that is returned by the runtime when it could not determine the value for each of those fields.
-            private const string ProcessFieldUnknownValue = "unknown";
+            private static readonly string ProcessFieldUnknownValue = Strings.Placeholder_UnknownValue;
 
             public ProcessInfo(
                 IEndpointInfo endpointInfo,

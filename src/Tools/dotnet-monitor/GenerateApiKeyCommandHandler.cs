@@ -5,6 +5,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,13 +22,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             if (!HashAlgorithmChecker.IsAllowedAlgorithm(hashAlgorithm))
             {
-                console.Error.WriteLine(FormattableString.CurrentCulture($"The {nameof(hashAlgorithm)} parameter value '{hashAlgorithm}' is not allowed."));
+                console.Error.WriteLine(
+                    string.Format(
+                        CultureInfo.CurrentCulture, 
+                        Strings.ErrorMessage_ParameterNotAllowed, 
+                        nameof(hashAlgorithm), 
+                        hashAlgorithm));
                 return Task.FromResult(1);
             }
 
             if (keyLength < ApiKeyAuthenticationHandler.ApiKeyByteMinLength || keyLength > ApiKeyAuthenticationHandler.ApiKeyByteMaxLength)
             {
-                console.Error.WriteLine(FormattableString.CurrentCulture($"The {nameof(keyLength)} parameter value '{keyLength}' is not allowed. Must be between {ApiKeyAuthenticationHandler.ApiKeyByteMinLength} and {ApiKeyAuthenticationHandler.ApiKeyByteMaxLength} bytes."));
+                console.Error.WriteLine(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.ErrorMessage_ParameterNotAllowedByteRange,
+                        nameof(hashAlgorithm),
+                        hashAlgorithm,
+                        ApiKeyAuthenticationHandler.ApiKeyByteMinLength,
+                        ApiKeyAuthenticationHandler.ApiKeyByteMaxLength));
                 return Task.FromResult(1);
             }
 

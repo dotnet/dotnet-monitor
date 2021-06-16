@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     _source = new ServerEndpointInfoSource(_portOptions.EndpointName);
                     break;
                 default:
-                    throw new InvalidOperationException($"Unhandled connection mode: {connectionMode}");
+                    throw new InvalidOperationException(string.Format(Strings.ErrorMessage_UnhandledConnectionMode, connectionMode));
             }
 
             // Filter out the current process based on the connection mode.

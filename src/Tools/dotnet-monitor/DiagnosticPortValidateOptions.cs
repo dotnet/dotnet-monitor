@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             if (options.ConnectionMode == DiagnosticPortConnectionMode.Listen
                 && string.IsNullOrEmpty(options.EndpointName))
             {
-                return ValidateOptionsResult.Fail("In 'Listen' mode, the diagnostic port endpoint name must be specified.");
+                return ValidateOptionsResult.Fail(Strings.ErrorMessage_DiagnosticPortMissingInListenMode);
             }
 
             return ValidateOptionsResult.Success;

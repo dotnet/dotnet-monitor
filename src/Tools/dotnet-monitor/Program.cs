@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static Option HashAlgorithm() =>
             new Option(
                 aliases: new[] { "-h", "--hash-algorithm" },
-                description: "The string representing the hash algorithm used to compute ApiKeyHash store in configuration")
+                description: Strings.HelpDescription_HashAlgorithm)
             {
                 Argument = new Argument<string>(name: "hashAlgorithm", getDefaultValue: () => GeneratedApiKey.DefaultHashAlgorithm)
             };
@@ -127,7 +127,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static Option KeyLength() =>
             new Option(
                 aliases: new[] { "-l", "--key-length" },
-                description: "The length of the MonitorApiKey in bytes. ")
+                description: Strings.HelpDescription_KeyLength)
             {
                 Argument = new Argument<int>(name: "keyLength", getDefaultValue: () => GeneratedApiKey.DefaultKeyLength)
             };
