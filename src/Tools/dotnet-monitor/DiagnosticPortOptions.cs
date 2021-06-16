@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 #if UNITTEST
@@ -15,14 +15,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     public class DiagnosticPortOptions
     {
-        [Display(Description = @"In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen' mode, the application connects to dotnet-monitor via " + nameof(EndpointName) + ".")]
+        [Display(
+            ResourceType = typeof(SharedStrings),
+            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode))]
         [DefaultValue(DiagnosticPortOptionsDefaults.ConnectionMode)]
         public DiagnosticPortConnectionMode? ConnectionMode { get; set; }
 
-        [Display(Description = @"In 'Listen' mode, specifies the name of the named pipe or unix domain socket to use for connecting to the diagnostic server.")]
+        [Display(
+            ResourceType = typeof(SharedStrings),
+            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortOptions_EndpointName))]
         public string EndpointName { get; set; }
 
-        [Display(Description = @"In 'Listen' mode, the maximum amount of connections to accept.")]
+        [Display(
+            ResourceType = typeof(SharedStrings),
+            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections))]
         public int? MaxConnections { get; set; }
     }
 

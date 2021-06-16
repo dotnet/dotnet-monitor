@@ -43,4 +43,17 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.UnitTests" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="SharedStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SharedStrings.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="SharedStrings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedStrings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.Diagnostics.Monitoring.WebApi</CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
