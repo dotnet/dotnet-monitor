@@ -158,7 +158,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
             }
             else
             {
-                throw CreateException("SharedAccessSignature or AccountKey must be specified.");
+                throw CreateException(Strings.ErrorMessage_EgressMissingSasOrKey);
             }
 
             BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(Options.ContainerName);
@@ -211,11 +211,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
         {
             if (!string.IsNullOrEmpty(innerMessage))
             {
-                return $"Azure blob egress failed: {innerMessage}";
+                return string.Format(Strings.ErrorMessage_EgressAzureFailedDetailed, innerMessage);
             }
             else
             {
-                return "Azure blob egress failed.";
+                return Strings.ErrorMessage_EgressAzureFailedGeneric;
             }
         }
     }

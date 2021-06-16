@@ -70,6 +70,60 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Azure blob egress failed: {0}.
+        /// </summary>
+        internal static string ErrorMessage_EgressAzureFailedDetailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressAzureFailedDetailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Azure blob egress failed..
+        /// </summary>
+        internal static string ErrorMessage_EgressAzureFailedGeneric {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressAzureFailedGeneric", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File system egress failed&quot; {0}.
+        /// </summary>
+        internal static string ErrorMessage_EgressFileFailedDetailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressFileFailedDetailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File system egress failed..
+        /// </summary>
+        internal static string ErrorMessage_EgressFileFailedGeneric {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressFileFailedGeneric", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SharedAccessSignature or AccountKey must be specified..
+        /// </summary>
+        internal static string ErrorMessage_EgressMissingSasOrKey {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressMissingSasOrKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Egress provider &apos;{0}&apos; does not exist..
+        /// </summary>
+        internal static string ErrorMessage_EgressProviderDoesNotExist {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressProviderDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field value &apos;{1}&apos; is not allowed..
         /// </summary>
         internal static string ErrorMessage_FieldNotAllowed {
@@ -120,6 +174,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_InvalidAuthHeader {
             get {
                 return ResourceManager.GetString("ErrorMessage_InvalidAuthHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field or the {1} field is required..
+        /// </summary>
+        internal static string ErrorMessage_TwoFieldsMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TwoFieldsMissing", resourceCulture);
             }
         }
         

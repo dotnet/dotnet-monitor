@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 return provider.EgressAsync(action, fileName, contentType, source, token);
             }
-            throw new EgressException($"Egress provider '{providerName}' does not exist.");
+            throw new EgressException(string.Format(Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
         }
 
         public Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 return provider.EgressAsync(action, fileName, contentType, source, token);
             }
-            throw new EgressException($"Egress provider '{providerName}' does not exist.");
+            throw new EgressException(string.Format(Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
         }
     }
 }

@@ -161,11 +161,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
         {
             if (!string.IsNullOrEmpty(innerMessage))
             {
-                return $"File system egress failed: {innerMessage}";
+                return string.Format(Strings.ErrorMessage_EgressFileFailedDetailed, innerMessage);
             }
             else
             {
-                return "File system egress failed.";
+                return Strings.ErrorMessage_EgressFileFailedGeneric;
             }
         }
     }
