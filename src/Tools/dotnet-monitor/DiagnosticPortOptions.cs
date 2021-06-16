@@ -35,7 +35,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum DiagnosticPortConnectionMode
     {
+        [Display(
+            ResourceType = typeof(SharedStrings),
+            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortConnectionMode_Connect))]
         Connect,
+
+        [Display(
+            ResourceType = typeof(SharedStrings),
+            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortConnectionMode_Listen))]
         Listen
     }
 }

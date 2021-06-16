@@ -61,6 +61,69 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to API key authentication not configured..
+        /// </summary>
+        internal static string ErrorMessage_ApiKeyNotConfigured {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ApiKeyNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field value &apos;{1}&apos; is not allowed..
+        /// </summary>
+        internal static string ErrorMessage_FieldNotAllowed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FieldNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field could not be decoded as hex string..
+        /// </summary>
+        internal static string ErrorMessage_FieldNotHex {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FieldNotHex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field value length must be an even number..
+        /// </summary>
+        internal static string ErrorMessage_FieldOddLengh {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FieldOddLengh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid API key..
+        /// </summary>
+        internal static string ErrorMessage_InvalidApiKey {
+            get {
+                return ResourceManager.GetString("ErrorMessage_InvalidApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid API key format..
+        /// </summary>
+        internal static string ErrorMessage_InvalidApiKeyFormat {
+            get {
+                return ResourceManager.GetString("ErrorMessage_InvalidApiKeyFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid authentication header..
+        /// </summary>
+        internal static string ErrorMessage_InvalidAuthHeader {
+            get {
+                return ResourceManager.GetString("ErrorMessage_InvalidAuthHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Monitor logs and metrics in a .NET application send the results to a chosen destination..
         /// </summary>
         internal static string HelpDescription_CommandCollect {

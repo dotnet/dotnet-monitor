@@ -117,6 +117,41 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrorMessage_ApiKeyNotConfigured" xml:space="preserve">
+    <value>API key authentication not configured.</value>
+    <comment>Gets a string similar to "API key authentication not configured.".</comment>
+  </data>
+  <data name="ErrorMessage_FieldNotAllowed" xml:space="preserve">
+    <value>The {0} field value '{1}' is not allowed.</value>
+    <comment>Gets the format string for rejecting a field value.
+2 Format Parameters:
+0. fieldName: The name of the field that failed validation
+1. fieldVale: The value in the field that was rejected</comment>
+  </data>
+  <data name="ErrorMessage_FieldNotHex" xml:space="preserve">
+    <value>The {0} field could not be decoded as hex string.</value>
+    <comment>Gets the format string for rejecting a field because it is not hex.
+1 Format Parameter:
+0. fieldName: The name of the field that failed validation</comment>
+  </data>
+  <data name="ErrorMessage_FieldOddLengh" xml:space="preserve">
+    <value>The {0} field value length must be an even number.</value>
+    <comment>Gets the format string for rejecting a field because it must have an even numbered length.
+1 Format Parameter:
+0. fieldName: The name of the field that failed validation</comment>
+  </data>
+  <data name="ErrorMessage_InvalidApiKey" xml:space="preserve">
+    <value>Invalid API key.</value>
+    <comment>Gets a string similar to "Invalid API key.".</comment>
+  </data>
+  <data name="ErrorMessage_InvalidApiKeyFormat" xml:space="preserve">
+    <value>Invalid API key format.</value>
+    <comment>Gets a string similar to "Invalid API key format.".</comment>
+  </data>
+  <data name="ErrorMessage_InvalidAuthHeader" xml:space="preserve">
+    <value>Invalid authentication header.</value>
+    <comment>Gets a string similar to "Invalid authentication header.".</comment>
+  </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
     <comment>Gets the string to display in help that explains what the 'collect' command does.</comment>

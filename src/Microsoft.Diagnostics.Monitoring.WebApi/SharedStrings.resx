@@ -129,6 +129,14 @@
     <value>List of allowed CORS origins, separated by semicolons.</value>
     <comment>The description provided for the AllowedOrigins parameter on CorsConfiguration.</comment>
   </data>
+  <data name="DisplayAttributeDescription_DiagnosticPortConnectionMode_Connect" xml:space="preserve">
+    <value>Launches in mode where dotnet-monitor will connect to a separate running dotnet process.</value>
+    <comment>The description provided for enum DiagnosticPortConnectionMode's Connect value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_DiagnosticPortConnectionMode_Listen" xml:space="preserve">
+    <value>Launches in mode where dotnet-monitor will listen for connections from a separate running dotnet process. This configuration options requires environment variables be set on the target process.</value>
+    <comment>The description provided for enum DiagnosticPortConnectionMode's Listen value.</comment>
+  </data>
   <data name="DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode" xml:space="preserve">
     <value>In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen' mode, the application connects to dotnet-monitor via EndpointName.</value>
     <comment>The description provided for the ConnectionMode parameter on DiagnosticPortOptions.</comment>

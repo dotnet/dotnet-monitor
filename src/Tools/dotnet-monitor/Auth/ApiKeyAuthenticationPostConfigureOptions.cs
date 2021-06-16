@@ -43,14 +43,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 if (!HashAlgorithmChecker.IsAllowedAlgorithm(sourceOptions.ApiKeyHashType))
                 {
-                    errors.Add(new ValidationResult($"The {nameof(ApiAuthenticationOptions.ApiKeyHashType)} field value '{sourceOptions.ApiKeyHashType}' is not allowed.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHashType) }));
+                    errors.Add(
+                        new ValidationResult(
+                            string.Format(
+                                Strings.ErrorMessage_FieldNotAllowed, 
+                                nameof(ApiAuthenticationOptions.ApiKeyHashType), 
+                                sourceOptions.ApiKeyHashType), 
+                            new string[] { nameof(ApiAuthenticationOptions.ApiKeyHashType) }));
                 }
                 else
                 {
                     using HashAlgorithm algorithm = HashAlgorithm.Create(sourceOptions.ApiKeyHashType);
                     if (null == algorithm)
                     {
-                        errors.Add(new ValidationResult($"The {nameof(ApiAuthenticationOptions.ApiKeyHashType)} field value '{sourceOptions.ApiKeyHashType}' is not supported.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHashType) }));
+                        errors.Add(
+                            new ValidationResult(
+                                string.Format(
+                                    Strings.ErrorMessage_FieldNotAllowed,
+                                    nameof(ApiAuthenticationOptions.ApiKeyHashType),
+                                    sourceOptions.ApiKeyHashType),
+                                new string[] { nameof(ApiAuthenticationOptions.ApiKeyHashType) }));
                     }
                 }
             }
@@ -66,6 +78,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         if (!byte.TryParse(sourceOptions.ApiKeyHash.AsSpan(i, 2), NumberStyles.HexNumber, provider: NumberFormatInfo.InvariantInfo, result: out byte resultByte))
                         {
+                            errors.Add(
+                                new ValidationResult(
+                                    string.Format(
+                                        Strings.ErrorMessage_FieldNotHex,
+                                        nameof(ApiAuthenticationOptions.ApiKeyHash)),
+                                    new string[] { nameof(ApiAuthenticationOptions.ApiKeyHash) }));
                             errors.Add(new ValidationResult($"The {nameof(ApiAuthenticationOptions.ApiKeyHash)} field could not be decoded as hex string.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHash) }));
                             break;
                         }
@@ -74,7 +92,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 else
                 {
-                    errors.Add(new ValidationResult($"The {nameof(ApiAuthenticationOptions.ApiKeyHash)} field value length must be an even number.", new string[] { nameof(ApiAuthenticationOptions.ApiKeyHash) }));
+                    errors.Add(
+                        new ValidationResult(
+                            string.Format(
+                                Strings.ErrorMessage_FieldOddLengh,
+                                nameof(ApiAuthenticationOptions.ApiKeyHash)),
+                            new string[] { nameof(ApiAuthenticationOptions.ApiKeyHash) }));
                 }
             }
 
