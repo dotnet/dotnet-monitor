@@ -260,7 +260,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             ProcessKey? processKey,
             [FromQuery]
             Models.TraceProfile profile = DefaultTraceProfiles,
-            [FromQuery][Range(-1, int.MaxValue)]
+            [FromQuery][Range(1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery][Range(1, int.MaxValue)]
             int metricsIntervalSeconds = 1,
@@ -317,7 +317,7 @@ namespace Microsoft.Diagnostics.Monitoring.RestServer.Controllers
             ProcessKey? processKey,
             [FromBody][Required]
             Models.EventPipeConfiguration configuration,
-            [FromQuery][Range(-1, int.MaxValue)]
+            [FromQuery][Range(1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
             string egressProvider = null)
