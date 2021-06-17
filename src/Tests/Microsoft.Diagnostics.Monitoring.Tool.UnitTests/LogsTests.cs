@@ -161,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 _httpClientFactory,
                 mode,
                 TestAppScenarios.Logger.Name,
-                async (runner, client) =>
+                appValidate: async (runner, client) =>
                 {
                     ValidationProblemDetailsException exception = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
                         async () =>
@@ -194,7 +194,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 _httpClientFactory,
                 mode,
                 TestAppScenarios.Logger.Name,
-                async (runner, client) =>
+                appValidate: async (runner, client) =>
                 {
                     ValidationProblemDetailsException exception = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
                         async () =>
@@ -373,7 +373,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 _httpClientFactory,
                 mode,
                 TestAppScenarios.Logger.Name,
-                (runner, client) => ValidateResponseStream(
+                appValidate: (runner, client) => ValidateResponseStream(
                     runner,
                     client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, logLevel),
                     callback));
@@ -389,7 +389,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 _httpClientFactory,
                 mode,
                 TestAppScenarios.Logger.Name,
-                (runner, client) => ValidateResponseStream(
+                appValidate: (runner, client) => ValidateResponseStream(
                     runner,
                     client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, configuration),
                     callback));

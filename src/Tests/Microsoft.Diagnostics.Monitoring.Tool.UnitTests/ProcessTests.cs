@@ -43,43 +43,33 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen)]
 #endif
-        public async Task SingleProcessIdentificationTest(DiagnosticPortConnectionMode mode)
+        public Task SingleProcessIdentificationTest(DiagnosticPortConnectionMode mode)
         {
-            DiagnosticPortHelper.Generate(
-                mode,
-                out DiagnosticPortConnectionMode appConnectionMode,
-                out string diagnosticPortPath);
-
-            await using MonitorRunner toolRunner = new(_outputHelper);
-            toolRunner.ConnectionMode = mode;
-            toolRunner.DiagnosticPortPath = diagnosticPortPath;
-            toolRunner.DisableAuthentication = true;
-            await toolRunner.StartAsync();
-
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
-            ApiClient apiClient = new(_outputHelper, httpClient);
-
-            AppRunner appRunner = new(_outputHelper);
-            appRunner.ConnectionMode = appConnectionMode;
-            appRunner.DiagnosticPortPath = diagnosticPortPath;
-            appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
-
             string expectedEnvVarValue = Guid.NewGuid().ToString("D");
-            appRunner.Environment[ExpectedEnvVarName] = expectedEnvVarValue;
 
-            await appRunner.ExecuteAsync(async () =>
-            {
-                await VerifyProcessAsync(apiClient, await apiClient.GetProcessesAsync(), appRunner.ProcessId, expectedEnvVarValue);
+            return ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await VerifyProcessAsync(client, await client.GetProcessesAsync(), runner.ProcessId, expectedEnvVarValue);
 
-                await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-            });
-            Assert.Equal(0, appRunner.ExitCode);
-
-            // Verify app is no longer reported
-            IEnumerable<ProcessIdentifier> identifiers = await apiClient.GetProcessesAsync();
-            Assert.NotNull(identifiers);
-            ProcessIdentifier identifier = identifiers.FirstOrDefault(p => p.Pid == appRunner.ProcessId);
-            Assert.Null(identifier);
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                postAppValidate: async (client, processId) =>
+                {
+                    // Verify app is no longer reported
+                    IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesAsync();
+                    Assert.NotNull(identifiers);
+                    ProcessIdentifier identifier = identifiers.FirstOrDefault(p => p.Pid == processId);
+                    Assert.Null(identifier);
+                },
+                configureApp: runner =>
+                {
+                    runner.Environment[ExpectedEnvVarName] = expectedEnvVarValue;
+                });
         }
 
         /// <summary>
