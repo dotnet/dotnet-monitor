@@ -213,10 +213,6 @@
     <value>Unable to bind any urls.</value>
     <comment>Gets a string similar to "Unable to bind any urls.".</comment>
   </data>
-  <data name="ErrorMessage_UnableToParseAddress" xml:space="preserve">
-    <value>Unable to parse address.</value>
-    <comment>Gets a string similar to "Unable to parse address.".</comment>
-  </data>
   <data name="ErrorMessage_UnhandledConnectionMode" xml:space="preserve">
     <value>Unhandled connection mode: {0}</value>
     <comment>Gets the format string for egress provider failure due to missing provider.

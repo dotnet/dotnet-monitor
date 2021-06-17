@@ -16,19 +16,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     public class DiagnosticPortOptions
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode))]
         [DefaultValue(DiagnosticPortOptionsDefaults.ConnectionMode)]
         public DiagnosticPortConnectionMode? ConnectionMode { get; set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortOptions_EndpointName))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_EndpointName))]
         public string EndpointName { get; set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections))]
         public int? MaxConnections { get; set; }
     }
 
@@ -36,13 +36,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     public enum DiagnosticPortConnectionMode
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortConnectionMode_Connect))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortConnectionMode_Connect))]
         Connect,
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_DiagnosticPortConnectionMode_Listen))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortConnectionMode_Listen))]
         Listen
     }
 }

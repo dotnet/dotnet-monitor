@@ -19,16 +19,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public enum ProcessFilterKey
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_ProcessFilterKey_ProcessId))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterKey_ProcessId))]
         ProcessId,
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_ProcessFilterKey_ProcessName))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterKey_ProcessName))]
         ProcessName,
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_ProcessFilterKey_CommandLine))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterKey_CommandLine))]
         CommandLine,
     }
 
@@ -36,41 +36,41 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public enum ProcessFilterType
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_ProcessFilterType_Exact))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterType_Exact))]
         Exact,
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_ProcessFilterType_Contains))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterType_Contains))]
         Contains,
     }
 
     public sealed class ProcessFilterOptions
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_ProcessFilterOptions_Filters))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterOptions_Filters))]
         public List<ProcessFilterDescriptor> Filters { get; set; } = new List<ProcessFilterDescriptor>(0);
     }
 
     public sealed class ProcessFilterDescriptor
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_ProcessFilterDescriptor_Key))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_Key))]
         [Required]
         public ProcessFilterKey Key { get;set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_ProcessFilterDescriptor_Value))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_Value))]
         [Required]
         public string Value { get; set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_ProcessFilterDescriptor_MatchType))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_MatchType))]
         [DefaultValue(ProcessFilterType.Exact)]
         public ProcessFilterType MatchType { get; set; } = ProcessFilterType.Exact;
     }

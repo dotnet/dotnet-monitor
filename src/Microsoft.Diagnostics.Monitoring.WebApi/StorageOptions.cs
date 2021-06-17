@@ -15,8 +15,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal class StorageOptions
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_StorageOptions_DumpTempFolder))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_StorageOptions_DumpTempFolder))]
         public string DumpTempFolder {get; set; }
     }
 }

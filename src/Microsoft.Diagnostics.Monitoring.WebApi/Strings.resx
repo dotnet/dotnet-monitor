@@ -205,8 +205,4 @@
     <comment>Gets the format string that is printed in the 5:WrittenToHttpStream event.
 0 Format Parameters</comment>
   </data>
-  <data name="Placeholder_UnknownValue" xml:space="preserve">
-    <value>unknown</value>
-    <comment>Gets a string similar to "unknown".</comment>
-  </data>
 </root>

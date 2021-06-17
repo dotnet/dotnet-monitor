@@ -221,14 +221,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
                 return ResourceManager.GetString("LogFormatString_WrittenToHttpStream", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to unknown.
-        /// </summary>
-        internal static string Placeholder_UnknownValue {
-            get {
-                return ResourceManager.GetString("Placeholder_UnknownValue", resourceCulture);
-            }
-        }
     }
 }

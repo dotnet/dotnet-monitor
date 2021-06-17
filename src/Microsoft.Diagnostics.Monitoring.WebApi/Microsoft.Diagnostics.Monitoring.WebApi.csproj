@@ -45,19 +45,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="SharedStrings.Designer.cs">
+    <Compile Update="OptionsDisplayStrings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>SharedStrings.resx</DependentUpon>
+      <DependentUpon>OptionsDisplayStrings.resx</DependentUpon>
     </Compile>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Update="SharedStrings.resx">
+    <EmbeddedResource Update="OptionsDisplayStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>SharedStrings.Designer.cs</LastGenOutput>
+      <LastGenOutput>OptionsDisplayStrings.Designer.cs</LastGenOutput>
       <CustomToolNamespace>Microsoft.Diagnostics.Monitoring.WebApi</CustomToolNamespace>
     </EmbeddedResource>
     <EmbeddedResource Update="Strings.resx">

@@ -23,51 +23,51 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class MetricsOptions
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_MetricsOptions_Enabled))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Enabled))]
         [DefaultValue(MetricsOptionsDefaults.Enabled)]
         public bool? Enabled { get; set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_MetricsOptions_Endpoints))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Endpoints))]
         public string Endpoints { get; set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds))]
         [DefaultValue(MetricsOptionsDefaults.UpdateIntervalSeconds)]
         public int? UpdateIntervalSeconds { get; set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_MetricsOptions_MetricCount))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_MetricCount))]
         [DefaultValue(MetricsOptionsDefaults.MetricCount)]
         public int? MetricCount { get; set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_MetricsOptions_IncludeDefaultProviders))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_IncludeDefaultProviders))]
         [DefaultValue(MetricsOptionsDefaults.IncludeDefaultProviders)]
         public bool? IncludeDefaultProviders { get; set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_MetricsOptions_Providers))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Providers))]
         public List<MetricProvider> Providers { get; set; } = new List<MetricProvider>(0);
     }
 
     public class MetricProvider
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_MetricProvider_ProviderName))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricProvider_ProviderName))]
         [Required]
         public string ProviderName { get; set; }
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_MetricProvider_CounterNames))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricProvider_CounterNames))]
         public List<string> CounterNames { get; set; } = new List<string>(0);
     }
 }

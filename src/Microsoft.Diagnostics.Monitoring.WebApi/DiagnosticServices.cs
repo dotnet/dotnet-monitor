@@ -32,8 +32,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly IOptionsMonitor<StorageOptions> _storageOptions;
         private readonly IOptionsMonitor<ProcessFilterOptions> _defaultProcessOptions;
 
-        public static IFormatProvider CultutreInfo { get; private set; }
-
         public DiagnosticServices(IEndpointInfoSource endpointInfoSource,
             IOptionsMonitor<StorageOptions> storageOptions,
             IOptionsMonitor<ProcessFilterOptions> defaultProcessMonitor)
@@ -189,7 +187,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             // String returned for a process field when its value could not be retrieved. This is the same
             // value that is returned by the runtime when it could not determine the value for each of those fields.
-            private static readonly string ProcessFieldUnknownValue = Strings.Placeholder_UnknownValue;
+            private static readonly string ProcessFieldUnknownValue = "unknown";
 
             public ProcessInfo(
                 IEndpointInfo endpointInfo,

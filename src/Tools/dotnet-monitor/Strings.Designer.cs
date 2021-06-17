@@ -223,15 +223,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to parse address..
-        /// </summary>
-        internal static string ErrorMessage_UnableToParseAddress {
-            get {
-                return ResourceManager.GetString("ErrorMessage_UnableToParseAddress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unhandled connection mode: {0}.
         /// </summary>
         internal static string ErrorMessage_UnhandledConnectionMode {

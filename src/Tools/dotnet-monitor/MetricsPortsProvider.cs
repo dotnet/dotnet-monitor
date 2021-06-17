@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         // At this point, expect to parse the addresses since these should be
                         // the ones bound by Kestrel.
-                        Debug.Fail(Strings.ErrorMessage_UnableToParseAddress, ex.Message);
+                        Debug.Fail("Unable to parse address.", ex.Message);
                     }
                 }
                 return metricsPorts;

@@ -13,14 +13,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
     internal class EgressOptions
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_EgressOptions_Providers))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_Providers))]
         public Dictionary<string, EgressProvider> Providers { get; set; }
             = new(StringComparer.OrdinalIgnoreCase);
 
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_EgressOptions_Properties))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_Properties))]
         public Dictionary<string, string> Properties { get; set; }
             = new(StringComparer.OrdinalIgnoreCase);
     }
@@ -28,8 +28,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
     internal class EgressProvider
     {
         [Display(
-            ResourceType = typeof(SharedStrings),
-            Description = nameof(SharedStrings.DisplayAttributeDescription_EgressProvider_EgressType))]
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressProvider_EgressType))]
         //TODO This should honor DataMember, but only seems to work with JsonProperty
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
         public string EgressType { get; set; }

@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static readonly Action<ILogger, int, int, Exception> _throttledEndpoint =
             LoggerMessage.Define<int, int>(
-                 eventId: new EventId(6, "ThrottledEndpoint"),
+                eventId: new EventId(6, "ThrottledEndpoint"),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ThrottledEndpoint);
 

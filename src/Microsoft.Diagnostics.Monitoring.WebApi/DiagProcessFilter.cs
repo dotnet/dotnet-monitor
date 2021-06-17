@@ -109,14 +109,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 case DiagProcessFilterCriteria.ProcessName:
                     return Compare(processInfo.ProcessName);
                 default:
-                    Debug.Fail(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            Strings.ErrorMessage_UnexpectedType,
-                            nameof(DiagProcessFilterCriteria),
-                            this.Criteria));
+                    Debug.Fail($"Unexpected {nameof(DiagProcessFilterCriteria)}: {this.Criteria}");
                     break;
-
             }
 
             return false;
@@ -132,12 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 return ContainsCompare(value);
             }
-            Debug.Fail(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    Strings.ErrorMessage_UnexpectedType,
-                    nameof(DiagProcessFilterMatchType),
-                    MatchType));
+            Debug.Fail($"Unexpected {nameof(DiagProcessFilterMatchType)}: {MatchType}");
 
             return false;
         }
