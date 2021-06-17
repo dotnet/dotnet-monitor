@@ -9,6 +9,7 @@ using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -211,7 +212,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
         {
             if (!string.IsNullOrEmpty(innerMessage))
             {
-                return string.Format(Strings.ErrorMessage_EgressAzureFailedDetailed, innerMessage);
+                return string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressAzureFailedDetailed, innerMessage);
             }
             else
             {
