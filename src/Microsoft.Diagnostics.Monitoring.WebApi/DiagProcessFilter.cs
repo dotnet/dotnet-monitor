@@ -77,7 +77,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         Value = processFilterDescriptor.Value
                     };
                 default:
-                    throw new ArgumentException($"Invalid {nameof(processFilterDescriptor)}");
+                    throw new ArgumentException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            Strings.ErrorMessage_UnexpectedType,
+                            nameof(ProcessFilterDescriptor),
+                            processFilterDescriptor.Key),
+                        nameof(processFilterDescriptor));
             }
         }
     }
@@ -103,7 +109,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 case DiagProcessFilterCriteria.ProcessName:
                     return Compare(processInfo.ProcessName);
                 default:
-                    Debug.Fail("Unexpected filter criteria");
+                    Debug.Fail(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            Strings.ErrorMessage_UnexpectedType,
+                            nameof(DiagProcessFilterCriteria),
+                            this.Criteria));
                     break;
 
             }
@@ -121,7 +132,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 return ContainsCompare(value);
             }
-            Debug.Fail("Unexpected match type");
+            Debug.Fail(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    Strings.ErrorMessage_UnexpectedType,
+                    nameof(DiagProcessFilterMatchType),
+                    MatchType));
 
             return false;
         }

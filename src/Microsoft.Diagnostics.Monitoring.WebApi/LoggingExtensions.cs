@@ -13,37 +13,37 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             LoggerMessage.Define(
                 eventId: new EventId(1, "RequestFailed"),
                 logLevel: LogLevel.Error,
-                formatString: "Request failed.");
+                formatString: Strings.LogFormatString_RequestFailed);
 
         private static readonly Action<ILogger, Exception> _requestCanceled =
             LoggerMessage.Define(
                 eventId: new EventId(2, "RequestCanceled"),
                 logLevel: LogLevel.Information,
-                formatString: "Request canceled.");
+                formatString: Strings.LogFormatString_RequestCanceled);
 
         private static readonly Action<ILogger, Exception> _resolvedTargetProcess =
             LoggerMessage.Define(
                 eventId: new EventId(3, "ResolvedTargetProcess"),
                 logLevel: LogLevel.Debug,
-                formatString: "Resolved target process.");
+                formatString: Strings.LogFormatString_ResolvedTargetProcess);
 
         private static readonly Action<ILogger, string, Exception> _egressedArtifact =
             LoggerMessage.Define<string>(
                 eventId: new EventId(4, "EgressedArtifact"),
                 logLevel: LogLevel.Information,
-                formatString: "Egressed artifact to {location}");
+                formatString: Strings.LogFormatString_EgressedArtifact);
 
         private static readonly Action<ILogger, Exception> _writtenToHttpStream =
             LoggerMessage.Define(
                 eventId: new EventId(5, "WrittenToHttpStream"),
                 logLevel: LogLevel.Information,
-                formatString: "Written to HTTP stream.");
+                formatString: Strings.LogFormatString_WrittenToHttpStream);
 
         private static readonly Action<ILogger, int, int, Exception> _throttledEndpoint =
             LoggerMessage.Define<int, int>(
                  eventId: new EventId(6, "ThrottledEndpoint"),
                 logLevel: LogLevel.Warning,
-                formatString: "Request limit for endpoint reached. Limit: {limit}, oustanding requests: {requests}");
+                formatString: Strings.LogFormatString_ThrottledEndpoint);
 
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
