@@ -20,6 +20,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
     {
         private static readonly TimeSpan DefaultNegativeVerificationTimeout = TimeSpan.FromSeconds(2);
 
+        private static readonly TimeSpan GetEndpointInfoTimeout = TimeSpan.FromSeconds(10);
+
         private readonly ITestOutputHelper _outputHelper;
 
         public EndpointInfoSourceTests(ITestOutputHelper outputHelper)
@@ -216,7 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         private async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(ServerEndpointInfoSource source)
         {
             _outputHelper.WriteLine("Getting endpoint infos.");
-            using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(10));
+            using CancellationTokenSource cancellationSource = new(GetEndpointInfoTimeout);
             return await source.GetEndpointInfoAsync(cancellationSource.Token);
         }
 
