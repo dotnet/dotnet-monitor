@@ -255,48 +255,53 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 lock (_addedEndpointInfoSources)
                 {
                     _addedEndpointInfoSources.Add(Tuple.Create(runner, addedEndpointInfoSource));
-                    _outputHelper.WriteLine($"Added endpoint registration for App{runner.AppId}");
+                    _outputHelper.WriteLine($"[Wait] Register App{runner.AppId}");
                 }
 
-                _outputHelper.WriteLine($"Waiting for new endpoint info for App{runner.AppId}");
+                _outputHelper.WriteLine($"[Wait] Wait for App{runner.AppId} notification");
                 timeoutCancellation.CancelAfter(timeout);
                 EndpointInfo endpointInfo = await addedEndpointInfoSource.Task;
-                _outputHelper.WriteLine($"Notified of new endpoint info for App{runner.AppId}");
+                _outputHelper.WriteLine($"[Wait] Received App{runner.AppId} notification");
 
                 return endpointInfo;
             }
 
             internal override void OnAddedEndpointInfo(EndpointInfo info)
             {
-                _outputHelper.WriteLine($"Added endpoint info to collection: {info.DebuggerDisplay}");
+                _outputHelper.WriteLine($"[Source] Added: {info.DebuggerDisplay}");
                 
                 lock (_addedEndpointInfoSources)
                 {
-                    foreach (var source in _addedEndpointInfoSources)
+                    _outputHelper.WriteLine($"[Source] Start notifications for process {info.ProcessId}");
+
+                    foreach (var sourceTuple in _addedEndpointInfoSources)
                     {
+                        AppRunner runner = sourceTuple.Item1;
+                        _outputHelper.WriteLine($"[Source] Checking App{runner.AppId}");
                         try
                         {
-                            if (info.ProcessId == source.Item1.ProcessId)
+                            if (info.ProcessId == sourceTuple.Item1.ProcessId)
                             {
-                                _outputHelper.WriteLine($"Notifying endpoint registration for App{source.Item1.AppId}");
-                                source.Item2.TrySetResult(info);
-                                _addedEndpointInfoSources.Remove(source);
+                                _outputHelper.WriteLine($"[Source] Notifying App{runner.AppId}");
+                                sourceTuple.Item2.TrySetResult(info);
+                                _addedEndpointInfoSources.Remove(sourceTuple);
                                 break;
                             }
                         }
                         catch (InvalidOperationException)
                         {
-                            // Thrown in app runner hasn't started process yet.
+                            // Thrown if app runner hasn't started process yet.
+                            _outputHelper.WriteLine($"[Source] App{runner.AppId} has not start yet.");
                         }
                     }
 
-                    _outputHelper.WriteLine($"Finished searching for endpoint registrations for process {info.ProcessId}");
+                    _outputHelper.WriteLine($"[Source] Finished notifications for process {info.ProcessId}");
                 }
             }
 
             internal override void OnRemovedEndpointInfo(EndpointInfo info)
             {
-                _outputHelper.WriteLine($"Removed endpoint info from collection: {info.DebuggerDisplay}");
+                _outputHelper.WriteLine($"[Source] Removed: {info.DebuggerDisplay}");
             }
         }
     }
