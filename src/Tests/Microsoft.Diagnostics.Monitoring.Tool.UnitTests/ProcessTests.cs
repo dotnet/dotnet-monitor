@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -101,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             for (int i = 0; i < appCount; i++)
             {
-                AppRunner runner = new(_outputHelper, appId: i + 1);
+                AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId: i + 1);
                 runner.ConnectionMode = appConnectionMode;
                 runner.DiagnosticPortPath = diagnosticPortPath;
                 runner.ScenarioName = TestAppScenarios.AsyncWait.Name;

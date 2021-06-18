@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading;
@@ -18,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
     /// <summary>
     /// Runner for running the unit test application.
     /// </summary>
-    internal sealed class AppRunner : IAsyncDisposable
+    public sealed class AppRunner : IAsyncDisposable
     {
         private readonly LoggingRunnerAdapter _adapter;
 
@@ -29,22 +30,23 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         private readonly DotNetRunner _runner = new();
 
+        private readonly Assembly _testAssembly;
+
         private TaskCompletionSource<object> _currentCommandSource;
 
         private bool _isDiposed;
 
         /// <summary>
-        /// The path of the currently executing assembly.
+        /// The path of the current test assembly.
         /// </summary>
-        private static string CurrentExecutingAssemblyPath =>
-            Assembly.GetExecutingAssembly().Location;
+        private string CurrentTestAssembly => _testAssembly.Location;
 
         /// <summary>
         /// The path to the application.
         /// </summary>
-        private static string AppPath =>
-            CurrentExecutingAssemblyPath
-                .Replace(Assembly.GetExecutingAssembly().GetName().Name, "Microsoft.Diagnostics.Monitoring.UnitTestApp");
+        private string AppPath =>
+            CurrentTestAssembly
+                .Replace(_testAssembly.GetName().Name, "Microsoft.Diagnostics.Monitoring.UnitTestApp");
 
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Listen"/>
@@ -71,8 +73,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// </summary>
         public string ScenarioName { get; set; }
 
-        public AppRunner(ITestOutputHelper outputHelper, int appId = 1)
+        public int AppId { get; }
+
+        public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1)
         {
+            AppId = appId;
+
+            _testAssembly = testAssembly;
             _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
@@ -104,6 +111,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             if (string.IsNullOrEmpty(ScenarioName))
             {
                 throw new ArgumentNullException(nameof(ScenarioName));
+            }
+
+            if (!File.Exists(AppPath))
+            {
+                throw new FileNotFoundException($"Application path could not be found.", AppPath);
             }
 
             _runner.EntrypointAssemblyPath = AppPath;

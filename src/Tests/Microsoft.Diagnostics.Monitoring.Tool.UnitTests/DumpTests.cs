@@ -15,6 +15,7 @@ using Microsoft.FileFormats.MachO;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;

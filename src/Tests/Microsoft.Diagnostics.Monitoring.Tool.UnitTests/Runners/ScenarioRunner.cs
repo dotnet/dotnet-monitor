@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using System;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -37,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(httpClientFactory);
             ApiClient apiClient = new(outputHelper, httpClient);
 
-            AppRunner appRunner = new(outputHelper);
+            AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = scenarioName;

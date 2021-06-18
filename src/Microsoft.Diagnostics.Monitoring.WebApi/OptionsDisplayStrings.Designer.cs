@@ -88,24 +88,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Launches in mode where dotnet-monitor will connect to a separate running dotnet process..
-        /// </summary>
-        public static string DisplayAttributeDescription_DiagnosticPortConnectionMode_Connect {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_DiagnosticPortConnectionMode_Connect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Launches in mode where dotnet-monitor will listen for connections from a separate running dotnet process. This configuration options requires environment variables be set on the target process..
-        /// </summary>
-        public static string DisplayAttributeDescription_DiagnosticPortConnectionMode_Listen {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_DiagnosticPortConnectionMode_Listen", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to In &apos;Connect&apos; mode, dotnet-monitor connects to the application for diagnostics. In &apos;Listen&apos; mode, the application connects to dotnet-monitor via EndpointName..
         /// </summary>
         public static string DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode {
