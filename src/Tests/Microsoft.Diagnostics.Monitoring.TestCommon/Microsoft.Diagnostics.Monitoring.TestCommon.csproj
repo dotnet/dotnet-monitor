@@ -15,10 +15,6 @@
     <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
-  </ItemGroup>
-
   <Import Project="GenerateDotNetHost.targets" />
 
 </Project>
