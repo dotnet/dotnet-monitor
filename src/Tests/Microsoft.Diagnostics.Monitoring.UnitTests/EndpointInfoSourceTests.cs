@@ -253,12 +253,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 lock (_addedEndpointInfoSources)
                 {
                     _addedEndpointInfoSources.Add(Tuple.Create(runner, addedEndpointInfoSource));
+                    _outputHelper.WriteLine($"Added endpoint registration for App{runner.AppId}");
                 }
 
-                _outputHelper.WriteLine("Waiting for new endpoint info.");
+                _outputHelper.WriteLine($"Waiting for new endpoint info for App{runner.AppId}");
                 timeoutCancellation.CancelAfter(timeout);
                 EndpointInfo endpointInfo = await addedEndpointInfoSource.Task;
-                _outputHelper.WriteLine("Notified of new endpoint info.");
+                _outputHelper.WriteLine($"Notified of new endpoint info for App{runner.AppId}");
 
                 return endpointInfo;
             }
@@ -275,7 +276,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                         {
                             if (info.ProcessId == source.Item1.ProcessId)
                             {
-                                _outputHelper.WriteLine($"Notifying endpoint registration for process ID {info.ProcessId}");
+                                _outputHelper.WriteLine($"Notifying endpoint registration for App{source.Item1.AppId}");
                                 source.Item2.TrySetResult(info);
                                 _addedEndpointInfoSources.Remove(source);
                                 break;
@@ -286,6 +287,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                             // Thrown in app runner hasn't started process yet.
                         }
                     }
+
+                    _outputHelper.WriteLine($"Finished searching for endpoint registrations for process {info.ProcessId}");
                 }
             }
 

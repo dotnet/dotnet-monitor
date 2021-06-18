@@ -73,8 +73,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// </summary>
         public string ScenarioName { get; set; }
 
+        public int AppId { get; }
+
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1)
         {
+            AppId = appId;
+
             _testAssembly = testAssembly;
             _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
 
