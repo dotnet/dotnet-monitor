@@ -66,36 +66,50 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey)
         {
             //CONSIDER The console logger uses the standard AddConsole, and therefore disregards IConsole.
-            using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: false).Build();
             try
             {
-                await host.StartAsync(token);
+                using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: false).Build();
+                try
+                {
+                    await host.StartAsync(token);
 
-                await host.WaitForShutdownAsync(token);
+                    await host.WaitForShutdownAsync(token);
+                }
+                catch (MonitoringException)
+                {
+                    // It is the responsibility of throwers to ensure that the exceptions are logged.
+                    return -1;
+                }
+                catch (OptionsValidationException ex)
+                {
+                    host.Services.GetRequiredService<ILoggerFactory>()
+                        .CreateLogger(typeof(DiagnosticsMonitorCommandHandler))
+                        .OptionsValidationFailure(ex);
+                    return -1;
+                }
+                finally
+                {
+                    if (host is IAsyncDisposable asyncDisposable)
+                    {
+                        await asyncDisposable.DisposeAsync();
+                    }
+                    else
+                    {
+                        host.Dispose();
+                    }
+                }
             }
-            catch (MonitoringException)
+            catch (FormatException ex)
             {
-                // It is the responsibility of throwers to ensure that the exceptions are logged.
+                Console.Error.WriteLine(ex.Message);
+                if (ex.InnerException != null)
+                {
+                    Console.Error.WriteLine(ex.InnerException.Message);
+                }
+
                 return -1;
             }
-            catch (OptionsValidationException ex)
-            {
-                host.Services.GetRequiredService<ILoggerFactory>()
-                    .CreateLogger(typeof(DiagnosticsMonitorCommandHandler))
-                    .OptionsValidationFailure(ex);
-                return -1;
-            }
-            finally
-            {
-                if (host is IAsyncDisposable asyncDisposable)
-                {
-                    await asyncDisposable.DisposeAsync();
-                }
-                else
-                {
-                    host.Dispose();
-                }
-            }
+
             return 0;
         }
 
@@ -105,7 +119,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter writer = new ConfigurationJsonWriter(Console.OpenStandardOutput());
             writer.Write(configuration, full: level == ConfigDisplayLevel.Full);
-
+            
             return Task.FromResult(0);
         }
 

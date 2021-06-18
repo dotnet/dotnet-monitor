@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -318,10 +319,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 
         private async Task<HttpResponseMessage> SendAndLogAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken token)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             HttpResponseMessage response;
             try
             {
                 response = await _httpClient.SendAsync(request, completionOption, token).ConfigureAwait(false);
+                sw.Stop();
             }
             finally
             {
@@ -329,6 +332,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             }
 
             _outputHelper.WriteLine("<- {0}", response.ToString());
+            _outputHelper.WriteLine($"Request duration: {sw.ElapsedMilliseconds} ms");
 
             return response;
         }

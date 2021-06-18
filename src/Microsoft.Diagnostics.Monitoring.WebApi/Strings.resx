@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ErrorMessage_CanNotGetEnvironment" xml:space="preserve">
+    <value>Unable to get process environment.</value>
+    <comment>Gets a string similar to "Unable to get process environment.".</comment>
+  </data>
+  <data name="ErrorMessage_InvalidMetricCount" xml:space="preserve">
+    <value>Invalid metric count.</value>
+    <comment>Gets a string similar to "Invalid metric count.".</comment>
+  </data>
+  <data name="ErrorMessage_MetricsDisabled" xml:space="preserve">
+    <value>Metrics was not enabled.</value>
+    <comment>Gets a string similar to "Metrics was not enabled.".</comment>
+  </data>
+  <data name="ErrorMessage_MultipleTargetProcesses" xml:space="preserve">
+    <value>Unable to select a single target process because multiple target processes have been discovered.</value>
+    <comment>Gets a string similar to "Unable to select a single target process because multiple target processes have been discovered.".</comment>
+  </data>
+  <data name="ErrorMessage_NoDefaultProcessConfig" xml:space="preserve">
+    <value>No default process configuration has been set.</value>
+    <comment>Gets a string similar to "No default process configuration has been set.".</comment>
+  </data>
+  <data name="ErrorMessage_NoTargetProcess" xml:space="preserve">
+    <value>Unable to discover a target process.</value>
+    <comment>Gets a string similar to "Unable to discover a target process.".</comment>
+  </data>
+  <data name="ErrorMessage_ProcessEnumeratuinFailed" xml:space="preserve">
+    <value>Unable to enumerate processes.</value>
+    <comment>Gets a string similar to "Unable to enumerate processes.".</comment>
+  </data>
+  <data name="ErrorMessage_UnexpectedType" xml:space="preserve">
+    <value>Unexpected {0}: {1}</value>
+    <comment>Gets the format string for unexpected type provided.
+2 Format Parameters:
+0. typeName: Name of the type that has the unexpected value
+1. value: The value that was unexpected</comment>
+  </data>
+  <data name="ErrorMessage_ValueEmptyNullWhitespace" xml:space="preserve">
+    <value>Value cannot be null, empty, or whitespace.</value>
+    <comment>Gets a string similar to "Value cannot be null, empty, or whitespace.".</comment>
+  </data>
+  <data name="ErrorMessage_ValueNotHex" xml:space="preserve">
+    <value>The value '{0}' is not a valid hexadecimal number.</value>
+    <comment>Gets the format string for the error message when a value could not be parsed as hex.
+1 Format Parameter:
+1. value: The value that could not be parsed</comment>
+  </data>
+  <data name="ErrorMessage_ValueNotInt" xml:space="preserve">
+    <value>The value '{0}' is not a valid integer.</value>
+    <comment>Gets the format string for the error message when a value could not be parsed into an integer.
+1 Format Parameter:
+1. value: The value that could not be parsed</comment>
+  </data>
+  <data name="ErrorMessage_ValueNotString" xml:space="preserve">
+    <value>Value must be of type string.</value>
+    <comment>Gets a string similar to "Value must be of type string.".</comment>
+  </data>
+  <data name="LogFormatString_EgressedArtifact" xml:space="preserve">
+    <value>Egressed artifact to {location}</value>
+    <comment>Gets the format string that is printed in the 4:EgressedArtifact event.
+1 Format Parameter:
+1. location: The location that the artifact was egressed to</comment>
+  </data>
+  <data name="LogFormatString_RequestCanceled" xml:space="preserve">
+    <value>Request canceled.</value>
+    <comment>Gets the format string that is printed in the 2:RequestCanceled event.
+0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_RequestFailed" xml:space="preserve">
+    <value>Request failed.</value>
+    <comment>Gets the format string that is printed in the 1:RequestFailed event.
+0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_ResolvedTargetProcess" xml:space="preserve">
+    <value>Resolved target process.</value>
+    <comment>Gets the format string that is printed in the 3:ResolvedTargetProcess event.
+0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_ThrottledEndpoint" xml:space="preserve">
+    <value>Request limit for endpoint reached. Limit: {limit}, oustanding requests: {requests}</value>
+    <comment>Gets the format string that is printed in the 6:ThrottledEndpoint event.
+2 Format Parameters:
+1. limit: The numerical limit that was reached
+2. requests: The number of outstanding requests</comment>
+  </data>
+  <data name="LogFormatString_WrittenToHttpStream" xml:space="preserve">
+    <value>Written to HTTP stream.</value>
+    <comment>Gets the format string that is printed in the 5:WrittenToHttpStream event.
+0 Format Parameters</comment>
+  </data>
+</root>

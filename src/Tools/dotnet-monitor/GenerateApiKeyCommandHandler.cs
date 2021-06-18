@@ -5,6 +5,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,9 +18,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// </summary>
     internal sealed class GenerateApiKeyCommandHandler
     {
-        public Task<int> GenerateApiKey(CancellationToken token, IConsole console)
+        public Task<int> GenerateApiKey(CancellationToken token, int keyLength, string hashAlgorithm, IConsole console)
         {
-            GeneratedApiKey newKey = GeneratedApiKey.Create();
+            if (!HashAlgorithmChecker.IsAllowedAlgorithm(hashAlgorithm))
+            {
+                console.Error.WriteLine(
+                    string.Format(
+                        CultureInfo.CurrentCulture, 
+                        Strings.ErrorMessage_ParameterNotAllowed, 
+                        nameof(hashAlgorithm), 
+                        hashAlgorithm));
+                return Task.FromResult(1);
+            }
+
+            if (keyLength < ApiKeyAuthenticationHandler.ApiKeyByteMinLength || keyLength > ApiKeyAuthenticationHandler.ApiKeyByteMaxLength)
+            {
+                console.Error.WriteLine(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.ErrorMessage_ParameterNotAllowedByteRange,
+                        nameof(hashAlgorithm),
+                        hashAlgorithm,
+                        ApiKeyAuthenticationHandler.ApiKeyByteMinLength,
+                        ApiKeyAuthenticationHandler.ApiKeyByteMaxLength));
+                return Task.FromResult(1);
+            }
+
+            GeneratedApiKey newKey = GeneratedApiKey.Create(keyLength, hashAlgorithm);
 
             console.Out.WriteLine(FormattableString.Invariant($"Authorization: {Monitoring.WebApi.AuthConstants.ApiKeySchema} {newKey.MonitorApiKey}"));
             console.Out.WriteLine(FormattableString.Invariant($"ApiKeyHash: {newKey.HashValue}"));

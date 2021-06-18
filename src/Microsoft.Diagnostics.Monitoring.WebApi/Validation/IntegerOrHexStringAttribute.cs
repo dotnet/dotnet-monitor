@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
         {
             if (!(value is string stringValue))
             {
-                return new ValidationResult("Value must be of type string.");
+                return new ValidationResult(Strings.ErrorMessage_ValueNotString);
             }
             else if (!TryParse(stringValue, out _, out string error))
             {
@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
 
             if (string.IsNullOrWhiteSpace(value))
             {
-                error = "Value cannot be null, empty, or whitespace.";
+                error = Strings.ErrorMessage_ValueEmptyNullWhitespace;
                 return false;
             }
             else if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
                 // It parses the actual value, not the "0x" syntax prefix.
                 if (!long.TryParse(value.Substring(2), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out result))
                 {
-                    error = FormattableString.Invariant($"The value '{value}' is not a valid hexadecimal number.");
+                    error = string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_ValueNotHex, value);
                     return false;
                 }
             }
@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
             {
                 if (!long.TryParse(value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out result))
                 {
-                    error = FormattableString.Invariant($"The value '{value}' is not a valid integer.");
+                    error = string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_ValueNotInt, value);
                     return false;
                 }
             }

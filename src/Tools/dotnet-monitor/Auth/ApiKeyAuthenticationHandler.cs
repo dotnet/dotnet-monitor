@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using System;
+using System.Buffers.Text;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -24,7 +25,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// </summary>
     internal sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
     {
-        public const int ApiKeyNumBytes = 32;
+        public const int ApiKeyByteMinLength = 32;
+        public const int ApiKeyByteMaxLength = 2048;
+        // This is the max length to efficiently encode an ApiKey of the length ApiKeyByteMaxLength.
+        private readonly int ApiKeyBase64MaxLength = Base64.GetMaxEncodedToUtf8Length(ApiKeyByteMaxLength);
 
         public ApiKeyAuthenticationHandler(
             IOptionsMonitor<ApiKeyAuthenticationOptions> options,
@@ -42,7 +46,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 Logger.ApiKeyValidationFailures(options.ValidationErrors);
 
-                return Task.FromResult(AuthenticateResult.Fail("API key authentication not configured."));
+                return Task.FromResult(AuthenticateResult.Fail(Strings.ErrorMessage_ApiKeyNotConfigured));
             }
 
             //We are expecting a header such as Authorization: <Schema> <key>
@@ -55,7 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (!AuthenticationHeaderValue.TryParse(values.First(), out AuthenticationHeaderValue authHeader))
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid authentication header."));
+                return Task.FromResult(AuthenticateResult.Fail(Strings.ErrorMessage_InvalidAuthHeader));
             }
 
             if (!string.Equals(authHeader.Scheme, Scheme.Name, StringComparison.OrdinalIgnoreCase))
@@ -63,20 +67,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            //The user is passing a base 64-encoded version of the secret
-            //We will be hash this and compare it to the secret in our configuration.
-            byte[] secret = new byte[ApiKeyAuthenticationHandler.ApiKeyNumBytes];
-            Span<byte> span = new Span<byte>(secret);
-            if (!Convert.TryFromBase64String(authHeader.Parameter, span, out int bytesWritten) || bytesWritten < 32)
+            if (authHeader.Parameter == null)
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid API key format."));
+                return Task.FromResult(AuthenticateResult.Fail(Strings.ErrorMessage_InvalidApiKeyFormat));
+            }
+
+            if (authHeader.Parameter.Length > ApiKeyBase64MaxLength)
+            {
+                return Task.FromResult(AuthenticateResult.Fail(Strings.ErrorMessage_InvalidApiKeyFormat));
+            }
+
+            // Calculate the max length of the base64 encoded value,
+            // the rules to decode this are really complex and allow white space in the
+            // string which should be ignored, simply calculate the max it can be.
+            int byteLen = Base64.GetMaxDecodedFromUtf8Length(authHeader.Parameter.Length);
+
+            if (byteLen < ApiKeyByteMinLength)
+            {
+                return Task.FromResult(AuthenticateResult.Fail(Strings.ErrorMessage_InvalidApiKeyFormat));
+            }
+
+            // The user is passing a base 64-encoded version of the secret
+            // We will be hash this and compare it to the secret in our configuration.
+            byte[] buffer = new byte[byteLen];
+            Span<byte> span = new Span<byte>(buffer);
+            if (!Convert.TryFromBase64String(authHeader.Parameter, span, out int bytesWritten) || bytesWritten < ApiKeyByteMinLength || bytesWritten > ApiKeyByteMaxLength)
+            {
+                return Task.FromResult(AuthenticateResult.Fail(Strings.ErrorMessage_InvalidApiKeyFormat));
             }
 
             Debug.Assert(null != options.HashAlgorithm);
             using HashAlgorithm algorithm = HashAlgorithm.Create(options.HashAlgorithm);
             Debug.Assert(null != algorithm);
 
-            byte[] hashedSecret = algorithm.ComputeHash(secret);
+            byte[] hashedSecret = algorithm.ComputeHash(buffer, 0, bytesWritten);
 
             Debug.Assert(null != options.HashValue);
             if (hashedSecret.SequenceEqual(options.HashValue))
@@ -88,7 +112,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
             else
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid API key."));
+                return Task.FromResult(AuthenticateResult.Fail(Strings.ErrorMessage_InvalidApiKey));
             }
         }
     }

@@ -118,7 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             if (!listenResults.AnyAddresses)
             {
                 // This is logged by GenericWebHostServer.StartAsync
-                throw new MonitoringException("Unable to bind any urls.");
+                throw new MonitoringException(Strings.ErrorMessage_UnableToBindUrls);
             }
 
             lifetime.ApplicationStarted.Register(() => LogBoundAddresses(app.ServerFeatures, listenResults, logger));

@@ -21,6 +21,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Default timeout for dump collection.
         /// </summary>
-        public static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(1);
+        /// <remarks>
+        /// Dumps (especially full dumps) can be quite large and take a significant amount of time to transfer.
+        /// </remarks>
+        public static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(3);
     }
 }

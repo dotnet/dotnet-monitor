@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 if (!_metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled))
                 {
-                    throw new InvalidOperationException("Metrics was not enabled");
+                    throw new InvalidOperationException(Strings.ErrorMessage_MetricsDisabled);
                 }
 
                 KeyValueLogScope scope = new KeyValueLogScope();

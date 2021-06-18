@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -63,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring
         {
             if (maxMetricCount < 1)
             {
-                throw new ArgumentException("Invalid metric count");
+                throw new ArgumentException(Strings.ErrorMessage_InvalidMetricCount);
             }
             _maxMetricCount = maxMetricCount;
         }

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Threading;
@@ -161,11 +162,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
         {
             if (!string.IsNullOrEmpty(innerMessage))
             {
-                return $"File system egress failed: {innerMessage}";
+                return string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressFileFailedDetailed, innerMessage);
             }
             else
             {
-                return "File system egress failed.";
+                return Strings.ErrorMessage_EgressFileFailedGeneric;
             }
         }
     }

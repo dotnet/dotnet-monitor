@@ -2,13 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 #if UNITTEST
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 #else
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -16,7 +14,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal class StorageOptions
     {
-        [Display(Description = "The location for temporary dump files. Defaults to the temp folder.")]
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_StorageOptions_DumpTempFolder))]
         public string DumpTempFolder {get; set; }
     }
 }

@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ErrorMessage_ApiKeyNotConfigured" xml:space="preserve">
+    <value>API key authentication not configured.</value>
+    <comment>Gets a string similar to "API key authentication not configured.".</comment>
+  </data>
+  <data name="ErrorMessage_DiagnosticPortMissingInListenMode" xml:space="preserve">
+    <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
+    <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
+  </data>
+  <data name="ErrorMessage_EgressAzureFailedDetailed" xml:space="preserve">
+    <value>Azure blob egress failed: {0}</value>
+    <comment>Gets the format string for egress failure to Azure blob (with an inner message).
+1 Format Parameter:
+0. innerMessage: The detailed inner message with additional error context.</comment>
+  </data>
+  <data name="ErrorMessage_EgressAzureFailedGeneric" xml:space="preserve">
+    <value>Azure blob egress failed.</value>
+    <comment>Gets a string similar to "Azure blob egress failed.".</comment>
+  </data>
+  <data name="ErrorMessage_EgressFileFailedDetailed" xml:space="preserve">
+    <value>File system egress failed" {0}</value>
+    <comment>Gets the format string for egress failure to File (with an inner message).
+1 Format Parameter:
+0. innerMessage: The detailed inner message with additional error context.</comment>
+  </data>
+  <data name="ErrorMessage_EgressFileFailedGeneric" xml:space="preserve">
+    <value>File system egress failed.</value>
+    <comment>Gets a string similar to "File system egress failed.".</comment>
+  </data>
+  <data name="ErrorMessage_EgressMissingSasOrKey" xml:space="preserve">
+    <value>SharedAccessSignature or AccountKey must be specified.</value>
+    <comment>Gets a string similar to "SharedAccessSignature or AccountKey must be specified.".</comment>
+  </data>
+  <data name="ErrorMessage_EgressProviderDoesNotExist" xml:space="preserve">
+    <value>Egress provider '{0}' does not exist.</value>
+    <comment>Gets the format string for egress provider failure due to missing provider.
+1 Format Parameter:
+0. providerName: The name of the provider that could not be found.</comment>
+  </data>
+  <data name="ErrorMessage_FieldNotAllowed" xml:space="preserve">
+    <value>The {0} field value '{1}' is not allowed.</value>
+    <comment>Gets the format string for rejecting a field value.
+2 Format Parameters:
+0. fieldName: The name of the field that failed validation
+1. fieldValue: The value in the field that was rejected</comment>
+  </data>
+  <data name="ErrorMessage_FieldNotHex" xml:space="preserve">
+    <value>The {0} field could not be decoded as hex string.</value>
+    <comment>Gets the format string for rejecting a field because it is not hex.
+1 Format Parameter:
+0. fieldName: The name of the field that failed validation</comment>
+  </data>
+  <data name="ErrorMessage_FieldOddLengh" xml:space="preserve">
+    <value>The {0} field value length must be an even number.</value>
+    <comment>Gets the format string for rejecting a field because it must have an even numbered length.
+1 Format Parameter:
+0. fieldName: The name of the field that failed validation</comment>
+  </data>
+  <data name="ErrorMessage_InvalidApiKey" xml:space="preserve">
+    <value>Invalid API key.</value>
+    <comment>Gets a string similar to "Invalid API key.".</comment>
+  </data>
+  <data name="ErrorMessage_InvalidApiKeyFormat" xml:space="preserve">
+    <value>Invalid API key format.</value>
+    <comment>Gets a string similar to "Invalid API key format.".</comment>
+  </data>
+  <data name="ErrorMessage_InvalidAuthHeader" xml:space="preserve">
+    <value>Invalid authentication header.</value>
+    <comment>Gets a string similar to "Invalid authentication header.".</comment>
+  </data>
+  <data name="ErrorMessage_ParameterNotAllowed" xml:space="preserve">
+    <value>The {0} parameter value '{1}' is not allowed.</value>
+    <comment>Gets the format string for rejecting a parameter value.
+2 Format Parameters:
+0. parameterName: The name of the parameter that failed validation
+1. parameterValue: The value in the parameter that was rejected</comment>
+  </data>
+  <data name="ErrorMessage_ParameterNotAllowedByteRange" xml:space="preserve">
+    <value>The {0} parameter value '{1}' is not allowed. Must be between {2} and {3} bytes long.</value>
+    <comment>Gets the format string for rejecting a parameter value with additional text specifying the required range in bytes.
+4 Format Parameters:
+0. parameterName: The name of the parameter that failed validation
+1. parameterValue: The value in the parameter that was rejected
+2. minBytes: The minimum number of bytes acceptable
+3. maxBytes: The maximum number of bytes acceptable</comment>
+  </data>
+  <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
+    <value>The {0} field or the {1} field is required.</value>
+    <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
+2 Format Parameters:
+0. fieldNameOne: The name of the first field that is missing
+1. fieldNameTwo: The name of the second field that is missing</comment>
+  </data>
+  <data name="ErrorMessage_UnableToBindUrls" xml:space="preserve">
+    <value>Unable to bind any urls.</value>
+    <comment>Gets a string similar to "Unable to bind any urls.".</comment>
+  </data>
+  <data name="ErrorMessage_UnhandledConnectionMode" xml:space="preserve">
+    <value>Unhandled connection mode: {0}</value>
+    <comment>Gets the format string for egress provider failure due to missing provider.
+1 Format Parameter:
+0. connectionMode: The provided DiagnosticPortConnectionMode that could not be parsed.</comment>
+  </data>
+  <data name="HelpDescription_CommandCollect" xml:space="preserve">
+    <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
+    <comment>Gets the string to display in help that explains what the 'collect' command does.</comment>
+  </data>
+  <data name="HelpDescription_CommandConfig" xml:space="preserve">
+    <value>Configuration related commands for dotnet-monitor.</value>
+    <comment>Gets the string to display in help that explains what the 'config' command does.</comment>
+  </data>
+  <data name="HelpDescription_CommandGenerateKey" xml:space="preserve">
+    <value>Generate api key and hash for authentication.</value>
+    <comment>Gets the string to display in help that explains what the 'generatekey' command does.</comment>
+  </data>
+  <data name="HelpDescription_CommandShow" xml:space="preserve">
+    <value>Shows configuration, as if dotnet-monitor collect was executed with these parameters.</value>
+    <comment>Gets the string to display in help that explains what the 'show' command does.</comment>
+  </data>
+  <data name="HelpDescription_HashAlgorithm" xml:space="preserve">
+    <value>The string representing the hash algorithm used to compute ApiKeyHash store in configuration, typically SHA256.</value>
+    <comment>Gets the string to display in help that explains what the '--hash-algorithm' option does.</comment>
+  </data>
+  <data name="HelpDescription_KeyLength" xml:space="preserve">
+    <value>The length of the MonitorApiKey in bytes.</value>
+    <comment>Gets the string to display in help that explains what the '--key-length' option does.</comment>
+  </data>
+  <data name="HelpDescription_OptionDiagnosticPort" xml:space="preserve">
+    <value>The fully qualified path and filename of the diagnostic port to which runtime instances can connect.</value>
+    <comment>Gets the string to display in help that explains what the '--diagnostic-port' option does.</comment>
+  </data>
+  <data name="HelpDescription_OptionLevel" xml:space="preserve">
+    <value>Configuration level. Unredacted configuration can show sensitive information.</value>
+    <comment>Gets the string to display in help that explains what the '--level' option does.</comment>
+  </data>
+  <data name="HelpDescription_OptionMetrics" xml:space="preserve">
+    <value>Enable publishing of metrics</value>
+    <comment>Gets the string to display in help that explains what the '--metricls' option does.</comment>
+  </data>
+  <data name="HelpDescription_OptionMetricsUrls" xml:space="preserve">
+    <value>Bindings for metrics api.</value>
+    <comment>Gets the string to display in help that explains what the '--metricUrls' option does.</comment>
+  </data>
+  <data name="HelpDescription_OptionNoAuth" xml:space="preserve">
+    <value>Turn off authentication.</value>
+    <comment>Gets the string to display in help that explains what the '--no-auth' option does.</comment>
+  </data>
+  <data name="HelpDescription_OptionTempApiKey" xml:space="preserve">
+    <value>Generates a new MonitorApiKey for each launch of the process.</value>
+    <comment>Gets the string to display in help that explains what the '--temp-apikey' option does.</comment>
+  </data>
+  <data name="HelpDescription_OptionUrls" xml:space="preserve">
+    <value>Bindings for the REST api.</value>
+    <comment>Gets the string to display in help that explains what the '--urls' option does.</comment>
+  </data>
+  <data name="LogFormatString_ApiKeyAuthenticationOptionsChanged" xml:space="preserve">
+    <value>{apiAuthenticationConfigKey} settings have changed.</value>
+    <comment>Gets the format string that is printed in the 22:ApiKeyAuthenticationOptionsChanged event.
+1 Format Parameter:
+1. apiAuthenticationConfigKey: The string key of ApiAuthentication object in configuration.</comment>
+  </data>
+  <data name="LogFormatString_ApiKeyValidationFailure" xml:space="preserve">
+    <value>{apiAuthenticationConfigKey} settings are invalid: {validationFailure}</value>
+    <comment>Gets the format string that is printed in the 21:ApiKeyValidationFailure event.
+2 Format Parameters:
+1. apiAuthenticationConfigKey: The string key of ApiAuthentication object in configuration.
+2. validationFailure: The error message of why the provided ApiAuthentication object is invalid.</comment>
+  </data>
+  <data name="LogFormatString_BoundDefaultAddress" xml:space="preserve">
+    <value>Bound default address: {address}</value>
+    <comment>Gets the format string that is printed in the 16:BoundDefaultAddress event.
+1 Format Parameter:
+1. address: The address the REST api was bound to</comment>
+  </data>
+  <data name="LogFormatString_BoundMetricsAddress" xml:space="preserve">
+    <value>Bound metrics address: {address}</value>
+    <comment>Gets the format string that is printed in the 17:BoundMetricsAddress event.
+1 Format Parameter:
+1. address: The address the metrics api was bound to</comment>
+  </data>
+  <data name="LogFormatString_DisabledNegotiateWhileElevated" xml:space="preserve">
+    <value>Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions.</value>
+    <comment>Gets the format string that is printed in the 20:DisabledNegotiateWhileElevated event.
+0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
+    <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
+    <comment>Gets the format string that is printed in the 5:EgressCopyActionStreamToEgressStream event.
+1 Format Parameter:
+1. bufferSize: Size of the buffer</comment>
+  </data>
+  <data name="LogFormatString_EgressProviderAdded" xml:space="preserve">
+    <value>Provider '{providerName}': Added.</value>
+    <comment>Gets the format string that is printed in the 1:EgressProviderAdded event.
+1 Format Parameter:
+1. providerName: Name of the provider that was added</comment>
+  </data>
+  <data name="LogFormatString_EgressProviderFileName" xml:space="preserve">
+    <value>Provider {providerType}: File name = {fileName}</value>
+    <comment>Gets the format string that is printed in the 9:EgressProviderFileName event.
+2 Format Parameters:
+1. providerType: Type of the provider
+2. fileName: Name of the file being egressed</comment>
+  </data>
+  <data name="LogFormatString_EgressProviderInvalidOptions" xml:space="preserve">
+    <value>Provider '{providerName}': Invalid options.</value>
+    <comment>Gets the format string that is printed in the 2:EgressProviderInvalidOptions event.
+1 Format Parameter:
+1. providerName: Name of the provider that was not valid</comment>
+  </data>
+  <data name="LogFormatString_EgressProviderInvalidType" xml:space="preserve">
+    <value>Provider '{providerName}': Type '{providerType}' is not supported.</value>
+    <comment>Gets the format string that is printed in the 3:EgressProviderInvalidType event.
+2 Format Parameters:
+1. providerName: Name of the provider that was not valid
+2. providerType: Type of the provider that is not a valid type</comment>
+  </data>
+  <data name="LogFormatString_EgressProviderInvokeStreamAction" xml:space="preserve">
+    <value>Provider {providerType}: Invoking stream action.</value>
+    <comment>Gets the format string that is printed in the 11:EgressProviderInvokeStreamAction event.
+1 Format Parameter:
+1. providerType: Type of the provider that was invoked</comment>
+  </data>
+  <data name="LogFormatString_EgressProviderOptionsValidationWarning" xml:space="preserve">
+    <value>Provider '{providerName}': {validationWarning}</value>
+    <comment>Gets the format string that is printed in the 6:EgressProviderOptionsValidationWarning event.
+2 Format Parameters:
+1. providerName: Name of the provider with a warning
+2. validationWarning: The warning message</comment>
+  </data>
+  <data name="LogFormatString_EgressProviderOptionValue" xml:space="preserve">
+    <value>Provider {providerType}: Provider option {optionName} = {optionValue}</value>
+    <comment>Gets the format string that is printed in the 7:EgressProviderOptionValue event.
+3 Format Parameters:
+1. providerType: Type of the provider
+2. optionName: Name of the provider option on this provider
+3. optionValue: Value of the option specified by OptionName</comment>
+  </data>
+  <data name="LogFormatString_EgressProviderSavedStream" xml:space="preserve">
+    <value>Provider {providerType}: Saved stream to {path}</value>
+    <comment>Gets the format string that is printed in the 12:EgressProviderSavedStream event.
+2 Format Parameters:
+1. providerType: Type of the provider
+2. path: path where provider saved the stream</comment>
+  </data>
+  <data name="LogFormatString_EgressProviderValidatingOptions" xml:space="preserve">
+    <value>Provider '{providerName}': Validating options.</value>
+    <comment>Gets the format string that is printed in the 4:EgressProviderValidatingOptions event.
+1 Format Parameter:
+1. providerName: Name of the provider that is being validated</comment>
+  </data>
+  <data name="LogFormatString_EgressProvideUnableToFindPropertyKey" xml:space="preserve">
+    <value>Provider {providerType}: Unable to find '{keyName}' key in egress properties</value>
+    <comment>Gets the format string that is printed in the 10:EgressProvideUnableToFindPropertyKey event.
+2 Format Parameters:
+1. providerType: Type of the provider
+2. keyName: Name of the property that could not be found</comment>
+  </data>
+  <data name="LogFormatString_EgressStreamOptionValue" xml:space="preserve">
+    <value>Provider {providerType}: Stream option {optionName} = {optionValue}</value>
+    <comment>Gets the format string that is printed in the 8:EgressStreamOptionValue event.
+3 Format Parameters:
+1. providerType: Type of the provider
+2. optionName: Name of the stream option on this provider
+3. optionValue: Value of the option specified by OptionName</comment>
+  </data>
+  <data name="LogFormatString_InsecureAutheticationConfiguration" xml:space="preserve">
+    <value>WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.</value>
+    <comment>Gets the format string that is printed in the 14:InsecureAutheticationConfiguration event.
+0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_LogTempApiKey" xml:space="preserve">
+    <value>Generated one-time-use ApiKey for dotnet-monitor; use the following header for authorization:{NewLine}{AuthHeaderName}: {AuthScheme} {MonitorApiKey}</value>
+    <comment>Gets the format string that is printed in the 23:LogTempApiKey event.
+4 Format Parameters:
+1. NewLine: A newline string from the current environment, Environment.NewLine
+2. AuthHeaderName: The string name of the Authorization header, "Authorization"
+3. AuthScheme: The scheme used in the http Authorization header
+4. MonitorApiKey: The parameter to the scheme used in the http Authorization header, this should be the MonitorApiKey's value</comment>
+  </data>
+  <data name="LogFormatString_NoAuthentication" xml:space="preserve">
+    <value>WARNING: Authentication has been disabled. This can pose a security risk and is not intended for production environments.</value>
+    <comment>Gets the format string that is printed in the 13:NoAuthentication event.
+0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_OptionsValidationFailure" xml:space="preserve">
+    <value>{failure}</value>
+    <comment>Gets the format string that is printed in the 18:OptionsValidationFailure event.
+1 Format Parameter:
+1. failure: The failure message from validation</comment>
+  </data>
+  <data name="LogFormatString_RunningElevated" xml:space="preserve">
+    <value>The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes)</value>
+    <comment>Gets the format string that is printed in the 19:RunningElevated event.
+0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_UnableToListenToAddress" xml:space="preserve">
+    <value>Unable to listen to {url}. Dotnet-monitor functionality will be limited.</value>
+    <comment>Gets the format string that is printed in the 15:UnableToListenToAddress event.
+1 Format Parameter:
+1. url: The URL that could not have a listener attached to it</comment>
+  </data>
+  <data name="Placeholder_NotPresent" xml:space="preserve">
+    <value>:NOT PRESENT:</value>
+    <comment>Gets a string similar to ":NOT PRESENT:".</comment>
+  </data>
+  <data name="Placeholder_Redacted" xml:space="preserve">
+    <value>:REDACTED:</value>
+    <comment>Gets a string similar to ":REDACTED:".</comment>
+  </data>
+</root>
