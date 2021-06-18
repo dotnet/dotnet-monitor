@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public static Task StartAsync(this MonitorRunner runner)
         {
-            return runner.StartAsync(TestTimeouts.StartProcess);
+            return runner.StartAsync(CommonTestTimeouts.StartProcess);
         }
 
         public static async Task StartAsync(this MonitorRunner runner, TimeSpan timeout)

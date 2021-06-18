@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 {
     // All log events have this structure (plus additional fields
     // not needed by the test runner for identifying events).
-    internal sealed  class ConsoleLogEvent
+    public sealed class ConsoleLogEvent
     {
         public string Category { get; set; }
 

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests
 {
-    internal static class DiagnosticPortHelper
+    public static class DiagnosticPortHelper
     {
         /// <summary>
         /// Calculates the app's diagnostic port mode and generates a port path

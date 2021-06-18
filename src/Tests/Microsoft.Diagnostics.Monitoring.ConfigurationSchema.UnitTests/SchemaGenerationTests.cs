@@ -11,6 +11,7 @@ using System;
 using System.Reflection;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Threading;
+using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
 {

@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
@@ -17,12 +16,10 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using IEndpointInfoSource = Microsoft.Diagnostics.Monitoring.WebApi.IEndpointInfoSource;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {

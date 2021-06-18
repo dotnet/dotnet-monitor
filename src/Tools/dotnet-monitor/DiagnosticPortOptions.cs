@@ -5,7 +5,6 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
@@ -30,19 +29,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections))]
         public int? MaxConnections { get; set; }
-    }
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum DiagnosticPortConnectionMode
-    {
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortConnectionMode_Connect))]
-        Connect,
-
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortConnectionMode_Listen))]
-        Listen
     }
 }
