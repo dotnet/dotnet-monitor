@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 #if UNITTEST
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 #else
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -20,36 +22,52 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// </summary>
     public class MetricsOptions
     {
-        [Display(Description = "Enable or disable metrics collection.")]
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Enabled))]
         [DefaultValue(MetricsOptionsDefaults.Enabled)]
         public bool? Enabled { get; set; }
 
-        [Display(Description = "Endpoints that expose prometheus metrics. Defaults to http://localhost:52325.")]
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Endpoints))]
         public string Endpoints { get; set; }
 
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds))]
         [DefaultValue(MetricsOptionsDefaults.UpdateIntervalSeconds)]
-        [Display(Description = "How often metrics are collected.")]
         public int? UpdateIntervalSeconds { get; set; }
 
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_MetricCount))]
         [DefaultValue(MetricsOptionsDefaults.MetricCount)]
-        [Display(Description = "Amount of data points to store per metric.")]
         public int? MetricCount { get; set; }
 
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_IncludeDefaultProviders))]
         [DefaultValue(MetricsOptionsDefaults.IncludeDefaultProviders)]
-        [Display(Description = "Include default providers: System.Runtime, Microsoft.AspNetCore.Hosting, and Grpc.AspNetCore.Server.")]
         public bool? IncludeDefaultProviders { get; set; }
 
-        [Display(Description = "Providers for custom metrics.")]
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Providers))]
         public List<MetricProvider> Providers { get; set; } = new List<MetricProvider>(0);
     }
 
     public class MetricProvider
     {
-        [Display(Description = "The name of the custom metrics provider.")]
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricProvider_ProviderName))]
         [Required]
         public string ProviderName { get; set; }
 
-        [Display(Description = "Name of custom metrics counters.")]
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricProvider_CounterNames))]
         public List<string> CounterNames { get; set; } = new List<string>(0);
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Options;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 return provider.EgressAsync(action, fileName, contentType, source, token);
             }
-            throw new EgressException($"Egress provider '{providerName}' does not exist.");
+            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
         }
 
         public Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
@@ -40,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 return provider.EgressAsync(action, fileName, contentType, source, token);
             }
-            throw new EgressException($"Egress provider '{providerName}' does not exist.");
+            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
         }
     }
 }

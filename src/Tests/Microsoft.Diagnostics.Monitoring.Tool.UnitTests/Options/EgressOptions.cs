@@ -2,29 +2,34 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 {
     internal class EgressOptions
     {
-        [Display(Description = "Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces.")]
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_Providers))]
         public Dictionary<string, EgressProvider> Providers { get; set; }
             = new(StringComparer.OrdinalIgnoreCase);
 
-        [Display(Description = "Additional properties, such as secrets, that can be referenced by the provider definitions.")]
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_Properties))]
         public Dictionary<string, string> Properties { get; set; }
             = new(StringComparer.OrdinalIgnoreCase);
     }
 
     internal class EgressProvider
     {
-        [Display(Description = "The type of provider. Currently this supports 'fileSystem' and 'azureBlobStorage'.")]
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressProvider_EgressType))]
         //TODO This should honor DataMember, but only seems to work with JsonProperty
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
         public string EgressType { get; set; }

@@ -131,7 +131,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 catch (ServerErrorException)
                 {
-                    throw new InvalidOperationException("Unable to get process environment.");
+                    throw new InvalidOperationException(Strings.ErrorMessage_CanNotGetEnvironment);
                 }
             },
             processKey);

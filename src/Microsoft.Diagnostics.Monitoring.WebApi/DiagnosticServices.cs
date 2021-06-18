@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -70,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             catch (UnauthorizedAccessException)
             {
-                throw new InvalidOperationException("Unable to enumerate processes.");
+                throw new InvalidOperationException(Strings.ErrorMessage_ProcessEnumeratuinFailed);
             }
 
             if (processFilterConfig != null)
@@ -116,7 +117,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 case Models.DumpType.Mini:
                     return DumpType.Normal;
                 default:
-                    throw new ArgumentException("Unexpected dumpType", nameof(dumpType));
+                    throw new ArgumentException(
+                        string.Format(
+                            CultureInfo.InvariantCulture, 
+                            Strings.ErrorMessage_UnexpectedType, 
+                            nameof(DumpType), 
+                            dumpType), 
+                        nameof(dumpType));
             }
         }
 
@@ -140,18 +147,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             //Short circuit when we are missing default process config
             if (!processFilterConfig.Filters.Any())
             {
-                throw new InvalidOperationException("No default process configuration has been set.");
+                throw new InvalidOperationException(Strings.ErrorMessage_NoDefaultProcessConfig);
             }
             IEnumerable<IProcessInfo> matchingProcesses = await GetProcessesAsync(processFilterConfig, token);
 
             switch (matchingProcesses.Count())
             {
                 case 0:
-                    throw new ArgumentException("Unable to discover a target process.");
+                    throw new ArgumentException(Strings.ErrorMessage_NoTargetProcess);
                 case 1:
                     return matchingProcesses.First();
                 default:
-                    throw new ArgumentException("Unable to select a single target process because multiple target processes have been discovered.");
+                    throw new ArgumentException(Strings.ErrorMessage_MultipleTargetProcesses);
             }
         }
 
@@ -180,7 +187,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             // String returned for a process field when its value could not be retrieved. This is the same
             // value that is returned by the runtime when it could not determine the value for each of those fields.
-            private const string ProcessFieldUnknownValue = "unknown";
+            private static readonly string ProcessFieldUnknownValue = "unknown";
 
             public ProcessInfo(
                 IEndpointInfo endpointInfo,

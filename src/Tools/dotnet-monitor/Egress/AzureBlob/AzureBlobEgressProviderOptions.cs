@@ -56,7 +56,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
             // One of the authentication keys/tokens is required
             if (string.IsNullOrEmpty(AccountKey) && string.IsNullOrEmpty(SharedAccessSignature))
             {
-                results.Add(new ValidationResult($"The {nameof(AccountKey)} field or the {nameof(SharedAccessSignature)} field is required."));
+                results.Add(
+                    new ValidationResult(
+                        string.Format(
+                            Strings.ErrorMessage_TwoFieldsMissing,
+                            nameof(AccountKey),
+                            nameof(SharedAccessSignature))));
             }
 
             return results;
