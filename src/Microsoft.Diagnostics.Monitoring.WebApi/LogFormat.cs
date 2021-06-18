@@ -12,7 +12,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public enum LogFormat
     {
         None = 0,
-        Json = 1,
-        EventStream = 2
+        NDJson = 1,
+        EventStream = 2,
+        Json = 3
     }
 }
