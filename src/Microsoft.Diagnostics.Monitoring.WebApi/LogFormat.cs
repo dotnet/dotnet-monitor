@@ -14,6 +14,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         None = 0,
         NDJson = 1,
         EventStream = 2,
-        Json = 3
+        JsonSequence = 3
     }
 }

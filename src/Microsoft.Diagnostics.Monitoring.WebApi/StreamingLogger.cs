@@ -71,9 +71,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 LogJson(logLevel, eventId, state, exception, formatter);
             }
-            else if (_logFormat == LogFormat.Json)
+            else if (_logFormat == LogFormat.JsonSequence)
             {
-                LogJson(logLevel, eventId, state, exception, formatter, LogFormat.Json);
+                LogJson(logLevel, eventId, state, exception, formatter, LogFormat.JsonSequence);
             }
             else
             {
@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             Stream outputStream = _outputStream;
 
             
-            if (jsonFormat == LogFormat.Json)
+            if (jsonFormat == LogFormat.JsonSequence)
             {
                 const byte recordSeparator = 0x1E;
                 outputStream.WriteByte(recordSeparator);
@@ -143,16 +143,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 jsonWriter.Flush();
             }
 
-            if (jsonFormat == LogFormat.NDJson)
-            {
-                outputStream.WriteByte((byte)'\n');
-            }
-            else if (jsonFormat == LogFormat.Json)
-            {
-                const byte lineFeed = 0x0A;
-                outputStream.WriteByte(lineFeed);
-            }
-
+            // JSON Sequence and NDJson both use newline as the end character
+            outputStream.WriteByte((byte)'\n');
 
             outputStream.Flush();
         }

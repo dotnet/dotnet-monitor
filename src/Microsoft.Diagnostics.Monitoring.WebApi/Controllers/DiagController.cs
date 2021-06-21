@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
         private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);
-        private static readonly MediaTypeHeaderValue JsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationJson);
+        private static readonly MediaTypeHeaderValue JsonSequenceHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationJsonSequence);
         private static readonly MediaTypeHeaderValue EventStreamHeader = new MediaTypeHeaderValue(ContentTypes.TextEventStream);
 
         private readonly ILogger<DiagController> _logger;
@@ -361,7 +361,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="level">The level of the logs to capture.</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpGet("logs/{processKey?}", Name = nameof(CaptureLogs))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJson, ContentTypes.TextEventStream)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
@@ -406,7 +406,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpPost("logs/{processKey?}", Name = nameof(CaptureLogsCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJson, ContentTypes.TextEventStream)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
@@ -494,9 +494,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 contentType = ContentTypes.ApplicationNdJson;
             }
-            else if (format == LogFormat.Json)
+            else if (format == LogFormat.JsonSequence)
             {
-                contentType = ContentTypes.ApplicationJson;
+                contentType = ContentTypes.ApplicationJsonSequence;
             }
 
             Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
@@ -548,9 +548,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return LogFormat.NDJson;
             }
-            if (acceptedHeaders.Contains(JsonHeader))
+            if (acceptedHeaders.Contains(JsonSequenceHeader))
             {
-                return LogFormat.Json;
+                return LogFormat.JsonSequence;
             }
             if (acceptedHeaders.Any(h => EventStreamHeader.IsSubsetOf(h)))
             {
@@ -560,9 +560,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return LogFormat.NDJson;
             }
-            if (acceptedHeaders.Any(h => JsonHeader.IsSubsetOf(h)))
+            if (acceptedHeaders.Any(h => JsonSequenceHeader.IsSubsetOf(h)))
             {
-                return LogFormat.Json;
+                return LogFormat.JsonSequence;
             }
             return LogFormat.None;
         }

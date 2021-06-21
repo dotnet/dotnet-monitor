@@ -580,7 +580,7 @@
                   "type": "string"
                 }
               },
-              "application/json": {
+              "application/json-seq": {
                 "schema": {
                   "type": "string"
                 }
@@ -689,7 +689,7 @@
                   "type": "string"
                 }
               },
-              "application/json": {
+              "application/json-seq": {
                 "schema": {
                   "type": "string"
                 }

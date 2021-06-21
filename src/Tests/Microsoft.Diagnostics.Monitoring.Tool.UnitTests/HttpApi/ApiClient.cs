@@ -199,9 +199,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// GET /logs/{pid}?level={logLevel}&durationSeconds={duration}
         /// </summary>
-        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, CancellationToken token, string contentType = ContentTypes.ApplicationNDJson)
         {
-            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, logLevel, token);
+            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, logLevel, token, contentType);
         }
 
         /// <summary>
@@ -212,32 +212,33 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             return CaptureLogsAsync(uid.ToString("D"), duration, logLevel, token);
         }
 
-        private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
+        private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogLevel? logLevel, CancellationToken token, string contentType = ContentTypes.ApplicationNDJson)
         {
             return CaptureLogsAsync(
                 HttpMethod.Get,
                 CreateLogsUriString(processKey, duration, logLevel),
                 content: null,
-                token);
+                token,
+                contentType);
         }
 
         /// <summary>
         /// POST /logs/{pid}?durationSeconds={duration}
         /// </summary>
-        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token, string contentType = ContentTypes.ApplicationNDJson)
         {
-            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, configuration, token);
+            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, configuration, token, contentType);
         }
 
         /// <summary>
         /// POST /logs/{uid}?durationSeconds={duration}
         /// </summary>
-        public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token, string contentType = ContentTypes.ApplicationNDJson)
         {
-            return CaptureLogsAsync(uid.ToString("D"), duration, configuration, token);
+            return CaptureLogsAsync(uid.ToString("D"), duration, configuration, token, contentType);
         }
 
-        private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
+        private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogsConfiguration configuration, CancellationToken token, string contentType = ContentTypes.ApplicationNDJson)
         {
             JsonSerializerOptions options = new();
             options.Converters.Add(new JsonStringEnumConverter());
@@ -247,13 +248,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
                 HttpMethod.Post,
                 CreateLogsUriString(processKey, duration, logLevel: null),
                 new StringContent(json, Encoding.UTF8, ContentTypes.ApplicationJson),
-                token);
+                token,
+                contentType);
         }
 
-        private async Task<ResponseStreamHolder> CaptureLogsAsync(HttpMethod method, string uri, HttpContent content, CancellationToken token)
+        private async Task<ResponseStreamHolder> CaptureLogsAsync(HttpMethod method, string uri, HttpContent content, CancellationToken token, string contentType = ContentTypes.ApplicationNDJson)
         {
             using HttpRequestMessage request = new(method, uri);
-            request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationNDJson);
+            request.Headers.Add(HeaderNames.Accept, contentType);
             request.Content = content;
 
             using DisposableBox<HttpResponseMessage> responseBox = new(
@@ -265,7 +267,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             switch (responseBox.Value.StatusCode)
             {
                 case HttpStatusCode.OK:
-                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationNDJson);
+                    ValidateContentType(responseBox.Value, contentType);
                     return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);

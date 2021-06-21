@@ -42,11 +42,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Tests that all log events are collected if log level set to Trace.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
         public Task LogsAllCategoriesTest(DiagnosticPortConnectionMode mode, LogFormat format)
@@ -88,10 +88,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Tests that log events with level at or above the specified level are collected.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
         public Task LogsDefaultLevelTest(DiagnosticPortConnectionMode mode, LogFormat format)
@@ -120,10 +120,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// at the log level specified in the request body.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
         public Task LogsDefaultLevelFallbackTest(DiagnosticPortConnectionMode mode, LogFormat format)
@@ -161,12 +161,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that LogLevel.None is not supported as the level query parameter.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(DiagnosticPortConnectionMode mode)
+        public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat format)
         {
+            string contentType = ContentTypes.ApplicationNDJson;
+
+            if (format == LogFormat.NDJson)
+            {
+                contentType = ContentTypes.ApplicationNDJson;
+            }
+            else if (format == LogFormat.JsonSequence)
+            {
+                contentType = ContentTypes.ApplicationJsonSequence;
+            }
+
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -180,7 +193,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                             using ResponseStreamHolder _ = await client.CaptureLogsAsync(
                                 runner.ProcessId,
                                 TestTimeouts.LogsDuration,
-                                LogLevel.None);
+                                LogLevel.None,
+                                contentType);
                         });
                     Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
                     Assert.Equal(StatusCodes.Status400BadRequest, exception.Details.Status);
@@ -194,12 +208,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that LogLevel.None is not supported as the default log level in the request body.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(DiagnosticPortConnectionMode mode)
+        public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat format)
         {
+            string contentType = ContentTypes.ApplicationNDJson;
+
+            if (format == LogFormat.NDJson)
+            {
+                contentType = ContentTypes.ApplicationNDJson;
+            }
+            else if (format == LogFormat.JsonSequence)
+            {
+                contentType = ContentTypes.ApplicationJsonSequence;
+            }
+
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -213,7 +240,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                             using ResponseStreamHolder _ = await client.CaptureLogsAsync(
                                 runner.ProcessId,
                                 TestTimeouts.LogsDuration,
-                                new LogsConfiguration() { LogLevel = LogLevel.None });
+                                new LogsConfiguration() { LogLevel = LogLevel.None },
+                                contentType);
                         });
                     Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
                     Assert.Equal(StatusCodes.Status400BadRequest, exception.Details.Status);
@@ -227,10 +255,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
         public Task LogsUseAppFiltersViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat format)
@@ -261,10 +289,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
         public Task LogsUseAppFiltersViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat format)
@@ -300,10 +328,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
         public Task LogsUseAppFiltersAndFilterSpecsTest(DiagnosticPortConnectionMode mode, LogFormat format)
@@ -344,10 +372,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that log events are collected for wildcard categories.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.Json)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
         public Task LogsWildcardTest(DiagnosticPortConnectionMode mode, LogFormat format)
@@ -392,6 +420,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat format)
         {
+            string contentType = ContentTypes.ApplicationNDJson;
+
+            if (format == LogFormat.NDJson)
+            {
+                contentType = ContentTypes.ApplicationNDJson;
+            }
+            else if (format == LogFormat.JsonSequence)
+            {
+                contentType = ContentTypes.ApplicationJsonSequence;
+            }
+
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -399,8 +438,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.Logger.Name,
                 appValidate: (runner, client) => ValidateResponseStream(
                     runner,
-                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, logLevel),
-                    callback, format));
+                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, logLevel, contentType),
+                    callback,
+                    format));
         }
 
         private Task ValidateLogsAsync(
@@ -409,6 +449,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat format)
         {
+            string contentType = ContentTypes.ApplicationNDJson;
+
+            if (format == LogFormat.NDJson)
+            {
+                contentType = ContentTypes.ApplicationNDJson;
+            }
+            else if (format == LogFormat.JsonSequence)
+            {
+                contentType = ContentTypes.ApplicationJsonSequence;
+            }
+
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -416,8 +467,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.Logger.Name,
                 appValidate: (runner, client) => ValidateResponseStream(
                     runner,
-                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, configuration),
-                    callback, format));
+                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, configuration, contentType),
+                    callback,
+                    format));
         }
 
         private async Task ValidateResponseStream(AppRunner runner, Task<ResponseStreamHolder> holderTask, Func<ChannelReader<LogEntry>, Task> callback, LogFormat format)
@@ -465,10 +517,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             while (null != (line = await reader.ReadLineAsync()))
             {
-                if (format == LogFormat.Json)
+                if (format == LogFormat.JsonSequence)
                 {
                     const char recordSeparator = '\u001E';
-                    line.Trim(recordSeparator);
+
+                    Assert.True(line.Length > 1);
+                    Assert.Equal(recordSeparator, line[0]);
+                    Assert.NotEqual(recordSeparator, line[1]);
+
+                    line = line.TrimStart(recordSeparator);
                 }
 
                 _outputHelper.WriteLine("Log entry: {0}", line);
