@@ -81,13 +81,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Get information about the specified process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
-        [HttpGet("processes/{processKey}", Name = nameof(GetProcessInfo))]
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
+        [HttpGet("process", Name = nameof(GetProcessInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Models.ProcessInfo), StatusCodes.Status200OK)]
         public Task<ActionResult<Models.ProcessInfo>> GetProcessInfo(
-            ProcessKey processKey)
+            [FromQuery]
+            int pid = -1,
+            [FromQuery]
+            Guid uid = new Guid(),
+            [FromQuery]
+            string name = ""
+            )
         {
+            // If the PID is set to -1 and processKey never gets overwritten by another parameter, then sender should get a 400 response.
+            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+
             return InvokeForProcess<Models.ProcessInfo>(processInfo =>
             {
                 Models.ProcessInfo processModel = new Models.ProcessInfo()
@@ -110,13 +121,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Get the environment block of the specified process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
-        [HttpGet("processes/{processKey}/env", Name = nameof(GetProcessEnvironment))]
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
+        [HttpGet("env", Name = nameof(GetProcessEnvironment))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status200OK)]
         public Task<ActionResult<Dictionary<string, string>>> GetProcessEnvironment(
-            ProcessKey processKey)
+            [FromQuery]
+            int pid = -1,
+            [FromQuery]
+            Guid uid = new Guid(),
+            [FromQuery]
+            string name = "")
         {
+            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+
             return InvokeForProcess<Dictionary<string, string>>(processInfo =>
             {
                 var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
@@ -140,11 +160,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Capture a dump of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="type">The type of dump to capture.</param>
         /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
         /// <returns></returns>
-        [HttpGet("dump/{processKey?}", Name = nameof(CaptureDump))]
+        [HttpGet("dump", Name = nameof(CaptureDump))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
@@ -152,12 +174,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 1)]
         public Task<ActionResult> CaptureDump(
-            ProcessKey? processKey,
+            [FromQuery]
+            int pid = -1,
+            [FromQuery]
+            Guid uid = new Guid(),
+            [FromQuery]
+            string name = "",
             [FromQuery]
             Models.DumpType type = Models.DumpType.WithHeap,
             [FromQuery]
             string egressProvider = null)
         {
+            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
             return InvokeForProcess(async processInfo =>
             {
                 string dumpFileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
@@ -193,10 +221,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Capture a GC dump of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
         /// <returns></returns>
-        [HttpGet("gcdump/{processKey?}", Name = nameof(CaptureGcDump))]
+        [HttpGet("gcdump", Name = nameof(CaptureGcDump))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
@@ -204,10 +234,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 1)]
         public Task<ActionResult> CaptureGcDump(
-            ProcessKey? processKey,
+            [FromQuery]
+            int pid = -1,
+            [FromQuery]
+            Guid uid = new Guid(),
+            [FromQuery]
+            string name = "",
             [FromQuery]
             string egressProvider = null)
         {
+            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+
             return InvokeForProcess(processInfo =>
             {
                 string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
@@ -244,12 +281,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Capture a trace of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="profile">The profiles enabled for the trace session.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
-        [HttpGet("trace/{processKey?}", Name = nameof(CaptureTrace))]
+        [HttpGet("trace", Name = nameof(CaptureTrace))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
@@ -257,7 +296,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureTrace(
-            ProcessKey? processKey,
+            [FromQuery]
+            int pid = -1,
+            [FromQuery]
+            Guid uid = new Guid(),
+            [FromQuery]
+            string name = "",
             [FromQuery]
             Models.TraceProfile profile = DefaultTraceProfiles,
             [FromQuery][Range(-1, int.MaxValue)]
@@ -267,6 +311,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
+            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+
             return InvokeForProcess(processInfo =>
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
@@ -302,11 +348,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Capture a trace of a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
         /// <param name="configuration">The trace configuration describing which events to capture.</param>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
-        [HttpPost("trace/{processKey?}", Name = nameof(CaptureTraceCustom))]
+        [HttpPost("trace", Name = nameof(CaptureTraceCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
@@ -314,14 +362,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureTraceCustom(
-            ProcessKey? processKey,
             [FromBody][Required]
             Models.EventPipeConfiguration configuration,
+            [FromQuery]
+            int pid = -1,
+            [FromQuery]
+            Guid uid = new Guid(),
+            [FromQuery]
+            string name = "",
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
             string egressProvider = null)
         {
+            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+
             return InvokeForProcess(processInfo =>
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
@@ -355,17 +410,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Capture a stream of logs from a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="level">The level of the logs to capture.</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
-        [HttpGet("logs/{processKey?}", Name = nameof(CaptureLogs))]
+        [HttpGet("logs", Name = nameof(CaptureLogs))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureLogs(
-            ProcessKey? processKey,
+            [FromQuery]
+            int pid = -1,
+            [FromQuery]
+            Guid uid = new Guid(),
+            [FromQuery]
+            string name = "",
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
@@ -373,6 +435,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
+            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+
             return InvokeForProcess(processInfo =>
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
@@ -400,24 +464,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Capture a stream of logs from a process.
         /// </summary>
-        /// <param name="processKey">Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.</param>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="configuration">The logs configuration describing which logs to capture.</param>
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
-        [HttpPost("logs/{processKey?}", Name = nameof(CaptureLogsCustom))]
+        [HttpPost("logs", Name = nameof(CaptureLogsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureLogsCustom(
-            ProcessKey? processKey,
             [FromBody]
             Models.LogsConfiguration configuration,
+            [FromQuery]
+            int pid = -1,
+            [FromQuery]
+            Guid uid = new Guid(),
+            [FromQuery]
+            string name = "",
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
             string egressProvider = null)
         {
+            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+
             return InvokeForProcess(processInfo =>
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
@@ -512,6 +585,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return durationSeconds < 0 ?
                 Timeout.InfiniteTimeSpan :
                 TimeSpan.FromSeconds(durationSeconds);
+        }
+
+        private static ProcessKey? GetProcessKeyFromIdentifier(
+            int pid,
+            Guid uid,
+            string name)
+        {
+            ProcessKey? processKey = null;
+
+            if (pid != -1)
+            {
+                processKey = new ProcessKey(pid);
+            }
+            else if (uid != Guid.Empty)
+            {
+                processKey = new ProcessKey(uid);
+            }
+            else if (name != "")
+            {
+                processKey = new ProcessKey(name);
+            }
+
+            return processKey;
         }
 
         private static string GetFileNameTimeStampUtcNow()
