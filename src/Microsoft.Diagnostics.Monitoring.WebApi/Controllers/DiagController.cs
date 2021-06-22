@@ -82,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// Get information about the specified process.
         /// </summary>
         /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         [HttpGet("process", Name = nameof(GetProcessInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
@@ -122,7 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// Get the environment block of the specified process.
         /// </summary>
         /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         [HttpGet("env", Name = nameof(GetProcessEnvironment))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
@@ -161,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// Capture a dump of a process.
         /// </summary>
         /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="type">The type of dump to capture.</param>
         /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
@@ -222,7 +222,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// Capture a GC dump of a process.
         /// </summary>
         /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
         /// <returns></returns>
@@ -282,7 +282,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// Capture a trace of a process.
         /// </summary>
         /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="profile">The profiles enabled for the trace session.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
@@ -350,7 +350,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// </summary>
         /// <param name="configuration">The trace configuration describing which events to capture.</param>
         /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
@@ -411,7 +411,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// Capture a stream of logs from a process.
         /// </summary>
         /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="level">The level of the logs to capture.</param>
@@ -465,7 +465,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// Capture a stream of logs from a process.
         /// </summary>
         /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">TheRuntime instance cookie used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="configuration">The logs configuration describing which logs to capture.</param>
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
@@ -587,27 +587,89 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 TimeSpan.FromSeconds(durationSeconds);
         }
 
-        private static ProcessKey? GetProcessKeyFromIdentifier(
+        private ProcessKey? GetProcessKeyFromIdentifier(
             int pid,
             Guid uid,
             string name)
         {
-            ProcessKey? processKey = null;
+            ProcessKey? pidKey = new ProcessKey(pid);
+            ProcessKey? uidKey = new ProcessKey(uid);
+            ProcessKey? nameKey = new ProcessKey(name);
+
+            List<ProcessKey?> processKeys = new List<ProcessKey?>();
 
             if (pid != -1)
             {
-                processKey = new ProcessKey(pid);
+                processKeys.Add(pidKey);
             }
-            else if (uid != Guid.Empty)
+                
+            if (uid != Guid.Empty)
             {
-                processKey = new ProcessKey(uid);
-            }
-            else if (name != "")
-            {
-                processKey = new ProcessKey(name);
+                processKeys.Add(uidKey);
             }
 
+            if (!name.Equals(""))
+            {
+                processKeys.Add(nameKey);
+            }
+
+            ProcessKey? processKey = GetProcessKey(processKeys).Result;
+
             return processKey;
+        }
+
+        private async Task<ProcessKey?> GetProcessKey(List<ProcessKey?> processKeys)
+        {
+            if (processKeys.Count == 1)
+            {
+                return processKeys[0];
+            }
+            else if (processKeys.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                List<IProcessInfo> processInfos = new List<IProcessInfo>();
+                foreach (ProcessKey processKey in processKeys)
+                {
+                    try {
+                        IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, HttpContext.RequestAborted);
+                        processInfos.Add(processInfo);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+
+                if (ProcessInfoIsEquivalent(processInfos))
+                {
+                    return processKeys[0];
+                }
+            }
+
+            return null;
+        }
+
+        private bool ProcessInfoIsEquivalent(List<IProcessInfo> processInfos)
+        {
+            IProcessInfo initialProcessInfo = processInfos[0];
+
+            for (int index = processInfos.Count - 1; index > 0; --index)
+            {
+                if (processInfos[index].EndpointInfo.ProcessId != initialProcessInfo.EndpointInfo.ProcessId)
+                {
+                    return false;
+                }
+
+                if (processInfos[index].EndpointInfo.RuntimeInstanceCookie != initialProcessInfo.EndpointInfo.RuntimeInstanceCookie)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static string GetFileNameTimeStampUtcNow()

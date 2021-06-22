@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -27,7 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
     {
         private readonly HttpClient _httpClient;
         private readonly ITestOutputHelper _outputHelper;
-
 
         public ApiClient(ITestOutputHelper outputHelper, HttpClient httpClient)
         {
@@ -66,24 +66,28 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{pid}
+        /// Get /process?pid={pid}
         /// </summary>
         public Task<Models.ProcessInfo> GetProcessAsync(int pid, CancellationToken token)
         {
-            return GetProcessAsync(pid.ToString(CultureInfo.InvariantCulture), token);
+            return GetProcessAsync(pid.ToString(CultureInfo.InvariantCulture), ProcessIdentifierFormat.PID, token);
         }
 
         /// <summary>
-        /// Get /processes/{uid}
+        /// Get /process?uid={uid}
         /// </summary>
         public Task<Models.ProcessInfo> GetProcessAsync(Guid uid, CancellationToken token)
         {
-            return GetProcessAsync(uid.ToString("D"), token);
+            return GetProcessAsync(uid.ToString("D"), ProcessIdentifierFormat.UID, token);
         }
 
-        private async Task<Models.ProcessInfo> GetProcessAsync(string processKey, CancellationToken token)
+        private async Task<Models.ProcessInfo> GetProcessAsync(string processIdentifier, ProcessIdentifierFormat processIdentifierFormat, CancellationToken token)
         {
-            using HttpRequestMessage request = new(HttpMethod.Get, $"/processes/{processKey}");
+            string requestPrefix = GetRequestPrefix(processIdentifierFormat);
+
+            string processIdentifierQuery = requestPrefix + processIdentifier;
+
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/process?" + processIdentifierQuery);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
 
             using HttpResponseMessage response = await SendAndLogAsync(
@@ -109,24 +113,28 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{pid}/env
+        /// Get /env?pid={pid}
         /// </summary>
         public Task<Dictionary<string, string>> GetProcessEnvironmentAsync(int pid, CancellationToken token)
         {
-            return GetProcessEnvironmentAsync(pid.ToString(CultureInfo.InvariantCulture), token);
+            return GetProcessEnvironmentAsync(pid.ToString(CultureInfo.InvariantCulture), ProcessIdentifierFormat.PID, token);
         }
 
         /// <summary>
-        /// Get /processes/{uid}/env
+        /// Get /env?uid={uid}
         /// </summary>
         public Task<Dictionary<string, string>> GetProcessEnvironmentAsync(Guid uid, CancellationToken token)
         {
-            return GetProcessEnvironmentAsync(uid.ToString("D"), token);
+            return GetProcessEnvironmentAsync(uid.ToString("D"), ProcessIdentifierFormat.UID, token);
         }
 
-        private async Task<Dictionary<string, string>> GetProcessEnvironmentAsync(string processKey, CancellationToken token)
+        private async Task<Dictionary<string, string>> GetProcessEnvironmentAsync(string processIdentifier, ProcessIdentifierFormat processIdentifierFormat, CancellationToken token)
         {
-            using HttpRequestMessage request = new(HttpMethod.Get, $"/processes/{processKey}/env");
+            string requestPrefix = GetRequestPrefix(processIdentifierFormat);
+
+            string processIdentifierQuery = requestPrefix + processIdentifier;
+
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/env?" + processIdentifierQuery);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
 
             using HttpResponseMessage response = await SendAndLogAsync(
@@ -152,24 +160,28 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump/{pid}?type={dumpType}
+        /// Get /dump?pid={pid}&type={dumpType}
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(int pid, DumpType dumpType, CancellationToken token)
         {
-            return CaptureDumpAsync(pid.ToString(CultureInfo.InvariantCulture), dumpType, token);
+            return CaptureDumpAsync(pid.ToString(CultureInfo.InvariantCulture), dumpType, ProcessIdentifierFormat.PID, token);
         }
 
         /// <summary>
-        /// Get /dump/{uid}?type={dumpType}
+        /// Get /dump?uid={uid}&type={dumpType}
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(Guid uid, DumpType dumpType, CancellationToken token)
         {
-            return CaptureDumpAsync(uid.ToString("D"), dumpType, token);
+            return CaptureDumpAsync(uid.ToString("D"), dumpType, ProcessIdentifierFormat.UID, token);
         }
 
-        private async Task<ResponseStreamHolder> CaptureDumpAsync(string processKey, DumpType dumpType, CancellationToken token)
+        private async Task<ResponseStreamHolder> CaptureDumpAsync(string processIdentifier, DumpType dumpType, ProcessIdentifierFormat processIdentifierFormat, CancellationToken token)
         {
-            using HttpRequestMessage request = new(HttpMethod.Get, $"/dump/{processKey}?type={dumpType.ToString("G")}");
+            string requestPrefix = GetRequestPrefix(processIdentifierFormat);
+
+            string processIdentifierQuery = requestPrefix + processIdentifier;
+
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/dump?{processIdentifierQuery}&type={dumpType.ToString("G")}");
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationOctetStream);
 
             using DisposableBox<HttpResponseMessage> responseBox = new(
@@ -197,55 +209,63 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// GET /logs/{pid}?level={logLevel}&durationSeconds={duration}
+        /// GET /logs?pid={pid}&level={logLevel}&durationSeconds={duration}
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
         {
-            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, logLevel, token);
+            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, logLevel, ProcessIdentifierFormat.PID, token);
         }
 
         /// <summary>
-        /// GET /logs/{uid}?level={logLevel}&durationSeconds={duration}
+        /// GET /logs?uid={uid}&level={logLevel}&durationSeconds={duration}
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
         {
-            return CaptureLogsAsync(uid.ToString("D"), duration, logLevel, token);
+            return CaptureLogsAsync(uid.ToString("D"), duration, logLevel, ProcessIdentifierFormat.UID, token);
         }
 
-        private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
+        private Task<ResponseStreamHolder> CaptureLogsAsync(string processIdentifier, TimeSpan duration, LogLevel? logLevel, ProcessIdentifierFormat processIdentifierFormat, CancellationToken token)
         {
+            string requestPrefix = GetRequestPrefix(processIdentifierFormat);
+
+            string processIdentifierQuery = requestPrefix + processIdentifier;
+
             return CaptureLogsAsync(
                 HttpMethod.Get,
-                CreateLogsUriString(processKey, duration, logLevel),
+                CreateLogsUriString(processIdentifierQuery, duration, logLevel),
                 content: null,
                 token);
         }
 
         /// <summary>
-        /// POST /logs/{pid}?durationSeconds={duration}
+        /// POST /logs?pid={pid}&durationSeconds={duration}
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
         {
-            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, configuration, token);
+            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, configuration, ProcessIdentifierFormat.PID, token);
         }
 
         /// <summary>
-        /// POST /logs/{uid}?durationSeconds={duration}
+        /// POST /logs?uid={uid}&durationSeconds={duration}
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
         {
-            return CaptureLogsAsync(uid.ToString("D"), duration, configuration, token);
+            return CaptureLogsAsync(uid.ToString("D"), duration, configuration, ProcessIdentifierFormat.UID, token);
         }
 
-        private Task<ResponseStreamHolder> CaptureLogsAsync(string processKey, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
+        private Task<ResponseStreamHolder> CaptureLogsAsync(string processIdentifier, TimeSpan duration, LogsConfiguration configuration, ProcessIdentifierFormat processIdentifierFormat, CancellationToken token)
         {
+            string requestPrefix = GetRequestPrefix(processIdentifierFormat);
+
+            string processIdentifierQuery = requestPrefix + processIdentifier;
+
             JsonSerializerOptions options = new();
             options.Converters.Add(new JsonStringEnumConverter());
             string json = JsonSerializer.Serialize(configuration, options);
 
             return CaptureLogsAsync(
                 HttpMethod.Post,
-                CreateLogsUriString(processKey, duration, logLevel: null),
+                CreateLogsUriString(processIdentifierQuery, duration, logLevel: null),
                 new StringContent(json, Encoding.UTF8, ContentTypes.ApplicationJson),
                 token);
         }
@@ -367,12 +387,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             Assert.Equal(expectedMediaType, responseMessage.Content.Headers.ContentType?.MediaType);
         }
 
-        private static string CreateLogsUriString(string processKey, TimeSpan duration, LogLevel? logLevel)
+        private static string CreateLogsUriString(string processIdentifierQuery, TimeSpan duration, LogLevel? logLevel)
         {
             StringBuilder routeBuilder = new();
-            routeBuilder.Append("/logs/");
-            routeBuilder.Append(processKey);
-            routeBuilder.Append("?");
+            routeBuilder.Append("/logs?");
+            routeBuilder.Append(processIdentifierQuery);
+            routeBuilder.Append("&");
             AppendDuration(routeBuilder, duration);
             if (logLevel.HasValue)
             {
@@ -393,6 +413,26 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             {
                 builder.Append(Convert.ToInt32(duration.TotalSeconds).ToString(CultureInfo.InvariantCulture));
             }
+        }
+
+        private string GetRequestPrefix(ProcessIdentifierFormat processIdentifierFormat)
+        {
+            string requestPrefix = "";
+
+            if (processIdentifierFormat == ProcessIdentifierFormat.PID)
+            {
+                requestPrefix = "pid=";
+            }
+            else if (processIdentifierFormat == ProcessIdentifierFormat.UID)
+            {
+                requestPrefix = "uid=";
+            }
+            else if (processIdentifierFormat == ProcessIdentifierFormat.Name)
+            {
+                requestPrefix = "name=";
+            }
+
+            return requestPrefix;
         }
     }
 }
