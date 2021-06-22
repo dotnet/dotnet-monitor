@@ -580,6 +580,11 @@
                   "type": "string"
                 }
               },
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              },
               "text/event-stream": {
                 "schema": {
                   "type": "string"
@@ -680,6 +685,11 @@
             "description": "Success",
             "content": {
               "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json-seq": {
                 "schema": {
                   "type": "string"
                 }

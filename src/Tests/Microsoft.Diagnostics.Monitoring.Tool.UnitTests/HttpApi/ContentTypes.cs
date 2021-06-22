@@ -7,6 +7,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
     internal static class ContentTypes
     {
         public const string ApplicationJson = "application/json";
+        public const string ApplicationJsonSequence = "application/json-seq";
         public const string ApplicationNDJson = "application/x-ndjson";
         public const string ApplicationOctetStream = "application/octet-stream";
         public const string ApplicationProblemJson = "application/problem+json";
