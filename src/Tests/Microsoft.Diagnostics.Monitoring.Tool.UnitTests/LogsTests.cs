@@ -32,6 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
+        const char JsonSequenceRecordSeparator = '\u001E';
+
         public LogsTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
@@ -49,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsAllCategoriesTest(DiagnosticPortConnectionMode mode, LogFormat format)
+        public Task LogsAllCategoriesTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -81,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                format);
+                logFormat);
         }
 
         /// <summary>
@@ -94,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelTest(DiagnosticPortConnectionMode mode, LogFormat format)
+        public Task LogsDefaultLevelTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -112,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                format);
+                logFormat);
         }
 
         /// <summary>
@@ -126,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelFallbackTest(DiagnosticPortConnectionMode mode, LogFormat format)
+        public Task LogsDefaultLevelFallbackTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -154,7 +156,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                format);
+                logFormat);
         }
 
         /// <summary>
@@ -167,19 +169,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat format)
+        public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
-            string contentType = ContentTypes.ApplicationNDJson;
-
-            if (format == LogFormat.NDJson)
-            {
-                contentType = ContentTypes.ApplicationNDJson;
-            }
-            else if (format == LogFormat.JsonSequence)
-            {
-                contentType = ContentTypes.ApplicationJsonSequence;
-            }
-
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -194,7 +185,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                                 runner.ProcessId,
                                 TestTimeouts.LogsDuration,
                                 LogLevel.None,
-                                contentType);
+                                logFormat);
                         });
                     Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
                     Assert.Equal(StatusCodes.Status400BadRequest, exception.Details.Status);
@@ -214,19 +205,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat format)
+        public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
-            string contentType = ContentTypes.ApplicationNDJson;
-
-            if (format == LogFormat.NDJson)
-            {
-                contentType = ContentTypes.ApplicationNDJson;
-            }
-            else if (format == LogFormat.JsonSequence)
-            {
-                contentType = ContentTypes.ApplicationJsonSequence;
-            }
-
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -241,7 +221,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                                 runner.ProcessId,
                                 TestTimeouts.LogsDuration,
                                 new LogsConfiguration() { LogLevel = LogLevel.None },
-                                contentType);
+                                logFormat);
                         });
                     Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
                     Assert.Equal(StatusCodes.Status400BadRequest, exception.Details.Status);
@@ -261,7 +241,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsUseAppFiltersViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat format)
+        public Task LogsUseAppFiltersViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -282,7 +262,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                format);
+                logFormat);
         }
 
         /// <summary>
@@ -295,7 +275,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsUseAppFiltersViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat format)
+        public Task LogsUseAppFiltersViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -320,7 +300,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                format);
+                logFormat);
         }
 
         /// <summary>
@@ -334,7 +314,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsUseAppFiltersAndFilterSpecsTest(DiagnosticPortConnectionMode mode, LogFormat format)
+        public Task LogsUseAppFiltersAndFilterSpecsTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -365,7 +345,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                format);
+                logFormat);
         }
 
         /// <summary>
@@ -378,7 +358,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsWildcardTest(DiagnosticPortConnectionMode mode, LogFormat format)
+        public Task LogsWildcardTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -411,26 +391,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                format);
+                logFormat);
         }
 
         private Task ValidateLogsAsync(
             DiagnosticPortConnectionMode mode,
             LogLevel? logLevel,
             Func<ChannelReader<LogEntry>, Task> callback,
-            LogFormat format)
+            LogFormat logFormat)
         {
-            string contentType = ContentTypes.ApplicationNDJson;
-
-            if (format == LogFormat.NDJson)
-            {
-                contentType = ContentTypes.ApplicationNDJson;
-            }
-            else if (format == LogFormat.JsonSequence)
-            {
-                contentType = ContentTypes.ApplicationJsonSequence;
-            }
-
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -438,28 +407,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.Logger.Name,
                 appValidate: (runner, client) => ValidateResponseStream(
                     runner,
-                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, logLevel, contentType),
+                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, logLevel, logFormat),
                     callback,
-                    format));
+                    logFormat));
         }
 
         private Task ValidateLogsAsync(
             DiagnosticPortConnectionMode mode,
             LogsConfiguration configuration,
             Func<ChannelReader<LogEntry>, Task> callback,
-            LogFormat format)
+            LogFormat logFormat)
         {
-            string contentType = ContentTypes.ApplicationNDJson;
-
-            if (format == LogFormat.NDJson)
-            {
-                contentType = ContentTypes.ApplicationNDJson;
-            }
-            else if (format == LogFormat.JsonSequence)
-            {
-                contentType = ContentTypes.ApplicationJsonSequence;
-            }
-
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -467,12 +425,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.Logger.Name,
                 appValidate: (runner, client) => ValidateResponseStream(
                     runner,
-                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, configuration, contentType),
+                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, configuration, logFormat),
                     callback,
-                    format));
+                    logFormat));
         }
 
-        private async Task ValidateResponseStream(AppRunner runner, Task<ResponseStreamHolder> holderTask, Func<ChannelReader<LogEntry>, Task> callback, LogFormat format)
+        private async Task ValidateResponseStream(AppRunner runner, Task<ResponseStreamHolder> holderTask, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
         {
             Assert.NotNull(runner);
             Assert.NotNull(holderTask);
@@ -517,15 +475,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             while (null != (line = await reader.ReadLineAsync()))
             {
-                if (format == LogFormat.JsonSequence)
+                if (logFormat == LogFormat.JsonSequence)
                 {
-                    const char recordSeparator = '\u001E';
-
                     Assert.True(line.Length > 1);
-                    Assert.Equal(recordSeparator, line[0]);
-                    Assert.NotEqual(recordSeparator, line[1]);
+                    Assert.Equal(JsonSequenceRecordSeparator, line[0]);
+                    Assert.NotEqual(JsonSequenceRecordSeparator, line[1]);
 
-                    line = line.TrimStart(recordSeparator);
+                    line = line.TrimStart(JsonSequenceRecordSeparator);
                 }
 
                 _outputHelper.WriteLine("Log entry: {0}", line);

@@ -46,6 +46,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly LogFormat _logFormat;
         private readonly LogLevel? _logLevel;
 
+        public const byte JsonSequenceRecordSeparator = 0x1E;
+
         public StreamingLogger(string category, Stream outputStream, LogFormat format, LogLevel? logLevel)
         {
             _outputStream = outputStream;
@@ -85,11 +87,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             Stream outputStream = _outputStream;
 
-            
             if (jsonFormat == LogFormat.JsonSequence)
             {
-                const byte recordSeparator = 0x1E;
-                outputStream.WriteByte(recordSeparator);
+                outputStream.WriteByte(JsonSequenceRecordSeparator);
             }
 
             //CONSIDER Should we cache up the loggers and writers?

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -135,35 +136,35 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// GET /logs/{pid}?level={logLevel}&durationSeconds={duration}
         /// </summary>
-        public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel, string contentType = ContentTypes.ApplicationNDJson)
+        public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat)
         {
-            return client.CaptureLogsAsync(pid, duration, logLevel, TestTimeouts.HttpApi, contentType);
+            return client.CaptureLogsAsync(pid, duration, logLevel, TestTimeouts.HttpApi, logFormat);
         }
 
         /// <summary>
         /// GET /logs/{pid}?level={logLevel}&durationSeconds={duration}
         /// </summary>
-        public static async Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel, TimeSpan timeout, string contentType = ContentTypes.ApplicationNDJson)
+        public static async Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel, TimeSpan timeout, LogFormat logFormat)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            return await client.CaptureLogsAsync(pid, duration, logLevel, timeoutSource.Token, contentType);
+            return await client.CaptureLogsAsync(pid, duration, logLevel, logFormat, timeoutSource.Token);
         }
 
         /// <summary>
         /// POST /logs/{pid}?durationSeconds={duration}
         /// </summary>
-        public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogsConfiguration configuration, string contentType = ContentTypes.ApplicationNDJson)
+        public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat)
         {
-            return client.CaptureLogsAsync(pid, duration, configuration, TestTimeouts.HttpApi, contentType);
+            return client.CaptureLogsAsync(pid, duration, configuration, TestTimeouts.HttpApi, logFormat);
         }
 
         /// <summary>
         /// POST /logs/{pid}?durationSeconds={duration}
         /// </summary>
-        public static async Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogsConfiguration configuration, TimeSpan timeout, string contentType = ContentTypes.ApplicationNDJson)
+        public static async Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogsConfiguration configuration, TimeSpan timeout, LogFormat logFormat)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            return await client.CaptureLogsAsync(pid, duration, configuration, timeoutSource.Token, contentType);
+            return await client.CaptureLogsAsync(pid, duration, configuration, logFormat, timeoutSource.Token);
         }
 
         /// <summary>
