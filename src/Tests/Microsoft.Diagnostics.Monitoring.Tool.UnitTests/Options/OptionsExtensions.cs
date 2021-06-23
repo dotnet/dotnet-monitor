@@ -52,8 +52,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
             }
 
             using var hashAlgorithm = HashAlgorithm.Create(algorithmName);
-            
-            options.ApiAuthentication.ApiKeyHash = ToHexString(hashAlgorithm.ComputeHash(apiKey));
+
+            byte[] hash = hashAlgorithm.ComputeHash(apiKey);
+            options.ApiAuthentication.ApiKeyHash = ToHexString(hash);
             options.ApiAuthentication.ApiKeyHashType = algorithmName;
 
             return options;

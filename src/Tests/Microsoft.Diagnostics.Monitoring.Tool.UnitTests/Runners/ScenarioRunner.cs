@@ -1,7 +1,12 @@
-﻿using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using System;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,7 +20,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             IHttpClientFactory httpClientFactory,
             DiagnosticPortConnectionMode mode,
             string scenarioName,
-            Func<AppRunner, ApiClient, Task> callback)
+            Func<AppRunner, ApiClient, Task> appValidate,
+            Func<ApiClient, int, Task> postAppValidate = null,
+            Action<AppRunner> configureApp = null)
         {
             DiagnosticPortHelper.Generate(
                 mode,
@@ -31,16 +38,26 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(httpClientFactory);
             ApiClient apiClient = new(outputHelper, httpClient);
 
-            AppRunner appRunner = new(outputHelper);
+            AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = scenarioName;
 
+            if (null != configureApp)
+            {
+                configureApp(appRunner);
+            }
+
             await appRunner.ExecuteAsync(async () =>
             {
-                await callback(appRunner, apiClient);
+                await appValidate(appRunner, apiClient);
             });
             Assert.Equal(0, appRunner.ExitCode);
+
+            if (null != postAppValidate)
+            {
+                await postAppValidate(apiClient, appRunner.ProcessId);
+            }
         }
     }
 }

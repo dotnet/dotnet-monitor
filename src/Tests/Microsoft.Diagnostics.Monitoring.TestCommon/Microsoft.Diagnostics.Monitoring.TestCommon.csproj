@@ -2,11 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortConnectionMode.cs" Link="Options\DiagnosticPortConnectionMode.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
     <PackageReference Include="Microsoft.DotNet.XUnitExtensions" Version="$(MicrosoftDotNetXUnitExtensionsVersion)" />
+    <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />
   </ItemGroup>
 
   <Import Project="GenerateDotNetHost.targets" />

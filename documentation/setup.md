@@ -36,17 +36,17 @@ In addition to public previews, we also publish last-known-good (LKG) builds for
 The LKG build of `dotnet monitor` is available on a private package feed. You can download the latest version of the .NET global tool using the following command:
 
 ```cmd
-dotnet tool install -g dotnet-monitor --add-source https://dnceng.pkgs.visualstudio.com/public/_packaging/dotnet-tools/nuget/v3/index.json --version 5.0.0-preview.5.*
+dotnet tool install -g dotnet-monitor --add-source https://dnceng.pkgs.visualstudio.com/public/_packaging/dotnet-tools/nuget/v3/index.json --version 5.0.0-preview.6.*
 ```
 
 If you already have `dotnet monitor` installed and want to update:
 
 ```cmd
-dotnet tool update -g dotnet-monitor --add-source https://dnceng.pkgs.visualstudio.com/public/_packaging/dotnet-tools/nuget/v3/index.json --version 5.0.0-preview.5.*
+dotnet tool update -g dotnet-monitor --add-source https://dnceng.pkgs.visualstudio.com/public/_packaging/dotnet-tools/nuget/v3/index.json --version 5.0.0-preview.6.*
 ```
 
 The LKG build of `dotnet monitor` is also available as a container image. You can pull the image using the following command:
 
 ```cmd
-docker pull mcr.microsoft.com/dotnet/nightly/monitor:5.0.0-preview.5
+docker pull mcr.microsoft.com/dotnet/nightly/monitor:5.0.0-preview.6
 ```

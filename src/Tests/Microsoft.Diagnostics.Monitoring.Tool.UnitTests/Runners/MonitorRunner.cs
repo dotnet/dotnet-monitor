@@ -203,6 +203,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             _adapter.Environment.Add("COMPlus_EnableDiagnostics", "0");
             // Console output in JSON for easy parsing
             _adapter.Environment.Add("Logging__Console__FormatterName", "json");
+            // Enable Information on ASP.NET Core logs for better ability to diagnose issues.
+            _adapter.Environment.Add("Logging__LogLevel__Microsoft.AspNetCore", "Information");
             // Enable Debug on Startup class to get lifetime and address events
             _adapter.Environment.Add("Logging__LogLevel__Microsoft.Diagnostics.Tools.Monitor.Startup", "Debug");
 

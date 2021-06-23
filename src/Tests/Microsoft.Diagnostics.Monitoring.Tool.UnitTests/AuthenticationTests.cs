@@ -116,18 +116,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         [Fact]
         public async Task ApiKeyAuthenticationSchemeTest()
         {
-            const string AlgorithmName = "SHA256";
-
+            const int keyLength = 32;
+            const string hashAlgorithm = "SHA256";
             await using MonitorRunner toolRunner = new(_outputHelper);
 
             _outputHelper.WriteLine("Generating API key.");
 
             // Generate initial API key
-            byte[] apiKey = GenerateApiKey();
+            byte[] apiKey = GenerateApiKey(keyLength);
 
             // Set API key via key-per-file
             RootOptions options = new();
-            options.UseApiKey(AlgorithmName, apiKey);
+            options.UseApiKey(hashAlgorithm, apiKey);
             toolRunner.WriteKeyPerValueConfiguration(options);
 
             // Start dotnet-monitor
@@ -146,9 +146,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             _outputHelper.WriteLine("Rotating API key.");
 
             // Rotate the API key
-            byte[] apiKey2 = GenerateApiKey();
+            byte[] apiKey2 = GenerateApiKey(keyLength);
 
-            options.UseApiKey(AlgorithmName, apiKey2);
+            options.UseApiKey(hashAlgorithm, apiKey2);
             toolRunner.WriteKeyPerValueConfiguration(options);
 
             // Wait for the key rotation to be consumed by dotnet-monitor; detect this
@@ -183,6 +183,61 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             // Check that /processes does not challenge for authentication
             processes = await apiClient.GetProcessesAsync();
             Assert.NotNull(processes);
+        }
+
+        /// <summary>
+        /// Tests that limits on API key length and
+        /// disallowed algorithms are enforced.
+        /// </summary>
+        [Theory]
+        [InlineData(32, "SHA256", HttpStatusCode.OK)]
+        [InlineData(33, "SHA256", HttpStatusCode.OK)]
+        [InlineData(34, "SHA256", HttpStatusCode.OK)]
+        [InlineData(2048, "SHA256", HttpStatusCode.OK)]
+        [InlineData(32, "SHA512", HttpStatusCode.OK)]
+        [InlineData(2048, "SHA512", HttpStatusCode.OK)]
+        [InlineData(0, "SHA256", HttpStatusCode.Unauthorized)]
+        [InlineData(31, "SHA256", HttpStatusCode.Unauthorized)]
+        [InlineData(2049, "SHA256", HttpStatusCode.Unauthorized)]
+        [InlineData(100000, "SHA256", HttpStatusCode.RequestHeaderFieldsTooLarge)]
+        [InlineData(32, "SHA1", HttpStatusCode.Unauthorized)]
+        [InlineData(32, "MD5", HttpStatusCode.Unauthorized)]
+        public async Task ApiKeyLimitsTest(int keyLength, string hashAlgorithm, HttpStatusCode expectedCode)
+        {
+            await using MonitorRunner toolRunner = new(_outputHelper);
+
+            _outputHelper.WriteLine("Generating API key.");
+
+            // Generate initial API key
+            byte[] apiKey = GenerateApiKey(keyLength);
+
+            // Set API key via key-per-file
+            RootOptions options = new();
+            options.UseApiKey(hashAlgorithm, apiKey);
+            toolRunner.WriteKeyPerValueConfiguration(options);
+
+            // Start dotnet-monitor
+            await toolRunner.StartAsync();
+
+            // Create HttpClient with default request headers
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(ApiKeyScheme, Convert.ToBase64String(apiKey));
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            if (expectedCode == HttpStatusCode.OK)
+            {
+                // We expect the combo to work
+                var processes = await apiClient.GetProcessesAsync();
+                Assert.NotNull(processes);
+            }
+            else
+            {
+                // We expect the authentication handler to reject our request
+                var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                    () => apiClient.GetProcessesAsync());
+                Assert.Equal(expectedCode, statusCodeException.StatusCode);
+            }
         }
 
         /// <summary>
@@ -283,13 +338,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             }
         }
 
-        private static byte[] GenerateApiKey()
+        private static byte[] GenerateApiKey(int keyLength = 32)
         {
-            byte[] apiKey = new byte[32]; // 256 bits
-
-            using RNGCryptoServiceProvider rngProvider = new();
-            rngProvider.GetBytes(apiKey);
-
+            byte[] apiKey = new byte[keyLength]; // 256 bits
+            RandomNumberGenerator.Fill(apiKey);
             return apiKey;
         }
     }

@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHash" xml:space="preserve">
+    <value>API key in hashed form. Each byte should be two hexadecimal-based digits.</value>
+    <comment>The description provided for the ApiKeyHash parameter on ApiAuthenticationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHashType" xml:space="preserve">
+    <value>Hash algorithm used to compute ApiKeyHash, typically 'SHA256'. 'SHA1' and 'MD5' are not allowed.</value>
+    <comment>The description provided for the ApiKeyHashType parameter on ApiAuthenticationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CorsConfiguration_AllowedOrigins" xml:space="preserve">
+    <value>List of allowed CORS origins, separated by semicolons.</value>
+    <comment>The description provided for the AllowedOrigins parameter on CorsConfiguration.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode" xml:space="preserve">
+    <value>In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen' mode, the application connects to dotnet-monitor via EndpointName.</value>
+    <comment>The description provided for the ConnectionMode parameter on DiagnosticPortOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_DiagnosticPortOptions_EndpointName" xml:space="preserve">
+    <value>In 'Listen' mode, specifies the name of the named pipe or unix domain socket to use for connecting to the diagnostic server.</value>
+    <comment>The description provided for the EndpointName parameter on DiagnosticPortOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections" xml:space="preserve">
+    <value>In 'Listen' mode, the maximum amount of connections to accept.</value>
+    <comment>The description provided for the MaxConnections parameter on DiagnosticPortOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
+    <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
+    <comment>The description provided for the Properties parameter on EgressOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_Providers" xml:space="preserve">
+    <value>Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces.</value>
+    <comment>The description provided for the Providers parameter on EgressOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EgressProvider_EgressType" xml:space="preserve">
+    <value>The type of provider. Currently this supports 'fileSystem' and 'azureBlobStorage'.</value>
+    <comment>The description provided for the EgressType parameter on EgressProvider.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricProvider_CounterNames" xml:space="preserve">
+    <value>Name of custom metrics counters.</value>
+    <comment>The description provided for the CounterNames parameter on MetricProvider.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricProvider_ProviderName" xml:space="preserve">
+    <value>The name of the custom metrics provider.</value>
+    <comment>The description provided for the ProviderName parameter on MetricProvider.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_Enabled" xml:space="preserve">
+    <value>Enable or disable metrics collection.</value>
+    <comment>The description provided for the Enabled parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_Endpoints" xml:space="preserve">
+    <value>Endpoints that expose prometheus metrics. Defaults to http://localhost:52325.</value>
+    <comment>The description provided for the Endpoints parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_IncludeDefaultProviders" xml:space="preserve">
+    <value>Include default providers: System.Runtime, Microsoft.AspNetCore.Hosting, and Grpc.AspNetCore.Server.</value>
+    <comment>The description provided for the IncludeDefaultProviders parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_MetricCount" xml:space="preserve">
+    <value>Amount of data points to store per metric.</value>
+    <comment>The description provided for the MetricCount parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_Providers" xml:space="preserve">
+    <value>Providers for custom metrics.</value>
+    <comment>The description provided for the Providers parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds" xml:space="preserve">
+    <value>How often metrics are collected.</value>
+    <comment>The description provided for the UpdateIntervalSeconds parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_Key" xml:space="preserve">
+    <value>The criteria used to compare against the target process.</value>
+    <comment>The description provided for the Key parameter on ProcessFilterDescriptor.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_MatchType" xml:space="preserve">
+    <value>Type of match to use against the process criteria.</value>
+    <comment>The description provided for the MatchType parameter on ProcessFilterDescriptor.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_Value" xml:space="preserve">
+    <value>The value of the criteria used to compare against the target process.</value>
+    <comment>The description provided for the Value parameter on ProcessFilterDescriptor.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterKey_CommandLine" xml:space="preserve">
+    <value>Performs a match based on the contents of the command passed to launch the process on the system; this typically includes the executable path and arguments to the process.</value>
+    <comment>The description provided for enum ProcessFilterKey's CommandLine value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterKey_ProcessId" xml:space="preserve">
+    <value>Performs a match based on the numerical ID of a process on the system.</value>
+    <comment>The description provided for enum ProcessFilterKey's ProcessId value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterKey_ProcessName" xml:space="preserve">
+    <value>Performs a match based on the name of a process on the system.</value>
+    <comment>The description provided for enum ProcessFilterKey's ProcessName value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterOptions_Filters" xml:space="preserve">
+    <value>Process filters used to determine which process to use if one is not explicitly specified. All filters must match.</value>
+    <comment>The description provided for the Filters parameter on ProcessFilterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterType_Contains" xml:space="preserve">
+    <value>Performs a case-insensitive substring search.</value>
+    <comment>The description provided for enum ProcessFilterType's Contains value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterType_Exact" xml:space="preserve">
+    <value>Performs a case-insensitive string comparison.</value>
+    <comment>The description provided for enum ProcessFilterType's Exact value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_StorageOptions_DumpTempFolder" xml:space="preserve">
+    <value>The location for temporary dump files. Defaults to the temp folder.</value>
+    <comment>The description provided for the DumpTempFolder parameter on StorageOptions.</comment>
+  </data>
+</root>

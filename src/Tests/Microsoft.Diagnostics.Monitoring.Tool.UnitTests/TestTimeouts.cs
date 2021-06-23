@@ -14,21 +14,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         public static readonly TimeSpan HttpApi = TimeSpan.FromSeconds(15);
 
         /// <summary>
-        /// Default timeout for sending commands from the test to a process.
-        /// </summary>
-        public static readonly TimeSpan SendCommand = TimeSpan.FromSeconds(15);
-
-        /// <summary>
-        /// Default timeout for starting an executable.
-        /// </summary>
-        public static readonly TimeSpan StartProcess = TimeSpan.FromMinutes(1);
-
-        /// <summary>
-        /// Default timeout for waiting for an executable to exit.
-        /// </summary>
-        public static readonly TimeSpan WaitForExit = TimeSpan.FromSeconds(15);
-
-        /// <summary>
         /// Default logs collection duration.
         /// </summary>
         public static readonly TimeSpan LogsDuration = TimeSpan.FromSeconds(10);
@@ -36,6 +21,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Default timeout for dump collection.
         /// </summary>
-        public static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(1);
+        /// <remarks>
+        /// Dumps (especially full dumps) can be quite large and take a significant amount of time to transfer.
+        /// </remarks>
+        public static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(3);
     }
 }
