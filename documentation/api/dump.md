@@ -7,19 +7,19 @@ Captures a managed dump of a specified process without using a debugger.
 ## HTTP Route
 
 ```http
-GET /dump/{pid}?type={type}&egressProvider={egressProvider} HTTP/1.1
+GET /dump?pid={pid}&type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or 
 
 ```http
-GET /dump/{uid}?type={type}&egressProvider={egressProvider} HTTP/1.1
+GET /dump?uid={uid}&type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
 
 ```http
-GET /dump/{name}?type={type}&egressProvider={egressProvider} HTTP/1.1
+GET /dump?name={name}&type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
@@ -70,7 +70,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /dump/21632?type=Full HTTP/1.1
+GET /dump?pid=21632&type=Full HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -78,7 +78,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /dump/cd4da319-fa9e-4987-ac4e-e57b2aac248b?type=Full HTTP/1.1
+GET /dump?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&type=Full HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
