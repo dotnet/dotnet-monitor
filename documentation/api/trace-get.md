@@ -5,19 +5,19 @@ Captures a diagnostic trace of a process based on a predefined set of trace prof
 ## HTTP Route
 
 ```http
-GET /trace/{pid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
+GET /trace?pid={pid}&profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or 
 
 ```http
-GET /trace/{uid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
+GET /trace?uid={uid}&profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
 
 ```http
-GET /trace/{name}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
+GET /trace?name={name}&profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
@@ -72,7 +72,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /trace/21632?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
+GET /trace?pid=21632&profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -80,7 +80,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
+GET /trace?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
