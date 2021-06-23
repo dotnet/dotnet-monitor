@@ -96,7 +96,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            // If the PID is set to -1 and processKey never gets overwritten by another parameter, then sender should get a 400 response.
             ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
 
             return InvokeForProcess<Models.ProcessInfo>(processInfo =>
@@ -464,10 +463,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Capture a stream of logs from a process.
         /// </summary>
+        /// <param name="configuration">The logs configuration describing which logs to capture.</param>
         /// <param name="pid">Process ID used to identify the target process.</param>
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="configuration">The logs configuration describing which logs to capture.</param>
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpPost("logs", Name = nameof(CaptureLogsCustom))]
