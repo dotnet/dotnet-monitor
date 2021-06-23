@@ -93,8 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid uid = new Guid(),
             [FromQuery]
-            string name = ""
-            )
+            string name = null)
         {
             // If the PID is set to -1 and processKey never gets overwritten by another parameter, then sender should get a 400 response.
             ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
@@ -133,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid uid = new Guid(),
             [FromQuery]
-            string name = "")
+            string name = null)
         {
             ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
 
@@ -179,7 +178,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid uid = new Guid(),
             [FromQuery]
-            string name = "",
+            string name = null,
             [FromQuery]
             Models.DumpType type = Models.DumpType.WithHeap,
             [FromQuery]
@@ -239,7 +238,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid uid = new Guid(),
             [FromQuery]
-            string name = "",
+            string name = null,
             [FromQuery]
             string egressProvider = null)
         {
@@ -301,7 +300,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid uid = new Guid(),
             [FromQuery]
-            string name = "",
+            string name = null,
             [FromQuery]
             Models.TraceProfile profile = DefaultTraceProfiles,
             [FromQuery][Range(-1, int.MaxValue)]
@@ -369,7 +368,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid uid = new Guid(),
             [FromQuery]
-            string name = "",
+            string name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
@@ -427,7 +426,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid uid = new Guid(),
             [FromQuery]
-            string name = "",
+            string name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
@@ -483,7 +482,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid uid = new Guid(),
             [FromQuery]
-            string name = "",
+            string name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
@@ -608,7 +607,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 processKeys.Add(uidKey);
             }
 
-            if (!name.Equals(""))
+            if (name != null)
             {
                 processKeys.Add(nameKey);
             }
@@ -664,6 +663,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
 
                 if (processInfos[index].EndpointInfo.RuntimeInstanceCookie != initialProcessInfo.EndpointInfo.RuntimeInstanceCookie)
+                {
+                    return false;
+                }
+
+                if (!processInfos[index].ProcessName.Equals(initialProcessInfo.ProcessName))
                 {
                     return false;
                 }
