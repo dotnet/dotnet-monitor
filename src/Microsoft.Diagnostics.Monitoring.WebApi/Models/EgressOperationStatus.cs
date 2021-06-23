@@ -5,9 +5,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
+#if UNITTEST
+namespace Microsoft.Diagnostics.Monitoring.UnitTests.Models
+#else
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
+#endif
 {
     /// <summary>
     /// Represents the state of a long running operation. Used for all types of results, including
@@ -29,6 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public OperationError Error { get; set; }
     }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum OperationState
     {
         Running,

@@ -97,10 +97,23 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
             {
                 if (!property.GetIndexParameters().Any())
                 {
-                    MapValue(
-                        property.GetValue(obj),
-                        FormattableString.Invariant($"{prefix}{property.Name}"),
-                        map);
+                    if (property.GetCustomAttribute<System.Text.Json.Serialization.JsonExtensionDataAttribute>() != null)
+                    {
+                        IDictionary<string,string> extendedProperties = (IDictionary<string,string>)property.GetValue(obj);
+                        foreach(KeyValuePair<string,string> kvp in extendedProperties)
+                        {
+                            MapValue(kvp.Value, FormattableString.Invariant($"{prefix}{kvp.Key}"), map);
+                        }
+                    }
+                    else
+                    {
+                        string propertyName = property.GetCustomAttribute<Newtonsoft.Json.JsonPropertyAttribute>()?.PropertyName ?? property.Name;
+
+                        MapValue(
+                            property.GetValue(obj),
+                            FormattableString.Invariant($"{prefix}{propertyName}"),
+                            map);
+                    }
                 }
             }
         }

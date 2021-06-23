@@ -304,10 +304,37 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
+        public async Task<OperationResponse> EgressTraceAsync(int processId, int durationSeconds, string egressProvider, CancellationToken token)
+        {
+            string uri = FormattableString.Invariant($"/trace/{processId}?egressProvider={egressProvider}&durationSeconds={durationSeconds}");
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+
+            return new OperationResponse(response.StatusCode, response.Headers.Location);
+        }
+
+        public async Task<OperationStatus> GetOperationStatus(Uri operation, CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, operation.ToString());
+            using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            return await ReadContentAsync<OperationStatus>(response).ConfigureAwait(false);
+        }
+
+        public async Task<HttpStatusCode> CancelEgressOperation(Uri operation, CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Delete, operation.ToString());
+            using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            return response.StatusCode;
+        }
+
         private static async Task<T> ReadContentAsync<T>(HttpResponseMessage responseMessage)
         {
             using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            return await JsonSerializer.DeserializeAsync<T>(contentStream).ConfigureAwait(false);
+            return await JsonSerializer.DeserializeAsync<T>(contentStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).ConfigureAwait(false);
         }
 
         private static Task<List<T>> ReadContentEnumerableAsync<T>(HttpResponseMessage responseMessage)

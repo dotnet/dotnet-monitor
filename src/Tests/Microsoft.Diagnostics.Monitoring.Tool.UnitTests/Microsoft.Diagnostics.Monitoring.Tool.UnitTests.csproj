@@ -16,6 +16,7 @@
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\ProcessFilterOptions.cs" Link="Options\ProcessFilterOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DumpType.cs" Link="Models\DumpType.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\LogsConfiguration.cs" Link="Models\LogsConfiguration.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\EgressOperationStatus.cs" Link="Models\EgressOperationStatus.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\StorageOptions.cs" Link="Options\StorageOptions.cs" />
