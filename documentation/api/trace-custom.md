@@ -5,19 +5,19 @@ Captures a diagnostic trace of a process using the given set of event providers 
 ## HTTP Route
 
 ```http
-POST /trace/{pid}?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /trace?pid={pid}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or 
 
 ```http
-POST /trace/{uid}?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /trace?uid={uid}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
 
 ```http
-POST /trace/{name}?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /trace?name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
@@ -76,7 +76,7 @@ The expected content type is `application/json`.
 ### Sample Request
 
 ```http
-POST /trace/21632?durationSeconds=60 HTTP/1.1
+POST /trace?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 Content-Type: application/json
@@ -97,7 +97,7 @@ Content-Type: application/json
 or
 
 ```http
-POST /trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?durationSeconds=60 HTTP/1.1
+POST /trace?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 Content-Type: application/json
