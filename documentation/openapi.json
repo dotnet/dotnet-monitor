@@ -49,7 +49,9 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "default": -1
             }
           },
           {
@@ -58,6 +60,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
               "format": "uuid"
             }
           },
@@ -66,7 +69,9 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           }
         ],
@@ -104,7 +109,9 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "default": -1
             }
           },
           {
@@ -113,6 +120,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
               "format": "uuid"
             }
           },
@@ -121,7 +129,9 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           }
         ],
@@ -162,7 +172,9 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "default": -1
             }
           },
           {
@@ -171,6 +183,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
               "format": "uuid"
             }
           },
@@ -179,7 +192,9 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           },
           {
@@ -239,7 +254,9 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "default": -1
             }
           },
           {
@@ -248,6 +265,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
               "format": "uuid"
             }
           },
@@ -256,7 +274,9 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           },
           {
@@ -308,7 +328,9 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "default": -1
             }
           },
           {
@@ -317,6 +339,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
               "format": "uuid"
             }
           },
@@ -325,7 +348,9 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           },
           {
@@ -409,7 +434,9 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "default": -1
             }
           },
           {
@@ -418,6 +445,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
               "format": "uuid"
             }
           },
@@ -426,7 +454,9 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           },
           {
@@ -512,7 +542,9 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "default": -1
             }
           },
           {
@@ -521,6 +553,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
               "format": "uuid"
             }
           },
@@ -529,7 +562,9 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           },
           {
@@ -604,7 +639,9 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "default": -1
             }
           },
           {
@@ -613,6 +650,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
               "format": "uuid"
             }
           },
@@ -621,7 +659,9 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           },
           {
