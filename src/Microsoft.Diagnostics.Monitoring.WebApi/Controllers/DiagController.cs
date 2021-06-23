@@ -50,12 +50,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
+        private readonly EgressOperationStore _operationStore;
 
-        public DiagController(ILogger<DiagController> logger, IServiceProvider serviceProvider)
+        public DiagController(ILogger<DiagController> logger,
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
+            _operationStore = serviceProvider.GetRequiredService<EgressOperationStore>();
         }
 
         /// <summary>
@@ -188,6 +191,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         // describes the result as a binary file.
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(MaxConcurrency = 1)]
         public Task<ActionResult> CaptureDump(
             [FromQuery]
@@ -224,13 +228,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     scope.AddArtifactType(ArtifactType_Dump);
                     scope.AddEndpointInfo(processInfo.EndpointInfo);
 
-                    return new EgressStreamResult(
+                    return await SendToEgress(new EgressOperation(
                         token => _diagnosticServices.GetDump(processInfo, type, token),
                         egressProvider,
                         dumpFileName,
                         processInfo.EndpointInfo,
                         ContentTypes.ApplicationOctetStream,
-                        scope);
+                        scope));
                 }
             }, processKey, ArtifactType_Dump);
         }
@@ -249,6 +253,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         // describes the result as a binary file.
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(MaxConcurrency = 1)]
         public Task<ActionResult> CaptureGcDump(
             [FromQuery]
@@ -311,6 +316,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         // describes the result as a binary file.
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureTrace(
             [FromQuery]
@@ -377,6 +383,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         // describes the result as a binary file.
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureTraceCustom(
             [FromBody][Required]
@@ -437,6 +444,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureLogs(
             [FromQuery]
@@ -491,6 +499,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureLogsCustom(
             [FromBody]
@@ -578,7 +587,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return _diagnosticPortOptions.Value.EndpointName;
         }
 
-        private ActionResult StartTrace(
+        private Task<ActionResult> StartTrace(
             IProcessInfo processInfo,
             MonitoringSourceConfiguration configuration,
             TimeSpan duration,
@@ -615,7 +624,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 processInfo.EndpointInfo);
         }
 
-        private ActionResult StartLogs(
+        private Task<ActionResult> StartLogs(
             IProcessInfo processInfo,
             EventLogsPipelineSettings settings,
             string egressProvider)
@@ -623,7 +632,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             LogFormat format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
             if (format == LogFormat.None)
             {
-                return this.NotAcceptable();
+                return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
             string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
@@ -715,7 +724,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return LogFormat.None;
         }
 
-        private ActionResult Result(
+        private Task<ActionResult> Result(
             string artifactType,
             string providerName,
             Func<Stream, CancellationToken, Task> action,
@@ -730,22 +739,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             if (string.IsNullOrEmpty(providerName))
             {
-                return new OutputStreamResult(
+                return Task.FromResult<ActionResult>(new OutputStreamResult(
                     action,
                     contentType,
                     asAttachment ? fileName : null,
-                    scope);
+                    scope));
             }
             else
             {
-                return new EgressStreamResult(
+                return SendToEgress(new EgressOperation(
                     action,
                     providerName,
                     fileName,
                     endpointInfo,
                     contentType,
-                    scope);
+                    scope));
             }
+        }
+
+        private async Task<ActionResult> SendToEgress(EgressOperation egressStreamResult)
+        {
+            Guid operationId = await _operationStore.AddOperation(egressStreamResult);
+            string newUrl = this.Url.Action(
+                action: nameof(OperationController.GetOperationStatus),
+                controller: OperationController.ControllerName, new { operationId = operationId },
+                protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
+
+            return Accepted(newUrl);
         }
 
         private static Func<Stream, CancellationToken, Task> ConvertFastSerializeAction(Func<CancellationToken, Task<IFastSerializable>> action)

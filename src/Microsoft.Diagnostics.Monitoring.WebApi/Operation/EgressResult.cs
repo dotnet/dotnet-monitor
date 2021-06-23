@@ -6,13 +6,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal struct EgressResult
     {
-        public EgressResult(string name, string value)
+        public EgressResult(string value)
         {
-            Name = name;
             Value = value;
         }
-
-        public string Name { get; }
 
         public string Value { get; }
     }

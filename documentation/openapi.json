@@ -239,6 +239,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       }
@@ -314,6 +317,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       }
@@ -423,6 +429,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       },
@@ -530,6 +539,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       }
@@ -635,6 +647,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       },
@@ -750,6 +765,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       }
@@ -801,6 +819,67 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/operation/{operationId}": {
+      "get": {
+        "tags": [
+          "Operation"
+        ],
+        "parameters": [
+          {
+            "name": "operationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationStatus"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationStatus"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Operation"
+        ],
+        "parameters": [
+          {
+            "name": "operationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
           }
         }
       }

@@ -14,68 +14,60 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class ActionContextExtensions
+    public sealed class ExecutionResult<T>
     {
-        public static Task ProblemAsync(this ActionContext context, Exception ex)
-        {
-            if (context.HttpContext.Features.Get<IHttpResponseFeature>().HasStarted)
-            {
-                // If already started writing response, do not rewrite
-                // as this will throw an InvalidOperationException.
-                return Task.CompletedTask;
-            }
-            else
-            {
-                BadRequestObjectResult result = new BadRequestObjectResult(ex.ToProblemDetails((int)HttpStatusCode.BadRequest));
-                // Need to manually add this here because this ObjectResult is not processed by the filter pipeline,
-                // which would look up the applicable content types and apply them before executing the result.
-                result.ContentTypes.Add(ContentTypes.ApplicationProblemJson);
-                return result.ExecuteResultAsync(context);
-            }
-        }
+        public T Result { get; set; }
+        public ProblemDetails ProblemDetails { get; set; }
+    }
 
-        public static async Task InvokeAsync(this ActionContext context, Func<CancellationToken, Task> action, ILogger logger)
+    internal static class ExecutionHelper
+    {
+        private static ExecutionResult<T> ExceptionToResult<T>(Exception ex) =>
+            new ExecutionResult<T>{ ProblemDetails = ex.ToProblemDetails((int)HttpStatusCode.BadRequest) };
+
+        public static async Task<ExecutionResult<T>> InvokeAsync<T>(Func<CancellationToken, Task<ExecutionResult<T>>> action, ILogger logger,
+            CancellationToken token)
+
         {
-            CancellationToken token = context.HttpContext.RequestAborted;
             // Exceptions are logged in the "when" clause in order to preview the exception
             // from the point of where it was thrown. This allows capturing of the log scopes
             // that were active when the exception was thrown. Waiting to log during the exception
             // handler will miss any scopes that were added during invocation of action.
             try
             {
-                await action(token);
+                return await action(token);
             }
             catch (ArgumentException ex) when (LogError(logger, ex))
             {
-                await context.ProblemAsync(ex);
+                return ExceptionToResult<T>(ex);
             }
             catch (DiagnosticsClientException ex) when (LogError(logger, ex))
             {
-                await context.ProblemAsync(ex);
+                return ExceptionToResult<T>(ex);
             }
             catch (InvalidOperationException ex) when (LogError(logger, ex))
             {
-                await context.ProblemAsync(ex);
+                return ExceptionToResult<T>(ex);
             }
             catch (OperationCanceledException ex) when (token.IsCancellationRequested && LogInformation(logger, ex))
             {
-                await context.ProblemAsync(ex);
+                return ExceptionToResult<T>(ex);
             }
             catch (OperationCanceledException ex) when (LogError(logger, ex))
             {
-                await context.ProblemAsync(ex);
+                return ExceptionToResult<T>(ex);
             }
             catch (MonitoringException ex) when (LogError(logger, ex))
             {
-                await context.ProblemAsync(ex);
+                return ExceptionToResult<T>(ex);
             }
             catch (ValidationException ex) when (LogError(logger, ex))
             {
-                await context.ProblemAsync(ex);
+                return ExceptionToResult<T>(ex);
             }
             catch (UnauthorizedAccessException ex) when (LogError(logger, ex))
             {
-                await context.ProblemAsync(ex);
+                return ExceptionToResult<T>(ex);
             }
         }
 
@@ -89,6 +81,45 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             logger.RequestCanceled();
             return true;
+        }
+    }
+
+    internal static class ActionContextExtensions
+    {
+        public static Task ProblemAsync(this ActionContext context, BadRequestObjectResult result)
+        {
+            if (context.HttpContext.Features.Get<IHttpResponseFeature>().HasStarted)
+            {
+                // If already started writing response, do not rewrite
+                // as this will throw an InvalidOperationException.
+                return Task.CompletedTask;
+            }
+            else
+            {
+                // Need to manually add this here because this ObjectResult is not processed by the filter pipeline,
+                // which would look up the applicable content types and apply them before executing the result.
+                result.ContentTypes.Add(ContentTypes.ApplicationProblemJson);
+                return result.ExecuteResultAsync(context);
+            }
+        }
+
+        public static async Task InvokeAsync(this ActionContext context, Func<CancellationToken, Task> action, ILogger logger)
+        {
+            //We want to handle two scenarios:
+            //1) These functions are part of an ExecuteResultAsync implementation, in which case
+            //they don't need to return anything. (The delegate below handles this case).
+            //2) They are part of deferred processing and return a result.
+            Func<CancellationToken, Task<ExecutionResult<object>>> innerAction = async (CancellationToken token) =>
+            {
+                await action(token);
+                return new ExecutionResult<object>();
+            };
+
+            ExecutionResult<object> result = await ExecutionHelper.InvokeAsync(innerAction, logger, context.HttpContext.RequestAborted);
+            if (result.ProblemDetails != null)
+            {
+                await context.ProblemAsync(new BadRequestObjectResult(result.ProblemDetails));
+            }
         }
     }
 }
