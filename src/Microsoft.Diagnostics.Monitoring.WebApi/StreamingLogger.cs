@@ -46,6 +46,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly LogFormat _logFormat;
         private readonly LogLevel? _logLevel;
 
+        public const byte JsonSequenceRecordSeparator = 0x1E;
+
         public StreamingLogger(string category, Stream outputStream, LogFormat format, LogLevel? logLevel)
         {
             _outputStream = outputStream;
@@ -67,9 +69,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            if (_logFormat == LogFormat.Json)
+            if (_logFormat == LogFormat.NDJson)
             {
                 LogJson(logLevel, eventId, state, exception, formatter);
+            }
+            else if (_logFormat == LogFormat.JsonSequence)
+            {
+                LogJson(logLevel, eventId, state, exception, formatter, LogFormat.JsonSequence);
             }
             else
             {
@@ -77,9 +83,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        private void LogJson<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        private void LogJson<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter, LogFormat jsonFormat = LogFormat.NDJson)
         {
             Stream outputStream = _outputStream;
+
+            if (jsonFormat == LogFormat.JsonSequence)
+            {
+                outputStream.WriteByte(JsonSequenceRecordSeparator);
+            }
 
             //CONSIDER Should we cache up the loggers and writers?
             using (var jsonWriter = new Utf8JsonWriter(outputStream, new JsonWriterOptions { Indented = false }))
@@ -87,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 // Matches the format of JsonConsoleFormatter
 
                 jsonWriter.WriteStartObject();
-                jsonWriter.WriteString("Timestamp", (state is IStateWithTimestamp stateWithTimestamp) ? FormatTimestamp(stateWithTimestamp): string.Empty);
+                jsonWriter.WriteString("Timestamp", (state is IStateWithTimestamp stateWithTimestamp) ? FormatTimestamp(stateWithTimestamp) : string.Empty);
                 jsonWriter.WriteString("LogLevel", logLevel.ToString());
                 jsonWriter.WriteNumber("EventId", eventId.Id);
                 // EventId.Name is optional; use empty string if it is null as this
@@ -132,7 +143,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 jsonWriter.Flush();
             }
 
+            // JSON Sequence and NDJson both use newline as the end character
             outputStream.WriteByte((byte)'\n');
+
             outputStream.Flush();
         }
 

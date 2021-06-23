@@ -5,19 +5,19 @@ Gets the environment block of a specified process.
 ## HTTP Route
 
 ```http
-GET /processes/{pid}/env HTTP/1.1
+GET /env?pid={pid} HTTP/1.1
 ```
 
 or 
 
 ```http
-GET /processes/{uid}/env HTTP/1.1
+GET /env?uid={uid} HTTP/1.1
 ```
 
 or
 
 ```http
-GET /processes/{name}/env HTTP/1.1
+GET /env?name={name} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -59,7 +59,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /processes/21632/env HTTP/1.1
+GET /env?pid=21632 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -67,7 +67,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /processes/cd4da319-fa9e-4987-ac4e-e57b2aac248b/env HTTP/1.1
+GET /env?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```

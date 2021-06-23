@@ -7,19 +7,19 @@ Captures log statements that are logged to the [ILogger<> infrastructure](https:
 ## HTTP Route
 
 ```http
-POST /logs/{pid}?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /logs?pid={pid}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or 
 
 ```http
-POST /logs/{uid}?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /logs?uid={uid}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
 
 ```http
-POST /logs/{name}?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /logs?name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 or
@@ -77,7 +77,7 @@ The expected content type is `application/json`.
 ### Sample Request
 
 ```http
-POST /logs/21632?durationSeconds=60 HTTP/1.1
+POST /logs?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 
@@ -93,7 +93,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-POST /logs/cd4da319-fa9e-4987-ac4e-e57b2aac248b?durationSeconds=60 HTTP/1.1
+POST /logs?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 

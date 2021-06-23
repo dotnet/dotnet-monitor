@@ -42,6 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
         private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);
+        private static readonly MediaTypeHeaderValue JsonSequenceHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationJsonSequence);
         private static readonly MediaTypeHeaderValue EventStreamHeader = new MediaTypeHeaderValue(ContentTypes.TextEventStream);
 
         private readonly ILogger<DiagController> _logger;
@@ -416,7 +417,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="level">The level of the logs to capture.</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpGet("logs", Name = nameof(CaptureLogs))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
@@ -470,7 +471,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpPost("logs", Name = nameof(CaptureLogsCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.TextEventStream)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
@@ -555,7 +556,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
 
             string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
-            string contentType = format == LogFormat.EventStream ? ContentTypes.TextEventStream : ContentTypes.ApplicationNdJson;
+            string contentType = ContentTypes.TextEventStream;
+            
+            if (format == LogFormat.EventStream)
+            {
+                contentType = ContentTypes.TextEventStream;
+            }
+            else if (format == LogFormat.NDJson)
+            {
+                contentType = ContentTypes.ApplicationNdJson;
+            }
+            else if (format == LogFormat.JsonSequence)
+            {
+                contentType = ContentTypes.ApplicationJsonSequence;
+            }
 
             Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
             {
@@ -694,7 +708,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
             if (acceptedHeaders.Contains(NdJsonHeader))
             {
-                return LogFormat.Json;
+                return LogFormat.NDJson;
+            }
+            if (acceptedHeaders.Contains(JsonSequenceHeader))
+            {
+                return LogFormat.JsonSequence;
             }
             if (acceptedHeaders.Any(h => EventStreamHeader.IsSubsetOf(h)))
             {
@@ -702,7 +720,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
             if (acceptedHeaders.Any(h => NdJsonHeader.IsSubsetOf(h)))
             {
-                return LogFormat.Json;
+                return LogFormat.NDJson;
+            }
+            if (acceptedHeaders.Any(h => JsonSequenceHeader.IsSubsetOf(h)))
+            {
+                return LogFormat.JsonSequence;
             }
             return LogFormat.None;
         }

@@ -211,20 +211,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// GET /logs?pid={pid}&level={logLevel}&durationSeconds={duration}
         /// </summary>
-        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, logLevel, ProcessIdentifierFormat.PID, token);
+            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, logLevel, logFormat, ProcessIdentifierFormat.PID, token);
         }
 
         /// <summary>
         /// GET /logs?uid={uid}&level={logLevel}&durationSeconds={duration}
         /// </summary>
-        public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogLevel? logLevel, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(uid.ToString("D"), duration, logLevel, ProcessIdentifierFormat.UID, token);
+            return CaptureLogsAsync(uid.ToString("D"), duration, logLevel, logFormat, ProcessIdentifierFormat.UID, token);
         }
 
-        private Task<ResponseStreamHolder> CaptureLogsAsync(string processIdentifier, TimeSpan duration, LogLevel? logLevel, ProcessIdentifierFormat processIdentifierFormat, CancellationToken token)
+        private Task<ResponseStreamHolder> CaptureLogsAsync(string processIdentifier, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, ProcessIdentifierFormat processIdentifierFormat, CancellationToken token)
         {
             string requestPrefix = GetRequestPrefix(processIdentifierFormat);
 
@@ -234,26 +234,27 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
                 HttpMethod.Get,
                 CreateLogsUriString(processIdentifierQuery, duration, logLevel),
                 content: null,
+                logFormat,
                 token);
         }
 
         /// <summary>
         /// POST /logs?pid={pid}&durationSeconds={duration}
         /// </summary>
-        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, configuration, ProcessIdentifierFormat.PID, token);
+            return CaptureLogsAsync(pid.ToString(CultureInfo.InvariantCulture), duration, configuration, logFormat, ProcessIdentifierFormat.PID, token);
         }
 
         /// <summary>
         /// POST /logs?uid={uid}&durationSeconds={duration}
         /// </summary>
-        public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogsConfiguration configuration, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(uid.ToString("D"), duration, configuration, ProcessIdentifierFormat.UID, token);
+            return CaptureLogsAsync(uid.ToString("D"), duration, configuration, logFormat, ProcessIdentifierFormat.UID, token);
         }
 
-        private Task<ResponseStreamHolder> CaptureLogsAsync(string processIdentifier, TimeSpan duration, LogsConfiguration configuration, ProcessIdentifierFormat processIdentifierFormat, CancellationToken token)
+        private Task<ResponseStreamHolder> CaptureLogsAsync(string processIdentifier, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, ProcessIdentifierFormat processIdentifierFormat, CancellationToken token)
         {
             string requestPrefix = GetRequestPrefix(processIdentifierFormat);
 
@@ -267,13 +268,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
                 HttpMethod.Post,
                 CreateLogsUriString(processIdentifierQuery, duration, logLevel: null),
                 new StringContent(json, Encoding.UTF8, ContentTypes.ApplicationJson),
+                logFormat,
                 token);
         }
 
-        private async Task<ResponseStreamHolder> CaptureLogsAsync(HttpMethod method, string uri, HttpContent content, CancellationToken token)
+        private async Task<ResponseStreamHolder> CaptureLogsAsync(HttpMethod method, string uri, HttpContent content, LogFormat logFormat, CancellationToken token)
         {
+            string contentType = "";
+
+            if (logFormat == LogFormat.JsonSequence)
+            {
+                contentType = ContentTypes.ApplicationJsonSequence;
+            }
+            else if (logFormat == LogFormat.NDJson)
+            {
+                contentType = ContentTypes.ApplicationNDJson;
+            }
+
             using HttpRequestMessage request = new(method, uri);
-            request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationNDJson);
+            request.Headers.Add(HeaderNames.Accept, contentType);
             request.Content = content;
 
             using DisposableBox<HttpResponseMessage> responseBox = new(
@@ -285,7 +298,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             switch (responseBox.Value.StatusCode)
             {
                 case HttpStatusCode.OK:
-                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationNDJson);
+                    ValidateContentType(responseBox.Value, contentType);
                     return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
