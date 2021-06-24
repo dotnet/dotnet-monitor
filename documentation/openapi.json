@@ -825,6 +825,9 @@
           "name": {
             "type": "string",
             "nullable": true
+          },
+          "is_default": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false

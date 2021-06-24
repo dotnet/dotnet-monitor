@@ -64,6 +64,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return this.InvokeService(async () =>
             {
+                IProcessInfo defaultProcessInfo = null;
+                try
+                {
+                    defaultProcessInfo = await _diagnosticServices.GetProcessAsync(null, HttpContext.RequestAborted);
+                }
+                catch (Exception)
+                {
+                    // Unable to locate a default process; no action required
+                }
+
                 IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
                 foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(processFilter: null, HttpContext.RequestAborted))
                 {
@@ -71,7 +81,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     {
                         Pid = p.EndpointInfo.ProcessId,
                         Uid = p.EndpointInfo.RuntimeInstanceCookie,
-                        Name = p.ProcessName
+                        Name = p.ProcessName,
+                        IsDefault = (defaultProcessInfo != null &&
+                            p.EndpointInfo.ProcessId == defaultProcessInfo.EndpointInfo.ProcessId &&
+                            p.EndpointInfo.RuntimeInstanceCookie == defaultProcessInfo.EndpointInfo.RuntimeInstanceCookie)
                     });
                 }
                 _logger.WrittenToHttpStream();
