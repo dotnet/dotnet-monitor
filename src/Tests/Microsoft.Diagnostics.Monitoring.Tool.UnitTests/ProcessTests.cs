@@ -145,7 +145,137 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         }
 
         /// <summary>
-        /// Verifies that a process was found in the identifiers list and checks the /processes/{processKey} route for the same process.
+        /// Tests that HTTP Requests using PID, UID, and/or Name have the correct response
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Connect)]
+#if NET5_0_OR_GREATER
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+#endif
+        public async Task ProcessRequestConsistencyTest(DiagnosticPortConnectionMode mode)
+        {
+            DiagnosticPortHelper.Generate(
+                mode,
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
+
+            await using MonitorRunner toolRunner = new(_outputHelper);
+            toolRunner.ConnectionMode = mode;
+            toolRunner.DiagnosticPortPath = diagnosticPortPath;
+            toolRunner.DisableAuthentication = true;
+            await toolRunner.StartAsync();
+
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            const int appCount = 1; // May add more extensive testing in the future that utilizes multiple processes
+            AppRunner[] appRunners = new AppRunner[appCount];
+
+            for (int i = 0; i < appCount; i++)
+            {
+                AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId: i + 1);
+                runner.ConnectionMode = appConnectionMode;
+                runner.DiagnosticPortPath = diagnosticPortPath;
+                runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
+                runner.Environment[ExpectedEnvVarName] = Guid.NewGuid().ToString("D");
+
+                appRunners[i] = runner;
+            }
+
+            IEnumerable<ProcessIdentifier> identifiers;
+            await appRunners.ExecuteAsync(async () =>
+            {
+                // Query for process identifiers
+                identifiers = await apiClient.GetProcessesAsync();
+
+                Assert.NotNull(identifiers);
+
+                List<int?> pids = new List<int?>();
+                List<Guid?> uids = new List<Guid?>();
+                List<string> names = new List<string>();
+
+                foreach (ProcessIdentifier processIdentifier in identifiers)
+                {
+                    pids.Add(processIdentifier.Pid);
+                    uids.Add(processIdentifier.Uid);
+                    names.Add(processIdentifier.Name);
+                }
+
+#if NET5_0_OR_GREATER
+                // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
+
+                List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
+
+                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null, System.Threading.CancellationToken.None));
+                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: uids[0], name: null, System.Threading.CancellationToken.None));
+                //processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: null, name: names[0], System.Threading.CancellationToken.None));
+
+                VerifyProcessInfoEquality(processInfoQueriesCheck1);
+#endif
+                // CHECK 2: Get response for requests using PID | PID and UID | PID, UID, and Name and check for consistency
+
+                List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
+
+                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null, System.Threading.CancellationToken.None));
+                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: null, System.Threading.CancellationToken.None));
+                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: names[0], System.Threading.CancellationToken.None));
+
+                VerifyProcessInfoEquality(processInfoQueriesCheck2);
+
+                // CHECK 3: Get response for processes using PID and an unassociated (randomly generated) UID and ensure the proper exception is thrown
+
+                await Assert.ThrowsAsync<ValidationProblemDetailsException>(async () => await apiClient.GetProcessAsync(pid: pids[0], uid: Guid.NewGuid(), name: null, System.Threading.CancellationToken.None));
+
+                // CHECK 4: Get response for processes using invalid PID, UID, or Name and ensure the proper exception is thrown
+
+                await Assert.ThrowsAsync<ValidationProblemDetailsException>(async () => await apiClient.GetProcessAsync(pid: -1, uid: null, name: null, System.Threading.CancellationToken.None));
+                await Assert.ThrowsAsync<ValidationProblemDetailsException>(async () => await apiClient.GetProcessAsync(pid: null, uid: Guid.NewGuid(), name: null, System.Threading.CancellationToken.None));
+                await Assert.ThrowsAsync<ValidationProblemDetailsException>(async () => await apiClient.GetProcessAsync(pid: null, uid: null, name: "", System.Threading.CancellationToken.None)); // Are we safe to assume that processes will not have an empty name?
+
+                // Verify each app instance is reported and shut them down.
+                int loopIter = 0;
+                foreach (AppRunner runner in appRunners)
+                {
+                    Assert.True(runner.Environment.TryGetValue(ExpectedEnvVarName, out string expectedEnvVarValue));
+
+                    await VerifyProcessAsync(apiClient, identifiers, runner.ProcessId, expectedEnvVarValue);
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+
+                    loopIter += 1;
+                }
+                
+            });
+
+            for (int i = 0; i < appCount; i++)
+            {
+                Assert.True(0 == appRunners[i].ExitCode, $"App {i} exit code is non-zero.");
+            }            
+        }
+
+        /// <summary>
+        /// Verifies that each provided instance of ProcessInfo is equivalent in terms of PID, UID, and Name.
+        /// </summary>
+        private static void VerifyProcessInfoEquality(List<ProcessInfo> processInfos)
+        {
+            List<int> processInfoPIDs = new List<int>();
+            List<Guid> processInfoUIDs = new List<Guid>();
+            List<string> processInfoNames = new List<string>();
+
+            foreach (ProcessInfo processInfo in processInfos)
+            {
+                processInfoPIDs.Add(processInfo.Pid);
+                processInfoUIDs.Add(processInfo.Uid);
+                processInfoNames.Add(processInfo.Name);
+            }
+
+            Assert.Single(processInfoPIDs.Distinct());
+            Assert.Single(processInfoUIDs.Distinct());
+            Assert.Single(processInfoNames.Distinct());
+        }
+
+        /// <summary>
+        /// Verifies that a process was found in the identifiers list and checks the /process?pid={processKey} route for the same process.
         /// </summary>
         private static async Task VerifyProcessAsync(ApiClient client, IEnumerable<ProcessIdentifier> identifiers, int processId, string expectedEnvVarValue)
         {

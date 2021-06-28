@@ -5,25 +5,7 @@ Captures a diagnostic trace of a process based on a predefined set of trace prof
 ## HTTP Route
 
 ```http
-GET /trace?pid={pid}&profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-GET /trace?uid={uid}&profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /trace?name={name}&profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /trace?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
+GET /trace?pid={pid}&uid={uid}&name={name}&profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.

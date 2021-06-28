@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonPropertyName("is_default")]
+        [JsonPropertyName("isDefault")]
         public bool IsDefault { get; set; }
     }
 }

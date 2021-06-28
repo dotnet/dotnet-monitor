@@ -55,9 +55,6 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 {
                     services.AddSwaggerGen(options =>
                     {
-                        options.MapType<ProcessKey>(CreateProcessKeySchema);
-                        options.MapType<ProcessKey?>(CreateProcessKeySchema);
-
                         options.DocumentFilter<BadRequestResponseDocumentFilter>();
                         options.DocumentFilter<UnauthorizedResponseDocumentFilter>();
                         options.DocumentFilter<TooManyRequestsResponseDocumentFilter>();

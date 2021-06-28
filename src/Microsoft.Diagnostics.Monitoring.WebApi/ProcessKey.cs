@@ -9,34 +9,41 @@ using System.Globalization;
 namespace Microsoft.Diagnostics.Monitoring
 {
     [TypeConverter(typeof(ProcessKeyTypeConverter))]
-    public struct ProcessKey
+    internal struct ProcessKey
     {
-        public ProcessKey(int processId)
+        internal ProcessKey(int processId)
         {
             ProcessId = processId;
             ProcessName = null;
             RuntimeInstanceCookie = null;
         }
 
-        public ProcessKey(Guid runtimeInstanceCookie)
+        internal ProcessKey(Guid runtimeInstanceCookie)
         {
             ProcessId = null;
             ProcessName = null;
             RuntimeInstanceCookie = runtimeInstanceCookie;
         }
 
-        public ProcessKey(string processName)
+        internal ProcessKey(string processName)
         {
             ProcessId = null;
             ProcessName = processName;
             RuntimeInstanceCookie = null;
         }
 
-        public int? ProcessId { get; }
+        internal ProcessKey(int? processId = null, Guid? runtimeInstanceCookie = null, string processName = null)
+        {
+            ProcessId = processId;
+            ProcessName = processName;
+            RuntimeInstanceCookie = runtimeInstanceCookie;
+        }
 
-        public string ProcessName { get; }
+        internal int? ProcessId { get; }
 
-        public Guid? RuntimeInstanceCookie { get; }
+        internal string ProcessName { get; }
+
+        internal Guid? RuntimeInstanceCookie { get; }
     }
 
     internal class ProcessKeyTypeConverter : TypeConverter

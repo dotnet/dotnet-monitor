@@ -125,7 +125,7 @@ To get completion support in your editor, simply add the `$schema` property to t
 }
 ```
 
-Once you've added the `$schema` property, you should have started support for completions in your editor.
+Once you've added the `$schema` property, you should have support for completions in your editor.
 
 ![completions](https://user-images.githubusercontent.com/4734691/115377729-bf2bb600-a184-11eb-9b8e-50f361c112f0.gif)
 

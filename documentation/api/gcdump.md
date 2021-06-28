@@ -11,25 +11,7 @@ Captures a GC dump of a specified process. These dumps are useful for several sc
 ## HTTP Route
 
 ```http
-GET /gcdump?pid={pid}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-GET /gcdump?uid={uid}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /gcdump?name={name}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /gcdump?egressProvider={egressProvider} HTTP/1.1
+GET /gcdump?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.

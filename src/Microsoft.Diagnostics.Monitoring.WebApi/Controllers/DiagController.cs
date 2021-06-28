@@ -103,13 +103,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(Models.ProcessInfo), StatusCodes.Status200OK)]
         public Task<ActionResult<Models.ProcessInfo>> GetProcessInfo(
             [FromQuery]
-            int pid = -1,
+            int? pid = null,
             [FromQuery]
-            Guid uid = new Guid(),
+            Guid? uid = null,
             [FromQuery]
             string name = null)
         {
-            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
 
             return InvokeForProcess<Models.ProcessInfo>(processInfo =>
             {
@@ -141,13 +141,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status200OK)]
         public Task<ActionResult<Dictionary<string, string>>> GetProcessEnvironment(
             [FromQuery]
-            int pid = -1,
+            int? pid = null,
             [FromQuery]
-            Guid uid = new Guid(),
+            Guid? uid = null,
             [FromQuery]
             string name = null)
         {
-            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
 
             return InvokeForProcess<Dictionary<string, string>>(processInfo =>
             {
@@ -187,9 +187,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [RequestLimit(MaxConcurrency = 1)]
         public Task<ActionResult> CaptureDump(
             [FromQuery]
-            int pid = -1,
+            int? pid = null,
             [FromQuery]
-            Guid uid = new Guid(),
+            Guid? uid = null,
             [FromQuery]
             string name = null,
             [FromQuery]
@@ -197,7 +197,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+
             return InvokeForProcess(async processInfo =>
             {
                 string dumpFileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
@@ -247,15 +248,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [RequestLimit(MaxConcurrency = 1)]
         public Task<ActionResult> CaptureGcDump(
             [FromQuery]
-            int pid = -1,
+            int? pid = null,
             [FromQuery]
-            Guid uid = new Guid(),
+            Guid? uid = null,
             [FromQuery]
             string name = null,
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -309,9 +310,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureTrace(
             [FromQuery]
-            int pid = -1,
+            int? pid = null,
             [FromQuery]
-            Guid uid = new Guid(),
+            Guid? uid = null,
             [FromQuery]
             string name = null,
             [FromQuery]
@@ -323,7 +324,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -377,9 +378,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromBody][Required]
             Models.EventPipeConfiguration configuration,
             [FromQuery]
-            int pid = -1,
+            int? pid = null,
             [FromQuery]
-            Guid uid = new Guid(),
+            Guid? uid = null,
             [FromQuery]
             string name = null,
             [FromQuery][Range(-1, int.MaxValue)]
@@ -387,7 +388,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -435,9 +436,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [RequestLimit(MaxConcurrency = 3)]
         public Task<ActionResult> CaptureLogs(
             [FromQuery]
-            int pid = -1,
+            int? pid = null,
             [FromQuery]
-            Guid uid = new Guid(),
+            Guid? uid = null,
             [FromQuery]
             string name = null,
             [FromQuery][Range(-1, int.MaxValue)]
@@ -447,7 +448,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -491,9 +492,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromBody]
             Models.LogsConfiguration configuration,
             [FromQuery]
-            int pid = -1,
+            int? pid = null,
             [FromQuery]
-            Guid uid = new Guid(),
+            Guid? uid = null,
             [FromQuery]
             string name = null,
             [FromQuery][Range(-1, int.MaxValue)]
@@ -501,7 +502,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKeyFromIdentifier(pid, uid, name);
+            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -610,96 +611,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return durationSeconds < 0 ?
                 Timeout.InfiniteTimeSpan :
                 TimeSpan.FromSeconds(durationSeconds);
-        }
-
-        private ProcessKey? GetProcessKeyFromIdentifier(
-            int pid,
-            Guid uid,
-            string name)
-        {
-            ProcessKey? pidKey = new ProcessKey(pid);
-            ProcessKey? uidKey = new ProcessKey(uid);
-            ProcessKey? nameKey = new ProcessKey(name);
-
-            List<ProcessKey?> processKeys = new List<ProcessKey?>();
-
-            if (pid != -1)
-            {
-                processKeys.Add(pidKey);
-            }
-                
-            if (uid != Guid.Empty)
-            {
-                processKeys.Add(uidKey);
-            }
-
-            if (name != null)
-            {
-                processKeys.Add(nameKey);
-            }
-
-            ProcessKey? processKey = GetProcessKey(processKeys).Result;
-
-            return processKey;
-        }
-
-        private async Task<ProcessKey?> GetProcessKey(List<ProcessKey?> processKeys)
-        {
-            if (processKeys.Count == 1)
-            {
-                return processKeys[0];
-            }
-            else if (processKeys.Count == 0)
-            {
-                return null;
-            }
-            else
-            {
-                List<IProcessInfo> processInfos = new List<IProcessInfo>();
-                foreach (ProcessKey processKey in processKeys)
-                {
-                    try {
-                        IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, HttpContext.RequestAborted);
-                        processInfos.Add(processInfo);
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }
-
-                if (ProcessInfoIsEquivalent(processInfos))
-                {
-                    return processKeys[0];
-                }
-            }
-
-            return null;
-        }
-
-        private bool ProcessInfoIsEquivalent(List<IProcessInfo> processInfos)
-        {
-            IProcessInfo initialProcessInfo = processInfos[0];
-
-            for (int index = processInfos.Count - 1; index > 0; --index)
-            {
-                if (processInfos[index].EndpointInfo.ProcessId != initialProcessInfo.EndpointInfo.ProcessId)
-                {
-                    return false;
-                }
-
-                if (processInfos[index].EndpointInfo.RuntimeInstanceCookie != initialProcessInfo.EndpointInfo.RuntimeInstanceCookie)
-                {
-                    return false;
-                }
-
-                if (!processInfos[index].ProcessName.Equals(initialProcessInfo.ProcessName))
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         private static string GetFileNameTimeStampUtcNow()

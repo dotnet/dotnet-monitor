@@ -24,7 +24,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static DiagProcessFilter FromProcessKey(ProcessKey processKey)
         {
             var filter = new DiagProcessFilter();
-            filter.Filters.Add(TransformKey(processKey));
+            List<DiagProcessFilterEntry> filterEntries = TransformKey(processKey);
+
+            for (int index = 0; index < filterEntries.Count; ++index)
+            {
+                filter.Filters.Add(filterEntries[index]);
+            }
+
             return filter;
         }
 
@@ -38,19 +44,26 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return filter;
         }
 
-        private static DiagProcessFilterEntry TransformKey(ProcessKey processKey)
+        private static List<DiagProcessFilterEntry> TransformKey(ProcessKey processKey)
         {
+            List<DiagProcessFilterEntry> filterEntries = new List<DiagProcessFilterEntry>();
+
             if (processKey.ProcessId.HasValue)
             {
-                return new DiagProcessFilterEntry { Criteria = DiagProcessFilterCriteria.ProcessId, MatchType = DiagProcessFilterMatchType.Exact, Value = processKey.ProcessId.Value.ToString(CultureInfo.InvariantCulture) };
+                filterEntries.Add(new DiagProcessFilterEntry { Criteria = DiagProcessFilterCriteria.ProcessId, MatchType = DiagProcessFilterMatchType.Exact, Value = processKey.ProcessId.Value.ToString(CultureInfo.InvariantCulture) });
             }
             if (processKey.ProcessName != null)
             {
-                return new DiagProcessFilterEntry { Criteria = DiagProcessFilterCriteria.ProcessName, MatchType = DiagProcessFilterMatchType.Exact, Value = processKey.ProcessName };
+                filterEntries.Add(new DiagProcessFilterEntry { Criteria = DiagProcessFilterCriteria.ProcessName, MatchType = DiagProcessFilterMatchType.Exact, Value = processKey.ProcessName });
             }
             if (processKey.RuntimeInstanceCookie.HasValue)
             {
-                return new DiagProcessFilterEntry { Criteria = DiagProcessFilterCriteria.RuntimeId, MatchType = DiagProcessFilterMatchType.Exact, Value = processKey.RuntimeInstanceCookie.Value.ToString("D") };
+                filterEntries.Add(new DiagProcessFilterEntry { Criteria = DiagProcessFilterCriteria.RuntimeId, MatchType = DiagProcessFilterMatchType.Exact, Value = processKey.RuntimeInstanceCookie.Value.ToString("D") });
+            }
+
+            if (filterEntries.Count > 0)
+            {
+                return filterEntries;
             }
 
             throw new ArgumentException($"Invalid {nameof(processKey)}");

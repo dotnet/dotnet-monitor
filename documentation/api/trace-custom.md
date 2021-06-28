@@ -5,25 +5,7 @@ Captures a diagnostic trace of a process using the given set of event providers 
 ## HTTP Route
 
 ```http
-POST /trace?pid={pid}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-POST /trace?uid={uid}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-POST /trace?name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-POST /trace?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /trace?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.

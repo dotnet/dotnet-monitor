@@ -5,19 +5,7 @@ Gets detailed information about a specified process.
 ## HTTP Route
 
 ```http
-GET /process?pid={pid} HTTP/1.1
-```
-
-or 
-
-```http
-GET /process?uid={uid} HTTP/1.1
-```
-
-or
-
-```http
-GET /process?name={name} HTTP/1.1
+GET /process?pid={pid}&uid={uid}&name={name} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
