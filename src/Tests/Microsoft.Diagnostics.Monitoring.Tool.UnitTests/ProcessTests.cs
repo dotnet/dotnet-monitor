@@ -75,6 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
         /// <summary>
         /// Tests that multiple processes are discoverable by dotnet-monitor.
+        /// Also tests for correct behavior in response to queries with different/multiple process identifiers.
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect)]
@@ -117,6 +118,47 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 identifiers = await apiClient.GetProcessesAsync();
                 Assert.NotNull(identifiers);
 
+                List<int?> pids = new List<int?>();
+                List<Guid?> uids = new List<Guid?>();
+                List<string> names = new List<string>();
+
+                foreach (ProcessIdentifier processIdentifier in identifiers)
+                {
+                    pids.Add(processIdentifier.Pid);
+                    uids.Add(processIdentifier.Uid);
+                    names.Add(processIdentifier.Name);
+                }
+
+#if NET5_0_OR_GREATER
+                // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
+
+                List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
+
+                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null));
+                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: uids[0], name: null));
+
+                VerifyProcessInfoEquality(processInfoQueriesCheck1);
+#endif
+                // CHECK 2: Get response for requests using PID | PID and UID | PID, UID, and Name and check for consistency
+
+                List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
+
+                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null));
+                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: null));
+                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: names[0]));
+
+                VerifyProcessInfoEquality(processInfoQueriesCheck2);
+
+                // CHECK 3: Get response for processes using PID and an unassociated (randomly generated) UID and ensure the proper exception is thrown
+
+                await VerifyInvalidRequestException(apiClient, pids[0], Guid.NewGuid(), null);
+
+                // CHECK 4: Get response for processes using invalid PID, UID, or Name and ensure the proper exception is thrown
+
+                await VerifyInvalidRequestException(apiClient, -1, null, null);
+                await VerifyInvalidRequestException(apiClient, null, Guid.NewGuid(), null);
+                await VerifyInvalidRequestException(apiClient, null, null, "");
+
                 // Verify each app instance is reported and shut them down.
                 foreach (AppRunner runner in appRunners)
                 {
@@ -145,115 +187,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         }
 
         /// <summary>
-        /// Tests that HTTP Requests using PID, UID, and/or Name have the correct response
-        /// </summary>
-        [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-#endif
-        public async Task ProcessRequestConsistencyTest(DiagnosticPortConnectionMode mode)
-        {
-            DiagnosticPortHelper.Generate(
-                mode,
-                out DiagnosticPortConnectionMode appConnectionMode,
-                out string diagnosticPortPath);
-
-            await using MonitorRunner toolRunner = new(_outputHelper);
-            toolRunner.ConnectionMode = mode;
-            toolRunner.DiagnosticPortPath = diagnosticPortPath;
-            toolRunner.DisableAuthentication = true;
-            await toolRunner.StartAsync();
-
-            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
-            ApiClient apiClient = new(_outputHelper, httpClient);
-
-            const int appCount = 1; // May add more extensive testing in the future that utilizes multiple processes
-            AppRunner[] appRunners = new AppRunner[appCount];
-
-            for (int i = 0; i < appCount; i++)
-            {
-                AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId: i + 1);
-                runner.ConnectionMode = appConnectionMode;
-                runner.DiagnosticPortPath = diagnosticPortPath;
-                runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
-                runner.Environment[ExpectedEnvVarName] = Guid.NewGuid().ToString("D");
-
-                appRunners[i] = runner;
-            }
-
-            IEnumerable<ProcessIdentifier> identifiers;
-            await appRunners.ExecuteAsync(async () =>
-            {
-                // Query for process identifiers
-                identifiers = await apiClient.GetProcessesAsync();
-
-                Assert.NotNull(identifiers);
-
-                List<int?> pids = new List<int?>();
-                List<Guid?> uids = new List<Guid?>();
-                List<string> names = new List<string>();
-
-                foreach (ProcessIdentifier processIdentifier in identifiers)
-                {
-                    pids.Add(processIdentifier.Pid);
-                    uids.Add(processIdentifier.Uid);
-                    names.Add(processIdentifier.Name);
-                }
-
-#if NET5_0_OR_GREATER
-                // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
-
-                List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
-
-                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null, System.Threading.CancellationToken.None));
-                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: uids[0], name: null, System.Threading.CancellationToken.None));
-                //processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: null, name: names[0], System.Threading.CancellationToken.None));
-
-                VerifyProcessInfoEquality(processInfoQueriesCheck1);
-#endif
-                // CHECK 2: Get response for requests using PID | PID and UID | PID, UID, and Name and check for consistency
-
-                List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
-
-                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null, System.Threading.CancellationToken.None));
-                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: null, System.Threading.CancellationToken.None));
-                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: names[0], System.Threading.CancellationToken.None));
-
-                VerifyProcessInfoEquality(processInfoQueriesCheck2);
-
-                // CHECK 3: Get response for processes using PID and an unassociated (randomly generated) UID and ensure the proper exception is thrown
-
-                await Assert.ThrowsAsync<ValidationProblemDetailsException>(async () => await apiClient.GetProcessAsync(pid: pids[0], uid: Guid.NewGuid(), name: null, System.Threading.CancellationToken.None));
-
-                // CHECK 4: Get response for processes using invalid PID, UID, or Name and ensure the proper exception is thrown
-
-                await Assert.ThrowsAsync<ValidationProblemDetailsException>(async () => await apiClient.GetProcessAsync(pid: -1, uid: null, name: null, System.Threading.CancellationToken.None));
-                await Assert.ThrowsAsync<ValidationProblemDetailsException>(async () => await apiClient.GetProcessAsync(pid: null, uid: Guid.NewGuid(), name: null, System.Threading.CancellationToken.None));
-                await Assert.ThrowsAsync<ValidationProblemDetailsException>(async () => await apiClient.GetProcessAsync(pid: null, uid: null, name: "", System.Threading.CancellationToken.None)); // Are we safe to assume that processes will not have an empty name?
-
-                // Verify each app instance is reported and shut them down.
-                int loopIter = 0;
-                foreach (AppRunner runner in appRunners)
-                {
-                    Assert.True(runner.Environment.TryGetValue(ExpectedEnvVarName, out string expectedEnvVarValue));
-
-                    await VerifyProcessAsync(apiClient, identifiers, runner.ProcessId, expectedEnvVarValue);
-
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-
-                    loopIter += 1;
-                }
-                
-            });
-
-            for (int i = 0; i < appCount; i++)
-            {
-                Assert.True(0 == appRunners[i].ExitCode, $"App {i} exit code is non-zero.");
-            }            
-        }
-
-        /// <summary>
         /// Verifies that each provided instance of ProcessInfo is equivalent in terms of PID, UID, and Name.
         /// </summary>
         private static void VerifyProcessInfoEquality(List<ProcessInfo> processInfos)
@@ -271,7 +204,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             Assert.Single(processInfoPIDs.Distinct());
             Assert.Single(processInfoUIDs.Distinct());
-            Assert.Single(processInfoNames.Distinct());
+            Assert.Single(processInfoNames.Distinct(StringComparer.Ordinal));
+        }
+
+        /// <summary>
+        /// Verifies that an invalid Process request throws the correct exception (ValidationProblemDetailsException) and has the correct Status and StatusCode.
+        /// </summary>
+        private static async Task VerifyInvalidRequestException(ApiClient client, int? pid, Guid? uid, string name)
+        {
+            ValidationProblemDetailsException validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
+                () => client.GetProcessAsync(pid: pid, uid: uid, name: name));
+            Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
+            Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }
 
         /// <summary>

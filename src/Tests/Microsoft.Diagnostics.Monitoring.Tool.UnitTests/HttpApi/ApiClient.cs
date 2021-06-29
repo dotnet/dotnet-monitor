@@ -71,10 +71,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// </summary>
         public Task<Models.ProcessInfo> GetProcessAsync(int? pid, Guid? uid, string name, CancellationToken token)
         {
-            return GetProcessAsyncHelper(GetProcessQuery(pid: pid, uid: uid, name: name), token);
+            return GetProcessAsync(GetProcessQuery(pid: pid, uid: uid, name: name), token);
         }
 
-        private async Task<Models.ProcessInfo> GetProcessAsyncHelper(string processQuery, CancellationToken token)
+        private async Task<Models.ProcessInfo> GetProcessAsync(string processQuery, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, $"/process?" + processQuery);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
@@ -396,28 +396,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         private static string GetProcessQuery(int? pid = null, Guid? uid = null, string name = null)
         {
             string assembledQuery = "";
-            bool initialQuery = true;
 
             if (pid != null)
             {
-                assembledQuery += "pid=" + pid.GetValueOrDefault().ToString(CultureInfo.InvariantCulture);
-                initialQuery = false;
+                assembledQuery += "pid=" + pid.Value.ToString(CultureInfo.InvariantCulture);
             }
 
             if (uid != null)
             {
-                if (initialQuery == false)
+                if (assembledQuery.Length > 0)
                 {
                     assembledQuery += "&";
                 }
 
-                assembledQuery += "uid=" + uid.GetValueOrDefault().ToString("D");
-                initialQuery = false;
+                assembledQuery += "uid=" + uid.Value.ToString("D");
             }
 
             if (name != null)
             {
-                if (initialQuery == false)
+                if (assembledQuery.Length > 0)
                 {
                     assembledQuery += "&";
                 }
@@ -430,7 +427,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
                 return assembledQuery;
             }
 
-            throw new Exception("One of PID, UID, or Name must be specified.");
+            throw new ArgumentException("One of PID, UID, or Name must be specified.");
         }
     }
 }

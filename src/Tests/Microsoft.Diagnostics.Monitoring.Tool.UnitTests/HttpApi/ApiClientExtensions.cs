@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes?pid={pid}
+        /// Get /process?pid={pid}
         /// </summary>
         public static Task<ProcessInfo> GetProcessAsync(this ApiClient client, int pid)
         {
@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes?pid={pid}
+        /// Get /process?pid={pid}
         /// </summary>
         public static async Task<ProcessInfo> GetProcessAsync(this ApiClient client, int pid, TimeSpan timeout)
         {
@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes?uid={uid}
+        /// Get /process?uid={uid}
         /// </summary>
         public static Task<ProcessInfo> GetProcessAsync(this ApiClient client, Guid uid)
         {
@@ -57,12 +57,30 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes?uid={uid}
+        /// Get /process?uid={uid}
+        /// </summary>
+        public static Task<ProcessInfo> GetProcessAsync(this ApiClient client, int? pid, Guid? uid, string name)
+        {
+            return client.GetProcessAsync(pid: pid, uid: uid, name: name, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// Get /process?uid={uid}
         /// </summary>
         public static async Task<ProcessInfo> GetProcessAsync(this ApiClient client, Guid uid, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
             return await client.GetProcessAsync(pid: null, uid: uid, name: null, token: timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Capable of getting every combination of process query: PID, UID, and/or Name
+        /// Get /process?pid={pid}&uid={uid}&name={name}
+        /// </summary>
+        public static async Task<Models.ProcessInfo> GetProcessAsync(this ApiClient client, int? pid, Guid? uid, string name, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.GetProcessAsync(pid: pid, uid: uid, name: name, token: timeoutSource.Token).ConfigureAwait(false);
         }
 
         /// <summary>

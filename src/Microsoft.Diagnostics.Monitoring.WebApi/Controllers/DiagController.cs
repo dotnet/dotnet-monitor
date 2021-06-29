@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess<Models.ProcessInfo>(processInfo =>
             {
@@ -147,7 +147,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess<Dictionary<string, string>>(processInfo =>
             {
@@ -197,7 +197,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async processInfo =>
             {
@@ -256,7 +256,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -324,7 +324,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -388,7 +388,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -448,7 +448,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -502,7 +502,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -611,6 +611,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return durationSeconds < 0 ?
                 Timeout.InfiniteTimeSpan :
                 TimeSpan.FromSeconds(durationSeconds);
+        }
+
+        private static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
+        {
+            return (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
         }
 
         private static string GetFileNameTimeStampUtcNow()
