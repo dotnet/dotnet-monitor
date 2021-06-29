@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class OptionsDisplayStrings {
@@ -79,6 +79,79 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The account key used to access the Azure blob storage account..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the account key used to look up the value from the Egress options Properties map..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKeyName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKeyName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The URI of the Azure blob storage account..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountUri {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The prefix to prepend to the blob name..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_BlobPrefix {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_BlobPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the container to which the blob will be egressed. If egressing to the root container, use the &quot;$root&quot; sentinel value..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the azure blob storage account..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureN" +
+                        "ame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written..
+        /// </summary>
+        public static string DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to List of allowed CORS origins, separated by semicolons..
         /// </summary>
         public static string DisplayAttributeDescription_CorsConfiguration_AllowedOrigins {
@@ -115,6 +188,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mapping of Azure blob storage egress provider names to their options..
+        /// </summary>
+        public static string DisplayAttributeDescription_EgressOptions_AzureBlobStorage {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_AzureBlobStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mapping of file system egress provider names to their options..
+        /// </summary>
+        public static string DisplayAttributeDescription_EgressOptions_FileSystem {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_FileSystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Additional properties, such as secrets, that can be referenced by the provider definitions..
         /// </summary>
         public static string DisplayAttributeDescription_EgressOptions_Properties {
@@ -124,20 +215,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces..
+        ///   Looks up a localized string similar to The directory path to which the stream data will be egressed..
         /// </summary>
-        public static string DisplayAttributeDescription_EgressOptions_Providers {
+        public static string DisplayAttributeDescription_FileSystemEgressProviderOptions_DirectoryPath {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_Providers", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_FileSystemEgressProviderOptions_DirectoryPath", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The type of provider. Currently this supports &apos;fileSystem&apos; and &apos;azureBlobStorage&apos;..
+        ///   Looks up a localized string similar to The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in DirectoryPath..
         /// </summary>
-        public static string DisplayAttributeDescription_EgressProvider_EgressType {
+        public static string DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectoryPath {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_EgressProvider_EgressType", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectory" +
+                        "Path", resourceCulture);
             }
         }
         

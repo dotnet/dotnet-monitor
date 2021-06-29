@@ -13,11 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class LoggingExtensions
     {
-        private static readonly Action<ILogger, string, Exception> _egressProviderAdded =
-            LoggerMessage.Define<string>(
-                eventId: new EventId(1, "EgressProviderAdded"),
-                logLevel: LogLevel.Debug,
-                formatString: Strings.LogFormatString_EgressProviderAdded);
+        // 1:EgressProviderAdded
 
         private static readonly Action<ILogger, string, Exception> _egressProviderInvalidOptions =
             LoggerMessage.Define<string>(
@@ -25,17 +21,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_EgressProviderInvalidOptions);
 
-        private static readonly Action<ILogger, string, string, Exception> _egressProviderInvalidType =
-            LoggerMessage.Define<string, string>(
-                eventId: new EventId(3, "EgressProviderInvalidType"),
-                logLevel: LogLevel.Error,
-                formatString: Strings.LogFormatString_EgressProviderInvalidType);
+        // 3:EgressProviderInvalidType
 
-        private static readonly Action<ILogger, string, Exception> _egressProviderValidatingOptions =
-            LoggerMessage.Define<string>(
-                eventId: new EventId(4, "EgressProviderValidatingOptions"),
-                logLevel: LogLevel.Debug,
-                formatString: Strings.LogFormatString_EgressProviderValidatingOptions);
+        // 4:EgressProviderValidatingOptions
 
         private static readonly Action<ILogger, int, Exception> _egressCopyActionStreamToEgressStream =
             LoggerMessage.Define<int>(
@@ -43,29 +31,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EgressCopyActionStreamToEgressStream);
 
-        private static readonly Action<ILogger, string, string, Exception> _egressProviderOptionsValidationWarning =
+        private static readonly Action<ILogger, string, string, Exception> _egressProviderOptionsValidationFailure =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(6, "EgressProviderOptionsValidationWarning"),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EgressProviderOptionsValidationWarning);
+                eventId: new EventId(6, "EgressProviderOptionsValidationFailure"),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_EgressProviderOptionsValidationError);
 
-        private static readonly Action<ILogger, string, string, string, Exception> _egressProviderOptionValue =
-            LoggerMessage.Define<string, string, string>(
-                eventId: new EventId(7, "EgressProviderOptionValue"),
-                logLevel: LogLevel.Debug,
-                formatString: Strings.LogFormatString_EgressProviderOptionValue);
+        // 7:EgressProviderOptionValue
 
-        private static readonly Action<ILogger, string, string, string, Exception> _egressStreamOptionValue =
-            LoggerMessage.Define<string, string, string>(
-                eventId: new EventId(8, "EgressStreamOptionValue"),
-                logLevel: LogLevel.Debug,
-                formatString: Strings.LogFormatString_EgressStreamOptionValue);
+        // 8:EgressStreamOptionValue
 
-        private static readonly Action<ILogger, string, string, Exception> _egressProviderFileName =
-            LoggerMessage.Define<string, string>(
-                eventId: new EventId(9, "EgressProviderFileName"),
-                logLevel: LogLevel.Debug,
-                formatString: Strings.LogFormatString_EgressProviderFileName);
+        // 9:EgressProviderFileName
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
             LoggerMessage.Define<string, string>(
@@ -151,64 +127,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_LogTempApiKey);
 
-        public static void EgressProviderAdded(this ILogger logger, string providerName)
-        {
-            _egressProviderAdded(logger, providerName, null);
-        }
-
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
         }
-
-        public static void EgressProviderInvalidType(this ILogger logger, string providerName, string providerType)
-        {
-            _egressProviderInvalidType(logger, providerName, providerType, null);
-        }
-
-        public static void EgressProviderValidatingOptions(this ILogger logger, string providerName)
-        {
-            _egressProviderValidatingOptions(logger, providerName, null);
-        }
-
         public static void EgressCopyActionStreamToEgressStream(this ILogger logger, int bufferSize)
         {
             _egressCopyActionStreamToEgressStream(logger, bufferSize, null);
         }
 
-        public static void EgressProviderOptionsValidationWarning(this ILogger logger, string providerName, string validationWarning)
+        public static void EgressProviderOptionsValidationFailure(this ILogger logger, string providerName, string failureMessage)
         {
-            _egressProviderOptionsValidationWarning(logger, providerName, validationWarning, null);
-        }
-
-        public static void EgressProviderOptionValue(this ILogger logger, string providerName, string optionName, Uri optionValue)
-        {
-            logger.EgressProviderOptionValue(providerName, optionName, optionValue?.ToString());
-        }
-
-        public static void EgressProviderOptionValue(this ILogger logger, string providerName, string optionName, string optionValue, bool redact = false)
-        {
-            if (redact)
-            {
-                optionValue = Redact(optionValue);
-            }
-
-            _egressProviderOptionValue(logger, providerName, optionName, optionValue, null);
-        }
-
-        public static void EgressStreamOptionValue(this ILogger logger, string providerName, string optionName, string optionValue, bool redact = false)
-        {
-            if (redact)
-            {
-                optionValue = Redact(optionValue);
-            }
-
-            _egressStreamOptionValue(logger, providerName, optionName, optionValue, null);
-        }
-
-        public static void EgressProviderFileName(this ILogger logger, string providerName, string fileName)
-        {
-            _egressProviderFileName(logger, providerName, fileName, null);
+            _egressProviderOptionsValidationFailure(logger, providerName, failureMessage, null);
         }
 
         public static void EgressProviderUnableToFindPropertyKey(this ILogger logger, string providerName, string keyName)
@@ -283,11 +213,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void LogTempKey(this ILogger logger, string monitorApiKey)
         {
             _logTempKey(logger, Environment.NewLine, HeaderNames.Authorization, Monitoring.WebApi.AuthConstants.ApiKeySchema, monitorApiKey, null);
-        }
-
-        private static string Redact(string value)
-        {
-            return string.IsNullOrEmpty(value) ? value : "<REDACTED>";
         }
     }
 }

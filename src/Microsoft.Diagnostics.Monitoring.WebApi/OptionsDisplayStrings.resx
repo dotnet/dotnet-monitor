@@ -125,6 +125,38 @@
     <value>Hash algorithm used to compute ApiKeyHash, typically 'SHA256'. 'SHA1' and 'MD5' are not allowed.</value>
     <comment>The description provided for the ApiKeyHashType parameter on ApiAuthenticationOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey" xml:space="preserve">
+    <value>The account key used to access the Azure blob storage account.</value>
+    <comment>The description provided for the AccountKey parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKeyName" xml:space="preserve">
+    <value>The name of the account key used to look up the value from the Egress options Properties map.</value>
+    <comment>The description provided for the AccountKeyName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountUri" xml:space="preserve">
+    <value>The URI of the Azure blob storage account.</value>
+    <comment>The description provided for the AccountUri parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_BlobPrefix" xml:space="preserve">
+    <value>The prefix to prepend to the blob name.</value>
+    <comment>The description provided for the BlobPrefix parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName" xml:space="preserve">
+    <value>The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.</value>
+    <comment>The description provided for the ContainerName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature" xml:space="preserve">
+    <value>The shared access signature (SAS) used to access the azure blob storage account.</value>
+    <comment>The description provided for the SharedAccessSignature parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureName" xml:space="preserve">
+    <value>The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
+    <comment>The description provided for the SharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize" xml:space="preserve">
+    <value>Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.</value>
+    <comment>The description provided for the CopyBufferSize parameter on all egress provider options.</comment>
+  </data>
   <data name="DisplayAttributeDescription_CorsConfiguration_AllowedOrigins" xml:space="preserve">
     <value>List of allowed CORS origins, separated by semicolons.</value>
     <comment>The description provided for the AllowedOrigins parameter on CorsConfiguration.</comment>
@@ -141,17 +173,25 @@
     <value>In 'Listen' mode, the maximum amount of connections to accept.</value>
     <comment>The description provided for the MaxConnections parameter on DiagnosticPortOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_EgressOptions_AzureBlobStorage" xml:space="preserve">
+    <value>Mapping of Azure blob storage egress provider names to their options.</value>
+    <comment>The description provided for the AzureBlobStorage parameter on EgressOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_FileSystem" xml:space="preserve">
+    <value>Mapping of file system egress provider names to their options.</value>
+    <comment>The description provided for the FileSystem parameter on EgressOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
     <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
     <comment>The description provided for the Properties parameter on EgressOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_EgressOptions_Providers" xml:space="preserve">
-    <value>Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces.</value>
-    <comment>The description provided for the Providers parameter on EgressOptions.</comment>
+  <data name="DisplayAttributeDescription_FileSystemEgressProviderOptions_DirectoryPath" xml:space="preserve">
+    <value>The directory path to which the stream data will be egressed.</value>
+    <comment>The description provided for the DirectoryPath parameter on FileSystemEgressProviderOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_EgressProvider_EgressType" xml:space="preserve">
-    <value>The type of provider. Currently this supports 'fileSystem' and 'azureBlobStorage'.</value>
-    <comment>The description provided for the EgressType parameter on EgressProvider.</comment>
+  <data name="DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectoryPath" xml:space="preserve">
+    <value>The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in DirectoryPath.</value>
+    <comment>The description provided for the IntermediateDirectoryPath parameter on FileSystemEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_MetricProvider_CounterNames" xml:space="preserve">
     <value>Name of custom metrics counters.</value>
