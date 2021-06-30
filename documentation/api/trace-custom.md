@@ -5,25 +5,7 @@ Captures a diagnostic trace of a process using the given set of event providers 
 ## HTTP Route
 
 ```http
-POST /trace/{pid}?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-POST /trace/{uid}?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-POST /trace/{name}?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-POST /trace?durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /trace?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -76,7 +58,7 @@ The expected content type is `application/json`.
 ### Sample Request
 
 ```http
-POST /trace/21632?durationSeconds=60 HTTP/1.1
+POST /trace?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 Content-Type: application/json
@@ -97,7 +79,7 @@ Content-Type: application/json
 or
 
 ```http
-POST /trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?durationSeconds=60 HTTP/1.1
+POST /trace?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 Content-Type: application/json

@@ -7,25 +7,7 @@ Captures log statements that are logged to the [ILogger<> infrastructure](https:
 ## HTTP Route
 
 ```http
-GET /logs/{pid}?level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-GET /logs/{uid}?level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /logs/{name}?level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /logs?level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+GET /logs?pid={pid}&uid={uid}&name={name}&level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -72,7 +54,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /logs/21632?level=Information&durationSeconds=60 HTTP/1.1
+GET /logs?pid=21632&level=Information&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -80,7 +62,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /logs/cd4da319-fa9e-4987-ac4e-e57b2aac248b?level=Information&durationSeconds=60 HTTP/1.1
+GET /logs?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&level=Information&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```

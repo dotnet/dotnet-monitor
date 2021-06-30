@@ -7,7 +7,7 @@ The following are the root routes on the HTTP API surface.
 | Route | Description |
 |---|---|
 | [`/processes`](processes.md) | Gets detailed information about discoverable processes. |
-| [`/dump`](dump.md) | Captures a managed dumps processes without using a debugger. |
+| [`/dump`](dump.md) | Captures managed dumps of processes without using a debugger. |
 | [`/gcdump`](gcdump.md) | Captures GC dumps of processes. |
 | [`/trace`](trace.md) | Captures traces of processes without using a profiler. |
 | [`/metrics`](metrics.md) | Captures metrics of a process. |

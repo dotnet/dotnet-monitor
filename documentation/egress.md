@@ -10,7 +10,7 @@ Egress providers must first be named and configured in dotnet-monitor configurat
 
 ### Sample Request
 ```http
-GET /dump/?egressProvider=monitorBlob HTTP/1.1
+GET /dump?egressProvider=monitorBlob HTTP/1.1
 ```
 
 ### Sample Response

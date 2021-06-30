@@ -35,7 +35,7 @@
         }
       }
     },
-    "/processes/{processKey}": {
+    "/process": {
       "get": {
         "tags": [
           "Diag"
@@ -44,28 +44,35 @@
         "operationId": "GetProcessInfo",
         "parameters": [
           {
-            "name": "processKey",
-            "in": "path",
-            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
-            "required": true,
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "The ID of the process.",
-                  "format": "int32"
-                },
-                {
-                  "type": "string",
-                  "description": "The runtime instance cookie of the runtime.",
-                  "format": "uuid"
-                },
-                {
-                  "type": "string",
-                  "description": "The name of the process."
-                }
-              ],
-              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name."
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           }
         ],
@@ -89,7 +96,7 @@
         }
       }
     },
-    "/processes/{processKey}/env": {
+    "/env": {
       "get": {
         "tags": [
           "Diag"
@@ -98,28 +105,35 @@
         "operationId": "GetProcessEnvironment",
         "parameters": [
           {
-            "name": "processKey",
-            "in": "path",
-            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
-            "required": true,
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "The ID of the process.",
-                  "format": "int32"
-                },
-                {
-                  "type": "string",
-                  "description": "The runtime instance cookie of the runtime.",
-                  "format": "uuid"
-                },
-                {
-                  "type": "string",
-                  "description": "The name of the process."
-                }
-              ],
-              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name."
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
             }
           }
         ],
@@ -146,7 +160,7 @@
         }
       }
     },
-    "/dump/{processKey}": {
+    "/dump": {
       "get": {
         "tags": [
           "Diag"
@@ -155,28 +169,34 @@
         "operationId": "CaptureDump",
         "parameters": [
           {
-            "name": "processKey",
-            "in": "path",
-            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
-            "required": true,
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "The ID of the process.",
-                  "format": "int32"
-                },
-                {
-                  "type": "string",
-                  "description": "The runtime instance cookie of the runtime.",
-                  "format": "uuid"
-                },
-                {
-                  "type": "string",
-                  "description": "The name of the process."
-                }
-              ],
-              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
               "nullable": true
             }
           },
@@ -223,7 +243,7 @@
         }
       }
     },
-    "/gcdump/{processKey}": {
+    "/gcdump": {
       "get": {
         "tags": [
           "Diag"
@@ -232,28 +252,34 @@
         "operationId": "CaptureGcDump",
         "parameters": [
           {
-            "name": "processKey",
-            "in": "path",
-            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
-            "required": true,
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "The ID of the process.",
-                  "format": "int32"
-                },
-                {
-                  "type": "string",
-                  "description": "The runtime instance cookie of the runtime.",
-                  "format": "uuid"
-                },
-                {
-                  "type": "string",
-                  "description": "The name of the process."
-                }
-              ],
-              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
               "nullable": true
             }
           },
@@ -292,7 +318,7 @@
         }
       }
     },
-    "/trace/{processKey}": {
+    "/trace": {
       "get": {
         "tags": [
           "Diag"
@@ -301,28 +327,34 @@
         "operationId": "CaptureTrace",
         "parameters": [
           {
-            "name": "processKey",
-            "in": "path",
-            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
-            "required": true,
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "The ID of the process.",
-                  "format": "int32"
-                },
-                {
-                  "type": "string",
-                  "description": "The runtime instance cookie of the runtime.",
-                  "format": "uuid"
-                },
-                {
-                  "type": "string",
-                  "description": "The name of the process."
-                }
-              ],
-              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
               "nullable": true
             }
           },
@@ -402,28 +434,34 @@
         "operationId": "CaptureTraceCustom",
         "parameters": [
           {
-            "name": "processKey",
-            "in": "path",
-            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
-            "required": true,
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "The ID of the process.",
-                  "format": "int32"
-                },
-                {
-                  "type": "string",
-                  "description": "The runtime instance cookie of the runtime.",
-                  "format": "uuid"
-                },
-                {
-                  "type": "string",
-                  "description": "The name of the process."
-                }
-              ],
-              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
               "nullable": true
             }
           },
@@ -496,7 +534,7 @@
         }
       }
     },
-    "/logs/{processKey}": {
+    "/logs": {
       "get": {
         "tags": [
           "Diag"
@@ -505,28 +543,34 @@
         "operationId": "CaptureLogs",
         "parameters": [
           {
-            "name": "processKey",
-            "in": "path",
-            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
-            "required": true,
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "The ID of the process.",
-                  "format": "int32"
-                },
-                {
-                  "type": "string",
-                  "description": "The runtime instance cookie of the runtime.",
-                  "format": "uuid"
-                },
-                {
-                  "type": "string",
-                  "description": "The name of the process."
-                }
-              ],
-              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
               "nullable": true
             }
           },
@@ -602,28 +646,34 @@
         "operationId": "CaptureLogsCustom",
         "parameters": [
           {
-            "name": "processKey",
-            "in": "path",
-            "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
-            "required": true,
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "The ID of the process.",
-                  "format": "int32"
-                },
-                {
-                  "type": "string",
-                  "description": "The runtime instance cookie of the runtime.",
-                  "format": "uuid"
-                },
-                {
-                  "type": "string",
-                  "description": "The name of the process."
-                }
-              ],
-              "description": "Value used to identify the target process, either the process ID, the runtime instance cookie, or process name.",
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
               "nullable": true
             }
           },
@@ -783,6 +833,9 @@
           "name": {
             "type": "string",
             "nullable": true
+          },
+          "isDefault": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false

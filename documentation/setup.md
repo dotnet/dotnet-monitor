@@ -1,6 +1,6 @@
 # Setup
 
-`dotnet monitor` is available via two different distribution mechanism:
+`dotnet monitor` is available via two different distribution mechanisms:
 
 - As a .NET Core global tool; and
 - As a container image available via the Microsoft Container Registry (MCR)
@@ -33,7 +33,7 @@ docker pull mcr.microsoft.com/dotnet/monitor:5.0.0-preview.5
 
 In addition to public previews, we also publish last-known-good (LKG) builds for the next release of `dotnet monitor`.
 
-The LKG build of `dotnet monitor` is available on a private package feed. You can download the latest versionof the .NET global tool using the following command:
+The LKG build of `dotnet monitor` is available on a private package feed. You can download the latest version of the .NET global tool using the following command:
 
 ```cmd
 dotnet tool install -g dotnet-monitor --add-source https://dnceng.pkgs.visualstudio.com/public/_packaging/dotnet-tools/nuget/v3/index.json --version 5.0.0-preview.6.*

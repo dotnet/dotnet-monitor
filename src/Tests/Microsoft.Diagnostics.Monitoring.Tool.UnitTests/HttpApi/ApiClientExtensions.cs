@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{pid}
+        /// Get /process?pid={pid}
         /// </summary>
         public static Task<ProcessInfo> GetProcessAsync(this ApiClient client, int pid)
         {
@@ -40,16 +40,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{pid}
+        /// Get /process?pid={pid}
         /// </summary>
         public static async Task<ProcessInfo> GetProcessAsync(this ApiClient client, int pid, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            return await client.GetProcessAsync(pid, timeoutSource.Token).ConfigureAwait(false);
+            return await client.GetProcessAsync(pid: pid, uid: null, name: null, token: timeoutSource.Token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Get /processes/{uid}
+        /// Get /process?uid={uid}
         /// </summary>
         public static Task<ProcessInfo> GetProcessAsync(this ApiClient client, Guid uid)
         {
@@ -57,16 +57,34 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{uid}
+        /// Get /process?uid={uid}
+        /// </summary>
+        public static Task<ProcessInfo> GetProcessAsync(this ApiClient client, int? pid, Guid? uid, string name)
+        {
+            return client.GetProcessAsync(pid: pid, uid: uid, name: name, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// Get /process?uid={uid}
         /// </summary>
         public static async Task<ProcessInfo> GetProcessAsync(this ApiClient client, Guid uid, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            return await client.GetProcessAsync(uid, timeoutSource.Token).ConfigureAwait(false);
+            return await client.GetProcessAsync(pid: null, uid: uid, name: null, token: timeoutSource.Token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Get /processes/{pid}/env
+        /// Capable of getting every combination of process query: PID, UID, and/or Name
+        /// Get /process?pid={pid}&uid={uid}&name={name}
+        /// </summary>
+        public static async Task<Models.ProcessInfo> GetProcessAsync(this ApiClient client, int? pid, Guid? uid, string name, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.GetProcessAsync(pid: pid, uid: uid, name: name, token: timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get /env?pid={pid}
         /// </summary>
         public static Task<Dictionary<string, string>> GetProcessEnvironmentAsync(this ApiClient client, int pid)
         {
@@ -74,7 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{pid}/env
+        /// Get /env?pid={pid}
         /// </summary>
         public static async Task<Dictionary<string, string>> GetProcessEnvironmentAsync(this ApiClient client, int pid, TimeSpan timeout)
         {
@@ -83,7 +101,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{uid}/env
+        /// Get /env?uid={uid}
         /// </summary>
         public static Task<Dictionary<string, string>> GetProcessEnvironmentAsync(this ApiClient client, Guid uid)
         {
@@ -91,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /processes/{uid}/env
+        /// Get /env?uid={uid}
         /// </summary>
         public static async Task<Dictionary<string, string>> GetProcessEnvironmentAsync(this ApiClient client, Guid uid, TimeSpan timeout)
         {
@@ -100,7 +118,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump/{pid}?type={dumpType}
+        /// Get /dump?pid={pid}&type={dumpType}
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType)
         {
@@ -108,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump/{pid}?type={dumpType}
+        /// Get /dump?pid={pid}&type={dumpType}
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType, TimeSpan timeout)
         {
@@ -117,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump/{uid}?type={dumpType}
+        /// Get /dump?uid={uid}&type={dumpType}
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, Guid uid, DumpType dumpType)
         {
@@ -125,7 +143,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump/{uid}?type={dumpType}
+        /// Get /dump?uid={uid}&type={dumpType}
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, Guid uid, DumpType dumpType, TimeSpan timeout)
         {
@@ -134,7 +152,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// GET /logs/{pid}?level={logLevel}&durationSeconds={duration}
+        /// GET /logs?pid={pid}&level={logLevel}&durationSeconds={duration}
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat)
         {
@@ -142,7 +160,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// GET /logs/{pid}?level={logLevel}&durationSeconds={duration}
+        /// GET /logs?pid={pid}&level={logLevel}&durationSeconds={duration}
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel, TimeSpan timeout, LogFormat logFormat)
         {
@@ -151,7 +169,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         }
 
         /// <summary>
-        /// POST /logs/{pid}?durationSeconds={duration}
+        /// POST /logs?pid={pid}&durationSeconds={duration}
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat)
         {

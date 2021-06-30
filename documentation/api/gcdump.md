@@ -11,25 +11,7 @@ Captures a GC dump of a specified process. These dumps are useful for several sc
 ## HTTP Route
 
 ```http
-GET /gcdump/{pid}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-GET /gcdump/{uid}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /gcdump/{name}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /gcdump&egressProvider={egressProvider} HTTP/1.1
+GET /gcdump?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -73,7 +55,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /gcdump/21632 HTTP/1.1
+GET /gcdump?pid=21632 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -81,7 +63,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /gcdump/cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
+GET /gcdump?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
