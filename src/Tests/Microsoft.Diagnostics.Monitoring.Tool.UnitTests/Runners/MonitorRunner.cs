@@ -230,6 +230,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
             using IDisposable _ = token.Register(() => CancelCompletionSources(token));
 
+            // Await ready and exited tasks in case process exits before it is ready.
+            if (_runner.ExitedTask == await Task.WhenAny(_readySource.Task, _runner.ExitedTask))
+            {
+                throw new InvalidOperationException("Process exited before it was ready.");
+            }
+
+            // Await ready task to check if it faulted or cancelled.
             await _readySource.Task;
         }
 

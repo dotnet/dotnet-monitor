@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         private readonly EventHandler _exitedHandler;
 
         // Completion source that is signaled when the process exits
-        private readonly TaskCompletionSource<object> _exitedSource;
+        private readonly TaskCompletionSource<int> _exitedSource;
 
         // The process object of the started process
         private readonly Process _process;
@@ -46,6 +46,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         /// Retrieves the exit code of the process.
         /// </summary>
         public int ExitCode => _process.ExitCode;
+
+        /// <summary>
+        /// Gets a task that completes with the process exit code when it exits.
+        /// </summary>
+        public Task<int> ExitedTask => _exitedSource.Task;
 
         /// <summary>
         /// The framework reference of the app to run.
@@ -91,8 +96,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             _process.StartInfo.RedirectStandardInput = true;
             _process.StartInfo.RedirectStandardOutput = true;
 
-            _exitedSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _exitedHandler = (s, e) => _exitedSource.SetResult(null);
+            _exitedSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _exitedHandler = (s, e) => _exitedSource.SetResult(_process.ExitCode);
 
             _process.EnableRaisingEvents = true;
             _process.Exited += _exitedHandler;
@@ -163,7 +168,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 using IDisposable _ = token.Register(() => cancellationSource.TrySetCanceled(token));
 
                 await Task.WhenAny(
-                    _exitedSource.Task,
+                    ExitedTask,
                     cancellationSource.Task).Unwrap();
             }
         }
