@@ -118,40 +118,44 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 identifiers = await apiClient.GetProcessesAsync();
                 Assert.NotNull(identifiers);
 
-                List<int?> pids = new List<int?>();
-                List<Guid?> uids = new List<Guid?>();
-                List<string> names = new List<string>();
-
                 foreach (ProcessIdentifier processIdentifier in identifiers)
                 {
-                    pids.Add(processIdentifier.Pid);
-                    uids.Add(processIdentifier.Uid);
-                    names.Add(processIdentifier.Name);
-                }
-
+                    int pid = processIdentifier.Pid;
+                    Guid uid = processIdentifier.Uid;
+                    string name = processIdentifier.Name;
 #if NET5_0_OR_GREATER
-                // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
+                    // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
 
-                List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
+                    List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
 
-                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null));
-                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: uids[0], name: null));
+                    processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: pid, uid: null, name: null));
+                    // Only check with uid if it is non-empty; this can happen in connect mode if the ProcessInfo command fails
+                    // to respond within the short period of time that is used to get the additional process information.
+                    if (uid == Guid.Empty)
+                    {
+                        _outputHelper.WriteLine("Skipped uid-only check because it is empty GUID.");
+                    }
+                    else
+                    {
+                        processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: uid, name: null));
+                    }
 
-                VerifyProcessInfoEquality(processInfoQueriesCheck1);
+                    VerifyProcessInfoEquality(processInfoQueriesCheck1);
 #endif
-                // CHECK 2: Get response for requests using PID | PID and UID | PID, UID, and Name and check for consistency
+                    // CHECK 2: Get response for requests using PID | PID and UID | PID, UID, and Name and check for consistency
 
-                List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
+                    List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
 
-                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null));
-                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: null));
-                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: names[0]));
+                    processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pid, uid: null, name: null));
+                    processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pid, uid: uid, name: null));
+                    processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pid, uid: uid, name: name));
 
-                VerifyProcessInfoEquality(processInfoQueriesCheck2);
+                    VerifyProcessInfoEquality(processInfoQueriesCheck2);
 
-                // CHECK 3: Get response for processes using PID and an unassociated (randomly generated) UID and ensure the proper exception is thrown
+                    // CHECK 3: Get response for processes using PID and an unassociated (randomly generated) UID and ensure the proper exception is thrown
 
-                await VerifyInvalidRequestException(apiClient, pids[0], Guid.NewGuid(), null);
+                    await VerifyInvalidRequestException(apiClient, pid, Guid.NewGuid(), null);
+                }
 
                 // CHECK 4: Get response for processes using invalid PID, UID, or Name and ensure the proper exception is thrown
 
