@@ -34,13 +34,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             IEgressProvider<TOptions> provider,
             IDynamicOptionsSource<TOptions> source,
             IEnumerable<IPostConfigureOptions<TOptions>> postConfigures,
-            IValidateOptions<TOptions> validatation)
+            IValidateOptions<TOptions> validation)
         {
             _logger = logger;
             _provider = provider;
             _source = source;
             _postConfigures = postConfigures;
-            _validation = validatation;
+            _validation = validation;
         }
 
         /// <inheritdoc/>
