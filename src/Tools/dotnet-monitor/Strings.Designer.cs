@@ -151,15 +151,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field value &apos;{1}&apos; is not allowed..
-        /// </summary>
-        internal static string ErrorMessage_FieldNotAllowed {
-            get {
-                return ResourceManager.GetString("ErrorMessage_FieldNotAllowed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The {0} field could not be decoded as hex string..
         /// </summary>
         internal static string ErrorMessage_FieldNotHex {
@@ -205,6 +196,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The configuration parameter {0} must be contain a valid jwk, the value &apos;{1}&apos; could not be parsed as a Json Web Key. The expected format is a Json Web Key written as JSON which is base64Url encoded. {2}.
+        /// </summary>
+        internal static string ErrorMessage_InvalidJwk {
+            get {
+                return ResourceManager.GetString("ErrorMessage_InvalidJwk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The configuration parameter {0} must be base64Url encoded, the value &apos;{1}&apos; could not be parsed as a base64Url-encoded string..
+        /// </summary>
+        internal static string ErrorMessage_NotBase64 {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NotBase64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} parameter value &apos;{1}&apos; is not allowed..
         /// </summary>
         internal static string ErrorMessage_ParameterNotAllowed {
@@ -223,6 +232,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The configuration parameter {0} must be contain a jwk that is valid for use with dotnet-monitor. The provided Json Web Key must be have a key-type of EC or RSA and must-not have private key information because this this key is only used for signature verification..
+        /// </summary>
+        internal static string ErrorMessage_RejectedJwk {
+            get {
+                return ResourceManager.GetString("ErrorMessage_RejectedJwk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field or the {1} field is required..
+        /// </summary>
+        internal static string ErrorMessage_TwoFieldsMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TwoFieldsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to bind any urls..
         /// </summary>
         internal static string ErrorMessage_UnableToBindUrls {
@@ -237,6 +264,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_UnhandledConnectionMode {
             get {
                 return ResourceManager.GetString("ErrorMessage_UnhandledConnectionMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown output format type: {0}.
+        /// </summary>
+        internal static string ErrorMessage_UnknownFormat {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnknownFormat", resourceCulture);
             }
         }
         
@@ -273,24 +309,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string HelpDescription_CommandShow {
             get {
                 return ResourceManager.GetString("HelpDescription_CommandShow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The string representing the hash algorithm used to compute ApiKeyHash store in configuration, typically SHA256..
-        /// </summary>
-        internal static string HelpDescription_HashAlgorithm {
-            get {
-                return ResourceManager.GetString("HelpDescription_HashAlgorithm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The length of the MonitorApiKey in bytes..
-        /// </summary>
-        internal static string HelpDescription_KeyLength {
-            get {
-                return ResourceManager.GetString("HelpDescription_KeyLength", resourceCulture);
             }
         }
         
@@ -367,11 +385,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {apiAuthenticationConfigKey} settings have changed..
+        ///   Looks up a localized string similar to The format to display the output in. Valid values are Json, Text, and EnvVar..
         /// </summary>
-        internal static string LogFormatString_ApiKeyAuthenticationOptionsChanged {
+        internal static string HelpDescription_OutputFormat {
             get {
-                return ResourceManager.GetString("LogFormatString_ApiKeyAuthenticationOptionsChanged", resourceCulture);
+                return ResourceManager.GetString("HelpDescription_OutputFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {apiAuthenticationConfigKey} settings have changed. The new settings have passed validation..
+        /// </summary>
+        internal static string LogFormatString_ApiKeyAuthenticationOptionsValidated {
+            get {
+                return ResourceManager.GetString("LogFormatString_ApiKeyAuthenticationOptionsValidated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {configName} have changed, new values: Subject={subject}, PublicKey={publicKey}.
+        /// </summary>
+        internal static string LogFormatString_ApiKeyOptionsChanged {
+            get {
+                return ResourceManager.GetString("LogFormatString_ApiKeyOptionsChanged", resourceCulture);
             }
         }
         
@@ -502,6 +538,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The configuration field {fieldName} contains private key information. The private key information is not required for dotnet-monitor to verify a token signature and it is strongly recomended to only provide the public key..
+        /// </summary>
+        internal static string LogFormatString_NotifyPrivateKey {
+            get {
+                return ResourceManager.GetString("LogFormatString_NotifyPrivateKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {failure}.
         /// </summary>
         internal static string LogFormatString_OptionsValidationFailure {
@@ -525,6 +570,51 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_UnableToListenToAddress {
             get {
                 return ResourceManager.GetString("LogFormatString_UnableToListenToAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generated ApiKey for dotnet-monitor; use the following header for authorization:.
+        /// </summary>
+        internal static string Message_GenerateApiKey {
+            get {
+                return ResourceManager.GetString("Message_GenerateApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}: {1} {2}.
+        /// </summary>
+        internal static string Message_GeneratedAuthorizationHeader {
+            get {
+                return ResourceManager.GetString("Message_GeneratedAuthorizationHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Public Key: {0}.
+        /// </summary>
+        internal static string Message_GeneratekeyPublicKey {
+            get {
+                return ResourceManager.GetString("Message_GeneratekeyPublicKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subject: {0}.
+        /// </summary>
+        internal static string Message_GeneratekeySubject {
+            get {
+                return ResourceManager.GetString("Message_GeneratekeySubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings in {0} format:.
+        /// </summary>
+        internal static string Message_SettingsDump {
+            get {
+                return ResourceManager.GetString("Message_SettingsDump", resourceCulture);
             }
         }
         

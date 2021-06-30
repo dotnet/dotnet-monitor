@@ -7,20 +7,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class ApiAuthenticationOptions
+    internal sealed class MonitorApiKeyOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHash))]
-        [RegularExpression("[0-9a-fA-F]+")]
-        [MinLength(64)]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Subject))]
         [Required]
-        public string ApiKeyHash { get; set; }
+        public string Subject { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHashType))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_PublicKey))]
+        [RegularExpression("[0-9a-zA-Z_-]+")]
         [Required]
-        public string ApiKeyHashType { get; set; }
+        public string PublicKey { get; set; }
     }
 }

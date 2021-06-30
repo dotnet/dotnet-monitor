@@ -3,10 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);SCHEMAGEN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Options\RootOptions.cs" Link="Options\RootOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\RootOptions.cs" Link="Options\RootOptions.cs" />
   </ItemGroup>
 
   <ItemGroup>

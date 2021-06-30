@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task DisableMetricsViaCommandLineTest()
         {
-            await using MonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.DisableMetricsViaCommandLine = true;
             await toolRunner.StartAsync();
 
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task DisableMetricsViaEnvironmentTest()
         {
-            await using MonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.ConfigurationFromEnvironment.Metrics = new()
             {
                 Enabled = false
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task DisableMetricsViaSettingsTest()
         {
-            await using MonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
 
             await toolRunner.WriteUserSettingsAsync(new RootOptions()
             {
@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task DisableMetricsViaKeyPerFileTest()
         {
-            await using MonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
 
             toolRunner.WriteKeyPerValueConfiguration(new RootOptions()
             {

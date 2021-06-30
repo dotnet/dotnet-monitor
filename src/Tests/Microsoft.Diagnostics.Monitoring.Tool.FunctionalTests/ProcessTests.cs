@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 out DiagnosticPortConnectionMode appConnectionMode,
                 out string diagnosticPortPath);
 
-            await using MonitorRunner toolRunner = new(_outputHelper);
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.ConnectionMode = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;

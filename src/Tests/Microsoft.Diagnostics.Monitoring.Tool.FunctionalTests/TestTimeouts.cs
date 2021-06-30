@@ -31,5 +31,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// This may need to be adjusted for individual calls that are longer than 30 seconds.
         /// </summary>
         public static readonly TimeSpan OperationTimeout = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// Timeout for waiting on an internal Task result that is expected to reach completion.
+        /// </summary>
+        public static readonly TimeSpan ExpectedTaskCompletionTime = TimeSpan.FromSeconds(5);
     }
 }

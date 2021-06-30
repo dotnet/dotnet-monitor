@@ -5,63 +5,19 @@
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
+using System.Text.Json;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests;
+using Microsoft.Diagnostics.Monitoring.UnitTests;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
     internal static class OptionsExtensions
     {
-        /// <summary>
-        /// Generates an environment variable map of the options.
-        /// </summary>
-        /// <remarks>
-        /// Each key is the variable name; each value is the variable value.
-        /// </remarks>
-        public static IDictionary<string, string> ToEnvironmentConfiguration(this RootOptions options)
-        {
-            Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, "DotNetMonitor_", variables);
-            return variables;
-        }
-
-        /// <summary>
-        /// Generates a key-per-file map of the options.
-        /// </summary>
-        /// <remarks>
-        /// Each key is the file name; each value is the file content.
-        /// </remarks>
-        public static IDictionary<string, string> ToKeyPerFileConfiguration(this RootOptions options)
-        {
-            Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, string.Empty, variables);
-            return variables;
-        }
-
-        /// <summary>
-        /// Sets API Key authentication.
-        /// </summary>
-        public static RootOptions UseApiKey(this RootOptions options, string algorithmName, byte[] apiKey)
-        {
-            if (null == options.ApiAuthentication)
-            {
-                options.ApiAuthentication = new ApiAuthenticationOptions();
-            }
-
-            using var hashAlgorithm = HashAlgorithm.Create(algorithmName);
-
-            byte[] hash = hashAlgorithm.ComputeHash(apiKey);
-            options.ApiAuthentication.ApiKeyHash = ToHexString(hash);
-            options.ApiAuthentication.ApiKeyHashType = algorithmName;
-
-            return options;
-        }
-
         public static RootOptions AddFileSystemEgress(this RootOptions options, string name, string outputPath)
         {
             var egressProvider = new FileSystemEgressProviderOptions()
@@ -80,89 +36,152 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        private static void MapDictionary(IDictionary dictionary, string prefix, IDictionary<string, string> map)
+        /// <summary>
+        /// Sets API Key authentication. Use this overload for most operations, unless specifically testing Authentication or Authorization.
+        /// </summary>
+        public static RootOptions UseApiKey(this RootOptions options, string algorithmName, Guid subject, out string token)
         {
-            foreach (var key in dictionary.Keys)
+            string subjectStr = subject.ToString("D");
+            Claim audClaim = new Claim(AuthConstants.ClaimAudienceStr, AuthConstants.ApiKeyJwtAudience);
+            Claim issClaim = new Claim(AuthConstants.ClaimIssuerStr, AuthConstants.ApiKeyJwtInternalIssuer);
+            Claim subClaim = new Claim(AuthConstants.ClaimSubjectStr, subjectStr);
+            JwtPayload newPayload = new JwtPayload(new Claim[] { audClaim, issClaim, subClaim });
+
+            return options.UseApiKey(algorithmName, subjectStr, newPayload, out token);
+        }
+
+        public static RootOptions UseApiKey(this RootOptions options, string algorithmName, string subject, JwtPayload customPayload, out string token)
+        {
+            return options.UseApiKey(algorithmName, subject, customPayload, out token, out SecurityKey _);
+        }
+
+        public static RootOptions UseApiKey(this RootOptions options, string algorithmName, string subject, JwtPayload customPayload, out string token, out SecurityKey privateKey)
+        {
+            if (null == options.Authentication)
             {
-                object value = dictionary[key];
-                if (null != value)
-                {
-                    string keyString = Convert.ToString(key, CultureInfo.InvariantCulture);
-                    MapValue(
-                        value,
-                        FormattableString.Invariant($"{prefix}{keyString}"),
-                        map);
-                }
+                options.Authentication = new AuthenticationOptions();
+            }
+
+            if (null == options.Authentication.MonitorApiKey)
+            {
+                options.Authentication.MonitorApiKey = new MonitorApiKeyOptions();
+            }
+
+            SigningCredentials signingCreds;
+            JsonWebKey exportableJwk;
+            switch (algorithmName)
+            {
+                case SecurityAlgorithms.EcdsaSha256:
+                case SecurityAlgorithms.EcdsaSha256Signature:
+                case SecurityAlgorithms.EcdsaSha384:
+                case SecurityAlgorithms.EcdsaSha384Signature:
+                case SecurityAlgorithms.EcdsaSha512:
+                case SecurityAlgorithms.EcdsaSha512Signature:
+                    ECDsa ecDsa = ECDsa.Create(GetEcCurveFromName(algorithmName));
+                    ECDsaSecurityKey ecSecKey = new ECDsaSecurityKey(ecDsa);
+                    signingCreds = new SigningCredentials(ecSecKey, algorithmName);
+                    ECDsa pubEcDsa = ECDsa.Create(ecDsa.ExportParameters(false));
+                    ECDsaSecurityKey pubEcSecKey = new ECDsaSecurityKey(pubEcDsa);
+                    exportableJwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(pubEcSecKey);
+                    privateKey = ecSecKey;
+                    break;
+
+                case SecurityAlgorithms.RsaSha256:
+                case SecurityAlgorithms.RsaSha256Signature:
+                case SecurityAlgorithms.RsaSha384:
+                case SecurityAlgorithms.RsaSha384Signature:
+                case SecurityAlgorithms.RsaSha512:
+                case SecurityAlgorithms.RsaSha512Signature:
+                    RSA rsa = RSA.Create(GetRsaKeyLengthFromName(algorithmName));
+                    RsaSecurityKey rsaSecKey = new RsaSecurityKey(rsa);
+                    signingCreds = new SigningCredentials(rsaSecKey, algorithmName);
+                    RSA pubRsa = RSA.Create(rsa.ExportParameters(false));
+                    RsaSecurityKey pubRsaSecKey = new RsaSecurityKey(pubRsa);
+                    exportableJwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(pubRsaSecKey);
+                    privateKey = rsaSecKey;
+                    break;
+
+                case SecurityAlgorithms.HmacSha256:
+                case SecurityAlgorithms.HmacSha384:
+                case SecurityAlgorithms.HmacSha512:
+                    HMAC hmac = HMAC.Create(GetHmacAlgorithmFromName(algorithmName));
+                    SymmetricSecurityKey hmacSecKey = new SymmetricSecurityKey(hmac.Key);
+                    signingCreds = new SigningCredentials(hmacSecKey, algorithmName);
+                    exportableJwk = JsonWebKeyConverter.ConvertFromSymmetricSecurityKey(hmacSecKey);
+                    privateKey = hmacSecKey;
+                    break;
+
+                default:
+                    throw new ArgumentException($"Algorithm name '{algorithmName}' not supported", nameof(algorithmName));
+            }
+
+            JwtHeader newHeader = new JwtHeader(signingCreds, null, JwtConstants.HeaderType);
+            JwtSecurityToken newToken = new JwtSecurityToken(newHeader, customPayload);
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            string resultToken = tokenHandler.WriteToken(newToken);
+
+            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonSerializerOptionsFactory.JsonIgnoreCondition.WhenWritingNull);
+            string publicKeyJson = JsonSerializer.Serialize(exportableJwk, serializerOptions);
+
+            string publicKeyEncoded = Base64UrlEncoder.Encode(publicKeyJson);
+
+            options.Authentication.MonitorApiKey.Subject = subject;
+            options.Authentication.MonitorApiKey.PublicKey = publicKeyEncoded;
+
+            token = resultToken;
+
+            return options;
+        }
+
+        private static string GetHmacAlgorithmFromName(string algorithmName)
+        {
+            switch (algorithmName)
+            {
+                case SecurityAlgorithms.HmacSha256:
+                    return typeof(HMACSHA256).FullName;
+                case SecurityAlgorithms.HmacSha384:
+                    return typeof(HMACSHA384).FullName;
+                case SecurityAlgorithms.HmacSha512:
+                    return typeof(HMACSHA512).FullName;
+                default:
+                    throw new ArgumentException($"Algorithm name '{algorithmName}' not supported", nameof(algorithmName));
             }
         }
 
-        private static void MapList(IList list, string prefix, IDictionary<string, string> map)
+        private static int GetRsaKeyLengthFromName(string algorithmName)
         {
-            for (int index = 0; index < list.Count; index++)
+            switch (algorithmName)
             {
-                object value = list[index];
-                if (null != value)
-                {
-                    MapValue(
-                        value,
-                        FormattableString.Invariant($"{prefix}{index}"),
-                        map);
-                }
+                case SecurityAlgorithms.RsaSha256:
+                case SecurityAlgorithms.RsaSha256Signature:
+                    return 2048;
+                case SecurityAlgorithms.RsaSha384:
+                case SecurityAlgorithms.RsaSha384Signature:
+                    return 3072;
+                case SecurityAlgorithms.RsaSha512:
+                case SecurityAlgorithms.RsaSha512Signature:
+                    return 4096;
+                default:
+                    throw new ArgumentException($"Algorithm name '{algorithmName}' not supported", nameof(algorithmName));
             }
         }
 
-        private static void MapObject(object obj, string prefix, IDictionary<string, string> map)
+        private static ECCurve GetEcCurveFromName(string algorithmName)
         {
-            foreach (PropertyInfo property in obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            switch (algorithmName)
             {
-                if (!property.GetIndexParameters().Any())
-                {
-                    MapValue(
-                        property.GetValue(obj),
-                        FormattableString.Invariant($"{prefix}{property.Name}"),
-                        map);
-                }
+                case SecurityAlgorithms.EcdsaSha256:
+                case SecurityAlgorithms.EcdsaSha256Signature:
+                    return ECCurve.NamedCurves.nistP256;
+                case SecurityAlgorithms.EcdsaSha384:
+                case SecurityAlgorithms.EcdsaSha384Signature:
+                    return ECCurve.NamedCurves.nistP384;
+                case SecurityAlgorithms.EcdsaSha512:
+                case SecurityAlgorithms.EcdsaSha512Signature:
+                    return ECCurve.NamedCurves.nistP521;
+                default:
+                    throw new ArgumentException($"Algorithm name '{algorithmName}' not supported", nameof(algorithmName));
             }
-        }
-
-        private static void MapValue(object value, string valueName, IDictionary<string, string> map)
-        {
-            if (null != value)
-            {
-                Type valueType = value.GetType();
-                if (valueType.IsPrimitive || typeof(string) == valueType)
-                {
-                    map.Add(
-                        valueName,
-                        Convert.ToString(value, CultureInfo.InvariantCulture));
-                }
-                else
-                {
-                    string prefix = FormattableString.Invariant($"{valueName}__");
-                    if (value is IDictionary dictionary)
-                    {
-                        MapDictionary(dictionary, prefix, map);
-                    }
-                    else if (value is IList list)
-                    {
-                        MapList(list, prefix, map);
-                    }
-                    else
-                    {
-                        MapObject(value, prefix, map);
-                    }
-                }
-            }
-        }
-
-        private static string ToHexString(byte[] data)
-        {
-            StringBuilder builder = new(2 * data.Length);
-            foreach (byte b in data)
-            {
-                builder.Append(b.ToString("X2", CultureInfo.InvariantCulture));
-            }
-            return builder.ToString();
         }
     }
 }

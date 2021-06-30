@@ -2,12 +2,23 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
-
+#if UNITTEST
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
+#else
 namespace Microsoft.Diagnostics.Tools.Monitor
+#endif
 {
-    internal sealed class AuthorizedUserRequirement : IAuthorizationRequirement
+#if UNITTEST
+    public
+#else
+    internal
+#endif 
+        enum OutputFormat
     {
+        Json,
+        Text,
+        Cmd,
+        Shell,
+        PowerShell,
     }
 }

@@ -4,9 +4,9 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 {
-    partial class RootOptions
+    internal partial class RootOptions
     {
         public LoggingOptions Logging { get; set; }
     }

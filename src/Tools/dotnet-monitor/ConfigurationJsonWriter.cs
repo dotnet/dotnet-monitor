@@ -68,21 +68,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (full)
             {
-                ProcessChildSection(configuration, ConfigurationKeys.ApiAuthentication, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.Authentication, includeChildSections: true);
                 ProcessChildSection(configuration, ConfigurationKeys.Egress, includeChildSections: true);
             }
             else
             {
-                //Do not emit ApiKeyHash
-                IConfigurationSection authSection = ProcessChildSection(configuration, ConfigurationKeys.ApiAuthentication, includeChildSections: false);
-                if (authSection != null)
+                IConfigurationSection auth = ProcessChildSection(configuration, ConfigurationKeys.Authentication, includeChildSections: false);
+                if (null != auth)
                 {
                     _writer.WriteStartObject();
-                    ProcessChildSection(authSection, nameof(ApiAuthenticationOptions.ApiKeyHash), includeChildSections: false, redact: true);
-                    ProcessChildSection(authSection, nameof(ApiAuthenticationOptions.ApiKeyHashType), includeChildSections: false, redact: false);
-                    _writer.WriteEndObject();
+                    IConfigurationSection monitorApiKey = ProcessChildSection(auth, ConfigurationKeys.MonitorApiKey, includeChildSections: false);
+                    if (null != monitorApiKey)
+                    {
+                        _writer.WriteStartObject();
+                        ProcessChildSection(monitorApiKey, nameof(MonitorApiKeyOptions.Subject), includeChildSections: false, redact: false);
+                        // The PublicKey should only ever contain the public key, however we expect that accidents may occur and we should
+                        // redact this field in the event the JWK contains the private key information.
+                        ProcessChildSection(monitorApiKey, nameof(MonitorApiKeyOptions.PublicKey), includeChildSections: false, redact: true);
+                    }
                 }
-
+                
                 IConfigurationSection egress = ProcessChildSection(configuration, ConfigurationKeys.Egress, includeChildSections: false);
                 if (egress != null)
                 {

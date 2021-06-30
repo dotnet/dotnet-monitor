@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class AuthOptions : IAuthOptions
+    internal sealed class AuthConfiguration : IAuthConfiguration
     {
         public bool EnableNegotiate => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && KeyAuthenticationMode != KeyAuthenticationMode.NoAuth;
 
@@ -17,15 +17,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public bool EnableKeyAuth => (KeyAuthenticationMode == KeyAuthenticationMode.StoredKey) ||
                                      (KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey);
         
-        public GeneratedApiKey TemporaryKey { get; }
+        public GeneratedJwtKey TemporaryJwtKey { get; }
 
-        public AuthOptions(KeyAuthenticationMode mode)
+        public AuthConfiguration(KeyAuthenticationMode mode)
         {
             KeyAuthenticationMode = mode;
             
             if (mode == KeyAuthenticationMode.TemporaryKey)
             {
-                TemporaryKey = GeneratedApiKey.Create();
+                TemporaryJwtKey = GeneratedJwtKey.Create();
             }
         }
     }

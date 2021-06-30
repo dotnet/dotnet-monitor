@@ -10,7 +10,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Auth\AuthConstants.cs" Link="Auth\AuthConstants.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Auth\JwtAlgorithmChecker.cs" Link="Auth\JwtAlgorithmChecker.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.FileFormats" Version="$(MicrosoftFileFormatsVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="$(MicrosoftIdentityModelTokensVersion)" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelTokensJwtVersion)" />
   </ItemGroup>
 
   <ItemGroup>

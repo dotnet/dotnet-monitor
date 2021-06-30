@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Tools\dotnet-monitor\OutputFormat.cs" Link="Options\OutputFormat.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
     <PackageReference Include="Microsoft.DotNet.XUnitExtensions" Version="$(MicrosoftDotNetXUnitExtensionsVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />

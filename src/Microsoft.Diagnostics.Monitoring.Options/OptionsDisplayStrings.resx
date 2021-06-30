@@ -117,14 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHash" xml:space="preserve">
-    <value>API key in hashed form. Each byte should be two hexadecimal-based digits.</value>
-    <comment>The description provided for the ApiKeyHash parameter on ApiAuthenticationOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHashType" xml:space="preserve">
-    <value>Hash algorithm used to compute ApiKeyHash, typically 'SHA256'. 'SHA1' and 'MD5' are not allowed.</value>
-    <comment>The description provided for the ApiKeyHashType parameter on ApiAuthenticationOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey" xml:space="preserve">
     <value>The account key used to access the Azure blob storage account.</value>
     <comment>The description provided for the AccountKey parameter on AzureBlobEgressProviderOptions.</comment>
@@ -196,6 +188,10 @@
   <data name="DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold" xml:space="preserve">
     <value>The minimum level of messages that are written to Console.Error.</value>
     <comment>The description provided for the LogToStandardErrorThreshold parameter on ConsoleLoggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey" xml:space="preserve">
+    <value>The parameters used to validate MonitorApiKey JWT tokens.</value>
+    <comment>The description provided for the MonitorApiKey parameter on AuthenticationOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CorsConfiguration_AllowedOrigins" xml:space="preserve">
     <value>List of allowed CORS origins, separated by semicolons.</value>
@@ -296,6 +292,14 @@
   <data name="DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds" xml:space="preserve">
     <value>How often metrics are collected.</value>
     <comment>The description provided for the UpdateIntervalSeconds parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MonitorApiKeyOptions_PublicKey" xml:space="preserve">
+    <value>The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information.</value>
+    <comment>The description provided for the PublicKey parameter on MonitorApiKeyOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MonitorApiKeyOptions_Subject" xml:space="preserve">
+    <value>The value of the 'sub' or Subject field in the JWT (JSON Web Token).</value>
+    <comment>The description provided for the Subject parameter on MonitorApiKeyOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_ProcessFilterDescriptor_Key" xml:space="preserve">
     <value>The criteria used to compare against the target process.</value>
