@@ -245,7 +245,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             Assert.Single(processInfoPIDs.Distinct());
             Assert.Single(processInfoUIDs.Distinct());
-            Assert.Single(processInfoNames.Distinct(StringComparer.Ordinal));
+            // In .NET 5+, the process name comes from the command line from the ProcessInfo command, which can fail
+            // or be abandoned if it takes too long to response. In .NET Core 3.1, the process name comes from the
+            // command line from issuing a very brief event source trace, which can also fail or be abandoned if it
+            // takes too long to finish. Additionally, for 'connect' mode, these values are recomputed for every http
+            // invocation, so a prior invocation could succeed whereas a subsequent one could fail. Much of this could
+            // be mitigated if process information could be cached between calls. In any of these scenarios, if the
+            // process name is failed to be determined, the http api will return "unknown". For testing purposes,
+            // filter out the "unknown" value before comparing the real process names. 
+            Assert.Single(processInfoNames.Except(new[] { "unknown" }, StringComparer.Ordinal).Distinct(StringComparer.Ordinal));
         }
 
         /// <summary>
