@@ -193,18 +193,26 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Verifies that each provided instance of ProcessInfo is equivalent in terms of PID, UID, and Name.
         /// </summary>
-        private static void VerifyProcessInfoEquality(List<ProcessInfo> processInfos)
+        private void VerifyProcessInfoEquality(List<ProcessInfo> processInfos)
         {
             List<int> processInfoPIDs = new List<int>();
             List<Guid> processInfoUIDs = new List<Guid>();
             List<string> processInfoNames = new List<string>();
 
+            _outputHelper.WriteLine("Start enumerating collected process information.");
+
             foreach (ProcessInfo processInfo in processInfos)
             {
+                _outputHelper.WriteLine($"- PID:  {processInfo.Pid}");
+                _outputHelper.WriteLine($"  UID:  {processInfo.Uid}");
+                _outputHelper.WriteLine($"  Name: {processInfo.Name}");
+
                 processInfoPIDs.Add(processInfo.Pid);
                 processInfoUIDs.Add(processInfo.Uid);
                 processInfoNames.Add(processInfo.Name);
             }
+
+            _outputHelper.WriteLine("End enumerating collected process information.");
 
             Assert.Single(processInfoPIDs.Distinct());
             Assert.Single(processInfoUIDs.Distinct());
