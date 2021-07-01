@@ -331,6 +331,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Turn off HTTP response egress.
+        /// </summary>
+        internal static string HelpDescription_OptionNoHTTPEgress {
+            get {
+                return ResourceManager.GetString("HelpDescription_OptionNoHTTPEgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generates a new MonitorApiKey for each launch of the process..
         /// </summary>
         internal static string HelpDescription_OptionTempApiKey {

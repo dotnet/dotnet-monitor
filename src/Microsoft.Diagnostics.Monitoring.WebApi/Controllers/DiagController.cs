@@ -448,6 +448,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
+            if (egressProvider == null)
+            {
+                // Just need to add an additional check here that looks if the --no-egress-provider flag was set in the command line args
+                egressProvider = "HTTP"; // Purely for testing -> simulating whether if we had a flag for NoHTTP that we could simply use existing framework
+            }
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
