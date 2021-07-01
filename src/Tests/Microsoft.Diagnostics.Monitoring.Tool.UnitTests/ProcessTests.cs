@@ -111,47 +111,80 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 appRunners[i] = runner;
             }
 
-            IEnumerable<ProcessIdentifier> identifiers;
+            IList<ProcessIdentifier> identifiers;
             await appRunners.ExecuteAsync(async () =>
             {
                 // Query for process identifiers
-                identifiers = await apiClient.GetProcessesAsync();
+                identifiers = (await apiClient.GetProcessesAsync()).ToList();
                 Assert.NotNull(identifiers);
 
-                List<int?> pids = new List<int?>();
-                List<Guid?> uids = new List<Guid?>();
-                List<string> names = new List<string>();
+                // Scope to only the processes that were launched by the test
+                IList<int> unmatchedPids = new List<int>();
+                foreach (AppRunner runner in appRunners)
+                {
+                    unmatchedPids.Add(runner.ProcessId);
+                }
+
+                _outputHelper.WriteLine("Start enumerating discovered processes.");
+                foreach (ProcessIdentifier identifier in identifiers.ToList())
+                {
+                    _outputHelper.WriteLine($"- PID:  {identifier.Pid}");
+                    _outputHelper.WriteLine($"  UID:  {identifier.Uid}");
+                    _outputHelper.WriteLine($"  Name: {identifier.Name}");
+
+                    if (!unmatchedPids.Remove(identifier.Pid))
+                    {
+                        _outputHelper.WriteLine($"  State: Ignored");
+                        identifiers.Remove(identifier);
+                    }
+                    else
+                    {
+                        _outputHelper.WriteLine($"  State: Included");
+                    }
+                }
+                _outputHelper.WriteLine("End enumerating discovered processes");
+
+                Assert.Empty(unmatchedPids);
+                Assert.Equal(appRunners.Length, identifiers.Count);
 
                 foreach (ProcessIdentifier processIdentifier in identifiers)
                 {
-                    pids.Add(processIdentifier.Pid);
-                    uids.Add(processIdentifier.Uid);
-                    names.Add(processIdentifier.Name);
-                }
-
+                    int pid = processIdentifier.Pid;
+                    Guid uid = processIdentifier.Uid;
+                    string name = processIdentifier.Name;
 #if NET5_0_OR_GREATER
-                // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
+                    // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
 
-                List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
+                    List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
 
-                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null));
-                processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: uids[0], name: null));
+                    processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: pid, uid: null, name: null));
+                    // Only check with uid if it is non-empty; this can happen in connect mode if the ProcessInfo command fails
+                    // to respond within the short period of time that is used to get the additional process information.
+                    if (uid == Guid.Empty)
+                    {
+                        _outputHelper.WriteLine("Skipped uid-only check because it is empty GUID.");
+                    }
+                    else
+                    {
+                        processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: uid, name: null));
+                    }
 
-                VerifyProcessInfoEquality(processInfoQueriesCheck1);
+                    VerifyProcessInfoEquality(processInfoQueriesCheck1);
 #endif
-                // CHECK 2: Get response for requests using PID | PID and UID | PID, UID, and Name and check for consistency
+                    // CHECK 2: Get response for requests using PID | PID and UID | PID, UID, and Name and check for consistency
 
-                List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
+                    List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
 
-                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: null, name: null));
-                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: null));
-                processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pids[0], uid: uids[0], name: names[0]));
+                    processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pid, uid: null, name: null));
+                    processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pid, uid: uid, name: null));
+                    processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pid, uid: uid, name: name));
 
-                VerifyProcessInfoEquality(processInfoQueriesCheck2);
+                    VerifyProcessInfoEquality(processInfoQueriesCheck2);
 
-                // CHECK 3: Get response for processes using PID and an unassociated (randomly generated) UID and ensure the proper exception is thrown
+                    // CHECK 3: Get response for processes using PID and an unassociated (randomly generated) UID and ensure the proper exception is thrown
 
-                await VerifyInvalidRequestException(apiClient, pids[0], Guid.NewGuid(), null);
+                    await VerifyInvalidRequestException(apiClient, pid, Guid.NewGuid(), null);
+                }
 
                 // CHECK 4: Get response for processes using invalid PID, UID, or Name and ensure the proper exception is thrown
 
@@ -176,7 +209,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             }
 
             // Query for process identifiers
-            identifiers = await apiClient.GetProcessesAsync();
+            identifiers = (await apiClient.GetProcessesAsync()).ToList();
             Assert.NotNull(identifiers);
 
             // Verify none of the apps are reported
@@ -189,18 +222,26 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Verifies that each provided instance of ProcessInfo is equivalent in terms of PID, UID, and Name.
         /// </summary>
-        private static void VerifyProcessInfoEquality(List<ProcessInfo> processInfos)
+        private void VerifyProcessInfoEquality(List<ProcessInfo> processInfos)
         {
             List<int> processInfoPIDs = new List<int>();
             List<Guid> processInfoUIDs = new List<Guid>();
             List<string> processInfoNames = new List<string>();
 
+            _outputHelper.WriteLine("Start enumerating collected process information.");
+
             foreach (ProcessInfo processInfo in processInfos)
             {
+                _outputHelper.WriteLine($"- PID:  {processInfo.Pid}");
+                _outputHelper.WriteLine($"  UID:  {processInfo.Uid}");
+                _outputHelper.WriteLine($"  Name: {processInfo.Name}");
+
                 processInfoPIDs.Add(processInfo.Pid);
                 processInfoUIDs.Add(processInfo.Uid);
                 processInfoNames.Add(processInfo.Name);
             }
+
+            _outputHelper.WriteLine("End enumerating collected process information.");
 
             Assert.Single(processInfoPIDs.Distinct());
             Assert.Single(processInfoUIDs.Distinct());
