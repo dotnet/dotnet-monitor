@@ -111,12 +111,41 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 appRunners[i] = runner;
             }
 
-            IEnumerable<ProcessIdentifier> identifiers;
+            IList<ProcessIdentifier> identifiers;
             await appRunners.ExecuteAsync(async () =>
             {
                 // Query for process identifiers
-                identifiers = await apiClient.GetProcessesAsync();
+                identifiers = (await apiClient.GetProcessesAsync()).ToList();
                 Assert.NotNull(identifiers);
+
+                // Scope to only the processes that were launched by the test
+                IList<int> unmatchedPids = new List<int>();
+                foreach (AppRunner runner in appRunners)
+                {
+                    unmatchedPids.Add(runner.ProcessId);
+                }
+
+                _outputHelper.WriteLine("Start enumerating discovered processes.");
+                foreach (ProcessIdentifier identifier in identifiers.ToList())
+                {
+                    _outputHelper.WriteLine($"- PID:  {identifier.Pid}");
+                    _outputHelper.WriteLine($"  UID:  {identifier.Uid}");
+                    _outputHelper.WriteLine($"  Name: {identifier.Name}");
+
+                    if (!unmatchedPids.Remove(identifier.Pid))
+                    {
+                        _outputHelper.WriteLine($"  State: Ignored");
+                        identifiers.Remove(identifier);
+                    }
+                    else
+                    {
+                        _outputHelper.WriteLine($"  State: Included");
+                    }
+                }
+                _outputHelper.WriteLine("End enumerating discovered processes");
+
+                Assert.Empty(unmatchedPids);
+                Assert.Equal(appRunners.Length, identifiers.Count);
 
                 foreach (ProcessIdentifier processIdentifier in identifiers)
                 {
@@ -180,7 +209,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             }
 
             // Query for process identifiers
-            identifiers = await apiClient.GetProcessesAsync();
+            identifiers = (await apiClient.GetProcessesAsync()).ToList();
             Assert.NotNull(identifiers);
 
             // Verify none of the apps are reported
