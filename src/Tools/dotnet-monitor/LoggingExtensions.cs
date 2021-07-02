@@ -151,11 +151,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_LogTempApiKey);
 
-        private static readonly Action<ILogger, Exception> _noHTTPEgress =
-            LoggerMessage.Define(
-                eventId: new EventId(13, "NoHTTPEgress"),
-                logLevel: LogLevel.Information,
-                formatString: Strings.LogFormatString_NoHTTPEgress);
         public static void EgressProviderAdded(this ILogger logger, string providerName)
         {
             _egressProviderAdded(logger, providerName, null);
@@ -288,11 +283,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void LogTempKey(this ILogger logger, string monitorApiKey)
         {
             _logTempKey(logger, Environment.NewLine, HeaderNames.Authorization, Monitoring.WebApi.AuthConstants.ApiKeySchema, monitorApiKey, null);
-        }
-
-        public static void NoHTTPEgress(this ILogger logger)
-        {
-            _noHTTPEgress(logger, null);
         }
 
         private static string Redact(string value)

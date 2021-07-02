@@ -405,11 +405,6 @@
     <comment>Gets the format string that is printed in the 13:NoAuthentication event.
 0 Format Parameters</comment>
   </data>
-  <data name="LogFormatString_NoHTTPEgress" xml:space="preserve">
-    <value>HTTP Request Egress has been disabled.</value>
-    <comment>Gets the format string that is printed in the 24:NoHTTPEgress event.
-0 Format Parameters</comment>
-  </data>
   <data name="LogFormatString_OptionsValidationFailure" xml:space="preserve">
     <value>{failure}</value>
     <comment>Gets the format string that is printed in the 18:OptionsValidationFailure event.

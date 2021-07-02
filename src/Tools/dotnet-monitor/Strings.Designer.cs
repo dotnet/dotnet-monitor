@@ -538,15 +538,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP Request Egress has been disabled..
-        /// </summary>
-        internal static string LogFormatString_NoHTTPEgress {
-            get {
-                return ResourceManager.GetString("LogFormatString_NoHTTPEgress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {failure}.
         /// </summary>
         internal static string LogFormatString_OptionsValidationFailure {

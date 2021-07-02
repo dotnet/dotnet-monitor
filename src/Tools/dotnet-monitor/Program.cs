@@ -112,7 +112,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 description: Strings.HelpDescription_OptionNoHTTPEgress
                 )
             {
-                
                 Argument = new Argument<bool>(name: "noHTTPEgress", getDefaultValue: () => false)
             };
 
