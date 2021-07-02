@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Handler
                 CommandHandler.Create(
                     Delegate.CreateDelegate(
-                        typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, Task<int>, bool>),
+                        typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, bool, Task<int>>),
                         new DiagnosticsMonitorCommandHandler(),
                         nameof(DiagnosticsMonitorCommandHandler.Start))),
                 SharedOptions()
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // Handler
                     CommandHandler.Create(
                         Delegate.CreateDelegate(
-                            typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, ConfigDisplayLevel, Task<int>, bool>),
+                            typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, bool, ConfigDisplayLevel, Task<int>>),
                             new DiagnosticsMonitorCommandHandler(),
                             nameof(DiagnosticsMonitorCommandHandler.ShowConfig))),
                     SharedOptions(),

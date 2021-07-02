@@ -65,10 +65,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHTTPEgress)
         {
+            HTTPEgressConfiguration.IsHTTPEgressEnabled = !noHTTPEgress;
+
             //CONSIDER The console logger uses the standard AddConsole, and therefore disregards IConsole.
             try
             {
-                using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: false, noHTTPEgress).Build();
+                using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHTTPEgress, configOnly: false).Build();
                 try
                 {
                     await host.StartAsync(token);
@@ -113,9 +115,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return 0;
         }
 
-        public Task<int> ShowConfig(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, ConfigDisplayLevel level, bool noHTTPEgress)
+        public Task<int> ShowConfig(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHTTPEgress, ConfigDisplayLevel level)
         {
-            IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: true, noHTTPEgress).Build();
+            IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHTTPEgress, configOnly: true).Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter writer = new ConfigurationJsonWriter(Console.OpenStandardOutput());
             writer.Write(configuration, full: level == ConfigDisplayLevel.Full);
@@ -123,7 +125,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return Task.FromResult(0);
         }
 
-        public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool configOnly, bool noHTTPEgress)
+        public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHTTPEgress, bool configOnly)
         {
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 

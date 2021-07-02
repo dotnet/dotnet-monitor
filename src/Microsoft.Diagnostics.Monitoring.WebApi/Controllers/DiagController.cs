@@ -448,12 +448,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            if (egressProvider == null)
+            if (!HTTPEgressConfiguration.IsHTTPEgressEnabled && egressProvider == null)
             {
-                // Just need to add an additional check here that looks if the --no-egress-provider flag was set in the command line args
-                egressProvider = "HTTP"; // Purely for testing -> simulating whether if we had a flag for NoHTTP that we could simply use existing framework
+                // This is able to take advantage of the existing infrastructure - since HTTP isn't a supported egressProvider, the user
+                // gets a 400 Message saying, "Egress provider 'HTTP' does not exist.'
+                egressProvider = "HTTP";
             }
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+
+           ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
