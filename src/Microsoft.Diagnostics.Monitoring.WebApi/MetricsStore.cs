@@ -147,7 +147,7 @@ namespace Microsoft.Diagnostics.Monitoring
             }
 
             metricValue = value.ToString(CultureInfo.InvariantCulture);
-            return FormattableString.Invariant($"{metric.Provider.Replace(".", string.Empty).ToLowerInvariant()}_{metric.Name.Replace('-', '_')}{unitSuffix}");
+            return FormattableString.Invariant($"{metric.Provider.Replace(".", string.Empty).Replace('-', '_').ToLowerInvariant()}_{metric.Name.Replace('-', '_')}{unitSuffix}");
         }
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)
