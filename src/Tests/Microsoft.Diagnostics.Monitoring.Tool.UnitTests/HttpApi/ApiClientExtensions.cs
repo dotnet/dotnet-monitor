@@ -7,8 +7,11 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 {
@@ -29,6 +32,45 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         {
             using CancellationTokenSource timeoutSource = new(timeout);
             return await client.GetProcessesAsync(timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// GET /processes with retry attempts
+        /// </summary>
+        public static async Task<IEnumerable<ProcessIdentifier>> GetProcessesWithRetryAsync(this ApiClient client, ITestOutputHelper outputHelper, Func<ProcessIdentifier, bool> filter = null, int maxAttempts = 5)
+        {
+            IList<ProcessIdentifier> identifiers = null;
+
+            int attempt = 0;
+            while (attempt < maxAttempts)
+            {
+                attempt++;
+
+                outputHelper.WriteLine($"Attempt #{attempt} of {maxAttempts}: GET /processes");
+
+                identifiers = (await client.GetProcessesAsync()).ToList();
+
+                if (null != filter)
+                {
+                    identifiers = identifiers.Where(filter).ToList();
+                }
+
+                // In .NET 5+, the process name comes from the command line from the ProcessInfo command, which can fail
+                // or be abandoned if it takes too long to respond. In .NET Core 3.1, the process name comes from the
+                // command line from issuing a very brief event source trace, which can also fail or be abandoned if it
+                // takes too long to finish. Additionally, for 'connect' mode, these values are recomputed for every http
+                // invocation, so a prior invocation could succeed whereas a subsequent one could fail. Much of this could
+                // be mitigated if process information could be cached between calls. In any of these scenarios, if the
+                // process name is failed to be determined, the http api will return "unknown". For testing purposes,
+                // retry getting the process information until it gets the process name successfully or fail the operation
+                // after a small number of attempts.
+                if (null != identifiers && !identifiers.Any(identifier => string.Equals("unknown", identifier.Name, StringComparison.Ordinal)))
+                {
+                    return identifiers;
+                }
+            }
+
+            throw new InvalidOperationException("Unable to get processes that have process names.");
         }
 
         /// <summary>
@@ -81,6 +123,46 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         {
             using CancellationTokenSource timeoutSource = new(timeout);
             return await client.GetProcessAsync(pid: pid, uid: uid, name: name, token: timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get /process?pid={pid}&uid={uid}&name={name} with retry attempts.
+        /// </summary>
+        public static async Task<ProcessInfo> GetProcessWithRetryAsync(this ApiClient client, ITestOutputHelper outputHelper, int? pid = null, Guid? uid = null, string name = null, int maxAttempts = 5)
+        {
+            ProcessInfo processInfo = null;
+
+            int attempt = 0;
+            while (attempt < maxAttempts)
+            {
+                attempt++;
+
+                outputHelper.WriteLine($"Attempt #{attempt} of {maxAttempts}: GET /process");
+                try
+                {
+                    processInfo = await client.GetProcessAsync(pid: pid, uid: uid, name: name);
+                }
+                catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    // Handle cases where it fails to locate the single process.
+                }
+
+                // In .NET 5+, the process name comes from the command line from the ProcessInfo command, which can fail
+                // or be abandoned if it takes too long to respond. In .NET Core 3.1, the process name comes from the
+                // command line from issuing a very brief event source trace, which can also fail or be abandoned if it
+                // takes too long to finish. Additionally, for 'connect' mode, these values are recomputed for every http
+                // invocation, so a prior invocation could succeed whereas a subsequent one could fail. Much of this could
+                // be mitigated if process information could be cached between calls. In any of these scenarios, if the
+                // process name is failed to be determined, the http api will return "unknown". For testing purposes,
+                // retry getting the process information until it gets the process name successfully or fail the operation
+                // after a small number of attempts.
+                if (null != processInfo && !string.Equals("unknown", processInfo.Name, StringComparison.Ordinal))
+                {
+                    return processInfo;
+                }
+            }
+
+            throw new InvalidOperationException("Unable to get process information that has a process name.");
         }
 
         /// <summary>
