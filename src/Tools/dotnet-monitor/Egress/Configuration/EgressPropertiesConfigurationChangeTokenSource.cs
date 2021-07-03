@@ -25,8 +25,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal sealed class EgressPropertiesConfigurationChangeTokenSource<TOptions> :
         ConfigurationDynamicChangeTokenSource<TOptions>
     {
-        public EgressPropertiesConfigurationChangeTokenSource(IEgressPropertiesConfigurationProvider configuration)
-            : base(configuration.Configuration)
+        public EgressPropertiesConfigurationChangeTokenSource(IEgressPropertiesConfigurationProvider provider)
+            : base(provider.Configuration)
         {
         }
     }

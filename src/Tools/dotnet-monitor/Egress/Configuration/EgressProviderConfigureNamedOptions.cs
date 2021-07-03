@@ -19,16 +19,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal sealed class EgressProviderConfigureNamedOptions<TOptions> :
         IConfigureNamedOptions<TOptions> where TOptions : class
     {
-        private readonly IEgressProviderConfigurationProvider<TOptions> _configuration;
+        private readonly IEgressProviderConfigurationProvider<TOptions> _provider;
 
-        public EgressProviderConfigureNamedOptions(IEgressProviderConfigurationProvider<TOptions> configuration)
+        public EgressProviderConfigureNamedOptions(IEgressProviderConfigurationProvider<TOptions> provider)
         {
-            _configuration = configuration;
+            _provider = provider;
         }
 
         public void Configure(string name, TOptions options)
         {
-            IConfigurationSection section = _configuration.Configuration.GetSection(name);
+            IConfigurationSection section = _provider.Configuration.GetSection(name);
             Debug.Assert(section.Exists());
             if (section.Exists())
             {

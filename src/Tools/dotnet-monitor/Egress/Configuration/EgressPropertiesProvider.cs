@@ -12,17 +12,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal sealed class EgressPropertiesProvider :
         IEgressPropertiesProvider
     {
-        private readonly IEgressPropertiesConfigurationProvider _configuration;
+        private readonly IEgressPropertiesConfigurationProvider _provider;
 
-        public EgressPropertiesProvider(IEgressPropertiesConfigurationProvider configuration)
+        public EgressPropertiesProvider(IEgressPropertiesConfigurationProvider provider)
         {
-            _configuration = configuration;
+            _provider = provider;
         }
 
         /// <inheritdoc/>
         public bool TryGetPropertyValue(string key, out string value)
         {
-            IConfigurationSection section = _configuration.Configuration.GetSection(key);
+            IConfigurationSection section = _provider.Configuration.GetSection(key);
             if (!section.Exists())
             {
                 value = null;
