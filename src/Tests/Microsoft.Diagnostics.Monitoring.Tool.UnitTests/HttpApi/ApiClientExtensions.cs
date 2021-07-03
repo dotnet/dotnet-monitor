@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         /// <summary>
         /// GET /processes with retry attempts
         /// </summary>
-        public static async Task<IEnumerable<ProcessIdentifier>> GetProcessesWithRetryAsync(this ApiClient client, ITestOutputHelper outputHelper, Func<ProcessIdentifier, bool> filter = null, int maxAttempts = 5)
+        public static async Task<IEnumerable<ProcessIdentifier>> GetProcessesWithRetryAsync(this ApiClient client, ITestOutputHelper outputHelper, int[] pidFilters, int maxAttempts = 5)
         {
             IList<ProcessIdentifier> identifiers = null;
 
@@ -50,9 +50,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 
                 identifiers = (await client.GetProcessesAsync()).ToList();
 
-                if (null != filter)
+                if (pidFilters.Length > 0)
                 {
-                    identifiers = identifiers.Where(filter).ToList();
+                    identifiers = identifiers.Where(i => pidFilters.Contains(i.Pid)).ToList();
                 }
 
                 // In .NET 5+, the process name comes from the command line from the ProcessInfo command, which can fail

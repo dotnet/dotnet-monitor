@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     // GET /processes and filter to just the single process
                     IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesWithRetryAsync(
                         _outputHelper,
-                        filter: identifier => identifier.Pid == runner.ProcessId);
+                        new[] { runner.ProcessId });
                     Assert.NotNull(identifiers);
                     Assert.Single(identifiers);
 
@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     // GET /processes and filter to just the single process
                     IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesWithRetryAsync(
                         _outputHelper,
-                        filter: identifier => identifier.Pid == processId);
+                        new[] { processId });
 
                     // Verify app is no longer reported
                     Assert.NotNull(identifiers);
@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 // Query for process identifiers
                 identifiers = (await apiClient.GetProcessesWithRetryAsync(
                     _outputHelper,
-                    filter: identifier => unmatchedPids.Contains(identifier.Pid))).ToList();
+                    unmatchedPids.ToArray())).ToList();
                 Assert.NotNull(identifiers);
 
                 _outputHelper.WriteLine("Start enumerating discovered processes.");
