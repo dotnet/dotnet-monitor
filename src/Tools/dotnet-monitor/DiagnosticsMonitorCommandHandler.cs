@@ -65,8 +65,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHTTPEgress)
         {
-            HTTPEgressConfiguration.IsHTTPEgressEnabled = !noHTTPEgress; // Where should this actually be assigned? Feels out of place here, but need to make sure it executes. Currently being passed to CreateHostBuilder without being used...
-
             //CONSIDER The console logger uses the standard AddConsole, and therefore disregards IConsole.
             try
             {
@@ -127,6 +125,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHTTPEgress, bool configOnly)
         {
+            HTTPEgressConfiguration.IsHTTPEgressEnabled = !noHTTPEgress; // Where should this actually be assigned? Feels potentially out of place here
+
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 
             KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
