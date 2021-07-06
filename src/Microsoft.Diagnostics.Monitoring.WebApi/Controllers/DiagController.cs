@@ -18,6 +18,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -518,6 +519,44 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 return StartLogs(processInfo, settings, egressProvider);
             }, processKey, ArtifactType_Logs);
+        }
+
+        /// <summary>
+        /// Gets the Dotnet Monitor Version (other configuration information may be added in the future).
+        /// </summary>
+        [HttpGet("info", Name = nameof(GetInfo))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(IEnumerable<Models.ProcessIdentifier>), StatusCodes.Status200OK)]
+        public ActionResult<Models.DotnetMonitorInfo> GetInfo()
+        {
+            string version = GetDotnetMonitorVersion();
+
+            return this.InvokeService(() =>
+            {
+                Models.DotnetMonitorInfo dotnetMonitorInfo = new Models.DotnetMonitorInfo()
+                {
+                    Version = version
+                };
+                
+                _logger.WrittenToHttpStream();
+                return new ActionResult<Models.DotnetMonitorInfo>(dotnetMonitorInfo);
+            }, _logger);
+        }
+
+        private string GetDotnetMonitorVersion()
+        {
+            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+
+            var assemblyVersionAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+
+            if (assemblyVersionAttribute is null)
+            {
+                return assembly.GetName().Version.ToString();
+            }
+            else
+            {
+                return assemblyVersionAttribute.InformationalVersion;
+            }
         }
 
         private ActionResult StartTrace(

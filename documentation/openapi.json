@@ -754,6 +754,36 @@
         }
       }
     },
+    "/info": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Gets the Dotnet Monitor Version (other configuration information may be added in the future).",
+        "operationId": "GetInfo",
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProcessIdentifier"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "tags": [
