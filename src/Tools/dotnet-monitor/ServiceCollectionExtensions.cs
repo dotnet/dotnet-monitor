@@ -7,7 +7,6 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
-using Microsoft.Diagnostics.Tools.Monitor.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -79,10 +78,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
             services.AddSingleton<IValidateOptions<TOptions>, EgressProviderValidateOptions<TOptions>>();
 
-            // Add dynamic options services for notifying of options changes for dynamically named options
-            services.TryAddSingletonEnumerable<IDynamicOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();
-            services.TryAddSingletonEnumerable<IDynamicOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
-            services.AddSingleton<IDynamicOptionsSource<TOptions>, DynamicOptionsSource<TOptions>>();
+            // Register change sources for the options type
+            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();
+            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
+
+            // Add custom options cache to override behavior of default named options
+            services.AddSingleton<IOptionsMonitorCache<TOptions>, EgressOptionsCache<TOptions>>();
 
             // Add egress provider and internal provider wrapper
             services.AddSingleton<IEgressProvider<TOptions>, TProvider>();

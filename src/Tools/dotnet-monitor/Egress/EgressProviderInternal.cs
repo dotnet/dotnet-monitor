@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -25,20 +24,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     {
         private readonly ILogger<EgressProviderInternal<TOptions>> _logger;
         private readonly IEgressProvider<TOptions> _provider;
-        private readonly IDynamicOptionsSource<TOptions> _source;
+        private readonly IOptionsMonitor<TOptions> _monitor;
         private readonly IEnumerable<IPostConfigureOptions<TOptions>> _postConfigures;
         private readonly IValidateOptions<TOptions> _validation;
 
         public EgressProviderInternal(
             ILogger<EgressProviderInternal<TOptions>> logger,
             IEgressProvider<TOptions> provider,
-            IDynamicOptionsSource<TOptions> source,
+            IOptionsMonitor<TOptions> monitor,
             IEnumerable<IPostConfigureOptions<TOptions>> postConfigures,
             IValidateOptions<TOptions> validation)
         {
             _logger = logger;
             _provider = provider;
-            _source = source;
+            _monitor = monitor;
             _postConfigures = postConfigures;
             _validation = validation;
         }
@@ -75,7 +74,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             try
             {
-                return _source.Get(providerName);
+                return _monitor.Get(providerName);
             }
             catch (OptionsValidationException ex)
             {

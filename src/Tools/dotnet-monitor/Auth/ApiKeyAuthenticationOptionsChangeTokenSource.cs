@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Threading;
-using MEOOptions = Microsoft.Extensions.Options.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -30,7 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _changeRegistration = _optionsMonitor.OnChange(OnReload);
         }
 
-        public string Name => MEOOptions.DefaultName;
+        public string Name => Options.DefaultName;
 
         public IChangeToken GetChangeToken()
         {
