@@ -26,6 +26,8 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `metricsIntervalSeconds` | query | false | int | The interval (in seconds) at which metrics are collected. Only applicable for the `Metrics` profile. Default is `1`. Min is `1`. Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected trace. When not specified, the trace is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
+> **NOTE:** When setting `durationSeconds` to `-1` (indefinite duration), there is currently no way to terminate the trace operation that preserves the `.nettrace` file in an accessible format. This also applies when prematurely terminating a trace operation that uses a finite value for `durationSeconds`.
+
 See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
 If none of `pid`, `uid`, or `name` are specified, a trace of the [default process](defaultprocess.md) will be captured. Attempting to capture a trace of the default process when the default process cannot be resolved will fail.
