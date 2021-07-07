@@ -448,12 +448,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            egressProvider = ValidateEgressProvider(egressProvider);
-
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
+                egressProvider = ValidateEgressProvider(egressProvider);
+
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
                 var settings = new EventLogsPipelineSettings()
