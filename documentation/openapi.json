@@ -773,10 +773,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProcessIdentifier"
-                  }
+                  "$ref": "#/components/schemas/DotnetMonitorInfo"
                 }
               }
             }
@@ -1012,6 +1009,16 @@
           "useAppFilters": {
             "type": "boolean",
             "description": "Set to true to collect logs at the application-defined categories and levels."
+          }
+        },
+        "additionalProperties": false
+      },
+      "DotnetMonitorInfo": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

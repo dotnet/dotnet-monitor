@@ -526,13 +526,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// </summary>
         [HttpGet("info", Name = nameof(GetInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(IEnumerable<Models.ProcessIdentifier>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
         public ActionResult<Models.DotnetMonitorInfo> GetInfo()
         {
-            string version = GetDotnetMonitorVersion();
-
             return this.InvokeService(() =>
             {
+                string version = GetDotnetMonitorVersion();
+
                 Models.DotnetMonitorInfo dotnetMonitorInfo = new Models.DotnetMonitorInfo()
                 {
                     Version = version
@@ -543,7 +543,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, _logger);
         }
 
-        private string GetDotnetMonitorVersion()
+        private static string GetDotnetMonitorVersion()
         {
             var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
 
