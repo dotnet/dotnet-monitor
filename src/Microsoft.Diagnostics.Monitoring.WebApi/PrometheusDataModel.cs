@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {"%", "ratio" },
         };
 
-        public static string Normalize(string metricProvier, string metric, string unit, double value, out string metricValue)
+        public static string Normalize(string metricProvider, string metric, string unit, double value, out string metricValue)
         {
             string baseUnit = null;
             if ((unit != null) && (!KnownUnits.TryGetValue(unit, out baseUnit)))
@@ -39,12 +39,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             metricValue = value.ToString(CultureInfo.InvariantCulture);
 
-            StringBuilder builder = new StringBuilder(metricProvier.Length + metric.Length + (baseUnit?.Length ?? 0) + 2);
+            bool hasUnit = !string.IsNullOrEmpty(baseUnit);
 
-            NormalizeString(builder, metricProvier, isProvider: true);
+            //The +1's account for separators
+            //CONSIDER Can we optimize with Span/stackalloc here instead of using StringBuilder?
+            StringBuilder builder = new StringBuilder(metricProvider.Length + metric.Length + (hasUnit ? baseUnit.Length + 1 : 0) + 1);
+
+            NormalizeString(builder, metricProvider, isProvider: true);
             builder.Append(SeperatorChar);
             NormalizeString(builder, metric, isProvider: false);
-            if (baseUnit?.Length > 0)
+            if (hasUnit)
             {
                 builder.Append(SeperatorChar);
                 NormalizeString(builder, baseUnit, isProvider: false);
