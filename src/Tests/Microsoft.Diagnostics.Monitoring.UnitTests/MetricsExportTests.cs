@@ -38,6 +38,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
             metric = Normalize("a", "b", unit: null);
             Assert.Equal("a_b", metric);
+
+            metric = Normalize("UnicodeάήΰLetter", "Unicode\u0befDigit", unit: null);
+            Assert.Equal("unicodeletter_Unicode_Digit", metric);
         }
 
         private static string Normalize(string provider, string name, string unit = "b")
