@@ -2,17 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Text.Json.Serialization;
-
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Models
 #else
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 #endif
 {
-    public class DotnetMonitorInfo
+    public class DotnetMonitorSecureInfo
     {
-        [JsonPropertyName("version")]
-        public string Version { get; set; }
+        // This is currently a stub that will be expanded in the future with additional configuration info.
     }
 }

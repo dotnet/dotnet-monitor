@@ -522,41 +522,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         /// <summary>
-        /// Gets the Dotnet Monitor Version (other configuration information may be added in the future).
+        /// Gets information about Dotnet-Monitor that should be secured behind authentication (currently a stub).
         /// </summary>
-        [HttpGet("info", Name = nameof(GetInfo))]
+        [HttpGet("secureinfo", Name = nameof(GetSecureInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
-        public ActionResult<Models.DotnetMonitorInfo> GetInfo()
+        [ProducesResponseType(typeof(Models.DotnetMonitorSecureInfo), StatusCodes.Status200OK)]
+        public ActionResult<Models.DotnetMonitorSecureInfo> GetSecureInfo()
         {
             return this.InvokeService(() =>
             {
-                string version = GetDotnetMonitorVersion();
-
-                Models.DotnetMonitorInfo dotnetMonitorInfo = new Models.DotnetMonitorInfo()
-                {
-                    Version = version
-                };
+                Models.DotnetMonitorSecureInfo dotnetMonitorSecureInfo = new Models.DotnetMonitorSecureInfo();
                 
                 _logger.WrittenToHttpStream();
-                return new ActionResult<Models.DotnetMonitorInfo>(dotnetMonitorInfo);
+                return new ActionResult<Models.DotnetMonitorSecureInfo>(dotnetMonitorSecureInfo);
             }, _logger);
-        }
-
-        private static string GetDotnetMonitorVersion()
-        {
-            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-
-            var assemblyVersionAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-
-            if (assemblyVersionAttribute is null)
-            {
-                return assembly.GetName().Version.ToString();
-            }
-            else
-            {
-                return assemblyVersionAttribute.InformationalVersion;
-            }
         }
 
         private ActionResult StartTrace(
