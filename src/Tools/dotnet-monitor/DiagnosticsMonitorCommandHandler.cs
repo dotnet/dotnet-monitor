@@ -125,12 +125,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHTTPEgress, bool configOnly)
         {
-            HTTPEgressConfiguration.IsHTTPEgressEnabled = !noHTTPEgress; // Where should this actually be assigned? Feels potentially out of place here
+            // Add small service with this setting on it -> IEgressService? Meant for non-HTTP scenarios but could add as property
 
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 
             KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
             AuthOptions authenticationOptions = new AuthOptions(authMode);
+
+            EgressMode egressMode = noHTTPEgress ? EgressMode.HTTPDisabled : EgressMode.HTTPEnabled;
+
+            EgressOutputOptions egressOptions = new EgressOutputOptions(egressMode);
 
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
@@ -177,6 +181,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //TODO Many of these service additions should be done through extension methods
 
                     services.AddSingleton<IAuthOptions>(authenticationOptions);
+
+                    services.AddSingleton<IEgressOutputOptions>(egressOptions);
 
                     // Although this is only observing API key authentication changes, it does handle
                     // the case when API key authentication is not enabled. This class could evolve

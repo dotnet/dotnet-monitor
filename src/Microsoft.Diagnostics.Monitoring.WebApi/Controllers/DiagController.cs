@@ -47,11 +47,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
+        private readonly IEgressOutputOptions _egressOutputOptions;
 
         public DiagController(ILogger<DiagController> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
+            _egressOutputOptions = serviceProvider.GetRequiredService<IEgressOutputOptions>();
         }
 
         /// <summary>
@@ -452,7 +454,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                egressProvider = ValidateEgressProvider(egressProvider);
+                ValidateEgressProvider(egressProvider);
 
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
@@ -625,33 +627,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
 
-        private static string ValidateEgressProvider(string egressProvider)
+        private void ValidateEgressProvider(string egressProvider)
         {
-            // I could imagine two ways of implementing this method: one that simply does the check for null and whether HTTP Egress is permitted,
-            // and one that actually enforces that egressProvider is one of the valid options. Currently, this is handled elsewhere, and thus
-            // isn't actually needed here, but is a discussion point.
-
-            /*
-            if (egressProvider.Equals(AzureBlobStorage) || egressProvider.Equals(FileSystemProvider))
+            if (egressProvider == null && _egressOutputOptions.EgressMode == EgressMode.HTTPDisabled)
             {
-                return egressProvider;
-            } else ...
-
-            */
-
-            if (!HTTPEgressConfiguration.IsHTTPEgressEnabled && egressProvider == null)
-            {
-                // This is able to take advantage of the existing infrastructure - since "HTTP" isn't a supported egressProvider, the user
-                // gets a 400 Message saying, "Egress provider 'HTTP' does not exist.'
-                // This does feel somewhat counterintuitive, given that the default is null (but is treated as meaning HTTP)...
-                // Internally, it might be better to have a different message for this situation, so we aren't forced to set egressProvider
-                // to something that like HTTP that is displayed on screen -> e.g. "HTTP Egress has been disabled; please select a different egress provider."
-                return "HTTP";
+                throw new ArgumentException("HTTP Egress is currently disabled.");
             }
-
-            // throw new ArgumentException(egressProvider + " is not a valid egress provider.");
-
-            return egressProvider;
         }
 
         private static LogFormat ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
