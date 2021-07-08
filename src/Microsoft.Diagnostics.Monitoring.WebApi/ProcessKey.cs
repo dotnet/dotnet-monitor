@@ -6,7 +6,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace Microsoft.Diagnostics.Monitoring
+namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     [TypeConverter(typeof(ProcessKeyTypeConverter))]
     internal struct ProcessKey

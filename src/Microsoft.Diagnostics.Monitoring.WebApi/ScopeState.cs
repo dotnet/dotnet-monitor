@@ -7,7 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.Diagnostics.Monitoring
+namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal sealed class ScopeState : IEnumerable<IReadOnlyList<KeyValuePair<string, object>>>
     {
