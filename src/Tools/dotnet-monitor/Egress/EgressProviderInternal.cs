@@ -25,21 +25,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly ILogger<EgressProviderInternal<TOptions>> _logger;
         private readonly IEgressProvider<TOptions> _provider;
         private readonly IOptionsMonitor<TOptions> _monitor;
-        private readonly IEnumerable<IPostConfigureOptions<TOptions>> _postConfigures;
-        private readonly IValidateOptions<TOptions> _validation;
 
         public EgressProviderInternal(
             ILogger<EgressProviderInternal<TOptions>> logger,
             IEgressProvider<TOptions> provider,
-            IOptionsMonitor<TOptions> monitor,
-            IEnumerable<IPostConfigureOptions<TOptions>> postConfigures,
-            IValidateOptions<TOptions> validation)
+            IOptionsMonitor<TOptions> monitor)
         {
             _logger = logger;
             _provider = provider;
             _monitor = monitor;
-            _postConfigures = postConfigures;
-            _validation = validation;
         }
 
         /// <inheritdoc/>

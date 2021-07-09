@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Concurrent;
@@ -23,39 +24,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     /// </summary>
     internal class EgressService : IEgressService, IDisposable
     {
+        private readonly IDisposable _changeRegistration;
+        private readonly ILogger<EgressService> _logger;
         private readonly IEnumerable<IEgressProviderConfigurationProvider> _providers;
         private readonly IDictionary<string, string> _providerTypeMap;
         private readonly IDictionary<string, Type> _optionsTypeMap;
-        private readonly IList<IDisposable> _registrations;
         private readonly IServiceProvider _serviceProvider;
 
         public EgressService(
             IServiceProvider serviceProvider,
+            ILogger<EgressService> logger,
+            IConfiguration configuration,
             IEnumerable<IEgressProviderConfigurationProvider> providers)
         {
+            _logger = logger;
             _providers = providers;
             _providerTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             _optionsTypeMap = new ConcurrentDictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
-            _registrations = new List<IDisposable>();
             _serviceProvider = serviceProvider;
 
-            foreach (IEgressProviderConfigurationProvider provider in providers)
-            {
-                _registrations.Add(ChangeToken.OnChange(
-                    () => provider.Configuration.GetReloadToken(),
-                    () => Reload()));
-            }
+            _changeRegistration = ChangeToken.OnChange(
+                () => configuration.GetEgressSection().GetReloadToken(),
+                Reload);
 
             Reload();
         }
 
         public void Dispose()
         {
-            foreach (IDisposable registration in _registrations)
-            {
-                registration.Dispose();
-            }
-            _registrations.Clear();
+            _changeRegistration.Dispose();
         }
 
         public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
@@ -133,15 +130,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private void Reload()
         {
-            _optionsTypeMap.Clear();
             _providerTypeMap.Clear();
+            _optionsTypeMap.Clear();
+
+            // Deliberately fill the maps in the reverse order of how they are accessed
+            // by the GetProvider method to avoid indeterminate accessing of the option
+            // information.
             foreach (IEgressProviderConfigurationProvider provider in _providers)
             {
                 _optionsTypeMap.Add(provider.ProviderType, provider.OptionsType);
 
                 foreach (IConfigurationSection optionsSection in provider.Configuration.GetChildren())
                 {
-                    _providerTypeMap.Add(optionsSection.Key, provider.ProviderType);
+                    string providerName = optionsSection.Key;
+                    if (_providerTypeMap.TryGetValue(providerName, out string existingProviderType))
+                    {
+                        _logger.DuplicateEgressProviderIgnored(providerName, provider.ProviderType, existingProviderType);
+                    }
+                    else
+                    {
+                        _providerTypeMap.Add(providerName, provider.ProviderType);
+                    }
                 }
             }
         }

@@ -412,6 +412,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New provider &apos;{providerName}&apos; under type &apos;{providerType}&apos; was already registered with type &apos;{existingProviderType}&apos; and will be ignored..
+        /// </summary>
+        internal static string LogFormatString_DuplicateEgressProviderIgnored {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateEgressProviderIgnored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copying action stream to egress stream with buffer size {bufferSize}.
         /// </summary>
         internal static string LogFormatString_EgressCopyActionStreamToEgressStream {

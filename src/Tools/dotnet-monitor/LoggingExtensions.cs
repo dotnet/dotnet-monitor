@@ -127,6 +127,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_LogTempApiKey);
 
+        private static readonly Action<ILogger, string, string, string, Exception> _duplicateEgressProviderIgnored =
+            LoggerMessage.Define<string, string, string>(
+                eventId: new EventId(24, "DuplicateEgressProviderIgnored"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DuplicateEgressProviderIgnored);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -213,6 +219,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void LogTempKey(this ILogger logger, string monitorApiKey)
         {
             _logTempKey(logger, Environment.NewLine, HeaderNames.Authorization, Monitoring.WebApi.AuthConstants.ApiKeySchema, monitorApiKey, null);
+        }
+
+        public static void DuplicateEgressProviderIgnored(this ILogger logger, string providerName, string providerType, string existingProviderType)
+        {
+            _duplicateEgressProviderIgnored(logger, providerName, providerType, existingProviderType, null);
         }
     }
 }

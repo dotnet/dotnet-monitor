@@ -102,11 +102,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.TryAddSingletonEnumerable<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
         }
 
-        private static void TryAddSingletonEnumerable<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
-        {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<TService, TImplementation>());
-        }
-
         private static void TryAddSingletonEnumerable<TService, TImplementation>(this IServiceCollection services, Func<IServiceProvider, TImplementation> func) where TImplementation : class, TService where TService : class
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<TService, TImplementation>(func));

@@ -313,6 +313,14 @@
     <comment>Gets the format string that is printed in the 20:DisabledNegotiateWhileElevated event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_DuplicateEgressProviderIgnored" xml:space="preserve">
+    <value>New provider '{providerName}' under type '{providerType}' was already registered with type '{existingProviderType}' and will be ignored.</value>
+    <comment>Gets the format string that is printed in the 24:DuplicateEgressProviderIgnored event.
+3 Format Parameter:
+1. providerName: Name of the provider that was already registered
+2. providerType: The type of provider that the new provider was attempting to be registered.
+3. existingProviderType: The type of provider that the new provider name was already registered.</comment>
+  </data>
   <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
     <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
     <comment>Gets the format string that is printed in the 5:EgressCopyActionStreamToEgressStream event.
