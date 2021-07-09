@@ -343,7 +343,6 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 | Name | Type | Description |
 |---|---|---|
-| type | string | Must be 'azureBlobStorage'.|
 | accountUri | string | The URI of the Azure blob storage account.|
 | containerName | string | The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.|
 | blobPrefix | string | Optional path prefix for the artifacts to egress.|
@@ -358,9 +357,8 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 ```json
 {
     "Egress": {
-        "Providers": {
+        "AzureBlobStorage": {
             "monitorBlob": {
-                "type": "azureBlobStorage",
                 "accountUri": "https://exampleaccount.blob.core.windows.net",
                 "containerName": "dotnet-monitor",
                 "blobPrefix": "artifacts",
@@ -378,7 +376,6 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 | Name | Type | Description |
 |---|---|---|
-| type | string | Must be 'fileSystem'|
 | directoryPath | string | The directory path to which the stream data will be egressed.|
 | intermediateDirectoryPath | string | The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in 'directoryPath'.|
 
@@ -387,9 +384,8 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 ```json
 {
     "Egress": {
-        "Providers": {
+        "FileSystem": {
             "monitorFile": {
-                "type": "fileSystem",
                 "directoryPath": "/artifacts",
                 "intermediateDirectoryPath": "/intermediateArtifacts"
             }

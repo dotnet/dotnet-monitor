@@ -15,5 +15,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         {
             return configuration.GetSection(ConfigurationKeys.Egress);
         }
+
+        /// <summary>
+        /// Get the Egress:Properties configuration section from the specified configuration.
+        /// </summary>
+        public static IConfigurationSection GetEgressPropertiesSection(this IConfiguration configuration)
+        {
+            return configuration.GetEgressSection().GetSection(nameof(EgressOptions.Properties));
+        }
     }
 }
