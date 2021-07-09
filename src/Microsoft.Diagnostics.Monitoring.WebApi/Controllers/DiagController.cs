@@ -203,6 +203,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async processInfo =>
             {
+                ValidateHTTPEgress(egressProvider);
+
                 string dumpFileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                     FormattableString.Invariant($"dump_{GetFileNameTimeStampUtcNow()}.dmp") :
                     FormattableString.Invariant($"core_{GetFileNameTimeStampUtcNow()}");
@@ -262,6 +264,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
+                ValidateHTTPEgress(egressProvider);
+
                 string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
                 Func<CancellationToken, Task<IFastSerializable>> action = async (token) => {
@@ -330,6 +334,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
+                ValidateHTTPEgress(egressProvider);
+
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
                 var configurations = new List<MonitoringSourceConfiguration>();
@@ -394,6 +400,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
+                ValidateHTTPEgress(egressProvider);
+
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
                 var providers = new List<EventPipeProvider>();
@@ -454,7 +462,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                ValidateEgressProvider(egressProvider);
+                ValidateHTTPEgress(egressProvider);
 
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
@@ -510,6 +518,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
+                ValidateHTTPEgress(egressProvider);
+
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
                 var settings = new EventLogsPipelineSettings()
@@ -627,7 +637,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
 
-        private void ValidateEgressProvider(string egressProvider)
+        private void ValidateHTTPEgress(string egressProvider)
         {
             if (egressProvider == null && _egressOutputOptions.EgressMode == EgressMode.HTTPDisabled)
             {
