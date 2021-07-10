@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,10 +38,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public class DiagController : ControllerBase
     {
-        private const string ArtifactType_Dump = "dump";
-        private const string ArtifactType_GCDump = "gcdump";
-        private const string ArtifactType_Logs = "logs";
-        private const string ArtifactType_Trace = "trace";
+        public const string ArtifactType_Dump = "dump";
+        public const string ArtifactType_GCDump = "gcdump";
+        public const string ArtifactType_Logs = "logs";
+        public const string ArtifactType_Trace = "trace";
 
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
         private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);
@@ -50,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
-        private readonly EgressOperationStore _operationStore;
+        private readonly EgressOperationStore _operationsStore;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -58,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _logger = logger;
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
-            _operationStore = serviceProvider.GetRequiredService<EgressOperationStore>();
+            _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
         }
 
         /// <summary>
@@ -192,7 +193,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(MaxConcurrency = 1)]
+        [RequestLimit(LimitKey = ArtifactType_Dump)]
         public Task<ActionResult> CaptureDump(
             [FromQuery]
             int? pid = null,
@@ -234,7 +235,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         dumpFileName,
                         processInfo.EndpointInfo,
                         ContentTypes.ApplicationOctetStream,
-                        scope));
+                        scope), limitKey: ArtifactType_Dump);
                 }
             }, processKey, ArtifactType_Dump);
         }
@@ -254,7 +255,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(MaxConcurrency = 1)]
+        [RequestLimit(LimitKey = ArtifactType_GCDump)]
         public Task<ActionResult> CaptureGcDump(
             [FromQuery]
             int? pid = null,
@@ -317,7 +318,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(MaxConcurrency = 3)]
+        [RequestLimit(LimitKey = ArtifactType_Trace)]
         public Task<ActionResult> CaptureTrace(
             [FromQuery]
             int? pid = null,
@@ -384,7 +385,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(MaxConcurrency = 3)]
+        [RequestLimit(LimitKey = ArtifactType_Trace)]
         public Task<ActionResult> CaptureTraceCustom(
             [FromBody][Required]
             Models.EventPipeConfiguration configuration,
@@ -445,7 +446,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(MaxConcurrency = 3)]
+        [RequestLimit(LimitKey = ArtifactType_Logs)]
         public Task<ActionResult> CaptureLogs(
             [FromQuery]
             int? pid = null,
@@ -500,7 +501,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(MaxConcurrency = 3)]
+        [RequestLimit(LimitKey = ArtifactType_Logs)]
         public Task<ActionResult> CaptureLogsCustom(
             [FromBody]
             Models.LogsConfiguration configuration,
@@ -753,19 +754,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     fileName,
                     endpointInfo,
                     contentType,
-                    scope));
+                    scope),
+                    limitKey: artifactType);
             }
         }
 
-        private async Task<ActionResult> SendToEgress(EgressOperation egressStreamResult)
+        private async Task<ActionResult> SendToEgress(EgressOperation egressStreamResult, string limitKey)
         {
-            Guid operationId = await _operationStore.AddOperation(egressStreamResult);
-            string newUrl = this.Url.Action(
-                action: nameof(OperationController.GetOperationStatus),
-                controller: OperationController.ControllerName, new { operationId = operationId },
-                protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
+            try
+            {
+                Guid operationId = await _operationsStore.AddOperation(egressStreamResult, limitKey);
+                string newUrl = this.Url.Action(
+                    action: nameof(OperationController.GetOperationStatus),
+                    controller: OperationController.ControllerName, new { operationId = operationId },
+                    protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
 
-            return Accepted(newUrl);
+                return Accepted(newUrl);
+            }
+            catch (TooManyRequestsException)
+            {
+                return this.StatusCode(StatusCodes.Status429TooManyRequests);
+            }
         }
 
         private static Func<Stream, CancellationToken, Task> ConvertFastSerializeAction(Func<CancellationToken, Task<IFastSerializable>> action)

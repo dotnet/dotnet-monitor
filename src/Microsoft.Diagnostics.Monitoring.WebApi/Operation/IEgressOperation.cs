@@ -12,6 +12,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal interface IEgressOperation
     {
-        Task<ExecutionResult<EgressResult?>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token);
+        Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token);
     }
 }

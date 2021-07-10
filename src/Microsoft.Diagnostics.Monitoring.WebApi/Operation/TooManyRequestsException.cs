@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    internal sealed class RequestLimitAttribute : Attribute
+    internal sealed class TooManyRequestsException : MonitoringException
     {
-        public string LimitKey { get; set; }
+        public TooManyRequestsException() : base(string.Empty)
+        {
+        }
     }
 }

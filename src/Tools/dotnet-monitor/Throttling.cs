@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Threading;
@@ -21,22 +22,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// </summary>
     internal sealed class Throttling
     {
-        private sealed class RequestCount
-        {
-            private int _count = 0;
-            public int Increment() => Interlocked.Increment(ref _count);
-
-            public void Decrement() => Interlocked.Decrement(ref _count);
-        }
 
         private readonly RequestDelegate _next;
-        private readonly ConcurrentDictionary<string, RequestCount> _requestCounts = new ConcurrentDictionary<string, RequestCount>();
-        private readonly ILogger<Throttling> _logger;
 
-        public Throttling(RequestDelegate next, ILogger<Throttling> logger)
+        private readonly RequestLimitTracker _limitTracker;
+        private const string EgressQuery = "egressprovider";
+
+        public Throttling(RequestDelegate next, RequestLimitTracker requestLimitTracker)
         {
             _next = next;
-            _logger = logger;
+            _limitTracker = requestLimitTracker;
         }
 
         public async Task Invoke(HttpContext context)
@@ -44,17 +39,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             var endpoint = context.GetEndpoint();
 
             RequestLimitAttribute requestLimit = endpoint?.Metadata.GetMetadata<RequestLimitAttribute>();
-            RequestCount requestCount = null;
+            IDisposable incrementor = null;
 
             try
             {
-                if (requestLimit != null)
+                //Operations and middleware both share the same increment limits, but
+                //we don't want the middleware to increment the limit if the operation is doing it as well.
+                if ((requestLimit != null) && !context.Request.Query.ContainsKey(EgressQuery))
                 {
-                    requestCount = _requestCounts.GetOrAdd(endpoint.DisplayName, (_) => new RequestCount());
-                    int newRequestCount = requestCount.Increment();
-                    if (newRequestCount > requestLimit.MaxConcurrency)
+                    incrementor = _limitTracker.Increment(requestLimit.LimitKey, out bool allowOperation);
+                    if (!allowOperation)
                     {
-                        _logger.ThrottledEndpoint(requestLimit.MaxConcurrency, newRequestCount);
                         context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
                         return;
                     }
@@ -64,8 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
             finally
             {
-                //IMPORTANT This will not work for operation style apis, such as when returning a 202 for egress calls.
-                requestCount?.Decrement();
+                incrementor?.Dispose();
             }
         }
     }

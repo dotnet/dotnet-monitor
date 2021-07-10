@@ -31,104 +31,131 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
+        private readonly DirectoryInfo _tempEgressPath;
 
         private const string FileProviderName = "files";
-        private const string FileProviderType = "fileSystem";
-        private static readonly string EgressPath = Path.Combine(Path.GetTempPath(), "Egress");
+        
 
         public EgressTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
-        }
-
-        private static RootOptions GenerateEgress()
-        {
-            var egressProvider = new EgressProvider()
-            {
-                EgressType = FileProviderType
-            };
-
-            egressProvider.Properties.Add("DirectoryPath", EgressPath);
-
-            var options = new RootOptions()
-            {
-                Egress = new EgressOptions
-                {
-                    Providers = new Dictionary<string, EgressProvider>
-                    {
-                        { FileProviderName, egressProvider}
-                    }
-                }
-            };
-
-            return options;
+            _tempEgressPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "Egress", Guid.NewGuid().ToString()));
         }
 
         [Fact]
         public async Task EgressTraceTest()
         {
-            await ExecuteEgressScenario(async (ApiClient apiClient, AppRunner appRunner) =>
-            {
-                OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: 5, FileProviderName).ConfigureAwait(false);
-                Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: 5, FileProviderName).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
-                OperationStatus operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
-                Assert.Equal(OperationState.Succeeded, operationResult.Status); 
-            });
+                    OperationStatus operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
+                    Assert.Equal(OperationState.Succeeded, operationResult.Status);
+                    Assert.True(File.Exists(operationResult.ResourceLocation));
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
+                });
         }
 
         [Fact]
         public async Task EgressCancelTest()
         {
-            await ExecuteEgressScenario(async (ApiClient apiClient, AppRunner appRunner) =>
-            {
-                OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName).ConfigureAwait(false);
-                Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
-                OperationStatus operationResult = await apiClient.GetOperationStatus(response.OperationUri).ConfigureAwait(false);
-                Assert.True(operationResult.Status == OperationState.Running);
+                    OperationStatus operationResult = await apiClient.GetOperationStatus(response.OperationUri).ConfigureAwait(false);
+                    Assert.True(operationResult.Status == OperationState.Running);
 
-                HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri).ConfigureAwait(false);
-                Assert.Equal(HttpStatusCode.OK, deleteStatus);
-                operationResult = await apiClient.GetOperationStatus(response.OperationUri).ConfigureAwait(false);
-                Assert.Equal(OperationState.Cancelled, operationResult.Status);
-            });
+                    HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.OK, deleteStatus);
+                    operationResult = await apiClient.GetOperationStatus(response.OperationUri).ConfigureAwait(false);
+                    Assert.Equal(OperationState.Cancelled, operationResult.Status);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
+                });
         }
 
-        private async Task ExecuteEgressScenario(Func<ApiClient, AppRunner, Task> func)
+        [Fact]
+        public async Task ConcurrencyLimitTest()
         {
-            await using MonitorRunner toolRunner = new(_outputHelper);
-            toolRunner.UseTempApiKey = true;
-            toolRunner.WriteKeyPerValueConfiguration(GenerateEgress());
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    OperationResponse response1 = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.Accepted, response1.StatusCode);
 
-            await toolRunner.StartAsync();
+                    //Wait 1 second to make sure the file names do not collide
+                    await Task.Delay(1000);
 
-            using HttpClient client = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
-            ApiClient apiClient = new ApiClient(_outputHelper, client);
+                    OperationResponse response2 = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.Accepted, response2.StatusCode);
 
-            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
-            appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
-            await appRunner.ExecuteAsync(async () =>
-            {
-                await func(apiClient, appRunner);
-                await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue).ConfigureAwait(false);
-            });
+                    await Task.Delay(1000);
+
+                    OperationResponse response3 = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.Accepted, response3.StatusCode);
+
+                    await Task.Delay(1000);
+
+                    OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+
+                    HttpStatusCode deleteStatus1 = await apiClient.CancelEgressOperation(response1.OperationUri).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.OK, deleteStatus1);
+
+                    HttpStatusCode deleteStatus2 = await apiClient.CancelEgressOperation(response2.OperationUri).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.OK, deleteStatus2);
+
+                    await Task.Delay(1000);
+
+                    OperationResponse response4 = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.Accepted, response4.StatusCode);
+
+                    HttpStatusCode deleteStatus3 = await apiClient.CancelEgressOperation(response3.OperationUri).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.OK, deleteStatus3);
+
+                    HttpStatusCode deleteStatus4 = await apiClient.CancelEgressOperation(response4.OperationUri).ConfigureAwait(false);
+                    Assert.Equal(HttpStatusCode.OK, deleteStatus4);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
+                });
         }
 
         public void Dispose()
         {
             try
             {
-                if (!Directory.Exists(EgressPath))
-                {
-                    return;
-                }
-                foreach(string file in Directory.GetFiles(EgressPath))
-                {
-                    File.Delete(file);
-                }
-                Directory.Delete(EgressPath);
+                _tempEgressPath?.Delete(recursive: true);
             }
             catch
             {

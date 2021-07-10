@@ -17,11 +17,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal sealed class EgressRequest : IDisposable
     {
         private bool _disposed;
+        private IDisposable _limitTracker;
 
-        public EgressRequest(Guid operationId, IEgressOperation egressOperation)
+        public EgressRequest(Guid operationId, IEgressOperation egressOperation, IDisposable limitTracker)
         {
             OperationId = operationId;
             EgressOperation = egressOperation;
+            _limitTracker = limitTracker;
         }
 
         public CancellationTokenSource CancellationTokenSource { get; } = new();
@@ -35,6 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             if (!_disposed)
             {
                 _disposed = true;
+                _limitTracker.Dispose();
                 CancellationTokenSource.Dispose();
             }
         }

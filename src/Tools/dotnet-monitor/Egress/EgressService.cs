@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 CreateSettings(source, fileName, contentType),
                 token);
 
-            return new EgressResult("name", value);
+            return new EgressResult(value);
         }
 
         public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
@@ -74,7 +74,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 CreateSettings(source, fileName, contentType),
                 token);
 
-            return new EgressResult("name", value);
+            return new EgressResult(value);
         }
 
         private IEgressProviderInternal GetProvider(string providerName)

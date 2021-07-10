@@ -306,7 +306,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 
         public async Task<OperationResponse> EgressTraceAsync(int processId, int durationSeconds, string egressProvider, CancellationToken token)
         {
-            string uri = FormattableString.Invariant($"/trace/{processId}?egressProvider={egressProvider}&durationSeconds={durationSeconds}");
+            string uri = FormattableString.Invariant($"/trace?pid={processId}&egressProvider={egressProvider}&durationSeconds={durationSeconds}");
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
 

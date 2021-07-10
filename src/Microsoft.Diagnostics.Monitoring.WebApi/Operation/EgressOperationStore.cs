@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private sealed class EgressEntry
         {
-            public ExecutionResult<EgressResult?> ExecutionResult { get; set; }
+            public ExecutionResult<EgressResult> ExecutionResult { get; set; }
             public Models.OperationState State { get; set;}
 
             public EgressRequest EgressRequest { get; set; }
@@ -29,17 +29,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
         private readonly EgressOperationQueue _taskQueue;
+        private readonly RequestLimitTracker _requestLimits;
 
-        public EgressOperationStore(EgressOperationQueue queue)
+        public EgressOperationStore(EgressOperationQueue queue, RequestLimitTracker requestLimits)
         {
             _taskQueue = queue;
+            _requestLimits = requestLimits;
         }
 
-        public async Task<Guid> AddOperation(IEgressOperation egressOperation)
+        public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
         {
             Guid operationId = Guid.NewGuid();
 
-            var request = new EgressRequest(operationId, egressOperation);
+            IDisposable limitTracker = _requestLimits.Increment(limitKey, out bool allowOperation);
+            //We increment the limit here, and decrement it once the operation is cancelled or completed.
+            //We do this here so that we can provide immediate errors if the user queues up too many operations.
+
+            if (!allowOperation)
+            {
+                limitTracker.Dispose();
+                throw new TooManyRequestsException();
+            }
+
+            var request = new EgressRequest(operationId, egressOperation, limitTracker);
             lock (_requests)
             {
                 //Add operation object to central table.
@@ -78,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public void CompleteOperation(Guid operationId, ExecutionResult<EgressResult?> result)
+        public void CompleteOperation(Guid operationId, ExecutionResult<EgressResult> result)
         {
             lock (_requests)
             {
@@ -94,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 entry.ExecutionResult = result;
                 entry.EgressRequest.Dispose();
 
-                if (entry.ExecutionResult.Result.HasValue)
+                if (entry.ExecutionResult.ProblemDetails == null)
                 {
                     entry.State = Models.OperationState.Succeeded;
                 }
@@ -123,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 if (entry.State == Models.OperationState.Succeeded)
                 {
-                    status.ResourceLocation = entry.ExecutionResult.Result?.Value;
+                    status.ResourceLocation = entry.ExecutionResult.Result.Value;
                 }
                 else if (entry.State == Models.OperationState.Failed)
                 {

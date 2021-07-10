@@ -21,14 +21,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     public class OperationController : ControllerBase
     {
         private readonly ILogger<OperationController> _logger;
-        private readonly EgressOperationStore _operationStore;
+        private readonly EgressOperationStore _operationsStore;
 
         public const string ControllerName = "operation";
 
         public OperationController(ILogger<OperationController> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _operationStore = serviceProvider.GetRequiredService<EgressOperationStore>();
+            _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
         }
 
         [HttpGet("{operationId}")]
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return this.InvokeService(() =>
             {
-                Models.OperationStatus status = _operationStore.GetOperationStatus(operationId);
+                Models.OperationStatus status = _operationsStore.GetOperationStatus(operationId);
                 int statusCode = (int)(status.Status == Models.OperationState.Succeeded ? StatusCodes.Status201Created : StatusCodes.Status200OK);
                 return this.StatusCode(statusCode, status);
             }, _logger);
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 //Note that if the operation is not found, it will throw an InvalidOperationException and
                 //return an error code.
-                _operationStore.CancelOperation(operationId);
+                _operationsStore.CancelOperation(operationId);
                 return Ok();
             }, _logger);
         }

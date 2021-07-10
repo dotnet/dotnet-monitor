@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private EgressOperationQueue _queue;
         private IServiceProvider _serviceProvider;
-        private EgressOperationStore _operationStore;
+        private EgressOperationStore _operationsStore;
 
         public EgressOperationService(EgressOperationQueue taskQueue,
             IServiceProvider serviceProvider,
@@ -23,25 +23,38 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             _queue = taskQueue;
             _serviceProvider = serviceProvider;
-            _operationStore = operationStore;
+            _operationsStore = operationStore;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var item = await _queue.DequeueAsync(stoppingToken);
+                EgressRequest egressRequest = await _queue.DequeueAsync(stoppingToken);
 
-                //We have two stopping tokens, one per item that can be triggered via Delete
-                //and if we are stopping the service
-                using (CancellationTokenSource linkedTokenSource =
-                    CancellationTokenSource.CreateLinkedTokenSource(item.CancellationTokenSource.Token, stoppingToken))
+                //Note we do not await these tasks, but we do limit how many can be executed at the same time
+                _ = Task.Run( async ()=>
                 {
-                    CancellationToken token = linkedTokenSource.Token;
-                    var result = await item.EgressOperation.ExecuteAsync(_serviceProvider, token);
+                    await ExecuteEgressOperation(egressRequest, stoppingToken);
+                }, stoppingToken);
+            }
+        }
 
-                    _operationStore.CompleteOperation(item.OperationId, result);
-                }
+        private async Task ExecuteEgressOperation(EgressRequest egressRequest, CancellationToken stoppingToken)
+        {
+            //We have two stopping tokens, one per item that can be triggered via Delete
+            //and if we are stopping the service
+            using (CancellationTokenSource linkedTokenSource =
+                CancellationTokenSource.CreateLinkedTokenSource(egressRequest.CancellationTokenSource.Token, stoppingToken))
+            {
+                CancellationToken token = linkedTokenSource.Token;
+                token.ThrowIfCancellationRequested();
+
+                var result = await egressRequest.EgressOperation.ExecuteAsync(_serviceProvider, token);
+
+                //It is possible that this operation never completes, due to infinite duration operations.
+
+                _operationsStore.CompleteOperation(egressRequest.OperationId, result);
             }
         }
     }
