@@ -12,13 +12,27 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    public class DiagnosticPortOptions
+    public class DiagnosticPortOptions : IDiagnosticPortOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode))]
         [DefaultValue(DiagnosticPortOptionsDefaults.ConnectionMode)]
         public DiagnosticPortConnectionMode? ConnectionMode { get; set; }
+
+        public string GetReadableConnectionMode()
+        {
+            if (ConnectionMode == DiagnosticPortConnectionMode.Connect)
+            {
+                return "Connect";
+            }
+            else if (ConnectionMode == DiagnosticPortConnectionMode.Listen)
+            {
+                return "Listen";
+            }
+
+            throw new System.Exception("Unable to establish the Connection Mode representation."); // Should this be a specific type of exception?
+        }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

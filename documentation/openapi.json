@@ -754,43 +754,19 @@
         }
       }
     },
-    "/secureinfo": {
+    "/info": {
       "get": {
         "tags": [
           "Diag"
         ],
-        "summary": "Gets information about Dotnet-Monitor that should be secured behind authentication (currently a stub).",
-        "operationId": "GetSecureInfo",
+        "summary": "Gets versioning and listening mode information about Dotnet-Monitor",
+        "operationId": "GetInfo",
         "responses": {
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
-          },
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DotnetMonitorSecureInfo"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/info": {
-      "get": {
-        "tags": [
-          "Info"
-        ],
-        "summary": "Gets the Dotnet Monitor Version (other configuration information may be added in the future).",
-        "operationId": "GetInfo",
-        "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           },
           "200": {
             "description": "Success",
@@ -1037,14 +1013,18 @@
         },
         "additionalProperties": false
       },
-      "DotnetMonitorSecureInfo": {
-        "type": "object",
-        "additionalProperties": false
-      },
       "DotnetMonitorInfo": {
         "type": "object",
         "properties": {
-          "version": {
+          "Version": {
+            "type": "string",
+            "nullable": true
+          },
+          "RuntimeVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "ListeningMode": {
             "type": "string",
             "nullable": true
           }

@@ -12,7 +12,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
     public class DotnetMonitorInfo
     {
-        [JsonPropertyName("version")]
+        [JsonPropertyName("Version")]
         public string Version { get; set; }
+
+        [JsonPropertyName("RuntimeVersion")]
+        public string RuntimeVersion { get; set; }
+
+        [JsonPropertyName("ListeningMode")]
+        public string ListeningMode { get; set; }
     }
 }

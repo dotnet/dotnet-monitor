@@ -176,6 +176,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     services.AddSingleton<IAuthOptions>(authenticationOptions);
 
+                    //services.AddSingleton<IDiagnosticPortOptions>(diagnosticPortOptions);
+
                     // Although this is only observing API key authentication changes, it does handle
                     // the case when API key authentication is not enabled. This class could evolve
                     // to observe other options in the future, at which point it might be good to
@@ -237,6 +239,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
                     services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
+
+                    DiagnosticPortOptions diagnosticPortOptions = new DiagnosticPortOptions();
+
+                    diagnosticPortOptions.ConnectionMode = GetConnectionMode(diagnosticPort);
+
+                    services.AddSingleton<IDiagnosticPortOptions>(diagnosticPortOptions);
 
                     services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                     services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
@@ -327,12 +335,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
         {
-            DiagnosticPortConnectionMode connectionMode = string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
+            DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
             });
+        }
+
+        private static DiagnosticPortConnectionMode GetConnectionMode(string diagnosticPort)
+        {
+            return string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
         }
 
         private static string GetEnvironmentOverrideOrValue(string overrideEnvironmentVariable, string value)
