@@ -6,29 +6,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal sealed class EgressOutputOptions : IEgressOutputOptions
     {
-        /*
-        public bool EnableNegotiate => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && KeyAuthenticationMode != KeyAuthenticationMode.NoAuth;
-
-        public KeyAuthenticationMode KeyAuthenticationMode { get; }
-
-        public bool EnableKeyAuth => (KeyAuthenticationMode == KeyAuthenticationMode.StoredKey) ||
-                                     (KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey);
-
-        public GeneratedApiKey TemporaryKey { get; }
-        */
-
         public EgressMode EgressMode { get; }
 
         public EgressOutputOptions(EgressMode mode)
         {
             EgressMode = mode;
-
-            /*
-            if (mode == EgressMode.HTTPDisabled)
-            {
-                TemporaryKey = GeneratedApiKey.Create();
-            }
-            */
         }
     }
 }

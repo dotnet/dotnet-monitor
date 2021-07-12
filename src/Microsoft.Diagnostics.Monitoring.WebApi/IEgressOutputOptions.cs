@@ -6,7 +6,6 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-
     public enum EgressMode
     {
         HTTPDisabled,

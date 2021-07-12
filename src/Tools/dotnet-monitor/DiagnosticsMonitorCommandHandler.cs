@@ -133,7 +133,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             AuthOptions authenticationOptions = new AuthOptions(authMode);
 
             EgressMode egressMode = noHTTPEgress ? EgressMode.HTTPDisabled : EgressMode.HTTPEnabled;
-
             EgressOutputOptions egressOptions = new EgressOutputOptions(egressMode);
 
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
