@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// if <paramref name="monitorConnectionMode"/> is <see cref="DiagnosticPortConnectionMode.Listen"/>.
         /// </summary>
         public static void Generate(
-            DiagnosticPortConnectionMode monitorConnectionMode,
+            Options.DiagnosticPortConnectionMode monitorConnectionMode,
             out DiagnosticPortConnectionMode appConnectionMode,
             out string diagnosticPortPath)
         {

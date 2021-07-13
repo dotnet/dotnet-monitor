@@ -4,7 +4,6 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Collections.Generic;
 using System.IO;
