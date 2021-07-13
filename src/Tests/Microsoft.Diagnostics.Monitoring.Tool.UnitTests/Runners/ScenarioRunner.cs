@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Net.Http;
 using System.Reflection;

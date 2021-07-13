@@ -202,7 +202,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
         private TestServerEndpointInfoSource CreateServerSource(out string transportName)
         {
-            DiagnosticPortHelper.Generate(Options.DiagnosticPortConnectionMode.Listen, out _, out transportName);
+            DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out transportName);
             _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
             return new TestServerEndpointInfoSource(transportName, _outputHelper);
         }
@@ -210,7 +210,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         private AppRunner CreateAppRunner(string transportName = null, int appId = 1)
         {
             AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId);
-            appRunner.ConnectionMode = Options.DiagnosticPortConnectionMode.Connect;
+            appRunner.ConnectionMode = DiagnosticPortConnectionMode.Connect;
             appRunner.DiagnosticPortPath = transportName;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
             return appRunner;

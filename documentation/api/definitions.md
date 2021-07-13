@@ -1,5 +1,15 @@
 # Definitions
 
+## DotnetMonitorInfo
+
+Object describing diagnostic/automation information about the executing instance of Dotnet-Monitor.
+
+| Name | Type | Description |
+|---|---|---|
+| Version | string | The current version of Dotnet-Monitor. |
+| RuntimeVersion | string | The version of the dotnet runtime. |
+| ListeningMode | DiagnosticPortConnectionMode | Indicates whether Dotnet-Monitor is in `Client` mode or `Listen` mode. |
+
 ## DumpType
 
 Enumeration that describes the type of information to capture in a managed dump.

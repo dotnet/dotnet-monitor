@@ -33,6 +33,7 @@ Authentication is not enforced for this route.
 |---|---|---|---|
 | 200 OK | | A list of metrics for a single process in the Prometheus exposition format. | `text/plain` |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples
 

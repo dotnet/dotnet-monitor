@@ -1,6 +1,6 @@
 # Info - Get
 
-Gets information about the Dotnet-Monitor version. Other configuration information may be included in the future.
+Gets information about the Dotnet-Monitor version, the runtime version, and the listening mode.
 
 ## HTTP Route
 
@@ -10,11 +10,11 @@ GET /info HTTP/1.1
 
 ## Host Address
 
-This route is available on all configured addresses.
+The default host address for these routes is `https://localhost:52323`.
 
 ## Authentication
 
-Authentication is not enforced for this route.
+Authentication is enforced for this route. See [Authentication](./../authentication.md) for further information.
 
 ## Responses
 
@@ -22,6 +22,7 @@ Authentication is not enforced for this route.
 |---|---|---|---|
 | 200 OK | | Information about Dotnet-Monitor formatted as JSON.  | `application/json` |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples
 
@@ -29,7 +30,7 @@ Authentication is not enforced for this route.
 
 ```http
 GET info HTTP/1.1
-Host: localhost:52325
+Host: localhost:52323
 ```
 
 ### Sample Response
@@ -38,7 +39,7 @@ Host: localhost:52325
 HTTP/1.1 200 OK
 Content-Type: application/json
 
-{"version":"5.0.0-dev.21358.1+6e4c58bec2230791bcd7958e4b44883ee224c596"}
+{"Version":"5.0.0-dev.21362.1+813e40f07bcf3de83b3bb374e2736ad256d0c067","RuntimeVersion":"3.1.16","ListeningMode":"Connect"}
 ```
 
 ## Supported Runtimes

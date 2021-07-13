@@ -49,13 +49,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
-        private readonly IDiagnosticPortOptions _diagnosticPortOptions;
+        private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
 
         public DiagController(ILogger<DiagController> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
-            _diagnosticPortOptions = serviceProvider.GetRequiredService<IDiagnosticPortOptions>();
+            _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
         }
 
         /// <summary>
@@ -536,7 +536,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string version = GetDotnetMonitorVersion();
                 string runtimeVersion = Environment.Version.ToString();
-                string listeningMode = _diagnosticPortOptions.GetReadableConnectionMode();
+                string listeningMode = GetReadableConnectionMode();
 
                 Models.DotnetMonitorInfo dotnetMonitorInfo = new Models.DotnetMonitorInfo()
                 {
@@ -564,6 +564,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return assemblyVersionAttribute.InformationalVersion;
             }
+        }
+
+        public string GetReadableConnectionMode()
+        {
+            return _diagnosticPortOptions.Value.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode).ToString("G");
         }
 
         private ActionResult StartTrace(

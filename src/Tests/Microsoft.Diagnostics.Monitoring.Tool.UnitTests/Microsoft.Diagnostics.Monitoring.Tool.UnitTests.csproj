@@ -20,8 +20,8 @@
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\StorageOptions.cs" Link="Options\StorageOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Auth\ApiAuthenticationOptions.cs" Link="Options\ApiAuthenticationOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortOptions.cs" Link="Options\DiagnosticPortOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortOptionsDefaults.cs" Link="Options\DiagnosticPortOptionsDefaults.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortOptions.cs" Link="Options\DiagnosticPortOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortOptionsDefaults.cs" Link="Options\DiagnosticPortOptionsDefaults.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1016,16 +1016,19 @@
       "DotnetMonitorInfo": {
         "type": "object",
         "properties": {
-          "Version": {
+          "version": {
             "type": "string",
+            "description": "The Dotnet-Monitor version",
             "nullable": true
           },
-          "RuntimeVersion": {
+          "runtimeVersion": {
             "type": "string",
+            "description": "The dotnet runtime version",
             "nullable": true
           },
-          "ListeningMode": {
+          "listeningMode": {
             "type": "string",
+            "description": "Indicates whether Dotnet-Monitor is in Client mode or Listen mode",
             "nullable": true
           }
         },
