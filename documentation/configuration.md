@@ -13,7 +13,7 @@
   -  If `$XDG_CONFIG_HOME` isn't defined, we fall back to ` $HOME/.config/dotnet-monitor/settings.json`
 - [Key-per-file](https://docs.microsoft.com/aspnet/core/fundamentals/configuration/#key-per-file-configuration-provider) in the shared settings path
     - On Windows, `%ProgramData%\dotnet-monitor`
-    - On \*nix, `etc/dotnet-monitor`
+    - On \*nix, `/etc/dotnet-monitor`
 
 - Environment variables
 
