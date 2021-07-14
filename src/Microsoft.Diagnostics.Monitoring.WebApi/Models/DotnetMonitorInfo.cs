@@ -13,21 +13,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class DotnetMonitorInfo
     {
         /// <summary>
-        /// The Dotnet-Monitor version 
+        /// The dotnet monitor version.
         /// </summary>
         [JsonPropertyName("version")]
         public string Version { get; set; }
 
         /// <summary>
-        /// The dotnet runtime version 
+        /// The dotnet runtime version.
         /// </summary>
         [JsonPropertyName("runtimeVersion")]
         public string RuntimeVersion { get; set; }
 
         /// <summary>
-        /// Indicates whether Dotnet-Monitor is in Client mode or Listen mode
+        /// Indicates whether dotnet monitor is in 'connect' mode or 'listen' mode.
         /// </summary>
-        [JsonPropertyName("listeningMode")]
-        public string ListeningMode { get; set; }
+        [JsonPropertyName("diagnosticPortMode")]
+        public DiagnosticPortConnectionMode DiagnosticPortMode { get; set; }
+
+        /// <summary>
+        /// The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.
+        /// </summary>
+        [JsonPropertyName("diagnosticPortName")]
+        public string DiagnosticPortName { get; set; }
     }
 }

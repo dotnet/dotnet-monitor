@@ -23,6 +23,7 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using DiagnosticPortConnectionMode = Microsoft.Diagnostics.Monitoring.UnitTests.Options.DiagnosticPortConnectionMode;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests
 {
@@ -44,14 +45,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Tests that all log events are collected if log level set to Trace.
         /// </summary>
         [Theory]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 
 #if NET5_0_OR_GREATER
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsAllCategoriesTest(Options.DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsAllCategoriesTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -90,13 +91,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Tests that log events with level at or above the specified level are collected.
         /// </summary>
         [Theory]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelTest(Options.DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsDefaultLevelTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -122,13 +123,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// at the log level specified in the request body.
         /// </summary>
         [Theory]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelFallbackTest(Options.DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsDefaultLevelFallbackTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -163,13 +164,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that LogLevel.None is not supported as the level query parameter.
         /// </summary>
         [Theory]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(Options.DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -199,13 +200,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that LogLevel.None is not supported as the default log level in the request body.
         /// </summary>
         [Theory]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(Options.DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -235,13 +236,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
         [Theory]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsUseAppFiltersViaQueryTest(Options.DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsUseAppFiltersViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -269,13 +270,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
         [Theory]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsUseAppFiltersViaBodyTest(Options.DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsUseAppFiltersViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -308,13 +309,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
         [Theory]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsUseAppFiltersAndFilterSpecsTest(Options.DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsUseAppFiltersAndFilterSpecsTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -352,13 +353,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// Test that log events are collected for wildcard categories.
         /// </summary>
         [Theory]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(Options.DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
 #endif
-        public Task LogsWildcardTest(Options.DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsWildcardTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
                 mode,
@@ -395,7 +396,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         }
 
         private Task ValidateLogsAsync(
-            Options.DiagnosticPortConnectionMode mode,
+            DiagnosticPortConnectionMode mode,
             LogLevel? logLevel,
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat logFormat)
@@ -413,7 +414,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         }
 
         private Task ValidateLogsAsync(
-            Options.DiagnosticPortConnectionMode mode,
+            DiagnosticPortConnectionMode mode,
             LogsConfiguration configuration,
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat logFormat)

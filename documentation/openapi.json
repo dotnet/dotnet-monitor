@@ -1013,22 +1013,32 @@
         },
         "additionalProperties": false
       },
+      "DiagnosticPortConnectionMode": {
+        "enum": [
+          "Connect",
+          "Listen"
+        ],
+        "type": "string"
+      },
       "DotnetMonitorInfo": {
         "type": "object",
         "properties": {
           "version": {
             "type": "string",
-            "description": "The Dotnet-Monitor version",
+            "description": "The dotnet monitor version.",
             "nullable": true
           },
           "runtimeVersion": {
             "type": "string",
-            "description": "The dotnet runtime version",
+            "description": "The dotnet runtime version.",
             "nullable": true
           },
-          "listeningMode": {
+          "diagnosticPortMode": {
+            "$ref": "#/components/schemas/DiagnosticPortConnectionMode"
+          },
+          "diagnosticPortName": {
             "type": "string",
-            "description": "Indicates whether Dotnet-Monitor is in Client mode or Listen mode",
+            "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
             "nullable": true
           }
         },

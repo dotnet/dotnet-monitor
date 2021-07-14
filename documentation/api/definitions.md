@@ -2,13 +2,14 @@
 
 ## DotnetMonitorInfo
 
-Object describing diagnostic/automation information about the executing instance of Dotnet-Monitor.
+Object describing diagnostic/automation information about the executing instance of `dotnet monitor`.
 
 | Name | Type | Description |
 |---|---|---|
 | Version | string | The current version of Dotnet-Monitor. |
 | RuntimeVersion | string | The version of the dotnet runtime. |
-| ListeningMode | string | Indicates whether Dotnet-Monitor is in `Client` mode or `Listen` mode. |
+| DiagnosticPortMode | DiagnosticPortConnectionMode | Indicates whether `dotnet monitor` is in `connect` mode or `listen` mode. |
+| DiagnosticPortName | string | The name of the named pipe or unix domain socket to use for connecting to the diagnostic server. |
 
 ## DumpType
 

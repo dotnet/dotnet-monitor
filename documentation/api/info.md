@@ -1,6 +1,6 @@
 # Info - Get
 
-Gets information about the Dotnet-Monitor version, the runtime version, and the listening mode.
+Gets information about the `dotnet monitor` version, the runtime version, and the diagnostic port settings.
 
 ## HTTP Route
 
@@ -20,7 +20,7 @@ Authentication is enforced for this route. See [Authentication](./../authenticat
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | | Information about Dotnet-Monitor formatted as JSON.  | `application/json` |
+| 200 OK | | Information about `dotnet monitor` formatted as JSON.  | `application/json` |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
@@ -29,7 +29,7 @@ Authentication is enforced for this route. See [Authentication](./../authenticat
 ### Sample Request
 
 ```http
-GET info HTTP/1.1
+GET /info HTTP/1.1
 Host: localhost:52323
 ```
 
@@ -39,7 +39,12 @@ Host: localhost:52323
 HTTP/1.1 200 OK
 Content-Type: application/json
 
-{"Version":"5.0.0-dev.21362.1+813e40f07bcf3de83b3bb374e2736ad256d0c067","RuntimeVersion":"3.1.16","ListeningMode":"Connect"}
+{
+	"version":"5.0.0",
+	"runtimeVersion":"3.1.16",
+	"diagnosticPortMode":"Connect",
+	"diagnosticPortName":null
+}
 ```
 
 ## Supported Runtimes

@@ -536,13 +536,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string version = GetDotnetMonitorVersion();
                 string runtimeVersion = Environment.Version.ToString();
-                string listeningMode = GetReadableConnectionMode();
+                DiagnosticPortConnectionMode diagnosticPortMode = GetDiagnosticPortMode();
+                string diagnosticPortName = GetDiagnosticPortName();
 
                 Models.DotnetMonitorInfo dotnetMonitorInfo = new Models.DotnetMonitorInfo()
                 {
                     Version = version,
                     RuntimeVersion = runtimeVersion,
-                    ListeningMode = listeningMode
+                    DiagnosticPortMode = diagnosticPortMode,
+                    DiagnosticPortName = diagnosticPortName
                 };
 
                 _logger.WrittenToHttpStream();
@@ -566,9 +568,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        public string GetReadableConnectionMode()
+        public DiagnosticPortConnectionMode GetDiagnosticPortMode()
         {
-            return _diagnosticPortOptions.Value.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode).ToString("G");
+            return _diagnosticPortOptions.Value.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode);
+        }
+
+        public string GetDiagnosticPortName()
+        {
+            return _diagnosticPortOptions.Value.EndpointName;
         }
 
         private ActionResult StartTrace(
