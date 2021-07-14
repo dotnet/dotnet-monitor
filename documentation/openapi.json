@@ -823,6 +823,31 @@
         }
       }
     },
+    "/operation": {
+      "get": {
+        "tags": [
+          "Operation"
+        ],
+        "responses": {
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OperationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/operation/{operationId}": {
       "get": {
         "tags": [
@@ -840,6 +865,9 @@
           }
         ],
         "responses": {
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
           "201": {
             "description": "Success",
             "content": {
@@ -878,6 +906,9 @@
           }
         ],
         "responses": {
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
           "200": {
             "description": "Success"
           }
@@ -984,6 +1015,33 @@
           "Triage"
         ],
         "type": "string"
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
       },
       "TraceProfile": {
         "enum": [
@@ -1146,7 +1204,14 @@
         }
       },
       "TooManyRequestsResponse": {
-        "description": "TooManyRequests"
+        "description": "TooManyRequests",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetails"
+            }
+          }
+        }
       }
     }
   }

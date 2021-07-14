@@ -14,14 +14,18 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation.Responses.TryGetValue(StatusCodeStrings.Status429TooManyRequests, out OpenApiResponse tooManyRequests))
+            if (operation.Responses.Remove(StatusCodeStrings.Status429TooManyRequests))
             {
-                tooManyRequests.Content.Clear();
-                tooManyRequests.Reference = new OpenApiReference()
-                {
-                    Id = ResponseNames.TooManyRequestsResponse,
-                    Type = ReferenceType.Response
-                };
+                operation.Responses.Add(
+                    StatusCodeStrings.Status429TooManyRequests,
+                    new OpenApiResponse()
+                    {
+                        Reference = new OpenApiReference()
+                        {
+                            Id = ResponseNames.TooManyRequestsResponse,
+                            Type = ReferenceType.Response
+                        }
+                    });
             }
         }
     }

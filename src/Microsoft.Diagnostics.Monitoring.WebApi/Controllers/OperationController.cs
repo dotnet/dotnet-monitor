@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [ApiController]
     [HostRestriction]
     [Authorize(Policy = AuthConstants.PolicyName)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public class OperationController : ControllerBase
     {
         private readonly ILogger<OperationController> _logger;
@@ -29,6 +30,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             _logger = logger;
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
+        }
+
+        [HttpGet]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(IEnumerable<Models.OperationSummary>), StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<Models.OperationSummary>> GetOperations()
+        {
+            return this.InvokeService(() =>
+            {
+                return new ActionResult<IEnumerable<Models.OperationSummary>>(_operationsStore.GetOperations());
+            }, _logger);
         }
 
         [HttpGet("{operationId}")]

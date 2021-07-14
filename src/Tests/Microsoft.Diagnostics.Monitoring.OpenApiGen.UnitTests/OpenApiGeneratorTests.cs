@@ -70,6 +70,8 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
                         break;
                     }
                 }
+
+                _outputHelper.WriteLine(generatedContent);
             }
             Assert.True(equal, "The generated OpenAPI description is different than the documented baseline.");
         }

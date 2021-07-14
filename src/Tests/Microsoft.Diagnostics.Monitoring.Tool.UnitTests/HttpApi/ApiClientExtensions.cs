@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -285,24 +286,29 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             return await client.GetMetricsAsync(timeoutSource.Token).ConfigureAwait(false);
         }
 
-        public static Task<OperationResponse> EgressTraceAsync(this ApiClient client, int processId, int durationSeconds, string egressProvider)
+        public static async Task<OperationResponse> EgressTraceAsync(this ApiClient client, int processId, int durationSeconds, string egressProvider)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return client.EgressTraceAsync(processId, durationSeconds, egressProvider, timeoutSource.Token);
+            return await client.EgressTraceAsync(processId, durationSeconds, egressProvider, timeoutSource.Token);
         }
 
-        public static Task<OperationStatus> GetOperationStatus(this ApiClient client, Uri operation)
+        public static async Task<OperationStatus> GetOperationStatus(this ApiClient client, Uri operation)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return client.GetOperationStatus(operation, timeoutSource.Token);
+            return await client.GetOperationStatus(operation, timeoutSource.Token);
         }
 
-        public static Task<HttpStatusCode> CancelEgressOperation(this ApiClient client, Uri operation)
+        public static async Task<HttpStatusCode> CancelEgressOperation(this ApiClient client, Uri operation)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return client.CancelEgressOperation(operation, timeoutSource.Token);
+            return await client.CancelEgressOperation(operation, timeoutSource.Token);
         }
 
+        public static async Task<HttpResponseMessage> ApiCall(this ApiClient client, string routeAndQuery)
+        {
+            using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
+            return await client.ApiCall(routeAndQuery, timeoutSource.Token);
+        }
 
         public static Task<OperationStatus> PollOperationToCompletion(this ApiClient apiClient, Uri operationUrl)
         {

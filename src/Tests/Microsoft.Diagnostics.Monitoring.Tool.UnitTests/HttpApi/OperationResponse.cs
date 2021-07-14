@@ -15,10 +15,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 
         public HttpStatusCode StatusCode { get; }
 
-        public OperationResponse(HttpStatusCode statusCode, Uri operationUri = null)
+        public string ResponseBody { get; }
+
+        public OperationResponse(HttpStatusCode statusCode, Uri operationUri = null, string responseBody = null)
         {
             OperationUri = operationUri;
             StatusCode = statusCode;
+            ResponseBody = responseBody;
         }
     }
 }

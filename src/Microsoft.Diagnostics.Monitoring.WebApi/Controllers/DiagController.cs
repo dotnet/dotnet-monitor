@@ -190,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
-        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Dump)]
@@ -252,7 +252,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
-        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_GCDump)]
@@ -315,7 +315,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
-        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Trace)]
@@ -382,7 +382,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
-        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Trace)]
@@ -443,7 +443,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpGet("logs", Name = nameof(CaptureLogs))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Logs)]
@@ -498,7 +498,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpPost("logs", Name = nameof(CaptureLogsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Logs)]
@@ -761,20 +761,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private async Task<ActionResult> SendToEgress(EgressOperation egressStreamResult, string limitKey)
         {
-            try
-            {
-                Guid operationId = await _operationsStore.AddOperation(egressStreamResult, limitKey);
-                string newUrl = this.Url.Action(
-                    action: nameof(OperationController.GetOperationStatus),
-                    controller: OperationController.ControllerName, new { operationId = operationId },
-                    protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
+            // Will throw TooManyRequestsException if there are too many concurrent operations.
+            Guid operationId = await _operationsStore.AddOperation(egressStreamResult, limitKey);
+            string newUrl = this.Url.Action(
+                action: nameof(OperationController.GetOperationStatus),
+                controller: OperationController.ControllerName, new { operationId = operationId },
+                protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
 
-                return Accepted(newUrl);
-            }
-            catch (TooManyRequestsException)
-            {
-                return this.StatusCode(StatusCodes.Status429TooManyRequests);
-            }
+            return Accepted(newUrl);
         }
 
         private static Func<Stream, CancellationToken, Task> ConvertFastSerializeAction(Func<CancellationToken, Task<IFastSerializable>> action)

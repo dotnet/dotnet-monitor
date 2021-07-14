@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,7 +52,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     incrementor = _limitTracker.Increment(requestLimit.LimitKey, out bool allowOperation);
                     if (!allowOperation)
                     {
-                        context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+
+                        //We should report the same kind of error from Middleware and the Mvc layer.
+                        context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                        context.Response.ContentType = ContentTypes.ApplicationProblemJson;
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(new ProblemDetails
+                        {
+                            Status = StatusCodes.Status429TooManyRequests,
+                            Detail = string.Empty
+                        }), context.RequestAborted);
                         return;
                     }
                 }

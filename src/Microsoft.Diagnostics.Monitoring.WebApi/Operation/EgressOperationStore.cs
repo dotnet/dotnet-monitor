@@ -117,6 +117,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
+        public IEnumerable<Models.OperationSummary> GetOperations()
+        {
+            lock (_requests)
+            {
+                return _requests.Select((kvp) => new Models.OperationSummary
+                {
+                    Id = kvp.Key,
+                    CreatedDateTime = kvp.Value.CreatedDateTime,
+                    Status = kvp.Value.State
+                }).ToList();
+            }
+        }
+
         public Models.OperationStatus GetOperationStatus(Guid operationId)
         {
             lock (_requests)

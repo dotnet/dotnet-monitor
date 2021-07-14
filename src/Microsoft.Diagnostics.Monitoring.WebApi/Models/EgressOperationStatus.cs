@@ -15,6 +15,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 #endif
 {
     /// <summary>
+    /// Represents a partial model when enumerating all operations.
+    /// </summary>
+    public class OperationSummary
+    {
+        public Guid Id { get; set; }
+
+        public DateTime CreatedDateTime { get; set; }
+
+        public OperationState Status { get; set; }
+    }
+
+    /// <summary>
     /// Represents the state of a long running operation. Used for all types of results, including
     /// successes and failures.
     /// </summary>

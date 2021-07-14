@@ -304,13 +304,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
+        public async Task<HttpResponseMessage> ApiCall(string routeAndQuery, CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, routeAndQuery);
+            HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false);
+            return response;
+        }
+
         public async Task<OperationResponse> EgressTraceAsync(int processId, int durationSeconds, string egressProvider, CancellationToken token)
         {
             string uri = FormattableString.Invariant($"/trace?pid={processId}&egressProvider={egressProvider}&durationSeconds={durationSeconds}");
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
 
-            return new OperationResponse(response.StatusCode, response.Headers.Location);
+            return new OperationResponse(response.StatusCode, response.Headers.Location, await response.Content.ReadAsStringAsync());
         }
 
         public async Task<OperationStatus> GetOperationStatus(Uri operation, CancellationToken token)
