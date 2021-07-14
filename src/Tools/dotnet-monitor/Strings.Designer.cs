@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -129,6 +129,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_EgressProviderDoesNotExist {
             get {
                 return ResourceManager.GetString("ErrorMessage_EgressProviderDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Egress provider type &apos;{0}&apos; was not registered..
+        /// </summary>
+        internal static string ErrorMessage_EgressProviderTypeNotRegistered {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressProviderTypeNotRegistered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to create unique intermediate file in &apos;{0}&apos; directory..
+        /// </summary>
+        internal static string ErrorMessage_EgressUnableToCreateIntermediateFile {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressUnableToCreateIntermediateFile", resourceCulture);
             }
         }
         
@@ -394,6 +412,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New provider &apos;{providerName}&apos; under type &apos;{providerType}&apos; was already registered with type &apos;{existingProviderType}&apos; and will be ignored..
+        /// </summary>
+        internal static string LogFormatString_DuplicateEgressProviderIgnored {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateEgressProviderIgnored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copying action stream to egress stream with buffer size {bufferSize}.
         /// </summary>
         internal static string LogFormatString_EgressCopyActionStreamToEgressStream {
@@ -403,38 +430,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provider &apos;{providerName}&apos;: Added..
-        /// </summary>
-        internal static string LogFormatString_EgressProviderAdded {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressProviderAdded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Provider {providerType}: File name = {fileName}.
-        /// </summary>
-        internal static string LogFormatString_EgressProviderFileName {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressProviderFileName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Provider &apos;{providerName}&apos;: Invalid options..
+        ///   Looks up a localized string similar to Provider &apos;{providerName}&apos;: The options are invalid. The provider will not be available for use..
         /// </summary>
         internal static string LogFormatString_EgressProviderInvalidOptions {
             get {
                 return ResourceManager.GetString("LogFormatString_EgressProviderInvalidOptions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Provider &apos;{providerName}&apos;: Type &apos;{providerType}&apos; is not supported..
-        /// </summary>
-        internal static string LogFormatString_EgressProviderInvalidType {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressProviderInvalidType", resourceCulture);
             }
         }
         
@@ -448,20 +448,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provider &apos;{providerName}&apos;: {validationWarning}.
+        ///   Looks up a localized string similar to Provider &apos;{providerName}&apos;: {failureMessage}.
         /// </summary>
-        internal static string LogFormatString_EgressProviderOptionsValidationWarning {
+        internal static string LogFormatString_EgressProviderOptionsValidationError {
             get {
-                return ResourceManager.GetString("LogFormatString_EgressProviderOptionsValidationWarning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Provider {providerType}: Provider option {optionName} = {optionValue}.
-        /// </summary>
-        internal static string LogFormatString_EgressProviderOptionValue {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressProviderOptionValue", resourceCulture);
+                return ResourceManager.GetString("LogFormatString_EgressProviderOptionsValidationError", resourceCulture);
             }
         }
         
@@ -475,29 +466,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provider &apos;{providerName}&apos;: Validating options..
-        /// </summary>
-        internal static string LogFormatString_EgressProviderValidatingOptions {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressProviderValidatingOptions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Provider {providerType}: Unable to find &apos;{keyName}&apos; key in egress properties.
         /// </summary>
         internal static string LogFormatString_EgressProvideUnableToFindPropertyKey {
             get {
                 return ResourceManager.GetString("LogFormatString_EgressProvideUnableToFindPropertyKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Provider {providerType}: Stream option {optionName} = {optionValue}.
-        /// </summary>
-        internal static string LogFormatString_EgressStreamOptionValue {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressStreamOptionValue", resourceCulture);
             }
         }
         

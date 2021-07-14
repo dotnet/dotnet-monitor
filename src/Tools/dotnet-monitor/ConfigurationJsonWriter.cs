@@ -3,18 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Diagnostics.Tools.Monitor.Egress;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -90,73 +86,72 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 if (egress != null)
                 {
                     _writer.WriteStartObject();
-                    //Redact all the properties since they could include secrets such as storage keys
-                    ProcessChildSection(egress, nameof(EgressOptions.Properties), includeChildSections: true, redact: true);
-                    WriteProviders(egress);
+                    ProcessEgressSection(egress);
                     _writer.WriteEndObject();
                 }
             }
             _writer.WriteEndObject();
         }
 
-        private void WriteProviders(IConfiguration egress)
+        private void ProcessEgressSection(IConfiguration egress)
         {
-            IConfigurationSection providers = ProcessChildSection(egress, nameof(EgressOptions.Providers), includeChildSections: false);
-            if (providers != null)
+            IList<string> processedSectionPaths = new List<string>();
+
+            // Redact all the properties since they could include secrets such as storage keys
+            IConfigurationSection propertiesSection = ProcessChildSection(egress, nameof(EgressOptions.Properties), includeChildSections: true, redact: true);
+            if (null != propertiesSection)
             {
-                Func<IConfigurationSection, string, bool> matchesProvider = (configSection, providerName) =>
-                                    configSection.Exists() &&
-                                    string.Equals(configSection.Key, nameof(EgressConfigureOptions.CommonEgressProviderOptions.Type), StringComparison.OrdinalIgnoreCase) &&
-                                    string.Equals(configSection.Value, providerName, StringComparison.OrdinalIgnoreCase);
+                processedSectionPaths.Add(propertiesSection.Path);
+            }
+
+            IConfigurationSection azureBlobProviderSection = ProcessChildSection(egress, nameof(EgressOptions.AzureBlobStorage), includeChildSections: false);
+            if (azureBlobProviderSection != null)
+            {
+                processedSectionPaths.Add(azureBlobProviderSection.Path);
 
                 _writer.WriteStartObject();
-                foreach (IConfigurationSection provider in providers.GetChildren())
+                foreach (IConfigurationSection optionsSection in azureBlobProviderSection.GetChildren())
                 {
-                    string egressName = provider.Key;
-                    IEnumerable<IConfigurationSection> egressProperties = provider.GetChildren();
-
-                    _writer.WritePropertyName(egressName);
+                    _writer.WritePropertyName(optionsSection.Key);
                     _writer.WriteStartObject();
-                    //matches azure blob storage provider type.
-                    //Emit well known properties.
-                    if (egressProperties.Any(child => matchesProvider(child, EgressProviderTypes.AzureBlobStorage)))
-                    {
-                        ProcessChildSection(provider, nameof(EgressConfigureOptions.CommonEgressProviderOptions.Type), includeChildSections: false);
-                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.AccountUri), includeChildSections: false);
-                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.BlobPrefix), includeChildSections: false);
-                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.ContainerName), includeChildSections: false);
-                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.CopyBufferSize), includeChildSections: false);
-                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.SharedAccessSignature), includeChildSections: false, redact: true);
-                        ProcessChildSection(provider, nameof(AzureBlobEgressProviderOptions.AccountKey), includeChildSections: false, redact: true);
-                        ProcessChildSection(provider, nameof(AzureBlobEgressFactory.ConfigurationOptions.SharedAccessSignatureName), includeChildSections: false, redact: false);
-                        ProcessChildSection(provider, nameof(AzureBlobEgressFactory.ConfigurationOptions.AccountKeyName), includeChildSections: false, redact: false);
-                    }
-                    //Matches filesystem provider type.
-                    else if (egressProperties.Any(child => matchesProvider(child, EgressProviderTypes.FileSystem)))
-                    {
-                        ProcessChildSection(provider, nameof(EgressConfigureOptions.CommonEgressProviderOptions.Type), includeChildSections: false);
-                        ProcessChildSection(provider, nameof(FileSystemEgressProviderOptions.DirectoryPath), includeChildSections: false);
-                        ProcessChildSection(provider, nameof(FileSystemEgressProviderOptions.IntermediateDirectoryPath), includeChildSections: false);
-                        ProcessChildSection(provider, nameof(FileSystemEgressProviderOptions.CopyBufferSize), includeChildSections: false);
-                    }
-                    else
-                    {
-                        //Emit other egress entries, with redaction
-                        foreach (IConfigurationSection providerProperty in egressProperties)
-                        {
-                            if (string.Equals(providerProperty.Key, nameof(EgressConfigureOptions.CommonEgressProviderOptions.Type), StringComparison.OrdinalIgnoreCase))
-                            {
-                                ProcessSection(providerProperty, includeChildSections: false, redact: false);
-                            }
-                            else
-                            {
-                                ProcessSection(providerProperty, includeChildSections: true, redact: true);
-                            }
-                        }
-                    }
+                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountUri), includeChildSections: false);
+                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.BlobPrefix), includeChildSections: false);
+                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.ContainerName), includeChildSections: false);
+                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.CopyBufferSize), includeChildSections: false);
+                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignature), includeChildSections: false, redact: true);
+                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKey), includeChildSections: false, redact: true);
+                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignatureName), includeChildSections: false, redact: false);
+                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKeyName), includeChildSections: false, redact: false);
                     _writer.WriteEndObject();
                 }
                 _writer.WriteEndObject();
+            }
+
+            IConfigurationSection fileSystemProviderSection = ProcessChildSection(egress, nameof(EgressOptions.FileSystem), includeChildSections: false);
+            if (fileSystemProviderSection != null)
+            {
+                processedSectionPaths.Add(fileSystemProviderSection.Path);
+
+                _writer.WriteStartObject();
+                foreach (IConfigurationSection optionsSection in fileSystemProviderSection.GetChildren())
+                {
+                    _writer.WritePropertyName(optionsSection.Key);
+                    _writer.WriteStartObject();
+                    ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.DirectoryPath), includeChildSections: false);
+                    ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.IntermediateDirectoryPath), includeChildSections: false);
+                    ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.CopyBufferSize), includeChildSections: false);
+                    _writer.WriteEndObject();
+                }
+                _writer.WriteEndObject();
+            }
+
+            //Emit other egress entries, with redaction
+            foreach (IConfigurationSection childSection in egress.GetChildren())
+            {
+                if (!processedSectionPaths.Contains(childSection.Path))
+                {
+                    ProcessChildSection(egress, childSection.Key, includeChildSections: true, redact: true);
+                }
             }
         }
 
