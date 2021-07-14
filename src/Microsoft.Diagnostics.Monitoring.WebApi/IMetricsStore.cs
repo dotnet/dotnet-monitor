@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Monitoring
+namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     /// <summary>
     /// Used to store metrics. A snapshot will be requested periodically.

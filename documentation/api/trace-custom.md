@@ -126,3 +126,7 @@ See [Process ID `pid` vs Unique ID `uid`](pidvsuid.md) for clarification on when
 On Windows, `.nettrace` files can be viewed in [PerfView](https://github.com/microsoft/perfview) for analysis or in Visual Studio. 
 
 A `.nettrace` files can be converted to another format (e.g. SpeedScope or Chromium) using the [dotnet-trace](https://docs.microsoft.com/dotnet/core/diagnostics/dotnet-trace) tool.
+
+### Indefinite traces are inaccessible
+
+When setting `durationSeconds` to `-1` (indefinite duration), there is currently no way to terminate the trace operation that preserves the `.nettrace` file in an accessible format. This also applies when prematurely terminating a trace operation that uses a finite value for `durationSeconds`.

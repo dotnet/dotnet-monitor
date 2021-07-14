@@ -16,33 +16,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
     /// Egress provider for egressing stream data to the file system.
     /// </summary>
     internal class FileSystemEgressProvider :
-        EgressProvider<FileSystemEgressProviderOptions, FileSystemEgressStreamOptions>
+        EgressProvider<FileSystemEgressProviderOptions>
     {
-        public FileSystemEgressProvider(FileSystemEgressProviderOptions options, ILogger logger = null)
-            : base(options, logger)
+        public FileSystemEgressProvider(ILogger<FileSystemEgressProvider> logger)
+            : base(logger)
         {
         }
 
         public override async Task<string> EgressAsync(
+            FileSystemEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
-            string name,
-            FileSystemEgressStreamOptions streamOptions,
+            EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            LogAndValidateOptions(name);
-
-            if (!Directory.Exists(Options.DirectoryPath))
+            if (!Directory.Exists(options.DirectoryPath))
             {
-                WrapException(() => Directory.CreateDirectory(Options.DirectoryPath));
+                WrapException(() => Directory.CreateDirectory(options.DirectoryPath));
             }
 
-            string targetPath = Path.Combine(Options.DirectoryPath, name);
+            string targetPath = Path.Combine(options.DirectoryPath, artifactSettings.Name);
 
-            if (!string.IsNullOrEmpty(Options.IntermediateDirectoryPath))
+            if (!string.IsNullOrEmpty(options.IntermediateDirectoryPath))
             {
-                if (!Directory.Exists(Options.IntermediateDirectoryPath))
+                if (!Directory.Exists(options.IntermediateDirectoryPath))
                 {
-                    WrapException(() => Directory.CreateDirectory(Options.IntermediateDirectoryPath));
+                    WrapException(() => Directory.CreateDirectory(options.IntermediateDirectoryPath));
                 }
 
                 string intermediateFilePath = null;
@@ -52,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
                     bool intermediatePathExists;
                     do
                     {
-                        intermediateFilePath = Path.Combine(Options.IntermediateDirectoryPath, Path.GetRandomFileName());
+                        intermediateFilePath = Path.Combine(options.IntermediateDirectoryPath, Path.GetRandomFileName());
                         intermediatePathExists = File.Exists(intermediateFilePath);
                         remainingAttempts--;
                     }
@@ -60,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
 
                     if (intermediatePathExists)
                     {
-                        throw CreateException($"Unable to create unique intermediate file in '{Options.IntermediateDirectoryPath}' directory.");
+                        throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressUnableToCreateIntermediateFile, options.IntermediateDirectoryPath));
                     }
 
                     await WriteFileAsync(action, intermediateFilePath, token);
@@ -89,15 +87,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
 
             Logger?.EgressProviderSavedStream(EgressProviderTypes.FileSystem, targetPath);
             return targetPath;
-        }
-
-        private void LogAndValidateOptions(string fileName)
-        {
-            Logger?.EgressProviderOptionValue(EgressProviderTypes.FileSystem, nameof(Options.DirectoryPath), Options.DirectoryPath);
-            Logger?.EgressProviderOptionValue(EgressProviderTypes.FileSystem, nameof(Options.IntermediateDirectoryPath), Options.IntermediateDirectoryPath);
-            Logger?.EgressProviderFileName(EgressProviderTypes.FileSystem, fileName);
-
-            ValidateOptions();
         }
 
         private async Task WriteFileAsync(Func<Stream, CancellationToken, Task> action, string filePath, CancellationToken token)
