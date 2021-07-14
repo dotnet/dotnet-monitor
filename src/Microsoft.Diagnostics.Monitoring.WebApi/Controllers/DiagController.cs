@@ -203,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async processInfo =>
             {
-                ValidateHTTPEgress(egressProvider);
+                CheckForDisabledHTTPEgress(egressProvider);
 
                 string dumpFileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                     FormattableString.Invariant($"dump_{GetFileNameTimeStampUtcNow()}.dmp") :
@@ -264,7 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                ValidateHTTPEgress(egressProvider);
+                CheckForDisabledHTTPEgress(egressProvider);
 
                 string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
@@ -334,7 +334,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                ValidateHTTPEgress(egressProvider);
+                CheckForDisabledHTTPEgress(egressProvider);
 
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
@@ -400,7 +400,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                ValidateHTTPEgress(egressProvider);
+                CheckForDisabledHTTPEgress(egressProvider);
 
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
@@ -462,7 +462,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                ValidateHTTPEgress(egressProvider);
+                CheckForDisabledHTTPEgress(egressProvider);
 
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
@@ -518,7 +518,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                ValidateHTTPEgress(egressProvider);
+                CheckForDisabledHTTPEgress(egressProvider);
 
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
@@ -637,7 +637,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
 
-        private void ValidateHTTPEgress(string egressProvider)
+        private void CheckForDisabledHTTPEgress(string egressProvider)
         {
             if (egressProvider == null && _egressOutputOptions.EgressMode == EgressMode.HTTPDisabled)
             {

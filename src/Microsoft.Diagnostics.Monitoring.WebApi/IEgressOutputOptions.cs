@@ -15,6 +15,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public interface IEgressOutputOptions
     {
         EgressMode EgressMode { get; }
-
     }
 }
