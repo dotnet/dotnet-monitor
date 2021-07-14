@@ -20,9 +20,9 @@ The default host address for these routes is `https://localhost:52323`. This rou
 
 | Name | In | Required | Type | Description |
 |---|---|---|---|---|
-| `pid` | path | false | int | The ID of the process. |
-| `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
-| `name` | path | false | string | The name of the process. |
+| `pid` | query | false | int | The ID of the process. |
+| `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | query | false | string | The name of the process. |
 | `type` | query | false | [DumpType](definitions.md#DumpType) | The type of dump to capture. Default value is `WithHeap` |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected dump. When not specified, the dump is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
