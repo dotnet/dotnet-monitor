@@ -8,7 +8,7 @@ Object describing diagnostic/automation information about the executing instance
 |---|---|---|
 | Version | string | The current version of Dotnet-Monitor. |
 | RuntimeVersion | string | The version of the dotnet runtime. |
-| ListeningMode | DiagnosticPortConnectionMode | Indicates whether Dotnet-Monitor is in `Client` mode or `Listen` mode. |
+| ListeningMode | string | Indicates whether Dotnet-Monitor is in `Client` mode or `Listen` mode. |
 
 ## DumpType
 

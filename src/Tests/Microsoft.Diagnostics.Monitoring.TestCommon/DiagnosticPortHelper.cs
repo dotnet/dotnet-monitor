@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// if <paramref name="monitorConnectionMode"/> is <see cref="DiagnosticPortConnectionMode.Listen"/>.
         /// </summary>
         public static void Generate(
-            Options.DiagnosticPortConnectionMode monitorConnectionMode,
+            DiagnosticPortConnectionMode monitorConnectionMode,
             out DiagnosticPortConnectionMode appConnectionMode,
             out string diagnosticPortPath)
         {
