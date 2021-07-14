@@ -42,6 +42,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         public static bool IsInKubernetes => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("KUBERNETES_SERVICE_HOST"));
-
     }
 }

@@ -125,8 +125,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHTTPEgress, bool configOnly)
         {
-            // Add small service with this setting on it -> IEgressService? Meant for non-HTTP scenarios but could add as property
-
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 
             KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
