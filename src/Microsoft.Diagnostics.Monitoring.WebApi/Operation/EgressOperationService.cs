@@ -33,10 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 EgressRequest egressRequest = await _queue.DequeueAsync(stoppingToken);
 
                 //Note we do not await these tasks, but we do limit how many can be executed at the same time
-                _ = Task.Run( async ()=>
-                {
-                    await ExecuteEgressOperation(egressRequest, stoppingToken);
-                }, stoppingToken);
+                _ = Task.Run(() => ExecuteEgressOperation(egressRequest, stoppingToken), stoppingToken);
             }
         }
 

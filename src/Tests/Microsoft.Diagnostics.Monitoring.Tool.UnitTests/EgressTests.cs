@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: 5, FileProviderName).ConfigureAwait(false);
+                    OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: 5, FileProviderName);
                     Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
                     OperationStatus operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
@@ -78,15 +78,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName).ConfigureAwait(false);
+                    OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName);
                     Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
-                    OperationStatus operationResult = await apiClient.GetOperationStatus(response.OperationUri).ConfigureAwait(false);
+                    OperationStatus operationResult = await apiClient.GetOperationStatus(response.OperationUri);
                     Assert.True(operationResult.Status == OperationState.Running);
 
-                    HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri).ConfigureAwait(false);
+                    HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri);
                     Assert.Equal(HttpStatusCode.OK, deleteStatus);
-                    operationResult = await apiClient.GetOperationStatus(response.OperationUri).ConfigureAwait(false);
+                    operationResult = await apiClient.GetOperationStatus(response.OperationUri);
                     Assert.Equal(OperationState.Cancelled, operationResult.Status);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     await CancelEgressOperation(apiClient, response1);
                     await CancelEgressOperation(apiClient, response2);
 
-                    OperationResponse response4 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted, delay: true);
+                    OperationResponse response4 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted, delay: false);
 
                     await CancelEgressOperation(apiClient, response3);
                     await CancelEgressOperation(apiClient, response4);
@@ -177,7 +177,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
         private async Task<OperationResponse> EgressTraceWithDelay(ApiClient apiClient, int processId, HttpStatusCode expectedCode, bool delay = true)
         {
-            OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName).ConfigureAwait(false);
+            OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName);
             Assert.Equal(expectedCode, response.StatusCode);
 
             if (delay)
@@ -191,7 +191,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
         private async Task CancelEgressOperation(ApiClient apiClient, OperationResponse response)
         {
-            HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri).ConfigureAwait(false);
+            HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri);
             Assert.Equal(HttpStatusCode.OK, deleteStatus);
         }
 

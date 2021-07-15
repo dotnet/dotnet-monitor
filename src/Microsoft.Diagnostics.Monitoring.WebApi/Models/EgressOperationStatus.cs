@@ -27,8 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     }
 
     /// <summary>
-    /// Represents the state of a long running operation. Used for all types of results, including
-    /// successes and failures.
+    /// Represents the state of a long running operation. Used for all types of results, including successes and failures.
     /// </summary>
     public class OperationStatus : OperationSummary
     {

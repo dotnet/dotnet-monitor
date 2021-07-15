@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             if (!_requestLimitTable.TryGetValue(key, out int maxConcurrency))
             {
-                throw new InvalidOperationException($"Unexpected limit key: {key}");
+                throw new InvalidOperationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, Strings.ErrorMessage_UnexpectedLimitKey, key));
             }
 
             RequestCount requestCount = _requestCounts.GetOrAdd(key, (_) => new RequestCount());

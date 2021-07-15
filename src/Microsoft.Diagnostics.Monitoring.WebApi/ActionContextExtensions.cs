@@ -16,18 +16,28 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     public sealed class ExecutionResult<T>
     {
-        public T Result { get; set; }
-        public ProblemDetails ProblemDetails { get; set; }
+        private static readonly ExecutionResult<T> _empty = new ExecutionResult<T>();
+
+        public T Result { get; private set; }
+        public ProblemDetails ProblemDetails { get; private set; }
+
+        private ExecutionResult() { }
+
+        public static ExecutionResult<T> Succeeded(T result) => new ExecutionResult<T> { Result = result };
+
+        public static ExecutionResult<T> Failed(ProblemDetails problemDetails) =>
+            new ExecutionResult<T> { ProblemDetails = problemDetails };
+
+        public static ExecutionResult<T> Empty() => _empty;
     }
 
     internal static class ExecutionHelper
     {
         private static ExecutionResult<T> ExceptionToResult<T>(Exception ex) =>
-            new ExecutionResult<T>{ ProblemDetails = ex.ToProblemDetails((int)HttpStatusCode.BadRequest) };
+            ExecutionResult<T>.Failed(ex.ToProblemDetails((int)HttpStatusCode.BadRequest));
 
         public static async Task<ExecutionResult<T>> InvokeAsync<T>(Func<CancellationToken, Task<ExecutionResult<T>>> action, ILogger logger,
             CancellationToken token)
-
         {
             // Exceptions are logged in the "when" clause in order to preview the exception
             // from the point of where it was thrown. This allows capturing of the log scopes
@@ -112,7 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             Func<CancellationToken, Task<ExecutionResult<object>>> innerAction = async (CancellationToken token) =>
             {
                 await action(token);
-                return new ExecutionResult<object>();
+                return ExecutionResult<object>.Empty();
             };
 
             ExecutionResult<object> result = await ExecutionHelper.InvokeAsync(innerAction, logger, context.HttpContext.RequestAborted);

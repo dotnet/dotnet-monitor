@@ -154,6 +154,12 @@
   <data name="ErrorMessage_TooManyRequests" xml:space="preserve">
     <value>Rate limit reached.</value>
   </data>
+  <data name="ErrorMessage_UnexpectedLimitKey" xml:space="preserve">
+    <value>Unexpected limit key: '{0}'</value>
+    <comment>Gets the format string for unexpected limit keys.
+2 Format Parameters
+1. Unlocalized name of artifact type</comment>
+  </data>
   <data name="ErrorMessage_UnexpectedType" xml:space="preserve">
     <value>Unexpected {0}: {1}</value>
     <comment>Gets the format string for unexpected type provided.

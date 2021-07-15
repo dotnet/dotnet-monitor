@@ -151,6 +151,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unexpected limit key: &apos;{0}&apos;.
+        /// </summary>
+        internal static string ErrorMessage_UnexpectedLimitKey {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnexpectedLimitKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected {0}: {1}.
         /// </summary>
         internal static string ErrorMessage_UnexpectedType {
