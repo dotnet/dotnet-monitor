@@ -317,7 +317,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
 
-            return new OperationResponse(response.StatusCode, response.Headers.Location, await response.Content.ReadAsStringAsync());
+            return new OperationResponse(response.StatusCode, response.Headers.Location, await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+        }
+
+        public async Task<List<Models.OperationSummary>> GetOperations(CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, "/operation");
+            using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            return await ReadContentEnumerableAsync<Models.OperationSummary>(response).ConfigureAwait(false);
         }
 
         public async Task<OperationStatus> GetOperationStatus(Uri operation, CancellationToken token)

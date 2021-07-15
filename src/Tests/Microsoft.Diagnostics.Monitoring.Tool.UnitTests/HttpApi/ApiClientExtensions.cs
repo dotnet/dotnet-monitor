@@ -298,6 +298,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             return await client.GetOperationStatus(operation, timeoutSource.Token);
         }
 
+        public static async Task<List<Models.OperationSummary>> GetOperations(this ApiClient client)
+        {
+            using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
+            return await client.GetOperations(timeoutSource.Token);
+        }
+
         public static async Task<HttpStatusCode> CancelEgressOperation(this ApiClient client, Uri operation)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);

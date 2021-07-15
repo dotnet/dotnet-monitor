@@ -15,6 +15,7 @@ using Microsoft.FileFormats.MachO;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -88,6 +89,39 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     Assert.Equal(HttpStatusCode.OK, deleteStatus);
                     operationResult = await apiClient.GetOperationStatus(response.OperationUri);
                     Assert.Equal(OperationState.Cancelled, operationResult.Status);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
+                });
+        }
+
+        [Fact]
+        public async Task EgressListTest()
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    OperationResponse response1 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted);
+                    OperationResponse response2 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted);
+                    await CancelEgressOperation(apiClient, response2);
+
+                    List<OperationSummary> result = await apiClient.GetOperations();
+                    Assert.Equal(2, result.Count);
+
+                    OperationStatus status1 = await apiClient.GetOperationStatus(response1.OperationUri);
+                    OperationSummary summary1 = result.First(os => os.OperationId == status1.OperationId);
+                    ValidateOperation(status1, summary1);
+
+                    OperationStatus status2 = await apiClient.GetOperationStatus(response2.OperationUri);
+                    OperationSummary summary2 = result.First(os => os.OperationId == status2.OperationId);
+                    ValidateOperation(status2, summary2);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -193,6 +227,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         {
             HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri);
             Assert.Equal(HttpStatusCode.OK, deleteStatus);
+        }
+
+        private void ValidateOperation(OperationStatus expected, OperationSummary summary)
+        {
+            Assert.Equal(expected.OperationId, summary.OperationId);
+            Assert.Equal(expected.Status, summary.Status);
+            Assert.Equal(expected.CreatedDateTime, summary.CreatedDateTime);
         }
 
         public void Dispose()
