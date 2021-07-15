@@ -2,14 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 #if UNITTEST
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 #else
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Monitoring.WebApi
 #endif
 {
     public class DiagnosticPortOptions

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Tools\dotnet-monitor\DiagnosticPortConnectionMode.cs" Link="Options\DiagnosticPortConnectionMode.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortConnectionMode.cs" Link="Options\DiagnosticPortConnectionMode.cs" />
   </ItemGroup>
 
   <ItemGroup>
