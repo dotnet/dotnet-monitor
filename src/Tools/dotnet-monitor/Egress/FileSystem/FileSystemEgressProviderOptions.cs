@@ -2,26 +2,35 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel.DataAnnotations;
 
+#if UNITTEST
+namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
+#else
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
+#endif
 {
     /// <summary>
     /// Egress provider options for file system egress.
     /// </summary>
-    internal class FileSystemEgressProviderOptions :
-        EgressProviderOptions
+    internal sealed class FileSystemEgressProviderOptions :
+        IEgressProviderCommonOptions
     {
-        /// <summary>
-        /// The directory path to which the stream data will be egressed.
-        /// </summary>
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FileSystemEgressProviderOptions_DirectoryPath))]
         [Required]
         public string DirectoryPath { get; set; }
 
-        /// <summary>
-        /// The directory path to which the stream data will initially be written, if specified; the file will then
-        /// be moved/renamed to the directory specified in <see cref="FileSystemEgressProviderOptions.DirectoryPath"/>.
-        /// </summary>
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectoryPath))]
         public string IntermediateDirectoryPath { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize))]
+        public int? CopyBufferSize { get; set; }
     }
 }

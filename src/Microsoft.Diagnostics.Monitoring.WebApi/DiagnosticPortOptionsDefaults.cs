@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 #if UNITTEST
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 #else
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Monitoring.WebApi
 #endif
 {
     internal class DiagnosticPortOptionsDefaults

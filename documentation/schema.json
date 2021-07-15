@@ -168,15 +168,26 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Providers": {
+        "AzureBlobStorage": {
           "type": [
             "null",
             "object"
           ],
-          "description": "Named providers for egress. The names can be referenced when requesting artifacts, such as dumps or traces.",
+          "description": "Mapping of Azure blob storage egress provider names to their options.",
           "default": {},
           "additionalProperties": {
-            "$ref": "#/definitions/EgressProvider"
+            "$ref": "#/definitions/AzureBlobEgressProviderOptions"
+          }
+        },
+        "FileSystem": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Mapping of file system egress provider names to their options.",
+          "default": {},
+          "additionalProperties": {
+            "$ref": "#/definitions/FileSystemEgressProviderOptions"
           }
         },
         "Properties": {
@@ -192,21 +203,96 @@
         }
       }
     },
-    "EgressProvider": {
+    "AzureBlobEgressProviderOptions": {
       "type": "object",
-      "additionalProperties": {
-        "type": [
-          "null",
-          "string"
-        ]
-      },
+      "additionalProperties": false,
       "required": [
-        "type"
+        "AccountUri",
+        "ContainerName"
       ],
       "properties": {
-        "type": {
+        "AccountUri": {
           "type": "string",
-          "description": "The type of provider. Currently this supports 'fileSystem' and 'azureBlobStorage'."
+          "description": "The URI of the Azure blob storage account.",
+          "format": "uri",
+          "minLength": 1
+        },
+        "AccountKey": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The account key used to access the Azure blob storage account."
+        },
+        "AccountKeyName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the account key used to look up the value from the Egress options Properties map."
+        },
+        "SharedAccessSignature": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The shared access signature (SAS) used to access the azure blob storage account."
+        },
+        "SharedAccessSignatureName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map."
+        },
+        "ContainerName": {
+          "type": "string",
+          "description": "The name of the container to which the blob will be egressed. If egressing to the root container, use the \"$root\" sentinel value.",
+          "minLength": 1
+        },
+        "BlobPrefix": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The prefix to prepend to the blob name."
+        },
+        "CopyBufferSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
+          "format": "int32"
+        }
+      }
+    },
+    "FileSystemEgressProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "DirectoryPath"
+      ],
+      "properties": {
+        "DirectoryPath": {
+          "type": "string",
+          "description": "The directory path to which the stream data will be egressed.",
+          "minLength": 1
+        },
+        "IntermediateDirectoryPath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in DirectoryPath."
+        },
+        "CopyBufferSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
+          "format": "int32"
         }
       }
     },

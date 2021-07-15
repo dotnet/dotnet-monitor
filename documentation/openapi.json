@@ -754,6 +754,33 @@
         }
       }
     },
+    "/info": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Gets versioning and listening mode information about Dotnet-Monitor",
+        "operationId": "GetInfo",
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DotnetMonitorInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "tags": [
@@ -982,6 +1009,37 @@
           "useAppFilters": {
             "type": "boolean",
             "description": "Set to true to collect logs at the application-defined categories and levels."
+          }
+        },
+        "additionalProperties": false
+      },
+      "DiagnosticPortConnectionMode": {
+        "enum": [
+          "Connect",
+          "Listen"
+        ],
+        "type": "string"
+      },
+      "DotnetMonitorInfo": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "The dotnet monitor version.",
+            "nullable": true
+          },
+          "runtimeVersion": {
+            "type": "string",
+            "description": "The dotnet runtime version.",
+            "nullable": true
+          },
+          "diagnosticPortMode": {
+            "$ref": "#/components/schemas/DiagnosticPortConnectionMode"
+          },
+          "diagnosticPortName": {
+            "type": "string",
+            "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
+            "nullable": true
           }
         },
         "additionalProperties": false

@@ -23,6 +23,7 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using DiagnosticPortConnectionMode = Microsoft.Diagnostics.Monitoring.UnitTests.Options.DiagnosticPortConnectionMode;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests
 {

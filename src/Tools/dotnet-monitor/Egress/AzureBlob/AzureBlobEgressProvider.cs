@@ -14,7 +14,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
+namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 {
     /// <summary>
     /// Egress provider for egressing stream data to an Azure blob storage account.
@@ -23,32 +23,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
     /// Blobs created through this provider will overwrite existing blobs if they have the same blob name.
     /// </remarks>
     internal class AzureBlobEgressProvider :
-        EgressProvider<AzureBlobEgressProviderOptions, AzureBlobEgressStreamOptions>
+        EgressProvider<AzureBlobEgressProviderOptions>
     {
-        public AzureBlobEgressProvider(AzureBlobEgressProviderOptions options, ILogger logger = null)
-            : base(options, logger)
+        public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
+            : base(logger)
         {
         }
 
         public override async Task<string> EgressAsync(
+            AzureBlobEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
-            string name,
-            AzureBlobEgressStreamOptions streamOptions,
+            EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            LogAndValidateOptions(streamOptions, name);
-
             try
             {
-                var containerClient = await GetBlobContainerClientAsync(token);
+                var containerClient = await GetBlobContainerClientAsync(options, token);
 
-                BlobClient blobClient = containerClient.GetBlobClient(GetBlobName(name));
+                BlobClient blobClient = containerClient.GetBlobClient(GetBlobName(options, artifactSettings));
 
                 Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
                 using var stream = await action(token);
 
                 // Write blob content, headers, and metadata
-                await blobClient.UploadAsync(stream, CreateHttpHeaders(streamOptions), streamOptions.Metadata, cancellationToken: token);
+                await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), artifactSettings.Metadata, cancellationToken: token);
 
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
@@ -65,18 +63,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
         }
 
         public override async Task<string> EgressAsync(
+            AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
-            string name,
-            AzureBlobEgressStreamOptions streamOptions,
+            EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            LogAndValidateOptions(streamOptions, name);
-
             try
             {
-                var containerClient = await GetBlobContainerClientAsync(token);
+                var containerClient = await GetBlobContainerClientAsync(options, token);
 
-                BlockBlobClient blobClient = containerClient.GetBlockBlobClient(GetBlobName(name));
+                BlockBlobClient blobClient = containerClient.GetBlockBlobClient(GetBlobName(options, artifactSettings));
 
                 // Write blob content
                 using (Stream blobStream = await blobClient.OpenWriteAsync(overwrite: true, cancellationToken: token))
@@ -88,10 +84,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
                 }
 
                 // Write blob headers
-                await blobClient.SetHttpHeadersAsync(CreateHttpHeaders(streamOptions), cancellationToken: token);
+                await blobClient.SetHttpHeadersAsync(CreateHttpHeaders(artifactSettings), cancellationToken: token);
 
                 // Write blob metadata
-                await blobClient.SetMetadataAsync(streamOptions.Metadata, cancellationToken: token);
+                await blobClient.SetMetadataAsync(artifactSettings.Metadata, cancellationToken: token);
 
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
@@ -107,24 +103,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
             }
         }
 
-        private void LogAndValidateOptions(AzureBlobEgressStreamOptions streamOptions, string fileName)
+        private Uri GetAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
         {
-            Logger?.EgressProviderOptionValue(EgressProviderTypes.AzureBlobStorage, nameof(Options.AccountKey), Options.AccountKey, redact: true);
-            Logger?.EgressProviderOptionValue(EgressProviderTypes.AzureBlobStorage, nameof(Options.AccountUri), GetAccountUri(out _));
-            Logger?.EgressProviderOptionValue(EgressProviderTypes.AzureBlobStorage, nameof(Options.BlobPrefix), Options.BlobPrefix);
-            Logger?.EgressProviderOptionValue(EgressProviderTypes.AzureBlobStorage, nameof(Options.ContainerName), Options.ContainerName);
-            Logger?.EgressProviderOptionValue(EgressProviderTypes.AzureBlobStorage, nameof(Options.SharedAccessSignature), Options.SharedAccessSignature, redact: true);
-            Logger?.EgressStreamOptionValue(EgressProviderTypes.AzureBlobStorage, nameof(streamOptions.ContentEncoding), streamOptions.ContentEncoding);
-            Logger?.EgressStreamOptionValue(EgressProviderTypes.AzureBlobStorage, nameof(streamOptions.ContentType), streamOptions.ContentType);
-            Logger?.EgressStreamOptionValue(EgressProviderTypes.AzureBlobStorage, nameof(streamOptions.Metadata), "[" + string.Join(", ", streamOptions.Metadata.Keys) + "]");
-            Logger?.EgressProviderFileName(EgressProviderTypes.AzureBlobStorage, fileName);
-
-            ValidateOptions();
-        }
-
-        private Uri GetAccountUri(out string accountName)
-        {
-            var blobUriBuilder = new BlobUriBuilder(Options.AccountUri);
+            var blobUriBuilder = new BlobUriBuilder(options.AccountUri);
             blobUriBuilder.Query = null;
             blobUriBuilder.BlobName = null;
             blobUriBuilder.BlobContainerName = null;
@@ -134,26 +115,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
             return blobUriBuilder.ToUri();
         }
 
-        private async Task<BlobContainerClient> GetBlobContainerClientAsync(CancellationToken token)
+        private async Task<BlobContainerClient> GetBlobContainerClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
         {
             BlobServiceClient serviceClient;
-            if (!string.IsNullOrWhiteSpace(Options.SharedAccessSignature))
+            if (!string.IsNullOrWhiteSpace(options.SharedAccessSignature))
             {
-                var serviceUriBuilder = new UriBuilder(Options.AccountUri)
+                var serviceUriBuilder = new UriBuilder(options.AccountUri)
                 {
-                    Query = Options.SharedAccessSignature
+                    Query = options.SharedAccessSignature
                 };
 
                 serviceClient = new BlobServiceClient(serviceUriBuilder.Uri);
             }
-            else if (!string.IsNullOrEmpty(Options.AccountKey))
+            else if (!string.IsNullOrEmpty(options.AccountKey))
             {
                 // Remove Query in case SAS token was specified
-                Uri accountUri = GetAccountUri(out string accountName);
+                Uri accountUri = GetAccountUri(options, out string accountName);
 
                 StorageSharedKeyCredential credential = new StorageSharedKeyCredential(
                     accountName,
-                    Options.AccountKey);
+                    options.AccountKey);
 
                 serviceClient = new BlobServiceClient(accountUri, credential);
             }
@@ -162,29 +143,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureStorage
                 throw CreateException(Strings.ErrorMessage_EgressMissingSasOrKey);
             }
 
-            BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(Options.ContainerName);
+            BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(options.ContainerName);
             await containerClient.CreateIfNotExistsAsync(cancellationToken: token);
 
             return containerClient;
         }
 
-        private string GetBlobName(string fileName)
+        private string GetBlobName(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings)
         {
-            if (string.IsNullOrEmpty(Options.BlobPrefix))
+            if (string.IsNullOrEmpty(options.BlobPrefix))
             {
-                return fileName;
+                return artifactSettings.Name;
             }
             else
             {
-                return string.Concat(Options.BlobPrefix, "/", fileName);
+                return string.Concat(options.BlobPrefix, "/", artifactSettings.Name);
             }
         }
 
-        private BlobHttpHeaders CreateHttpHeaders(AzureBlobEgressStreamOptions streamOptions)
+        private BlobHttpHeaders CreateHttpHeaders(EgressArtifactSettings artifactSettings)
         {
             BlobHttpHeaders headers = new BlobHttpHeaders();
-            headers.ContentEncoding = streamOptions.ContentEncoding;
-            headers.ContentType = streamOptions.ContentType;
+            headers.ContentEncoding = artifactSettings.ContentEncoding;
+            headers.ContentType = artifactSettings.ContentType;
             return headers;
         }
 

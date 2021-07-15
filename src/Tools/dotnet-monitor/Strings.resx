@@ -155,6 +155,18 @@
 1 Format Parameter:
 0. providerName: The name of the provider that could not be found.</comment>
   </data>
+  <data name="ErrorMessage_EgressProviderTypeNotRegistered" xml:space="preserve">
+    <value>Egress provider type '{0}' was not registered.</value>
+    <comment>Gets the format string for egress provider type failure due to missing provider type.
+1 Format Parameter:
+0. providerType: The type of the provider that could not be found.</comment>
+  </data>
+  <data name="ErrorMessage_EgressUnableToCreateIntermediateFile" xml:space="preserve">
+    <value>Unable to create unique intermediate file in '{0}' directory.</value>
+    <comment>Gets the format string for file system egress provider failure due to inability to create an intermediate file.
+1 Format Parameter:
+0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
+  </data>
   <data name="ErrorMessage_FieldNotAllowed" xml:space="preserve">
     <value>The {0} field value '{1}' is not allowed.</value>
     <comment>Gets the format string for rejecting a field value.
@@ -305,37 +317,25 @@
     <comment>Gets the format string that is printed in the 20:DisabledNegotiateWhileElevated event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_DuplicateEgressProviderIgnored" xml:space="preserve">
+    <value>New provider '{providerName}' under type '{providerType}' was already registered with type '{existingProviderType}' and will be ignored.</value>
+    <comment>Gets the format string that is printed in the 24:DuplicateEgressProviderIgnored event.
+3 Format Parameter:
+1. providerName: Name of the provider that was already registered
+2. providerType: The type of provider that the new provider was attempting to be registered.
+3. existingProviderType: The type of provider that the new provider name was already registered.</comment>
+  </data>
   <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
     <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
     <comment>Gets the format string that is printed in the 5:EgressCopyActionStreamToEgressStream event.
 1 Format Parameter:
 1. bufferSize: Size of the buffer</comment>
   </data>
-  <data name="LogFormatString_EgressProviderAdded" xml:space="preserve">
-    <value>Provider '{providerName}': Added.</value>
-    <comment>Gets the format string that is printed in the 1:EgressProviderAdded event.
-1 Format Parameter:
-1. providerName: Name of the provider that was added</comment>
-  </data>
-  <data name="LogFormatString_EgressProviderFileName" xml:space="preserve">
-    <value>Provider {providerType}: File name = {fileName}</value>
-    <comment>Gets the format string that is printed in the 9:EgressProviderFileName event.
-2 Format Parameters:
-1. providerType: Type of the provider
-2. fileName: Name of the file being egressed</comment>
-  </data>
   <data name="LogFormatString_EgressProviderInvalidOptions" xml:space="preserve">
-    <value>Provider '{providerName}': Invalid options.</value>
+    <value>Provider '{providerName}': The options are invalid. The provider will not be available for use.</value>
     <comment>Gets the format string that is printed in the 2:EgressProviderInvalidOptions event.
 1 Format Parameter:
 1. providerName: Name of the provider that was not valid</comment>
-  </data>
-  <data name="LogFormatString_EgressProviderInvalidType" xml:space="preserve">
-    <value>Provider '{providerName}': Type '{providerType}' is not supported.</value>
-    <comment>Gets the format string that is printed in the 3:EgressProviderInvalidType event.
-2 Format Parameters:
-1. providerName: Name of the provider that was not valid
-2. providerType: Type of the provider that is not a valid type</comment>
   </data>
   <data name="LogFormatString_EgressProviderInvokeStreamAction" xml:space="preserve">
     <value>Provider {providerType}: Invoking stream action.</value>
@@ -343,20 +343,12 @@
 1 Format Parameter:
 1. providerType: Type of the provider that was invoked</comment>
   </data>
-  <data name="LogFormatString_EgressProviderOptionsValidationWarning" xml:space="preserve">
-    <value>Provider '{providerName}': {validationWarning}</value>
-    <comment>Gets the format string that is printed in the 6:EgressProviderOptionsValidationWarning event.
+  <data name="LogFormatString_EgressProviderOptionsValidationError" xml:space="preserve">
+    <value>Provider '{providerName}': {failureMessage}</value>
+    <comment>Gets the format string that is printed in the 6:EgressProviderOptionsValidationError event.
 2 Format Parameters:
 1. providerName: Name of the provider with a warning
-2. validationWarning: The warning message</comment>
-  </data>
-  <data name="LogFormatString_EgressProviderOptionValue" xml:space="preserve">
-    <value>Provider {providerType}: Provider option {optionName} = {optionValue}</value>
-    <comment>Gets the format string that is printed in the 7:EgressProviderOptionValue event.
-3 Format Parameters:
-1. providerType: Type of the provider
-2. optionName: Name of the provider option on this provider
-3. optionValue: Value of the option specified by OptionName</comment>
+2. failureMessage: The failure message</comment>
   </data>
   <data name="LogFormatString_EgressProviderSavedStream" xml:space="preserve">
     <value>Provider {providerType}: Saved stream to {path}</value>
@@ -365,26 +357,12 @@
 1. providerType: Type of the provider
 2. path: path where provider saved the stream</comment>
   </data>
-  <data name="LogFormatString_EgressProviderValidatingOptions" xml:space="preserve">
-    <value>Provider '{providerName}': Validating options.</value>
-    <comment>Gets the format string that is printed in the 4:EgressProviderValidatingOptions event.
-1 Format Parameter:
-1. providerName: Name of the provider that is being validated</comment>
-  </data>
   <data name="LogFormatString_EgressProvideUnableToFindPropertyKey" xml:space="preserve">
     <value>Provider {providerType}: Unable to find '{keyName}' key in egress properties</value>
     <comment>Gets the format string that is printed in the 10:EgressProvideUnableToFindPropertyKey event.
 2 Format Parameters:
 1. providerType: Type of the provider
 2. keyName: Name of the property that could not be found</comment>
-  </data>
-  <data name="LogFormatString_EgressStreamOptionValue" xml:space="preserve">
-    <value>Provider {providerType}: Stream option {optionName} = {optionValue}</value>
-    <comment>Gets the format string that is printed in the 8:EgressStreamOptionValue event.
-3 Format Parameters:
-1. providerType: Type of the provider
-2. optionName: Name of the stream option on this provider
-3. optionValue: Value of the option specified by OptionName</comment>
   </data>
   <data name="LogFormatString_InsecureAutheticationConfiguration" xml:space="preserve">
     <value>WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.</value>

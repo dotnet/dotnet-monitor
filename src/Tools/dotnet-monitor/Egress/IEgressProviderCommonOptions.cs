@@ -2,17 +2,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if UNITTEST
+namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
+#else
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
+#endif
 {
     /// <summary>
     /// Egress provider options common to all egress providers.
     /// </summary>
-    internal abstract class EgressProviderOptions
+    internal interface IEgressProviderCommonOptions
     {
         /// <summary>
         /// Buffer size used when copying data from an egress callback returning a stream
         /// to the egress callback that is provided a stream to which data is written.
         /// </summary>
-        public int? CopyBufferSize { get; set; }
+        public int? CopyBufferSize { get; }
     }
 }

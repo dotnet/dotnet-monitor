@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,12 +50,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IEgressOutputOptions _egressOutputOptions;
+        private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
 
         public DiagController(ILogger<DiagController> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
             _egressOutputOptions = serviceProvider.GetRequiredService<IEgressOutputOptions>();
+            _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
         }
 
         /// <summary>
@@ -534,6 +538,60 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, ArtifactType_Logs);
         }
 
+        /// <summary>
+        /// Gets versioning and listening mode information about Dotnet-Monitor 
+        /// </summary>
+        [HttpGet("info", Name = nameof(GetInfo))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
+        public ActionResult<Models.DotnetMonitorInfo> GetInfo()
+        {
+            return this.InvokeService(() =>
+            {
+                string version = GetDotnetMonitorVersion();
+                string runtimeVersion = Environment.Version.ToString();
+                DiagnosticPortConnectionMode diagnosticPortMode = GetDiagnosticPortMode();
+                string diagnosticPortName = GetDiagnosticPortName();
+
+                Models.DotnetMonitorInfo dotnetMonitorInfo = new Models.DotnetMonitorInfo()
+                {
+                    Version = version,
+                    RuntimeVersion = runtimeVersion,
+                    DiagnosticPortMode = diagnosticPortMode,
+                    DiagnosticPortName = diagnosticPortName
+                };
+
+                _logger.WrittenToHttpStream();
+                return new ActionResult<Models.DotnetMonitorInfo>(dotnetMonitorInfo);
+            }, _logger);
+        }
+
+        private static string GetDotnetMonitorVersion()
+        {
+            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+
+            var assemblyVersionAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+
+            if (assemblyVersionAttribute is null)
+            {
+                return assembly.GetName().Version.ToString();
+            }
+            else
+            {
+                return assemblyVersionAttribute.InformationalVersion;
+            }
+        }
+
+        public DiagnosticPortConnectionMode GetDiagnosticPortMode()
+        {
+            return _diagnosticPortOptions.Value.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode);
+        }
+
+        public string GetDiagnosticPortName()
+        {
+            return _diagnosticPortOptions.Value.EndpointName;
+        }
+
         private ActionResult StartTrace(
             IProcessInfo processInfo,
             MonitoringSourceConfiguration configuration,
@@ -584,7 +642,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
             string contentType = ContentTypes.TextEventStream;
-            
+
             if (format == LogFormat.EventStream)
             {
                 contentType = ContentTypes.TextEventStream;

@@ -55,17 +55,27 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
                 {
-                    await VerifyProcessAsync(client, await client.GetProcessesAsync(), runner.ProcessId, expectedEnvVarValue);
+                    // GET /processes and filter to just the single process
+                    IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesWithRetryAsync(
+                        _outputHelper,
+                        new[] { runner.ProcessId });
+                    Assert.NotNull(identifiers);
+                    Assert.Single(identifiers);
+
+                    await VerifyProcessAsync(client, identifiers, runner.ProcessId, expectedEnvVarValue);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
                 postAppValidate: async (client, processId) =>
                 {
+                    // GET /processes and filter to just the single process
+                    IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesWithRetryAsync(
+                        _outputHelper,
+                        new[] { processId });
+
                     // Verify app is no longer reported
-                    IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesAsync();
                     Assert.NotNull(identifiers);
-                    ProcessIdentifier identifier = identifiers.FirstOrDefault(p => p.Pid == processId);
-                    Assert.Null(identifier);
+                    Assert.Empty(identifiers);
                 },
                 configureApp: runner =>
                 {
@@ -114,16 +124,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
             IList<ProcessIdentifier> identifiers;
             await appRunners.ExecuteAsync(async () =>
             {
-                // Query for process identifiers
-                identifiers = (await apiClient.GetProcessesAsync()).ToList();
-                Assert.NotNull(identifiers);
-
                 // Scope to only the processes that were launched by the test
                 IList<int> unmatchedPids = new List<int>();
                 foreach (AppRunner runner in appRunners)
                 {
                     unmatchedPids.Add(runner.ProcessId);
                 }
+
+                // Query for process identifiers
+                identifiers = (await apiClient.GetProcessesWithRetryAsync(
+                    _outputHelper,
+                    unmatchedPids.ToArray())).ToList();
+                Assert.NotNull(identifiers);
 
                 _outputHelper.WriteLine("Start enumerating discovered processes.");
                 foreach (ProcessIdentifier identifier in identifiers.ToList())
@@ -132,15 +144,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     _outputHelper.WriteLine($"  UID:  {identifier.Uid}");
                     _outputHelper.WriteLine($"  Name: {identifier.Name}");
 
-                    if (!unmatchedPids.Remove(identifier.Pid))
-                    {
-                        _outputHelper.WriteLine($"  State: Ignored");
-                        identifiers.Remove(identifier);
-                    }
-                    else
-                    {
-                        _outputHelper.WriteLine($"  State: Included");
-                    }
+                    unmatchedPids.Remove(identifier.Pid);
                 }
                 _outputHelper.WriteLine("End enumerating discovered processes");
 
@@ -157,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
                     List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
 
-                    processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: pid, uid: null, name: null));
+                    processInfoQueriesCheck1.Add(await apiClient.GetProcessWithRetryAsync(_outputHelper, pid: pid));
                     // Only check with uid if it is non-empty; this can happen in connect mode if the ProcessInfo command fails
                     // to respond within the short period of time that is used to get the additional process information.
                     if (uid == Guid.Empty)
@@ -166,7 +170,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     }
                     else
                     {
-                        processInfoQueriesCheck1.Add(await apiClient.GetProcessAsync(pid: null, uid: uid, name: null));
+                        processInfoQueriesCheck1.Add(await apiClient.GetProcessWithRetryAsync(_outputHelper, uid: uid));
                     }
 
                     VerifyProcessInfoEquality(processInfoQueriesCheck1);
@@ -175,9 +179,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
 
                     List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
 
-                    processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pid, uid: null, name: null));
-                    processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pid, uid: uid, name: null));
-                    processInfoQueriesCheck2.Add(await apiClient.GetProcessAsync(pid: pid, uid: uid, name: name));
+                    processInfoQueriesCheck2.Add(await apiClient.GetProcessWithRetryAsync(_outputHelper, pid: pid));
+                    processInfoQueriesCheck2.Add(await apiClient.GetProcessWithRetryAsync(_outputHelper, pid: pid, uid: uid));
+                    processInfoQueriesCheck2.Add(await apiClient.GetProcessWithRetryAsync(_outputHelper, pid: pid, uid: uid, name: name));
 
                     VerifyProcessInfoEquality(processInfoQueriesCheck2);
 
@@ -251,7 +255,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Verifies that an invalid Process request throws the correct exception (ValidationProblemDetailsException) and has the correct Status and StatusCode.
         /// </summary>
-        private static async Task VerifyInvalidRequestException(ApiClient client, int? pid, Guid? uid, string name)
+        private async Task VerifyInvalidRequestException(ApiClient client, int? pid, Guid? uid, string name)
         {
             ValidationProblemDetailsException validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
                 () => client.GetProcessAsync(pid: pid, uid: uid, name: name));
@@ -262,19 +266,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         /// <summary>
         /// Verifies that a process was found in the identifiers list and checks the /process?pid={processKey} route for the same process.
         /// </summary>
-        private static async Task VerifyProcessAsync(ApiClient client, IEnumerable<ProcessIdentifier> identifiers, int processId, string expectedEnvVarValue)
+        private async Task VerifyProcessAsync(ApiClient client, IEnumerable<ProcessIdentifier> identifiers, int processId, string expectedEnvVarValue)
         {
             Assert.NotNull(identifiers);
             ProcessIdentifier identifier = identifiers.FirstOrDefault(p => p.Pid == processId);
             Assert.NotNull(identifier);
 
-            ProcessInfo info = await client.GetProcessAsync(identifier.Pid);
+            ProcessInfo info = await client.GetProcessWithRetryAsync(_outputHelper, pid: identifier.Pid);
             Assert.NotNull(info);
             Assert.Equal(identifier.Pid, info.Pid);
 
 #if NET5_0_OR_GREATER
             // Currently, the runtime instance identifier is only provided for .NET 5 and higher
-            info = await client.GetProcessAsync(identifier.Uid);
+            info = await client.GetProcessWithRetryAsync(_outputHelper, uid: identifier.Uid);
             Assert.NotNull(info);
             Assert.Equal(identifier.Pid, info.Pid);
             Assert.Equal(identifier.Uid, info.Uid);
