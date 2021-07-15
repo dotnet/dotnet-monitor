@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal sealed class TooManyRequestsException : MonitoringException
     {
-        public TooManyRequestsException() : base(string.Empty)
+        public TooManyRequestsException() : base(Strings.ErrorMessage_TooManyRequests)
         {
         }
     }

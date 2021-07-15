@@ -76,12 +76,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 if (!_requests.TryGetValue(operationId, out EgressEntry entry))
                 {
-                    throw new InvalidOperationException("Operation not found");
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
 
                 if (entry.State != Models.OperationState.Running)
                 {
-                    throw new InvalidOperationException("Operation is not running");
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
 
                 entry.State = Models.OperationState.Cancelled;
@@ -96,11 +96,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 if (!_requests.TryGetValue(operationId, out EgressEntry entry))
                 {
-                    throw new InvalidOperationException("Operation not found");
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
                 if (entry.State != Models.OperationState.Running)
                 {
-                    throw new InvalidOperationException("Operation not running");
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
 
                 entry.ExecutionResult = result;
@@ -123,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 return _requests.Select((kvp) => new Models.OperationSummary
                 {
-                    Id = kvp.Key,
+                    OperationId = kvp.Key,
                     CreatedDateTime = kvp.Value.CreatedDateTime,
                     Status = kvp.Value.State
                 }).ToList();
@@ -136,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 if (!_requests.TryGetValue(operationId, out EgressEntry entry))
                 {
-                    throw new InvalidOperationException("Operation not found");
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
 
                 var status = new Models.OperationStatus()

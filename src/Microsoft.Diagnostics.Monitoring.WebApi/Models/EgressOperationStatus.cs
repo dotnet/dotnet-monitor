@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     /// </summary>
     public class OperationSummary
     {
-        public Guid Id { get; set; }
+        public Guid OperationId { get; set; }
 
         public DateTime CreatedDateTime { get; set; }
 
@@ -30,14 +30,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     /// Represents the state of a long running operation. Used for all types of results, including
     /// successes and failures.
     /// </summary>
-    public class OperationStatus
+    public class OperationStatus : OperationSummary
     {
         //CONSIDER Should we also have a retry-after? Not sure we can produce meaningful values for this.
-        public OperationState Status { get; set; }
-
-        public Guid OperationId { get; set; }
-
-        public DateTime CreatedDateTime { get; set; }
 
         //Success cases
         public string ResourceLocation { get; set; }

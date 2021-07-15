@@ -22,15 +22,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// - In the future, we may want to switch to https://github.com/dotnet/aspnetcore/issues/29933
     /// TODO For asp.net 2.1, this would be implemented as an ActionFilter. For 3.1+, we use an endpoints + middleware
     /// </summary>
-    internal sealed class Throttling
+    internal sealed class RequestLimitMiddleware
     {
-
         private readonly RequestDelegate _next;
 
         private readonly RequestLimitTracker _limitTracker;
         private const string EgressQuery = "egressprovider";
 
-        public Throttling(RequestDelegate next, RequestLimitTracker requestLimitTracker)
+        public RequestLimitMiddleware(RequestDelegate next, RequestLimitTracker requestLimitTracker)
         {
             _next = next;
             _limitTracker = requestLimitTracker;
@@ -59,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         await context.Response.WriteAsync(JsonSerializer.Serialize(new ProblemDetails
                         {
                             Status = StatusCodes.Status429TooManyRequests,
-                            Detail = string.Empty
+                            Detail = Microsoft.Diagnostics.Monitoring.WebApi.Strings.ErrorMessage_TooManyRequests
                         }), context.RequestAborted);
                         return;
                     }
