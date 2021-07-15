@@ -8,8 +8,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     public enum EgressMode
     {
-        HTTPDisabled,
-        HTTPEnabled
+        HttpDisabled,
+        HttpEnabled
     }
 
     public interface IEgressOutputOptions

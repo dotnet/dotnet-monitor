@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
             AuthOptions authenticationOptions = new AuthOptions(authMode);
 
-            EgressMode egressMode = noHTTPEgress ? EgressMode.HTTPDisabled : EgressMode.HTTPEnabled;
+            EgressMode egressMode = noHTTPEgress ? EgressMode.HttpDisabled : EgressMode.HttpEnabled;
             EgressOutputOptions egressOptions = new EgressOutputOptions(egressMode);
 
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
