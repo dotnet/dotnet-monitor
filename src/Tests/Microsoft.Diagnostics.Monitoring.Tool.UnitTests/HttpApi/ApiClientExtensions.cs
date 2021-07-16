@@ -289,31 +289,31 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         public static async Task<OperationResponse> EgressTraceAsync(this ApiClient client, int processId, int durationSeconds, string egressProvider)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return await client.EgressTraceAsync(processId, durationSeconds, egressProvider, timeoutSource.Token);
+            return await client.EgressTraceAsync(processId, durationSeconds, egressProvider, timeoutSource.Token).ConfigureAwait(false);
         }
 
         public static async Task<OperationStatus> GetOperationStatus(this ApiClient client, Uri operation)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return await client.GetOperationStatus(operation, timeoutSource.Token);
+            return await client.GetOperationStatus(operation, timeoutSource.Token).ConfigureAwait(false);
         }
 
         public static async Task<List<Models.OperationSummary>> GetOperations(this ApiClient client)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return await client.GetOperations(timeoutSource.Token);
+            return await client.GetOperations(timeoutSource.Token).ConfigureAwait(false);
         }
 
         public static async Task<HttpStatusCode> CancelEgressOperation(this ApiClient client, Uri operation)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return await client.CancelEgressOperation(operation, timeoutSource.Token);
+            return await client.CancelEgressOperation(operation, timeoutSource.Token).ConfigureAwait(false);
         }
 
         public static async Task<HttpResponseMessage> ApiCall(this ApiClient client, string routeAndQuery)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return await client.ApiCall(routeAndQuery, timeoutSource.Token);
+            return await client.ApiCall(routeAndQuery, timeoutSource.Token).ConfigureAwait(false);
         }
 
         public static Task<OperationStatus> PollOperationToCompletion(this ApiClient apiClient, Uri operationUrl)
@@ -330,7 +330,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             while (operationResult.Status == OperationState.Running)
             {
                 cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationTokenSource.Token);
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationTokenSource.Token).ConfigureAwait(false);
                 operationResult = await apiClient.GetOperationStatus(operationUrl).ConfigureAwait(false);
             }
 
