@@ -57,9 +57,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: 5, FileProviderName);
                     Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
-                    OperationStatus operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
-                    Assert.Equal(OperationState.Succeeded, operationResult.Status);
-                    Assert.True(File.Exists(operationResult.ResourceLocation));
+                    OperationStatusResponse operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.Created, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Succeeded, operationResult.OperationStatus.Status);
+                    Assert.True(File.Exists(operationResult.OperationStatus.ResourceLocation));
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -82,13 +83,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     OperationResponse response = await apiClient.EgressTraceAsync(appRunner.ProcessId, durationSeconds: -1, FileProviderName);
                     Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
-                    OperationStatus operationResult = await apiClient.GetOperationStatus(response.OperationUri);
-                    Assert.True(operationResult.Status == OperationState.Running);
+                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
 
                     HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri);
                     Assert.Equal(HttpStatusCode.OK, deleteStatus);
+
                     operationResult = await apiClient.GetOperationStatus(response.OperationUri);
-                    Assert.Equal(OperationState.Cancelled, operationResult.Status);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Cancelled, operationResult.OperationStatus.Status);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -108,20 +112,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    OperationResponse response1 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted);
-                    OperationResponse response2 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted);
+                    OperationResponse response1 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId);
+                    OperationResponse response2 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, delay: false);
                     await CancelEgressOperation(apiClient, response2);
 
                     List<OperationSummary> result = await apiClient.GetOperations();
                     Assert.Equal(2, result.Count);
 
-                    OperationStatus status1 = await apiClient.GetOperationStatus(response1.OperationUri);
-                    OperationSummary summary1 = result.First(os => os.OperationId == status1.OperationId);
-                    ValidateOperation(status1, summary1);
+                    OperationStatusResponse status1 = await apiClient.GetOperationStatus(response1.OperationUri);
+                    OperationSummary summary1 = result.First(os => os.OperationId == status1.OperationStatus.OperationId);
+                    ValidateOperation(status1.OperationStatus, summary1);
 
-                    OperationStatus status2 = await apiClient.GetOperationStatus(response2.OperationUri);
-                    OperationSummary summary2 = result.First(os => os.OperationId == status2.OperationId);
-                    ValidateOperation(status2, summary2);
+                    OperationStatusResponse status2 = await apiClient.GetOperationStatus(response2.OperationUri);
+                    OperationSummary summary2 = result.First(os => os.OperationId == status2.OperationStatus.OperationId);
+                    ValidateOperation(status2.OperationStatus, summary2);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -141,15 +145,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    OperationResponse response1 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted);
-                    OperationResponse response2 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted);
-                    OperationResponse response3 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted);
-                    OperationResponse response = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.TooManyRequests);
+                    OperationResponse response1 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId);
+                    OperationResponse response2 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId);
+                    OperationResponse response3 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId);
+
+                    ValidationProblemDetailsException ex = await Assert.ThrowsAsync<ValidationProblemDetailsException>(() => EgressTraceWithDelay(apiClient, appRunner.ProcessId));
+                    Assert.Equal(HttpStatusCode.TooManyRequests, ex.StatusCode);
+                    Assert.Equal((int)HttpStatusCode.TooManyRequests, ex.Details.Status.GetValueOrDefault());
+
 
                     await CancelEgressOperation(apiClient, response1);
                     await CancelEgressOperation(apiClient, response2);
 
-                    OperationResponse response4 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted, delay: false);
+                    OperationResponse response4 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, delay: false);
 
                     await CancelEgressOperation(apiClient, response3);
                     await CancelEgressOperation(apiClient, response4);
@@ -172,21 +180,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    OperationResponse response1 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted);
-                    OperationResponse response3 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted);
+                    OperationResponse response1 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId);
+                    OperationResponse response3 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId);
                     using HttpResponseMessage traceDirect1 = await TraceWithDelay(apiClient, appRunner.ProcessId);
                     Assert.Equal(HttpStatusCode.OK, traceDirect1.StatusCode);
 
-                    OperationResponse response = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.TooManyRequests);
-                    using HttpResponseMessage traceDirect = await TraceWithDelay(apiClient, appRunner.ProcessId);
+                    ValidationProblemDetailsException ex = await Assert.ThrowsAsync<ValidationProblemDetailsException>(() => EgressTraceWithDelay(apiClient, appRunner.ProcessId, delay: false));
+                    Assert.Equal(HttpStatusCode.TooManyRequests, ex.StatusCode);
+
+                    using HttpResponseMessage traceDirect = await TraceWithDelay(apiClient, appRunner.ProcessId, delay: false);
                     Assert.Equal(HttpStatusCode.TooManyRequests, traceDirect.StatusCode);
 
                     //Validate that the failure from a direct call (handled by middleware)
                     //matches the failure produces by egress operations (handled by the Mvc ActionResult stack)
-                    Assert.Equal(response.ResponseBody, await traceDirect.Content.ReadAsStringAsync());
+                    using HttpResponseMessage egressDirect = await EgressDirect(apiClient, appRunner.ProcessId);
+                    Assert.Equal(HttpStatusCode.TooManyRequests, egressDirect.StatusCode);
+                    Assert.Equal(await egressDirect.Content.ReadAsStringAsync(), await traceDirect.Content.ReadAsStringAsync());
 
                     await CancelEgressOperation(apiClient, response1);
-                    OperationResponse response4 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, HttpStatusCode.Accepted, delay: true);
+                    OperationResponse response4 = await EgressTraceWithDelay(apiClient, appRunner.ProcessId, delay: false);
 
                     await CancelEgressOperation(apiClient, response3);
                     await CancelEgressOperation(apiClient, response4);
@@ -207,20 +219,28 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
             return message;
-        } 
+        }
 
-        private async Task<OperationResponse> EgressTraceWithDelay(ApiClient apiClient, int processId, HttpStatusCode expectedCode, bool delay = true)
+        private Task<HttpResponseMessage> EgressDirect(ApiClient client, int processId)
         {
-            OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName);
-            Assert.Equal(expectedCode, response.StatusCode);
+            return client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&egressProvider={FileProviderName}"));
+        }
 
-            if (delay)
+        private async Task<OperationResponse> EgressTraceWithDelay(ApiClient apiClient, int processId, bool delay = true)
+        {
+            try
             {
-                //Wait 1 second to make sure the file names do not collide
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName);
+                return response;
             }
-
-            return response;
+            finally
+            {
+                if (delay)
+                {
+                    //Wait 1 second to make sure the file names do not collide
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                }
+            }
         }
 
         private async Task CancelEgressOperation(ApiClient apiClient, OperationResponse response)

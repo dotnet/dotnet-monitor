@@ -292,7 +292,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             return await client.EgressTraceAsync(processId, durationSeconds, egressProvider, timeoutSource.Token).ConfigureAwait(false);
         }
 
-        public static async Task<OperationStatus> GetOperationStatus(this ApiClient client, Uri operation)
+        public static async Task<OperationStatusResponse> GetOperationStatus(this ApiClient client, Uri operation)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
             return await client.GetOperationStatus(operation, timeoutSource.Token).ConfigureAwait(false);
@@ -316,18 +316,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             return await client.ApiCall(routeAndQuery, timeoutSource.Token).ConfigureAwait(false);
         }
 
-        public static Task<OperationStatus> PollOperationToCompletion(this ApiClient apiClient, Uri operationUrl)
+        public static Task<OperationStatusResponse> PollOperationToCompletion(this ApiClient apiClient, Uri operationUrl)
         {
             return apiClient.PollOperationToCompletion(operationUrl, TestTimeouts.OperationTimeout);
         }
 
-        public static async Task<OperationStatus> PollOperationToCompletion(this ApiClient apiClient, Uri operationUrl, TimeSpan timeout)
+        public static async Task<OperationStatusResponse> PollOperationToCompletion(this ApiClient apiClient, Uri operationUrl, TimeSpan timeout)
         {
-            OperationStatus operationResult = await apiClient.GetOperationStatus(operationUrl).ConfigureAwait(false);
-            Assert.True(operationResult.Status == OperationState.Running || operationResult.Status == OperationState.Succeeded);
+            OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUrl).ConfigureAwait(false);
+            Assert.True(operationResult.StatusCode == HttpStatusCode.OK || operationResult.StatusCode == HttpStatusCode.Created);
+            Assert.True(operationResult.OperationStatus.Status == OperationState.Running || operationResult.OperationStatus.Status == OperationState.Succeeded);
 
             using CancellationTokenSource cancellationTokenSource = new(timeout);
-            while (operationResult.Status == OperationState.Running)
+            while (operationResult.OperationStatus.Status == OperationState.Running)
             {
                 cancellationTokenSource.Token.ThrowIfCancellationRequested();
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationTokenSource.Token).ConfigureAwait(false);

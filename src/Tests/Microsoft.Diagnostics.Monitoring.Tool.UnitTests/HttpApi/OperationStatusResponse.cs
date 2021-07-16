@@ -2,23 +2,23 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
 {
-    internal sealed class OperationResponse
+    internal sealed class OperationStatusResponse
     {
-        public Uri OperationUri { get; }
-
         public HttpStatusCode StatusCode { get; }
 
-        public OperationResponse(HttpStatusCode statusCode, Uri operationUri = null)
+        public OperationStatus OperationStatus { get; }
+
+        public OperationStatusResponse(HttpStatusCode statusCode, OperationStatus status)
         {
-            OperationUri = operationUri;
             StatusCode = statusCode;
+            OperationStatus = status;
         }
     }
 }

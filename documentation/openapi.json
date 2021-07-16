@@ -823,10 +823,10 @@
         }
       }
     },
-    "/operation": {
+    "/operations": {
       "get": {
         "tags": [
-          "Operation"
+          "Operations"
         ],
         "responses": {
           "401": {
@@ -848,10 +848,10 @@
         }
       }
     },
-    "/operation/{operationId}": {
+    "/operations/{operationId}": {
       "get": {
         "tags": [
-          "Operation"
+          "Operations"
         ],
         "parameters": [
           {
@@ -892,7 +892,7 @@
       },
       "delete": {
         "tags": [
-          "Operation"
+          "Operations"
         ],
         "parameters": [
           {

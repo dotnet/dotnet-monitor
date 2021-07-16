@@ -19,10 +19,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     /// </summary>
     public class OperationSummary
     {
+        [JsonPropertyName("operationId")]
         public Guid OperationId { get; set; }
 
+        [JsonPropertyName("createdDateTime")]
         public DateTime CreatedDateTime { get; set; }
 
+        [JsonPropertyName("status")]
         public OperationState Status { get; set; }
     }
 
@@ -34,9 +37,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         //CONSIDER Should we also have a retry-after? Not sure we can produce meaningful values for this.
 
         //Success cases
+        [JsonPropertyName("resourceLocation")]
         public string ResourceLocation { get; set; }
 
         //Failure cases
+        [JsonPropertyName("error")]
         public OperationError Error { get; set; }
     }
 
@@ -51,7 +56,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
     public class OperationError
     {
+        [JsonPropertyName("code")]
         public string Code { get; set; }
+
+        [JsonPropertyName("message")]
         public string Message { get; set; }
     }
 }

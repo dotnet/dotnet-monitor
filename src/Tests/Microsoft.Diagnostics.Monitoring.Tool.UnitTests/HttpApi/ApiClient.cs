@@ -317,40 +317,89 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
 
-            return new OperationResponse(response.StatusCode, response.Headers.Location, await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Accepted:
+                    return new OperationResponse(response.StatusCode, response.Headers.Location);
+                case HttpStatusCode.BadRequest:
+                case HttpStatusCode.TooManyRequests:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
         public async Task<List<Models.OperationSummary>> GetOperations(CancellationToken token)
         {
-            using HttpRequestMessage request = new(HttpMethod.Get, "/operation");
+            using HttpRequestMessage request = new(HttpMethod.Get, "/operations");
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
 
-            return await ReadContentEnumerableAsync<Models.OperationSummary>(response).ConfigureAwait(false);
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(response, ContentTypes.ApplicationJson);
+                    return await ReadContentEnumerableAsync<Models.OperationSummary>(response).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
-        public async Task<OperationStatus> GetOperationStatus(Uri operation, CancellationToken token)
+        public async Task<OperationStatusResponse> GetOperationStatus(Uri operation, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, operation.ToString());
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
 
-            return await ReadContentAsync<OperationStatus>(response).ConfigureAwait(false);
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Created:
+                case HttpStatusCode.OK:
+                    ValidateContentType(response, ContentTypes.ApplicationJson);
+                    return new OperationStatusResponse(response.StatusCode, await ReadContentAsync<OperationStatus>(response).ConfigureAwait(false));
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
         public async Task<HttpStatusCode> CancelEgressOperation(Uri operation, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Delete, operation.ToString());
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
+            
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    return response.StatusCode;
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
 
-            return response.StatusCode;
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
         private static async Task<T> ReadContentAsync<T>(HttpResponseMessage responseMessage)
         {
             using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            return await JsonSerializer.DeserializeAsync<T>(contentStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).ConfigureAwait(false);
+            return await JsonSerializer.DeserializeAsync<T>(contentStream).ConfigureAwait(false);
         }
 
         private static Task<List<T>> ReadContentEnumerableAsync<T>(HttpResponseMessage responseMessage)

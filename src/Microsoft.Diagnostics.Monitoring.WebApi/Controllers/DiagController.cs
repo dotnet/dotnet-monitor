@@ -764,8 +764,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             // Will throw TooManyRequestsException if there are too many concurrent operations.
             Guid operationId = await _operationsStore.AddOperation(egressStreamResult, limitKey);
             string newUrl = this.Url.Action(
-                action: nameof(OperationController.GetOperationStatus),
-                controller: OperationController.ControllerName, new { operationId = operationId },
+                action: nameof(OperationsController.GetOperationStatus),
+                controller: OperationsController.ControllerName, new { operationId = operationId },
                 protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
 
             return Accepted(newUrl);

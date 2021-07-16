@@ -19,14 +19,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [HostRestriction]
     [Authorize(Policy = AuthConstants.PolicyName)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    public class OperationController : ControllerBase
+    public class OperationsController : ControllerBase
     {
-        private readonly ILogger<OperationController> _logger;
+        private readonly ILogger<OperationsController> _logger;
         private readonly EgressOperationStore _operationsStore;
 
-        public const string ControllerName = "operation";
+        public const string ControllerName = "operations";
 
-        public OperationController(ILogger<OperationController> logger, IServiceProvider serviceProvider)
+        public OperationsController(ILogger<OperationsController> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
