@@ -61,6 +61,7 @@
     <SystemIOPipelinesVersion>4.5.1</SystemIOPipelinesVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
     <SystemTextEncodingsWebVersion>4.7.2</SystemTextEncodingsWebVersion>
+    <SystemThreadingChannelsVersion>5.0.0</SystemThreadingChannelsVersion>
     <!-- Third-party references -->
     <NJsonSchemaVersion>10.3.11</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>

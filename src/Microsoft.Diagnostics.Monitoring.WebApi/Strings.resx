@@ -141,9 +141,24 @@
     <value>Unable to discover a target process.</value>
     <comment>Gets a string similar to "Unable to discover a target process.".</comment>
   </data>
+  <data name="ErrorMessage_OperationNotFound" xml:space="preserve">
+    <value>Operation not found.</value>
+  </data>
+  <data name="ErrorMessage_OperationNotRunning" xml:space="preserve">
+    <value>Operation is not running.</value>
+  </data>
   <data name="ErrorMessage_ProcessEnumeratuinFailed" xml:space="preserve">
     <value>Unable to enumerate processes.</value>
     <comment>Gets a string similar to "Unable to enumerate processes.".</comment>
+  </data>
+  <data name="ErrorMessage_TooManyRequests" xml:space="preserve">
+    <value>Rate limit reached.</value>
+  </data>
+  <data name="ErrorMessage_UnexpectedLimitKey" xml:space="preserve">
+    <value>Unexpected limit key: '{0}'</value>
+    <comment>Gets the format string for unexpected limit keys.
+1 Format Parameter:
+1. Unlocalized name of artifact type</comment>
   </data>
   <data name="ErrorMessage_UnexpectedType" xml:space="preserve">
     <value>Unexpected {0}: {1}</value>
