@@ -29,7 +29,7 @@
     <!-- dotnet/arcade references -->
     <MicrosoftDotNetXUnitExtensionsVersion>6.0.0-beta.21365.11</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rc.1.21366.8</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rc.1.21367.4</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21365.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21365.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
