@@ -191,6 +191,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 1)]
+        [EgressValidation]
         public Task<ActionResult> CaptureDump(
             [FromQuery]
             int? pid = null,
@@ -207,8 +208,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async processInfo =>
             {
-                CheckForDisabledHttpEgress(egressProvider);
-
                 string dumpFileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                     FormattableString.Invariant($"dump_{GetFileNameTimeStampUtcNow()}.dmp") :
                     FormattableString.Invariant($"core_{GetFileNameTimeStampUtcNow()}");
@@ -254,6 +253,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 1)]
+        [EgressValidation]
         public Task<ActionResult> CaptureGcDump(
             [FromQuery]
             int? pid = null,
@@ -268,8 +268,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                CheckForDisabledHttpEgress(egressProvider);
-
                 string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
                 Func<CancellationToken, Task<IFastSerializable>> action = async (token) => {
@@ -318,6 +316,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
+        [EgressValidation]
         public Task<ActionResult> CaptureTrace(
             [FromQuery]
             int? pid = null,
@@ -338,8 +337,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                CheckForDisabledHttpEgress(egressProvider);
-
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
                 var configurations = new List<MonitoringSourceConfiguration>();
@@ -386,6 +383,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
+        [EgressValidation]
         public Task<ActionResult> CaptureTraceCustom(
             [FromBody][Required]
             Models.EventPipeConfiguration configuration,
@@ -404,8 +402,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                CheckForDisabledHttpEgress(egressProvider);
-
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
                 var providers = new List<EventPipeProvider>();
@@ -448,6 +444,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
+        [EgressValidation]
         public Task<ActionResult> CaptureLogs(
             [FromQuery]
             int? pid = null,
@@ -466,8 +463,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                CheckForDisabledHttpEgress(egressProvider);
-
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
                 var settings = new EventLogsPipelineSettings()
@@ -504,6 +499,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [RequestLimit(MaxConcurrency = 3)]
+        [EgressValidation]
         public Task<ActionResult> CaptureLogsCustom(
             [FromBody]
             Models.LogsConfiguration configuration,
@@ -522,8 +518,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                CheckForDisabledHttpEgress(egressProvider);
-
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
                 var settings = new EventLogsPipelineSettings()
@@ -694,15 +688,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
-
-        private void CheckForDisabledHttpEgress(string egressProvider)
-        {
-            if (egressProvider == null && _egressOutputOptions.EgressMode == EgressMode.HttpDisabled)
-            {
-                throw new ArgumentException("Http Egress is currently disabled.");
-            }
-        }
-
+        
         private static LogFormat ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
             if (acceptedHeaders == null)

@@ -181,6 +181,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     services.AddSingleton<IEgressOutputOptions>(egressOptions);
 
+                    services.AddMvc(options =>
+                    {
+                        options.Filters.Add(typeof(EgressValidationUnhandledExceptionFilter));
+                    });
+
                     // Although this is only observing API key authentication changes, it does handle
                     // the case when API key authentication is not enabled. This class could evolve
                     // to observe other options in the future, at which point it might be good to

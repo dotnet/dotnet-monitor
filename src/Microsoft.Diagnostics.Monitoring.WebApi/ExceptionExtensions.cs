@@ -7,7 +7,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class ExceptionExtensions
+    public static class ExceptionExtensions
     {
         public static ProblemDetails ToProblemDetails(this Exception ex, int statusCode)
         {
