@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -10,6 +11,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class GeneratedApiKey
     {
+        public const int DefaultKeyLength = 32;
+        public const string DefaultHashAlgorithm = "SHA256";
+
         public readonly string MonitorApiKey;
         public readonly string HashAlgorithm;
         public readonly string HashValue;
@@ -23,15 +27,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static GeneratedApiKey Create()
         {
-            return GeneratedApiKey.Create("SHA256");
+            return GeneratedApiKey.Create(DefaultKeyLength, DefaultHashAlgorithm);
         }
 
-        private static GeneratedApiKey Create(string hashAlgorithm)
+        public static GeneratedApiKey Create(int keyLength, string hashAlgorithm)
         {
+            if (!HashAlgorithmChecker.IsAllowedAlgorithm(hashAlgorithm))
+            {
+                throw new ArgumentOutOfRangeException(nameof(hashAlgorithm));
+            }
+
+            if (keyLength < ApiKeyAuthenticationHandler.ApiKeyByteMinLength || keyLength > ApiKeyAuthenticationHandler.ApiKeyByteMaxLength)
+            {
+                throw new ArgumentOutOfRangeException(nameof(keyLength));
+            }
+
             using RandomNumberGenerator rng = RandomNumberGenerator.Create();
             using HashAlgorithm hasher = System.Security.Cryptography.HashAlgorithm.Create(hashAlgorithm);
 
-            byte[] secret = new byte[ApiKeyAuthenticationHandler.ApiKeyNumBytes];
+            byte[] secret = new byte[keyLength];
             rng.GetBytes(secret);
 
             byte[] hash = hasher.ComputeHash(secret);

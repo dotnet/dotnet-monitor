@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
@@ -69,6 +70,8 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
                         break;
                     }
                 }
+
+                _outputHelper.WriteLine(generatedContent);
             }
             Assert.True(equal, "The generated OpenAPI description is different than the documented baseline.");
         }

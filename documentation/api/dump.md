@@ -7,25 +7,7 @@ Captures a managed dump of a specified process without using a debugger.
 ## HTTP Route
 
 ```http
-GET /dump/{pid}?type={type}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-GET /dump/{uid}?type={type}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /dump/{name}?type={type}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /dump?type={type}&egressProvider={egressProvider} HTTP/1.1
+GET /dump?pid={pid}&uid={uid}&name={name}&type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -38,9 +20,9 @@ The default host address for these routes is `https://localhost:52323`. This rou
 
 | Name | In | Required | Type | Description |
 |---|---|---|---|---|
-| `pid` | path | false | int | The ID of the process. |
-| `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
-| `name` | path | false | string | The name of the process. |
+| `pid` | query | false | int | The ID of the process. |
+| `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | query | false | string | The name of the process. |
 | `type` | query | false | [DumpType](definitions.md#DumpType) | The type of dump to capture. Default value is `WithHeap` |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected dump. When not specified, the dump is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
@@ -70,7 +52,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /dump/21632?type=Full HTTP/1.1
+GET /dump?pid=21632&type=Full HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -78,7 +60,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /dump/cd4da319-fa9e-4987-ac4e-e57b2aac248b?type=Full HTTP/1.1
+GET /dump?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&type=Full HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```

@@ -7,10 +7,11 @@ The following are the root routes on the HTTP API surface.
 | Route | Description |
 |---|---|
 | [`/processes`](processes.md) | Gets detailed information about discoverable processes. |
-| [`/dump`](dump.md) | Captures a managed dumps processes without using a debugger. |
+| [`/dump`](dump.md) | Captures managed dumps of processes without using a debugger. |
 | [`/gcdump`](gcdump.md) | Captures GC dumps of processes. |
 | [`/trace`](trace.md) | Captures traces of processes without using a profiler. |
 | [`/metrics`](metrics.md) | Captures metrics of a process. |
 | [`/logs`](logs.md) | Captures logs of processes. |
+| [`/info`](info.md) | Gets info about Dotnet Monitor. |
 
 The `dotnet monitor` tool is able to detect .NET Core 3.1 and .NET 5+ applications. When connecting to a .NET Core 3.1 application, some information may not be available and is called out in the documentation.

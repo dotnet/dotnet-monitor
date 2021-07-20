@@ -7,25 +7,7 @@ Captures log statements that are logged to the [ILogger<> infrastructure](https:
 ## HTTP Route
 
 ```http
-GET /logs/{pid}?level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-GET /logs/{uid}?level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /logs/{name}?level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /logs?level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+GET /logs?pid={pid}&uid={uid}&name={name}&level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -38,9 +20,9 @@ The default host address for these routes is `https://localhost:52323`. This rou
 
 | Name | In | Required | Type | Description |
 |---|---|---|---|---|
-| `pid` | path | false | int | The ID of the process. |
-| `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
-| `name` | path | false | string | The name of the process. |
+| `pid` | query | false | int | The ID of the process. |
+| `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | query | false | string | The name of the process. |
 | `level` | query | false | [LogLevel](definitions.md#LogLevel) | The name of the log level at which log events are collected. If not specified, logs are collected levels as specified by the [application-defined configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/#configure-logging). |
 | `durationSeconds` | query | false | int | The duration of the log collection operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected logs. When not specified, the logs are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
@@ -72,7 +54,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /logs/21632?level=Information&durationSeconds=60 HTTP/1.1
+GET /logs?pid=21632&level=Information&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -80,7 +62,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /logs/cd4da319-fa9e-4987-ac4e-e57b2aac248b?level=Information&durationSeconds=60 HTTP/1.1
+GET /logs?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&level=Information&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -14,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             if (options.ConnectionMode == DiagnosticPortConnectionMode.Listen
                 && string.IsNullOrEmpty(options.EndpointName))
             {
-                return ValidateOptionsResult.Fail("In 'Listen' mode, the diagnostic port endpoint name must be specified.");
+                return ValidateOptionsResult.Fail(Strings.ErrorMessage_DiagnosticPortMissingInListenMode);
             }
 
             return ValidateOptionsResult.Success;

@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <NoWarn>;1591;1701</NoWarn>
+    <Description>REST Api surface for dotnet-monitor</Description>
+    <!-- Tentatively create package so other teams can tentatively consume. -->
+    <IsPackable>true</IsPackable>
+    <IsShippingAssembly>true</IsShippingAssembly>
+    <PackageTags>Diagnostic</PackageTags>
+    <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
+    <PackageReference Include="Microsoft.Diagnostics.Monitoring.EventPipe" Version="$(MicrosoftDiagnosticsMonitoringEventPipeVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' != ''">
+    <ProjectReference Include="$(DIAGNOSTICS_REPO_ROOT)\src\Microsoft.Diagnostics.Monitoring.EventPipe\Microsoft.Diagnostics.Monitoring.EventPipe.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <!--
+      AspNetCore references use version ranges in order to allow package references to this
+      WebApi package to use newer versions but not reference anything newer than .NET Core 2.1
+    -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="[$(MicrosoftAspNetCoreMvcVersion),2.2.0)" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="$(MicrosoftBclHashCodeVersion)" />
+    <!--
+      Upgraded packages to avoid insecure versions; these are not directly referenced by the code.
+    -->
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="[$(MicrosoftAspNetCoreHttpVersion),2.2.0)" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="[$(MicrosoftAspNetCoreServerKestrelCoreVersion),2.2.0)" />
+    <PackageReference Include="System.IO.Pipelines" Version="$(SystemIOPipelinesVersion)" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="$(SystemTextEncodingsWebVersion)" />
+    <PackageReference Include="System.Threading.Channels" Version="$(SystemThreadingChannelsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="dotnet-monitor" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="OptionsDisplayStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OptionsDisplayStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="OptionsDisplayStrings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>OptionsDisplayStrings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.Diagnostics.Monitoring.WebApi</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

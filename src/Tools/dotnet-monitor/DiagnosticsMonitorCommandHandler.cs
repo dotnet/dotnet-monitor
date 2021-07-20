@@ -5,9 +5,8 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring;
-using Microsoft.Diagnostics.Monitoring.RestServer;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,12 +16,10 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using IEndpointInfoSource = Microsoft.Diagnostics.Monitoring.WebApi.IEndpointInfoSource;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -69,36 +66,50 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey)
         {
             //CONSIDER The console logger uses the standard AddConsole, and therefore disregards IConsole.
-            using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: false).Build();
             try
             {
-                await host.StartAsync(token);
+                using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: false).Build();
+                try
+                {
+                    await host.StartAsync(token);
 
-                await host.WaitForShutdownAsync(token);
+                    await host.WaitForShutdownAsync(token);
+                }
+                catch (MonitoringException)
+                {
+                    // It is the responsibility of throwers to ensure that the exceptions are logged.
+                    return -1;
+                }
+                catch (OptionsValidationException ex)
+                {
+                    host.Services.GetRequiredService<ILoggerFactory>()
+                        .CreateLogger(typeof(DiagnosticsMonitorCommandHandler))
+                        .OptionsValidationFailure(ex);
+                    return -1;
+                }
+                finally
+                {
+                    if (host is IAsyncDisposable asyncDisposable)
+                    {
+                        await asyncDisposable.DisposeAsync();
+                    }
+                    else
+                    {
+                        host.Dispose();
+                    }
+                }
             }
-            catch (MonitoringException)
+            catch (FormatException ex)
             {
-                // It is the responsibility of throwers to ensure that the exceptions are logged.
+                Console.Error.WriteLine(ex.Message);
+                if (ex.InnerException != null)
+                {
+                    Console.Error.WriteLine(ex.InnerException.Message);
+                }
+
                 return -1;
             }
-            catch (OptionsValidationException ex)
-            {
-                host.Services.GetRequiredService<ILoggerFactory>()
-                    .CreateLogger(typeof(DiagnosticsMonitorCommandHandler))
-                    .OptionsValidationFailure(ex);
-                return -1;
-            }
-            finally
-            {
-                if (host is IAsyncDisposable asyncDisposable)
-                {
-                    await asyncDisposable.DisposeAsync();
-                }
-                else
-                {
-                    host.Dispose();
-                }
-            }
+
             return 0;
         }
 
@@ -108,7 +119,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter writer = new ConfigurationJsonWriter(Console.OpenStandardOutput());
             writer.Write(configuration, full: level == ConfigDisplayLevel.Full);
-
+            
             return Task.FromResult(0);
         }
 
@@ -230,6 +241,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                     services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
+                    services.AddSingleton<RequestLimitTracker>();
+                    services.ConfigureOperationStore();
                     services.ConfigureEgress(context.Configuration);
                     services.ConfigureMetrics(context.Configuration);
                     services.ConfigureStorage(context.Configuration);
@@ -316,12 +329,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
         {
-            DiagnosticPortConnectionMode connectionMode = string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
+            DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
             });
+        }
+
+        private static DiagnosticPortConnectionMode GetConnectionMode(string diagnosticPort)
+        {
+            return string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
         }
 
         private static string GetEnvironmentOverrideOrValue(string overrideEnvironmentVariable, string value)
