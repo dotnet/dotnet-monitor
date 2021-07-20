@@ -135,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/dotnet-monitor/issues/586")]
         public async Task ConcurrencyLimitTest()
         {
             await ScenarioRunner.SingleTarget(
