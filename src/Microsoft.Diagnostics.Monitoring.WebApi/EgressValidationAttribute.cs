@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -39,6 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class EgressValidationActionFilter : IActionFilter
     {
         private IEgressOutputOptions _egressOutputOptions;
+        private const string EgressQuery = "egressprovider";
 
         public EgressValidationActionFilter(IEgressOutputOptions egressOutputOptions)
         {
@@ -53,12 +55,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public void OnActionExecuting(ActionExecutingContext context)
         {
             StringValues value;
-            bool egressProvider = context.HttpContext.Request.Query.TryGetValue("egressProvider", out value);
 
-            if (egressProvider == false || value.ToString() == null)
+            bool egressProviderGiven = context.HttpContext.Request.Query.TryGetValue(EgressQuery, out value);
+
+            if (!egressProviderGiven || value.ToString().Equals(""))
             {
                 if (_egressOutputOptions.EgressMode == EgressMode.HttpDisabled)
                 {
+                    ILogger<EgressValidationActionFilter> logger = context.HttpContext.RequestServices
+                        .GetRequiredService<ILoggerFactory>()
+                        .CreateLogger<EgressValidationActionFilter>();
+
+                    logger.LogError(Strings.ErrorMessage_HttpEgressDisabled);
+
                     throw new ArgumentException("Http Egress is currently disabled.");
                 }
             }
