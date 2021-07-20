@@ -5,25 +5,7 @@ Captures a diagnostic trace of a process based on a predefined set of trace prof
 ## HTTP Route
 
 ```http
-GET /trace/{pid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-GET /trace/{uid}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /trace/{name}?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /trace?profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
+GET /trace?pid={pid}&uid={uid}&name={name}&profile={profile}&durationSeconds={durationSeconds}&metricsIntervalSeconds={metricsIntervalSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -36,9 +18,9 @@ The default host address for these routes is `https://localhost:52323`. This rou
 
 | Name | In | Required | Type | Description |
 |---|---|---|---|---|
-| `pid` | path | false | int | The ID of the process. |
-| `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
-| `name` | path | false | string | The name of the process. |
+| `pid` | query | false | int | The ID of the process. |
+| `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | query | false | string | The name of the process. |
 | `profile` | query | false | [TraceProfile](definitions.md#TraceProfile) | The name of the profile(s) used to collect events. See [TraceProfile](definitions.md#TraceProfile) for details on the list of event providers, levels, and keywords each profile represents. Multiple profiles may be specified by separating them with commas. Default is `Cpu,Http,Metrics` |
 | `durationSeconds` | query | false | int | The duration of the trace operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `metricsIntervalSeconds` | query | false | int | The interval (in seconds) at which metrics are collected. Only applicable for the `Metrics` profile. Default is `1`. Min is `1`. Max is `2147483647`. |
@@ -72,7 +54,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /trace/21632?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
+GET /trace?pid=21632&profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -80,7 +62,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /trace/cd4da319-fa9e-4987-ac4e-e57b2aac248b?profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
+GET /trace?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -114,3 +96,7 @@ See [Process ID `pid` vs Unique ID `uid`](pidvsuid.md) for clarification on when
 On Windows, `.nettrace` files can be viewed in [PerfView](https://github.com/microsoft/perfview) for analysis or in Visual Studio. 
 
 A `.nettrace` files can be converted to another format (e.g. SpeedScope or Chromium) using the [dotnet-trace](https://docs.microsoft.com/dotnet/core/diagnostics/dotnet-trace) tool.
+
+### Indefinite traces are inaccessible
+
+When setting `durationSeconds` to `-1` (indefinite duration), there is currently no way to terminate the trace operation that preserves the `.nettrace` file in an accessible format. This also applies when prematurely terminating a trace operation that uses a finite value for `durationSeconds`.

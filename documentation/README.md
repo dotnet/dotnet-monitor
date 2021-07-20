@@ -2,7 +2,7 @@
 
 `dotnet monitor` is a tool that makes it easier to get access to diagnostics information in a dotnet process.
 
-When running a dotnet application differences in diverse local and production environments can make collecting diagnostics artifacts (e.g., logs, traces, process dumps) challenging. `dotnet monitor` aims to simplify the process by exposing a consistent HTTP API regardless of where your application is run.
+When running a dotnet application, differences in diverse local and production environments can make collecting diagnostics artifacts (e.g., logs, traces, process dumps) challenging. `dotnet monitor` aims to simplify the process by exposing a consistent HTTP API regardless of where your application is run.
 
 ## Table of contents
 
@@ -20,6 +20,7 @@ When running a dotnet application differences in diverse local and production en
     - [`/trace`](./api/trace.md)
     - [`/metrics`](./api/metrics.md)
     - [`/logs`](./api/logs.md)
+    - [`/info`](./api/info.md)
 - [Configuration](./configuration.md)
     - [JSON Schema](./schema.json)
 - [Authentication](./authentication.md)
@@ -29,3 +30,4 @@ When running a dotnet application differences in diverse local and production en
 - [Troubleshooting](./troubleshooting.md)
 - [Clone, build, and test the repo](./building.md)
 - [Official Build Instructions](./official-build-instructions.md)
+- [Release Process](./release-process.md)

@@ -9,7 +9,7 @@ The recommended configuration for `dotnet monitor` is to use [API Key Authentica
 ## Windows Authentication
 We only recommend using Windows Authentication if you're running `dotnet monitor` as a local development tool on Windows; for all other environments using an [API Key](#api-key-authentication) is recommended.
 
-Windows authentication doesn't require explicit configuration and is enabled automatically when running `dotnet monitor` on Windows. When available, dotnet-monitor will authorize any user authenticated as the same user that started the `dotnet monitor` process. It is not possible to disable Windows authentication.
+Windows authentication doesn't require explicit configuration and is enabled automatically when running `dotnet monitor` on Windows. When available, `dotnet monitor` will authorize any user authenticated as the same user that started the `dotnet monitor` process. It is not possible to disable Windows authentication.
 
 > **NOTE:** Windows authentication will not be attempted if you are running `dotnet monitor` as an Administrator
 
@@ -23,7 +23,7 @@ An API Key is the recommended authentication mechanism for `dotnet monitor`. To 
 The API Key you use to secure `dotnet monitor` should be a 32-byte cryptographically random secret. You can generate a key either using `dotnet monitor` or via your shell. To generate an API Key with `dotnet monitor`, simply invoke the `generatekey` command:
 
 ```powershell
-dotnet-monitor generatekey
+dotnet monitor generatekey
 ```
 
 The output from this command will display the API Key formatted as an authentication header along with its hash and associated hashing algorithm. You will need to store the `ApiKeyHash` and `ApiKeyHashType` in the configuration for `dotnet monitor` and use the authorization header value when making requests to the `dotnet monitor` HTTPS endpoint.
@@ -147,5 +147,5 @@ Disabling authentication could enable lower privileged processes to exfiltrate s
 
 Authentication can be turned off by specifying the `--no-auth` option to `dotnet monitor` at startup:
 ```powershell
-dotnet-monitor collect --no-auth
+dotnet monitor collect --no-auth
 ```

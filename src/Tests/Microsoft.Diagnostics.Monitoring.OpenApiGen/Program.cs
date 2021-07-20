@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.RestServer.Controllers;
+using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -55,9 +55,6 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 {
                     services.AddSwaggerGen(options =>
                     {
-                        options.MapType<ProcessKey>(CreateProcessKeySchema);
-                        options.MapType<ProcessKey?>(CreateProcessKeySchema);
-
                         options.DocumentFilter<BadRequestResponseDocumentFilter>();
                         options.DocumentFilter<UnauthorizedResponseDocumentFilter>();
                         options.DocumentFilter<TooManyRequestsResponseDocumentFilter>();

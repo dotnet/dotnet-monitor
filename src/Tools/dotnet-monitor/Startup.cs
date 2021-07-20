@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Diagnostics.Monitoring;
-using Microsoft.Diagnostics.Monitoring.RestServer;
-using Microsoft.Diagnostics.Monitoring.RestServer.Controllers;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -118,7 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             if (!listenResults.AnyAddresses)
             {
                 // This is logged by GenericWebHostServer.StartAsync
-                throw new MonitoringException("Unable to bind any urls.");
+                throw new MonitoringException(Strings.ErrorMessage_UnableToBindUrls);
             }
 
             lifetime.ApplicationStarted.Register(() => LogBoundAddresses(app.ServerFeatures, listenResults, logger));
@@ -186,7 +186,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             app.UseResponseCompression();
 
             //Note this must be after UseRouting but before UseEndpoints
-            app.UseMiddleware<Throttling>();
+            app.UseMiddleware<RequestLimitMiddleware>();
 
             app.UseEndpoints(builder =>
             {

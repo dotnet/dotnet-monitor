@@ -11,25 +11,7 @@ Captures a GC dump of a specified process. These dumps are useful for several sc
 ## HTTP Route
 
 ```http
-GET /gcdump/{pid}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or 
-
-```http
-GET /gcdump/{uid}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /gcdump/{name}&egressProvider={egressProvider} HTTP/1.1
-```
-
-or
-
-```http
-GET /gcdump&egressProvider={egressProvider} HTTP/1.1
+GET /gcdump?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -42,9 +24,9 @@ The default host address for these routes is `https://localhost:52323`. This rou
 
 | Name | In | Required | Type | Description |
 |---|---|---|---|---|
-| `pid` | path | false | int | The ID of the process. |
-| `uid` | path | false | guid | A value that uniquely identifies a runtime instance within a process. |
-| `name` | path | false | string | The name of the process. |
+| `pid` | query | false | int | The ID of the process. |
+| `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | query | false | string | The name of the process. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected GC dump. When not specified, the GC dump is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
 See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
@@ -73,7 +55,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /gcdump/21632 HTTP/1.1
+GET /gcdump?pid=21632 HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -81,7 +63,7 @@ Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /gcdump/cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
+GET /gcdump?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
 Host: localhost:52323
 Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
 ```

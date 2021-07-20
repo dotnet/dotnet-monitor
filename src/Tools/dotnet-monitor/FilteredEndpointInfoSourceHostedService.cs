@@ -4,7 +4,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Diagnostics.Monitoring;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
