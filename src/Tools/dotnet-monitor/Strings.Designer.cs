@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -351,9 +351,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         /// <summary>
         ///   Looks up a localized string similar to Turn off HTTP response egress.
         /// </summary>
-        internal static string HelpDescription_OptionNoHTTPEgress {
+        internal static string HelpDescription_OptionNoHttpEgress {
             get {
-                return ResourceManager.GetString("HelpDescription_OptionNoHTTPEgress", resourceCulture);
+                return ResourceManager.GetString("HelpDescription_OptionNoHttpEgress", resourceCulture);
             }
         }
         

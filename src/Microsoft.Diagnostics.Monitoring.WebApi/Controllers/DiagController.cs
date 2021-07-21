@@ -49,14 +49,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
-        private readonly IEgressOutputOptions _egressOutputOptions;
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
 
         public DiagController(ILogger<DiagController> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
-            _egressOutputOptions = serviceProvider.GetRequiredService<IEgressOutputOptions>();
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
         }
 
@@ -688,7 +686,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
-        
+
         private static LogFormat ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
             if (acceptedHeaders == null)

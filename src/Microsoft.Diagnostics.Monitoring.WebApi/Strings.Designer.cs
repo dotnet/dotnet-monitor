@@ -68,18 +68,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
                 return ResourceManager.GetString("ErrorMessage_CanNotGetEnvironment", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Http Egress was not enabled..
+        ///   Looks up a localized string similar to HTTP egress is not enabled..
         /// </summary>
-        internal static string ErrorMessage_HttpEgressDisabled
-        {
-            get
-            {
+        internal static string ErrorMessage_HttpEgressDisabled {
+            get {
                 return ResourceManager.GetString("ErrorMessage_HttpEgressDisabled", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Invalid metric count..
         /// </summary>
@@ -225,7 +223,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Written to HTTP stream..
+        ///   Looks up a localized string similar to Written to Http stream..
         /// </summary>
         internal static string LogFormatString_WrittenToHttpStream {
             get {

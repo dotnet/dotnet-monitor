@@ -6,11 +6,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal sealed class EgressOutputOptions : IEgressOutputOptions
     {
-        public EgressMode EgressMode { get; }
+        public bool IsHttpEgressEnabled { get; set; }
 
-        public EgressOutputOptions(EgressMode mode)
+        public EgressOutputOptions(bool httpEgressEnabled)
         {
-            EgressMode = mode;
+            IsHttpEgressEnabled = httpEgressEnabled;
         }
     }
 }

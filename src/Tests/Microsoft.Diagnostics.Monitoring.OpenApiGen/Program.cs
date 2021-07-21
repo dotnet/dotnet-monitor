@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                     diagnosticPort: null,
                     noAuth: false,
                     tempApiKey: false,
-                    noHTTPEgress: false,
+                    noHttpEgress: false,
                     configOnly: false)
                 .ConfigureServices(services =>
                 {

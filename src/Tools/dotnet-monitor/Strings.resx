@@ -275,7 +275,7 @@
     <value>Turn off authentication.</value>
     <comment>Gets the string to display in help that explains what the '--no-auth' option does.</comment>
   </data>
-  <data name="HelpDescription_OptionNoHTTPEgress" xml:space="preserve">
+  <data name="HelpDescription_OptionNoHttpEgress" xml:space="preserve">
     <value>Turn off HTTP response egress</value>
     <comment>Gets the string to display in help that explains what the '--no-http-egress' option does.</comment>
   </data>

@@ -16,6 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public sealed class EgressValidationAttribute : ActionFilterAttribute, IFilterFactory
     {
         public bool IsReusable => true;
+
         IFilterMetadata IFilterFactory.CreateInstance(IServiceProvider serviceProvider)
         {
             var egressOutputOptions = serviceProvider.GetRequiredService<IEgressOutputOptions>();
@@ -26,14 +27,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
     }
 
+    [AttributeUsage(AttributeTargets.Class)]
     public class EgressValidationUnhandledExceptionFilter : ActionFilterAttribute, IExceptionFilter
     {
+        private ILogger _logger;
+
+        public EgressValidationUnhandledExceptionFilter(ILogger<EgressValidationUnhandledExceptionFilter> logger)
+        {
+            _logger = logger;
+        }
+
         public void OnException(ExceptionContext context)
         {
-            BadRequestObjectResult badRequestResult = new BadRequestObjectResult(context.Exception.Message);
-            badRequestResult.Value = ExceptionExtensions.ToProblemDetails(context.Exception, StatusCodes.Status400BadRequest);
+            if (context.Exception is EgressValidationActionFilter.EgressDisabledException egressException)
+            {
+                BadRequestObjectResult badRequestResult = new BadRequestObjectResult(egressException.Message);
+                badRequestResult.Value = ExceptionExtensions.ToProblemDetails(egressException, StatusCodes.Status400BadRequest);
 
-            context.Result = badRequestResult;
+                context.Result = badRequestResult;
+
+                _logger.LogError(Strings.ErrorMessage_HttpEgressDisabled);
+            }
         }
     }
 
@@ -58,17 +72,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             bool egressProviderGiven = context.HttpContext.Request.Query.TryGetValue(EgressQuery, out value);
 
-            if (!egressProviderGiven || value.ToString().Equals(""))
+            if (!egressProviderGiven || StringValues.IsNullOrEmpty(value))
             {
-                if (_egressOutputOptions.EgressMode == EgressMode.HttpDisabled)
+                if (!_egressOutputOptions.IsHttpEgressEnabled)
                 {
-                    ILogger<EgressValidationActionFilter> logger = context.HttpContext.RequestServices
-                        .GetRequiredService<ILoggerFactory>()
-                        .CreateLogger<EgressValidationActionFilter>();
+                    throw new EgressDisabledException();
+                }
+            }
+        }
 
-                    logger.LogError(Strings.ErrorMessage_HttpEgressDisabled);
-
-                    throw new ArgumentException("Http Egress is currently disabled.");
+        public class EgressDisabledException : Exception
+        {
+            public override string Message
+            {
+                get
+                {
+                    return "Http Egress is currently disabled.";
                 }
             }
         }

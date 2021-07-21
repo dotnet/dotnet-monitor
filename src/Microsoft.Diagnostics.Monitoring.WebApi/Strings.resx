@@ -122,8 +122,8 @@
     <comment>Gets a string similar to "Unable to get process environment.".</comment>
   </data>
   <data name="ErrorMessage_HttpEgressDisabled" xml:space="preserve">
-    <value>Http Egress was not enabled.</value>
-    <comment>Gets a string similar to "Http Egress was not enabled.".</comment>
+    <value>HTTP egress is not enabled.</value>
+    <comment>Gets a string similar to "HTTP egress is not enabled.".</comment>
   </data>
   <data name="ErrorMessage_InvalidMetricCount" xml:space="preserve">
     <value>Invalid metric count.</value>
@@ -205,7 +205,7 @@
 2. requests: The number of outstanding requests</comment>
   </data>
   <data name="LogFormatString_WrittenToHttpStream" xml:space="preserve">
-    <value>Written to HTTP stream.</value>
+    <value>Written to Http stream.</value>
     <comment>Gets the format string that is printed in the 5:WrittenToHttpStream event.
 0 Format Parameters</comment>
   </data>

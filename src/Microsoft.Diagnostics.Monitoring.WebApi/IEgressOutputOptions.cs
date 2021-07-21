@@ -6,14 +6,8 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    public enum EgressMode
-    {
-        HttpDisabled,
-        HttpEnabled
-    }
-
     public interface IEgressOutputOptions
     {
-        EgressMode EgressMode { get; }
+        bool IsHttpEgressEnabled { get; set; }
     }
 }

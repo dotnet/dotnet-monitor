@@ -26,6 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 HashAlgorithm(), KeyLength()
             };
 
+
         private static Command CollectCommand() =>
             new Command(
                 name: "collect",
@@ -62,7 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static IEnumerable<Option> SharedOptions() => new Option[]
         {
-            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey(), NoHTTPEgress()
+            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey(), NoHttpEgress()
         };
         
         private static Option Urls() =>
@@ -106,13 +107,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 Argument = new Argument<bool>(name: "noAuth", getDefaultValue: () => false)
             };
 
-        private static Option NoHTTPEgress() =>
+        private static Option NoHttpEgress() =>
             new Option(
                 alias: "--no-http-egress",
-                description: Strings.HelpDescription_OptionNoHTTPEgress
+                description: Strings.HelpDescription_OptionNoHttpEgress
                 )
             {
-                Argument = new Argument<bool>(name: "noHTTPEgress", getDefaultValue: () => false)
+                Argument = new Argument<bool>(name: "noHttpEgress", getDefaultValue: () => false)
             };
 
         private static Option TempApiKey() =>
