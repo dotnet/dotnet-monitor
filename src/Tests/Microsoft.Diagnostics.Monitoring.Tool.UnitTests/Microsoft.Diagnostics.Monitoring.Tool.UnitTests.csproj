@@ -19,8 +19,8 @@
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\EgressOperationStatus.cs" Link="Models\EgressOperationStatus.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
-	<Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DotnetMonitorInfo.cs" Link="Models\DotnetMonitorInfo.cs" />
-	<Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\StorageOptions.cs" Link="Options\StorageOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DotnetMonitorInfo.cs" Link="Models\DotnetMonitorInfo.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\StorageOptions.cs" Link="Options\StorageOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Auth\ApiAuthenticationOptions.cs" Link="Options\ApiAuthenticationOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortOptions.cs" Link="Options\DiagnosticPortOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortOptionsDefaults.cs" Link="Options\DiagnosticPortOptionsDefaults.cs" />
