@@ -26,7 +26,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 HashAlgorithm(), KeyLength()
             };
 
-
         private static Command CollectCommand() =>
             new Command(
                 name: "collect",

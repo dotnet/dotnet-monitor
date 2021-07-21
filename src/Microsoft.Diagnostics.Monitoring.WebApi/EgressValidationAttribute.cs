@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 get
                 {
-                    return "Http Egress is currently disabled.";
+                    return Strings.ErrorMessage_HttpEgressDisabled;
                 }
             }
         }
