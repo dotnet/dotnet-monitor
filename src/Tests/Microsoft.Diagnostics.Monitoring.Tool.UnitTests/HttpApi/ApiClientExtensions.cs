@@ -9,8 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
@@ -282,6 +284,58 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
         {
             using CancellationTokenSource timeoutSource = new(timeout);
             return await client.GetMetricsAsync(timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        public static async Task<OperationResponse> EgressTraceAsync(this ApiClient client, int processId, int durationSeconds, string egressProvider)
+        {
+            using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
+            return await client.EgressTraceAsync(processId, durationSeconds, egressProvider, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        public static async Task<OperationStatusResponse> GetOperationStatus(this ApiClient client, Uri operation)
+        {
+            using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
+            return await client.GetOperationStatus(operation, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        public static async Task<List<Models.OperationSummary>> GetOperations(this ApiClient client)
+        {
+            using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
+            return await client.GetOperations(timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        public static async Task<HttpStatusCode> CancelEgressOperation(this ApiClient client, Uri operation)
+        {
+            using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
+            return await client.CancelEgressOperation(operation, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        public static async Task<HttpResponseMessage> ApiCall(this ApiClient client, string routeAndQuery)
+        {
+            using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
+            return await client.ApiCall(routeAndQuery, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        public static Task<OperationStatusResponse> PollOperationToCompletion(this ApiClient apiClient, Uri operationUrl)
+        {
+            return apiClient.PollOperationToCompletion(operationUrl, TestTimeouts.OperationTimeout);
+        }
+
+        public static async Task<OperationStatusResponse> PollOperationToCompletion(this ApiClient apiClient, Uri operationUrl, TimeSpan timeout)
+        {
+            OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUrl).ConfigureAwait(false);
+            Assert.True(operationResult.StatusCode == HttpStatusCode.OK || operationResult.StatusCode == HttpStatusCode.Created);
+            Assert.True(operationResult.OperationStatus.Status == OperationState.Running || operationResult.OperationStatus.Status == OperationState.Succeeded);
+
+            using CancellationTokenSource cancellationTokenSource = new(timeout);
+            while (operationResult.OperationStatus.Status == OperationState.Running)
+            {
+                cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationTokenSource.Token).ConfigureAwait(false);
+                operationResult = await apiClient.GetOperationStatus(operationUrl).ConfigureAwait(false);
+            }
+
+            return operationResult;
         }
     }
 }

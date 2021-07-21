@@ -5,13 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    internal sealed class RequestLimitAttribute : Attribute
+    internal interface IEgressOperation
     {
-        public string LimitKey { get; set; }
+        Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token);
     }
 }

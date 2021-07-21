@@ -126,11 +126,47 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operation not found..
+        /// </summary>
+        internal static string ErrorMessage_OperationNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OperationNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation is not running..
+        /// </summary>
+        internal static string ErrorMessage_OperationNotRunning {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OperationNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to enumerate processes..
         /// </summary>
         internal static string ErrorMessage_ProcessEnumeratuinFailed {
             get {
                 return ResourceManager.GetString("ErrorMessage_ProcessEnumeratuinFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rate limit reached..
+        /// </summary>
+        internal static string ErrorMessage_TooManyRequests {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TooManyRequests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected limit key: &apos;{0}&apos;.
+        /// </summary>
+        internal static string ErrorMessage_UnexpectedLimitKey {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnexpectedLimitKey", resourceCulture);
             }
         }
         

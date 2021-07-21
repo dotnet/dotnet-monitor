@@ -251,6 +251,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                     services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
+                    services.AddSingleton<RequestLimitTracker>();
+                    services.ConfigureOperationStore();
                     services.ConfigureEgress(context.Configuration);
                     services.ConfigureMetrics(context.Configuration);
                     services.ConfigureStorage(context.Configuration);
