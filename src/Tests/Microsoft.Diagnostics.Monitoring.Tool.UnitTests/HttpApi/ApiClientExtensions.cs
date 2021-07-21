@@ -286,6 +286,23 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             return await client.GetMetricsAsync(timeoutSource.Token).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// GET /info
+        /// </summary>
+        public static Task<DotnetMonitorInfo> GetInfoAsync(this ApiClient client)
+        {
+            return client.GetInfoAsync(TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// GET /info
+        /// </summary>
+        public static async Task<DotnetMonitorInfo> GetInfoAsync(this ApiClient client, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.GetInfoAsync(timeoutSource.Token).ConfigureAwait(false);
+        }
+
         public static async Task<OperationResponse> EgressTraceAsync(this ApiClient client, int processId, int durationSeconds, string egressProvider)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);

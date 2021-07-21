@@ -144,6 +144,33 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
+        public async Task<DotnetMonitorInfo> GetInfoAsync(CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/info");
+            request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
+
+            using HttpResponseMessage response = await SendAndLogAsync(
+                request,
+                HttpCompletionOption.ResponseContentRead,
+                token).ConfigureAwait(false);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(response, ContentTypes.ApplicationJson);
+                    return await ReadContentAsync<DotnetMonitorInfo>(response).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Get /dump?pid={pid}&type={dumpType}
         /// </summary>
