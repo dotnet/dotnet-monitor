@@ -239,6 +239,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       }
@@ -314,6 +317,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       }
@@ -423,6 +429,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       },
@@ -530,6 +539,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       }
@@ -635,6 +647,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       },
@@ -750,6 +765,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Success"
           }
         }
       }
@@ -801,6 +819,98 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/operations": {
+      "get": {
+        "tags": [
+          "Operations"
+        ],
+        "responses": {
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OperationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operations/{operationId}": {
+      "get": {
+        "tags": [
+          "Operations"
+        ],
+        "parameters": [
+          {
+            "name": "operationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationStatus"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationStatus"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Operations"
+        ],
+        "parameters": [
+          {
+            "name": "operationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success"
           }
         }
       }
@@ -905,6 +1015,33 @@
           "Triage"
         ],
         "type": "string"
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
       },
       "TraceProfile": {
         "enum": [
@@ -1043,6 +1180,72 @@
           }
         },
         "additionalProperties": false
+      },
+      "OperationState": {
+        "enum": [
+          "Running",
+          "Succeeded",
+          "Failed",
+          "Cancelled"
+        ],
+        "type": "string"
+      },
+      "OperationSummary": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OperationState"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a partial model when enumerating all operations."
+      },
+      "OperationError": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OperationStatus": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OperationState"
+          },
+          "resourceLocation": {
+            "type": "string",
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/OperationError"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the state of a long running operation. Used for all types of results, including successes and failures."
       }
     },
     "responses": {
@@ -1067,7 +1270,14 @@
         }
       },
       "TooManyRequestsResponse": {
-        "description": "TooManyRequests"
+        "description": "TooManyRequests",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetails"
+            }
+          }
+        }
       }
     }
   }

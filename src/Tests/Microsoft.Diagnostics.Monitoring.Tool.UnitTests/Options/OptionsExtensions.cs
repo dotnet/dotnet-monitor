@@ -60,6 +60,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
             return options;
         }
 
+        public static RootOptions AddFileSystemEgress(this RootOptions options, string name, string outputPath)
+        {
+            var egressProvider = new FileSystemEgressProviderOptions()
+            {
+                DirectoryPath = outputPath
+            };
+
+            options.Egress = new EgressOptions
+            {
+                FileSystem = new Dictionary<string, FileSystemEgressProviderOptions>()
+                {
+                    { name, egressProvider }
+                }
+            };
+
+            return options;
+        }
+
         private static void MapDictionary(IDictionary dictionary, string prefix, IDictionary<string, string> map)
         {
             foreach (var key in dictionary.Keys)
@@ -97,9 +115,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
             {
                 if (!property.GetIndexParameters().Any())
                 {
+                    string propertyName = property.GetCustomAttribute<Newtonsoft.Json.JsonPropertyAttribute>()?.PropertyName ?? property.Name;
+
                     MapValue(
                         property.GetValue(obj),
-                        FormattableString.Invariant($"{prefix}{property.Name}"),
+                        FormattableString.Invariant($"{prefix}{propertyName}"),
                         map);
                 }
             }

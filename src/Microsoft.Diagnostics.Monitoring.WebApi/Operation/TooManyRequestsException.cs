@@ -2,18 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal struct EgressResult
+    internal sealed class TooManyRequestsException : MonitoringException
     {
-        public EgressResult(string name, string value)
+        public TooManyRequestsException() : base(Strings.ErrorMessage_TooManyRequests)
         {
-            Name = name;
-            Value = value;
         }
-
-        public string Name { get; }
-
-        public string Value { get; }
     }
 }

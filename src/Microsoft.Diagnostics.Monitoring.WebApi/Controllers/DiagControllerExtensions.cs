@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
@@ -75,6 +76,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return controller.Problem(e);
             }
+            catch (TooManyRequestsException e) when (LogError(logger, e))
+            {
+                return controller.Problem(e, statusCode: StatusCodes.Status429TooManyRequests);
+            }
             catch (MonitoringException e) when (LogError(logger, e))
             {
                 return controller.Problem(e);
@@ -85,9 +90,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        public static ObjectResult Problem(this ControllerBase controller, Exception ex)
+        public static ObjectResult Problem(this ControllerBase controller, Exception ex, int statusCode = StatusCodes.Status400BadRequest)
         {
-            return controller.BadRequest(ex.ToProblemDetails((int)HttpStatusCode.BadRequest));
+            return new BadRequestObjectResult(ex.ToProblemDetails(statusCode)) { StatusCode = statusCode };
         }
 
         private static bool LogError(ILogger logger, Exception ex)

@@ -17,9 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{B24CD8
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C7568468-1C79-4944-8136-18812A7F9EA7}"
-	ProjectSection(SolutionItems) = preProject
-		src\Tests\test.runsettings = src\Tests\test.runsettings
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.TestCommon", "src\Tests\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj", "{863AA12D-0918-49CE-9E76-45A22680268B}"
 EndProject

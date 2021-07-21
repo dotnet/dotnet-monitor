@@ -22,7 +22,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             string scenarioName,
             Func<AppRunner, ApiClient, Task> appValidate,
             Func<ApiClient, int, Task> postAppValidate = null,
-            Action<AppRunner> configureApp = null)
+            Action<AppRunner> configureApp = null,
+            Action<MonitorRunner> configureTool = null)
         {
             DiagnosticPortHelper.Generate(
                 mode,
@@ -33,6 +34,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             toolRunner.ConnectionMode = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
+
+            configureTool?.Invoke(toolRunner);
+
             await toolRunner.StartAsync();
 
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(httpClientFactory);
@@ -43,10 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = scenarioName;
 
-            if (null != configureApp)
-            {
-                configureApp(appRunner);
-            }
+            configureApp?.Invoke(appRunner);
 
             await appRunner.ExecuteAsync(async () =>
             {
