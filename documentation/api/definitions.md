@@ -132,6 +132,68 @@ The following configuration will collect logs for the Microsoft.AspNetCore.Hosti
 }
 ```
 
+## OperationError
+
+| Name | Type | Description |
+|---|---|---|
+| `code` | string | Error code representing the failure. |
+| `message` | string | Detailed error message. |
+
+## OperationState
+
+Status of the egress operation.
+
+| Name | Description |
+|---|---|
+| `Running` | Operation has been started. This is the initial state. |
+| `Cancelled` | The operation was cancelled by the user. |
+| `Succeeded` | Egress operation has been successful. Querying the operation will return the location of the egressed artifact. |
+| `Failed` | Egress operation failed. Querying the operation will return detailed error information. |
+
+## OperationStatus
+
+Detailed information about an operation.
+
+| Name | Type | Description |
+|---|---|---|
+| `resourceLocation` | string | Resource location of the egressed artifact. This can be Uri or path depending on the egress provider. |
+| `error` | [OperationError](#OperationError) | Detailed error message if the operation is in a `Failed` state. |
+| `operationId` | guid | Unique identifier for the operation. |
+| `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
+| `status` | [OperationState](#OperationState) | The current status of operation. |
+
+### Example
+
+```json
+{
+    "resourceLocation": "https://example.blob.core.windows.net/dotnet-monitor/artifacts%2Fcore_20210721_062115",
+    "error": null,
+    "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
+    "createdDateTime": "2021-07-21T06:21:15.315861Z",
+    "status": "Succeeded"
+}
+```
+
+## OperationSummary
+
+Summary state of an operation.
+
+| Name | Type | Description |
+|---|---|---|
+| `operationId` | guid | Unique identifier for the operation. |
+| `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
+| `status` | [OperationState](#OperationState) | The current status of operation. |
+
+### Example
+
+```json
+{
+    "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
+    "createdDateTime": "2021-07-21T06:21:15.315861Z",
+    "status": "Succeeded"
+}
+```
+
 ## ProcessIdentifier
 
 Object with process identifying information. The properties on this object describe indentifying aspects for a found process; these values can be used in other API calls to perform operations on specific processes.
