@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
@@ -135,6 +136,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);
+
+            //var process = Process.GetProcessById(_adapter.ProcessId);
+
+            //Thread t = new Thread(() => {
+            //    process.WaitForExit();
+            //    _outputHelper.WriteLine(DateTime.UtcNow.ToString("HH:mm:ss") + " !ProcessExit");
+                
+            //});
+
+            //t.IsBackground = true;
+
+            //t.Start();
+
 
             using IDisposable _ = token.Register(() => CancelCompletionSources(token));
 

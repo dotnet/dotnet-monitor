@@ -135,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 });
         }
 
-        [Fact(Skip = "https://github.com/dotnet/dotnet-monitor/issues/586")]
+        [Fact]
         public async Task ConcurrencyLimitTest()
         {
             await ScenarioRunner.SingleTarget(
@@ -152,7 +152,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                     ValidationProblemDetailsException ex = await Assert.ThrowsAsync<ValidationProblemDetailsException>(() => EgressTraceWithDelay(apiClient, appRunner.ProcessId));
                     Assert.Equal(HttpStatusCode.TooManyRequests, ex.StatusCode);
                     Assert.Equal((int)HttpStatusCode.TooManyRequests, ex.Details.Status.GetValueOrDefault());
-
 
                     await CancelEgressOperation(apiClient, response1);
                     await CancelEgressOperation(apiClient, response2);
