@@ -46,10 +46,10 @@ Content-Type: application/json
 
 [
     {
-        "operationId":"67f07e40-5cca-4709-9062-26302c484f18","createdDateTime":"2021-07-21T06:21:15.315861Z","status":"Succeeded"
+        "operationId": "67f07e40-5cca-4709-9062-26302c484f18","createdDateTime": "2021-07-21T06:21:15.315861Z","status": "Succeeded"
     },
     {
-        "operationId":"26e74e52-0a16-4e84-84bb-27f904bfaf85","createdDateTime":"2021-07-21T23:30:22.3058272Z","status":"Failed"
+        "operationId": "26e74e52-0a16-4e84-84bb-27f904bfaf85","createdDateTime": "2021-07-21T23:30:22.3058272Z","status": "Failed"
     }
 ]
 ```

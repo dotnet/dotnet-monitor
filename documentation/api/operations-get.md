@@ -45,12 +45,11 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-    "resourceLocation":"https://example.blob.core.windows.net/dotnet-monitor/artifacts%2Fcore_20210721_062115",
-    "error":null,
-    "operationId":
-    "67f07e40-5cca-4709-9062-26302c484f18",
-    "createdDateTime":"2021-07-21T06:21:15.315861Z",
-    "status":"Succeeded"  
+    "resourceLocation": "https://example.blob.core.windows.net/dotnet-monitor/artifacts%2Fcore_20210721_062115",
+    "error": null,
+    "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
+    "createdDateTime": "2021-07-21T06:21:15.315861Z",
+    "status": "Succeeded"  
 }
 ```
 
