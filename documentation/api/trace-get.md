@@ -43,9 +43,10 @@ Allowed schemes:
 | Name | Type | Description | Content Type |
 |---|---|---|---|
 | 200 OK | stream | A trace of the process. | `application/octet-stream` |
+| 202 Accepted | | When specifying an egress provider, returns a Location of the operation to query for egress status. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
-| 429 Too Many Requests | | There are too many trace requests at this time. Try to request a trace at a later time. | |
+| 429 Too Many Requests | | There are too many trace requests at this time. Try to request a trace at a later time. | `application/problem+json` |
 
 > **NOTE:** After the expiration of the trace duration, completing the request may take a long time (up to several minutes) for large applications. The runtime needs to send over the type cache for all managed code that was captured in the trace, known as rundown events. Thus, the length of time of the request may take significantly longer than the requested duration.
 

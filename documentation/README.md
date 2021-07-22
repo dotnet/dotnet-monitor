@@ -21,6 +21,7 @@ When running a dotnet application, differences in diverse local and production e
     - [`/metrics`](./api/metrics.md)
     - [`/logs`](./api/logs.md)
     - [`/info`](./api/info.md)
+    - [`/operations`](.api/operations.md)
 - [Configuration](./configuration.md)
     - [JSON Schema](./schema.json)
 - [Authentication](./authentication.md)
