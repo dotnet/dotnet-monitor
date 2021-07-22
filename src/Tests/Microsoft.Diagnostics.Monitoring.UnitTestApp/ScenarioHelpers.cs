@@ -24,6 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                         .AddJsonConsole(options =>
                         {
                             options.UseUtcTimestamp = true;
+                            options.TimestampFormat = "[HH:mm:ss] ";
                         });
                 }).BuildServiceProvider();
 

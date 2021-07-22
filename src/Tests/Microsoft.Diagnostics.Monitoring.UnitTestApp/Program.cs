@@ -11,14 +11,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
 {
     internal class Program
     {
-        public static Task<int> Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
-            return new CommandLineBuilder()
-                .AddCommand(AsyncWaitScenario.Command())
-                .AddCommand(LoggerScenario.Command())
-                .UseDefaults()
-                .Build()
-                .InvokeAsync(args);
+            try
+            {
+                int result = await new CommandLineBuilder()
+                    .AddCommand(AsyncWaitScenario.Command())
+                    .AddCommand(LoggerScenario.Command())
+                    .UseDefaults()
+                    .Build()
+                    .InvokeAsync(args);
+                return result;
+            }
+            catch (System.Exception e)
+            {
+                System.Console.Error.WriteLine(e.ToString());
+                System.Console.Error.Flush();
+                return -55;
+            }
+
         }
     }
 }
