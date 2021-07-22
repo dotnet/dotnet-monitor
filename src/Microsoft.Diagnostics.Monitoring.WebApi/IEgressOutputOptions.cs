@@ -8,6 +8,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     public interface IEgressOutputOptions
     {
-        bool IsHttpEgressEnabled { get; set; }
+        bool IsHttpEgressEnabled { get; }
     }
 }

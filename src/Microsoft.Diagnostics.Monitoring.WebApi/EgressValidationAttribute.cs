@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     [AttributeUsage(AttributeTargets.Class)]
     public class EgressValidationUnhandledExceptionFilter : ActionFilterAttribute, IExceptionFilter
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public EgressValidationUnhandledExceptionFilter(ILogger<EgressValidationUnhandledExceptionFilter> logger)
         {
@@ -46,14 +46,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 context.Result = badRequestResult;
 
-                _logger.LogError(Strings.ErrorMessage_HttpEgressDisabled);
+                _logger.LogError(egressException.Message);
             }
         }
     }
 
     public class EgressValidationActionFilter : IActionFilter
     {
-        private IEgressOutputOptions _egressOutputOptions;
+        private readonly IEgressOutputOptions _egressOutputOptions;
         private const string EgressQuery = "egressprovider";
 
         public EgressValidationActionFilter(IEgressOutputOptions egressOutputOptions)
@@ -63,7 +63,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            // Not sure we need to do anything here...
         }
 
         public void OnActionExecuting(ActionExecutingContext context)

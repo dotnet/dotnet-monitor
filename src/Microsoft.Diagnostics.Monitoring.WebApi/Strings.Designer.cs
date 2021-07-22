@@ -259,7 +259,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Written to Http stream..
+        ///   Looks up a localized string similar to Written to HTTP stream..
         /// </summary>
         internal static string LogFormatString_WrittenToHttpStream {
             get {

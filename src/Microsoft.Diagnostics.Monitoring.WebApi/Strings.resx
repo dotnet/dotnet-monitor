@@ -220,7 +220,7 @@
 2. requests: The number of outstanding requests</comment>
   </data>
   <data name="LogFormatString_WrittenToHttpStream" xml:space="preserve">
-    <value>Written to Http stream.</value>
+    <value>Written to HTTP stream.</value>
     <comment>Gets the format string that is printed in the 5:WrittenToHttpStream event.
 0 Format Parameters</comment>
   </data>
