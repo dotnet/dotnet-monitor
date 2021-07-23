@@ -64,6 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             ProcessChildSection(configuration, ConfigurationKeys.Metrics, includeChildSections: true);
             ProcessChildSection(configuration, ConfigurationKeys.Storage, includeChildSections: true);
             ProcessChildSection(configuration, ConfigurationKeys.DefaultProcess, includeChildSections: true);
+            ProcessChildSection(configuration, ConfigurationKeys.Logging, includeChildSections: true);
 
             if (full)
             {

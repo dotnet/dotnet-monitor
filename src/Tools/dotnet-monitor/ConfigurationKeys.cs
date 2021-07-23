@@ -19,5 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string Storage = nameof(Storage);
 
         public const string DefaultProcess = nameof(DefaultProcess);
+
+        public const string Logging = nameof(Logging);
     }
 }
