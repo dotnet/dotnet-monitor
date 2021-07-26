@@ -216,50 +216,21 @@
     },
     "LoggingOptions": {
       "type": "object",
-      "additionalProperties": false,
       "properties": {
         "LogLevel": {
           "type": "object",
           "properties": {
             "Default": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft.Diagnostics": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft.Hosting.Lifetime": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             }
           }
         },
@@ -267,54 +238,19 @@
           "type": "object",
           "properties": {
             "Default": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft.Diagnostics": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft.Hosting.Lifetime": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft.Extensions.Hosting": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "FormatterName": {
               "type": "string",
@@ -327,12 +263,6 @@
                   "type": "boolean"
                 },
                 "TimestampFormat": {
-                  "type": "string"
-                },
-                "CustomPrefix": {
-                  "type": "string"
-                },
-                "CustomSuffix": {
                   "type": "string"
                 },
                 "SingleLine": {
@@ -359,44 +289,16 @@
             "type": "object",
             "properties": {
               "Default": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/definitions/LogLevelOptions"
-                  }
-                ]
+                "$ref": "#/definitions/LogLevelOptions"
               },
               "Microsoft": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/definitions/LogLevelOptions"
-                  }
-                ]
+                "$ref": "#/definitions/LogLevelOptions"
               },
               "Microsoft.Diagnostics": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/definitions/LogLevelOptions"
-                  }
-                ]
+                "$ref": "#/definitions/LogLevelOptions"
               },
               "Microsoft.Hosting.Lifetime": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/definitions/LogLevelOptions"
-                  }
-                ]
+                "$ref": "#/definitions/LogLevelOptions"
               }
             }
           }
@@ -405,44 +307,16 @@
           "type": "object",
           "properties": {
             "Default": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft.Diagnostics": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft.Hosting.Lifetime": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             }
           }
         },
@@ -450,44 +324,16 @@
           "type": "object",
           "properties": {
             "Default": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft.Diagnostics": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             },
             "Microsoft.Hosting.Lifetime": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/LogLevelOptions"
-                }
-              ]
+              "$ref": "#/definitions/LogLevelOptions"
             }
           }
         }
