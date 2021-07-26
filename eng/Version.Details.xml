@@ -4,35 +4,35 @@
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>166610c56ff732093f0145a2911d4f6c40b786da</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21372.2">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21373.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>9a79ec280159d935c8607fc9433cd3fa9bee7ac6</Sha>
+      <Sha>b99be68ebf5c6c712418ef6054616b37762ffc73</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21372.2">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21373.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>9a79ec280159d935c8607fc9433cd3fa9bee7ac6</Sha>
+      <Sha>b99be68ebf5c6c712418ef6054616b37762ffc73</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.21370.12">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.21373.11">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>89806f0b9e93ad2bbe32c654412835c0801a2032</Sha>
+      <Sha>c6a28c81f96d196338b3ea520bc1e6dc7c440ee2</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="6.0.0-beta.21370.12">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="6.0.0-beta.21373.11">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>89806f0b9e93ad2bbe32c654412835c0801a2032</Sha>
+      <Sha>c6a28c81f96d196338b3ea520bc1e6dc7c440ee2</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.215101">
       <Uri>https://github.com/dotnet/symstore</Uri>
       <Sha>3ed87724fe4e98c7ecc77617720591783ee2e676</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rc.1.21373.1">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rc.1.21374.5">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>d1c349f29752ac0718bda7b809ab7fd4f82ca414</Sha>
+      <Sha>2be49d930a5fb53e781abd175c3b2a8f8b7827d4</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rc.1.21372.4">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rc.1.21374.7">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>290430eedbfe0e690c8dd119bba6f5a95f2bef53</Sha>
+      <Sha>d019e70d2b7c2f7cd1137fac084dbcdc3d2e05f5</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
