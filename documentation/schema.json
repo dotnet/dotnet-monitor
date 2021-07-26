@@ -49,6 +49,17 @@
         }
       ]
     },
+    "Logging": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/LoggingOptions"
+        }
+      ]
+    },
     "Metrics": {
       "default": {},
       "oneOf": [
@@ -202,6 +213,122 @@
           }
         }
       }
+    },
+    "LoggingOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "LogLevel": {
+          "type": "object",
+          "properties": {
+            "Default": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/LogLevelOptions"
+                }
+              ]
+            },
+            "Microsoft": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/LogLevelOptions"
+                }
+              ]
+            },
+            "Microsoft.Diagnostics": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/LogLevelOptions"
+                }
+              ]
+            },
+            "Microsoft.Hosting.Lifetime": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/LogLevelOptions"
+                }
+              ]
+            }
+          }
+
+        },
+        "Console": {
+          "type": "object",
+          "properties": {
+            "FormatterName": {
+              "type": "string",
+              "enum": [ "Json", "Simple", "Systemd" ]
+            },
+            "FormatterOptions": {
+              "type": "object",
+
+            }
+          }
+        },
+        "EventLog": {
+          "type":  "object",
+          "LogLevel": {
+            "type": "object",
+            "properties": {
+              "Default": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/definitions/LogLevelOptions"
+                  }
+                ]
+              },
+              "Microsoft": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/definitions/LogLevelOptions"
+                  }
+                ]
+              },
+              "Microsoft.Diagnostics": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/definitions/LogLevelOptions"
+                  }
+                ]
+              },
+              "Microsoft.Hosting.Lifetime": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/definitions/LogLevelOptions"
+                  }
+                ]
+              }
+            }
+          }
+      }
+    },
+    "LogLevelOptions": {
+      "type": "string",
+      "enum": ["Trace", "Debug", "Information", "Warning", "Error", "Critical", "None"]
     },
     "AzureBlobEgressProviderOptions": {
       "type": "object",
