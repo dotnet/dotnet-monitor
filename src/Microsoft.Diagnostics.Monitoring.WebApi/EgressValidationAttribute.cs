@@ -13,7 +13,7 @@ using System;
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    public sealed class EgressValidationAttribute : ActionFilterAttribute, IFilterFactory
+    internal sealed class EgressValidationAttribute : ActionFilterAttribute, IFilterFactory
     {
         public bool IsReusable => true;
 
@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     }
 
     [AttributeUsage(AttributeTargets.Class)]
-    public class EgressValidationUnhandledExceptionFilter : ActionFilterAttribute, IExceptionFilter
+    internal class EgressValidationUnhandledExceptionFilter : ActionFilterAttribute, IExceptionFilter
     {
         private readonly ILogger _logger;
 
@@ -41,17 +41,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             if (context.Exception is EgressValidationActionFilter.EgressDisabledException egressException)
             {
-                BadRequestObjectResult badRequestResult = new BadRequestObjectResult(egressException.Message);
-                badRequestResult.Value = ExceptionExtensions.ToProblemDetails(egressException, StatusCodes.Status400BadRequest);
-
-                context.Result = badRequestResult;
+                context.Result = new BadRequestObjectResult(egressException.ToProblemDetails(StatusCodes.Status400BadRequest));
 
                 _logger.LogError(egressException.Message);
             }
         }
     }
 
-    public class EgressValidationActionFilter : IActionFilter
+    internal class EgressValidationActionFilter : IActionFilter
     {
         private readonly IEgressOutputOptions _egressOutputOptions;
         private const string EgressQuery = "egressprovider";
