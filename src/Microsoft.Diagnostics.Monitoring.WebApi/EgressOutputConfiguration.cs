@@ -2,12 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    public interface IEgressOutputOptions
+    internal sealed class EgressOutputConfiguration : IEgressOutputConfiguration
     {
-        bool IsHttpEgressEnabled { get; }
+        public bool IsHttpEgressEnabled { get; }
+
+        public EgressOutputConfiguration(bool httpEgressEnabled)
+        {
+            IsHttpEgressEnabled = httpEgressEnabled;
+        }
     }
 }
