@@ -63,12 +63,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly string UserSettingsPath = Path.Combine(UserConfigDirectoryPath, SettingsFileName);
 
-        public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey)
+        public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress)
         {
             //CONSIDER The console logger uses the standard AddConsole, and therefore disregards IConsole.
             try
             {
-                using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: false).Build();
+                using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress, configOnly: false).Build();
                 try
                 {
                     await host.StartAsync(token);
@@ -113,9 +113,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return 0;
         }
 
-        public Task<int> ShowConfig(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, ConfigDisplayLevel level)
+        public Task<int> ShowConfig(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, ConfigDisplayLevel level)
         {
-            IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: true).Build();
+            IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress, configOnly: true).Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter writer = new ConfigurationJsonWriter(Console.OpenStandardOutput());
             writer.Write(configuration, full: level == ConfigDisplayLevel.Full);
@@ -123,12 +123,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return Task.FromResult(0);
         }
 
-        public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool configOnly)
+        public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, bool configOnly)
         {
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 
             KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
             AuthOptions authenticationOptions = new AuthOptions(authMode);
+
+            EgressOutputConfiguration egressConfiguration = new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress);
 
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
@@ -175,6 +177,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //TODO Many of these service additions should be done through extension methods
 
                     services.AddSingleton<IAuthOptions>(authenticationOptions);
+
+                    services.AddSingleton<IEgressOutputConfiguration>(egressConfiguration);
 
                     // Although this is only observing API key authentication changes, it does handle
                     // the case when API key authentication is not enabled. This class could evolve

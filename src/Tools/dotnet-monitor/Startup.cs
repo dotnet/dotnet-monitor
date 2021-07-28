@@ -49,6 +49,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             .SetCompatibilityVersion(CompatibilityVersion.Latest)
             .AddApplicationPart(typeof(DiagController).Assembly);
 
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(EgressValidationUnhandledExceptionFilter));
+            });
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = context =>

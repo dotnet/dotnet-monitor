@@ -8,6 +8,11 @@ Egress providers use [operations](./api/operations.md) to provide status.
 
 > **NOTE:** The filesystem provider can be used to egress to [kubernetes volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
 
+### Disabling HTTP Egress
+
+The `--no-http-egress` flag requires users to specify an egress provider by preventing the default HTTP response for logs, traces, dumps, and gcdumps.
+
+
 ## Examples of Egressing a dump to blob storage
 
 ### Sample Request

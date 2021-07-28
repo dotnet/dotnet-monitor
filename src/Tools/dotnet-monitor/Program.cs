@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Handler
                 CommandHandler.Create(
                     Delegate.CreateDelegate(
-                        typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, Task<int>>),
+                        typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, bool, Task<int>>),
                         new DiagnosticsMonitorCommandHandler(),
                         nameof(DiagnosticsMonitorCommandHandler.Start))),
                 SharedOptions()
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // Handler
                     CommandHandler.Create(
                         Delegate.CreateDelegate(
-                            typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, ConfigDisplayLevel, Task<int>>),
+                            typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, bool, ConfigDisplayLevel, Task<int>>),
                             new DiagnosticsMonitorCommandHandler(),
                             nameof(DiagnosticsMonitorCommandHandler.ShowConfig))),
                     SharedOptions(),
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static IEnumerable<Option> SharedOptions() => new Option[]
         {
-            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey()
+            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey(), NoHttpEgress()
         };
         
         private static Option Urls() =>
@@ -104,6 +104,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 )
             {
                 Argument = new Argument<bool>(name: "noAuth", getDefaultValue: () => false)
+            };
+
+        private static Option NoHttpEgress() =>
+            new Option(
+                alias: "--no-http-egress",
+                description: Strings.HelpDescription_OptionNoHttpEgress
+                )
+            {
+                Argument = new Argument<bool>(name: "noHttpEgress", getDefaultValue: () => false)
             };
 
         private static Option TempApiKey() =>
