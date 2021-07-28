@@ -22,13 +22,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterName))]
-        public string FormatterName { get; set; }
+        public string FormatterName { get; set; } = "simple";
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold))]
         public logLevel LogToStandardErrorThreshold { get; set; }
-
-        public IDictionary<string, string> Properties { get; set; }
     }
 }

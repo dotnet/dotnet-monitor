@@ -158,11 +158,11 @@
     <comment>The description provided for the CopyBufferSize parameter on all egress provider options.</comment>
   </data>
   <data name="DisplayAttributeDescription_ConsoleOptions_FormatterName" xml:space="preserve">
-    <value>Formatter name for Console provider</value>
+    <value>Name of the log message formatter to use. Defaults to 'simple'</value>
     <comment>The description provided for the FormatterName parameter on ConsoleOptions</comment>
   </data>
   <data name="DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold" xml:space="preserve">
-    <value>Logging severity level for Console provider</value>
+    <value>The minimum level of messages are written to Console.Error</value>
     <comment>The description provided for the LogLevel parameter on ConsoleOptions</comment>
   </data>
   <data name="DisplayAttributeDescription_CorsConfiguration_AllowedOrigins" xml:space="preserve">
@@ -220,10 +220,6 @@
   <data name="DisplayAttributeDescription_LoggingOptions_LogLevel" xml:space="preserve">
     <value>Logging options for the LogLevel provider </value>
     <comment>The description provided for the LogLevel parameter on LoggingOptions</comment>
-  </data>
-  <data name="DisplayAttributeDescription_LogLevelOptions_LogLevel" xml:space="preserve">
-    <value>Logging severity level for LogLevel provider</value>
-    <comment>The description provided for the LogLevel parameter on LogLevelOptions</comment>
   </data>
   <data name="DisplayAttributeDescription_logLevel_Critical" xml:space="preserve">
     <value>Logs that describe an unrecoverable application or system crash, or a catastrophic failure that requires immediate attention.</value>

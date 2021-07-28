@@ -152,7 +152,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Formatter name for Console provider.
+        ///   Looks up a localized string similar to Name of the log message formatter to use. Defaults to &apos;simple&apos;.
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleOptions_FormatterName {
             get {
@@ -161,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Logging severity level for Console provider.
+        ///   Looks up a localized string similar to The minimum level of messages are written to Console.Error.
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold {
             get {
@@ -356,15 +356,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_logLevel_Warning {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Warning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logging severity level for LogLevel provider.
-        /// </summary>
-        public static string DisplayAttributeDescription_LogLevelOptions_LogLevel {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelOptions_LogLevel", resourceCulture);
             }
         }
         
