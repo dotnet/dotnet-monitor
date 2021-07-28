@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class OptionsDisplayStrings {
@@ -152,6 +152,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Formatter name for Console provider.
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleOptions_FormatterName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging severity level for Console provider.
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to List of allowed CORS origins, separated by semicolons..
         /// </summary>
         public static string DisplayAttributeDescription_CorsConfiguration_AllowedOrigins {
@@ -230,6 +248,123 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectory" +
                         "Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the Console provider.
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_Console {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_Console", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the Debug provider.
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_Debug {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_Debug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the EventLog provider.
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_EventLog {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_EventLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the EventSource provider.
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_EventSource {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_EventSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the LogLevel provider .
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_LogLevel {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_LogLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logs that describe an unrecoverable application or system crash, or a catastrophic failure that requires immediate attention..
+        /// </summary>
+        public static string DisplayAttributeDescription_logLevel_Critical {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Critical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logs that are used for interactive investigation during development. These logs should primarily contain information useful for debugging and have no long-term value..
+        /// </summary>
+        public static string DisplayAttributeDescription_logLevel_Debug {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Debug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logs that highlight when the current flow of execution is stopped due to a failure. These should indicate a failure in the current activity, not an application-wide failure..
+        /// </summary>
+        public static string DisplayAttributeDescription_logLevel_Error {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logs that track the general flow of the application. These logs should have long-term value..
+        /// </summary>
+        public static string DisplayAttributeDescription_logLevel_Information {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not used for writing log messages. Specifies that a logging category should not write any messages..
+        /// </summary>
+        public static string DisplayAttributeDescription_logLevel_None {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logs that contain the most detailed messages. These messages may contain sensitive application data. These messages are disabled by default and should never be enabled in a production environment..
+        /// </summary>
+        public static string DisplayAttributeDescription_logLevel_Trace {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Trace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logs that highlight an abnormal or unexpected event in the application flow, but do not otherwise cause the application execution to stop..
+        /// </summary>
+        public static string DisplayAttributeDescription_logLevel_Warning {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging severity level for LogLevel provider.
+        /// </summary>
+        public static string DisplayAttributeDescription_LogLevelOptions_LogLevel {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelOptions_LogLevel", resourceCulture);
             }
         }
         

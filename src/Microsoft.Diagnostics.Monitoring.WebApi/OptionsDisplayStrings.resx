@@ -157,6 +157,14 @@
     <value>Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.</value>
     <comment>The description provided for the CopyBufferSize parameter on all egress provider options.</comment>
   </data>
+  <data name="DisplayAttributeDescription_ConsoleOptions_FormatterName" xml:space="preserve">
+    <value>Formatter name for Console provider</value>
+    <comment>The description provided for the FormatterName parameter on ConsoleOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold" xml:space="preserve">
+    <value>Logging severity level for Console provider</value>
+    <comment>The description provided for the LogLevel parameter on ConsoleOptions</comment>
+  </data>
   <data name="DisplayAttributeDescription_CorsConfiguration_AllowedOrigins" xml:space="preserve">
     <value>List of allowed CORS origins, separated by semicolons.</value>
     <comment>The description provided for the AllowedOrigins parameter on CorsConfiguration.</comment>
@@ -192,6 +200,58 @@
   <data name="DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectoryPath" xml:space="preserve">
     <value>The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in DirectoryPath.</value>
     <comment>The description provided for the IntermediateDirectoryPath parameter on FileSystemEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_Console" xml:space="preserve">
+    <value>Logging options for the Console provider</value>
+    <comment>The description provided for the Console parameter on LoggingOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_Debug" xml:space="preserve">
+    <value>Logging options for the Debug provider</value>
+    <comment>The description provided for the Debug parameter on LoggingOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_EventLog" xml:space="preserve">
+    <value>Logging options for the EventLog provider</value>
+    <comment>The description provided for the EventLog parameter on LoggingOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_EventSource" xml:space="preserve">
+    <value>Logging options for the EventSource provider</value>
+    <comment>The description provided for the EventSource parameter on LoggingOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_LogLevel" xml:space="preserve">
+    <value>Logging options for the LogLevel provider </value>
+    <comment>The description provided for the LogLevel parameter on LoggingOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LogLevelOptions_LogLevel" xml:space="preserve">
+    <value>Logging severity level for LogLevel provider</value>
+    <comment>The description provided for the LogLevel parameter on LogLevelOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_logLevel_Critical" xml:space="preserve">
+    <value>Logs that describe an unrecoverable application or system crash, or a catastrophic failure that requires immediate attention.</value>
+    <comment>The description provided for the Critical logging severity level on logLevel</comment>
+  </data>
+  <data name="DisplayAttributeDescription_logLevel_Debug" xml:space="preserve">
+    <value>Logs that are used for interactive investigation during development. These logs should primarily contain information useful for debugging and have no long-term value.</value>
+    <comment>The description provided for the Debug logging severity level on logLevel</comment>
+  </data>
+  <data name="DisplayAttributeDescription_logLevel_Error" xml:space="preserve">
+    <value>Logs that highlight when the current flow of execution is stopped due to a failure. These should indicate a failure in the current activity, not an application-wide failure.</value>
+    <comment>The description provided for the Error logging severity level on logLevel</comment>
+  </data>
+  <data name="DisplayAttributeDescription_logLevel_Information" xml:space="preserve">
+    <value>Logs that track the general flow of the application. These logs should have long-term value.</value>
+    <comment>The description provided for the Information logging severity level on logLevel</comment>
+  </data>
+  <data name="DisplayAttributeDescription_logLevel_None" xml:space="preserve">
+    <value>Not used for writing log messages. Specifies that a logging category should not write any messages.</value>
+    <comment>The description provided for the None logging severity level on logLevel</comment>
+  </data>
+  <data name="DisplayAttributeDescription_logLevel_Trace" xml:space="preserve">
+    <value>Logs that contain the most detailed messages. These messages may contain sensitive application data. These messages are disabled by default and should never be enabled in a production environment.</value>
+    <comment>The description provided for the Trace logging severity level on logLevel</comment>
+  </data>
+  <data name="DisplayAttributeDescription_logLevel_Warning" xml:space="preserve">
+    <value>Logs that highlight an abnormal or unexpected event in the application flow, but do not otherwise cause the application execution to stop.</value>
+    <comment>The description provided for the Warning logging severity level on logLevel</comment>
   </data>
   <data name="DisplayAttributeDescription_MetricProvider_CounterNames" xml:space="preserve">
     <value>Name of custom metrics counters.</value>

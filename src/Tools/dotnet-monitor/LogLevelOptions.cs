@@ -21,9 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_LogLevel))]
-        public  LogLevel LogLevel { get; set; }
-
-        public IDictionary<string, string> Properties { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelOptions_LogLevel))]
+        public logLevel LogLevel { get; set; }
     }
 }

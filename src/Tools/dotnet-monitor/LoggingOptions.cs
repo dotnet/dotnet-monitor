@@ -37,13 +37,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_Debug))]
-        public LogLevel Debug { get; set; }
+        public logLevel Debug { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_EventSource))]
-        public LogLevel EventSource { get; set; }
-
-        public IDictionary<string, string> Properties { get; set; }
+        public logLevel EventSource { get; set; }
     }
 }
