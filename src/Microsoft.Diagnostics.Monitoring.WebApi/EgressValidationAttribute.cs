@@ -19,9 +19,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         IFilterMetadata IFilterFactory.CreateInstance(IServiceProvider serviceProvider)
         {
-            var egressOutputOptions = serviceProvider.GetRequiredService<IEgressOutputConfiguration>();
+            var egressOutputConfiguration = serviceProvider.GetRequiredService<IEgressOutputConfiguration>();
 
-            EgressValidationActionFilter actionFilter = new EgressValidationActionFilter(egressOutputOptions);
+            EgressValidationActionFilter actionFilter = new EgressValidationActionFilter(egressOutputConfiguration);
 
             return actionFilter;
         }
@@ -50,12 +50,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal class EgressValidationActionFilter : IActionFilter
     {
-        private readonly IEgressOutputConfiguration _egressOutputOptions;
+        private readonly IEgressOutputConfiguration _egressOutputConfiguration;
         private const string EgressQuery = "egressprovider";
 
-        public EgressValidationActionFilter(IEgressOutputConfiguration egressOutputOptions)
+        public EgressValidationActionFilter(IEgressOutputConfiguration egressOutputConfiguration)
         {
-            _egressOutputOptions = egressOutputOptions;
+            _egressOutputConfiguration = egressOutputConfiguration;
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             if (!egressProviderGiven || StringValues.IsNullOrEmpty(value))
             {
-                if (!_egressOutputOptions.IsHttpEgressEnabled)
+                if (!_egressOutputConfiguration.IsHttpEgressEnabled)
                 {
                     throw new EgressDisabledException();
                 }

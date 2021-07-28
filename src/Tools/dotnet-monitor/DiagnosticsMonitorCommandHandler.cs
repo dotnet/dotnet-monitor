@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
             AuthOptions authenticationOptions = new AuthOptions(authMode);
 
-            EgressOutputConfiguration egressOptions = new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress);
+            EgressOutputConfiguration egressConfiguration = new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress);
 
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
@@ -178,7 +178,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     services.AddSingleton<IAuthOptions>(authenticationOptions);
 
-                    services.AddSingleton<IEgressOutputConfiguration>(egressOptions);
+                    services.AddSingleton<IEgressOutputConfiguration>(egressConfiguration);
 
                     // Although this is only observing API key authentication changes, it does handle
                     // the case when API key authentication is not enabled. This class could evolve
