@@ -81,6 +81,17 @@
           "$ref": "#/definitions/ProcessFilterOptions"
         }
       ]
+    },
+    "Logging": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/LoggingOptions"
+        }
+      ]
     }
   },
   "definitions": {
@@ -463,6 +474,98 @@
         "Exact",
         "Contains"
       ]
+    },
+    "LoggingOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "LogLevel": {
+          "description": "Logging options for the LogLevel provider ",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/LogLevelThreshold"
+            }
+          ]
+        },
+        "Console": {
+          "description": "Logging options for the Console provider",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ConsoleOptions"
+            }
+          ]
+        },
+        "EventLog": {
+          "description": "Logging options for the EventLog provider",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/LogLevelThreshold"
+            }
+          ]
+        },
+        "Debug": {
+          "description": "Logging options for the Debug provider",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/LogLevelThreshold"
+            }
+          ]
+        },
+        "EventSource": {
+          "description": "Logging options for the EventSource provider",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/LogLevelThreshold"
+            }
+          ]
+        }
+      }
+    },
+    "LogLevelThreshold": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Trace",
+        "Debug",
+        "Information",
+        "Warning",
+        "Error",
+        "Critical",
+        "None"
+      ],
+      "enum": [
+        "Trace",
+        "Debug",
+        "Information",
+        "Warning",
+        "Error",
+        "Critical",
+        "None"
+      ]
+    },
+    "ConsoleOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "FormatterName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Name of the log message formatter to use. Defaults to 'simple'"
+        },
+        "LogToStandardErrorThreshold": {
+          "description": "The minimum level of messages are written to Console.Error",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/LogLevelThreshold"
+            }
+          ]
+        }
+      }
     }
   }
 }

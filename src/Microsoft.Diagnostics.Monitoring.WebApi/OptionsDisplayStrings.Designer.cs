@@ -299,63 +299,63 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         /// <summary>
         ///   Looks up a localized string similar to Logs that describe an unrecoverable application or system crash, or a catastrophic failure that requires immediate attention..
         /// </summary>
-        public static string DisplayAttributeDescription_logLevel_Critical {
+        public static string DisplayAttributeDescription_LogLevelThreshold_Critical {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Critical", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Critical", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Logs that are used for interactive investigation during development. These logs should primarily contain information useful for debugging and have no long-term value..
         /// </summary>
-        public static string DisplayAttributeDescription_logLevel_Debug {
+        public static string DisplayAttributeDescription_LogLevelThreshold_Debug {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Debug", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Debug", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Logs that highlight when the current flow of execution is stopped due to a failure. These should indicate a failure in the current activity, not an application-wide failure..
         /// </summary>
-        public static string DisplayAttributeDescription_logLevel_Error {
+        public static string DisplayAttributeDescription_LogLevelThreshold_Error {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Error", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Error", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Logs that track the general flow of the application. These logs should have long-term value..
         /// </summary>
-        public static string DisplayAttributeDescription_logLevel_Information {
+        public static string DisplayAttributeDescription_LogLevelThreshold_Information {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Information", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Information", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Not used for writing log messages. Specifies that a logging category should not write any messages..
         /// </summary>
-        public static string DisplayAttributeDescription_logLevel_None {
+        public static string DisplayAttributeDescription_LogLevelThreshold_None {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_None", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_None", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Logs that contain the most detailed messages. These messages may contain sensitive application data. These messages are disabled by default and should never be enabled in a production environment..
         /// </summary>
-        public static string DisplayAttributeDescription_logLevel_Trace {
+        public static string DisplayAttributeDescription_LogLevelThreshold_Trace {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Trace", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Trace", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Logs that highlight an abnormal or unexpected event in the application flow, but do not otherwise cause the application execution to stop..
         /// </summary>
-        public static string DisplayAttributeDescription_logLevel_Warning {
+        public static string DisplayAttributeDescription_LogLevelThreshold_Warning {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_logLevel_Warning", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Warning", resourceCulture);
             }
         }
         

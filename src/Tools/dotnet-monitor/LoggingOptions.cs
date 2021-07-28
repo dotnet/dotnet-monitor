@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_LogLevel))]
-        public logLevel LogLevel { get; set; }
+        public LogLevelThreshold LogLevel { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -32,16 +32,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_EventLog))]
-        public logLevel EventLog { get; set; }
+        public LogLevelThreshold EventLog { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_Debug))]
-        public logLevel Debug { get; set; }
+        public LogLevelThreshold Debug { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_EventSource))]
-        public logLevel EventSource { get; set; }
+        public LogLevelThreshold EventSource { get; set; }
     }
 }

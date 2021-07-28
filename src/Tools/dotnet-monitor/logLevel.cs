@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 #endif
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
@@ -17,35 +18,36 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    public enum logLevel
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum LogLevelThreshold
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_logLevel_Trace))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelThreshold_Trace))]
         Trace,
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_logLevel_Debug))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelThreshold_Debug))]
         Debug,
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_logLevel_Information))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelThreshold_Information))]
         Information,
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_logLevel_Warning))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelThreshold_Warning))]
         Warning,
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_logLevel_Error))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelThreshold_Error))]
         Error,
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_logLevel_Critical))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelThreshold_Critical))]
         Critical,
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_logLevel_None))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelThreshold_None))]
         None
     }
 }

@@ -27,6 +27,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold))]
-        public logLevel LogToStandardErrorThreshold { get; set; }
+        public LogLevelThreshold LogToStandardErrorThreshold { get; set; }
     }
 }
