@@ -196,6 +196,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
                 argsList.Add("--no-auth");
             }
 
+            if (DisableHttpEgress)
+            {
+                argsList.Add("--no-http-egress");
+            }
+
             if (UseTempApiKey)
             {
                 argsList.Add("--temp-apikey");

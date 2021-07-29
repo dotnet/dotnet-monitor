@@ -9,7 +9,9 @@ using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Models;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.FileFormats;
 using Microsoft.FileFormats.ELF;
 using Microsoft.FileFormats.MachO;
@@ -25,6 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using DiagnosticPortConnectionMode = Microsoft.Diagnostics.Monitoring.UnitTests.Options.DiagnosticPortConnectionMode;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests
 {
@@ -232,12 +235,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                         () => appClient.CaptureDumpAsync(appRunner.ProcessId, DumpType.Mini));
                     Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsExceptionDumps.StatusCode);
                     Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsExceptionDumps.Details.Status);
+                    // This should be identical to the error message found in Strings.resx
+                    Assert.Equal("HTTP egress is not enabled.", validationProblemDetailsExceptionDumps.Message);
 
                     // Logs Error Check
                     ValidationProblemDetailsException validationProblemDetailsExceptionLogs = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
                             () => appClient.CaptureLogsAsync(appRunner.ProcessId, TestTimeouts.LogsDuration, Extensions.Logging.LogLevel.None, WebApi.LogFormat.NDJson));
                     Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsExceptionLogs.StatusCode);
                     Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsExceptionLogs.Details.Status);
+                    // This should be identical to the error message found in Strings.resx
+                    Assert.Equal("HTTP egress is not enabled.", validationProblemDetailsExceptionLogs.Message);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
