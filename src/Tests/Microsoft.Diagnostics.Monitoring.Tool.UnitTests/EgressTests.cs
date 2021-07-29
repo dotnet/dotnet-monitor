@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.UnitTests.HttpApi;
@@ -35,7 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
         private readonly DirectoryInfo _tempEgressPath;
 
         private const string FileProviderName = "files";
-        
 
         public EgressTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
@@ -209,6 +209,39 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests
                 {
                     toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
                 });
+        }
+
+        /// <summary>
+        /// Tests that turning off HTTP egress results in an error for dumps and logs (gcdumps and traces are currently not tested)
+        /// </summary>
+        [Fact]
+        public async Task DisableHttpEgressTest()
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, appClient) =>
+                {
+                    ProcessInfo processInfo = await appClient.GetProcessAsync(appRunner.ProcessId);
+                    Assert.NotNull(processInfo);
+
+                    // Dump Error Check
+                    ValidationProblemDetailsException validationProblemDetailsExceptionDumps = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
+                        () => appClient.CaptureDumpAsync(appRunner.ProcessId, DumpType.Mini));
+                    Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsExceptionDumps.StatusCode);
+                    Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsExceptionDumps.Details.Status);
+
+                    // Logs Error Check
+                    ValidationProblemDetailsException validationProblemDetailsExceptionLogs = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
+                            () => appClient.CaptureLogsAsync(appRunner.ProcessId, TestTimeouts.LogsDuration, Extensions.Logging.LogLevel.None, WebApi.LogFormat.NDJson));
+                    Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsExceptionLogs.StatusCode);
+                    Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsExceptionLogs.Details.Status);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                disableHttpEgress: true);
         }
 
         private async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
