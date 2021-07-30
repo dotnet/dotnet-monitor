@@ -480,12 +480,14 @@
       "additionalProperties": false,
       "properties": {
         "LogLevel": {
+          "type": [
+            "null",
+            "object"
+          ],
           "description": "Logging options for the LogLevel provider ",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/LogLevelThreshold"
-            }
-          ]
+          "additionalProperties": {
+            "$ref": "#/definitions/LogLevelThreshold"
+          }
         },
         "Console": {
           "description": "Logging options for the Console provider",
@@ -499,28 +501,34 @@
           ]
         },
         "EventLog": {
+          "type": [
+            "null",
+            "object"
+          ],
           "description": "Logging options for the EventLog provider",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/LogLevelThreshold"
-            }
-          ]
+          "additionalProperties": {
+            "$ref": "#/definitions/LogLevelThreshold"
+          }
         },
         "Debug": {
+          "type": [
+            "null",
+            "object"
+          ],
           "description": "Logging options for the Debug provider",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/LogLevelThreshold"
-            }
-          ]
+          "additionalProperties": {
+            "$ref": "#/definitions/LogLevelThreshold"
+          }
         },
         "EventSource": {
+          "type": [
+            "null",
+            "object"
+          ],
           "description": "Logging options for the EventSource provider",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/LogLevelThreshold"
-            }
-          ]
+          "additionalProperties": {
+            "$ref": "#/definitions/LogLevelThreshold"
+          }
         }
       }
     },
