@@ -559,11 +559,12 @@
       "additionalProperties": false,
       "properties": {
         "FormatterName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "Name of the log message formatter to use. Defaults to 'simple'"
+          "description": "Name of the log message formatter to use. Defaults to 'simple'",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/FormatterNameOptions"
+            }
+          ]
         },
         "LogToStandardErrorThreshold": {
           "description": "The minimum level of messages are written to Console.Error",
@@ -574,6 +575,20 @@
           ]
         }
       }
+    },
+    "FormatterNameOptions": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Json",
+        "Simple",
+        "Systemd"
+      ],
+      "enum": [
+        "Json",
+        "Simple",
+        "Systemd"
+      ]
     }
   }
 }

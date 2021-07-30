@@ -201,6 +201,18 @@
     <value>The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in DirectoryPath.</value>
     <comment>The description provided for the IntermediateDirectoryPath parameter on FileSystemEgressProviderOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_FormatterNameOptions_Json" xml:space="preserve">
+    <value>Reserved name for Json console formatter</value>
+    <comment>The description provider for the Json parameter on FormatterNameOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_FormatterNameOptions_Simple" xml:space="preserve">
+    <value>Reserved name for simple console formatter</value>
+    <comment>The description provider for the Simple parameter on FormatterNameOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_FormatterNameOptions_Systemd" xml:space="preserve">
+    <value>Reserved name for systemd console formatter</value>
+    <comment>The description provider for the Systemd parameter on FormatterNameOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_LoggingOptions_Console" xml:space="preserve">
     <value>Logging options for the Console provider</value>
     <comment>The description provided for the Console parameter on LoggingOptions</comment>

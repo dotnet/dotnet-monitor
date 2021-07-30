@@ -252,6 +252,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reserved name for Json console formatter.
+        /// </summary>
+        public static string DisplayAttributeDescription_FormatterNameOptions_Json {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_FormatterNameOptions_Json", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reserved name for simple console formatter.
+        /// </summary>
+        public static string DisplayAttributeDescription_FormatterNameOptions_Simple {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_FormatterNameOptions_Simple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reserved name for systemd console formatter.
+        /// </summary>
+        public static string DisplayAttributeDescription_FormatterNameOptions_Systemd {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_FormatterNameOptions_Systemd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logging options for the Console provider.
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_Console {

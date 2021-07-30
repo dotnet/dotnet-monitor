@@ -3,13 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.Logging;
 #if !UNITTEST
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.Extensions.Logging;
 #endif
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
@@ -17,16 +18,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    internal sealed class ConsoleOptions
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum FormatterNameOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterName))]
-        public FormatterNameOptions FormatterName { get; set; } = FormatterNameOptions.Simple;
-
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FormatterNameOptions_Json))]
+        Json,
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold))]
-        public LogLevelThreshold LogToStandardErrorThreshold { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FormatterNameOptions_Simple))]
+        Simple,
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FormatterNameOptions_Systemd))]
+        Systemd
     }
 }
