@@ -23,7 +23,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             Func<AppRunner, ApiClient, Task> appValidate,
             Func<ApiClient, int, Task> postAppValidate = null,
             Action<AppRunner> configureApp = null,
-            Action<MonitorRunner> configureTool = null)
+            Action<MonitorRunner> configureTool = null,
+            bool disableHttpEgress = false)
         {
             DiagnosticPortHelper.Generate(
                 mode,
@@ -34,6 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             toolRunner.ConnectionMode = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
+            toolRunner.DisableHttpEgress = disableHttpEgress;
 
             configureTool?.Invoke(toolRunner);
 

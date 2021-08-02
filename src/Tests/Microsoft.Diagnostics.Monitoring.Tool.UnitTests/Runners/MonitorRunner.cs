@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         private readonly string _runnerTmpPath =
             Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
 
-        private bool _isDiposed;
+        private bool _isDisposed;
 
         /// <summary>
         /// The path of the currently executing assembly.
@@ -94,6 +94,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         public bool DisableAuthentication { get; set; }
 
         /// <summary>
+        /// Determines whether HTTP egress is disabled when starting dotnet-monitor.
+        /// </summary>
+        public bool DisableHttpEgress { get; set; }
+
+        /// <summary>
         /// Determines whether a temporary api key should be generated while starting dotnet-monitor.
         /// </summary>
         public bool UseTempApiKey { get; set; }
@@ -132,11 +137,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         {
             lock (_adapter)
             {
-                if (_isDiposed)
+                if (_isDisposed)
                 {
                     return;
                 }
-                _isDiposed = true;
+                _isDisposed = true;
             }
 
             _adapter.ReceivedStandardOutputLine -= StandardOutputCallback;
@@ -189,6 +194,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
             if (DisableAuthentication)
             {
                 argsList.Add("--no-auth");
+            }
+
+            if (DisableHttpEgress)
+            {
+                argsList.Add("--no-http-egress");
             }
 
             if (UseTempApiKey)
