@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Microsoft.Diagnostics.Monitoring.UnitTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public static class CommonTestTimeouts
     {

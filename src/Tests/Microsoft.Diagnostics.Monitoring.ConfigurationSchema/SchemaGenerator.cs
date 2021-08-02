@@ -1,9 +1,8 @@
-﻿using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
+﻿using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using NJsonSchema;
 using NJsonSchema.Generation;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 {

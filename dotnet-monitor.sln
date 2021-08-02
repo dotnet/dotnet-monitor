@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests\Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests.csproj", "{FCEC25E0-9EE1-416E-A7C4-2898E5640157}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests.csproj", "{04427BC9-8F54-4633-9BBB-6661715BD271}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.csproj", "{04427BC9-8F54-4633-9BBB-6661715BD271}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.UnitTestApp", "src\Tests\Microsoft.Diagnostics.Monitoring.UnitTestApp\Microsoft.Diagnostics.Monitoring.UnitTestApp.csproj", "{DC672D2F-3A21-40BD-B495-660850EBC5F7}"
 EndProject
@@ -32,7 +32,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Diagnostics.Monitoring.ConfigurationSchema", "src\Tests\Microsoft.Diagnostics.Monitoring.ConfigurationSchema\Microsoft.Diagnostics.Monitoring.ConfigurationSchema.csproj", "{422ABBF6-6236-4042-AACA-09531DBDFBAA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.UnitTests\Microsoft.Diagnostics.Monitoring.UnitTests.csproj", "{3AD0A40B-C569-4712-9764-7A788B9CD811}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.WebApi.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.WebApi.UnitTests\Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.csproj", "{3AD0A40B-C569-4712-9764-7A788B9CD811}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

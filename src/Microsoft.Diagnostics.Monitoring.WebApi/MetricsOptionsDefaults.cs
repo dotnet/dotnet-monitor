@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 #else
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 #endif

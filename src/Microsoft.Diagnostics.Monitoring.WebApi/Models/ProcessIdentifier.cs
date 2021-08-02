@@ -6,7 +6,7 @@ using System;
 using System.Text.Json.Serialization;
 
 #if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Models
+namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models
 #else
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 #endif
