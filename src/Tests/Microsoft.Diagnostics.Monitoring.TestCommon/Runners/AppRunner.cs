@@ -2,8 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +13,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 {
     /// <summary>
     /// Runner for running the unit test application.

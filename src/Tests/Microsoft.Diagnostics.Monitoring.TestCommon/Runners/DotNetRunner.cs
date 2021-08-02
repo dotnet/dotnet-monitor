@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information
 
-using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 {
     /// <summary>
     /// Runner for running dotnet processes.

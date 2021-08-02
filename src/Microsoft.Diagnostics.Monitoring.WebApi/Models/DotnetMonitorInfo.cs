@@ -5,9 +5,9 @@
 using System.Text.Json.Serialization;
 
 #if UNITTEST
-using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Models
+namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models
 #else
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 #endif

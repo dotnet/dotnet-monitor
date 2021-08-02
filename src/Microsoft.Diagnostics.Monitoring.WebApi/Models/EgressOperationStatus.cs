@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 #if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Models
+namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models
 #else
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 #endif
