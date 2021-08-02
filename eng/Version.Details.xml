@@ -4,13 +4,13 @@
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>166610c56ff732093f0145a2911d4f6c40b786da</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21379.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21380.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>30dc8118eac6d5a8aec58f8e6b1007ca9c6c31f0</Sha>
+      <Sha>6771e250058b81654a6d4fd8356a009436ab5061</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21379.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21380.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>30dc8118eac6d5a8aec58f8e6b1007ca9c6c31f0</Sha>
+      <Sha>6771e250058b81654a6d4fd8356a009436ab5061</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -26,13 +26,13 @@
       <Uri>https://github.com/dotnet/symstore</Uri>
       <Sha>3ed87724fe4e98c7ecc77617720591783ee2e676</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rc.1.21379.10">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rc.1.21381.3">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>a8cd18906ff92571ac5fc594215f5a9e52954154</Sha>
+      <Sha>85180121312ec21d6f33d99acb2723868586a3a2</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rc.1.21380.1">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rc.1.21401.3">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>cb64fe6669826b9e1e17bb66c84c13ba76bdec8e</Sha>
+      <Sha>d90f6b6c86be7001dc839e147ab229dfd1c7d20d</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

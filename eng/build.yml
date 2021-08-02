@@ -116,7 +116,7 @@ jobs:
       displayName: Publish Test Results (Core 3.1)
       inputs:
         testResultsFormat: xUnit
-        testResultsFiles: '**/*UnitTests*netcoreapp3.1*.xml' 
+        testResultsFiles: '**/*Tests*netcoreapp3.1*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} Core 3.1'
@@ -130,7 +130,7 @@ jobs:
       displayName: Publish Test Results (NET 5.0)
       inputs:
         testResultsFormat: xUnit
-        testResultsFiles: '**/*UnitTests*net5.0*.xml' 
+        testResultsFiles: '**/*Tests*net5.0*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} NET 5.0'
@@ -144,7 +144,7 @@ jobs:
       displayName: Publish Test Results (NET 6.0)
       inputs:
         testResultsFormat: xUnit
-        testResultsFiles: '**/*UnitTests*net6.0*.xml' 
+        testResultsFiles: '**/*Tests*net6.0*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} NET 6.0'

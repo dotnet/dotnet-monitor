@@ -7,7 +7,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 
 #if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 #else
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 #endif

@@ -42,7 +42,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="dotnet-monitor" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
-    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.WebApi.UnitTests" />
   </ItemGroup>
 
   <ItemGroup>
