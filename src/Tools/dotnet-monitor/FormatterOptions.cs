@@ -17,21 +17,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    internal sealed class ConsoleOptions
+    internal sealed class FormatterOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterName))]
-        public FormatterNameOptions FormatterName { get; set; } = FormatterNameOptions.Simple;
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterOptions_IncludeScopes))]
+        public bool IncludeScopes { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold))]
-        public LogLevelThreshold LogToStandardErrorThreshold { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterOptions_TimestampFormat))]
+        public string TimestampFormat { get; set; } = null;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterOptions))]
-        public FormatterOptions FormatterOptions { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterOptions_UseUtcTimestamp))]
+        public bool UseUtcTimestamp { get; set; } = false;
     }
 }

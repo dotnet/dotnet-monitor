@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_LogLevel))]
-        public IDictionary<string, LogLevelThreshold> LogLevel { get; set; }
+        public LogLevelThreshold LogLevel { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -43,5 +43,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_EventSource))]
         public IDictionary<string, LogLevelThreshold> EventSource { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_CaptureScopes))]
+        public bool CaptureScopes { get; set; }
     }
 }

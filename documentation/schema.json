@@ -480,14 +480,12 @@
       "additionalProperties": false,
       "properties": {
         "LogLevel": {
-          "type": [
-            "null",
-            "object"
-          ],
           "description": "Logging options for the LogLevel provider ",
-          "additionalProperties": {
-            "$ref": "#/definitions/LogLevelThreshold"
-          }
+          "oneOf": [
+            {
+              "$ref": "#/definitions/LogLevelThreshold"
+            }
+          ]
         },
         "Console": {
           "description": "Logging options for the Console provider",
@@ -529,6 +527,9 @@
           "additionalProperties": {
             "$ref": "#/definitions/LogLevelThreshold"
           }
+        },
+        "CaptureScopes": {
+          "type": "boolean"
         }
       }
     },
@@ -573,6 +574,17 @@
               "$ref": "#/definitions/LogLevelThreshold"
             }
           ]
+        },
+        "FormatterOptions": {
+          "description": "Formatter options for Console logging",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/FormatterOptions"
+            }
+          ]
         }
       }
     },
@@ -589,6 +601,27 @@
         "Simple",
         "Systemd"
       ]
+    },
+    "FormatterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "IncludeScopes": {
+          "type": "boolean",
+          "description": "Includes scopes when true"
+        },
+        "TimestampFormat": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Gets or sets format string used to format timestamp in logging messages. Defaults to null"
+        },
+        "UseUtcTimestamp": {
+          "type": "boolean",
+          "description": "Gets or sets indication whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false"
+        }
+      }
     }
   }
 }

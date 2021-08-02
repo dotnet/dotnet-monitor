@@ -152,7 +152,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name of the log message formatter to use. Defaults to &apos;simple&apos;.
+        ///   Looks up a localized string similar to Name of the log message formatter to use. Defaults to &apos;Simple&apos;..
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleOptions_FormatterName {
             get {
@@ -161,7 +161,43 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The minimum level of messages are written to Console.Error.
+        ///   Looks up a localized string similar to Formatter options for the built-in console log formatter..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gets or sets whether scopes should be included or not..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions_IncludeScopes {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterOptions_IncludeScopes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gets or sets format string used to format timestamp in logging messages. Defaults to null..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions_TimestampFormat {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterOptions_TimestampFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gets or sets indication whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions_UseUtcTimestamp {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterOptions_UseUtcTimestamp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum level of messages are written to Console.Error..
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold {
             get {
@@ -252,7 +288,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reserved name for Json console formatter.
+        ///   Looks up a localized string similar to Reserved name for Json console formatter..
         /// </summary>
         public static string DisplayAttributeDescription_FormatterNameOptions_Json {
             get {
@@ -261,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reserved name for simple console formatter.
+        ///   Looks up a localized string similar to Reserved name for simple console formatter..
         /// </summary>
         public static string DisplayAttributeDescription_FormatterNameOptions_Simple {
             get {
@@ -270,7 +306,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reserved name for systemd console formatter.
+        ///   Looks up a localized string similar to Reserved name for systemd console formatter..
         /// </summary>
         public static string DisplayAttributeDescription_FormatterNameOptions_Systemd {
             get {
@@ -279,7 +315,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Logging options for the Console provider.
+        ///   Looks up a localized string similar to Gets or sets whether logging scopes are being captured. Defaults to true..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_CaptureScopes {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_CaptureScopes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the Console provider..
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_Console {
             get {
@@ -288,7 +333,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Logging options for the Debug provider.
+        ///   Looks up a localized string similar to Logging options for the Debug provider..
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_Debug {
             get {
@@ -297,7 +342,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Logging options for the EventLog provider.
+        ///   Looks up a localized string similar to Logging options for the EventLog provider..
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_EventLog {
             get {
@@ -306,7 +351,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Logging options for the EventSource provider.
+        ///   Looks up a localized string similar to Logging options for the EventSource provider..
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_EventSource {
             get {
@@ -315,7 +360,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Logging options for the LogLevel provider .
+        ///   Looks up a localized string similar to Logging options for the LogLevel provider..
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_LogLevel {
             get {
