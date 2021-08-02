@@ -153,6 +153,50 @@
     <value>The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
     <comment>The description provided for the SharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_CollectionRuleActionOptions_Settings" xml:space="preserve">
+    <value>The settings to pass to the action when it is executed. Settings may be optional if the action doesn't require settings or its settings are all optional.</value>
+    <comment>The description provided for the Settings parameter on CollectionRuleActionOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleActionOptions_Type" xml:space="preserve">
+    <value>The type of action to execute.</value>
+    <comment>The description provided for the Type parameter on CollectionRuleActionOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount" xml:space="preserve">
+    <value>The number of times the action list may be executed before being throttled.</value>
+    <comment>The description provided for the ActionCount parameter on CollectionRuleLimitsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCountSlidingWindowDuration" xml:space="preserve">
+    <value>The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.</value>
+    <comment>The description provided for the ActionCountSlidingWindowDuration parameter on CollectionRuleLimitsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_RuleDuration" xml:space="preserve">
+    <value>The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.</value>
+    <comment>The description provided for the RuleDuration parameter on CollectionRuleLimitsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleOptions_Actions" xml:space="preserve">
+    <value>The list of actions to be executed when the trigger raises its notification.</value>
+    <comment>The description provided for the Actions parameter on CollectionRuleOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleOptions_Filters" xml:space="preserve">
+    <value>Process filters used to determine to which process(es) the collection rule is applied. All filters must match. If no filters are specified, the rule is applied to all discovered processes.</value>
+    <comment>The description provided for the Filters parameter on CollectionRuleOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleOptions_Limits" xml:space="preserve">
+    <value>The set of limits to constrain the execution of the rule and its components.</value>
+    <comment>The description provided for the Limits parameter on CollectionRuleOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleOptions_Trigger" xml:space="preserve">
+    <value>The trigger to use to monitor for a condition in the target process.</value>
+    <comment>The description provided for the Trigger parameter on CollectionRuleOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleTriggerOptions_Settings" xml:space="preserve">
+    <value>The settings to pass to the trigger when it is executed. Settings may be optional if the trigger doesn't require settings or its settings are all optional.</value>
+    <comment>The description provided for the Settings parameter on CollectionRuleTriggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleTriggerOptions_Type" xml:space="preserve">
+    <value>The type of trigger used to monitor for a condition in the target process.</value>
+    <comment>The description provided for the Type parameter on CollectionRuleTriggerOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize" xml:space="preserve">
     <value>Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.</value>
     <comment>The description provided for the CopyBufferSize parameter on all egress provider options.</comment>

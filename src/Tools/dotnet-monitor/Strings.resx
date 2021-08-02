@@ -167,6 +167,11 @@
 1 Format Parameter:
 0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
   </data>
+  <data name="ErrorMessage_FieldMustBeLessThanOtherField" xml:space="preserve">
+    <value>The value of field {0} must be less than the value of field {1}.</value>
+    <comment>{0} = Field name that must be lower.
+{1} = Field name that must be higher.</comment>
+  </data>
   <data name="ErrorMessage_FieldNotAllowed" xml:space="preserve">
     <value>The {0} field value '{1}' is not allowed.</value>
     <comment>Gets the format string for rejecting a field value.
@@ -214,6 +219,11 @@
 2. minBytes: The minimum number of bytes acceptable
 3. maxBytes: The maximum number of bytes acceptable</comment>
   </data>
+  <data name="ErrorMessage_TwoFieldsCannotBeSpecified" xml:space="preserve">
+    <value>Both the {0} field and the {1} field cannot be specified.</value>
+    <comment>{0} = Name of first field that must not be specified if second field is specified.
+{1} = Name of second field that must not be specified if first field is specified.</comment>
+  </data>
   <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
     <value>The {0} field or the {1} field is required.</value>
     <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
@@ -230,6 +240,14 @@
     <comment>Gets the format string for egress provider failure due to missing provider.
 1 Format Parameter:
 0. connectionMode: The provided DiagnosticPortConnectionMode that could not be parsed.</comment>
+  </data>
+  <data name="ErrorMessage_UnknownActionType" xml:space="preserve">
+    <value>'{0}' is not a known action type.</value>
+    <comment>{0} = The type of action that is unknown.</comment>
+  </data>
+  <data name="ErrorMessage_UnknownTriggerType" xml:space="preserve">
+    <value>'{0}' is not a known trigger type.</value>
+    <comment>{0} = The type of trigger that is unknown.</comment>
   </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>

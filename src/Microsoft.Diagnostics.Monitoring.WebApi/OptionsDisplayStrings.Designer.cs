@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class OptionsDisplayStrings {
@@ -139,6 +139,106 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureN" +
                         "ame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings to pass to the action when it is executed. Settings may be optional if the action doesn&apos;t require settings or its settings are all optional..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleActionOptions_Settings {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionOptions_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of action to execute..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleActionOptions_Type {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionOptions_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of times the action list may be executed before being throttled..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCountSlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCountSlidingWindowD" +
+                        "uration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleLimitsOptions_RuleDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsOptions_RuleDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list of actions to be executed when the trigger raises its notification..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleOptions_Actions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleOptions_Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Process filters used to determine to which process(es) the collection rule is applied. All filters must match. If no filters are specified, the rule is applied to all discovered processes..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleOptions_Filters {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleOptions_Filters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The set of limits to constrain the execution of the rule and its components..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleOptions_Limits {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleOptions_Limits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The trigger to use to monitor for a condition in the target process..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleOptions_Trigger {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleOptions_Trigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings to pass to the trigger when it is executed. Settings may be optional if the trigger doesn&apos;t require settings or its settings are all optional..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerOptions_Settings {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerOptions_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of trigger used to monitor for a condition in the target process..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerOptions_Type {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerOptions_Type", resourceCulture);
             }
         }
         

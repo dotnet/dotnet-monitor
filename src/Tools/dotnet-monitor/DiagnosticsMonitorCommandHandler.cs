@@ -247,10 +247,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                     services.AddSingleton<RequestLimitTracker>();
                     services.ConfigureOperationStore();
-                    services.ConfigureEgress(context.Configuration);
+                    services.ConfigureEgress();
                     services.ConfigureMetrics(context.Configuration);
                     services.ConfigureStorage(context.Configuration);
                     services.ConfigureDefaultProcess(context.Configuration);
+                    services.ConfigureCollectionRules();
                 });
             }
 

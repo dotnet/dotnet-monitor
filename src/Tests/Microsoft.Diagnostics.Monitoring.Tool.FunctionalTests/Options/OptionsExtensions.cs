@@ -11,6 +11,12 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
+#if !UNITTEST
+using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+#endif
+
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
     internal static class OptionsExtensions
@@ -24,7 +30,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static IDictionary<string, string> ToEnvironmentConfiguration(this RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, "DotNetMonitor_", variables);
+            MapObject(options, "DotNetMonitor_", "__", variables);
+            return variables;
+        }
+
+        public static IDictionary<string, string> ToConfigurationValues(this RootOptions options)
+        {
+            Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
+            MapObject(options, string.Empty, ":", variables);
             return variables;
         }
 
@@ -37,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static IDictionary<string, string> ToKeyPerFileConfiguration(this RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, string.Empty, variables);
+            MapObject(options, string.Empty, "__", variables);
             return variables;
         }
 
@@ -78,7 +91,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        private static void MapDictionary(IDictionary dictionary, string prefix, IDictionary<string, string> map)
+        public static CollectionRuleOptions CreateCollectionRule(this RootOptions rootOptions, string name)
+        {
+            CollectionRuleOptions options = new();
+            rootOptions.CollectionRules.Add(name, options);
+            return options;
+        }
+
+        private static void MapDictionary(IDictionary dictionary, string prefix, string separator, IDictionary<string, string> map)
         {
             foreach (var key in dictionary.Keys)
             {
@@ -89,12 +109,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                     MapValue(
                         value,
                         FormattableString.Invariant($"{prefix}{keyString}"),
+                        separator,
                         map);
                 }
             }
         }
 
-        private static void MapList(IList list, string prefix, IDictionary<string, string> map)
+        private static void MapList(IList list, string prefix, string separator, IDictionary<string, string> map)
         {
             for (int index = 0; index < list.Count; index++)
             {
@@ -104,12 +125,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                     MapValue(
                         value,
                         FormattableString.Invariant($"{prefix}{index}"),
+                        separator,
                         map);
                 }
             }
         }
 
-        private static void MapObject(object obj, string prefix, IDictionary<string, string> map)
+        private static void MapObject(object obj, string prefix, string separator, IDictionary<string, string> map)
         {
             foreach (PropertyInfo property in obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -118,17 +140,21 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                     MapValue(
                         property.GetValue(obj),
                         FormattableString.Invariant($"{prefix}{property.Name}"),
+                        separator,
                         map);
                 }
             }
         }
 
-        private static void MapValue(object value, string valueName, IDictionary<string, string> map)
+        private static void MapValue(object value, string valueName, string separator, IDictionary<string, string> map)
         {
             if (null != value)
             {
                 Type valueType = value.GetType();
-                if (valueType.IsPrimitive || typeof(string) == valueType)
+                if (valueType.IsPrimitive ||
+                    valueType.IsEnum ||
+                    typeof(string) == valueType ||
+                    typeof(TimeSpan) == valueType)
                 {
                     map.Add(
                         valueName,
@@ -136,18 +162,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 }
                 else
                 {
-                    string prefix = FormattableString.Invariant($"{valueName}__");
+                    string prefix = FormattableString.Invariant($"{valueName}{separator}");
                     if (value is IDictionary dictionary)
                     {
-                        MapDictionary(dictionary, prefix, map);
+                        MapDictionary(dictionary, prefix, separator, map);
                     }
                     else if (value is IList list)
                     {
-                        MapList(list, prefix, map);
+                        MapList(list, prefix, separator, map);
                     }
                     else
                     {
-                        MapObject(value, prefix, map);
+                        MapObject(value, prefix, separator, map);
                     }
                 }
             }

@@ -16,6 +16,16 @@
         }
       ]
     },
+    "CollectionRules": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "default": {},
+      "additionalProperties": {
+        "$ref": "#/definitions/CollectionRuleOptions"
+      }
+    },
     "CorsConfiguration": {
       "default": {},
       "oneOf": [
@@ -102,6 +112,188 @@
           "type": "string",
           "description": "Hash algorithm used to compute ApiKeyHash, typically 'SHA256'. 'SHA1' and 'MD5' are not allowed.",
           "minLength": 1
+        }
+      }
+    },
+    "CollectionRuleOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Trigger"
+      ],
+      "properties": {
+        "Filters": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "Process filters used to determine to which process(es) the collection rule is applied. All filters must match. If no filters are specified, the rule is applied to all discovered processes.",
+          "items": {
+            "$ref": "#/definitions/ProcessFilterDescriptor"
+          }
+        },
+        "Trigger": {
+          "description": "The trigger to use to monitor for a condition in the target process.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/CollectionRuleTriggerOptions"
+            }
+          ]
+        },
+        "Actions": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The list of actions to be executed when the trigger raises its notification.",
+          "items": {
+            "$ref": "#/definitions/CollectionRuleActionOptions"
+          }
+        },
+        "Limits": {
+          "description": "The set of limits to constrain the execution of the rule and its components.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CollectionRuleLimitsOptions"
+            }
+          ]
+        }
+      }
+    },
+    "ProcessFilterDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Key",
+        "Value"
+      ],
+      "properties": {
+        "Key": {
+          "description": "The criteria used to compare against the target process.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ProcessFilterKey"
+            }
+          ]
+        },
+        "Value": {
+          "type": "string",
+          "description": "The value of the criteria used to compare against the target process.",
+          "minLength": 1
+        },
+        "MatchType": {
+          "description": "Type of match to use against the process criteria.",
+          "default": "Exact",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ProcessFilterType"
+            }
+          ]
+        }
+      }
+    },
+    "ProcessFilterKey": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "ProcessId",
+        "ProcessName",
+        "CommandLine"
+      ],
+      "enum": [
+        "ProcessId",
+        "ProcessName",
+        "CommandLine"
+      ]
+    },
+    "ProcessFilterType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Exact",
+        "Contains"
+      ],
+      "enum": [
+        "Exact",
+        "Contains"
+      ]
+    },
+    "CollectionRuleTriggerOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Type"
+      ],
+      "properties": {
+        "Type": {
+          "type": "string",
+          "description": "The type of trigger used to monitor for a condition in the target process.",
+          "minLength": 1
+        },
+        "Settings": {
+          "description": "The settings to pass to the trigger when it is executed. Settings may be optional if the trigger doesn't require settings or its settings are all optional.",
+          "oneOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "CollectionRuleActionOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Type"
+      ],
+      "properties": {
+        "Type": {
+          "type": "string",
+          "description": "The type of action to execute.",
+          "minLength": 1
+        },
+        "Settings": {
+          "description": "The settings to pass to the action when it is executed. Settings may be optional if the action doesn't require settings or its settings are all optional.",
+          "oneOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "CollectionRuleLimitsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ActionCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The number of times the action list may be executed before being throttled.",
+          "format": "int32"
+        },
+        "ActionCountSlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.",
+          "format": "time-span"
+        },
+        "RuleDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.",
+          "format": "time-span"
         }
       }
     },
@@ -405,64 +597,6 @@
           }
         }
       }
-    },
-    "ProcessFilterDescriptor": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "Key",
-        "Value"
-      ],
-      "properties": {
-        "Key": {
-          "description": "The criteria used to compare against the target process.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/ProcessFilterKey"
-            }
-          ]
-        },
-        "Value": {
-          "type": "string",
-          "description": "The value of the criteria used to compare against the target process.",
-          "minLength": 1
-        },
-        "MatchType": {
-          "description": "Type of match to use against the process criteria.",
-          "default": "Exact",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/ProcessFilterType"
-            }
-          ]
-        }
-      }
-    },
-    "ProcessFilterKey": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "ProcessId",
-        "ProcessName",
-        "CommandLine"
-      ],
-      "enum": [
-        "ProcessId",
-        "ProcessName",
-        "CommandLine"
-      ]
-    },
-    "ProcessFilterType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Exact",
-        "Contains"
-      ],
-      "enum": [
-        "Exact",
-        "Contains"
-      ]
     }
   }
 }

@@ -24,10 +24,26 @@
     <Compile Include="..\..\Tools\dotnet-monitor\Auth\ApiAuthenticationOptions.cs" Link="Options\ApiAuthenticationOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortOptions.cs" Link="Options\DiagnosticPortOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortOptionsDefaults.cs" Link="Options\DiagnosticPortOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ActionOptionsConstants.cs" Link="Options\CollectionRules\Actions\ActionOptionsConstants.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectDumpOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectGCDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectGCDumpOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectLogsOptions.cs" Link="Options\CollectionRules\Actions\CollectLogsOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectTraceOptions.cs" Link="Options\CollectionRules\Actions\CollectTraceOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptions.cs" Link="Options\CollectionRules\Actions\ExecuteOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptions.cs" Link="Options\CollectionRules\CollectionRuleActionOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptions.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleOptions.cs" Link="Options\CollectionRules\CollectionRuleOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleTriggerOptions.cs" Link="Options\CollectionRules\CollectionRuleTriggerOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetRequestCountOptions.cs" Link="Options\CollectionRules\Triggers\AspNetRequestCountOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetRequestDurationOptions.cs" Link="Options\CollectionRules\Triggers\AspNetRequestDurationOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetResponseStatusOptions.cs" Link="Options\CollectionRules\Triggers\AspNetResponseStatusOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\TriggerOptionsConstants.cs" Link="Options\CollectionRules\Triggers\TriggerOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\EgressOptions.cs" Link="Options\EgressOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProviderOptions.cs" Link="Options\AzureBlobEgressProviderOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\FileSystem\FileSystemEgressProviderOptions.cs" Link="Options\FileSystemEgressProviderOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\IEgressProviderCommonOptions.cs" Link="Options\IEgressProviderCommonOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +60,11 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Options\CollectionRules\Actions\" />
+    <Folder Include="Options\CollectionRules\Triggers\" />
   </ItemGroup>
 
 </Project>

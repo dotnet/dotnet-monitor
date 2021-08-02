@@ -55,6 +55,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             _changeRegistration.Dispose();
         }
 
+        public bool CheckProvider(string providerName)
+        {
+            try
+            {
+                return null != GetProvider(providerName);
+            }
+            catch (EgressException)
+            {
+                return false;
+            }
+        }
+
         public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
         {
             string value = await GetProvider(providerName).EgressAsync(

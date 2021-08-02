@@ -11,8 +11,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal interface IEgressService
     {
+        bool CheckProvider(string providerName);
+
         Task<EgressResult> EgressAsync(
-            string endpointName,
+            string providerName,
             Func<CancellationToken, Task<Stream>> action,
             string fileName,
             string contentType,
@@ -20,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             CancellationToken token);
 
         Task<EgressResult> EgressAsync(
-            string endpointName,
+            string providerName,
             Func<Stream, CancellationToken, Task> action,
             string fileName,
             string contentType,
