@@ -3,12 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-#if !UNITTEST
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
-using Microsoft.Extensions.Logging;
-#endif
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 #if UNITTEST
@@ -47,6 +43,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_CaptureScopes))]
+        [DefaultValue(true)]
         public bool CaptureScopes { get; set; }
     }
 }

@@ -535,7 +535,8 @@
         },
         "CaptureScopes": {
           "type": "boolean",
-          "description": "Gets or sets whether logging scopes are being captured. Defaults to true."
+          "description": "Gets or sets whether logging scopes are being captured. Defaults to true.",
+          "default": true
         }
       }
     },
@@ -567,6 +568,7 @@
       "properties": {
         "FormatterName": {
           "description": "Name of the log message formatter to use. Defaults to 'Simple'.",
+          "default": "Simple",
           "oneOf": [
             {
               "$ref": "#/definitions/FormatterNameOptions"
@@ -625,7 +627,8 @@
         },
         "UseUtcTimestamp": {
           "type": "boolean",
-          "description": "Gets or sets indication whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false."
+          "description": "Gets or sets indication whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
+          "default": false
         }
       }
     },

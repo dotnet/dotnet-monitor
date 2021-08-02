@@ -3,13 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.Logging;
-#if !UNITTEST
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
-#endif
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
@@ -27,11 +22,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterOptions_TimestampFormat))]
-        public string TimestampFormat { get; set; } = null;
+        [DefaultValue(null)]
+        public string TimestampFormat { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterOptions_UseUtcTimestamp))]
-        public bool UseUtcTimestamp { get; set; } = false;
+        [DefaultValue(false)]
+        public bool UseUtcTimestamp { get; set; }
     }
 }

@@ -3,13 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.Logging;
-#if !UNITTEST
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
-#endif
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
@@ -22,7 +17,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterName))]
-        public FormatterNameOptions FormatterName { get; set; } = FormatterNameOptions.Simple;
+        [DefaultValue(FormatterNameOptions.Simple)]
+        public FormatterNameOptions FormatterName { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

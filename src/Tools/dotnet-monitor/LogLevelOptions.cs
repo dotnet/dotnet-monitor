@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
