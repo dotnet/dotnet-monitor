@@ -174,7 +174,7 @@
     <comment>The description provider for the TimestampFormat parameter on FormatterOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_ConsoleOptions_FormatterOptions_UseUtcTimestamp" xml:space="preserve">
-    <value>Gets or sets indication whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.</value>
+    <value>Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.</value>
     <comment>The description provider for the UseUtcTimestamp parameter on FormatterOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold" xml:space="preserve">

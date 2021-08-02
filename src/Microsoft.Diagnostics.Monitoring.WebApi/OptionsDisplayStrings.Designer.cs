@@ -188,7 +188,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gets or sets indication whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false..
+        ///   Looks up a localized string similar to Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false..
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions_UseUtcTimestamp {
             get {
