@@ -480,15 +480,17 @@
       "additionalProperties": false,
       "properties": {
         "LogLevel": {
-          "description": "Logging options for the LogLevel provider ",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/LogLevelThreshold"
-            }
-          ]
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Corresponding LogLevels to categories; applies to no specific provider.",
+          "additionalProperties": {
+            "$ref": "#/definitions/LogLevelThreshold"
+          }
         },
         "Console": {
-          "description": "Logging options for the Console provider",
+          "description": "Logging options for the Console provider.",
           "oneOf": [
             {
               "type": "null"
@@ -499,37 +501,41 @@
           ]
         },
         "EventLog": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "Logging options for the EventLog provider",
-          "additionalProperties": {
-            "$ref": "#/definitions/LogLevelThreshold"
-          }
+          "description": "Logging options for the EventLog provider.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevelOptions"
+            }
+          ]
         },
         "Debug": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "Logging options for the Debug provider",
-          "additionalProperties": {
-            "$ref": "#/definitions/LogLevelThreshold"
-          }
+          "description": "Logging options for the Debug provider.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevelOptions"
+            }
+          ]
         },
         "EventSource": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "Logging options for the EventSource provider",
-          "additionalProperties": {
-            "$ref": "#/definitions/LogLevelThreshold"
-          }
+          "description": "Logging options for the EventSource provider.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevelOptions"
+            }
+          ]
         },
         "CaptureScopes": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Gets or sets whether logging scopes are being captured. Defaults to true."
         }
       }
     },
@@ -560,7 +566,7 @@
       "additionalProperties": false,
       "properties": {
         "FormatterName": {
-          "description": "Name of the log message formatter to use. Defaults to 'simple'",
+          "description": "Name of the log message formatter to use. Defaults to 'Simple'.",
           "oneOf": [
             {
               "$ref": "#/definitions/FormatterNameOptions"
@@ -568,7 +574,7 @@
           ]
         },
         "LogToStandardErrorThreshold": {
-          "description": "The minimum level of messages are written to Console.Error",
+          "description": "The minimum level of messages that are written to Console.Error.",
           "oneOf": [
             {
               "$ref": "#/definitions/LogLevelThreshold"
@@ -576,7 +582,7 @@
           ]
         },
         "FormatterOptions": {
-          "description": "Formatter options for Console logging",
+          "description": "Formatter options for the built-in console log formatter.",
           "oneOf": [
             {
               "type": "null"
@@ -608,18 +614,34 @@
       "properties": {
         "IncludeScopes": {
           "type": "boolean",
-          "description": "Includes scopes when true"
+          "description": "Gets or sets whether scopes should be included or not."
         },
         "TimestampFormat": {
           "type": [
             "null",
             "string"
           ],
-          "description": "Gets or sets format string used to format timestamp in logging messages. Defaults to null"
+          "description": "Gets or sets format string used to format timestamp in logging messages. Defaults to null."
         },
         "UseUtcTimestamp": {
           "type": "boolean",
-          "description": "Gets or sets indication whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false"
+          "description": "Gets or sets indication whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false."
+        }
+      }
+    },
+    "LogLevelOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "LogLevel": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Corresponding LogLevels to categories; applies to the specified provider.",
+          "additionalProperties": {
+            "$ref": "#/definitions/LogLevelThreshold"
+          }
         }
       }
     }

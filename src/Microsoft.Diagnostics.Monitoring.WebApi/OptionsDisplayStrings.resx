@@ -178,8 +178,8 @@
     <comment>The description provider for the UseUtcTimestamp parameter on FormatterOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold" xml:space="preserve">
-    <value>The minimum level of messages are written to Console.Error.</value>
-    <comment>The description provided for the LogLevel parameter on ConsoleOptions.</comment>
+    <value>The minimum level of messages that are written to Console.Error.</value>
+    <comment>The description provided for the LogToStandardErrorThreshold parameter on ConsoleOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CorsConfiguration_AllowedOrigins" xml:space="preserve">
     <value>List of allowed CORS origins, separated by semicolons.</value>
@@ -250,8 +250,12 @@
     <comment>The description provided for the EventSource parameter on LoggingOptions</comment>
   </data>
   <data name="DisplayAttributeDescription_LoggingOptions_LogLevel" xml:space="preserve">
-    <value>Logging options for the LogLevel provider.</value>
+    <value>Corresponding LogLevels to categories; applies to no specific provider.</value>
     <comment>The description provided for the LogLevel parameter on LoggingOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_LogLevelOptions_LogLevel" xml:space="preserve">
+    <value>Corresponding LogLevels to categories; applies to the specified provider.</value>
+    <comment>The description provided for the LogLevel parameter on LogLevelOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_LogLevelThreshold_Critical" xml:space="preserve">
     <value>Logs that describe an unrecoverable application or system crash, or a catastrophic failure that requires immediate attention.</value>

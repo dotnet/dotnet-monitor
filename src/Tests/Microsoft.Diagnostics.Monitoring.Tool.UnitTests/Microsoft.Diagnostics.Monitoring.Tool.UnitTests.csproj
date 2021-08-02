@@ -33,6 +33,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\LogLevelThreshold.cs" Link="Options\LogLevelThreshold.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\FormatterNameOptions.cs" Link="Options\FormatterNameOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\FormatterOptions.cs" Link="Options\FormatterOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\LogLevelOptions.cs" Link="Options\LogLevelOptions.cs" />
   </ItemGroup>
 
   <ItemGroup>

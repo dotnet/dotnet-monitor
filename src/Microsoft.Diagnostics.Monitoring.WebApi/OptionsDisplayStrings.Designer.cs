@@ -197,7 +197,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The minimum level of messages are written to Console.Error..
+        ///   Looks up a localized string similar to The minimum level of messages that are written to Console.Error..
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold {
             get {
@@ -360,11 +360,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Logging options for the LogLevel provider..
+        ///   Looks up a localized string similar to Corresponding LogLevels to categories; applies to no specific provider..
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_LogLevel {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_LogLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Corresponding LogLevels to categories; applies to the specified provider..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_LogLevelOptions_LogLevel {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_LogLevelOptions_LogLevel", resourceCulture);
             }
         }
         
