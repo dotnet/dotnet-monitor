@@ -541,7 +541,7 @@
       }
     },
     "LogLevel": {
-      "type": "integer",
+      "type": "string",
       "description": "",
       "x-enumNames": [
         "Trace",
@@ -553,13 +553,13 @@
         "None"
       ],
       "enum": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
+        "Trace",
+        "Debug",
+        "Information",
+        "Warning",
+        "Error",
+        "Critical",
+        "None"
       ]
     },
     "ConsoleLoggerOptions": {

@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Microsoft.Extensions.Logging;
+using System.Text.Json.Serialization;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
@@ -24,6 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel LogToStandardErrorThreshold { get; set; }
 
         [Display(
