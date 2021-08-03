@@ -586,15 +586,49 @@
         "FormatterOptions": {
           "description": "Formatter options for the built-in console log formatter.",
           "oneOf": [
+            {},
             {
               "type": "null"
-            },
-            {
-              "$ref": "#/definitions/FormatterOptions"
             }
           ]
         }
-      }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "FormatterName"
+          ],
+          "properties": {
+            "FormatterName": {
+              "const": "Json"
+            },
+            "FormatterOptions": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/JsonConsoleFormatterOptions"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "FormatterName"
+          ],
+          "properties": {
+            "FormatterName": {
+              "const": "Simple"
+            },
+            "FormatterOptions": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/SimpleConsoleFormatterOptions"
+                }
+              ]
+            }
+          }
+        }
+      ]
     },
     "ConsoleLoggerFormat": {
       "type": "string",
@@ -610,25 +644,6 @@
         "Systemd"
       ]
     },
-    "FormatterOptions": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "IncludeScopes": {
-          "type": "boolean"
-        },
-        "TimestampFormat": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "UseUtcTimestamp": {
-          "type": "boolean",
-          "default": false
-        }
-      }
-    },
     "LogLevelOptions": {
       "type": "object",
       "additionalProperties": false,
@@ -641,6 +656,40 @@
           "description": "Corresponding LogLevels to categories; applies to no specific provider.",
           "additionalProperties": {
             "$ref": "#/definitions/LogLevel"
+          }
+        }
+      }
+    },
+    "JsonConsoleFormatterOptions": {
+      "title": "JsonConsoleFormatterOptions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Foo": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Corresponding LogLevels to categories; applies to no specific provider.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SimpleConsoleFormatterOptions": {
+      "title": "SimpleConsoleFormatterOptions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Bar": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Corresponding LogLevels to categories; applies to no specific provider.",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
+﻿using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
+using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using NJsonSchema;
 using NJsonSchema.Generation;
 using System;
@@ -16,6 +17,9 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             schema.Id = @"https://www.github.com/dotnet/dotnet-monitor";
             schema.Title = "DotnetMonitorConfiguration";
 
+            var tempVar = JsonSchema.FromType<JsonConsoleFormatterOptions>();
+            schema.Definitions.Add(nameof(JsonConsoleFormatterOptions), tempVar);
+
             //Allow other properties in the schema.
             schema.AdditionalPropertiesSchema = JsonSchema.CreateAnySchema();
 
@@ -29,6 +33,33 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             {
                 kvp.Value.Default = JsonSchema.CreateAnySchema();
             }
+
+            JsonSchema tempSchema = new JsonSchema();
+
+            //tempSchema.Type = object;
+
+            JsonSchemaProperty formatterNameConstraintProperty = new JsonSchemaProperty();
+            JsonSchemaProperty formatterOptionsConstraintProperty = new JsonSchemaProperty();
+
+            JsonSchema tempSchema2 = new JsonSchema();
+
+            tempSchema2.Reference = tempVar;
+
+            formatterOptionsConstraintProperty.OneOf.Add(tempSchema2);
+
+            formatterNameConstraintProperty.ExtensionData = new Dictionary<string, object>();
+            formatterNameConstraintProperty.ExtensionData.Add("const", "Json");
+
+            tempSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameConstraintProperty);
+
+            tempSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsConstraintProperty);
+
+            tempSchema.RequiredProperties.Add(nameof(ConsoleLoggerOptions.FormatterName));
+
+            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(tempSchema);
+
+            //schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(tempSchemaSimple);
+            //schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(tempSchemaSchemad);
 
             string schemaPayload = schema.ToJson();
 

@@ -31,6 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterOptions))]
-        public FormatterOptions FormatterOptions { get; set; }
+        public object FormatterOptions { get; set; }
     }
 }
