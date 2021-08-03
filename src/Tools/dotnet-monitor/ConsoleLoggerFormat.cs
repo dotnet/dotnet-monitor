@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum FormatterNameOptions
+    public enum ConsoleLoggerFormat
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_LogLevelOptions_LogLevel))]
-        public IDictionary<string, LogLevelThreshold> LogLevel { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_LogLevel))]
+        public IDictionary<string, LogLevel> LogLevel { get; set; }
     }
 }

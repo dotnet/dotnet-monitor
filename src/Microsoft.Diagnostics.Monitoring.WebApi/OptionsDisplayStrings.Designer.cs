@@ -152,6 +152,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gets or sets whether scopes should be included or not..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleFormatterOptions_IncludeScopes {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_IncludeScopes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gets or sets format string used to format timestamp in logging messages. Defaults to null..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name of the log message formatter to use. Defaults to &apos;Simple&apos;..
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleOptions_FormatterName {
@@ -166,33 +193,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterOptions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gets or sets whether scopes should be included or not..
-        /// </summary>
-        public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions_IncludeScopes {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterOptions_IncludeScopes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gets or sets format string used to format timestamp in logging messages. Defaults to null..
-        /// </summary>
-        public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions_TimestampFormat {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterOptions_TimestampFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false..
-        /// </summary>
-        public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions_UseUtcTimestamp {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterOptions_UseUtcTimestamp", resourceCulture);
             }
         }
         
@@ -371,9 +371,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         /// <summary>
         ///   Looks up a localized string similar to Corresponding LogLevels to categories; applies to the specified provider..
         /// </summary>
-        public static string DisplayAttributeDescription_LoggingOptions_LogLevelOptions_LogLevel {
+        public static string DisplayAttributeDescription_LogLevelOptions_LogLevel {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_LogLevelOptions_LogLevel", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelOptions_LogLevel", resourceCulture);
             }
         }
         

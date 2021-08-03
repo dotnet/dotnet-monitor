@@ -157,6 +157,18 @@
     <value>Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.</value>
     <comment>The description provided for the CopyBufferSize parameter on all egress provider options.</comment>
   </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_IncludeScopes" xml:space="preserve">
+    <value>Gets or sets whether scopes should be included or not.</value>
+    <comment>The description provider for the IncludesScopes parameter on FormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat" xml:space="preserve">
+    <value>Gets or sets format string used to format timestamp in logging messages. Defaults to null.</value>
+    <comment>The description provider for the TimestampFormat parameter on FormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp" xml:space="preserve">
+    <value>Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.</value>
+    <comment>The description provider for the UseUtcTimestamp parameter on FormatterOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_ConsoleOptions_FormatterName" xml:space="preserve">
     <value>Name of the log message formatter to use. Defaults to 'Simple'.</value>
     <comment>The description provided for the FormatterName parameter on ConsoleOptions.</comment>
@@ -164,18 +176,6 @@
   <data name="DisplayAttributeDescription_ConsoleOptions_FormatterOptions" xml:space="preserve">
     <value>Formatter options for the built-in console log formatter.</value>
     <comment>The description provider for the FormatterOptions parameter on ConsoleOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_ConsoleOptions_FormatterOptions_IncludeScopes" xml:space="preserve">
-    <value>Gets or sets whether scopes should be included or not.</value>
-    <comment>The description provider for the IncludesScopes parameter on FormatterOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_ConsoleOptions_FormatterOptions_TimestampFormat" xml:space="preserve">
-    <value>Gets or sets format string used to format timestamp in logging messages. Defaults to null.</value>
-    <comment>The description provider for the TimestampFormat parameter on FormatterOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_ConsoleOptions_FormatterOptions_UseUtcTimestamp" xml:space="preserve">
-    <value>Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.</value>
-    <comment>The description provider for the UseUtcTimestamp parameter on FormatterOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold" xml:space="preserve">
     <value>The minimum level of messages that are written to Console.Error.</value>
@@ -253,7 +253,7 @@
     <value>Corresponding LogLevels to categories; applies to no specific provider.</value>
     <comment>The description provided for the LogLevel parameter on LoggingOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_LoggingOptions_LogLevelOptions_LogLevel" xml:space="preserve">
+  <data name="DisplayAttributeDescription_LogLevelOptions_LogLevel" xml:space="preserve">
     <value>Corresponding LogLevels to categories; applies to the specified provider.</value>
     <comment>The description provided for the LogLevel parameter on LogLevelOptions.</comment>
   </data>

@@ -29,9 +29,9 @@
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\FileSystem\FileSystemEgressProviderOptions.cs" Link="Options\FileSystemEgressProviderOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\IEgressProviderCommonOptions.cs" Link="Options\IEgressProviderCommonOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\LoggingOptions.cs" Link="Options\LoggingOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\ConsoleOptions.cs" Link="Options\ConsoleOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\ConsoleLoggerFormat.cs" Link="Options\ConsoleLoggerFormat.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\LogLevelThreshold.cs" Link="Options\LogLevelThreshold.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\FormatterNameOptions.cs" Link="Options\FormatterNameOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\ConsoleLoggerOptions.cs" Link="Options\ConsoleLoggerOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\FormatterOptions.cs" Link="Options\FormatterOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\LogLevelOptions.cs" Link="Options\LogLevelOptions.cs" />
   </ItemGroup>
