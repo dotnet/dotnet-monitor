@@ -644,6 +644,19 @@
               ]
             }
           }
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "LogToStandardErrorThreshold": {},
+            "FormatterOptions": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/SimpleConsoleFormatterOptions"
+                }
+              ]
+            }
+          }
         }
       ]
     },

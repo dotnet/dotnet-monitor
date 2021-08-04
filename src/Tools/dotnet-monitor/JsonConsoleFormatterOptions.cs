@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    class JsonConsoleFormatterOptions
+    internal sealed class JsonConsoleFormatterOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

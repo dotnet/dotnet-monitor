@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    class SimpleConsoleFormatterOptions
+    internal sealed class SimpleConsoleFormatterOptions
     {
 #if NET5_0_OR_GREATER
         [Display(
