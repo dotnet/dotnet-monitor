@@ -627,6 +627,23 @@
               ]
             }
           }
+        },
+        {
+          "required": [
+            "FormatterName"
+          ],
+          "properties": {
+            "FormatterName": {
+              "const": "Systemd"
+            },
+            "FormatterOptions": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/ConsoleFormatterOptions"
+                }
+              ]
+            }
+          }
         }
       ]
     },
@@ -665,15 +682,70 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Foo": {
+        "JsonWriterOptions": {
+          "description": "Gets or sets JsonWriterOptions.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/JsonConsoleFormatterOptions/definitions/JsonWriterOptions"
+            }
+          ]
+        },
+        "IncludeScopes": {
+          "type": "boolean",
+          "description": "Gets or sets whether scopes should be included or not."
+        },
+        "TimestampFormat": {
           "type": [
             "null",
-            "object"
+            "string"
           ],
-          "description": "Corresponding LogLevels to categories; applies to no specific provider.",
-          "additionalProperties": {
-            "type": "string"
+          "description": "Gets or sets format string used to format timestamp in logging messages. Defaults to null."
+        },
+        "UseUtcTimestamp": {
+          "type": "boolean",
+          "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
+          "default": false
+        }
+      },
+      "definitions": {
+        "JsonWriterOptions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "Encoder": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/JsonConsoleFormatterOptions/definitions/JavaScriptEncoder"
+                }
+              ]
+            },
+            "Indented": {
+              "type": "boolean"
+            },
+            "SkipValidation": {
+              "type": "boolean"
+            }
           }
+        },
+        "JavaScriptEncoder": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/JsonConsoleFormatterOptions/definitions/TextEncoder"
+            },
+            {
+              "type": "object",
+              "x-abstract": true,
+              "additionalProperties": false
+            }
+          ]
+        },
+        "TextEncoder": {
+          "type": "object",
+          "x-abstract": true,
+          "additionalProperties": false
         }
       }
     },
@@ -682,15 +754,48 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Bar": {
+        "SingleLine": {
+          "type": "boolean",
+          "description": "When false, the entire message gets logged in a single line."
+        },
+        "IncludeScopes": {
+          "type": "boolean",
+          "description": "Gets or sets whether scopes should be included or not."
+        },
+        "TimestampFormat": {
           "type": [
             "null",
-            "object"
+            "string"
           ],
-          "description": "Corresponding LogLevels to categories; applies to no specific provider.",
-          "additionalProperties": {
-            "type": "string"
-          }
+          "description": "Gets or sets format string used to format timestamp in logging messages. Defaults to null."
+        },
+        "UseUtcTimestamp": {
+          "type": "boolean",
+          "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
+          "default": false
+        }
+      }
+    },
+    "ConsoleFormatterOptions": {
+      "title": "ConsoleFormatterOptions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "IncludeScopes": {
+          "type": "boolean",
+          "description": "Gets or sets whether scopes should be included or not."
+        },
+        "TimestampFormat": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Gets or sets format string used to format timestamp in logging messages. Defaults to null."
+        },
+        "UseUtcTimestamp": {
+          "type": "boolean",
+          "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
+          "default": false
         }
       }
     }

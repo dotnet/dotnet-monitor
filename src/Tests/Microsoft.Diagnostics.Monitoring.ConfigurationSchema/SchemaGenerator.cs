@@ -1,5 +1,4 @@
-﻿using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
-using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
+﻿using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
 using NJsonSchema;
 using NJsonSchema.Generation;
 using System;
@@ -17,8 +16,14 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             schema.Id = @"https://www.github.com/dotnet/dotnet-monitor";
             schema.Title = "DotnetMonitorConfiguration";
 
-            var tempVar = JsonSchema.FromType<JsonConsoleFormatterOptions>();
-            schema.Definitions.Add(nameof(JsonConsoleFormatterOptions), tempVar);
+            JsonSchema jsonConsoleFormatterOptionsSchema = JsonSchema.FromType<JsonConsoleFormatterOptions>();
+            schema.Definitions.Add(nameof(JsonConsoleFormatterOptions), jsonConsoleFormatterOptionsSchema);
+
+            JsonSchema simpleConsoleFormatterOptionsSchema = JsonSchema.FromType<SimpleConsoleFormatterOptions>();
+            schema.Definitions.Add(nameof(SimpleConsoleFormatterOptions), simpleConsoleFormatterOptionsSchema);
+
+            JsonSchema systemdConsoleFormatterOptionsSchema = JsonSchema.FromType<ConsoleFormatterOptions>();
+            schema.Definitions.Add(nameof(ConsoleFormatterOptions), systemdConsoleFormatterOptionsSchema);
 
             //Allow other properties in the schema.
             schema.AdditionalPropertiesSchema = JsonSchema.CreateAnySchema();
@@ -34,32 +39,64 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 kvp.Value.Default = JsonSchema.CreateAnySchema();
             }
 
-            JsonSchema tempSchema = new JsonSchema();
+            JsonSchema tempSchemaJson = new JsonSchema();
+            JsonSchema tempSchemaSimple = new JsonSchema();
+            JsonSchema tempSchemaSystemd = new JsonSchema();
 
-            //tempSchema.Type = object;
+            JsonSchemaProperty formatterNameConstraintPropertyJson = new JsonSchemaProperty();
+            JsonSchemaProperty formatterOptionsConstraintPropertyJson = new JsonSchemaProperty();
 
-            JsonSchemaProperty formatterNameConstraintProperty = new JsonSchemaProperty();
-            JsonSchemaProperty formatterOptionsConstraintProperty = new JsonSchemaProperty();
+            JsonSchema tempSchemaJson2 = new JsonSchema();
+            tempSchemaJson2.Reference = jsonConsoleFormatterOptionsSchema;
 
-            JsonSchema tempSchema2 = new JsonSchema();
+            formatterOptionsConstraintPropertyJson.OneOf.Add(tempSchemaJson2);
 
-            tempSchema2.Reference = tempVar;
+            formatterNameConstraintPropertyJson.ExtensionData = new Dictionary<string, object>();
+            formatterNameConstraintPropertyJson.ExtensionData.Add("const", "Json");
 
-            formatterOptionsConstraintProperty.OneOf.Add(tempSchema2);
+            tempSchemaJson.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameConstraintPropertyJson);
+            tempSchemaJson.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsConstraintPropertyJson);
+            tempSchemaJson.RequiredProperties.Add(nameof(ConsoleLoggerOptions.FormatterName));
 
-            formatterNameConstraintProperty.ExtensionData = new Dictionary<string, object>();
-            formatterNameConstraintProperty.ExtensionData.Add("const", "Json");
+            /////////////////////////
 
-            tempSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameConstraintProperty);
+            JsonSchemaProperty formatterNameConstraintPropertySimple = new JsonSchemaProperty();
+            JsonSchemaProperty formatterOptionsConstraintPropertySimple = new JsonSchemaProperty();
 
-            tempSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsConstraintProperty);
+            JsonSchema tempSchemaSimple2 = new JsonSchema();
+            tempSchemaSimple2.Reference = simpleConsoleFormatterOptionsSchema;
 
-            tempSchema.RequiredProperties.Add(nameof(ConsoleLoggerOptions.FormatterName));
+            formatterOptionsConstraintPropertySimple.OneOf.Add(tempSchemaSimple2);
 
-            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(tempSchema);
+            formatterNameConstraintPropertySimple.ExtensionData = new Dictionary<string, object>();
+            formatterNameConstraintPropertySimple.ExtensionData.Add("const", "Simple");
 
-            //schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(tempSchemaSimple);
-            //schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(tempSchemaSchemad);
+            tempSchemaSimple.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameConstraintPropertySimple);
+            tempSchemaSimple.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsConstraintPropertySimple);
+            tempSchemaSimple.RequiredProperties.Add(nameof(ConsoleLoggerOptions.FormatterName));
+
+            /////////////////////////
+
+            JsonSchemaProperty formatterNameConstraintPropertySystemd = new JsonSchemaProperty();
+            JsonSchemaProperty formatterOptionsConstraintPropertySystemd = new JsonSchemaProperty();
+
+            JsonSchema tempSchemaSystemd2 = new JsonSchema();
+            tempSchemaSystemd2.Reference = systemdConsoleFormatterOptionsSchema;
+
+            formatterOptionsConstraintPropertySystemd.OneOf.Add(tempSchemaSystemd2);
+
+            formatterNameConstraintPropertySystemd.ExtensionData = new Dictionary<string, object>();
+            formatterNameConstraintPropertySystemd.ExtensionData.Add("const", "Systemd");
+
+            tempSchemaSystemd.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameConstraintPropertySystemd);
+            tempSchemaSystemd.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsConstraintPropertySystemd);
+            tempSchemaSystemd.RequiredProperties.Add(nameof(ConsoleLoggerOptions.FormatterName));
+
+            /////////////////////////
+
+            schema.Definitions[nameof(ConsoleLoggerOptions)].AnyOf.Add(tempSchemaJson);
+            schema.Definitions[nameof(ConsoleLoggerOptions)].AnyOf.Add(tempSchemaSimple);
+            schema.Definitions[nameof(ConsoleLoggerOptions)].AnyOf.Add(tempSchemaSystemd);
 
             string schemaPayload = schema.ToJson();
 

@@ -161,6 +161,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gets or sets JsonWriterOptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleFormatterOptions_JsonWriterOptions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_JsonWriterOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines when to use color when logging messages..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleFormatterOptions_SimpleColorBehavior {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_SimpleColorBehavior", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When false, the entire message gets logged in a single line..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleFormatterOptions_SimpleSingleLine {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_SimpleSingleLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets or sets format string used to format timestamp in logging messages. Defaults to null..
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat {

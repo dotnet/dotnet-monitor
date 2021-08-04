@@ -161,6 +161,18 @@
     <value>Gets or sets whether scopes should be included or not.</value>
     <comment>The description provider for the IncludesScopes parameter on FormatterOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_JsonWriterOptions" xml:space="preserve">
+    <value>Gets or sets JsonWriterOptions.</value>
+    <comment>The description provided for the JsonWriterOptions parameter on JsonFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_SimpleColorBehavior" xml:space="preserve">
+    <value>Determines when to use color when logging messages.</value>
+    <comment>The description provided for the ColorBehavior parameter on SimpleConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_SimpleSingleLine" xml:space="preserve">
+    <value>When false, the entire message gets logged in a single line.</value>
+    <comment>The description provided for the SingleLine parameter on SimpleConsoleFormatterOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat" xml:space="preserve">
     <value>Gets or sets format string used to format timestamp in logging messages. Defaults to null.</value>
     <comment>The description provider for the TimestampFormat parameter on FormatterOptions.</comment>

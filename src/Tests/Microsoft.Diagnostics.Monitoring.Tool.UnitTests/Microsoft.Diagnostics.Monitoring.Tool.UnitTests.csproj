@@ -35,7 +35,9 @@
     <Compile Include="..\..\Tools\dotnet-monitor\FormatterOptions.cs" Link="Options\FormatterOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\LogLevelOptions.cs" Link="Options\LogLevelOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\JsonConsoleFormatterOptions.cs" Link="Options\JsonConsoleFormatterOptions.cs" />
-  </ItemGroup>
+    <Compile Include="..\..\Tools\dotnet-monitor\ConsoleFormatterOptions.cs" Link="Options\ConsoleFormatterOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\SimpleConsoleFormatterOptions.cs" Link="Options\SimpleConsoleFormatterOptions.cs" />
+</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.FileFormats" Version="$(MicrosoftFileFormatsVersion)" />
