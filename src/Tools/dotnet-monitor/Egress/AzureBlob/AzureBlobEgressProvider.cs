@@ -22,9 +22,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
     /// <remarks>
     /// Blobs created through this provider will overwrite existing blobs if they have the same blob name.
     /// </remarks>
-    internal class AzureBlobEgressProvider :
+    internal partial class AzureBlobEgressProvider :
         EgressProvider<AzureBlobEgressProviderOptions>
     {
+        private int BlobStorageBufferSize = 4 * 1024 * 1024;
+
         public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
             : base(logger)
         {
@@ -75,12 +77,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 BlockBlobClient blobClient = containerClient.GetBlockBlobClient(GetBlobName(options, artifactSettings));
 
                 // Write blob content
-                using (Stream blobStream = await blobClient.OpenWriteAsync(overwrite: true, cancellationToken: token))
-                {
-                    Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
-                    await action(blobStream, token);
 
-                    await blobStream.FlushAsync(token);
+                var bloboptions = new BlockBlobOpenWriteOptions
+                {
+                    BufferSize = BlobStorageBufferSize,
+                };
+                using (Stream blobStream = await blobClient.OpenWriteAsync(overwrite: true, options: bloboptions, cancellationToken: token))
+                using (AutoFlushStream flushStream = new AutoFlushStream(blobStream, BlobStorageBufferSize))
+                {
+                    //Azure's stream from OpenWriteAsync will do the following
+                    //1. Write the data to a local buffer
+                    //2. Once that buffer is full, stage the data remotely (this data is not considered valid yet)
+                    //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
+                    //the stream.
+                    // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
+                    Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
+                    await action(flushStream, token);
+
+                    await flushStream.FlushAsync(token);
                 }
 
                 // Write blob headers
