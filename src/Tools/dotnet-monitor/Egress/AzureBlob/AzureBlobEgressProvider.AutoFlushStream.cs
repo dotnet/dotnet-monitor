@@ -18,14 +18,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         /// </summary>
         private sealed class AutoFlushStream : Stream
         {
-            private Stream _baseStream;
+            private readonly Stream _baseStream;
+            private readonly long _flushSize;
             private long _written;
-
-            public long FlushSize { get; }
 
             public AutoFlushStream(Stream stream, long flushSize)
             {
-                FlushSize = flushSize >= 0 ? flushSize : throw new ArgumentOutOfRangeException(nameof(flushSize));
+                _flushSize = flushSize >= 0 ? flushSize : throw new ArgumentOutOfRangeException(nameof(flushSize));
                 _baseStream = stream ?? throw new ArgumentNullException(nameof(stream));
             }
 
@@ -61,28 +60,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 ProcessWrite(count);
             }
 
-            public override void Flush()
+            public override void WriteByte(byte value)
             {
-                _baseStream.Flush();
-                _written = 0;
-            }
-
-            private void ProcessWrite(int count)
-            {
-                _written += count;
-                if (_written >= FlushSize)
-                {
-                    Flush();
-                }
-            }
-
-            private async Task ProcessWriteAsync(int count, CancellationToken token)
-            {
-                _written += count;
-                if (_written >= FlushSize)
-                {
-                    await FlushAsync(token);
-                }
+                _baseStream.WriteByte(value);
+                ProcessWrite(1);
             }
 
             public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
@@ -91,16 +72,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 await ProcessWriteAsync(count, cancellationToken);
             }
 
+            public override void Flush()
+            {
+                _baseStream.Flush();
+                _written = 0;
+            }
+
             public override async Task FlushAsync(CancellationToken cancellationToken)
             {
                 await _baseStream.FlushAsync(cancellationToken);
                 _written = 0;
             }
 
-            public override void WriteByte(byte value)
+            private void ProcessWrite(int count)
             {
-                _baseStream.WriteByte(value);
-                ProcessWrite(1);
+                _written += count;
+                if (_written >= _flushSize)
+                {
+                    Flush();
+                }
+            }
+
+            private Task ProcessWriteAsync(int count, CancellationToken cancellationToken)
+            {
+                _written += count;
+                if (_written >= _flushSize)
+                {
+                    return FlushAsync(cancellationToken);
+                }
+                return Task.CompletedTask;
             }
         }
     }
