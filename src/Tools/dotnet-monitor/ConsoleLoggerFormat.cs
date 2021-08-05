@@ -17,15 +17,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FormatterNameOptions_Json))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerFormat_Json))]
         Json,
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FormatterNameOptions_Simple))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerFormat_Simple))]
         Simple,
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FormatterNameOptions_Systemd))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerFormat_Systemd))]
         Systemd
     }
 }

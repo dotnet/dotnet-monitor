@@ -161,37 +161,37 @@
     <value>Gets or sets whether scopes should be included or not.</value>
     <comment>The description provider for the IncludesScopes parameter on FormatterOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_JsonWriterOptions" xml:space="preserve">
-    <value>Gets or sets JsonWriterOptions.</value>
-    <comment>The description provided for the JsonWriterOptions parameter on JsonFormatterOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_SimpleColorBehavior" xml:space="preserve">
-    <value>Determines when to use color when logging messages.</value>
-    <comment>The description provided for the ColorBehavior parameter on SimpleConsoleFormatterOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_SimpleSingleLine" xml:space="preserve">
-    <value>When false, the entire message gets logged in a single line.</value>
-    <comment>The description provided for the SingleLine parameter on SimpleConsoleFormatterOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat" xml:space="preserve">
     <value>Gets or sets format string used to format timestamp in logging messages. Defaults to null.</value>
-    <comment>The description provider for the TimestampFormat parameter on FormatterOptions.</comment>
+    <comment>The description provider for the TimestampFormat parameter on ConsoleFormatterOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp" xml:space="preserve">
     <value>Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.</value>
-    <comment>The description provider for the UseUtcTimestamp parameter on FormatterOptions.</comment>
+    <comment>The description provider for the UseUtcTimestamp parameter on ConsoleFormatterOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_ConsoleOptions_FormatterName" xml:space="preserve">
+  <data name="DisplayAttributeDescription_ConsoleLoggerFormat_Json" xml:space="preserve">
+    <value>Reserved name for Json console formatter.</value>
+    <comment>The description provider for the Json parameter on ConsoleLoggerFormat.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerFormat_Simple" xml:space="preserve">
+    <value>Reserved name for simple console formatter.</value>
+    <comment>The description provider for the Simple parameter on ConsoleLoggerFormat.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerFormat_Systemd" xml:space="preserve">
+    <value>Reserved name for systemd console formatter.</value>
+    <comment>The description provider for the Systemd parameter on ConsoleLoggerFormat.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_FormatterName" xml:space="preserve">
     <value>Name of the log message formatter to use. Defaults to 'Simple'.</value>
-    <comment>The description provided for the FormatterName parameter on ConsoleOptions.</comment>
+    <comment>The description provided for the FormatterName parameter on ConsoleLoggerOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_ConsoleOptions_FormatterOptions" xml:space="preserve">
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_FormatterOptions" xml:space="preserve">
     <value>Formatter options for the built-in console log formatter.</value>
-    <comment>The description provider for the FormatterOptions parameter on ConsoleOptions.</comment>
+    <comment>The description provider for the FormatterOptions parameter on ConsoleLoggerOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold" xml:space="preserve">
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold" xml:space="preserve">
     <value>The minimum level of messages that are written to Console.Error.</value>
-    <comment>The description provided for the LogToStandardErrorThreshold parameter on ConsoleOptions.</comment>
+    <comment>The description provided for the LogToStandardErrorThreshold parameter on ConsoleLoggerOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CorsConfiguration_AllowedOrigins" xml:space="preserve">
     <value>List of allowed CORS origins, separated by semicolons.</value>
@@ -229,17 +229,9 @@
     <value>The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in DirectoryPath.</value>
     <comment>The description provided for the IntermediateDirectoryPath parameter on FileSystemEgressProviderOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_FormatterNameOptions_Json" xml:space="preserve">
-    <value>Reserved name for Json console formatter.</value>
-    <comment>The description provider for the Json parameter on FormatterNameOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_FormatterNameOptions_Simple" xml:space="preserve">
-    <value>Reserved name for simple console formatter.</value>
-    <comment>The description provider for the Simple parameter on FormatterNameOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_FormatterNameOptions_Systemd" xml:space="preserve">
-    <value>Reserved name for systemd console formatter.</value>
-    <comment>The description provider for the Systemd parameter on FormatterNameOptions.</comment>
+  <data name="DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions" xml:space="preserve">
+    <value>Gets or sets JsonWriterOptions.</value>
+    <comment>The description provided for the JsonWriterOptions parameter on JsonConsoleFormatterOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_LoggingOptions_CaptureScopes" xml:space="preserve">
     <value>Gets or sets whether logging scopes are being captured. Defaults to true.</value>
@@ -268,34 +260,6 @@
   <data name="DisplayAttributeDescription_LogLevelOptions_LogLevel" xml:space="preserve">
     <value>Corresponding LogLevels to categories; applies to the specified provider.</value>
     <comment>The description provided for the LogLevel parameter on LogLevelOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_LogLevelThreshold_Critical" xml:space="preserve">
-    <value>Logs that describe an unrecoverable application or system crash, or a catastrophic failure that requires immediate attention.</value>
-    <comment>The description provided for the Critical logging severity level on LogLevelThreshold.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_LogLevelThreshold_Debug" xml:space="preserve">
-    <value>Logs that are used for interactive investigation during development. These logs should primarily contain information useful for debugging and have no long-term value.</value>
-    <comment>The description provided for the Debug logging severity level on LogLevelThreshold.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_LogLevelThreshold_Error" xml:space="preserve">
-    <value>Logs that highlight when the current flow of execution is stopped due to a failure. These should indicate a failure in the current activity, not an application-wide failure.</value>
-    <comment>The description provided for the Error logging severity level on LogLevelThreshold.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_LogLevelThreshold_Information" xml:space="preserve">
-    <value>Logs that track the general flow of the application. These logs should have long-term value.</value>
-    <comment>The description provided for the Information logging severity level on LogLevelThreshold.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_LogLevelThreshold_None" xml:space="preserve">
-    <value>Not used for writing log messages. Specifies that a logging category should not write any messages.</value>
-    <comment>The description provided for the None logging severity level on LogLevelThreshold.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_LogLevelThreshold_Trace" xml:space="preserve">
-    <value>Logs that contain the most detailed messages. These messages may contain sensitive application data. These messages are disabled by default and should never be enabled in a production environment.</value>
-    <comment>The description provided for the Trace logging severity level on LogLevelThreshold.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_LogLevelThreshold_Warning" xml:space="preserve">
-    <value>Logs that highlight an abnormal or unexpected event in the application flow, but do not otherwise cause the application execution to stop.</value>
-    <comment>The description provided for the Warning logging severity level on LogLevelThreshold.</comment>
   </data>
   <data name="DisplayAttributeDescription_MetricProvider_CounterNames" xml:space="preserve">
     <value>Name of custom metrics counters.</value>
@@ -364,6 +328,14 @@
   <data name="DisplayAttributeDescription_ProcessFilterType_Exact" xml:space="preserve">
     <value>Performs a case-insensitive string comparison.</value>
     <comment>The description provided for enum ProcessFilterType's Exact value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior" xml:space="preserve">
+    <value>Determines when to use color when logging messages.</value>
+    <comment>The description provided for the ColorBehavior parameter on SimpleConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SimpleConsoleFormatterOptions_SingleLine" xml:space="preserve">
+    <value>When false, the entire message gets logged in a single line.</value>
+    <comment>The description provided for the SingleLine parameter on SimpleConsoleFormatterOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_StorageOptions_DumpTempFolder" xml:space="preserve">
     <value>The location for temporary dump files. Defaults to the temp folder.</value>

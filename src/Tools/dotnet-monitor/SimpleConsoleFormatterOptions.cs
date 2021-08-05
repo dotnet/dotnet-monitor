@@ -19,14 +19,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 #if NET5_0_OR_GREATER
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleFormatterOptions_SimpleColorBehavior))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior))]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LoggerColorBehavior ColorBehavior { get; set; }
 #endif
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleFormatterOptions_SimpleSingleLine))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SimpleConsoleFormatterOptions_SingleLine))]
         public bool SingleLine { get; set; }
 
         [Display(

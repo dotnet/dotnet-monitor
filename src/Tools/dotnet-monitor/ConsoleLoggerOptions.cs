@@ -18,19 +18,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterName))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerOptions_FormatterName))]
         [DefaultValue(ConsoleLoggerFormat.Simple)]
         public ConsoleLoggerFormat FormatterName { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold))]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel LogToStandardErrorThreshold { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleOptions_FormatterOptions))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerOptions_FormatterOptions))]
         public object FormatterOptions { get; set; }
     }
 }

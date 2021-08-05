@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleFormatterOptions_JsonWriterOptions))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions))]
         public JsonWriterOptions JsonWriterOptions { get; set; }
 
         [Display(

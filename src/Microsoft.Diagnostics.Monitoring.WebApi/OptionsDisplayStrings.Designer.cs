@@ -161,33 +161,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gets or sets JsonWriterOptions..
-        /// </summary>
-        public static string DisplayAttributeDescription_ConsoleFormatterOptions_JsonWriterOptions {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_JsonWriterOptions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Determines when to use color when logging messages..
-        /// </summary>
-        public static string DisplayAttributeDescription_ConsoleFormatterOptions_SimpleColorBehavior {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_SimpleColorBehavior", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to When false, the entire message gets logged in a single line..
-        /// </summary>
-        public static string DisplayAttributeDescription_ConsoleFormatterOptions_SimpleSingleLine {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_SimpleSingleLine", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Gets or sets format string used to format timestamp in logging messages. Defaults to null..
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat {
@@ -206,29 +179,56 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reserved name for Json console formatter..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerFormat_Json {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerFormat_Json", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reserved name for simple console formatter..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerFormat_Simple {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerFormat_Simple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reserved name for systemd console formatter..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerFormat_Systemd {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerFormat_Systemd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name of the log message formatter to use. Defaults to &apos;Simple&apos;..
         /// </summary>
-        public static string DisplayAttributeDescription_ConsoleOptions_FormatterName {
+        public static string DisplayAttributeDescription_ConsoleLoggerOptions_FormatterName {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterName", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerOptions_FormatterName", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Formatter options for the built-in console log formatter..
         /// </summary>
-        public static string DisplayAttributeDescription_ConsoleOptions_FormatterOptions {
+        public static string DisplayAttributeDescription_ConsoleLoggerOptions_FormatterOptions {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_FormatterOptions", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerOptions_FormatterOptions", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The minimum level of messages that are written to Console.Error..
         /// </summary>
-        public static string DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold {
+        public static string DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleOptions_LogToStandardErrorThreshold", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold", resourceCulture);
             }
         }
         
@@ -315,29 +315,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reserved name for Json console formatter..
+        ///   Looks up a localized string similar to Gets or sets JsonWriterOptions..
         /// </summary>
-        public static string DisplayAttributeDescription_FormatterNameOptions_Json {
+        public static string DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_FormatterNameOptions_Json", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reserved name for simple console formatter..
-        /// </summary>
-        public static string DisplayAttributeDescription_FormatterNameOptions_Simple {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_FormatterNameOptions_Simple", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reserved name for systemd console formatter..
-        /// </summary>
-        public static string DisplayAttributeDescription_FormatterNameOptions_Systemd {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_FormatterNameOptions_Systemd", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions", resourceCulture);
             }
         }
         
@@ -401,69 +383,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_LogLevelOptions_LogLevel {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_LogLevelOptions_LogLevel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logs that describe an unrecoverable application or system crash, or a catastrophic failure that requires immediate attention..
-        /// </summary>
-        public static string DisplayAttributeDescription_LogLevelThreshold_Critical {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Critical", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logs that are used for interactive investigation during development. These logs should primarily contain information useful for debugging and have no long-term value..
-        /// </summary>
-        public static string DisplayAttributeDescription_LogLevelThreshold_Debug {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Debug", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logs that highlight when the current flow of execution is stopped due to a failure. These should indicate a failure in the current activity, not an application-wide failure..
-        /// </summary>
-        public static string DisplayAttributeDescription_LogLevelThreshold_Error {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logs that track the general flow of the application. These logs should have long-term value..
-        /// </summary>
-        public static string DisplayAttributeDescription_LogLevelThreshold_Information {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Information", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Not used for writing log messages. Specifies that a logging category should not write any messages..
-        /// </summary>
-        public static string DisplayAttributeDescription_LogLevelThreshold_None {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_None", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logs that contain the most detailed messages. These messages may contain sensitive application data. These messages are disabled by default and should never be enabled in a production environment..
-        /// </summary>
-        public static string DisplayAttributeDescription_LogLevelThreshold_Trace {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Trace", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logs that highlight an abnormal or unexpected event in the application flow, but do not otherwise cause the application execution to stop..
-        /// </summary>
-        public static string DisplayAttributeDescription_LogLevelThreshold_Warning {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelThreshold_Warning", resourceCulture);
             }
         }
         
@@ -617,6 +536,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_ProcessFilterType_Exact {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_ProcessFilterType_Exact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines when to use color when logging messages..
+        /// </summary>
+        public static string DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When false, the entire message gets logged in a single line..
+        /// </summary>
+        public static string DisplayAttributeDescription_SimpleConsoleFormatterOptions_SingleLine {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_SimpleConsoleFormatterOptions_SingleLine", resourceCulture);
             }
         }
         
