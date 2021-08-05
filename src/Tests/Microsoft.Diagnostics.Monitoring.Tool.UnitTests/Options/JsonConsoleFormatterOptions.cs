@@ -1,29 +1,20 @@
-﻿using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.Logging.Console;
-using System;
-using System.Collections.Generic;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
 {
-    internal sealed class SimpleConsoleFormatterOptions
+    internal sealed class JsonConsoleFormatterOptions
     {
-#if NET5_0_OR_GREATER
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior))]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public LoggerColorBehavior ColorBehavior { get; set; }
-#endif
-
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SimpleConsoleFormatterOptions_SingleLine))]
-        public bool SingleLine { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions))]
+        public JsonWriterOptions JsonWriterOptions { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

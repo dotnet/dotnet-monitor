@@ -6,11 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json;
 
-#if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
-#else
-namespace Microsoft.Diagnostics.Tools.Monitor
-#endif
 {
     internal sealed class JsonConsoleFormatterOptions
     {

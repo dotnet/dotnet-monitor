@@ -28,13 +28,6 @@
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProviderOptions.cs" Link="Options\AzureBlobEgressProviderOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\FileSystem\FileSystemEgressProviderOptions.cs" Link="Options\FileSystemEgressProviderOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\IEgressProviderCommonOptions.cs" Link="Options\IEgressProviderCommonOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\LoggingOptions.cs" Link="Options\LoggingOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\ConsoleLoggerFormat.cs" Link="Options\ConsoleLoggerFormat.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\ConsoleLoggerOptions.cs" Link="Options\ConsoleLoggerOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\LogLevelOptions.cs" Link="Options\LogLevelOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\JsonConsoleFormatterOptions.cs" Link="Options\JsonConsoleFormatterOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\ConsoleFormatterOptions.cs" Link="Options\ConsoleFormatterOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\SimpleConsoleFormatterOptions.cs" Link="Options\SimpleConsoleFormatterOptions.cs" />
   </ItemGroup>
 
   <ItemGroup>
