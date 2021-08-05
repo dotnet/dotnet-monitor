@@ -265,7 +265,7 @@
   </data>
   <data name="HelpDescription_OptionMetrics" xml:space="preserve">
     <value>Enable publishing of metrics</value>
-    <comment>Gets the string to display in help that explains what the '--metricls' option does.</comment>
+    <comment>Gets the string to display in help that explains what the '--metrics' option does.</comment>
   </data>
   <data name="HelpDescription_OptionMetricsUrls" xml:space="preserve">
     <value>Bindings for metrics api.</value>
@@ -274,6 +274,10 @@
   <data name="HelpDescription_OptionNoAuth" xml:space="preserve">
     <value>Turn off authentication.</value>
     <comment>Gets the string to display in help that explains what the '--no-auth' option does.</comment>
+  </data>
+  <data name="HelpDescription_OptionNoHttpEgress" xml:space="preserve">
+    <value>Turn off HTTP response egress</value>
+    <comment>Gets the string to display in help that explains what the '--no-http-egress' option does.</comment>
   </data>
   <data name="HelpDescription_OptionTempApiKey" xml:space="preserve">
     <value>Generates a new MonitorApiKey for each launch of the process.</value>

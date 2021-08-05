@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 {
     // All log events have this structure (plus additional fields
     // not needed by the test runner for identifying events).

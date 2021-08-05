@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 #if UNITTEST
 using Microsoft.Diagnostics.Monitoring.WebApi;
 
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Options
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 #else
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 #endif

@@ -121,6 +121,10 @@
     <value>Unable to get process environment.</value>
     <comment>Gets a string similar to "Unable to get process environment.".</comment>
   </data>
+  <data name="ErrorMessage_HttpEgressDisabled" xml:space="preserve">
+    <value>HTTP egress is not enabled.</value>
+    <comment>Gets a string similar to "HTTP egress is not enabled.".</comment>
+  </data>
   <data name="ErrorMessage_InvalidMetricCount" xml:space="preserve">
     <value>Invalid metric count.</value>
     <comment>Gets a string similar to "Invalid metric count.".</comment>

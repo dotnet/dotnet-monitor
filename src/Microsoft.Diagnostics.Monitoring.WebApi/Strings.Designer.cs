@@ -70,6 +70,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP egress is not enabled..
+        /// </summary>
+        internal static string ErrorMessage_HttpEgressDisabled {
+            get {
+                return ResourceManager.GetString("ErrorMessage_HttpEgressDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid metric count..
         /// </summary>
         internal static string ErrorMessage_InvalidMetricCount {
