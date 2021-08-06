@@ -242,6 +242,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                         Assert.Equal(expectedValue, actualValue);
                     }
                 }
+
+                index++;
             }
 
             return collectTraceOptions;

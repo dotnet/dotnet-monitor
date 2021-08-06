@@ -33,6 +33,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptions.cs" Link="Options\CollectionRules\CollectionRuleActionOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptions.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleOptions.cs" Link="Options\CollectionRules\CollectionRuleOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleOptionsConstants.cs" Link="Options\CollectionRules\CollectionRuleOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleTriggerOptions.cs" Link="Options\CollectionRules\CollectionRuleTriggerOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetRequestCountOptions.cs" Link="Options\CollectionRules\Triggers\AspNetRequestCountOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetRequestDurationOptions.cs" Link="Options\CollectionRules\Triggers\AspNetRequestDurationOptions.cs" />

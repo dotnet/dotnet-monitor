@@ -35,13 +35,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             if (ruleSection.Exists())
             {
                 ruleSection.Bind(options);
-            }
 
-            BindTriggerSettings(ruleSection, options);
+                BindTriggerSettings(ruleSection, options);
 
-            for (int i = 0; i < options.Actions.Count; i++)
-            {
-                BindActionSettings(ruleSection, options, i);
+                for (int i = 0; i < options.Actions.Count; i++)
+                {
+                    BindActionSettings(ruleSection, options, i);
+                }
             }
         }
 

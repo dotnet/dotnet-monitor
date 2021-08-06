@@ -25,13 +25,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCountSlidingWindowDuration))]
-        [Range(typeof(TimeSpan), "00:00:01", "1.00:00:00")]
+        [Range(typeof(TimeSpan), CollectionRuleOptionsConstants.ActionCountSlidingWindowDuration_MinValue, CollectionRuleOptionsConstants.ActionCountSlidingWindowDuration_MaxValue)]
         public TimeSpan? ActionCountSlidingWindowDuration { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleLimitsOptions_RuleDuration))]
-        [Range(typeof(TimeSpan), "00:00:01", "365.00:00:00")]
+        [Range(typeof(TimeSpan), CollectionRuleOptionsConstants.RuleDuration_MinValue, CollectionRuleOptionsConstants.RuleDuration_MaxValue)]
         public TimeSpan? RuleDuration { get; set; }
     }
 }

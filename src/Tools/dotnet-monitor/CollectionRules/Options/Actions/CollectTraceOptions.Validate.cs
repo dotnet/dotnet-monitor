@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             {
                 if (hasProviders)
                 {
-                    // Both Profile and Providers cannot specified at the same time, otherwise
+                    // Both Profile and Providers cannot be specified at the same time, otherwise
                     // cannot determine whether to use providers from the profile or the custom
                     // specified providers.
                     results.Add(new ValidationResult(
