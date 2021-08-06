@@ -1,4 +1,4 @@
-﻿using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+﻿using Microsoft.Diagnostics.Tools.Monitor;
 using NJsonSchema;
 using NJsonSchema.Generation;
 using System;

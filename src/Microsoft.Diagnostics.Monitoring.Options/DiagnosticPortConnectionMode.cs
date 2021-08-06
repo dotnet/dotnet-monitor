@@ -4,11 +4,7 @@
 
 using System.Text.Json.Serialization;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Monitoring.WebApi
-#endif
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum DiagnosticPortConnectionMode

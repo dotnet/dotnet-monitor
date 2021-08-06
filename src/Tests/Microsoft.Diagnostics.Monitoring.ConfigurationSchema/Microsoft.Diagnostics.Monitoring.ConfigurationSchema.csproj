@@ -6,11 +6,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Options\RootOptions.cs" Link="RootOptions.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.csproj" />
+      <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     </ItemGroup>
 
 </Project>

@@ -214,13 +214,6 @@
 2. minBytes: The minimum number of bytes acceptable
 3. maxBytes: The maximum number of bytes acceptable</comment>
   </data>
-  <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
-    <value>The {0} field or the {1} field is required.</value>
-    <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
-2 Format Parameters:
-0. fieldNameOne: The name of the first field that is missing
-1. fieldNameTwo: The name of the second field that is missing</comment>
-  </data>
   <data name="ErrorMessage_UnableToBindUrls" xml:space="preserve">
     <value>Unable to bind any urls.</value>
     <comment>Gets a string similar to "Unable to bind any urls.".</comment>
