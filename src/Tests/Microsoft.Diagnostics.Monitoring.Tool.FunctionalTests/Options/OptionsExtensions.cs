@@ -15,12 +15,15 @@ using System.Text;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.Extensions.Configuration;
 #endif
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
     internal static class OptionsExtensions
     {
+        private const string KeySegmentSeparator = "__";
+
         /// <summary>
         /// Generates an environment variable map of the options.
         /// </summary>
@@ -30,14 +33,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static IDictionary<string, string> ToEnvironmentConfiguration(this RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, "DotNetMonitor_", "__", variables);
+            MapObject(options, DiagnosticsMonitorCommandHandler.ConfigPrefix, KeySegmentSeparator, variables);
             return variables;
         }
 
+        /// <summary>
+        /// Generates a map of options that can be passed directly to configuration via an in-memory collection.
+        /// </summary>
+        /// <remarks>
+        /// Each key is the configuration path; each value is the configuration path value.
+        /// </remarks>
         public static IDictionary<string, string> ToConfigurationValues(this RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, string.Empty, ":", variables);
+            MapObject(options, string.Empty, ConfigurationPath.KeyDelimiter, variables);
             return variables;
         }
 
@@ -50,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static IDictionary<string, string> ToKeyPerFileConfiguration(this RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, string.Empty, "__", variables);
+            MapObject(options, string.Empty, KeySegmentSeparator, variables);
             return variables;
         }
 

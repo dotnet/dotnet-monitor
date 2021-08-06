@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class DiagnosticsMonitorCommandHandler
     {
-        private const string ConfigPrefix = "DotnetMonitor_";
+        public const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
         private const string ProductFolderName = "dotnet-monitor";
 
@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             //CONSIDER The console logger uses the standard AddConsole, and therefore disregards IConsole.
             try
             {
-                using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress, configOnly: false).Build();
+                IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress, configOnly: false).Build();
                 try
                 {
                     await host.StartAsync(token);

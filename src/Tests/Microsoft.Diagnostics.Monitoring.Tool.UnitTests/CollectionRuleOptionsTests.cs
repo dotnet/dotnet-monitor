@@ -21,6 +21,7 @@ using Xunit.Abstractions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.Tracing;
+using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -195,9 +196,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(4, failures.Length);
                     VerifyRequiredMessage(failures, 0, nameof(EventCounterOptions.ProviderName));
                     VerifyRequiredMessage(failures, 1, nameof(EventCounterOptions.CounterName));
-                    VerifyRangeMessage(failures, 2, nameof(EventCounterOptions.SlidingWindowDuration),
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(EventCounterOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
-                    VerifyRangeMessage(failures, 3, nameof(EventCounterOptions.Frequency),
+                    VerifyRangeMessage<int>(failures, 3, nameof(EventCounterOptions.Frequency),
                         TriggerOptionsConstants.Frequency_MinValue_String, TriggerOptionsConstants.Frequency_MaxValue_String);
                 });
         }
@@ -285,7 +286,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(2, failures.Length);
-                    VerifyEnumDataTypeMessage(failures, 0, nameof(CollectDumpOptions.Type));
+                    VerifyEnumDataTypeMessage<DumpType>(failures, 0, nameof(CollectDumpOptions.Type));
                     VerifyEgressNotExistMessage(failures, 1, UnknownEgressName);
                 });
         }
@@ -406,8 +407,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(3, failures.Length);
-                    VerifyEnumDataTypeMessage(failures, 0, nameof(CollectLogsOptions.LogLevel));
-                    VerifyRangeMessage(failures, 1, nameof(CollectLogsOptions.Duration),
+                    VerifyEnumDataTypeMessage<LogLevel>(failures, 0, nameof(CollectLogsOptions.LogLevel));
+                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(CollectLogsOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
                     VerifyRequiredMessage(failures, 2, nameof(CollectLogsOptions.Egress));
                 });
@@ -436,7 +437,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyEnumDataTypeMessage(failures, 0, nameof(CollectLogsOptions.FilterSpecs));
+                    VerifyEnumDataTypeMessage<LogLevel>(failures, 0, nameof(CollectLogsOptions.FilterSpecs));
                 });
         }
 
@@ -574,12 +575,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(5, failures.Length);
-                    VerifyEnumDataTypeMessage(failures, 0, nameof(CollectTraceOptions.Profile));
-                    VerifyRangeMessage(failures, 1, nameof(CollectTraceOptions.MetricsIntervalSeconds),
+                    VerifyEnumDataTypeMessage<TraceProfile>(failures, 0, nameof(CollectTraceOptions.Profile));
+                    VerifyRangeMessage<int>(failures, 1, nameof(CollectTraceOptions.MetricsIntervalSeconds),
                         ActionOptionsConstants.MetricsIntervalSeconds_MinValue_String, ActionOptionsConstants.MetricsIntervalSeconds_MaxValue_String);
-                    VerifyRangeMessage(failures, 2, nameof(CollectTraceOptions.BufferSizeMegabytes),
+                    VerifyRangeMessage<int>(failures, 2, nameof(CollectTraceOptions.BufferSizeMegabytes),
                         ActionOptionsConstants.BufferSizeMegabytes_MinValue_String, ActionOptionsConstants.BufferSizeMegabytes_MaxValue_String);
-                    VerifyRangeMessage(failures, 3, nameof(CollectTraceOptions.Duration),
+                    VerifyRangeMessage<TimeSpan>(failures, 3, nameof(CollectTraceOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
                     VerifyRequiredMessage(failures, 4, nameof(CollectTraceOptions.Egress));
                 });
@@ -723,7 +724,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<RootOptions> setup,
             Action<IOptionsMonitor<CollectionRuleOptions>> validate)
         {
-            using IHost host = new HostBuilder()
+            IHost host = new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
                 {
                     RootOptions options = new();
@@ -808,32 +809,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static void VerifyRequiredMessage(string[] failures, int index, string fieldName)
         {
-            string message = string.Format(
-                CultureInfo.InvariantCulture,
-                "The {0} field is required.",
-                fieldName);
+            string message = (new RequiredAttribute()).FormatErrorMessage(fieldName);
 
             Assert.Equal(message, failures[index]);
         }
 
-        private static void VerifyEnumDataTypeMessage(string[] failures, int index, string fieldName)
+        private static void VerifyEnumDataTypeMessage<T>(string[] failures, int index, string fieldName)
         {
-            string message = string.Format(
-                CultureInfo.InvariantCulture,
-                "The field {0} is invalid.",
-                fieldName);
+            string message = (new EnumDataTypeAttribute(typeof(T))).FormatErrorMessage(fieldName);
 
             Assert.Equal(message, failures[index]);
         }
 
-        private static void VerifyRangeMessage(string[] failures, int index, string fieldName, string min, string max)
+        private static void VerifyRangeMessage<T>(string[] failures, int index, string fieldName, string min, string max)
         {
-            string message = string.Format(
-                CultureInfo.InvariantCulture,
-                "The field {0} must be between {1} and {2}.",
-                fieldName,
-                min,
-                max);
+            string message = (new RangeAttribute(typeof(T), min, max)).FormatErrorMessage(fieldName);
 
             Assert.Equal(message, failures[index]);
         }
