@@ -161,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gets or sets format string used to format timestamp in logging messages. Defaults to null..
+        ///   Looks up a localized string similar to Gets or sets the format string used to format the timestamp in logging messages. Defaults to null..
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat {
             get {
@@ -369,7 +369,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Corresponding LogLevels to categories; applies to no specific provider..
+        ///   Looks up a localized string similar to A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider..
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_LogLevel {
             get {
@@ -378,7 +378,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Corresponding LogLevels to categories; applies to the specified provider..
+        ///   Looks up a localized string similar to A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to the specified provider..
         /// </summary>
         public static string DisplayAttributeDescription_LogLevelOptions_LogLevel {
             get {

@@ -11,17 +11,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ConsoleLoggerFormat
     {
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerFormat_Json))]
         Json,
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerFormat_Simple))]
         Simple,
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerFormat_Systemd))]
         Systemd
     }
 }

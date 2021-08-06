@@ -484,7 +484,7 @@
             "null",
             "object"
           ],
-          "description": "Corresponding LogLevels to categories; applies to no specific provider.",
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.",
           "additionalProperties": {
             "$ref": "#/definitions/LogLevel"
           }
@@ -646,9 +646,10 @@
           }
         },
         {
-          "additionalProperties": false,
           "properties": {
-            "LogToStandardErrorThreshold": {},
+            "FormatterName": {
+              "type": "null"
+            },
             "FormatterOptions": {
               "oneOf": [
                 {
@@ -683,7 +684,7 @@
             "null",
             "object"
           ],
-          "description": "Corresponding LogLevels to categories; applies to no specific provider.",
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.",
           "additionalProperties": {
             "$ref": "#/definitions/LogLevel"
           }
@@ -712,7 +713,7 @@
             "null",
             "string"
           ],
-          "description": "Gets or sets format string used to format timestamp in logging messages. Defaults to null."
+          "description": "Gets or sets the format string used to format the timestamp in logging messages. Defaults to null."
         },
         "UseUtcTimestamp": {
           "type": "boolean",
@@ -767,6 +768,14 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "ColorBehavior": {
+          "description": "Determines when to use color when logging messages.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/SimpleConsoleFormatterOptions/definitions/LoggerColorBehavior"
+            }
+          ]
+        },
         "SingleLine": {
           "type": "boolean",
           "description": "When false, the entire message gets logged in a single line."
@@ -780,12 +789,28 @@
             "null",
             "string"
           ],
-          "description": "Gets or sets format string used to format timestamp in logging messages. Defaults to null."
+          "description": "Gets or sets the format string used to format the timestamp in logging messages. Defaults to null."
         },
         "UseUtcTimestamp": {
           "type": "boolean",
           "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
           "default": false
+        }
+      },
+      "definitions": {
+        "LoggerColorBehavior": {
+          "type": "string",
+          "description": "",
+          "x-enumNames": [
+            "Default",
+            "Enabled",
+            "Disabled"
+          ],
+          "enum": [
+            "Default",
+            "Enabled",
+            "Disabled"
+          ]
         }
       }
     },
@@ -803,7 +828,7 @@
             "null",
             "string"
           ],
-          "description": "Gets or sets format string used to format timestamp in logging messages. Defaults to null."
+          "description": "Gets or sets the format string used to format the timestamp in logging messages. Defaults to null."
         },
         "UseUtcTimestamp": {
           "type": "boolean",

@@ -162,7 +162,7 @@
     <comment>The description provider for the IncludesScopes parameter on FormatterOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat" xml:space="preserve">
-    <value>Gets or sets format string used to format timestamp in logging messages. Defaults to null.</value>
+    <value>Gets or sets the format string used to format the timestamp in logging messages. Defaults to null.</value>
     <comment>The description provider for the TimestampFormat parameter on ConsoleFormatterOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp" xml:space="preserve">
@@ -254,11 +254,11 @@
     <comment>The description provided for the EventSource parameter on LoggingOptions</comment>
   </data>
   <data name="DisplayAttributeDescription_LoggingOptions_LogLevel" xml:space="preserve">
-    <value>Corresponding LogLevels to categories; applies to no specific provider.</value>
+    <value>A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.</value>
     <comment>The description provided for the LogLevel parameter on LoggingOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_LogLevelOptions_LogLevel" xml:space="preserve">
-    <value>Corresponding LogLevels to categories; applies to the specified provider.</value>
+    <value>A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to the specified provider.</value>
     <comment>The description provided for the LogLevel parameter on LogLevelOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_MetricProvider_CounterNames" xml:space="preserve">

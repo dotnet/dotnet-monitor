@@ -81,17 +81,19 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         {
             JsonSchema consoleLoggerOptionsSchema = new JsonSchema();
 
+            JsonSchemaProperty formatterNameProperty = new JsonSchemaProperty();
             JsonSchemaProperty formatterOptionsProperty = new JsonSchemaProperty();
-            JsonSchemaProperty logToStandardErrorThresholdPropertyDefault = new JsonSchemaProperty();
 
             JsonSchema formatterOptionsSchema = new JsonSchema();
             formatterOptionsSchema.Reference = consoleFormatterOptions;
 
             formatterOptionsProperty.OneOf.Add(formatterOptionsSchema);
 
-            consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.LogToStandardErrorThreshold), logToStandardErrorThresholdPropertyDefault);
+            formatterNameProperty.ExtensionData = new Dictionary<string, object>();
+            formatterNameProperty.ExtensionData.Add("type", "null");
+
+            consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameProperty);
             consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsProperty);
-            consoleLoggerOptionsSchema.AllowAdditionalProperties = false;
 
             return consoleLoggerOptionsSchema;
         }
