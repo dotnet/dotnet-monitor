@@ -485,12 +485,21 @@
             "object"
           ],
           "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.",
+          "default": {},
           "additionalProperties": {
-            "$ref": "#/definitions/LogLevel"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
           }
         },
         "Console": {
           "description": "Logging options for the Console provider.",
+          "default": {},
           "oneOf": [
             {
               "type": "null"
@@ -502,6 +511,7 @@
         },
         "EventLog": {
           "description": "Logging options for the EventLog provider.",
+          "default": {},
           "oneOf": [
             {
               "type": "null"
@@ -513,6 +523,7 @@
         },
         "Debug": {
           "description": "Logging options for the Debug provider.",
+          "default": {},
           "oneOf": [
             {
               "type": "null"
@@ -524,6 +535,7 @@
         },
         "EventSource": {
           "description": "Logging options for the EventSource provider.",
+          "default": {},
           "oneOf": [
             {
               "type": "null"
@@ -585,12 +597,31 @@
         },
         "FormatterOptions": {
           "description": "Formatter options for the built-in console log formatter.",
+          "default": {},
           "oneOf": [
             {},
             {
               "type": "null"
             }
           ]
+        },
+        "LogLevel": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies solely to ConsoleLoggerOptions.",
+          "default": {},
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
+          }
         }
       },
       "anyOf": [
@@ -603,11 +634,7 @@
               "const": "Json"
             },
             "FormatterOptions": {
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/JsonConsoleFormatterOptions"
-                }
-              ]
+              "$ref": "#/definitions/JsonConsoleFormatterOptions"
             }
           }
         },
@@ -620,11 +647,7 @@
               "const": "Simple"
             },
             "FormatterOptions": {
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/SimpleConsoleFormatterOptions"
-                }
-              ]
+              "$ref": "#/definitions/SimpleConsoleFormatterOptions"
             }
           }
         },
@@ -637,25 +660,18 @@
               "const": "Systemd"
             },
             "FormatterOptions": {
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/ConsoleFormatterOptions"
-                }
-              ]
+              "$ref": "#/definitions/ConsoleFormatterOptions"
             }
           }
         },
         {
           "properties": {
             "FormatterName": {
-              "type": "null"
+              "default": "Simple",
+              "const": 8
             },
             "FormatterOptions": {
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/SimpleConsoleFormatterOptions"
-                }
-              ]
+              "$ref": "#/definitions/SimpleConsoleFormatterOptions"
             }
           }
         }
@@ -684,9 +700,17 @@
             "null",
             "object"
           ],
-          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.",
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to the specified provider.",
+          "default": {},
           "additionalProperties": {
-            "$ref": "#/definitions/LogLevel"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
           }
         }
       }

@@ -16,8 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_LogLevel))]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public IDictionary<string, LogLevel> LogLevel { get; set; }
+        public IDictionary<string, LogLevel?> LogLevel { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

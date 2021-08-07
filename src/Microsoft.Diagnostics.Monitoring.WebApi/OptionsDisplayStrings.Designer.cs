@@ -224,6 +224,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies solely to ConsoleLoggerOptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerOptions_LogLevel {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerOptions_LogLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The minimum level of messages that are written to Console.Error..
         /// </summary>
         public static string DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold {

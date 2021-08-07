@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
@@ -14,8 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_LogLevel))]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public IDictionary<string, LogLevel> LogLevel { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelOptions_LogLevel))]
+        public IDictionary<string, LogLevel?> LogLevel { get; set; }
     }
 }

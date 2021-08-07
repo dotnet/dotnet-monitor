@@ -3,6 +3,7 @@ using NJsonSchema;
 using NJsonSchema.Generation;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 {
@@ -11,6 +12,10 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         public string GenerateSchema()
         {
             var settings = new JsonSchemaGeneratorSettings();
+
+            settings.SerializerSettings = new Newtonsoft.Json.JsonSerializerSettings();
+            settings.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+
             JsonSchema schema = JsonSchema.FromType<RootOptions>(settings);
             schema.Id = @"https://www.github.com/dotnet/dotnet-monitor";
             schema.Title = "DotnetMonitorConfiguration";
@@ -31,8 +36,16 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             schema.Definitions[nameof(EgressOptions)].Properties[nameof(EgressOptions.AzureBlobStorage)].Default = JsonSchema.CreateAnySchema();
             schema.Definitions[nameof(EgressOptions)].Properties[nameof(EgressOptions.FileSystem)].Default = JsonSchema.CreateAnySchema();
             schema.Definitions[nameof(EgressOptions)].Properties[nameof(EgressOptions.Properties)].Default = JsonSchema.CreateAnySchema();
+            schema.Definitions[nameof(LoggingOptions)].Properties[nameof(LoggingOptions.LogLevel)].Default = JsonSchema.CreateAnySchema();
+            schema.Definitions[nameof(LoggingOptions)].Properties[nameof(LoggingOptions.Console)].Default = JsonSchema.CreateAnySchema();
+            schema.Definitions[nameof(LoggingOptions)].Properties[nameof(LoggingOptions.EventLog)].Default = JsonSchema.CreateAnySchema();
+            schema.Definitions[nameof(LoggingOptions)].Properties[nameof(LoggingOptions.Debug)].Default = JsonSchema.CreateAnySchema();
+            schema.Definitions[nameof(LoggingOptions)].Properties[nameof(LoggingOptions.EventSource)].Default = JsonSchema.CreateAnySchema();
+            schema.Definitions[nameof(LogLevelOptions)].Properties[nameof(LogLevelOptions.LogLevel)].Default = JsonSchema.CreateAnySchema();
+            schema.Definitions[nameof(ConsoleLoggerOptions)].Properties[nameof(ConsoleLoggerOptions.FormatterOptions)].Default = JsonSchema.CreateAnySchema();
+            schema.Definitions[nameof(ConsoleLoggerOptions)].Properties[nameof(ConsoleLoggerOptions.LogLevel)].Default = JsonSchema.CreateAnySchema();
 
-            //Make the default for each property and empty object.
+            //Make the default for each property an empty object.
             foreach (KeyValuePair<string, JsonSchemaProperty> kvp in schema.Properties)
             {
                 kvp.Value.Default = JsonSchema.CreateAnySchema();
@@ -65,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             JsonSchema formatterOptionsSchema = new JsonSchema();
             formatterOptionsSchema.Reference = consoleFormatterOptions;
 
-            formatterOptionsProperty.OneOf.Add(formatterOptionsSchema);
+            formatterOptionsProperty.Reference = formatterOptionsSchema;
 
             formatterNameProperty.ExtensionData = new Dictionary<string, object>();
             formatterNameProperty.ExtensionData.Add("const", consoleLoggerFormat.ToString());
@@ -83,17 +96,18 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
             JsonSchemaProperty formatterNameProperty = new JsonSchemaProperty();
             JsonSchemaProperty formatterOptionsProperty = new JsonSchemaProperty();
-
+            
             JsonSchema formatterOptionsSchema = new JsonSchema();
             formatterOptionsSchema.Reference = consoleFormatterOptions;
 
-            formatterOptionsProperty.OneOf.Add(formatterOptionsSchema);
+            formatterOptionsProperty.Reference = formatterOptionsSchema;
 
             formatterNameProperty.ExtensionData = new Dictionary<string, object>();
-            formatterNameProperty.ExtensionData.Add("type", "null");
+            formatterNameProperty.ExtensionData.Add("const", JsonObjectType.Null);
 
             consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameProperty);
             consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsProperty);
+            consoleLoggerOptionsSchema.Properties[nameof(ConsoleLoggerOptions.FormatterName)].Default = "Simple";
 
             return consoleLoggerOptionsSchema;
         }

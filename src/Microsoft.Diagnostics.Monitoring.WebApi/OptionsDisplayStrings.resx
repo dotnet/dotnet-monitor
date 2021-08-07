@@ -189,6 +189,10 @@
     <value>Formatter options for the built-in console log formatter.</value>
     <comment>The description provider for the FormatterOptions parameter on ConsoleLoggerOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_LogLevel" xml:space="preserve">
+    <value>A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies solely to ConsoleLoggerOptions.</value>
+    <comment>The description provided for the LogLevel parameter on ConsoleLoggerOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold" xml:space="preserve">
     <value>The minimum level of messages that are written to Console.Error.</value>
     <comment>The description provided for the LogToStandardErrorThreshold parameter on ConsoleLoggerOptions.</comment>
