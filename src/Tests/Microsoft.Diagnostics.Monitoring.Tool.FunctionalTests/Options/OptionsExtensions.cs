@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,13 +16,13 @@ using System.Text;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
-using Microsoft.Extensions.Configuration;
 #endif
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
     internal static class OptionsExtensions
     {
+        private const string EnvironmentVariablePrefix = "DotnetMonitor_";
         private const string KeySegmentSeparator = "__";
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static IDictionary<string, string> ToEnvironmentConfiguration(this RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, DiagnosticsMonitorCommandHandler.ConfigPrefix, KeySegmentSeparator, variables);
+            MapObject(options, EnvironmentVariablePrefix, KeySegmentSeparator, variables);
             return variables;
         }
 
