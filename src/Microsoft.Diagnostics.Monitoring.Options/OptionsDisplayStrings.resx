@@ -345,4 +345,11 @@
     <value>The location for temporary dump files. Defaults to the temp folder.</value>
     <comment>The description provided for the DumpTempFolder parameter on StorageOptions.</comment>
   </data>
+  <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
+    <value>The {0} field or the {1} field is required.</value>
+    <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
+2 Format Parameters:
+0. fieldNameOne: The name of the first field that is missing
+1. fieldNameTwo: The name of the second field that is missing</comment>
+  </data>
 </root>

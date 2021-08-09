@@ -6,11 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
-#endif
 {
     /// <summary>
     /// Egress provider options for Azure blob storage.

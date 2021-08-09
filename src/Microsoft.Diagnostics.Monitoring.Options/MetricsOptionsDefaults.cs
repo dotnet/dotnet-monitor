@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal sealed class StorageOptionsDefaults
+    internal class MetricsOptionsDefaults
     {
-        public static readonly string DumpTempFolder = Path.GetTempPath();
+        public const bool Enabled = true;
+
+        public const int UpdateIntervalSeconds = 10;
+
+        public const int MetricCount = 3;
+
+        public const bool IncludeDefaultProviders = true;
     }
 }

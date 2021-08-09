@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
+namespace Microsoft.Diagnostics.Monitoring.Options
 {
     internal sealed class LogLevelOptions
     {

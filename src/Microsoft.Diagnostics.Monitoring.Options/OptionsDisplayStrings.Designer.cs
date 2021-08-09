@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings", typeof(OptionsDisplayStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Monitoring.Options.OptionsDisplayStrings", typeof(OptionsDisplayStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -572,6 +572,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_StorageOptions_DumpTempFolder {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_DumpTempFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field or the {1} field is required..
+        /// </summary>
+        public static string ErrorMessage_TwoFieldsMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TwoFieldsMissing", resourceCulture);
             }
         }
     }

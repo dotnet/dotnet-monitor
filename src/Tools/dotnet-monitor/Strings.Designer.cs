@@ -223,15 +223,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field or the {1} field is required..
-        /// </summary>
-        internal static string ErrorMessage_TwoFieldsMissing {
-            get {
-                return ResourceManager.GetString("ErrorMessage_TwoFieldsMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to bind any urls..
         /// </summary>
         internal static string ErrorMessage_UnableToBindUrls {

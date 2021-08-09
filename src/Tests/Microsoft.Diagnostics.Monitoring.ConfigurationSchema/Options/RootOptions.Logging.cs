@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
+using Microsoft.Diagnostics.Monitoring.Options;
+
+namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal enum ConsoleLoggerFormat
+    partial class RootOptions
     {
-        Json,
-        Simple,
-        Systemd
+        public LoggingOptions Logging { get; set; }
     }
 }

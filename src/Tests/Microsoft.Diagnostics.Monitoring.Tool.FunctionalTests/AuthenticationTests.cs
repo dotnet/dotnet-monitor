@@ -17,6 +17,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Microsoft.Diagnostics.Tools.Monitor;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {

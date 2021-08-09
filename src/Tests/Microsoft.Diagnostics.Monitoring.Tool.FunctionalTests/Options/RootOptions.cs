@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
+namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal class RootOptions
+    internal partial class RootOptions
     {
         public ApiAuthenticationOptions ApiAuthentication { get; set; }
 
@@ -19,7 +21,5 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public StorageOptions Storage { get; set; }
 
         public ProcessFilterOptions DefaultProcess { get; set; }
-
-        public LoggingOptions Logging { get; set; }
     }
 }
