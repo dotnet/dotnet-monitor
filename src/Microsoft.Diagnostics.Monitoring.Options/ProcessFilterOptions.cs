@@ -5,11 +5,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ProcessFilterKey
     {
         [Display(
@@ -26,7 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         CommandLine,
     }
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ProcessFilterType
     {
         [Display(

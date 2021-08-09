@@ -1,4 +1,6 @@
 ﻿using Microsoft.Diagnostics.Tools.Monitor;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using NJsonSchema;
 using NJsonSchema.Generation;
 using System;
@@ -11,6 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         public string GenerateSchema()
         {
             var settings = new JsonSchemaGeneratorSettings();
+            settings.SerializerSettings = new JsonSerializerSettings();
+            settings.SerializerSettings.Converters.Add(new StringEnumConverter());
             JsonSchema schema = JsonSchema.FromType<RootOptions>(settings);
             schema.Id = @"https://www.github.com/dotnet/dotnet-monitor";
             schema.Title = "DotnetMonitorConfiguration";
