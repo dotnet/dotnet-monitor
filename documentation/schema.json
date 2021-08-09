@@ -624,7 +624,7 @@
           }
         }
       },
-      "anyOf": [
+      "oneOf": [
         {
           "required": [
             "FormatterName"
@@ -667,8 +667,8 @@
         {
           "properties": {
             "FormatterName": {
-              "default": "Simple",
-              "const": 8
+              "type": "null",
+              "default": "Simple"
             },
             "FormatterOptions": {
               "$ref": "#/definitions/SimpleConsoleFormatterOptions"

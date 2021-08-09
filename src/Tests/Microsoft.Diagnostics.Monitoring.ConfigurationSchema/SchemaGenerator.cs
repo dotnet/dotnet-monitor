@@ -3,7 +3,8 @@ using NJsonSchema;
 using NJsonSchema.Generation;
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 {
@@ -13,8 +14,8 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         {
             var settings = new JsonSchemaGeneratorSettings();
 
-            settings.SerializerSettings = new Newtonsoft.Json.JsonSerializerSettings();
-            settings.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+            settings.SerializerSettings = new JsonSerializerSettings();
+            settings.SerializerSettings.Converters.Add(new StringEnumConverter());
 
             JsonSchema schema = JsonSchema.FromType<RootOptions>(settings);
             schema.Id = @"https://www.github.com/dotnet/dotnet-monitor";
@@ -56,10 +57,10 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             JsonSchema systemdConsoleLoggerOptionsSchema = GenerateConsoleLoggerOptionsSchema(systemdConsoleFormatterOptions, ConsoleLoggerFormat.Systemd);
             JsonSchema defaultConsoleLoggerOptionsSchema = GenerateDefaultConsoleLoggerOptionsSchema(simpleConsoleFormatterOptions);
 
-            schema.Definitions[nameof(ConsoleLoggerOptions)].AnyOf.Add(jsonConsoleLoggerOptionsSchema);
-            schema.Definitions[nameof(ConsoleLoggerOptions)].AnyOf.Add(simpleConsoleLoggerOptionsSchema);
-            schema.Definitions[nameof(ConsoleLoggerOptions)].AnyOf.Add(systemdConsoleLoggerOptionsSchema);
-            schema.Definitions[nameof(ConsoleLoggerOptions)].AnyOf.Add(defaultConsoleLoggerOptionsSchema);
+            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(jsonConsoleLoggerOptionsSchema);
+            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(simpleConsoleLoggerOptionsSchema);
+            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(systemdConsoleLoggerOptionsSchema);
+            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(defaultConsoleLoggerOptionsSchema);
 
             string schemaPayload = schema.ToJson();
 
@@ -102,12 +103,11 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
             formatterOptionsProperty.Reference = formatterOptionsSchema;
 
-            formatterNameProperty.ExtensionData = new Dictionary<string, object>();
-            formatterNameProperty.ExtensionData.Add("const", JsonObjectType.Null);
+            formatterNameProperty.Type = JsonObjectType.Null;
+            formatterNameProperty.Default = "Simple";
 
             consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameProperty);
             consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsProperty);
-            consoleLoggerOptionsSchema.Properties[nameof(ConsoleLoggerOptions.FormatterName)].Default = "Simple";
 
             return consoleLoggerOptionsSchema;
         }
