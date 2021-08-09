@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Options\OptionsExtensions.cs" Link="Options\OptionsExtensions.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj" />
+        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
+    </ItemGroup>
+
+</Project>

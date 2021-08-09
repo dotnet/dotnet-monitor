@@ -8,6 +8,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public const string ApiAuthentication = nameof(ApiAuthentication);
 
+        public const string CollectionRules = nameof(CollectionRules);
+
         public const string CorsConfiguration = nameof(CorsConfiguration);
 
         public const string DiagnosticPort = nameof(DiagnosticPort);

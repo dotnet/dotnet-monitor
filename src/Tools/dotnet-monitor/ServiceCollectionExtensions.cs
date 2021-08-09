@@ -3,6 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
@@ -31,6 +36,52 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 .AddSingleton<IOptionsChangeTokenSource<ApiKeyAuthenticationOptions>, ApiKeyAuthenticationOptionsChangeTokenSource>();
         }
 
+        public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
+        {
+            services.RegisterCollectionRuleAction<CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
+            services.RegisterCollectionRuleAction<CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
+            services.RegisterCollectionRuleAction<CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
+            services.RegisterCollectionRuleAction<CollectTraceOptions>(KnownCollectionRuleActions.CollectTrace);
+            services.RegisterCollectionRuleAction<ExecuteOptions>(KnownCollectionRuleActions.Execute);
+
+            services.RegisterCollectionRuleTrigger<AspNetRequestCountOptions>(KnownCollectionRuleTriggers.AspNetRequestCount);
+            services.RegisterCollectionRuleTrigger<AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
+            services.RegisterCollectionRuleTrigger<AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
+            services.RegisterCollectionRuleTrigger<EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
+            services.RegisterCollectionRuleTrigger(KnownCollectionRuleTriggers.Startup);
+
+            services.AddSingleton<ICollectionRuleActionOptionsProvider, CollectionRuleActionOptionsProvider>();
+            services.AddSingleton<ICollectionRuleTriggerOptionsProvider, CollectionRuleTriggerOptionsProvider>();
+            services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
+            services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
+
+            return services;
+        }
+
+        private static IServiceCollection RegisterCollectionRuleAction<TOptions>(this IServiceCollection services, string actionType) where TOptions : class, new()
+        {
+            services.TryAddSingletonEnumerable<ICollectionRuleActionProvider, CollectionRuleActionProvider<TOptions>>(sp => new CollectionRuleActionProvider<TOptions>(actionType));
+            // NOTE: When opening colletion rule actions for extensibility, this should not be added for all registered actions.
+            // Each action should register its own IValidateOptions<> implementation (if it needs one).
+            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+            return services;
+        }
+
+        private static IServiceCollection RegisterCollectionRuleTrigger(this IServiceCollection services, string triggerType)
+        {
+            services.TryAddSingletonEnumerable<ICollectionRuleTriggerProvider, CollectionRuleTriggerProvider>(sp => new CollectionRuleTriggerProvider(triggerType));
+            return services;
+        }
+
+        private static IServiceCollection RegisterCollectionRuleTrigger<TOptions>(this IServiceCollection services, string triggerType) where TOptions : class, new()
+        {
+            services.TryAddSingletonEnumerable<ICollectionRuleTriggerProvider, CollectionRuleTriggerProvider<TOptions>>(sp => new CollectionRuleTriggerProvider<TOptions>(triggerType));
+            // NOTE: When opening colletion rule triggers for extensibility, this should not be added for all registered triggers.
+            // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
+            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+            return services;
+        }
+
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
@@ -46,7 +97,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services.Configure<T>(configuration.GetSection(key));
         }
 
-        public static IServiceCollection ConfigureEgress(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection ConfigureEgress(this IServiceCollection services)
         {
             // Register IEgressService implementation that provides egressing
             // of artifacts for the REST server.
@@ -76,7 +127,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             // Add options services for configuring the options type
             services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
-            services.AddSingleton<IValidateOptions<TOptions>, EgressProviderValidateOptions<TOptions>>();
+            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
 
             // Register change sources for the options type
             services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();

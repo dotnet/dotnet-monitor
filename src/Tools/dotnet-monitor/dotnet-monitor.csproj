@@ -55,6 +55,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
   </ItemGroup>
 
   <ItemGroup>

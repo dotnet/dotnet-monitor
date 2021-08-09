@@ -30,9 +30,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests\Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests.csproj", "{886D1FD5-125F-435B-934C-30DF2938E7F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Diagnostics.Monitoring.ConfigurationSchema", "src\Tests\Microsoft.Diagnostics.Monitoring.ConfigurationSchema\Microsoft.Diagnostics.Monitoring.ConfigurationSchema.csproj", "{422ABBF6-6236-4042-AACA-09531DBDFBAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.ConfigurationSchema", "src\Tests\Microsoft.Diagnostics.Monitoring.ConfigurationSchema\Microsoft.Diagnostics.Monitoring.ConfigurationSchema.csproj", "{422ABBF6-6236-4042-AACA-09531DBDFBAA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.WebApi.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.WebApi.UnitTests\Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.csproj", "{3AD0A40B-C569-4712-9764-7A788B9CD811}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests.csproj", "{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +82,10 @@ Global
 		{3AD0A40B-C569-4712-9764-7A788B9CD811}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AD0A40B-C569-4712-9764-7A788B9CD811}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AD0A40B-C569-4712-9764-7A788B9CD811}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +104,7 @@ Global
 		{886D1FD5-125F-435B-934C-30DF2938E7F6} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{422ABBF6-6236-4042-AACA-09531DBDFBAA} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{3AD0A40B-C569-4712-9764-7A788B9CD811} = {C7568468-1C79-4944-8136-18812A7F9EA7}
+		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46465737-C938-44FC-BE1A-4CE139EBB5E0}

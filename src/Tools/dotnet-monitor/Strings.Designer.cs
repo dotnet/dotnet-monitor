@@ -151,6 +151,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value of field {0} must be less than the value of field {1}..
+        /// </summary>
+        internal static string ErrorMessage_FieldMustBeLessThanOtherField {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FieldMustBeLessThanOtherField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field value &apos;{1}&apos; is not allowed..
         /// </summary>
         internal static string ErrorMessage_FieldNotAllowed {
@@ -223,6 +232,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Both the {0} field and the {1} field cannot be specified..
+        /// </summary>
+        internal static string ErrorMessage_TwoFieldsCannotBeSpecified {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TwoFieldsCannotBeSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field or the {1} field is required..
         /// </summary>
         internal static string ErrorMessage_TwoFieldsMissing {
@@ -246,6 +264,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_UnhandledConnectionMode {
             get {
                 return ResourceManager.GetString("ErrorMessage_UnhandledConnectionMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a known action type..
+        /// </summary>
+        internal static string ErrorMessage_UnknownActionType {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnknownActionType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a known trigger type..
+        /// </summary>
+        internal static string ErrorMessage_UnknownTriggerType {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnknownTriggerType", resourceCulture);
             }
         }
         
@@ -417,6 +453,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_DisabledNegotiateWhileElevated {
             get {
                 return ResourceManager.GetString("LogFormatString_DisabledNegotiateWhileElevated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule action &apos;{actionType}&apos; was previously registered; the new registration will be ignored..
+        /// </summary>
+        internal static string LogFormatString_DuplicateCollectionRuleActionIgnored {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateCollectionRuleActionIgnored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule trigger &apos;{triggerType}&apos; was previously registered; the new registration will be ignored..
+        /// </summary>
+        internal static string LogFormatString_DuplicateCollectionRuleTriggerIgnored {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateCollectionRuleTriggerIgnored", resourceCulture);
             }
         }
         

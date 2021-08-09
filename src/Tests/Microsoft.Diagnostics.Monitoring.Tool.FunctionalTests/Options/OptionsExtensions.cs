@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,10 +12,19 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
+#if !UNITTEST
+using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+#endif
+
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
     internal static class OptionsExtensions
     {
+        private const string EnvironmentVariablePrefix = "DotnetMonitor_";
+        private const string KeySegmentSeparator = "__";
+
         /// <summary>
         /// Generates an environment variable map of the options.
         /// </summary>
@@ -24,7 +34,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static IDictionary<string, string> ToEnvironmentConfiguration(this RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, "DotNetMonitor_", variables);
+            MapObject(options, EnvironmentVariablePrefix, KeySegmentSeparator, variables);
+            return variables;
+        }
+
+        /// <summary>
+        /// Generates a map of options that can be passed directly to configuration via an in-memory collection.
+        /// </summary>
+        /// <remarks>
+        /// Each key is the configuration path; each value is the configuration path value.
+        /// </remarks>
+        public static IDictionary<string, string> ToConfigurationValues(this RootOptions options)
+        {
+            Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
+            MapObject(options, string.Empty, ConfigurationPath.KeyDelimiter, variables);
             return variables;
         }
 
@@ -37,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static IDictionary<string, string> ToKeyPerFileConfiguration(this RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, string.Empty, variables);
+            MapObject(options, string.Empty, KeySegmentSeparator, variables);
             return variables;
         }
 
@@ -78,7 +101,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        private static void MapDictionary(IDictionary dictionary, string prefix, IDictionary<string, string> map)
+        public static CollectionRuleOptions CreateCollectionRule(this RootOptions rootOptions, string name)
+        {
+            CollectionRuleOptions options = new();
+            rootOptions.CollectionRules.Add(name, options);
+            return options;
+        }
+
+        private static void MapDictionary(IDictionary dictionary, string prefix, string separator, IDictionary<string, string> map)
         {
             foreach (var key in dictionary.Keys)
             {
@@ -89,12 +119,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                     MapValue(
                         value,
                         FormattableString.Invariant($"{prefix}{keyString}"),
+                        separator,
                         map);
                 }
             }
         }
 
-        private static void MapList(IList list, string prefix, IDictionary<string, string> map)
+        private static void MapList(IList list, string prefix, string separator, IDictionary<string, string> map)
         {
             for (int index = 0; index < list.Count; index++)
             {
@@ -104,12 +135,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                     MapValue(
                         value,
                         FormattableString.Invariant($"{prefix}{index}"),
+                        separator,
                         map);
                 }
             }
         }
 
-        private static void MapObject(object obj, string prefix, IDictionary<string, string> map)
+        private static void MapObject(object obj, string prefix, string separator, IDictionary<string, string> map)
         {
             foreach (PropertyInfo property in obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -118,17 +150,21 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                     MapValue(
                         property.GetValue(obj),
                         FormattableString.Invariant($"{prefix}{property.Name}"),
+                        separator,
                         map);
                 }
             }
         }
 
-        private static void MapValue(object value, string valueName, IDictionary<string, string> map)
+        private static void MapValue(object value, string valueName, string separator, IDictionary<string, string> map)
         {
             if (null != value)
             {
                 Type valueType = value.GetType();
-                if (valueType.IsPrimitive || typeof(string) == valueType)
+                if (valueType.IsPrimitive ||
+                    valueType.IsEnum ||
+                    typeof(string) == valueType ||
+                    typeof(TimeSpan) == valueType)
                 {
                     map.Add(
                         valueName,
@@ -136,18 +172,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 }
                 else
                 {
-                    string prefix = FormattableString.Invariant($"{valueName}__");
+                    string prefix = FormattableString.Invariant($"{valueName}{separator}");
                     if (value is IDictionary dictionary)
                     {
-                        MapDictionary(dictionary, prefix, map);
+                        MapDictionary(dictionary, prefix, separator, map);
                     }
                     else if (value is IList list)
                     {
-                        MapList(list, prefix, map);
+                        MapList(list, prefix, separator, map);
                     }
                     else
                     {
-                        MapObject(value, prefix, map);
+                        MapObject(value, prefix, separator, map);
                     }
                 }
             }
