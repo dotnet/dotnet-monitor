@@ -26,6 +26,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 {
     internal sealed class ApiClient
     {
+        private static readonly JsonSerializerOptions DefaultJsonDeserializeOptions
+            = CreateJsonDeserializeOptions();
+        private static readonly JsonSerializerOptions DefaultJsonSerializeOptions
+            = CreateJsonSerializeOptions();
+
         private readonly HttpClient _httpClient;
         private readonly ITestOutputHelper _outputHelper;
 
@@ -252,9 +257,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         private Task<ResponseStreamHolder> CaptureLogsAsync(string processQuery, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, CancellationToken token)
         {
-            JsonSerializerOptions options = new();
-            options.Converters.Add(new JsonStringEnumConverter());
-            string json = JsonSerializer.Serialize(configuration, options);
+            string json = JsonSerializer.Serialize(configuration, DefaultJsonSerializeOptions);
 
             return CaptureLogsAsync(
                 HttpMethod.Post,
@@ -426,7 +429,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         private static async Task<T> ReadContentAsync<T>(HttpResponseMessage responseMessage)
         {
             using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            return await JsonSerializer.DeserializeAsync<T>(contentStream).ConfigureAwait(false);
+            return await JsonSerializer.DeserializeAsync<T>(contentStream, DefaultJsonDeserializeOptions).ConfigureAwait(false);
         }
 
         private static Task<List<T>> ReadContentEnumerableAsync<T>(HttpResponseMessage responseMessage)
@@ -547,6 +550,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             }
 
             throw new ArgumentException("One of PID, UID, or Name must be specified.");
+        }
+
+        private static JsonSerializerOptions CreateJsonDeserializeOptions()
+        {
+            JsonSerializerOptions options = new();
+            options.Converters.Add(new JsonStringEnumConverter());
+            return options;
+        }
+
+        private static JsonSerializerOptions CreateJsonSerializeOptions()
+        {
+            JsonSerializerOptions options = new();
+            options.Converters.Add(new JsonStringEnumConverter());
+            return options;
         }
     }
 }
