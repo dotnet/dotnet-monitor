@@ -152,6 +152,96 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gets or sets whether scopes should be included or not..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleFormatterOptions_IncludeScopes {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_IncludeScopes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gets or sets the format string used to format the timestamp in logging messages. Defaults to null..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reserved name for Json console formatter..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerFormat_Json {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerFormat_Json", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reserved name for simple console formatter..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerFormat_Simple {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerFormat_Simple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reserved name for systemd console formatter..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerFormat_Systemd {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerFormat_Systemd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name of the log message formatter to use. Defaults to &apos;Simple&apos;..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerOptions_FormatterName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerOptions_FormatterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Formatter options for the built-in console log formatter..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerOptions_FormatterOptions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerOptions_FormatterOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies solely to ConsoleLoggerOptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerOptions_LogLevel {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerOptions_LogLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum level of messages that are written to Console.Error..
+        /// </summary>
+        public static string DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to List of allowed CORS origins, separated by semicolons..
         /// </summary>
         public static string DisplayAttributeDescription_CorsConfiguration_AllowedOrigins {
@@ -230,6 +320,78 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectory" +
                         "Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gets or sets JsonWriterOptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gets or sets whether logging scopes are being captured. Defaults to true..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_CaptureScopes {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_CaptureScopes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the Console provider..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_Console {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_Console", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the Debug provider..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_Debug {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_Debug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the EventLog provider..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_EventLog {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_EventLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging options for the EventSource provider..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_EventSource {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_EventSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoggingOptions_LogLevel {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoggingOptions_LogLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to the specified provider..
+        /// </summary>
+        public static string DisplayAttributeDescription_LogLevelOptions_LogLevel {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LogLevelOptions_LogLevel", resourceCulture);
             }
         }
         
@@ -383,6 +545,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_ProcessFilterType_Exact {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_ProcessFilterType_Exact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines when to use color when logging messages..
+        /// </summary>
+        public static string DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When false, the entire message gets logged in a single line..
+        /// </summary>
+        public static string DisplayAttributeDescription_SimpleConsoleFormatterOptions_SingleLine {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_SimpleConsoleFormatterOptions_SingleLine", resourceCulture);
             }
         }
         
