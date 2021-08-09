@@ -4,11 +4,7 @@
 
 using System.Globalization;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
-#endif
 {
     // Constants for trigger options allowing reuse among multiple trigger and for tests to verify ranges.
     internal static class TriggerOptionsConstants

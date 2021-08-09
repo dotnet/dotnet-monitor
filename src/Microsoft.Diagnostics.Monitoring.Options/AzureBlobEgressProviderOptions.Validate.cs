@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -24,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 results.Add(
                     new ValidationResult(
                         string.Format(
-                            Strings.ErrorMessage_TwoFieldsMissing,
+                            OptionsDisplayStrings.ErrorMessage_TwoFieldsMissing,
                             nameof(AccountKey),
                             nameof(SharedAccessSignature))));
             }

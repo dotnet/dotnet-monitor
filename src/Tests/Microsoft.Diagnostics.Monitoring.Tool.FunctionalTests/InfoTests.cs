@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
