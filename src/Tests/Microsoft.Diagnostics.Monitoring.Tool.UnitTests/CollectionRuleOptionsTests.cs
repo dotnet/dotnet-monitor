@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddExecuteAction("echo");
+                        .AddExecuteAction("cmd.exe");
                 },
                 ex =>
                 {
@@ -666,7 +666,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_ExecuteAction_MinimumOptions()
         {
-            const string ExpectedExePath = "echo";
+            const string ExpectedExePath = "cmd.exe";
 
             return ValidateSuccess(
                 rootOptions =>
@@ -685,8 +685,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_ExecuteAction_RoundTrip()
         {
-            const string ExpectedExePath = "echo";
-            const string ExpectedArguments = "\"Hello\"";
+            const string ExpectedExePath = "cmd.exe";
+            const string ExpectedArguments = "/c \"echo Hello\"";
 
             return ValidateSuccess(
                 rootOptions =>
