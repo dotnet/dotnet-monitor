@@ -133,6 +133,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DuplicateEgressProviderIgnored);
 
+        private static readonly Action<ILogger, string, Exception> _duplicateCollectionRuleActionIgnored =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(25, "DuplicateCollectionRuleActionIgnored"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DuplicateCollectionRuleActionIgnored);
+
+        private static readonly Action<ILogger, string, Exception> _duplicateCollectionRuleTriggerIgnored =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(26, "DuplicateCollectionRuleTriggerIgnored"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DuplicateCollectionRuleTriggerIgnored);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -224,6 +236,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DuplicateEgressProviderIgnored(this ILogger logger, string providerName, string providerType, string existingProviderType)
         {
             _duplicateEgressProviderIgnored(logger, providerName, providerType, existingProviderType, null);
+        }
+
+        public static void DuplicateCollectionRuleActionIgnored(this ILogger logger, string actionType)
+        {
+            _duplicateCollectionRuleActionIgnored(logger, actionType, null);
+        }
+
+        public static void DuplicateCollectionRuleTriggerIgnored(this ILogger logger, string triggerType)
+        {
+            _duplicateCollectionRuleTriggerIgnored(logger, triggerType, null);
         }
     }
 }

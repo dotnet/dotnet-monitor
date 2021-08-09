@@ -2,34 +2,38 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
     internal sealed class CollectionRuleActionOptionsProvider :
         ICollectionRuleActionOptionsProvider
     {
-        private readonly IEnumerable<ICollectionRuleActionProvider> _actionProviders;
+        private readonly IDictionary<string, Type> _optionsMap =
+            new Dictionary<string, Type>(StringComparer.Ordinal);
 
-        public CollectionRuleActionOptionsProvider(IEnumerable<ICollectionRuleActionProvider> actionProviders)
+        public CollectionRuleActionOptionsProvider(
+            ILogger<CollectionRuleActionOptionsProvider> logger,
+            IEnumerable<ICollectionRuleActionProvider> providers)
         {
-            _actionProviders = actionProviders;
+            foreach (ICollectionRuleActionProvider provider in providers)
+            {
+                if (_optionsMap.ContainsKey(provider.ActionType))
+                {
+                    logger.DuplicateCollectionRuleActionIgnored(provider.ActionType);
+                }
+                else
+                {
+                    _optionsMap.Add(provider.ActionType, provider.OptionsType);
+                }
+            }
         }
 
         public bool TryGetOptionsType(string actionType, out Type optionsType)
         {
-            ICollectionRuleActionProvider actionProvider = _actionProviders
-                .FirstOrDefault(provider => string.Equals(actionType, provider.ActionType, StringComparison.Ordinal));
-            if (null == actionProvider)
-            {
-                optionsType = null;
-                return false;
-            }
-
-            optionsType = actionProvider.OptionsType;
-            return true;
+            return _optionsMap.TryGetValue(actionType, out optionsType);
         }
     }
 }

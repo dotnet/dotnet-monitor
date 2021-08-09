@@ -335,6 +335,18 @@
     <comment>Gets the format string that is printed in the 20:DisabledNegotiateWhileElevated event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_DuplicateCollectionRuleActionIgnored" xml:space="preserve">
+    <value>Collection rule action '{actionType}' was previously registered; the new registration will be ignored.</value>
+    <comment>Gets the format string that is printed in the 25:DuplicateCollectionRuleActionIgnored event.
+1 Format Parameter:
+1. actionType: The registration name of the collection rule action.</comment>
+  </data>
+  <data name="LogFormatString_DuplicateCollectionRuleTriggerIgnored" xml:space="preserve">
+    <value>Collection rule trigger '{triggerType}' was previously registered; the new registration will be ignored.</value>
+    <comment>Gets the format string that is printed in the 26:DuplicateCollectionRuleTriggerIgnored event.
+1 Format Parameter:
+1. triggerType: The registration name of the collection rule trigger.</comment>
+  </data>
   <data name="LogFormatString_DuplicateEgressProviderIgnored" xml:space="preserve">
     <value>New provider '{providerName}' under type '{providerType}' was already registered with type '{existingProviderType}' and will be ignored.</value>
     <comment>Gets the format string that is printed in the 24:DuplicateEgressProviderIgnored event.

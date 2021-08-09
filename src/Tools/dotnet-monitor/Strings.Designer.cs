@@ -457,6 +457,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection rule action &apos;{actionType}&apos; was previously registered; the new registration will be ignored..
+        /// </summary>
+        internal static string LogFormatString_DuplicateCollectionRuleActionIgnored {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateCollectionRuleActionIgnored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule trigger &apos;{triggerType}&apos; was previously registered; the new registration will be ignored..
+        /// </summary>
+        internal static string LogFormatString_DuplicateCollectionRuleTriggerIgnored {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateCollectionRuleTriggerIgnored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New provider &apos;{providerName}&apos; under type &apos;{providerType}&apos; was already registered with type &apos;{existingProviderType}&apos; and will be ignored..
         /// </summary>
         internal static string LogFormatString_DuplicateEgressProviderIgnored {
