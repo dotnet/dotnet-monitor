@@ -3,13 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
+namespace Microsoft.Diagnostics.Monitoring.Options
 {
-    internal sealed class ConsoleFormatterOptions
+    internal sealed class JsonConsoleFormatterOptions
     {
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions))]
+        public JsonWriterOptions JsonWriterOptions { get; set; }
+
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleFormatterOptions_IncludeScopes))]

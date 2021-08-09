@@ -5,6 +5,17 @@
   "type": "object",
   "additionalProperties": {},
   "properties": {
+    "Logging": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/LoggingOptions"
+        }
+      ]
+    },
     "ApiAuthentication": {
       "default": {},
       "oneOf": [
@@ -81,20 +92,249 @@
           "$ref": "#/definitions/ProcessFilterOptions"
         }
       ]
-    },
-    "Logging": {
-      "default": {},
-      "oneOf": [
-        {
-          "type": "null"
-        },
-        {
-          "$ref": "#/definitions/LoggingOptions"
-        }
-      ]
     }
   },
   "definitions": {
+    "LoggingOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "LogLevel": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.",
+          "default": {},
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
+          }
+        },
+        "Console": {
+          "description": "Logging options for the Console provider.",
+          "default": {},
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ConsoleLoggerOptions"
+            }
+          ]
+        },
+        "EventLog": {
+          "description": "Logging options for the EventLog provider.",
+          "default": {},
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevelOptions"
+            }
+          ]
+        },
+        "Debug": {
+          "description": "Logging options for the Debug provider.",
+          "default": {},
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevelOptions"
+            }
+          ]
+        },
+        "EventSource": {
+          "description": "Logging options for the EventSource provider.",
+          "default": {},
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevelOptions"
+            }
+          ]
+        },
+        "CaptureScopes": {
+          "type": "boolean",
+          "description": "Gets or sets whether logging scopes are being captured. Defaults to true.",
+          "default": true
+        }
+      }
+    },
+    "LogLevel": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Trace",
+        "Debug",
+        "Information",
+        "Warning",
+        "Error",
+        "Critical",
+        "None"
+      ],
+      "enum": [
+        "Trace",
+        "Debug",
+        "Information",
+        "Warning",
+        "Error",
+        "Critical",
+        "None"
+      ]
+    },
+    "ConsoleLoggerOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "FormatterName": {
+          "description": "Name of the log message formatter to use. Defaults to 'Simple'.",
+          "default": "Simple",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ConsoleLoggerFormat"
+            }
+          ]
+        },
+        "LogToStandardErrorThreshold": {
+          "description": "The minimum level of messages that are written to Console.Error.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/LogLevel"
+            }
+          ]
+        },
+        "FormatterOptions": {
+          "description": "Formatter options for the built-in console log formatter.",
+          "default": {},
+          "oneOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "LogLevel": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies solely to ConsoleLoggerOptions.",
+          "default": {},
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "FormatterName"
+          ],
+          "properties": {
+            "FormatterName": {
+              "const": "Json"
+            },
+            "FormatterOptions": {
+              "$ref": "#/definitions/JsonConsoleFormatterOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "FormatterName"
+          ],
+          "properties": {
+            "FormatterName": {
+              "const": "Simple"
+            },
+            "FormatterOptions": {
+              "$ref": "#/definitions/SimpleConsoleFormatterOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "FormatterName"
+          ],
+          "properties": {
+            "FormatterName": {
+              "const": "Systemd"
+            },
+            "FormatterOptions": {
+              "$ref": "#/definitions/ConsoleFormatterOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "FormatterName": {
+              "type": "null",
+              "default": "Simple"
+            },
+            "FormatterOptions": {
+              "$ref": "#/definitions/SimpleConsoleFormatterOptions"
+            }
+          }
+        }
+      ]
+    },
+    "ConsoleLoggerFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Json",
+        "Simple",
+        "Systemd"
+      ],
+      "enum": [
+        "Json",
+        "Simple",
+        "Systemd"
+      ]
+    },
+    "LogLevelOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "LogLevel": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to the specified provider.",
+          "default": {},
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
+          }
+        }
+      }
+    },
     "ApiAuthenticationOptions": {
       "type": "object",
       "additionalProperties": false,
@@ -474,246 +714,6 @@
         "Exact",
         "Contains"
       ]
-    },
-    "LoggingOptions": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "LogLevel": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.",
-          "default": {},
-          "additionalProperties": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/definitions/LogLevel"
-              }
-            ]
-          }
-        },
-        "Console": {
-          "description": "Logging options for the Console provider.",
-          "default": {},
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/ConsoleLoggerOptions"
-            }
-          ]
-        },
-        "EventLog": {
-          "description": "Logging options for the EventLog provider.",
-          "default": {},
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/LogLevelOptions"
-            }
-          ]
-        },
-        "Debug": {
-          "description": "Logging options for the Debug provider.",
-          "default": {},
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/LogLevelOptions"
-            }
-          ]
-        },
-        "EventSource": {
-          "description": "Logging options for the EventSource provider.",
-          "default": {},
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/LogLevelOptions"
-            }
-          ]
-        },
-        "CaptureScopes": {
-          "type": "boolean",
-          "description": "Gets or sets whether logging scopes are being captured. Defaults to true.",
-          "default": true
-        }
-      }
-    },
-    "LogLevel": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Trace",
-        "Debug",
-        "Information",
-        "Warning",
-        "Error",
-        "Critical",
-        "None"
-      ],
-      "enum": [
-        "Trace",
-        "Debug",
-        "Information",
-        "Warning",
-        "Error",
-        "Critical",
-        "None"
-      ]
-    },
-    "ConsoleLoggerOptions": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "FormatterName": {
-          "description": "Name of the log message formatter to use. Defaults to 'Simple'.",
-          "default": "Simple",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/ConsoleLoggerFormat"
-            }
-          ]
-        },
-        "LogToStandardErrorThreshold": {
-          "description": "The minimum level of messages that are written to Console.Error.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/LogLevel"
-            }
-          ]
-        },
-        "FormatterOptions": {
-          "description": "Formatter options for the built-in console log formatter.",
-          "default": {},
-          "oneOf": [
-            {},
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "LogLevel": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies solely to ConsoleLoggerOptions.",
-          "default": {},
-          "additionalProperties": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/definitions/LogLevel"
-              }
-            ]
-          }
-        }
-      },
-      "oneOf": [
-        {
-          "required": [
-            "FormatterName"
-          ],
-          "properties": {
-            "FormatterName": {
-              "const": "Json"
-            },
-            "FormatterOptions": {
-              "$ref": "#/definitions/JsonConsoleFormatterOptions"
-            }
-          }
-        },
-        {
-          "required": [
-            "FormatterName"
-          ],
-          "properties": {
-            "FormatterName": {
-              "const": "Simple"
-            },
-            "FormatterOptions": {
-              "$ref": "#/definitions/SimpleConsoleFormatterOptions"
-            }
-          }
-        },
-        {
-          "required": [
-            "FormatterName"
-          ],
-          "properties": {
-            "FormatterName": {
-              "const": "Systemd"
-            },
-            "FormatterOptions": {
-              "$ref": "#/definitions/ConsoleFormatterOptions"
-            }
-          }
-        },
-        {
-          "properties": {
-            "FormatterName": {
-              "type": "null",
-              "default": "Simple"
-            },
-            "FormatterOptions": {
-              "$ref": "#/definitions/SimpleConsoleFormatterOptions"
-            }
-          }
-        }
-      ]
-    },
-    "ConsoleLoggerFormat": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Json",
-        "Simple",
-        "Systemd"
-      ],
-      "enum": [
-        "Json",
-        "Simple",
-        "Systemd"
-      ]
-    },
-    "LogLevelOptions": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "LogLevel": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to the specified provider.",
-          "default": {},
-          "additionalProperties": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/definitions/LogLevel"
-              }
-            ]
-          }
-        }
-      }
     },
     "JsonConsoleFormatterOptions": {
       "title": "JsonConsoleFormatterOptions",

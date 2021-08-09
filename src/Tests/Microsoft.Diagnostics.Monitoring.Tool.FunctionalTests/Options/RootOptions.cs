@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal class RootOptions
+    internal partial class RootOptions
     {
         public ApiAuthenticationOptions ApiAuthentication { get; set; }
 
@@ -21,7 +21,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public StorageOptions Storage { get; set; }
 
         public ProcessFilterOptions DefaultProcess { get; set; }
-
-        public LoggingOptions Logging { get; set; }
     }
 }
