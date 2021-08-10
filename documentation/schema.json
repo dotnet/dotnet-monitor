@@ -403,6 +403,7 @@
         },
         "Limits": {
           "description": "The set of limits to constrain the execution of the rule and its components.",
+          "default": {},
           "oneOf": [
             {
               "type": "null"
@@ -482,7 +483,12 @@
         "Type": {
           "type": "string",
           "description": "The type of trigger used to monitor for a condition in the target process.",
-          "minLength": 1
+          "minLength": 1,
+          "oneOf": [
+            {
+              "$ref": "#/definitions/CollectionRuleTriggerType"
+            }
+          ]
         },
         "Settings": {
           "description": "The settings to pass to the trigger when it is executed. Settings may be optional if the trigger doesn't require settings or its settings are all optional.",
@@ -493,7 +499,71 @@
             }
           ]
         }
-      }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "AspNetRequestCount"
+            },
+            "Settings": {
+              "$ref": "#/definitions/AspNetRequestCountOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "AspNetRequestDuration"
+            },
+            "Settings": {
+              "$ref": "#/definitions/AspNetRequestDurationOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "AspNetResponseStatus"
+            },
+            "Settings": {
+              "$ref": "#/definitions/AspNetResponseStatusOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "EventCounter"
+            },
+            "Settings": {
+              "$ref": "#/definitions/EventCounterOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
+              "const": "Startup"
+            },
+            "Settings": {
+              "type": "null"
+            }
+          }
+        }
+      ]
     },
     "CollectionRuleActionOptions": {
       "type": "object",
@@ -505,7 +575,12 @@
         "Type": {
           "type": "string",
           "description": "The type of action to execute.",
-          "minLength": 1
+          "minLength": 1,
+          "oneOf": [
+            {
+              "$ref": "#/definitions/CollectionRuleActionType"
+            }
+          ]
         },
         "Settings": {
           "description": "The settings to pass to the action when it is executed. Settings may be optional if the action doesn't require settings or its settings are all optional.",
@@ -516,7 +591,74 @@
             }
           ]
         }
-      }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "CollectDump"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectDumpOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "CollectGCDump"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectGCDumpOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "CollectLogs"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectLogsOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "CollectTrace"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectTraceOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "Execute"
+            },
+            "Settings": {
+              "$ref": "#/definitions/ExecuteOptions"
+            }
+          }
+        }
+      ]
     },
     "CollectionRuleLimitsOptions": {
       "type": "object",
@@ -528,7 +670,8 @@
             "null"
           ],
           "description": "The number of times the action list may be executed before being throttled.",
-          "format": "int32"
+          "format": "int32",
+          "default": 5
         },
         "ActionCountSlidingWindowDuration": {
           "type": [
@@ -846,6 +989,508 @@
           "items": {
             "$ref": "#/definitions/ProcessFilterDescriptor"
           }
+        }
+      }
+    },
+    "CollectionRuleActionType": {
+      "type": "string",
+      "enum": [
+        "CollectDump",
+        "CollectGCDump",
+        "CollectLogs",
+        "CollectTrace",
+        "Execute"
+      ]
+    },
+    "CollectDumpOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Egress"
+      ],
+      "properties": {
+        "Type": {
+          "description": "The type of dump to collect from the target process.",
+          "default": "WithHeap",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/DumpType"
+            }
+          ]
+        },
+        "Egress": {
+          "type": "string",
+          "description": "The name of the egress provider to which the dump is egressed.",
+          "minLength": 1
+        }
+      }
+    },
+    "DumpType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Full",
+        "Mini",
+        "WithHeap",
+        "Triage"
+      ],
+      "enum": [
+        "Full",
+        "Mini",
+        "WithHeap",
+        "Triage"
+      ]
+    },
+    "CollectGCDumpOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Egress"
+      ],
+      "properties": {
+        "Egress": {
+          "type": "string",
+          "description": "The name of the egress provider to which the GC dump is egressed.",
+          "minLength": 1
+        }
+      }
+    },
+    "CollectLogsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Egress"
+      ],
+      "properties": {
+        "DefaultLevel": {
+          "description": "The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value.",
+          "default": "Warning",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevel"
+            }
+          ]
+        },
+        "FilterSpecs": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured.",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
+          }
+        },
+        "UseAppFilters": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Specifies whether to capture log statements at the levels as specified in the application-defined filters.",
+          "default": true
+        },
+        "Duration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The duration of time in which logs are collected.",
+          "format": "time-span",
+          "default": "00:00:30"
+        },
+        "Egress": {
+          "type": "string",
+          "description": "The name of the egress provider to which the logs are egressed.",
+          "minLength": 1
+        }
+      }
+    },
+    "CollectTraceOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Egress"
+      ],
+      "properties": {
+        "Profile": {
+          "description": "Use a predefined set of event providers and settings to capture in the trace. More than one profile may be specified at the same time. Either Profile or Providers must be specified, but not both.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TraceProfile"
+            }
+          ]
+        },
+        "MetricsIntervalSeconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The amount of time (in seconds) between the collection of each sample of the counter. Only applicable when Profile contains Metrics.",
+          "format": "int32",
+          "default": 1,
+          "maximum": 86400.0,
+          "minimum": 1.0
+        },
+        "Providers": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "A list of event providers and settings to capture in the trace.  Either Profile or Providers must be specified, but not both.",
+          "items": {
+            "$ref": "#/definitions/EventPipeProvider"
+          }
+        },
+        "RequestRundown": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Indicates that rundown information should be included in the trace.",
+          "default": true
+        },
+        "BufferSizeMegabytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The size of the event pipe buffer to use in the target process. If the event pipe buffer fills with too many events, newer events will be dropped until the buffer is drained to fit new events.",
+          "format": "int32",
+          "default": 256,
+          "maximum": 1024.0,
+          "minimum": 1.0
+        },
+        "Duration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The duration of time in which trace events are collected.",
+          "format": "time-span",
+          "default": "00:00:30"
+        },
+        "Egress": {
+          "type": "string",
+          "description": "The name of the egress provider to which the trace is egressed.",
+          "minLength": 1
+        }
+      }
+    },
+    "TraceProfile": {
+      "type": "string",
+      "description": "",
+      "x-enumFlags": true,
+      "x-enumNames": [
+        "Cpu",
+        "Http",
+        "Logs",
+        "Metrics"
+      ],
+      "enum": [
+        "Cpu",
+        "Http",
+        "Logs",
+        "Metrics"
+      ]
+    },
+    "EventPipeProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Name"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "Keywords": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "EventLevel": {
+          "$ref": "#/definitions/EventLevel"
+        },
+        "Arguments": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "EventLevel": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "LogAlways",
+        "Critical",
+        "Error",
+        "Warning",
+        "Informational",
+        "Verbose"
+      ],
+      "enum": [
+        "LogAlways",
+        "Critical",
+        "Error",
+        "Warning",
+        "Informational",
+        "Verbose"
+      ]
+    },
+    "ExecuteOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Path"
+      ],
+      "properties": {
+        "Path": {
+          "type": "string",
+          "description": "The path of the executable to start.",
+          "minLength": 1
+        },
+        "Arguments": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The arguments to pass to the executable."
+        }
+      }
+    },
+    "CollectionRuleTriggerType": {
+      "type": "string",
+      "enum": [
+        "AspNetRequestCount",
+        "AspNetRequestDuration",
+        "AspNetResponseStatus",
+        "EventCounter",
+        "Startup"
+      ]
+    },
+    "AspNetRequestCountOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "RequestCount"
+      ],
+      "properties": {
+        "RequestCount": {
+          "type": "integer",
+          "description": "The threshold of the number of requests that start within the sliding window of time.",
+          "format": "int32"
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the number of requests are counted.",
+          "format": "time-span",
+          "default": "00:01:00"
+        },
+        "IncludePaths": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ExcludePaths": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The list of request paths to ignore.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AspNetRequestDurationOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "RequestCount"
+      ],
+      "properties": {
+        "RequestCount": {
+          "type": "integer",
+          "description": "The threshold of the number of slow requests that start within the sliding window of time.",
+          "format": "int32"
+        },
+        "RequestDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The threshold of the amount of time in which a request is considered to be slow.",
+          "format": "time-span",
+          "default": "00:00:05"
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the the number of slow requests are counted.",
+          "format": "time-span",
+          "default": "00:01:00"
+        },
+        "IncludePaths": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ExcludePaths": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The list of request paths to ignore.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AspNetResponseStatusOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "StatusCodes",
+        "ResponseCount"
+      ],
+      "properties": {
+        "StatusCodes": {
+          "type": "array",
+          "description": "The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. \"400-499\").",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "ResponseCount": {
+          "type": "integer",
+          "description": "The threshold number of responses with matching status codes.",
+          "format": "int32"
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the the number of responses with matching status codes must occur.",
+          "format": "time-span",
+          "default": "00:01:00"
+        },
+        "IncludePaths": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ExcludePaths": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The list of request paths to ignore.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "EventCounterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ProviderName",
+        "CounterName"
+      ],
+      "properties": {
+        "ProviderName": {
+          "type": "string",
+          "description": "The name of the event source that provides the counter information.",
+          "minLength": 1
+        },
+        "CounterName": {
+          "type": "string",
+          "description": "The name of the counter to monitor.",
+          "minLength": 1
+        },
+        "GreaterThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double"
+        },
+        "LessThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double"
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
+          "format": "time-span",
+          "default": "00:01:00"
+        },
+        "Frequency": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The amount of time (in seconds) between the collection of each sample of the counter.",
+          "format": "int32",
+          "default": 5,
+          "maximum": 86400.0,
+          "minimum": 1.0
         }
       }
     },

@@ -125,6 +125,62 @@
     <value>Hash algorithm used to compute ApiKeyHash, typically 'SHA256'. 'SHA1' and 'MD5' are not allowed.</value>
     <comment>The description provided for the ApiKeyHashType parameter on ApiAuthenticationOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_AspNetRequestCountOptions_ExcludePaths" xml:space="preserve">
+    <value>The list of request paths to ignore.</value>
+    <comment>The description provided for the ExcludePaths parameter on AspNetRequestCountOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetRequestCountOptions_IncludePaths" xml:space="preserve">
+    <value>The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.</value>
+    <comment>The description provided for the IncludePaths parameter on AspNetRequestCountOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetRequestCountOptions_RequestCount" xml:space="preserve">
+    <value>The threshold of the number of requests that start within the sliding window of time.</value>
+    <comment>The description provided for the RequestCount parameter on AspNetRequestCountOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetRequestCountOptions_SlidingWindowDuration" xml:space="preserve">
+    <value>The sliding time window in which the number of requests are counted.</value>
+    <comment>The description provided for the SlidingWindowDuration parameter on AspNetRequestCountOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetRequestDurationOptions_ExcludePaths" xml:space="preserve">
+    <value>The list of request paths to ignore.</value>
+    <comment>The description provided for the ExcludePaths parameter on AspNetRequestDurationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetRequestDurationOptions_IncludePaths" xml:space="preserve">
+    <value>The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.</value>
+    <comment>The description provided for the IncludePaths parameter on AspNetRequestDurationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetRequestDurationOptions_RequestCount" xml:space="preserve">
+    <value>The threshold of the number of slow requests that start within the sliding window of time.</value>
+    <comment>The description provided for the RequestCount parameter on AspNetRequestDurationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetRequestDurationOptions_RequestDuration" xml:space="preserve">
+    <value>The threshold of the amount of time in which a request is considered to be slow.</value>
+    <comment>The description provided for the RequestDuration parameter on AspNetRequestDurationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetRequestDurationOptions_SlidingWindowDuration" xml:space="preserve">
+    <value>The sliding time window in which the the number of slow requests are counted.</value>
+    <comment>The description provided for the SlidingWindowDuration parameter on AspNetRequestDurationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_ExcludePaths" xml:space="preserve">
+    <value>The list of request paths to ignore.</value>
+    <comment>The description provided for the ExcludePaths parameter on AspNetResponseStatusOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_IncludePaths" xml:space="preserve">
+    <value>The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.</value>
+    <comment>The description provided for the IncludePaths parameter on AspNetResponseStatusOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_ResponseCount" xml:space="preserve">
+    <value>The threshold number of responses with matching status codes.</value>
+    <comment>The description provided for the ResponseCount parameter on AspNetResponseStatusOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_SlidingWindowDuration" xml:space="preserve">
+    <value>The sliding time window in which the the number of responses with matching status codes must occur.</value>
+    <comment>The description provided for the SlidingWindowDuration parameter on AspNetResponseStatusOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes" xml:space="preserve">
+    <value>The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. "400-499").</value>
+    <comment>The description provided for the StatusCodes parameter on AspNetResponseStatusOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey" xml:space="preserve">
     <value>The account key used to access the Azure blob storage account.</value>
     <comment>The description provided for the AccountKey parameter on AzureBlobEgressProviderOptions.</comment>
@@ -152,6 +208,18 @@
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureName" xml:space="preserve">
     <value>The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
     <comment>The description provided for the SharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectDumpOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the dump is egressed.</value>
+    <comment>The description provided for the Egress parameter on CollectDumpOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectDumpOptions_Type" xml:space="preserve">
+    <value>The type of dump to collect from the target process.</value>
+    <comment>The description provided for the Type parameter on CollectDumpOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectGCDumpOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the GC dump is egressed.</value>
+    <comment>The description provided for the Egress parameter on CollectGCDumpOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleActionOptions_Settings" xml:space="preserve">
     <value>The settings to pass to the action when it is executed. Settings may be optional if the action doesn't require settings or its settings are all optional.</value>
@@ -196,6 +264,54 @@
   <data name="DisplayAttributeDescription_CollectionRuleTriggerOptions_Type" xml:space="preserve">
     <value>The type of trigger used to monitor for a condition in the target process.</value>
     <comment>The description provided for the Type parameter on CollectionRuleTriggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLogsOptions_DefaultLevel" xml:space="preserve">
+    <value>The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value.</value>
+    <comment>The description provided for the LogLevel parameter on CollectLogsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLogsOptions_Duration" xml:space="preserve">
+    <value>The duration of time in which logs are collected.</value>
+    <comment>The description provided for the Duration parameter on CollectLogsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLogsOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the logs are egressed.</value>
+    <comment>The description provided for the Egress parameter on CollectLogsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLogsOptions_FilterSpecs" xml:space="preserve">
+    <value>A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured.</value>
+    <comment>The description provided for the FilterSpecs parameter on CollectLogsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLogsOptions_UseAppFilters" xml:space="preserve">
+    <value>Specifies whether to capture log statements at the levels as specified in the application-defined filters.</value>
+    <comment>The description provided for the UseAppFilters parameter on CollectLogsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes" xml:space="preserve">
+    <value>The size of the event pipe buffer to use in the target process. If the event pipe buffer fills with too many events, newer events will be dropped until the buffer is drained to fit new events.</value>
+    <comment>The description provided for the BufferSizeMegabytes parameter on CollectTraceOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectTraceOptions_Duration" xml:space="preserve">
+    <value>The duration of time in which trace events are collected.</value>
+    <comment>The description provided for the Duration parameter on CollectTraceOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectTraceOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the trace is egressed.</value>
+    <comment>The description provided for the Egress parameter on CollectTraceOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectTraceOptions_MetricsIntervalSeconds" xml:space="preserve">
+    <value>The amount of time (in seconds) between the collection of each sample of the counter. Only applicable when Profile contains Metrics.</value>
+    <comment>The description provided for the MetricsIntervalSeconds parameter on CollectTraceOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectTraceOptions_Profile" xml:space="preserve">
+    <value>Use a predefined set of event providers and settings to capture in the trace. More than one profile may be specified at the same time. Either Profile or Providers must be specified, but not both.</value>
+    <comment>The description provided for the Profile parameter on CollectTraceOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectTraceOptions_Providers" xml:space="preserve">
+    <value>A list of event providers and settings to capture in the trace.  Either Profile or Providers must be specified, but not both.</value>
+    <comment>The description provided for the Providers parameter on CollectTraceOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectTraceOptions_RequestRundown" xml:space="preserve">
+    <value>Indicates that rundown information should be included in the trace.</value>
+    <comment>The description provided for the RequestRundown parameter on CollectTraceOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize" xml:space="preserve">
     <value>Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.</value>
@@ -268,6 +384,38 @@
   <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
     <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
     <comment>The description provided for the Properties parameter on EgressOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventCounterOptions_CounterName" xml:space="preserve">
+    <value>The name of the counter to monitor.</value>
+    <comment>The description provided for the CounterName parameter on EventCounterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventCounterOptions_Frequency" xml:space="preserve">
+    <value>The amount of time (in seconds) between the collection of each sample of the counter.</value>
+    <comment>The description provided for the Frequency parameter on EventCounterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventCounterOptions_GreaterThan" xml:space="preserve">
+    <value>The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.</value>
+    <comment>The description provided for the GreaterThan parameter on EventCounterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventCounterOptions_LessThan" xml:space="preserve">
+    <value>The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.</value>
+    <comment>The description provided for the LessThan parameter on EventCounterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventCounterOptions_ProviderName" xml:space="preserve">
+    <value>The name of the event source that provides the counter information.</value>
+    <comment>The description provided for the ProviderName parameter on EventCounterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventCounterOptions_SlidingWindowDuration" xml:space="preserve">
+    <value>The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.</value>
+    <comment>The description provided for the SlidingWindowDuration parameter on EventCounterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ExecuteOptions_Arguments" xml:space="preserve">
+    <value>The arguments to pass to the executable.</value>
+    <comment>The description provided for the Arguments parameter on ExecuteOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ExecuteOptions_Path" xml:space="preserve">
+    <value>The path of the executable to start.</value>
+    <comment>The description provided for the Path parameter on ExecuteOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_FileSystemEgressProviderOptions_DirectoryPath" xml:space="preserve">
     <value>The directory path to which the stream data will be egressed.</value>
