@@ -3,16 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models
-#else
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
-#endif
 {
     /// <summary>
     /// Represents a partial model when enumerating all operations.
