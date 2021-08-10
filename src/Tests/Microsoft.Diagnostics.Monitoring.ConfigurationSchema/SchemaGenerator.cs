@@ -17,26 +17,17 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
     {
         public string GenerateSchema()
         {
-            var settings = new JsonSchemaGeneratorSettings();
+            var schema = new JsonSchema();
+            var context = new GenerationContext(schema);
+            context.SetRoot<RootOptions>();
 
-            settings.SerializerSettings = new JsonSerializerSettings();
-            settings.SerializerSettings.Converters.Add(new StringEnumConverter());
-
-            JsonSchema schema = JsonSchema.FromType<RootOptions>(settings);
             schema.Id = @"https://www.github.com/dotnet/dotnet-monitor";
             schema.Title = "DotnetMonitorConfiguration";
 
-            JsonSchema jsonConsoleFormatterOptions = JsonSchema.FromType<JsonConsoleFormatterOptions>();
-            schema.Definitions.Add(nameof(JsonConsoleFormatterOptions), jsonConsoleFormatterOptions);
-
-            JsonSchema simpleConsoleFormatterOptions = JsonSchema.FromType<SimpleConsoleFormatterOptions>();
-            schema.Definitions.Add(nameof(SimpleConsoleFormatterOptions), simpleConsoleFormatterOptions);
-
-            JsonSchema systemdConsoleFormatterOptions = JsonSchema.FromType<ConsoleFormatterOptions>();
-            schema.Definitions.Add(nameof(ConsoleFormatterOptions), systemdConsoleFormatterOptions);
-
             //Allow other properties in the schema.
             schema.AdditionalPropertiesSchema = JsonSchema.CreateAnySchema();
+
+            AddConsoleLoggerFormatterSubSchemas(context);
 
             //TODO Figure out a better way to add object defaults
             schema.Definitions[nameof(EgressOptions)].Properties[nameof(EgressOptions.AzureBlobStorage)].Default = JsonSchema.CreateAnySchema();
@@ -57,16 +48,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 kvp.Value.Default = JsonSchema.CreateAnySchema();
             }
 
-            JsonSchema jsonConsoleLoggerOptionsSchema = GenerateConsoleLoggerOptionsSchema(jsonConsoleFormatterOptions, ConsoleLoggerFormat.Json);
-            JsonSchema simpleConsoleLoggerOptionsSchema = GenerateConsoleLoggerOptionsSchema(simpleConsoleFormatterOptions, ConsoleLoggerFormat.Simple);
-            JsonSchema systemdConsoleLoggerOptionsSchema = GenerateConsoleLoggerOptionsSchema(systemdConsoleFormatterOptions, ConsoleLoggerFormat.Systemd);
-            JsonSchema defaultConsoleLoggerOptionsSchema = GenerateDefaultConsoleLoggerOptionsSchema(simpleConsoleFormatterOptions);
-
-            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(jsonConsoleLoggerOptionsSchema);
-            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(simpleConsoleLoggerOptionsSchema);
-            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(systemdConsoleLoggerOptionsSchema);
-            schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(defaultConsoleLoggerOptionsSchema);
-
             string schemaPayload = schema.ToJson();
 
             //Normalize newlines embedded into json
@@ -74,39 +55,37 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             return schemaPayload;
         }
 
-        public static JsonSchema GenerateConsoleLoggerOptionsSchema(JsonSchema consoleFormatterOptions, ConsoleLoggerFormat consoleLoggerFormat)
+        private static void AddConsoleLoggerFormatterSubSchemas(GenerationContext context)
         {
-            JsonSchema consoleLoggerOptionsSchema = new JsonSchema();
-
-            JsonSchemaProperty formatterNameProperty = new JsonSchemaProperty();
-            JsonSchemaProperty formatterOptionsProperty = new JsonSchemaProperty();
-
-            JsonSchema formatterOptionsSchema = new JsonSchema();
-            formatterOptionsSchema.Reference = consoleFormatterOptions;
-
-            formatterOptionsProperty.Reference = formatterOptionsSchema;
-
-            formatterNameProperty.ExtensionData = new Dictionary<string, object>();
-            formatterNameProperty.ExtensionData.Add("const", consoleLoggerFormat.ToString());
-
-            consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameProperty);
-            consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsProperty);
-            consoleLoggerOptionsSchema.RequiredProperties.Add(nameof(ConsoleLoggerOptions.FormatterName));
-
-            return consoleLoggerOptionsSchema;
+            AddConsoleLoggerOptionsSubSchema<JsonConsoleFormatterOptions>(context, ConsoleLoggerFormat.Json);
+            AddConsoleLoggerOptionsSubSchema<SimpleConsoleFormatterOptions>(context, ConsoleLoggerFormat.Simple);
+            AddConsoleLoggerOptionsSubSchema<ConsoleFormatterOptions>(context, ConsoleLoggerFormat.Systemd);
+            AddDefaultConsoleLoggerOptionsSubSchema(context);
         }
 
-        public static JsonSchema GenerateDefaultConsoleLoggerOptionsSchema(JsonSchema consoleFormatterOptions)
+        private static void AddConsoleLoggerOptionsSubSchema<TOptions>(GenerationContext context, ConsoleLoggerFormat consoleLoggerFormat)
+        {
+            JsonSchema consoleLoggerOptionsSchema = new JsonSchema();
+            consoleLoggerOptionsSchema.RequiredProperties.Add(nameof(ConsoleLoggerOptions.FormatterName));
+
+            JsonSchemaProperty formatterOptionsProperty = AddDiscriminatedSubSchema(
+                context.Schema.Definitions[nameof(ConsoleLoggerOptions)],
+                nameof(ConsoleLoggerOptions.FormatterName),
+                consoleLoggerFormat.ToString(),
+                nameof(ConsoleLoggerOptions.FormatterOptions),
+                consoleLoggerOptionsSchema);
+
+            formatterOptionsProperty.Reference = context.AddTypeIfNotExist<TOptions>();
+        }
+
+        private static void AddDefaultConsoleLoggerOptionsSubSchema(GenerationContext context)
         {
             JsonSchema consoleLoggerOptionsSchema = new JsonSchema();
 
             JsonSchemaProperty formatterNameProperty = new JsonSchemaProperty();
             JsonSchemaProperty formatterOptionsProperty = new JsonSchemaProperty();
-            
-            JsonSchema formatterOptionsSchema = new JsonSchema();
-            formatterOptionsSchema.Reference = consoleFormatterOptions;
 
-            formatterOptionsProperty.Reference = formatterOptionsSchema;
+            formatterOptionsProperty.Reference = context.AddTypeIfNotExist<SimpleConsoleFormatterOptions>();
 
             formatterNameProperty.Type = JsonObjectType.Null;
             formatterNameProperty.Default = "Simple";
@@ -114,7 +93,66 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterName), formatterNameProperty);
             consoleLoggerOptionsSchema.Properties.Add(nameof(ConsoleLoggerOptions.FormatterOptions), formatterOptionsProperty);
 
-            return consoleLoggerOptionsSchema;
+            context.Schema.Definitions[nameof(ConsoleLoggerOptions)].OneOf.Add(consoleLoggerOptionsSchema);
+        }
+
+        private static JsonSchemaProperty AddDiscriminatedSubSchema(
+            JsonSchema parentSchema,
+            string descriminatingPropertyName,
+            string descriminatingPropertyValue,
+            string descriminatedPropertyName,
+            JsonSchema subSchema = null)
+        {
+            if (null == subSchema)
+            {
+                subSchema = new JsonSchema();
+            }
+
+            JsonSchemaProperty descriminatingProperty = new JsonSchemaProperty();
+            descriminatingProperty.ExtensionData = new Dictionary<string, object>();
+            descriminatingProperty.ExtensionData.Add("const", descriminatingPropertyValue);
+
+            subSchema.Properties.Add(descriminatingPropertyName, descriminatingProperty);
+
+            JsonSchemaProperty descriminatedProperty = new JsonSchemaProperty();
+
+            subSchema.Properties.Add(descriminatedPropertyName, descriminatedProperty);
+
+            parentSchema.OneOf.Add(subSchema);
+
+            return descriminatedProperty;
+        }
+
+        private class GenerationContext
+        {
+            private readonly JsonSchemaGenerator _generator;
+            private readonly JsonSchemaResolver _resolver;
+            private readonly JsonSchemaGeneratorSettings _settings;
+
+            public GenerationContext(JsonSchema rootSchema)
+            {
+                Schema = rootSchema;
+
+                _settings = new JsonSchemaGeneratorSettings();
+                _settings.SerializerSettings = new JsonSerializerSettings();
+                _settings.SerializerSettings.Converters.Add(new StringEnumConverter());
+
+                _resolver = new JsonSchemaResolver(rootSchema, _settings);
+
+                _generator = new JsonSchemaGenerator(_settings);
+            }
+
+            public JsonSchema AddTypeIfNotExist<T>()
+            {
+                return _generator.Generate(typeof(T), _resolver);
+            }
+
+            public void SetRoot<T>()
+            {
+                _generator.Generate(Schema, typeof(T), _resolver);
+            }
+
+            public JsonSchema Schema { get; }
         }
     }
 }
