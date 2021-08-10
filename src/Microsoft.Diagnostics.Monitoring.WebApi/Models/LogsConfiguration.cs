@@ -7,11 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models
-#else
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
-#endif
 {
     public class LogsConfiguration
     {
