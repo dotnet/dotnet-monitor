@@ -98,9 +98,9 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
         private static JsonSchemaProperty AddDiscriminatedSubSchema(
             JsonSchema parentSchema,
-            string descriminatingPropertyName,
-            string descriminatingPropertyValue,
-            string descriminatedPropertyName,
+            string discriminatingPropertyName,
+            string discriminatingPropertyValue,
+            string discriminatedPropertyName,
             JsonSchema subSchema = null)
         {
             if (null == subSchema)
@@ -110,13 +110,13 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
             JsonSchemaProperty descriminatingProperty = new JsonSchemaProperty();
             descriminatingProperty.ExtensionData = new Dictionary<string, object>();
-            descriminatingProperty.ExtensionData.Add("const", descriminatingPropertyValue);
+            descriminatingProperty.ExtensionData.Add("const", discriminatingPropertyValue);
 
-            subSchema.Properties.Add(descriminatingPropertyName, descriminatingProperty);
+            subSchema.Properties.Add(discriminatingPropertyName, descriminatingProperty);
 
             JsonSchemaProperty descriminatedProperty = new JsonSchemaProperty();
 
-            subSchema.Properties.Add(descriminatedPropertyName, descriminatedProperty);
+            subSchema.Properties.Add(discriminatedPropertyName, descriminatedProperty);
 
             parentSchema.OneOf.Add(subSchema);
 
