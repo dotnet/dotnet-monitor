@@ -108,19 +108,19 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 subSchema = new JsonSchema();
             }
 
-            JsonSchemaProperty descriminatingProperty = new JsonSchemaProperty();
-            descriminatingProperty.ExtensionData = new Dictionary<string, object>();
-            descriminatingProperty.ExtensionData.Add("const", discriminatingPropertyValue);
+            JsonSchemaProperty discriminatingProperty = new JsonSchemaProperty();
+            discriminatingProperty.ExtensionData = new Dictionary<string, object>();
+            discriminatingProperty.ExtensionData.Add("const", discriminatingPropertyValue);
 
-            subSchema.Properties.Add(discriminatingPropertyName, descriminatingProperty);
+            subSchema.Properties.Add(discriminatingPropertyName, discriminatingProperty);
 
-            JsonSchemaProperty descriminatedProperty = new JsonSchemaProperty();
+            JsonSchemaProperty discriminatedProperty = new JsonSchemaProperty();
 
-            subSchema.Properties.Add(discriminatedPropertyName, descriminatedProperty);
+            subSchema.Properties.Add(discriminatedPropertyName, discriminatedProperty);
 
             parentSchema.OneOf.Add(subSchema);
 
-            return descriminatedProperty;
+            return discriminatedProperty;
         }
 
         private class GenerationContext
