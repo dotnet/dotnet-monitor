@@ -201,6 +201,46 @@
     <value>Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.</value>
     <comment>The description provided for the CopyBufferSize parameter on all egress provider options.</comment>
   </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_IncludeScopes" xml:space="preserve">
+    <value>Gets or sets whether scopes should be included or not.</value>
+    <comment>The description provider for the IncludesScopes parameter on FormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat" xml:space="preserve">
+    <value>Gets or sets the format string used to format the timestamp in logging messages. Defaults to null.</value>
+    <comment>The description provider for the TimestampFormat parameter on ConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp" xml:space="preserve">
+    <value>Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.</value>
+    <comment>The description provider for the UseUtcTimestamp parameter on ConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerFormat_Json" xml:space="preserve">
+    <value>Reserved name for Json console formatter.</value>
+    <comment>The description provider for the Json parameter on ConsoleLoggerFormat.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerFormat_Simple" xml:space="preserve">
+    <value>Reserved name for simple console formatter.</value>
+    <comment>The description provider for the Simple parameter on ConsoleLoggerFormat.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerFormat_Systemd" xml:space="preserve">
+    <value>Reserved name for systemd console formatter.</value>
+    <comment>The description provider for the Systemd parameter on ConsoleLoggerFormat.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_FormatterName" xml:space="preserve">
+    <value>Name of the log message formatter to use. Defaults to 'Simple'.</value>
+    <comment>The description provided for the FormatterName parameter on ConsoleLoggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_FormatterOptions" xml:space="preserve">
+    <value>Formatter options for the built-in console log formatter.</value>
+    <comment>The description provider for the FormatterOptions parameter on ConsoleLoggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_LogLevel" xml:space="preserve">
+    <value>A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies solely to ConsoleLoggerOptions.</value>
+    <comment>The description provided for the LogLevel parameter on ConsoleLoggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold" xml:space="preserve">
+    <value>The minimum level of messages that are written to Console.Error.</value>
+    <comment>The description provided for the LogToStandardErrorThreshold parameter on ConsoleLoggerOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_CorsConfiguration_AllowedOrigins" xml:space="preserve">
     <value>List of allowed CORS origins, separated by semicolons.</value>
     <comment>The description provided for the AllowedOrigins parameter on CorsConfiguration.</comment>
@@ -236,6 +276,38 @@
   <data name="DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectoryPath" xml:space="preserve">
     <value>The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in DirectoryPath.</value>
     <comment>The description provided for the IntermediateDirectoryPath parameter on FileSystemEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions" xml:space="preserve">
+    <value>Gets or sets JsonWriterOptions.</value>
+    <comment>The description provided for the JsonWriterOptions parameter on JsonConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_CaptureScopes" xml:space="preserve">
+    <value>Gets or sets whether logging scopes are being captured. Defaults to true.</value>
+    <comment>The description provider for the CaptureScopes parameter on LoggingOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_Console" xml:space="preserve">
+    <value>Logging options for the Console provider.</value>
+    <comment>The description provided for the Console parameter on LoggingOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_Debug" xml:space="preserve">
+    <value>Logging options for the Debug provider.</value>
+    <comment>The description provided for the Debug parameter on LoggingOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_EventLog" xml:space="preserve">
+    <value>Logging options for the EventLog provider.</value>
+    <comment>The description provided for the EventLog parameter on LoggingOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_EventSource" xml:space="preserve">
+    <value>Logging options for the EventSource provider.</value>
+    <comment>The description provided for the EventSource parameter on LoggingOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_LogLevel" xml:space="preserve">
+    <value>A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.</value>
+    <comment>The description provided for the LogLevel parameter on LoggingOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LogLevelOptions_LogLevel" xml:space="preserve">
+    <value>A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to the specified provider.</value>
+    <comment>The description provided for the LogLevel parameter on LogLevelOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_MetricProvider_CounterNames" xml:space="preserve">
     <value>Name of custom metrics counters.</value>
@@ -305,8 +377,23 @@
     <value>Performs a case-insensitive string comparison.</value>
     <comment>The description provided for enum ProcessFilterType's Exact value.</comment>
   </data>
+  <data name="DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior" xml:space="preserve">
+    <value>Determines when to use color when logging messages.</value>
+    <comment>The description provided for the ColorBehavior parameter on SimpleConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SimpleConsoleFormatterOptions_SingleLine" xml:space="preserve">
+    <value>When false, the entire message gets logged in a single line.</value>
+    <comment>The description provided for the SingleLine parameter on SimpleConsoleFormatterOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_StorageOptions_DumpTempFolder" xml:space="preserve">
     <value>The location for temporary dump files. Defaults to the temp folder.</value>
     <comment>The description provided for the DumpTempFolder parameter on StorageOptions.</comment>
+  </data>
+  <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
+    <value>The {0} field or the {1} field is required.</value>
+    <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
+2 Format Parameters:
+0. fieldNameOne: The name of the first field that is missing
+1. fieldNameTwo: The name of the second field that is missing</comment>
   </data>
 </root>

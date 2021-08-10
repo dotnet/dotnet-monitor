@@ -5,11 +5,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
-#endif
 {
     /// <summary>
     /// Options for the CollectGCDump action.
