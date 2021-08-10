@@ -716,7 +716,6 @@
       ]
     },
     "JsonConsoleFormatterOptions": {
-      "title": "JsonConsoleFormatterOptions",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -724,7 +723,7 @@
           "description": "Gets or sets JsonWriterOptions.",
           "oneOf": [
             {
-              "$ref": "#/definitions/JsonConsoleFormatterOptions/definitions/JsonWriterOptions"
+              "$ref": "#/definitions/JsonWriterOptions"
             }
           ]
         },
@@ -744,51 +743,48 @@
           "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
           "default": false
         }
-      },
-      "definitions": {
-        "JsonWriterOptions": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "Encoder": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/JsonConsoleFormatterOptions/definitions/JavaScriptEncoder"
-                }
-              ]
-            },
-            "Indented": {
-              "type": "boolean"
-            },
-            "SkipValidation": {
-              "type": "boolean"
-            }
-          }
-        },
-        "JavaScriptEncoder": {
-          "allOf": [
+      }
+    },
+    "JsonWriterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Encoder": {
+          "oneOf": [
             {
-              "$ref": "#/definitions/JsonConsoleFormatterOptions/definitions/TextEncoder"
+              "type": "null"
             },
             {
-              "type": "object",
-              "x-abstract": true,
-              "additionalProperties": false
+              "$ref": "#/definitions/JavaScriptEncoder"
             }
           ]
         },
-        "TextEncoder": {
+        "Indented": {
+          "type": "boolean"
+        },
+        "SkipValidation": {
+          "type": "boolean"
+        }
+      }
+    },
+    "JavaScriptEncoder": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/TextEncoder"
+        },
+        {
           "type": "object",
           "x-abstract": true,
           "additionalProperties": false
         }
-      }
+      ]
+    },
+    "TextEncoder": {
+      "type": "object",
+      "x-abstract": true,
+      "additionalProperties": false
     },
     "SimpleConsoleFormatterOptions": {
-      "title": "SimpleConsoleFormatterOptions",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -796,7 +792,7 @@
           "description": "Determines when to use color when logging messages.",
           "oneOf": [
             {
-              "$ref": "#/definitions/SimpleConsoleFormatterOptions/definitions/LoggerColorBehavior"
+              "$ref": "#/definitions/LoggerColorBehavior"
             }
           ]
         },
@@ -820,26 +816,23 @@
           "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
           "default": false
         }
-      },
-      "definitions": {
-        "LoggerColorBehavior": {
-          "type": "string",
-          "description": "",
-          "x-enumNames": [
-            "Default",
-            "Enabled",
-            "Disabled"
-          ],
-          "enum": [
-            "Default",
-            "Enabled",
-            "Disabled"
-          ]
-        }
       }
     },
+    "LoggerColorBehavior": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Default",
+        "Enabled",
+        "Disabled"
+      ],
+      "enum": [
+        "Default",
+        "Enabled",
+        "Disabled"
+      ]
+    },
     "ConsoleFormatterOptions": {
-      "title": "ConsoleFormatterOptions",
       "type": "object",
       "additionalProperties": false,
       "properties": {
