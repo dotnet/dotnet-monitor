@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -121,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// Capable of getting every combination of process query: PID, UID, and/or Name
         /// Get /process?pid={pid}&uid={uid}&name={name}
         /// </summary>
-        public static async Task<Models.ProcessInfo> GetProcessAsync(this ApiClient client, int? pid, Guid? uid, string name, TimeSpan timeout)
+        public static async Task<ProcessInfo> GetProcessAsync(this ApiClient client, int? pid, Guid? uid, string name, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
             return await client.GetProcessAsync(pid: pid, uid: uid, name: name, token: timeoutSource.Token).ConfigureAwait(false);
@@ -315,7 +315,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.GetOperationStatus(operation, timeoutSource.Token).ConfigureAwait(false);
         }
 
-        public static async Task<List<Models.OperationSummary>> GetOperations(this ApiClient client)
+        public static async Task<List<OperationSummary>> GetOperations(this ApiClient client)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
             return await client.GetOperations(timeoutSource.Token).ConfigureAwait(false);
