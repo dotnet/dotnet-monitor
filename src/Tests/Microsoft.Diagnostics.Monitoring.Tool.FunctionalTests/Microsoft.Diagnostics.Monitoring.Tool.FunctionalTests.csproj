@@ -10,12 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DumpType.cs" Link="Models\DumpType.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\LogsConfiguration.cs" Link="Models\LogsConfiguration.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\EgressOperationStatus.cs" Link="Models\EgressOperationStatus.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DotnetMonitorInfo.cs" Link="Models\DotnetMonitorInfo.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ActionOptionsConstants.cs" Link="Options\CollectionRules\Actions\ActionOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectDumpOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectGCDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectGCDumpOptions.cs" />
