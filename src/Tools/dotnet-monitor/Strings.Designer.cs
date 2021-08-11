@@ -151,6 +151,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided path to an executable for the Execute Action could not be found..
+        /// </summary>
+        internal static string ErrorMessage_ExecuteActionInvalidPath {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExecuteActionInvalidPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No path was provided to an executable for the Execute Action.
+        /// </summary>
+        internal static string ErrorMessage_ExecuteActionNoProvidedPath {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExecuteActionNoProvidedPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value of field {0} must be less than the value of field {1}..
         /// </summary>
         internal static string ErrorMessage_FieldMustBeLessThanOtherField {

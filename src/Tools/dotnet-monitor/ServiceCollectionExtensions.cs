@@ -61,6 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureActionValidation(this IServiceCollection services)
         {
             services.AddSingleton<IValidateOptions<ExecuteOptions>, ExecuteActionValidateOptions>();
+            // Add other Action validation here as it is implemented.
 
             return services;
         }

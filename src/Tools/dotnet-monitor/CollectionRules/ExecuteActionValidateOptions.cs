@@ -1,11 +1,6 @@
 ﻿using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Text;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
@@ -20,10 +15,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     return ValidateOptionsResult.Success;
                 }
 
-                return ValidateOptionsResult.Fail("An invalid path was provided.");
+                return ValidateOptionsResult.Fail(Strings.ErrorMessage_ExecuteActionInvalidPath);
             }
 
-            return ValidateOptionsResult.Fail("No path was provided.") ;
+            return ValidateOptionsResult.Fail(Strings.ErrorMessage_ExecuteActionNoProvidedPath) ;
         }
     }
 }
