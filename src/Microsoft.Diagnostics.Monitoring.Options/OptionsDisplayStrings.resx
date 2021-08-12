@@ -126,11 +126,11 @@
     <comment>The description provided for the ApiKeyHashType parameter on ApiAuthenticationOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetRequestCountOptions_ExcludePaths" xml:space="preserve">
-    <value>The list of request paths to ignore.</value>
+    <value>The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored.</value>
     <comment>The description provided for the ExcludePaths parameter on AspNetRequestCountOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetRequestCountOptions_IncludePaths" xml:space="preserve">
-    <value>The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.</value>
+    <value>The list of request paths to monitor. If not specified, all request paths are monitored.  A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored.</value>
     <comment>The description provided for the IncludePaths parameter on AspNetRequestCountOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetRequestCountOptions_RequestCount" xml:space="preserve">
@@ -142,11 +142,11 @@
     <comment>The description provided for the SlidingWindowDuration parameter on AspNetRequestCountOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetRequestDurationOptions_ExcludePaths" xml:space="preserve">
-    <value>The list of request paths to ignore.</value>
+    <value>The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored.</value>
     <comment>The description provided for the ExcludePaths parameter on AspNetRequestDurationOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetRequestDurationOptions_IncludePaths" xml:space="preserve">
-    <value>The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.</value>
+    <value>The list of request paths to monitor. If not specified, all request paths are monitored. A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored.</value>
     <comment>The description provided for the IncludePaths parameter on AspNetRequestDurationOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetRequestDurationOptions_RequestCount" xml:space="preserve">
@@ -162,11 +162,11 @@
     <comment>The description provided for the SlidingWindowDuration parameter on AspNetRequestDurationOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_ExcludePaths" xml:space="preserve">
-    <value>The list of request paths to ignore.</value>
+    <value>The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored.</value>
     <comment>The description provided for the ExcludePaths parameter on AspNetResponseStatusOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_IncludePaths" xml:space="preserve">
-    <value>The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.</value>
+    <value>The list of request paths to monitor. If not specified, all request paths are monitored. A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored.</value>
     <comment>The description provided for the IncludePaths parameter on AspNetResponseStatusOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_ResponseCount" xml:space="preserve">
@@ -174,7 +174,7 @@
     <comment>The description provided for the ResponseCount parameter on AspNetResponseStatusOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_SlidingWindowDuration" xml:space="preserve">
-    <value>The sliding time window in which the the number of responses with matching status codes must occur.</value>
+    <value>The sliding time window in which the number of responses with matching status codes must occur.</value>
     <comment>The description provided for the SlidingWindowDuration parameter on AspNetResponseStatusOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes" xml:space="preserve">

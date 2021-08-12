@@ -1317,7 +1317,7 @@
             "array",
             "null"
           ],
-          "description": "The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.",
+          "description": "The list of request paths to monitor. If not specified, all request paths are monitored.  A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored.",
           "items": {
             "type": "string"
           }
@@ -1327,7 +1327,7 @@
             "array",
             "null"
           ],
-          "description": "The list of request paths to ignore.",
+          "description": "The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored.",
           "items": {
             "type": "string"
           }
@@ -1369,7 +1369,7 @@
             "array",
             "null"
           ],
-          "description": "The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.",
+          "description": "The list of request paths to monitor. If not specified, all request paths are monitored. A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored.",
           "items": {
             "type": "string"
           }
@@ -1379,7 +1379,7 @@
             "array",
             "null"
           ],
-          "description": "The list of request paths to ignore.",
+          "description": "The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored.",
           "items": {
             "type": "string"
           }
@@ -1412,7 +1412,7 @@
             "null",
             "string"
           ],
-          "description": "The sliding time window in which the the number of responses with matching status codes must occur.",
+          "description": "The sliding time window in which the number of responses with matching status codes must occur.",
           "format": "time-span",
           "default": "00:01:00"
         },
@@ -1421,7 +1421,7 @@
             "array",
             "null"
           ],
-          "description": "The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored.",
+          "description": "The list of request paths to monitor. If not specified, all request paths are monitored. A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored.",
           "items": {
             "type": "string"
           }
@@ -1431,7 +1431,7 @@
             "array",
             "null"
           ],
-          "description": "The list of request paths to ignore.",
+          "description": "The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored.",
           "items": {
             "type": "string"
           }

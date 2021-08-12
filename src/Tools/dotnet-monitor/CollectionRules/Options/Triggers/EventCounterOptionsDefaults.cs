@@ -6,7 +6,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
     internal static class EventCounterOptionsDefaults
     {
-        public const string SlidingWindowDuration = "00:01:00";
+        public const string SlidingWindowDuration = TriggerOptionsConstants.SlidingWindowDuration_Default;
         public const int Frequency = 5;
     }
 }

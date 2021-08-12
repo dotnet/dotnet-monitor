@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The list of request paths to ignore..
+        ///   Looks up a localized string similar to The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored..
         /// </summary>
         public static string DisplayAttributeDescription_AspNetRequestCountOptions_ExcludePaths {
             get {
@@ -88,7 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored..
+        ///   Looks up a localized string similar to The list of request paths to monitor. If not specified, all request paths are monitored.  A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored..
         /// </summary>
         public static string DisplayAttributeDescription_AspNetRequestCountOptions_IncludePaths {
             get {
@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The list of request paths to ignore..
+        ///   Looks up a localized string similar to The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored..
         /// </summary>
         public static string DisplayAttributeDescription_AspNetRequestDurationOptions_ExcludePaths {
             get {
@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored..
+        ///   Looks up a localized string similar to The list of request paths to monitor. If not specified, all request paths are monitored. A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored..
         /// </summary>
         public static string DisplayAttributeDescription_AspNetRequestDurationOptions_IncludePaths {
             get {
@@ -160,7 +160,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The list of request paths to ignore..
+        ///   Looks up a localized string similar to The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored..
         /// </summary>
         public static string DisplayAttributeDescription_AspNetResponseStatusOptions_ExcludePaths {
             get {
@@ -169,7 +169,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The list of request paths to monitor. If not specified, all request paths are monitored. Request paths matching the ExcludePaths list will not be monitored..
+        ///   Looks up a localized string similar to The list of request paths to monitor. If not specified, all request paths are monitored. A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored..
         /// </summary>
         public static string DisplayAttributeDescription_AspNetResponseStatusOptions_IncludePaths {
             get {
@@ -187,7 +187,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The sliding time window in which the the number of responses with matching status codes must occur..
+        ///   Looks up a localized string similar to The sliding time window in which the number of responses with matching status codes must occur..
         /// </summary>
         public static string DisplayAttributeDescription_AspNetResponseStatusOptions_SlidingWindowDuration {
             get {

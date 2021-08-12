@@ -4,8 +4,10 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
-    internal static class AspNetResponseStatusOptionsDefaults
+    internal interface IAspNetActionPathFilters
     {
-        public const string SlidingWindowDuration = TriggerOptionsConstants.SlidingWindowDuration_Default;
+        public string[] IncludePaths { get; }
+
+        public string[] ExcludePaths { get; }
     }
 }

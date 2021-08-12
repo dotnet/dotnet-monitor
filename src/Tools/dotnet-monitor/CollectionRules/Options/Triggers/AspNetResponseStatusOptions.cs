@@ -12,7 +12,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// <summary>
     /// Options for the AspNetResponseStatus trigger.
     /// </summary>
-    internal sealed class AspNetResponseStatusOptions
+    internal sealed class AspNetResponseStatusOptions :
+        IAspNetActionPathFilters
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -34,11 +35,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         [DefaultValue(AspNetResponseStatusOptionsDefaults.SlidingWindowDuration)]
         public TimeSpan? SlidingWindowDuration { get; set; }
 
+        // CONSIDER: Currently described that paths have to exactly match one item in the list.
+        // Consider allowing for wildcard/globbing to simplfy list of matchable paths.
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_IncludePaths))]
         public string[] IncludePaths { get; set; }
 
+        // CONSIDER: Currently described that paths have to exactly match one item in the list.
+        // Consider allowing for wildcard/globbing to simplfy list of matchable paths.
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_ExcludePaths))]

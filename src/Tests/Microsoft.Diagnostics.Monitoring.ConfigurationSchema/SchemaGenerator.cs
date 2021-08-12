@@ -184,7 +184,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             triggerTypeSchema.Enumeration.Add(triggerType);
         }
 
-
         private static JsonSchemaProperty AddDiscriminatedSubSchema(
             JsonSchema parentSchema,
             string discriminatingPropertyName,
