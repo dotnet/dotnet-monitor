@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public override async ValueTask DisposeAsync()
         {
-            lock (_adapter)
+            lock (_lock)
             {
                 if (_isDiposed)
                 {

@@ -21,13 +21,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     /// </summary>
     internal class MonitorRunner : IAsyncDisposable
     {
-        protected readonly LoggingRunnerAdapter _adapter;
+        protected readonly object _lock = new();
 
         protected readonly ITestOutputHelper _outputHelper;
 
         protected readonly DotNetRunner _runner = new();
 
-        protected readonly string _runnerTmpPath =
+        private readonly LoggingRunnerAdapter _adapter;
+
+        private readonly string _runnerTmpPath =
             Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
 
         private bool _isDisposed;
@@ -35,20 +37,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// <summary>
         /// The path of the currently executing assembly.
         /// </summary>
-        protected static string CurrentExecutingAssemblyPath =>
+        private static string CurrentExecutingAssemblyPath =>
             Assembly.GetExecutingAssembly().Location;
 
         /// <summary>
         /// The target framework name of the currently executing assembly.
         /// </summary>
-        protected static string CurrentTargetFrameworkFolderName =>
+        private static string CurrentTargetFrameworkFolderName =>
             new FileInfo(CurrentExecutingAssemblyPath).Directory.Name;
 
         /// <summary>
         /// The path to dotnet-monitor. It is currently only build for the
         /// netcoreapp3.1 target framework.
         /// </summary>
-        protected static string DotNetMonitorPath =>
+        private static string DotNetMonitorPath =>
             CurrentExecutingAssemblyPath
                 .Replace(Assembly.GetExecutingAssembly().GetName().Name, "dotnet-monitor")
                 .Replace(CurrentTargetFrameworkFolderName, "netcoreapp3.1");
@@ -85,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public virtual async ValueTask DisposeAsync()
         {
-            lock (_adapter)
+            lock (_lock)
             {
                 if (_isDisposed)
                 {
