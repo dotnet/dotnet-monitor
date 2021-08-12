@@ -21,5 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public string Path { get; set; }
 
         public string Arguments { get; set; }
+
+        public bool IgnoreExitCode { get; set; } = false;
     }
 }

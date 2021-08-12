@@ -1,33 +1,78 @@
-﻿using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+﻿using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
-    internal sealed class ExecuteAction : IAction<ExecuteOptions>
+    internal sealed class ExecuteAction : ICollectionRuleAction<ExecuteOptions>
     {
-        public async Task<ActionResponse> Execute(ExecuteOptions options, CancellationToken token)
+        // Completion source that is signaled when the process exits
+        private TaskCompletionSource<int> _exitedSource;
+
+        /// <summary>
+        /// Gets a task that completes with the process exit code when it exits.
+        /// </summary>
+        public Task<int> ExitedTask => _exitedSource.Task;
+
+        public async Task<ActionResult> ExecuteAsync(ExecuteOptions options, DiagnosticsClient client, CancellationToken cancellationToken)
         {
-            ActionResponse executeResponse = new();
+            string path = options.Path;
+            string arguments = options.Arguments;
 
-            await Task.Run(() =>
+            if (!File.Exists(path))
             {
-                string path = options.Path;
-                string arguments = options.Arguments;
+                throw new FileNotFoundException("A file could not be found at the provided path: " + path);
+            }
 
-                Process process = Process.Start(path, arguments);
+            // May want to capture stdout and stderr and return as part of the result in the future
+            Process process = new Process();
 
-                process.WaitForExit();
+            process.StartInfo = new ProcessStartInfo(path, arguments);
+            process.EnableRaisingEvents = true;
 
-                int exitCode = process.ExitCode;
+            _exitedSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-                executeResponse.OutputValues = new Dictionary<string, string> { { "ExitCode", exitCode.ToString() } };
+            if (!process.Start())
+            {
+                throw new InvalidOperationException($"Unable to start: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
+            }
 
-            }, token);
+            await WaitForExitAsync(process, cancellationToken).ConfigureAwait(false);
+
+            int exitCode = process.ExitCode;
+
+            if (!options.IgnoreExitCode && exitCode != 0)
+            {
+                // Do we want to use a specific type of Exception here? My thought was that the proper type of Exception may be dependent on the exitCode's value
+                throw new Exception("The process exited with exit code " + exitCode.ToString());
+            }
+
+            ActionResult executeResponse = new();
+
+            executeResponse.OutputValues = new Dictionary<string, string> { { "ExitCode", exitCode.ToString() } };
 
             return executeResponse;
+        }
+
+        /// <summary>
+        /// Waits for the process to exit.
+        /// </summary>
+        public async Task WaitForExitAsync(Process process, CancellationToken token)
+        {
+            if (!process.HasExited)
+            {
+                TaskCompletionSource<object> cancellationSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                using IDisposable _ = token.Register(() => cancellationSource.TrySetCanceled(token));
+
+                await Task.WhenAny(
+                    ExitedTask,
+                    cancellationSource.Task).Unwrap();
+            }
         }
     }
 }

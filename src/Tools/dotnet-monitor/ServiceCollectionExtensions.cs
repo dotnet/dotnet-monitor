@@ -58,14 +58,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection ConfigureActionValidation(this IServiceCollection services)
-        {
-            services.AddSingleton<IValidateOptions<ExecuteOptions>, ExecuteActionValidateOptions>();
-            // Add other Action validation here as it is implemented.
-
-            return services;
-        }
-
         private static IServiceCollection RegisterCollectionRuleAction<TOptions>(this IServiceCollection services, string actionType) where TOptions : class, new()
         {
             services.TryAddSingletonEnumerable<ICollectionRuleActionProvider, CollectionRuleActionProvider<TOptions>>(sp => new CollectionRuleActionProvider<TOptions>(actionType));

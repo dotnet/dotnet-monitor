@@ -167,14 +167,6 @@
 1 Format Parameter:
 0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
   </data>
-  <data name="ErrorMessage_ExecuteActionInvalidPath" xml:space="preserve">
-    <value>The provided path to an executable for the Execute Action could not be found.</value>
-    <comment>Gets the format string for rejecting an invalid path when validating ExecuteOptions.</comment>
-  </data>
-  <data name="ErrorMessage_ExecuteActionNoProvidedPath" xml:space="preserve">
-    <value>No path was provided to an executable for the Execute Action</value>
-    <comment>Gets the format string for rejecting an empty path when validating ExecuteOptions.</comment>
-  </data>
   <data name="ErrorMessage_FieldMustBeLessThanOtherField" xml:space="preserve">
     <value>The value of field {0} must be less than the value of field {1}.</value>
     <comment>{0} = Field name that must be lower.
