@@ -12,6 +12,7 @@
   <ItemGroup>
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Auth\AuthConstants.cs" Link="Auth\AuthConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Auth\JwtAlgorithmChecker.cs" Link="Auth\JwtAlgorithmChecker.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\OutputFormat.cs" Link="Options\OutputFormat.cs" />
   </ItemGroup>
 
   <ItemGroup>
