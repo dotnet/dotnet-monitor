@@ -30,6 +30,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectLogsOptions.cs" Link="Options\CollectionRules\Actions\CollectLogsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectTraceOptions.cs" Link="Options\CollectionRules\Actions\CollectTraceOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptions.cs" Link="Options\CollectionRules\Actions\ExecuteOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptionsDefaults.cs" Link="Options\CollectionRules\Actions\ExecuteOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptions.cs" Link="Options\CollectionRules\CollectionRuleActionOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptions.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleOptions.cs" Link="Options\CollectionRules\CollectionRuleOptions.cs" />

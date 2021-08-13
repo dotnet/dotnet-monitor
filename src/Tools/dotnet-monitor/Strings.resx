@@ -191,6 +191,10 @@
 1 Format Parameter:
 0. fieldName: The name of the field that failed validation</comment>
   </data>
+  <data name="ErrorMessage_FileNotFound" xml:space="preserve">
+    <value>A file could not be found at the provided path: {0}</value>
+    <comment>{0} = Provided path to executable.</comment>
+  </data>
   <data name="ErrorMessage_InvalidApiKey" xml:space="preserve">
     <value>Invalid API key.</value>
     <comment>Gets a string similar to "Invalid API key.".</comment>
@@ -202,6 +206,10 @@
   <data name="ErrorMessage_InvalidAuthHeader" xml:space="preserve">
     <value>Invalid authentication header.</value>
     <comment>Gets a string similar to "Invalid authentication header.".</comment>
+  </data>
+  <data name="ErrorMessage_NonzeroExitCode" xml:space="preserve">
+    <value>The process exited with exit code {0}</value>
+    <comment>{0} = Nonzero exit code.</comment>
   </data>
   <data name="ErrorMessage_ParameterNotAllowed" xml:space="preserve">
     <value>The {0} parameter value '{1}' is not allowed.</value>

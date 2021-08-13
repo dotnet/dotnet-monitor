@@ -13,11 +13,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
     internal interface ICollectionRuleAction<TOptions>
     {
-        Task<ActionResult> ExecuteAsync(TOptions options, DiagnosticsClient client, CancellationToken token);
+        Task<CollectionRuleActionResult> ExecuteAsync(TOptions options, DiagnosticsClient client, CancellationToken token);
     }
 
-    internal struct ActionResult
+    internal struct CollectionRuleActionResult
     {
-        internal Dictionary<string, string> OutputValues { get; set; }
+        public Dictionary<string, string> OutputValues { get; set; }
     }
 }

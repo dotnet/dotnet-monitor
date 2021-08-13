@@ -187,6 +187,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A file could not be found at the provided path: {0}.
+        /// </summary>
+        internal static string ErrorMessage_FileNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid API key..
         /// </summary>
         internal static string ErrorMessage_InvalidApiKey {
@@ -210,6 +219,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_InvalidAuthHeader {
             get {
                 return ResourceManager.GetString("ErrorMessage_InvalidAuthHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The process exited with exit code {0}.
+        /// </summary>
+        internal static string ErrorMessage_NonzeroExitCode {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NonzeroExitCode", resourceCulture);
             }
         }
         
@@ -255,6 +273,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_UnableToBindUrls {
             get {
                 return ResourceManager.GetString("ErrorMessage_UnableToBindUrls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to start: {0} {1}.
+        /// </summary>
+        internal static string ErrorMessage_UnableToStartProcess {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnableToStartProcess", resourceCulture);
             }
         }
         
