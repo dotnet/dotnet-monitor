@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
@@ -16,6 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount))]
+        [DefaultValue(CollectionRuleLimitsOptionsDefaults.ActionCount)]
         public int? ActionCount { get; set; }
 
         [Display(

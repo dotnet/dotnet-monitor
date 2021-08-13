@@ -79,6 +79,132 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetRequestCountOptions_ExcludePaths {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetRequestCountOptions_ExcludePaths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list of request paths to monitor. If not specified, all request paths are monitored.  A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetRequestCountOptions_IncludePaths {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetRequestCountOptions_IncludePaths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold of the number of requests that start within the sliding window of time..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetRequestCountOptions_RequestCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetRequestCountOptions_RequestCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sliding time window in which the number of requests are counted..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetRequestCountOptions_SlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetRequestCountOptions_SlidingWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetRequestDurationOptions_ExcludePaths {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetRequestDurationOptions_ExcludePaths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list of request paths to monitor. If not specified, all request paths are monitored. A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetRequestDurationOptions_IncludePaths {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetRequestDurationOptions_IncludePaths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold of the number of slow requests that start within the sliding window of time..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetRequestDurationOptions_RequestCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetRequestDurationOptions_RequestCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold of the amount of time in which a request is considered to be slow..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetRequestDurationOptions_RequestDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetRequestDurationOptions_RequestDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sliding time window in which the the number of slow requests are counted..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetRequestDurationOptions_SlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetRequestDurationOptions_SlidingWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetResponseStatusOptions_ExcludePaths {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetResponseStatusOptions_ExcludePaths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list of request paths to monitor. If not specified, all request paths are monitored. A request path must exactly match one of the items in the list to be monitored. Request paths matching the ExcludePaths list will not be monitored..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetResponseStatusOptions_IncludePaths {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetResponseStatusOptions_IncludePaths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold number of responses with matching status codes..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetResponseStatusOptions_ResponseCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetResponseStatusOptions_ResponseCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sliding time window in which the number of responses with matching status codes must occur..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetResponseStatusOptions_SlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetResponseStatusOptions_SlidingWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. &quot;400-499&quot;)..
+        /// </summary>
+        public static string DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The account key used to access the Azure blob storage account..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey {
@@ -139,6 +265,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureN" +
                         "ame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the dump is egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectDumpOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectDumpOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of dump to collect from the target process..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectDumpOptions_Type {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectDumpOptions_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the GC dump is egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectGCDumpOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectGCDumpOptions_Egress", resourceCulture);
             }
         }
         
@@ -239,6 +392,114 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectionRuleTriggerOptions_Type {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerOptions_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLogsOptions_DefaultLevel {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_DefaultLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The duration of time in which logs are collected..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLogsOptions_Duration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the logs are egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLogsOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLogsOptions_FilterSpecs {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_FilterSpecs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specifies whether to capture log statements at the levels as specified in the application-defined filters..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLogsOptions_UseAppFilters {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_UseAppFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size of the event pipe buffer to use in the target process. If the event pipe buffer fills with too many events, newer events will be dropped until the buffer is drained to fit new events..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The duration of time in which trace events are collected..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_Duration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the trace is egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount of time (in seconds) between the collection of each sample of the counter. Only applicable when Profile contains Metrics..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_MetricsIntervalSeconds {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_MetricsIntervalSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use a predefined set of event providers and settings to capture in the trace. More than one profile may be specified at the same time. Either Profile or Providers must be specified, but not both..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_Profile {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_Profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A list of event providers and settings to capture in the trace.  Either Profile or Providers must be specified, but not both..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_Providers {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_Providers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Indicates that rundown information should be included in the trace..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_RequestRundown {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_RequestRundown", resourceCulture);
             }
         }
         
@@ -401,6 +662,78 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_EgressOptions_Properties {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_Properties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the counter to monitor..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventCounterOptions_CounterName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventCounterOptions_CounterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount of time (in seconds) between the collection of each sample of the counter..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventCounterOptions_Frequency {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventCounterOptions_Frequency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventCounterOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventCounterOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventCounterOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventCounterOptions_LessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the event source that provides the counter information..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventCounterOptions_ProviderName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventCounterOptions_ProviderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventCounterOptions_SlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventCounterOptions_SlidingWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The arguments to pass to the executable..
+        /// </summary>
+        public static string DisplayAttributeDescription_ExecuteOptions_Arguments {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ExecuteOptions_Arguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path of the executable to start..
+        /// </summary>
+        public static string DisplayAttributeDescription_ExecuteOptions_Path {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ExecuteOptions_Path", resourceCulture);
             }
         }
         
