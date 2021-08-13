@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -110,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
             int formatQty = (endLine + 1).ToString("D").Length; // Get the length of the biggest number (add 1 for the 1-based index)
             for (int i = startLine; i <= endLine; i++)
             {
-                outputHelper.WriteLine("{0}:{1}{2}", (i+1).ToString("D" + formatQty), (i == lineHighlighted) ? " >" : "  ", lines[i]);
+                outputHelper.WriteLine("{0}:{1}{2}", (i+1).ToString("D" + formatQty, CultureInfo.InvariantCulture), (i == lineHighlighted) ? " >" : "  ", lines[i]);
             }
         }
 
