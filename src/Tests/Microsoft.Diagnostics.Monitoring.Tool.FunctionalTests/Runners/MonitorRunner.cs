@@ -167,10 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public virtual async Task WaitForExitAsync(CancellationToken token)
         {
             await RunnerExitedTask.WithCancellation(token).ConfigureAwait(false);
-            if (token.IsCancellationRequested)
-            {
-                return;
-            }
+            token.ThrowIfCancellationRequested();
             await _adapter.ReadToEnd(token).ConfigureAwait(false);
         }
 
