@@ -8,6 +8,7 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -115,11 +116,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ApiKeyValidationFailure);
 
-        private static readonly Action<ILogger, string, Exception> _apiKeyAuthenticationOptionsChanged =
-            LoggerMessage.Define<string>(
-                eventId: new EventId(22, "ApiKeyAuthenticationOptionsChanged"),
-                logLevel: LogLevel.Information,
-                formatString: Strings.LogFormatString_ApiKeyAuthenticationOptionsChanged);
+        // 22:ApiKeyAuthenticationOptionsChanged
 
         private static readonly Action<ILogger, string, string, string, string, Exception> _logTempKey =
             LoggerMessage.Define<string, string, string, string>(
@@ -133,10 +130,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DuplicateEgressProviderIgnored);
 
+        private static readonly Action<ILogger, string, Exception> _apiKeyAuthenticationOptionsValidated =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(25, "ApiKeyAuthenticationOptionsValidated"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ApiKeyAuthenticationOptionsValidated);
+
+        private static readonly Action<ILogger, string, Exception> _notifyPrivateKey =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(26, "NotifyPrivateKey"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_NotifyPrivateKey);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
         }
+
         public static void EgressCopyActionStreamToEgressStream(this ILogger logger, int bufferSize)
         {
             _egressCopyActionStreamToEgressStream(logger, bufferSize, null);
@@ -207,13 +217,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             foreach (ValidationResult error in errors)
             {
-                _apiKeyValidationFailure(logger, nameof(ConfigurationKeys.ApiAuthentication), error.ErrorMessage, null);
+                _apiKeyValidationFailure(logger, ConfigurationKeys.MonitorApiKey, error.ErrorMessage, null);
             }
-        }
-
-        public static void ApiKeyAuthenticationOptionsChanged(this ILogger logger)
-        {
-            _apiKeyAuthenticationOptionsChanged(logger, nameof(ConfigurationKeys.ApiAuthentication), null);
         }
 
         public static void LogTempKey(this ILogger logger, string monitorApiKey)
@@ -224,6 +229,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DuplicateEgressProviderIgnored(this ILogger logger, string providerName, string providerType, string existingProviderType)
         {
             _duplicateEgressProviderIgnored(logger, providerName, providerType, existingProviderType, null);
+        }
+
+        public static void ApiKeyAuthenticationOptionsValidated(this ILogger logger)
+        {
+            _apiKeyAuthenticationOptionsValidated(logger, ConfigurationKeys.MonitorApiKey, null);
+        }
+
+        public static void NotifyPrivateKey(this ILogger logger, string fieldName)
+        {
+            _notifyPrivateKey(logger, fieldName, null);
         }
     }
 }

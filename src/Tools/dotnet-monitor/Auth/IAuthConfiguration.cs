@@ -13,10 +13,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         NoAuth,
     }
 
-    internal interface IAuthOptions
+    internal interface IAuthConfiguration
     {
         bool EnableNegotiate { get; }
         KeyAuthenticationMode KeyAuthenticationMode { get; }
-        GeneratedApiKey TemporaryKey { get; }
+        GeneratedJwtKey TemporaryJwtKey { get; }
     }
 }

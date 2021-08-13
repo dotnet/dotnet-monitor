@@ -167,13 +167,6 @@
 1 Format Parameter:
 0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
   </data>
-  <data name="ErrorMessage_FieldNotAllowed" xml:space="preserve">
-    <value>The {0} field value '{1}' is not allowed.</value>
-    <comment>Gets the format string for rejecting a field value.
-2 Format Parameters:
-0. fieldName: The name of the field that failed validation
-1. fieldValue: The value in the field that was rejected</comment>
-  </data>
   <data name="ErrorMessage_FieldNotHex" xml:space="preserve">
     <value>The {0} field could not be decoded as hex string.</value>
     <comment>Gets the format string for rejecting a field because it is not hex.
@@ -198,6 +191,21 @@
     <value>Invalid authentication header.</value>
     <comment>Gets a string similar to "Invalid authentication header.".</comment>
   </data>
+  <data name="ErrorMessage_InvalidJwk" xml:space="preserve">
+    <value>The configuration parameter {0} must be contain a valid jwk, the value '{1}' could not be parsed as a Json Web Key. The expected format is a Json Web Key written as JSON which is base64Url encoded. {2}</value>
+    <comment>Gets the format string for rejecting a config param because it is not a json-encoded jwk.
+3 Format Parameters:
+0. configName: The variable name for the provided string.
+1. value: The value of the string that could not be parsed.
+2. errorMessage: Additional error message text.</comment>
+  </data>
+  <data name="ErrorMessage_NotBase64" xml:space="preserve">
+    <value>The configuration parameter {0} must be base64Url encoded, the value '{1}' could not be parsed as a base64Url-encoded string.</value>
+    <comment>Gets the format string for rejecting a string because it is not base64url encoded.
+2 Format Parameters:
+0. stringName: The variable name for the provided string.
+1. stringValue: The value of the string that could not be parsed.</comment>
+  </data>
   <data name="ErrorMessage_ParameterNotAllowed" xml:space="preserve">
     <value>The {0} parameter value '{1}' is not allowed.</value>
     <comment>Gets the format string for rejecting a parameter value.
@@ -214,6 +222,19 @@
 2. minBytes: The minimum number of bytes acceptable
 3. maxBytes: The maximum number of bytes acceptable</comment>
   </data>
+  <data name="ErrorMessage_RejectedJwk" xml:space="preserve">
+    <value>The configuration parameter {0} must be contain a jwk that is valid for use with dotnet-monitor. The provided Json Web Key must be have a key-type of EC or RSA and must-not have private key information because this this key is only used for signature verification.</value>
+    <comment>Gets the format string for rejecting a config param because it is not a jwk type that is accepted.
+1 Format Parameter:
+0. configName: The variable name for the provided string.</comment>
+  </data>
+  <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
+    <value>The {0} field or the {1} field is required.</value>
+    <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
+2 Format Parameters:
+0. fieldNameOne: The name of the first field that is missing
+1. fieldNameTwo: The name of the second field that is missing</comment>
+  </data>
   <data name="ErrorMessage_UnableToBindUrls" xml:space="preserve">
     <value>Unable to bind any urls.</value>
     <comment>Gets a string similar to "Unable to bind any urls.".</comment>
@@ -223,6 +244,12 @@
     <comment>Gets the format string for egress provider failure due to missing provider.
 1 Format Parameter:
 0. connectionMode: The provided DiagnosticPortConnectionMode that could not be parsed.</comment>
+  </data>
+  <data name="ErrorMessage_UnknownFormat" xml:space="preserve">
+    <value>Unknown output format type: {0}</value>
+    <comment>Gets the format string for an unknown output format.
+1 Format Parameter:
+0. formatType: The value of the unknown OutputFormat type.</comment>
   </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
@@ -239,14 +266,6 @@
   <data name="HelpDescription_CommandShow" xml:space="preserve">
     <value>Shows configuration, as if dotnet-monitor collect was executed with these parameters.</value>
     <comment>Gets the string to display in help that explains what the 'show' command does.</comment>
-  </data>
-  <data name="HelpDescription_HashAlgorithm" xml:space="preserve">
-    <value>The string representing the hash algorithm used to compute ApiKeyHash store in configuration, typically SHA256.</value>
-    <comment>Gets the string to display in help that explains what the '--hash-algorithm' option does.</comment>
-  </data>
-  <data name="HelpDescription_KeyLength" xml:space="preserve">
-    <value>The length of the MonitorApiKey in bytes.</value>
-    <comment>Gets the string to display in help that explains what the '--key-length' option does.</comment>
   </data>
   <data name="HelpDescription_OptionDiagnosticPort" xml:space="preserve">
     <value>The fully qualified path and filename of the diagnostic port to which runtime instances can connect.</value>
@@ -280,11 +299,23 @@
     <value>Bindings for the REST api.</value>
     <comment>Gets the string to display in help that explains what the '--urls' option does.</comment>
   </data>
-  <data name="LogFormatString_ApiKeyAuthenticationOptionsChanged" xml:space="preserve">
-    <value>{apiAuthenticationConfigKey} settings have changed.</value>
+  <data name="HelpDescription_OutputFormat" xml:space="preserve">
+    <value>The format to display the output in. Valid values are Json, Text, and EnvVar.</value>
+    <comment>Gets the string to display in help that explains what the '--output' option does.</comment>
+  </data>
+  <data name="LogFormatString_ApiKeyAuthenticationOptionsValidated" xml:space="preserve">
+    <value>{apiAuthenticationConfigKey} settings have changed. The new settings have passed validation.</value>
     <comment>Gets the format string that is printed in the 22:ApiKeyAuthenticationOptionsChanged event.
 1 Format Parameter:
 1. apiAuthenticationConfigKey: The string key of ApiAuthentication object in configuration.</comment>
+  </data>
+  <data name="LogFormatString_ApiKeyOptionsChanged" xml:space="preserve">
+    <value>The {configName} have changed, new values: Subject={subject}, PublicKey={publicKey}</value>
+    <comment>Gets the format string that is printed in the 21:ApiKeyValidationFailure event.
+3 Format Parameters:
+1. configName: The string key of MonitorApiKey object in configuration.
+2. subject: The value of the Subject property from the MonitorApiKeyOptions object.
+3. publicKey: The value of the PublicKey property from the MonitorApiKeyOptions object.</comment>
   </data>
   <data name="LogFormatString_ApiKeyValidationFailure" xml:space="preserve">
     <value>{apiAuthenticationConfigKey} settings are invalid: {validationFailure}</value>
@@ -376,6 +407,9 @@
     <comment>Gets the format string that is printed in the 13:NoAuthentication event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_NotifyPrivateKey" xml:space="preserve">
+    <value>The configuration field {fieldName} contains private key information. The private key information is not required for dotnet-monitor to verify a token signature and it is strongly recomended to only provide the public key.</value>
+  </data>
   <data name="LogFormatString_OptionsValidationFailure" xml:space="preserve">
     <value>{failure}</value>
     <comment>Gets the format string that is printed in the 18:OptionsValidationFailure event.
@@ -392,6 +426,26 @@
     <comment>Gets the format string that is printed in the 15:UnableToListenToAddress event.
 1 Format Parameter:
 1. url: The URL that could not have a listener attached to it</comment>
+  </data>
+  <data name="Message_GenerateApiKey" xml:space="preserve">
+    <value>Generated ApiKey for dotnet-monitor; use the following header for authorization:</value>
+    <comment>Gets a header string for the output of GenerateApiKeyCommand.</comment>
+  </data>
+  <data name="Message_GeneratedAuthorizationHeader" xml:space="preserve">
+    <value>{0}: {1} {2}</value>
+    <comment>Gets the string for writing the http Authorization header.</comment>
+  </data>
+  <data name="Message_GeneratekeyPublicKey" xml:space="preserve">
+    <value>Public Key: {0}</value>
+    <comment>Gets the string for displaying the PublicKey configuration value</comment>
+  </data>
+  <data name="Message_GeneratekeySubject" xml:space="preserve">
+    <value>Subject: {0}</value>
+    <comment>Gets the string for displaying the Subject configuration value</comment>
+  </data>
+  <data name="Message_SettingsDump" xml:space="preserve">
+    <value>Settings in {0} format:</value>
+    <comment>Gets a header string for the configuration output of GenerateApiKeyCommand.</comment>
   </data>
   <data name="Placeholder_NotPresent" xml:space="preserve">
     <value>:NOT PRESENT:</value>

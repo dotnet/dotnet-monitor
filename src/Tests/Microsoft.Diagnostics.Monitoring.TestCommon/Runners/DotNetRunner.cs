@@ -42,6 +42,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public IDictionary<string, string> Environment => _process.StartInfo.Environment;
 
         /// <summary>
+        /// Gets a <see cref="bool"/> indicating if <see cref="StartAsync(CancellationToken)"/> has been called and the process has been started.
+        /// </summary>
+        public bool HasStarted { get; private set; } = false;
+
+        /// <summary>
         /// Retrieves the exit code of the process.
         /// </summary>
         public int ExitCode => _process.ExitCode;
@@ -59,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// <summary>
         /// Determines if the process has exited.
         /// </summary>
-        public bool HasExited => _process.HasExited;
+        public bool HasExited => HasStarted && _process.HasExited;
 
         /// <summary>
         /// Gets the process ID of the running process.
@@ -133,6 +138,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             {
                 throw new InvalidOperationException($"Unable to start: {_process.StartInfo.FileName} {_process.StartInfo.Arguments}");
             }
+            HasStarted = true;
 
             if (WaitForDiagnosticPipe)
             {
@@ -161,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public async Task WaitForExitAsync(CancellationToken token)
         {
-            if (!_process.HasExited)
+            if (HasStarted && !_process.HasExited)
             {
                 TaskCompletionSource<object> cancellationSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
                 using IDisposable _ = token.Register(() => cancellationSource.TrySetCanceled(token));
@@ -177,7 +183,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public void ForceClose()
         {
-            if (!_process.HasExited)
+            if (HasStarted && !_process.HasExited)
             {
                 _process.Kill();
             }

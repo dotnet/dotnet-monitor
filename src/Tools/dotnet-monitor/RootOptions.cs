@@ -8,9 +8,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal partial class RootOptions
     {
-        public ApiAuthenticationOptions ApiAuthentication { get; set; }
+        public AuthenticationOptions Authentication { get; set; }
 
-        public CorsConfiguration CorsConfiguration { get; set; }
+        public CorsConfigurationOptions CorsConfiguration { get; set; }
 
         public DiagnosticPortOptions DiagnosticPort { get; set; }
 

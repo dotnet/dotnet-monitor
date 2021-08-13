@@ -16,14 +16,14 @@
         }
       ]
     },
-    "ApiAuthentication": {
+    "Authentication": {
       "default": {},
       "oneOf": [
         {
           "type": "null"
         },
         {
-          "$ref": "#/definitions/ApiAuthenticationOptions"
+          "$ref": "#/definitions/AuthenticationOptions"
         }
       ]
     },
@@ -34,7 +34,7 @@
           "type": "null"
         },
         {
-          "$ref": "#/definitions/CorsConfiguration"
+          "$ref": "#/definitions/CorsConfigurationOptions"
         }
       ]
     },
@@ -335,28 +335,45 @@
         }
       }
     },
-    "ApiAuthenticationOptions": {
+    "AuthenticationOptions": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "ApiKeyHash",
-        "ApiKeyHashType"
+        "MonitorApiKey"
       ],
       "properties": {
-        "ApiKeyHash": {
-          "type": "string",
-          "description": "API key in hashed form. Each byte should be two hexadecimal-based digits.",
-          "minLength": 64,
-          "pattern": "[0-9a-fA-F]+"
-        },
-        "ApiKeyHashType": {
-          "type": "string",
-          "description": "Hash algorithm used to compute ApiKeyHash, typically 'SHA256'. 'SHA1' and 'MD5' are not allowed.",
-          "minLength": 1
+        "MonitorApiKey": {
+          "description": "The parameters used to validate MonitorApiKey JWT tokens.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MonitorApiKeyOptions"
+            }
+          ]
         }
       }
     },
-    "CorsConfiguration": {
+    "MonitorApiKeyOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Subject",
+        "PublicKey"
+      ],
+      "properties": {
+        "Subject": {
+          "type": "string",
+          "description": "The value of the 'sub' or Subject field in the JWT (JSON Web Token).",
+          "minLength": 1
+        },
+        "PublicKey": {
+          "type": "string",
+          "description": "The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information.",
+          "minLength": 1,
+          "pattern": "[0-9a-zA-Z_-]+"
+        }
+      }
+    },
+    "CorsConfigurationOptions": {
       "type": "object",
       "additionalProperties": false,
       "required": [
