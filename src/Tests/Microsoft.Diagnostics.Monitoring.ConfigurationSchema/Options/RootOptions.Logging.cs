@@ -4,7 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 
-namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
+namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal partial class RootOptions
     {

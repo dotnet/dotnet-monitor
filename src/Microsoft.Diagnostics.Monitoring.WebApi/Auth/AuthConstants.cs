@@ -3,11 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.UnitTests
-#else
 namespace Microsoft.Diagnostics.Monitoring.WebApi
-#endif
 {
     internal static class AuthConstants
     {

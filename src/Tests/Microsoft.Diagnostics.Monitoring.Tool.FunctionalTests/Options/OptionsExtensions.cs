@@ -11,8 +11,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests;
-using Microsoft.Diagnostics.Monitoring.UnitTests;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {

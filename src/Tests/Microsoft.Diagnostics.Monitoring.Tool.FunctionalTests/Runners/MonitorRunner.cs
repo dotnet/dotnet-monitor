@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         protected readonly ITestOutputHelper _outputHelper;
 
-        protected readonly DotNetRunner _runner = new();
+        private readonly DotNetRunner _runner = new();
 
         private readonly LoggingRunnerAdapter _adapter;
 
@@ -33,6 +33,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
 
         private bool _isDisposed;
+
+        /// <summary>
+        /// Sets configuration values via environment variables.
+        /// </summary>
+        public RootOptions ConfigurationFromEnvironment { get; } = new();
+
+        /// <summary>
+        /// Gets the task for the underlying <see cref="DotNetRunner"/>'s 
+        /// <see cref="DotNetRunner.ExitedTask"/> which is used to wait for process exit.
+        /// </summary>
+        protected Task<int> RunnerExitedTask => _runner.ExitedTask;
 
         /// <summary>
         /// The path of the currently executing assembly.
@@ -54,11 +65,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             CurrentExecutingAssemblyPath
                 .Replace(Assembly.GetExecutingAssembly().GetName().Name, "dotnet-monitor")
                 .Replace(CurrentTargetFrameworkFolderName, "netcoreapp3.1");
-
-        /// <summary>
-        /// Sets configuration values via environment variables.
-        /// </summary>
-        public RootOptions ConfigurationFromEnvironment { get; } = new();
 
         private string SharedConfigDirectoryPath =>
             Path.Combine(_runnerTmpPath, "SharedConfig");
@@ -160,7 +166,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public virtual async Task WaitForExitAsync(CancellationToken token)
         {
-            await Task.Run(() => _runner.ExitedTask.Wait(token)).ConfigureAwait(false);
+            await RunnerExitedTask.WithCancellation(token).ConfigureAwait(false);
             if (token.IsCancellationRequested)
             {
                 return;

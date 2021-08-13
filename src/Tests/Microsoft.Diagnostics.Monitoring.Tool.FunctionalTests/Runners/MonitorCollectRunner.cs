@@ -33,15 +33,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         private readonly TaskCompletionSource<string> _monitorApiKeySource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        // Completion source containing a bool indicating if the warning message WarnPrivateKey was sent. true if the message was seen, false or not completed otherwise
-        private readonly TaskCompletionSource<bool> _warnPrivateKeySource =
-            new(TaskCreationOptions.RunContinuationsAsynchronously);
-
         // Completion source containing a string which is fired when the monitor enters a ready idle state
         private readonly TaskCompletionSource<string> _readySource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private bool _isDiposed;
+
+        /// <summary>
+        /// Event callback for when a Private Key warning message is seen.
+        /// </summary>
+        public event Action<string> WarnPrivateKey;
 
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Connect"/>
@@ -69,9 +70,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         /// <summary>
         /// Determines whether a temporary api key should be generated while starting dotnet-monitor.
-
-        /// <summary>
-        /// Determines whether a temporary api key should be generated while starting dotnet-monitor.
         /// </summary>
         public bool UseTempApiKey { get; set; }
 
@@ -79,6 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// Determines whether metrics are disabled via the command line when starting dotnet-monitor.
         /// </summary>
         public bool DisableMetricsViaCommandLine { get; set; }
+
 
         public MonitorCollectRunner(ITestOutputHelper outputHelper)
             : base(outputHelper)
@@ -95,8 +94,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 }
                 _isDiposed = true;
             }
-
-            _warnPrivateKeySource.TrySetResult(false);
 
             CancelCompletionSources(CancellationToken.None);
 
@@ -151,9 +148,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             await base.StartAsync(command, argsList.ToArray(), token);
 
-            Task endingTask = await Task.WhenAny(_readySource.Task, _runner.ExitedTask);
+            Task<int> runnerExitTask = RunnerExitedTask;
+            Task endingTask = await Task.WhenAny(_readySource.Task, runnerExitTask);
             // Await ready and exited tasks in case process exits before it is ready.
-            if (_runner.ExitedTask == endingTask)
+            if (runnerExitTask == endingTask)
             {
                 throw new InvalidOperationException("Process exited before it was ready.");
             }
@@ -185,7 +183,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _metricsAddressSource.TrySetCanceled(token);
             _readySource.TrySetCanceled(token);
             _monitorApiKeySource.TrySetCanceled(token);
-            _warnPrivateKeySource.TrySetCanceled(token);
         }
 
         public Task<string> GetDefaultAddressAsync(CancellationToken token)
@@ -201,11 +198,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public Task<string> GetMonitorApiKey(CancellationToken token)
         {
             return _monitorApiKeySource.GetAsync(token);
-        }
-
-        public Task<bool> GetWarnPrivateKeyState(CancellationToken token)
-        {
-            return _warnPrivateKeySource.GetAsync(token);
         }
 
         private void HandleLifetimeEvent(ConsoleLogEvent logEvent)
@@ -261,7 +253,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                     if (logEvent.State.TryGetValue("fieldName", out string fieldName))
                     {
                         _outputHelper.WriteLine("Private Key data detected in field: {0}", fieldName);
-                        Assert.True(_warnPrivateKeySource.TrySetResult(true));
+                        WarnPrivateKey?.Invoke(fieldName);
                     }
                     break;
             }

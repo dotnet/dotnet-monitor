@@ -4,13 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 
-#if SCHEMAGEN
-using Microsoft.Diagnostics.Tools.Monitor;
-
-namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
-#else
 namespace Microsoft.Diagnostics.Tools.Monitor
-#endif
 {
     internal partial class RootOptions
     {

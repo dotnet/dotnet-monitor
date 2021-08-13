@@ -31,7 +31,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         // Completion source containing the format type emitted by the generatekey command
         private readonly TaskCompletionSource<string> _formatHeaderSource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private bool _formatHeaderSeen = false;
         private readonly Regex _formatHeaderRegex =
             new Regex("^Settings in (?<format>[a-zA-Z0-9-_]+) format:$", RegexOptions.Compiled);
 
@@ -147,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             Assert.True(_outputSource.TrySetResult(_outputBuilder.ToString()));
 
-            if (this.FormatUsed == OutputFormat.Json)
+            if (FormatUsed == OutputFormat.Json)
             {
                 RootOptions parsedOpts = JsonSerializer.Deserialize<RootOptions>(_outputBuilder.ToString());
 
@@ -158,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         protected override void StandardOutputCallback(string line)
         {
-            if (_formatHeaderSeen)
+            if (_formatHeaderSource.Task.IsCompletedSuccessfully)
             {
                 _outputBuilder.AppendLine(line);
             }
@@ -174,33 +173,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             Match formatMatch = _formatHeaderRegex.Match(line);
             if (formatMatch.Success)
             {
-                _formatHeaderSeen = true;
                 string formatValue = formatMatch.Groups["format"].Value;
                 _outputHelper.WriteLine($"Output Format: {formatValue}");
                 Assert.True(_formatHeaderSource.TrySetResult(formatValue));
             }
 
-            Match subjectMatch = _subjectRegexMap[this.FormatUsed].Match(line);
+            Match subjectMatch = _subjectRegexMap[FormatUsed].Match(line);
             if (subjectMatch.Success)
             {
                 string subjectValue = subjectMatch.Groups["subject"].Value;
                 _outputHelper.WriteLine($"Subject: {subjectValue}");
 
                 // for Json we will parse the whole blob and set the value that way
-                if (this.FormatUsed != OutputFormat.Json)
+                if (FormatUsed != OutputFormat.Json)
                 {
                     Assert.True(_subjectSource.TrySetResult(subjectValue));
                 }
             }
 
-            Match publicKeyMatch = _publicKeyRegexMap[this.FormatUsed].Match(line);
+            Match publicKeyMatch = _publicKeyRegexMap[FormatUsed].Match(line);
             if (publicKeyMatch.Success)
             {
                 string publicKeyValue = publicKeyMatch.Groups["publickey"].Value;
                 _outputHelper.WriteLine($"Public Key: {publicKeyValue}");
 
                 // for Json we will parse the whole blob and set the value that way
-                if (this.FormatUsed != OutputFormat.Json)
+                if (FormatUsed != OutputFormat.Json)
                 {
                     Assert.True(_publicKeySource.TrySetResult(publicKeyValue));
                 }

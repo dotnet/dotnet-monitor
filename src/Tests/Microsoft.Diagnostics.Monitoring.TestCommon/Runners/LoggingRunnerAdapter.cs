@@ -141,7 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             Task stdWaiter = _standardOutputTask.SafeAwait(_outputHelper);
 
             // Wait for everything to end with the cancellation token still allowed to abort the wait
-            await Task.Run(() => Task.WaitAll(new Task[] { stdWaiter, errorWaiter }, token)).ConfigureAwait(false);
+            await Task.WhenAll(stdWaiter, errorWaiter).WithCancellation(token).ConfigureAwait(false);
         }
 
         private async Task ReadLinesAsync(StreamReader reader, List<string> lines, Action<string> callback, CancellationToken cancelToken)

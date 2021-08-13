@@ -8,7 +8,6 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.UnitTests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -25,6 +24,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System.Threading;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -33,6 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
+        private readonly List<(string fieldName, DateTime time)> _warnPrivateKeyLog = new();
 
         public AuthenticationTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
@@ -222,6 +223,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         public async Task ApiKeyAlgorithmTest(string signingAlgo, bool valid)
         {
             MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.WarnPrivateKey += ToolRunner_WarnPrivateKey;
             await using (toolRunner)
             {
                 toolRunner.DisableMetricsViaCommandLine = true;
@@ -250,10 +252,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(HttpStatusCode.Unauthorized, ex.StatusCode);
                 }
             }
+            toolRunner.WarnPrivateKey -= ToolRunner_WarnPrivateKey;
 
-            using CancellationTokenSource cancellationTokenSource = new(TestTimeouts.ExpectedTaskCompletionTime);
-            Task<bool> warnPrivateKeyTask = toolRunner.GetWarnPrivateKeyState(cancellationTokenSource.Token);
-            Assert.False(await warnPrivateKeyTask, "Found warning message for private key in PublicKey field, no such warning message should be seen.");
+            Assert.Empty(_warnPrivateKeyLog);
         }
 
         /// <summary>
@@ -449,6 +450,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         public async Task WarnOnPrivateKey(string signingAlgo)
         {
             MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.WarnPrivateKey += ToolRunner_WarnPrivateKey;
             await using (toolRunner)
             {
                 toolRunner.DisableMetricsViaCommandLine = true;
@@ -501,10 +503,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                 await apiClient.GetProcessesAsync();
             }
+            toolRunner.WarnPrivateKey -= ToolRunner_WarnPrivateKey;
 
-            using CancellationTokenSource cancellationTokenSource = new(TestTimeouts.ExpectedTaskCompletionTime);
-            Task<bool> warnPrivateKeyTask = toolRunner.GetWarnPrivateKeyState(cancellationTokenSource.Token);
-            Assert.True(await warnPrivateKeyTask, "No warning message for existance of the Private Key in the PublicKey field was found.");
+            Assert.Single(_warnPrivateKeyLog);
         }
 
 
@@ -602,11 +603,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         }
 
-        private static byte[] GenerateApiKey(int keyLength = 32)
+        private void ToolRunner_WarnPrivateKey(string fieldName)
         {
-            byte[] apiKey = new byte[keyLength]; // 256 bits
-            RandomNumberGenerator.Fill(apiKey);
-            return apiKey;
+            _warnPrivateKeyLog.Add((fieldName, DateTime.Now));
         }
 
         private static JwtPayload GetJwtPayload(string audience, string subject, string issuer)

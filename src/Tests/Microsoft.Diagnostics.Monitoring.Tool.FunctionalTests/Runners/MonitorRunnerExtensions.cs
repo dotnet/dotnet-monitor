@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.UnitTests;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;

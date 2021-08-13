@@ -21,9 +21,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private GeneratedJwtKey(string token, string subject, string publicKey)
         {
-            this.Token = token;
-            this.Subject = subject;
-            this.PublicKey = publicKey;
+            Token = token;
+            Subject = subject;
+            PublicKey = publicKey;
         }
 
         public static GeneratedJwtKey Create()
