@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 // So we need to make a local "combined" token that we can cancel if the provided CancellationToken token is never canceled
                 // This allows the framework to properly cleanup the Task and it's associated token registrations
                 Task waitOnCancellation = Task.Delay(Timeout.Infinite, combinedTokenSource.Token);
-                await Task.WhenAny(task, waitOnCancellation).ConfigureAwait(false);
+                await Task.WhenAny(task, waitOnCancellation).Unwrap().ConfigureAwait(false);
             }
             finally
             {
