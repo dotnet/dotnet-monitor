@@ -5,17 +5,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
-#if UNITTEST
-using Microsoft.Diagnostics.Monitoring.WebApi;
-
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Monitoring.WebApi
-#endif
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ProcessFilterKey
     {
         [Display(
@@ -32,7 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         CommandLine,
     }
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ProcessFilterType
     {
         [Display(

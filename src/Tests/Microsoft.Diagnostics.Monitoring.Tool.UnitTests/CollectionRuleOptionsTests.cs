@@ -368,7 +368,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions);
 
                     collectLogsOptions.UseAppFilters = ExpectedUseAppFilters;
-                    collectLogsOptions.LogLevel = ExpectedLogLevel;
+                    collectLogsOptions.DefaultLevel = ExpectedLogLevel;
                     collectLogsOptions.FilterSpecs = ExpectedFilterSpecs;
                     collectLogsOptions.Duration = ExpectedDuration;
 
@@ -378,7 +378,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     CollectLogsOptions collectLogsOptions = ruleOptions.VerifyCollectLogsAction(0, ExpectedEgressProvider);
                     Assert.Equal(ExpectedUseAppFilters, collectLogsOptions.UseAppFilters);
-                    Assert.Equal(ExpectedLogLevel, collectLogsOptions.LogLevel);
+                    Assert.Equal(ExpectedLogLevel, collectLogsOptions.DefaultLevel);
                     Assert.NotNull(collectLogsOptions.FilterSpecs);
                     Assert.Equal(ExpectedFilterSpecs.Count, collectLogsOptions.FilterSpecs.Count);
                     foreach ((string expectedCategory, LogLevel? expectedLogLevel) in ExpectedFilterSpecs)
@@ -400,14 +400,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetStartupTrigger()
                         .AddCollectLogsAction(egress: null, out CollectLogsOptions collectLogsOptions);
 
-                    collectLogsOptions.LogLevel = (LogLevel)100;
+                    collectLogsOptions.DefaultLevel = (LogLevel)100;
                     collectLogsOptions.Duration = TimeSpan.FromDays(3);
                 },
                 ex =>
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(3, failures.Length);
-                    VerifyEnumDataTypeMessage<LogLevel>(failures, 0, nameof(CollectLogsOptions.LogLevel));
+                    VerifyEnumDataTypeMessage<LogLevel>(failures, 0, nameof(CollectLogsOptions.DefaultLevel));
                     VerifyRangeMessage<TimeSpan>(failures, 1, nameof(CollectLogsOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
                     VerifyRequiredMessage(failures, 2, nameof(CollectLogsOptions.Egress));

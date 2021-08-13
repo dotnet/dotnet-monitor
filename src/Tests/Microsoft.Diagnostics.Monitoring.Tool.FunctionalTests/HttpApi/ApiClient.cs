@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -26,6 +26,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 {
     internal sealed class ApiClient
     {
+        private static readonly JsonSerializerOptions DefaultJsonDeserializeOptions
+            = CreateJsonDeserializeOptions();
+        private static readonly JsonSerializerOptions DefaultJsonSerializeOptions
+            = CreateJsonSerializeOptions();
+
         private readonly HttpClient _httpClient;
         private readonly ITestOutputHelper _outputHelper;
 
@@ -38,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// <summary>
         /// GET /processes
         /// </summary>
-        public async Task<IEnumerable<Models.ProcessIdentifier>> GetProcessesAsync(CancellationToken token)
+        public async Task<IEnumerable<ProcessIdentifier>> GetProcessesAsync(CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, "/processes");
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
@@ -52,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             {
                 case HttpStatusCode.OK:
                     ValidateContentType(response, ContentTypes.ApplicationJson);
-                    return await ReadContentEnumerableAsync<Models.ProcessIdentifier>(response).ConfigureAwait(false);
+                    return await ReadContentEnumerableAsync<ProcessIdentifier>(response).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(response, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
@@ -69,12 +74,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// Capable of getting every combination of process query: PID, UID, and/or Name
         /// Get /process?pid={pid}&uid={uid}&name={name}
         /// </summary>
-        public Task<Models.ProcessInfo> GetProcessAsync(int? pid, Guid? uid, string name, CancellationToken token)
+        public Task<ProcessInfo> GetProcessAsync(int? pid, Guid? uid, string name, CancellationToken token)
         {
             return GetProcessAsync(GetProcessQuery(pid: pid, uid: uid, name: name), token);
         }
 
-        private async Task<Models.ProcessInfo> GetProcessAsync(string processQuery, CancellationToken token)
+        private async Task<ProcessInfo> GetProcessAsync(string processQuery, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, $"/process?" + processQuery);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
@@ -88,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             {
                 case HttpStatusCode.OK:
                     ValidateContentType(response, ContentTypes.ApplicationJson);
-                    return await ReadContentAsync<Models.ProcessInfo>(response).ConfigureAwait(false);
+                    return await ReadContentAsync<ProcessInfo>(response).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(response, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
@@ -252,9 +257,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         private Task<ResponseStreamHolder> CaptureLogsAsync(string processQuery, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, CancellationToken token)
         {
-            JsonSerializerOptions options = new();
-            options.Converters.Add(new JsonStringEnumConverter());
-            string json = JsonSerializer.Serialize(configuration, options);
+            string json = JsonSerializer.Serialize(configuration, DefaultJsonSerializeOptions);
 
             return CaptureLogsAsync(
                 HttpMethod.Post,
@@ -360,7 +363,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
-        public async Task<List<Models.OperationSummary>> GetOperations(CancellationToken token)
+        public async Task<List<OperationSummary>> GetOperations(CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, "/operations");
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
@@ -369,7 +372,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             {
                 case HttpStatusCode.OK:
                     ValidateContentType(response, ContentTypes.ApplicationJson);
-                    return await ReadContentEnumerableAsync<Models.OperationSummary>(response).ConfigureAwait(false);
+                    return await ReadContentEnumerableAsync<OperationSummary>(response).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(response, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
@@ -426,7 +429,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         private static async Task<T> ReadContentAsync<T>(HttpResponseMessage responseMessage)
         {
             using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            return await JsonSerializer.DeserializeAsync<T>(contentStream).ConfigureAwait(false);
+            return await JsonSerializer.DeserializeAsync<T>(contentStream, DefaultJsonDeserializeOptions).ConfigureAwait(false);
         }
 
         private static Task<List<T>> ReadContentEnumerableAsync<T>(HttpResponseMessage responseMessage)
@@ -547,6 +550,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             }
 
             throw new ArgumentException("One of PID, UID, or Name must be specified.");
+        }
+
+        private static JsonSerializerOptions CreateJsonDeserializeOptions()
+        {
+            JsonSerializerOptions options = new();
+            options.Converters.Add(new JsonStringEnumConverter());
+            return options;
+        }
+
+        private static JsonSerializerOptions CreateJsonSerializeOptions()
+        {
+            JsonSerializerOptions options = new();
+            options.Converters.Add(new JsonStringEnumConverter());
+            return options;
         }
     }
 }

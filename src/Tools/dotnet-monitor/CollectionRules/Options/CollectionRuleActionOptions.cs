@@ -6,11 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
-#endif
 {
     /// <summary>
     /// Options for describing the type of action to execute and the settings to pass to that action.

@@ -6,13 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortConnectionMode.cs" Link="Options\DiagnosticPortConnectionMode.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
     <PackageReference Include="Microsoft.DotNet.XUnitExtensions" Version="$(MicrosoftDotNetXUnitExtensionsVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
   </ItemGroup>
 
   <Import Project="GenerateDotNetHost.targets" />

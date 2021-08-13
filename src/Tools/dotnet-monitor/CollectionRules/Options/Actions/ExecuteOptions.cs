@@ -1,16 +1,13 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
-#endif
 {
     /// <summary>
     /// Options for the Execute action.
@@ -18,9 +15,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     [DebuggerDisplay("Execute: Path = {Path}")]
     internal sealed class ExecuteOptions
     {
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExecuteOptions_Path))]
         [Required]
         public string Path { get; set; }
 
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExecuteOptions_Arguments))]
         public string Arguments { get; set; }
 
         [DefaultValue(ExecuteOptionsDefaults.IgnoreExitCode)]

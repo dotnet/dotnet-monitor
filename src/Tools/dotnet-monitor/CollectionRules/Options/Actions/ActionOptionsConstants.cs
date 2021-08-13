@@ -4,11 +4,7 @@
 
 using System.Globalization;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
-#endif
 {
     // Constants for action options allowing reuse among multiple actions and for tests to verify ranges.
     internal static class ActionOptionsConstants

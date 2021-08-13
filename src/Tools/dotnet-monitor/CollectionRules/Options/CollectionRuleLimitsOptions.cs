@@ -4,13 +4,10 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
-#endif
 {
     /// <summary>
     /// Options for limiting the execution of a collection rule.
@@ -20,6 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount))]
+        [DefaultValue(CollectionRuleLimitsOptionsDefaults.ActionCount)]
         public int? ActionCount { get; set; }
 
         [Display(

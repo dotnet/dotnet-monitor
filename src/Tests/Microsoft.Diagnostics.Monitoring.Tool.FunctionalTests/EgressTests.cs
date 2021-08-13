@@ -8,9 +8,10 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,7 +23,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using DiagnosticPortConnectionMode = Microsoft.Diagnostics.Monitoring.TestCommon.Options.DiagnosticPortConnectionMode;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {

@@ -46,21 +46,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="OptionsDisplayStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>OptionsDisplayStrings.resx</DependentUpon>
-    </Compile>
+    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Update="OptionsDisplayStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>OptionsDisplayStrings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>Microsoft.Diagnostics.Monitoring.WebApi</CustomToolNamespace>
-    </EmbeddedResource>
     <EmbeddedResource Update="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>

@@ -6,13 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-#if UNITTEST
-using Microsoft.Diagnostics.Monitoring.WebApi;
-
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
-#else
 namespace Microsoft.Diagnostics.Monitoring.WebApi
-#endif
 {
     /// <summary>
     /// Configuration for prometheus metric collection and retrieval.
