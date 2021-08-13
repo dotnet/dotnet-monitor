@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidateFilePathValidity(path);
 
             // May want to capture stdout and stderr and return as part of the result in the future
-            Process process = new Process();
+            using Process process = new Process();
 
             process.StartInfo = new ProcessStartInfo(path, arguments);
             process.EnableRaisingEvents = true;
@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             // Completion source that is signaled when the process exits
             TaskCompletionSource<int> exitedSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            EventHandler exitedHandler = (s, e) => exitedSource.SetResult(process.ExitCode);
+            EventHandler exitedHandler = (s, e) => exitedSource.TrySetResult(process.ExitCode);
 
             process.EnableRaisingEvents = true;
             process.Exited += exitedHandler;
@@ -42,13 +42,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 if (!process.Start())
                 {
-                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments));
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments));
                 }
 
                 await WaitForExitAsync(process, exitedSource.Task, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
+                process.Exited -= exitedHandler;
+
                 ValidateExitCode(IgnoreExitCode, process.ExitCode);
             }
 
@@ -65,8 +67,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             if (!process.HasExited)
             {
-                await Task.WhenAny(exitedTask, Task.Delay(Timeout.Infinite, token)).ConfigureAwait(false);
-                token.ThrowIfCancellationRequested();
+                TaskCompletionSource<object> cancellationTaskSource = new();
+                using var _ = token.Register(() => cancellationTaskSource.TrySetCanceled(token));
+                await Task.WhenAny(exitedTask, cancellationTaskSource.Task).Unwrap().ConfigureAwait(false);
             }
         }
 
@@ -74,7 +77,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             if (!File.Exists(path))
             {
-                throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_FileNotFound, path));
+                throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_FileNotFound, path));
             }
         }
 
@@ -82,7 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             if (!ignoreExitCode && exitCode != 0)
             {
-                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_NonzeroExitCode, exitCode.ToString(CultureInfo.InvariantCulture)));
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_NonzeroExitCode, exitCode.ToString(CultureInfo.InvariantCulture)));
             }
         }
     }
