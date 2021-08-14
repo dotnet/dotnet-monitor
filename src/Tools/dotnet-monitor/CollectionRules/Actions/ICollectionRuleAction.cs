@@ -9,7 +9,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal interface ICollectionRuleAction<TOptions>
     {
