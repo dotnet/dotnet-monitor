@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public static async Task WithCancellation(this Task task, CancellationToken token)
         {
-            CancellationTokenSource localTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            using CancellationTokenSource localTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
 
             try
             {
@@ -56,11 +56,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
             finally
             {
-                // If the token provided wasn't cancelled, cancel our own token
-                if (!token.IsCancellationRequested)
-                {
-                    localTokenSource.Cancel();
-                }
+                // Cancel to make sure Task.Delay token registration is removed.
+                localTokenSource.Cancel();
             }
         }
     }
