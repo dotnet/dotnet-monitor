@@ -128,10 +128,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             switch (FrameworkReference)
             {
                 case DotNetFrameworkReference.Microsoft_AspNetCore_App:
-                    frameworkVersion = GetAspNetCoreFrameworkVersion();
+                    frameworkVersion = TargetFramework.GetAspNetCoreFrameworkVersion();
                     break;
                 case DotNetFrameworkReference.Microsoft_NetCore_App:
-                    frameworkVersion = GetNetCoreAppFrameworkVersion();
+                    frameworkVersion = TargetFramework.GetNetCoreAppFrameworkVersion();
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported framework reference: {FrameworkReference}");
@@ -192,31 +192,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             {
                 _process.Kill();
             }
-        }
-
-        private string GetAspNetCoreFrameworkVersion()
-        {
-            if (TargetFrameworkMoniker.Current == TargetFramework)
-            {
-                return DotNetHost.CurrentAspNetCoreVersionString;
-            }
-            throw new InvalidOperationException($"Unsupported target framework moniker: {TargetFramework}");
-        }
-
-        private string GetNetCoreAppFrameworkVersion()
-        {
-            switch (TargetFramework)
-            {
-                case TargetFrameworkMoniker.Current:
-                    return DotNetHost.CurrentNetCoreVersionString;
-                case TargetFrameworkMoniker.Net50:
-                    return DotNetHost.NetCore50VersionString;
-                case TargetFrameworkMoniker.Net60:
-                    return DotNetHost.NetCore60VersionString;
-                case TargetFrameworkMoniker.NetCoreApp31:
-                    return DotNetHost.NetCore31VersionString;
-            }
-            throw new InvalidOperationException($"Unsupported target framework moniker: {TargetFramework}");
         }
     }
 }

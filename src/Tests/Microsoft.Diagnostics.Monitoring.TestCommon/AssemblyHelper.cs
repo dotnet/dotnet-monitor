@@ -19,27 +19,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             if (tfm != TargetFrameworkMoniker.Current)
             {
-                string currentFolderName = GetTargetFrameworkMonikerFolderName(DotNetHost.BuiltTargetFrameworkMoniker);
-                string targetFolderName = GetTargetFrameworkMonikerFolderName(tfm);
+                string currentFolderName = DotNetHost.BuiltTargetFrameworkMoniker.ToFolderName();
+                string targetFolderName = tfm.ToFolderName();
 
                 assemblyPath = assemblyPath.Replace(currentFolderName, targetFolderName);
             }
 
             return assemblyPath;
-        }
-
-        private static string GetTargetFrameworkMonikerFolderName(TargetFrameworkMoniker moniker)
-        {
-            switch (moniker)
-            {
-                case TargetFrameworkMoniker.Net50:
-                    return "net5.0";
-                case TargetFrameworkMoniker.Net60:
-                    return "net6.0";
-                case TargetFrameworkMoniker.NetCoreApp31:
-                    return "netcoreapp3.1";
-            }
-            throw new ArgumentException($"Moniker '{moniker:G}' is not supported.");
         }
     }
 }
