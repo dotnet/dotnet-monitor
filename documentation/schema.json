@@ -1278,6 +1278,13 @@
             "string"
           ],
           "description": "The arguments to pass to the executable."
+        },
+        "IgnoreExitCode": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
         }
       }
     },

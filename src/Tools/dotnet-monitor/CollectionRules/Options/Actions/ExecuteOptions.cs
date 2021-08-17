@@ -1,8 +1,9 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
@@ -24,5 +25,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExecuteOptions_Arguments))]
         public string Arguments { get; set; }
+
+        [DefaultValue(ExecuteOptionsDefaults.IgnoreExitCode)]
+        public bool? IgnoreExitCode { get; set; }
     }
 }
