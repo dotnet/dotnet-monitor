@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal interface ICollectionRuleAction<TOptions>
     {
-        Task<CollectionRuleActionResult> ExecuteAsync(TOptions options, DiagnosticsClient client, CancellationToken token);
+        Task<CollectionRuleActionResult> ExecuteAsync(TOptions options, IEndpointInfo endpointInfo, CancellationToken token);
     }
 
     internal struct CollectionRuleActionResult

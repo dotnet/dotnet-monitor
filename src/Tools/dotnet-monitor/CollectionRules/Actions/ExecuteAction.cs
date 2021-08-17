@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
@@ -16,13 +17,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class ExecuteAction : ICollectionRuleAction<ExecuteOptions>
     {
-        public async Task<CollectionRuleActionResult> ExecuteAsync(ExecuteOptions options, DiagnosticsClient client, CancellationToken cancellationToken)
+        public async Task<CollectionRuleActionResult> ExecuteAsync(ExecuteOptions options, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
             string path = options.Path;
             string arguments = options.Arguments;
             bool IgnoreExitCode = options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
 
-            ValidateFilePathValidity(path);
+            ValidateFilePath(path);
 
             // May want to capture stdout and stderr and return as part of the result in the future
             using Process process = new Process();
@@ -50,9 +51,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             finally
             {
                 process.Exited -= exitedHandler;
-
-                ValidateExitCode(IgnoreExitCode, process.ExitCode);
             }
+
+            ValidateExitCode(IgnoreExitCode, process.ExitCode);
 
             return new CollectionRuleActionResult()
             {
@@ -73,7 +74,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
         }
 
-        internal static void ValidateFilePathValidity(string path)
+        internal static void ValidateFilePath(string path)
         {
             if (!File.Exists(path))
             {
