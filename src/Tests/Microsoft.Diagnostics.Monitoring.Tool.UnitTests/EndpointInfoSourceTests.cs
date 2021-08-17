@@ -4,6 +4,8 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +15,8 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
+namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-#if NET5_0_OR_GREATER
     public class EndpointInfoSourceTests
     {
         private static readonly TimeSpan DefaultNegativeVerificationTimeout = TimeSpan.FromSeconds(2);
@@ -104,8 +105,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
         /// Tests that the server endpoint info source can properly enumerate endpoint infos when a single
         /// target connects to it and "disconnects" from it.
         /// </summary>
-        [Fact]
-        public async Task ServerSourceAddRemoveSingleConnectionTest()
+        [Theory]
+        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        public async Task ServerSourceAddRemoveSingleConnectionTest(TargetFrameworkMoniker appTfm)
         {
             await using var source = CreateServerSource(out string transportName);
             source.Start();
@@ -113,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
             var endpointInfos = await GetEndpointInfoAsync(source);
             Assert.Empty(endpointInfos);
 
-            AppRunner runner = CreateAppRunner(transportName);
+            AppRunner runner = CreateAppRunner(transportName, appTfm);
 
             Task newEndpointInfoTask = source.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
@@ -143,8 +145,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
         /// Tests that the server endpoint info source can properly enumerate endpoint infos when multiple
         /// targets connect to it and "disconnect" from it.
         /// </summary>
-        [Fact]
-        public async Task ServerSourceAddRemoveMultipleConnectionTest()
+        [Theory]
+        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        public async Task ServerSourceAddRemoveMultipleConnectionTest(TargetFrameworkMoniker appTfm)
         {
             await using var source = CreateServerSource(out string transportName);
             source.Start();
@@ -159,7 +162,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
             // Start all app instances
             for (int i = 0; i < appCount; i++)
             {
-                runners[i] = CreateAppRunner(transportName, appId: i + 1);
+                runners[i] = CreateAppRunner(transportName, appTfm, appId: i + 1);
                 newEndpointInfoTasks[i] = source.WaitForNewEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
             }
 
@@ -199,6 +202,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
             Assert.Empty(endpointInfos);
         }
 
+        public static IEnumerable<object[]> GetTfmsSupportingPortListener()
+        {
+            yield return new object[] { TargetFrameworkMoniker.Net50 };
+            yield return new object[] { TargetFrameworkMoniker.Net60 };
+        }
+
         private TestServerEndpointInfoSource CreateServerSource(out string transportName)
         {
             DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out transportName);
@@ -206,9 +215,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
             return new TestServerEndpointInfoSource(transportName, _outputHelper);
         }
 
-        private AppRunner CreateAppRunner(string transportName = null, int appId = 1)
+        private AppRunner CreateAppRunner(string transportName, TargetFrameworkMoniker tfm, int appId = 1)
         {
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId);
+            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId, tfm);
             appRunner.ConnectionMode = DiagnosticPortConnectionMode.Connect;
             appRunner.DiagnosticPortPath = transportName;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
@@ -305,5 +314,4 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
             }
         }
     }
-#endif
 }

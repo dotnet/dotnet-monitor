@@ -61,24 +61,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to API key in hashed form. Each byte should be two hexadecimal-based digits..
-        /// </summary>
-        public static string DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHash {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHash", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Hash algorithm used to compute ApiKeyHash, typically &apos;SHA256&apos;. &apos;SHA1&apos; and &apos;MD5&apos; are not allowed..
-        /// </summary>
-        public static string DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHashType {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_ApiAuthenticationOptions_ApiKeyHashType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The list of request paths to ignore. A request path must exactly match one of the items in the list to be ignored..
         /// </summary>
         public static string DisplayAttributeDescription_AspNetRequestCountOptions_ExcludePaths {
@@ -201,6 +183,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameters used to validate MonitorApiKey JWT tokens..
+        /// </summary>
+        public static string DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey", resourceCulture);
             }
         }
         
@@ -897,6 +888,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information..
+        /// </summary>
+        public static string DisplayAttributeDescription_MonitorApiKeyOptions_PublicKey {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_MonitorApiKeyOptions_PublicKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value of the &apos;sub&apos; or Subject field in the JWT (JSON Web Token)..
+        /// </summary>
+        public static string DisplayAttributeDescription_MonitorApiKeyOptions_Subject {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_MonitorApiKeyOptions_Subject", resourceCulture);
             }
         }
         

@@ -11,19 +11,19 @@ using System.Threading;
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     /// <summary>
-    /// Notifies that ApiKeyAuthenticationOptions changes when ApiAuthenticationOptions changes.
+    /// Notifies that <see cref="MonitorApiKeyConfiguration"/> changes when <see cref="MonitorApiKeyOptions"/> changes.
     /// </summary>
-    internal sealed class ApiKeyAuthenticationOptionsChangeTokenSource :
-        IOptionsChangeTokenSource<ApiKeyAuthenticationOptions>,
+    internal sealed class MonitorApiKeyChangeTokenSource :
+        IOptionsChangeTokenSource<MonitorApiKeyConfiguration>,
         IDisposable
     {
-        private readonly IOptionsMonitor<ApiAuthenticationOptions> _optionsMonitor;
+        private readonly IOptionsMonitor<MonitorApiKeyOptions> _optionsMonitor;
         private readonly IDisposable _changeRegistration;
 
         private ConfigurationReloadToken _reloadToken = new ConfigurationReloadToken();
 
-        public ApiKeyAuthenticationOptionsChangeTokenSource(
-            IOptionsMonitor<ApiAuthenticationOptions> optionsMonitor)
+        public MonitorApiKeyChangeTokenSource(
+            IOptionsMonitor<MonitorApiKeyOptions> optionsMonitor)
         {
             _optionsMonitor = optionsMonitor;
             _changeRegistration = _optionsMonitor.OnChange(OnReload);
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _changeRegistration.Dispose();
         }
 
-        private void OnReload(ApiAuthenticationOptions options)
+        private void OnReload(MonitorApiKeyOptions options)
         {
             Interlocked.Exchange(ref _reloadToken, new ConfigurationReloadToken()).OnReload();
         }

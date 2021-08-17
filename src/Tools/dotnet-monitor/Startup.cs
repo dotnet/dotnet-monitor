@@ -99,9 +99,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IApplicationBuilder app,
             IHostApplicationLifetime lifetime,
             IWebHostEnvironment env,
-            IAuthOptions options,
+            IAuthConfiguration options,
             AddressListenResults listenResults,
-            ApiKeyAuthenticationOptionsObserver optionsObserver,
+            MonitorApiKeyConfigurationObserver optionsObserver,
             ILogger<Startup> logger)
         {
             // These errors are populated before Startup.Configure is called because
@@ -141,7 +141,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 if (options.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                 {
-                    logger.LogTempKey(options.TemporaryKey.MonitorApiKey);
+                    logger.LogTempKey(options.TemporaryJwtKey.Token);
                 }
                 //Auth is enabled and we are binding on http. Make sure we log a warning.
 
@@ -181,8 +181,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             app.UseAuthentication();
             app.UseAuthorization();
 
-            CorsConfiguration corsConfiguration = new CorsConfiguration();
-            Configuration.Bind(nameof(CorsConfiguration), corsConfiguration);
+            CorsConfigurationOptions corsConfiguration = new CorsConfigurationOptions();
+            Configuration.Bind(ConfigurationKeys.CorsConfiguration, corsConfiguration);
             if (!string.IsNullOrEmpty(corsConfiguration.AllowedOrigins))
             {
                 app.UseCors(builder => builder.WithOrigins(corsConfiguration.GetOrigins()).AllowAnyHeader().AllowAnyMethod());
@@ -217,7 +217,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private static void LogElevatedPermissions(IAuthOptions options, ILogger logger)
+        private static void LogElevatedPermissions(IAuthConfiguration options, ILogger logger)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

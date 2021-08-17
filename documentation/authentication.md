@@ -14,29 +14,38 @@ Windows authentication doesn't require explicit configuration and is enabled aut
 > **NOTE:** Windows authentication will not be attempted if you are running `dotnet monitor` as an Administrator
 
 ## API Key Authentication
-An API Key is the recommended authentication mechanism for `dotnet monitor`. To enable it, you will need to generate a secret key, update the configuration of `dotnet monitor`, and then specify the API Key in the Authorization header on all requests to `dotnet monitor`.
+An API Key is the recommended authentication mechanism for `dotnet monitor`. API Keys are referred to as `MonitorApiKey` in configuration and source code but we will shorten the term to "API key" in this document. To enable it, you will need to generate a secret token, update the configuration of `dotnet monitor`, and then specify the secret token in the `Authorization` header on all requests to `dotnet monitor`.
 
 > **NOTE:** API Key Authentication should only be used when [TLS is enabled](#) to protect the key while in transit. `dotnet monitor` will emit a warning if authentication is enabled over an insecure transport medium.
 
 ### Generating an API Key
 
-The API Key you use to secure `dotnet monitor` should be a 32-byte cryptographically random secret. You can generate a key either using `dotnet monitor` or via your shell. To generate an API Key with `dotnet monitor`, simply invoke the `generatekey` command:
+The API Key you use to secure `dotnet monitor` is a secret JWT token, cryptographically signed by a public/private key algorithm. You can generate a key either using `dotnet monitor` or via your shell. To generate an API Key with `dotnet monitor`, simply invoke the `generatekey` command:
 
 ```powershell
 dotnet monitor generatekey
 ```
 
-The output from this command will display the API Key formatted as an authentication header along with its hash and associated hashing algorithm. You will need to store the `ApiKeyHash` and `ApiKeyHashType` in the configuration for `dotnet monitor` and use the authorization header value when making requests to the `dotnet monitor` HTTPS endpoint.
+The output from this command will display the API key (a bearer JWT token) formatted as an `Authorization` header along with its corresponding configuration for `dotnet monitor`. You will need to store the `Subject` and `PublicKey` in the configuration for `dotnet monitor` and use the `Authorization` header value when making requests to the `dotnet monitor` HTTPS endpoint.
 
 ```yaml
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
-ApiKeyHash: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-ApiKeyHashType: SHA256
+Generated ApiKey for dotnet-monitor; use the following header for authorization:
+
+Authorization: Bearer eyJhbGciOiJFUffffffffffffCI6IkpXVCJ9.eyJhdWQiOiJodffffffffffffGh1Yi5jb20vZG90bmV0L2RvdG5ldC1tb25pdG9yIiwiaXNzIjoiaHR0cHM6Ly9naXRodWIuY29tL2RvdG5ldC9kb3RuZXQtbW9uaXRvci9nZW5lcmF0ZWtleStNb25pdG9yQXBpS2V5Iiwic3ViIjoiYWU1NDczYjYtOGRhZC00OThkLWI5MTUtNTNiOWM2ODQwMDBlIn0.RZffffffffffff_yIyApvFKcxFpDJ65HJZek1_dt7jCTCMEEEffffffffffffR08OyhZZHs46PopwAsf_6fdTLKB1UGvLr95volwEwIFnHjdvMfTJ9ffffffffffffAU
+
+Settings in Text format:
+Subject: ae5473b6-8dad-498d-b915-ffffffffffff
+Public Key: eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19
 ```
+>**Note:** While all values provided in this document are the correct length and format, the raw values have been edited to provent this public example being used as a dotnet-monitor configuration.
 
-The API Key is hashed using the SHA256 algorithm when using the `generatekey` command, but other [secure hash implementations](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hashalgorithm.create?view=net-5.0#System_Security_Cryptography_HashAlgorithm_Create_System_String) (such as SHA384 and SHA512) are also supported; due to collision problems the SHA1 and MD5 algorithms are not permitted.
+The `generatekey` command supports 1 parameter `--output`/`-o` to specify the configuration format. By default, `dotnet monitor generatekey` will use the `--output json` format. Currently, the values in the list below are supported values for `--output`.
 
-> NOTE: The generated API Key should be secured at rest. We recommend using a tool such as a password manager to save it.
+- `Json` output format will provide a json blob in the correct format to merge with an `appsettings.json` file to specify configuration via json file.
+- `Text` output format write the individual parameters in an easily human-readable format.
+- `Cmd` output format in environment variables for a `cmd.exe` prompt.
+- `PowerShell` output format in environment variables for a `powershell` or `pwsh` prompt.
+- `Shell` output format in environment variables for a `bash` shell or another linux shell prompt.
 
 ### Configuring dotnet-monitor to use an API Key
 
@@ -48,29 +57,31 @@ If you're running on Windows, you can save these settings to `%USERPROFILE%\.dot
 
 ```json
 {
-  "ApiAuthentication": {
-    "ApiKeyHash": "CB233C3BE9F650146CFCA81D7AA608E3A3865D7313016DFA02DAF82A2505C683",
-    "ApiKeyHashType": "SHA256"
+  "Authentication": {
+    "MonitorApiKey": {
+      "Subject": "ae5473b6-8dad-498d-b915-ffffffffffff",
+      "PublicKey": "eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"
+    }
   }
 }
 ```
 
-Alternatively, you can use environment variables to specify the configuration.
+Alternatively, you can use environment variables to specify the configuration. Use `dotnet monitor generatekey --output shell` to get the format below.
 
 ```sh
-DotnetMonitor_ApiAuthentication__ApiKeyHash="CB233C3BE9F650146CFCA81D7AA608E3A3865D7313016DFA02DAF82A2505C683"
-DotnetMonitor_ApiAuthentication__ApiKeyHashType="SHA256"
+export Authentication__MonitorApiKey__Subject="ae5473b6-8dad-498d-b915-ffffffffffff"
+export Authentication__MonitorApiKey__PublicKey="eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"
 ```
 
-> **NOTE:** When you use environment variables to configure the API Key hash, you must restart `dotnet monitor` for the changes to take effect.
+> **NOTE:** When you use environment variables to configure the API Key, you must restart `dotnet monitor` for the changes to take effect.
 
 ### Configuring an API Key in a Kubernetes Cluster
 If you're running in Kubernetes, we recommend creating secrets and mounting them into the `dotnet monitor` sidecar container via a deployment manifest. You can use this `kubectl` command to either create or rotate the API Key.
 
 ```sh
 kubectl create secret generic apikey \
-  --from-literal=ApiAuthentication__ApiKeyHash=$hash \
-  --from-literal=ApiAuthentication__ApiKeyHashType=SHA256 \
+  --from-literal=Authentication__MonitorApiKey__Subject='ae5473b6-8dad-498d-b915-ffffffffffff' \
+  --from-literal=Authentication__MonitorApiKey__PublicKey='eyffffffffffff...19' \
   --dry-run=client -o yaml \
   | kubectl apply -f -
 ```
@@ -94,52 +105,30 @@ spec:
 
 > **NOTE:** For a complete example of running dotnet-monitor in Kubernetes, see [Running in a Kubernetes Cluster](getting-started.md#running-in-a-kubernetes-cluster) in the Getting Started guide.
 
-### Generate an API Key with PowerShell
-```powershell
-$rng = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
-$secret = [byte[]]::new(32)
-$rng.GetBytes($secret)
-$API_KEY = [Convert]::ToBase64String($secret)
-"Authorization: MonitorApiKey $API_KEY"
+### Generate API Keys manually
 
-$secretStream = [System.IO.MemoryStream]::new($secret)
-$HASHED_KEY = (Get-FileHash -Algorithm SHA256 -InputStream $secretStream).Hash
-$rng.Dispose()
-
-Write-Output "ApiKeyHash: $HASHED_KEY"
-Write-Output "ApiKeyHashType: SHA256"
-```
-
-### Generate an API Key with a Linux shell
-
-```sh
-API_KEY=`openssl rand -base64 32`
-echo "Authorization: MonitorApiKey $API_KEY"
-
-HASHED_KEY=`$API_KEY | base64 -d | sha256sum`
-echo "ApiKeyHash: $HASHED_KEY"
-echo "ApiKeyHashType: SHA256"
-```
+API keys for `dotnet monitor` are standard JSON Web Tokens or JWTs and can be generated without the `generatekey` command on `dotnet monitor`. For more details see [Api Key Format](api-key-format.md).
 
 ## Authenticating requests
 When using Windows Authentication, your browser will automatically handle the Windows authentication challenge. If you are using an API Key, you must specify it via the `Authorization` header.
 
 ```sh
-curl -H "Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=" https://localhost:52323/processes
+curl -H "Authorization: Bearer eyJhbGciOiJFUffffffffffffCI6IkpXVCJ9.eyJhdWQiOiJodffffffffffffGh1Yi5jb20vZG90bmV0L2RvdG5ldC1tb25pdG9yIiwiaXNzIjoiaHR0cHM6Ly9naXRodWIuY29tL2RvdG5ldC9kb3RuZXQtbW9uaXRvci9nZW5lcmF0ZWtleStNb25pdG9yQXBpS2V5Iiwic3ViIjoiYWU1NDczYjYtOGRhZC00OThkLWI5MTUtNTNiOWM2ODQwMDBlIn0.RZffffffffffff_yIyApvFKcxFpDJ65HJZek1_dt7jCTCMEEEffffffffffffR08OyhZZHs46PopwAsf_6fdTLKB1UGvLr95volwEwIFnHjdvMfTJ9ffffffffffffAU" https://localhost:52323/processes
 ```
 
-If using PowerShell, be sure to use `curl.exe`, as `curl` is an alias for `Invoke-WebRequest` that does not accept the same parameters.
+If using PowerShell, you can use `Invoke-WebRequest` but it does not accept the same parameters.
 
 ```powershell
-curl.exe -H "Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=" https://localhost:52323/processes
+ (Invoke-WebRequest -Uri https://localhost:52323/processes -Headers @{ 'Authorization' = 'Bearer eyJhbGciOiJFUffffffffffffCI6IkpXVCJ9.eyJhdWQiOiJodffffffffffffGh1Yi5jb20vZG90bmV0L2RvdG5ldC1tb25pdG9yIiwiaXNzIjoiaHR0cHM6Ly9naXRodWIuY29tL2RvdG5ldC9kb3RuZXQtbW9uaXRvci9nZW5lcmF0ZWtleStNb25pdG9yQXBpS2V5Iiwic3ViIjoiYWU1NDczYjYtOGRhZC00OThkLWI5MTUtNTNiOWM2ODQwMDBlIn0.RZffffffffffff_yIyApvFKcxFpDJ65HJZek1_dt7jCTCMEEEffffffffffffR08OyhZZHs46PopwAsf_6fdTLKB1UGvLr95volwEwIFnHjdvMfTJ9ffffffffffffAU' }).Content | ConvertFrom-Json
 ```
 
-To use Windows authentication with PowerShell, you can specify the `--negotiate` flag
+To use Windows authentication with PowerShell, you can specify the `-UseDefaultCredentials` flag for `Invoke-WebRequest` or `--negotiate` for `curl.exe`
 ```powershell
 curl.exe --negotiate https://localhost:52323/processes -u $(whoami)
 ```
-
-
+```powershell
+(Invoke-WebRequest -Uri https://localhost:52323/processes -UseDefaultCredentials).Content | ConvertFrom-Json
+```
 
 ## Disabling Authentication
 
