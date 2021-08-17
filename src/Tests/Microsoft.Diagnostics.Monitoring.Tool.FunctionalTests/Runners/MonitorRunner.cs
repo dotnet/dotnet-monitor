@@ -46,25 +46,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         protected Task<int> RunnerExitedTask => _runner.ExitedTask;
 
         /// <summary>
-        /// The path of the currently executing assembly.
-        /// </summary>
-        private static string CurrentExecutingAssemblyPath =>
-            Assembly.GetExecutingAssembly().Location;
-
-        /// <summary>
-        /// The target framework name of the currently executing assembly.
-        /// </summary>
-        private static string CurrentTargetFrameworkFolderName =>
-            new FileInfo(CurrentExecutingAssemblyPath).Directory.Name;
-
-        /// <summary>
-        /// The path to dotnet-monitor. It is currently only build for the
+        /// The path to dotnet-monitor. It is currently only built for the
         /// netcoreapp3.1 target framework.
         /// </summary>
         private static string DotNetMonitorPath =>
-            CurrentExecutingAssemblyPath
-                .Replace(Assembly.GetExecutingAssembly().GetName().Name, "dotnet-monitor")
-                .Replace(CurrentTargetFrameworkFolderName, "netcoreapp3.1");
+            AssemblyHelper.GetAssemblyArtifactBinPath(
+                Assembly.GetExecutingAssembly(),
+                "dotnet-monitor",
+                TargetFrameworkMoniker.NetCoreApp31);
 
         private string SharedConfigDirectoryPath =>
             Path.Combine(_runnerTmpPath, "SharedConfig");

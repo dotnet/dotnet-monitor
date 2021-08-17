@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// Gets the process ID of the running process.
         /// </summary>
         public int ProcessId => _process.Id;
-        
+
         /// <summary>
         /// Gets a <see cref="StreamReader"/> that reads stderr.
         /// </summary>
@@ -85,6 +85,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// Gets a <see cref="StreamReader"/> that reads stdout.
         /// </summary>
         public StreamReader StandardOutput => _process.StandardOutput;
+
+        /// <summary>
+        /// Get or set the target framework on which the application should run.
+        /// </summary>
+        public TargetFrameworkMoniker TargetFramework { get; set; } = TargetFrameworkMoniker.Current;
 
         /// <summary>
         /// Determines if <see cref="StartAsync(CancellationToken)" /> should wait for the diagnostic pipe to be available.
@@ -123,10 +128,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             switch (FrameworkReference)
             {
                 case DotNetFrameworkReference.Microsoft_AspNetCore_App:
-                    frameworkVersion = DotNetHost.CurrentAspNetCoreVersionString;
+                    frameworkVersion = TargetFramework.GetAspNetCoreFrameworkVersion();
                     break;
                 case DotNetFrameworkReference.Microsoft_NetCore_App:
-                    frameworkVersion = DotNetHost.CurrentNetCoreVersionString;
+                    frameworkVersion = TargetFramework.GetNetCoreAppFrameworkVersion();
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported framework reference: {FrameworkReference}");
