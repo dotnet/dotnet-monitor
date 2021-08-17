@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
         private const string SchemaGeneratorName = "Microsoft.Diagnostics.Monitoring.ConfigurationSchema";
 
         private static readonly string SchemaGeneratorPath =
-            CurrentExecutingAssemblyPath.Replace(Assembly.GetExecutingAssembly().GetName().Name, SchemaGeneratorName);
+            AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), SchemaGeneratorName);
 
         public SchemaGenerationTests(ITestOutputHelper outputHelper)
         {
