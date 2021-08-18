@@ -3,12 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -128,7 +130,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 
             KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
-            AuthOptions authenticationOptions = new AuthOptions(authMode);
+            AuthConfiguration authenticationOptions = new AuthConfiguration(authMode);
 
             EgressOutputConfiguration egressConfiguration = new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress);
 
@@ -176,7 +178,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     //TODO Many of these service additions should be done through extension methods
 
-                    services.AddSingleton<IAuthOptions>(authenticationOptions);
+                    services.AddSingleton<IAuthConfiguration>(authenticationOptions);
 
                     services.AddSingleton<IEgressOutputConfiguration>(egressConfiguration);
 
@@ -185,21 +187,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // to observe other options in the future, at which point it might be good to
                     // refactor the options observers for each into separate implementations and are
                     // orchestrated by this single service.
-                    services.AddSingleton<ApiKeyAuthenticationOptionsObserver>();
+                    services.AddSingleton<MonitorApiKeyConfigurationObserver>();
 
                     List<string> authSchemas = null;
                     if (authenticationOptions.EnableKeyAuth)
                     {
-                        services.ConfigureApiKeyConfiguration(context.Configuration);
-
-                        //Add support for Authentication and Authorization.
-                        AuthenticationBuilder authBuilder = services.AddAuthentication(options =>
-                        {
-                            options.DefaultAuthenticateScheme = AuthConstants.ApiKeySchema;
-                            options.DefaultChallengeScheme = AuthConstants.ApiKeySchema;
-                        })
-                        .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
-
+                        AuthenticationBuilder authBuilder = services.ConfigureMonitorApiKeyAuthentication(context.Configuration);
+                                                
                         authSchemas = new List<string> { AuthConstants.ApiKeySchema };
 
                         if (authenticationOptions.EnableNegotiate)
@@ -222,7 +216,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                                 builder.AddRequirements(new AuthorizedUserRequirement());
                                 builder.RequireAuthenticatedUser();
                                 builder.AddAuthenticationSchemes(authSchemas.ToArray());
-
                             });
                         }
                         else
@@ -300,14 +293,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return hostBuilder;
         }
 
-        private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, AuthOptions authenticationOptions)
+        private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, AuthConfiguration authenticationOptions)
         {
-            if (authenticationOptions.TemporaryKey != null)
+            if (authenticationOptions.TemporaryJwtKey != null)
             {
                 builder.AddInMemoryCollection(new Dictionary<string, string>
                 {
-                    { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHashType)), authenticationOptions.TemporaryKey.HashAlgorithm },
-                    { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHash)), authenticationOptions.TemporaryKey.HashValue },
+                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)), authenticationOptions.TemporaryJwtKey.Subject },
+                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)), authenticationOptions.TemporaryJwtKey.PublicKey },
                 });
             }
         }

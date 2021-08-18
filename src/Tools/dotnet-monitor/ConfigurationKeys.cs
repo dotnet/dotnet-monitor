@@ -6,20 +6,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ConfigurationKeys
     {
-        public const string ApiAuthentication = nameof(ApiAuthentication);
+        public const string Authentication = nameof(RootOptions.Authentication);
 
         public const string CollectionRules = nameof(CollectionRules);
 
-        public const string CorsConfiguration = nameof(CorsConfiguration);
+        public const string MonitorApiKey = nameof(AuthenticationOptions.MonitorApiKey);
 
-        public const string DiagnosticPort = nameof(DiagnosticPort);
+        public const string CorsConfiguration = nameof(RootOptions.CorsConfiguration);
 
-        public const string Egress = nameof(Egress);
+        public const string DiagnosticPort = nameof(RootOptions.DiagnosticPort);
 
-        public const string Metrics = nameof(Metrics);
+        public const string Egress = nameof(RootOptions.Egress);
 
-        public const string Storage = nameof(Storage);
+        public const string Metrics = nameof(RootOptions.Metrics);
 
+        public const string Storage = nameof(RootOptions.Storage);
+        
         public const string DefaultProcess = nameof(DefaultProcess);
 
         public const string Logging = nameof(Logging);

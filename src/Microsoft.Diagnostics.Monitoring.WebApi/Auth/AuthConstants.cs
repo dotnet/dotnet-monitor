@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class AuthConstants
@@ -10,6 +11,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string NegotiateSchema = "Negotiate";
         public const string NtlmSchema = "NTLM";
         public const string KerberosSchema = "Kerberos";
-        public const string ApiKeySchema = "MonitorApiKey";
+        public const string FederationAuthType = "AuthenticationTypes.Federation";
+        public const string ApiKeySchema = "Bearer";
+        public const string ApiKeyJwtType = "JWT";
+        public const string ApiKeyJwtInternalIssuer = "https://github.com/dotnet/dotnet-monitor/generatekey+MonitorApiKey";
+        public const string ApiKeyJwtAudience = "https://github.com/dotnet/dotnet-monitor";
+        public const string ClaimAudienceStr = "aud";
+        public const string ClaimIssuerStr = "iss";
+        public const string ClaimSubjectStr = "sub";
     }
 }

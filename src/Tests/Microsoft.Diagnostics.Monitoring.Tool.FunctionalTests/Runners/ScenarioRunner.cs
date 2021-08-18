@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             Func<AppRunner, ApiClient, Task> appValidate,
             Func<ApiClient, int, Task> postAppValidate = null,
             Action<AppRunner> configureApp = null,
-            Action<MonitorRunner> configureTool = null,
+            Action<MonitorCollectRunner> configureTool = null,
             bool disableHttpEgress = false)
         {
             DiagnosticPortHelper.Generate(
@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 out DiagnosticPortConnectionMode appConnectionMode,
                 out string diagnosticPortPath);
 
-            await using MonitorRunner toolRunner = new(outputHelper);
+            await using MonitorCollectRunner toolRunner = new(outputHelper);
             toolRunner.ConnectionMode = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;

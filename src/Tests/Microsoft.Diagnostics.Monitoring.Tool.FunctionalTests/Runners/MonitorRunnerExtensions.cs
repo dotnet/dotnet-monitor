@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -11,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 {
-    internal static class MonitorRunnerExtensions
+    internal static class MonitorCollectRunnerExtensions
     {
         /// <summary>
         /// Creates a <see cref="HttpClient"/> over the default address of the <paramref name="runner"/>.
         /// </summary>
-        public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorRunner runner, IHttpClientFactory factory)
+        public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory)
         {
             return runner.CreateHttpClientDefaultAddressAsync(factory, Extensions.Options.Options.DefaultName, TestTimeouts.HttpApi);
         }
@@ -24,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// <summary>
         /// Creates a named <see cref="HttpClient"/> over the default address of the <paramref name="runner"/>.
         /// </summary>
-        public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorRunner runner, IHttpClientFactory factory, string name)
+        public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string name)
         {
             return runner.CreateHttpClientDefaultAddressAsync(factory, name, TestTimeouts.HttpApi);
         }
@@ -32,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// <summary>
         /// Creates a <see cref="HttpClient"/> over the default address of the <paramref name="runner"/>.
         /// </summary>
-        public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorRunner runner, IHttpClientFactory factory, TimeSpan timeout)
+        public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, TimeSpan timeout)
         {
             return runner.CreateHttpClientDefaultAddressAsync(factory, Extensions.Options.Options.DefaultName, timeout);
         }
@@ -40,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// <summary>
         /// Creates a named <see cref="HttpClient"/> over the default address of the <paramref name="runner"/>.
         /// </summary>
-        public static async Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorRunner runner, IHttpClientFactory factory, string name, TimeSpan timeout)
+        public static async Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string name, TimeSpan timeout)
         {
             HttpClient client = factory.CreateClient(name);
 
@@ -50,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             if (runner.UseTempApiKey)
             {
                 string monitorApiKey = await runner.GetMonitorApiKey(cancellation.Token);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthenticationTests.ApiKeyScheme, monitorApiKey);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, monitorApiKey);
             }
 
             return client;
@@ -59,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// <summary>
         /// Creates a <see cref="HttpClient"/> over the metrics address of the <paramref name="runner"/>.
         /// </summary>
-        public static Task<HttpClient> CreateHttpClientMetricsAddressAsync(this MonitorRunner runner, IHttpClientFactory factory)
+        public static Task<HttpClient> CreateHttpClientMetricsAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory)
         {
             return runner.CreateHttpClientMetricsAddressAsync(factory, TestTimeouts.HttpApi);
         }
@@ -67,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// <summary>
         /// Creates a <see cref="HttpClient"/> over the metrics address of the <paramref name="runner"/>.
         /// </summary>
-        public static async Task<HttpClient> CreateHttpClientMetricsAddressAsync(this MonitorRunner runner, IHttpClientFactory factory, TimeSpan timeout)
+        public static async Task<HttpClient> CreateHttpClientMetricsAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, TimeSpan timeout)
         {
             HttpClient client = factory.CreateClient();
 
@@ -77,12 +78,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             return client;
         }
 
-        public static Task StartAsync(this MonitorRunner runner)
+        public static Task StartAsync(this MonitorCollectRunner runner)
         {
             return runner.StartAsync(CommonTestTimeouts.StartProcess);
         }
 
-        public static async Task StartAsync(this MonitorRunner runner, TimeSpan timeout)
+        public static async Task StartAsync(this MonitorCollectRunner runner, TimeSpan timeout)
         {
             using CancellationTokenSource cancellation = new(timeout);
             await runner.StartAsync(cancellation.Token);
