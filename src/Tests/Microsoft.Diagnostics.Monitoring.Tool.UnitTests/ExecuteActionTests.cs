@@ -63,10 +63,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             options.Path = DotNetHost.HostExePath;
             options.Arguments = GenerateArgumentsString(new string[] { "TokenCancellation" }); ;
 
-            TaskCanceledException invalidOperationException = await Assert.ThrowsAsync<TaskCanceledException>(
+            TaskCanceledException taskCanceledException = await Assert.ThrowsAsync<TaskCanceledException>(
                 () => action.ExecuteAsync(options, null, CreateCancellationToken()));
 
-            Assert.Contains(TaskCanceledMessage, invalidOperationException.Message);
+            Assert.Contains(TaskCanceledMessage, taskCanceledException.Message);
         }
 
         [Fact]
@@ -108,9 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string uniquePathName = Guid.NewGuid().ToString();
 
             options.Path = uniquePathName;
-            options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
-                Assembly.GetExecutingAssembly().GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteApp");
+            options.Arguments = GenerateArgumentsString(Array.Empty<string>());
 
             FileNotFoundException fileNotFoundException = await Assert.ThrowsAsync<FileNotFoundException>(
                 () => action.ExecuteAsync(options, null, CreateCancellationToken()));
@@ -122,7 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             return Assembly.GetExecutingAssembly().Location.Replace(
                 Assembly.GetExecutingAssembly().GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + ' ' + string.Join(' ', additionalArgs);
+                "Microsoft.Diagnostics.Monitoring.ExecuteActionApp") + ' ' + string.Join(' ', additionalArgs);
         }
 
         private static CancellationToken CreateCancellationToken()

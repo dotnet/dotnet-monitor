@@ -29,7 +29,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             using Process process = new Process();
 
             process.StartInfo = new ProcessStartInfo(path, arguments);
-
             process.EnableRaisingEvents = true;
 
             // Completion source that is signaled when the process exits

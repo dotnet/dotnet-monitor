@@ -5,7 +5,7 @@
 using System.IO;
 using System.Threading;
 
-namespace Microsoft.Diagnostics.Monitoring.ExecuteApp
+namespace Microsoft.Diagnostics.Monitoring.ExecuteActionApp
 {
     internal class Program
     {
