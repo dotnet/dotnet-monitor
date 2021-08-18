@@ -20,6 +20,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         // This should be identical to the error message found in Strings.resx (except without the process's exit code)
         private const string NonzeroExitCodeMessage = "The process exited with exit code";
 
+        // This should be identical to the error message found in Strings.resx (except without the process's exit code)
+        private const string TaskCanceledMessage = "A task was canceled";
+
         [Fact]
         public async Task ExecuteAction_ZeroExitCode()
         {
@@ -30,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             options.Path = DotNetHost.HostExePath;
             options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
                 Assembly.GetExecutingAssembly().GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteActionApp") + " ZeroExitCode";
+                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + " ZeroExitCode";
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
             CancellationToken cancellationToken = cancellationTokenSource.Token;
@@ -50,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             options.Path = DotNetHost.HostExePath;
             options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
                 Assembly.GetExecutingAssembly().GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteActionApp") + " NonzeroExitCode";
+                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + " NonzeroExitCode";
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
             CancellationToken cancellationToken = cancellationTokenSource.Token;
@@ -70,14 +73,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             options.Path = DotNetHost.HostExePath;
             options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
                 Assembly.GetExecutingAssembly().GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteActionApp") + " TokenCancellation";
+                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + " TokenCancellation";
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
             CancellationToken cancellationToken = cancellationTokenSource.Token;
 
-            OperationCanceledException invalidOperationException = await Assert.ThrowsAsync<OperationCanceledException>(
+            TaskCanceledException invalidOperationException = await Assert.ThrowsAsync<TaskCanceledException>(
     () => action.ExecuteAsync(options, null, cancellationToken));
-            Assert.Contains(NonzeroExitCodeMessage, invalidOperationException.Message);
+            Assert.Contains(TaskCanceledMessage, invalidOperationException.Message);
         }
     }
 }

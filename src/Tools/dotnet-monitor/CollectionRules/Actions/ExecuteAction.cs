@@ -38,8 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             foreach (string arg in args)
             {
                 process.StartInfo.ArgumentList.Add(arg);
-            }
-            */
+            }*/
 
             process.EnableRaisingEvents = true;
 
