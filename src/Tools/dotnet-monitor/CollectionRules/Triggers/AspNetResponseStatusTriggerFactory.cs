@@ -9,7 +9,7 @@ using System;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 {
     /// <summary>
-    /// Factory for creating a new AspNetReponseStatusTrigger trigger.
+    /// Factory for creating a new AspNetResponseStatusTrigger trigger.
     /// </summary>
     internal sealed class AspNetResponseStatusTriggerFactory :
         ICollectionRuleTriggerFactory<AspNetResponseStatusOptions>
@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// <inheritdoc/>
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, AspNetResponseStatusOptions options)
         {
-            throw new NotImplementedException("TODO: Implement AspNetReponseStatusTrigger.");
+            throw new NotImplementedException("TODO: Implement AspNetResponseStatusTrigger.");
         }
     }
 }

@@ -2,37 +2,39 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
-    internal class CollectionRuleTriggerDescriptor<TFactory> :
+    internal sealed class CollectionRuleTriggerDescriptor<TFactory> :
         ICollectionRuleTriggerDescriptor
     {
-        public CollectionRuleTriggerDescriptor(string triggerName) :
-            this (triggerName, null)
-        {
-        }
-
-        protected CollectionRuleTriggerDescriptor(string triggerName, Type optionsType)
+        public CollectionRuleTriggerDescriptor(string triggerName)
         {
             TriggerName = triggerName;
-            OptionsType = optionsType;
         }
 
         public Type FactoryType => typeof(TFactory);
 
-        public Type OptionsType { get; }
+        public Type OptionsType => null;
 
         public string TriggerName { get; }
     }
 
     internal sealed class CollectionRuleTriggerProvider<TFactory, TOptions> :
-        CollectionRuleTriggerDescriptor<TFactory>
+        ICollectionRuleTriggerDescriptor
+        where TFactory : ICollectionRuleTriggerFactory<TOptions>
     {
         public CollectionRuleTriggerProvider(string triggerName)
-            : base(triggerName, typeof(TOptions))
         {
+            TriggerName = triggerName;
         }
+
+        public Type FactoryType => typeof(TFactory);
+
+        public Type OptionsType => typeof(TOptions);
+
+        public string TriggerName { get; }
     }
 }
