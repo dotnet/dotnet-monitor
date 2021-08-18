@@ -9,6 +9,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
     internal sealed class CollectionRuleTriggerDescriptor<TFactory> :
         ICollectionRuleTriggerDescriptor
+        where TFactory : ICollectionRuleTriggerFactory
     {
         public CollectionRuleTriggerDescriptor(string triggerName)
         {
