@@ -243,6 +243,10 @@
     <value>Unable to bind any urls.</value>
     <comment>Gets a string similar to "Unable to bind any urls.".</comment>
   </data>
+  <data name="ErrorMessage_UnableToStartProcess" xml:space="preserve">
+    <value>Unable to start: {0} {1}</value>
+    <comment>{0} = FileName, {1} = Process's Arguments</comment>
+  </data>
   <data name="ErrorMessage_UnhandledConnectionMode" xml:space="preserve">
     <value>Unhandled connection mode: {0}</value>
     <comment>Gets the format string for egress provider failure due to missing provider.

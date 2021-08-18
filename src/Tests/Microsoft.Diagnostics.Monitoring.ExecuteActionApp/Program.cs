@@ -11,15 +11,13 @@ namespace Microsoft.Diagnostics.Monitoring.ExecuteApp
     {
         public static int Main(string[] args)
         {
-            //File.WriteAllText("C:\\Users\\kkeirstead\\FileOutputs\\Test.txt", args[0]); // Testing purposes only
-
             string testType = args[0];
-            const int DelayMs = 3000; // Should be greater than the token delay in the test.
+            const int DelayMs = 3000; // Must be greater than TokenTimeoutMs in ExecuteActionTests.
 
             switch (testType)
             {
                 case "ZeroExitCode":
-                    return 0; ;
+                    return 0;
 
                 case "NonzeroExitCode":
                     return -1;
@@ -29,13 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.ExecuteApp
                     return 0;
 
                 case "TextFileOutput":
-                    //File.WriteAllText("C:\\Users\\kkeirstead\\FileOutputs\\Test2.txt", args[1]); // Testing purposes only
-                    //File.WriteAllText("C:\\Users\\kkeirstead\\FileOutputs\\Test3.txt", args[2]); // Testing purposes only
-
-                    string textFilePath = args[1];
-                    string textFileMessage = args[2];
-
-                    File.WriteAllText(textFilePath, textFileMessage);
+                    File.WriteAllText(args[1], args[2]);
                     return 0;
 
                 default:

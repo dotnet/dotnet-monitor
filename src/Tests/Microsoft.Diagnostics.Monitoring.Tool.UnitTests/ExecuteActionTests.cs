@@ -11,15 +11,14 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Threading;
 using System;
 using System.IO;
+using System.Diagnostics;
+using Microsoft.Diagnostics.Tools.Monitor;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ExecuteActionTests
     {
-        private const int TokenTimeoutMs = 2000; // Arbitrarily set
-
-        // This should be identical to the error message found in Strings.resx (except without the process's exit code)
-        private const string NonzeroExitCodeMessage = "The process exited with exit code";
+        private const int TokenTimeoutMs = 2000; // Must be less than DelayMs in the ExecuteApp
 
         private const string TaskCanceledMessage = "A task was canceled";
 
@@ -31,14 +30,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
-                Assembly.GetExecutingAssembly().GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + " ZeroExitCode";
+            options.Arguments = GenerateArgumentsString(new string[] { "ZeroExitCode" });
 
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-            CancellationToken cancellationToken = cancellationTokenSource.Token;
-
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationToken);
+            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, CreateCancellationToken());
 
             Assert.Equal("0", result.OutputValues["ExitCode"]);
         }
@@ -51,16 +45,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
-                Assembly.GetExecutingAssembly().GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + " NonzeroExitCode";
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-            CancellationToken cancellationToken = cancellationTokenSource.Token;
+            options.Arguments = GenerateArgumentsString(new string[] { "NonzeroExitCode" });
 
             InvalidOperationException invalidOperationException = await Assert.ThrowsAsync<InvalidOperationException>(
-                () => action.ExecuteAsync(options, null, cancellationToken));
-            Assert.Contains(NonzeroExitCodeMessage, invalidOperationException.Message);
+                () => action.ExecuteAsync(options, null, CreateCancellationToken()));
+
+            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "-1"), invalidOperationException.Message);
         }
 
         [Fact]
@@ -71,15 +61,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
-                Assembly.GetExecutingAssembly().GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + " TokenCancellation";
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-            CancellationToken cancellationToken = cancellationTokenSource.Token;
+            options.Arguments = GenerateArgumentsString(new string[] { "TokenCancellation" }); ;
 
             TaskCanceledException invalidOperationException = await Assert.ThrowsAsync<TaskCanceledException>(
-                () => action.ExecuteAsync(options, null, cancellationToken));
+                () => action.ExecuteAsync(options, null, CreateCancellationToken()));
+
             Assert.Contains(TaskCanceledMessage, invalidOperationException.Message);
         }
 
@@ -91,21 +77,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             DirectoryInfo outputDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "ExecuteAction", Guid.NewGuid().ToString()));
-            string textFileOutputPath = outputDirectory.FullName;
-
-            textFileOutputPath += "\\file.txt";
+            string textFileOutputPath = outputDirectory.FullName + "\\file.txt";
 
             const string testMessage = "TestMessage";
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
-                Assembly.GetExecutingAssembly().GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + " TextFileOutput " + textFileOutputPath + " " + testMessage;
+            options.Arguments = GenerateArgumentsString(new string[] { "TextFileOutput", textFileOutputPath, testMessage });
 
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-            CancellationToken cancellationToken = cancellationTokenSource.Token;
-
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationToken);
+            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, CreateCancellationToken());
 
             Assert.Equal("0", result.OutputValues["ExitCode"]);
             Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
@@ -117,6 +96,39 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             catch
             {
             }
+        }
+
+        [Fact]
+        public async Task ExecuteAction_InvalidPath()
+        {
+            ExecuteAction action = new();
+
+            ExecuteOptions options = new();
+
+            string uniquePathName = Guid.NewGuid().ToString();
+
+            options.Path = uniquePathName;
+            options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
+                Assembly.GetExecutingAssembly().GetName().Name,
+                "Microsoft.Diagnostics.Monitoring.ExecuteApp");
+
+            FileNotFoundException fileNotFoundException = await Assert.ThrowsAsync<FileNotFoundException>(
+                () => action.ExecuteAsync(options, null, CreateCancellationToken()));
+
+            Assert.Equal(string.Format(Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
+        }
+
+        private static string GenerateArgumentsString(string[] additionalArgs)
+        {
+            return Assembly.GetExecutingAssembly().Location.Replace(
+                Assembly.GetExecutingAssembly().GetName().Name,
+                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + ' ' + string.Join(' ', additionalArgs);
+        }
+
+        private static CancellationToken CreateCancellationToken()
+        {
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+            return cancellationTokenSource.Token;
         }
     }
 }
