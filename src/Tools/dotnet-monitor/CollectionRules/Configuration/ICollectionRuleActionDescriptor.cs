@@ -6,9 +6,9 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
-    internal interface ICollectionRuleActionProvider
+    internal interface ICollectionRuleActionDescriptor
     {
-        string ActionType { get; }
+        string ActionName { get; }
 
         Type OptionsType { get; }
     }

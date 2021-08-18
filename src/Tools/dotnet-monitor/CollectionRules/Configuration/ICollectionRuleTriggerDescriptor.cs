@@ -6,10 +6,12 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
-    interface ICollectionRuleTriggerProvider
+    interface ICollectionRuleTriggerDescriptor
     {
-        string TriggerType { get; }
+        Type FactoryType { get; }
 
         Type OptionsType { get; }
+
+        string TriggerName { get; }
     }
 }

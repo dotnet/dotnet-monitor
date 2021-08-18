@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
@@ -61,17 +63,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
         {
-            services.RegisterCollectionRuleAction<CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
-            services.RegisterCollectionRuleAction<CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
-            services.RegisterCollectionRuleAction<CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
-            services.RegisterCollectionRuleAction<CollectTraceOptions>(KnownCollectionRuleActions.CollectTrace);
-            services.RegisterCollectionRuleAction<ExecuteOptions>(KnownCollectionRuleActions.Execute);
+            services.RegisterCollectionRuleAction<CollectDumpAction, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
+            services.RegisterCollectionRuleAction<CollectGCDumpAction, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
+            services.RegisterCollectionRuleAction<CollectLogsAction, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
+            services.RegisterCollectionRuleAction<CollectTraceAction, CollectTraceOptions>(KnownCollectionRuleActions.CollectTrace);
+            services.RegisterCollectionRuleAction<ExecuteAction, ExecuteOptions>(KnownCollectionRuleActions.Execute);
 
-            services.RegisterCollectionRuleTrigger<AspNetRequestCountOptions>(KnownCollectionRuleTriggers.AspNetRequestCount);
-            services.RegisterCollectionRuleTrigger<AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
-            services.RegisterCollectionRuleTrigger<AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
-            services.RegisterCollectionRuleTrigger<EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
-            services.RegisterCollectionRuleTrigger(KnownCollectionRuleTriggers.Startup);
+            services.RegisterCollectionRuleTrigger<AspNetRequestCountTriggerFactory, AspNetRequestCountOptions>(KnownCollectionRuleTriggers.AspNetRequestCount);
+            services.RegisterCollectionRuleTrigger<AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
+            services.RegisterCollectionRuleTrigger<AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
+            services.RegisterCollectionRuleTrigger<EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
+            services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
 
             services.AddSingleton<ICollectionRuleActionOptionsProvider, CollectionRuleActionOptionsProvider>();
             services.AddSingleton<ICollectionRuleTriggerOptionsProvider, CollectionRuleTriggerOptionsProvider>();
@@ -81,24 +83,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        private static IServiceCollection RegisterCollectionRuleAction<TOptions>(this IServiceCollection services, string actionType) where TOptions : class, new()
+        private static IServiceCollection RegisterCollectionRuleAction<TAction, TOptions>(this IServiceCollection services, string actionName)
+            where TAction : ICollectionRuleAction<TOptions>
+            where TOptions : class, new()
         {
-            services.TryAddSingletonEnumerable<ICollectionRuleActionProvider, CollectionRuleActionProvider<TOptions>>(sp => new CollectionRuleActionProvider<TOptions>(actionType));
+            services.TryAddSingletonEnumerable<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TAction, TOptions>>(sp => new CollectionRuleActionDescriptor<TAction, TOptions>(actionName));
             // NOTE: When opening colletion rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
             return services;
         }
 
-        private static IServiceCollection RegisterCollectionRuleTrigger(this IServiceCollection services, string triggerType)
+        private static IServiceCollection RegisterCollectionRuleTrigger<TFactory>(this IServiceCollection services, string triggerName)
+            where TFactory : class, ICollectionRuleTriggerFactory
         {
-            services.TryAddSingletonEnumerable<ICollectionRuleTriggerProvider, CollectionRuleTriggerProvider>(sp => new CollectionRuleTriggerProvider(triggerType));
+            services.AddSingleton<TFactory>();
+            services.TryAddSingletonEnumerable<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerDescriptor<TFactory>>(
+                sp => new CollectionRuleTriggerDescriptor<TFactory>(triggerName));
             return services;
         }
 
-        private static IServiceCollection RegisterCollectionRuleTrigger<TOptions>(this IServiceCollection services, string triggerType) where TOptions : class, new()
+        private static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions>(this IServiceCollection services, string triggerName)
+            where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
+            where TOptions : class, new()
         {
-            services.TryAddSingletonEnumerable<ICollectionRuleTriggerProvider, CollectionRuleTriggerProvider<TOptions>>(sp => new CollectionRuleTriggerProvider<TOptions>(triggerType));
+            services.AddSingleton<TFactory>();
+            services.TryAddSingletonEnumerable<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerProvider<TFactory, TOptions>>(
+                sp => new CollectionRuleTriggerProvider<TFactory, TOptions>(triggerName));
             // NOTE: When opening colletion rule triggers for extensibility, this should not be added for all registered triggers.
             // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
