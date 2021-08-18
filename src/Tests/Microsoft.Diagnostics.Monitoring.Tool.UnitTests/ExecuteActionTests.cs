@@ -10,6 +10,7 @@ using System.Reflection;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Threading;
 using System;
+using System.IO;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -20,7 +21,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         // This should be identical to the error message found in Strings.resx (except without the process's exit code)
         private const string NonzeroExitCodeMessage = "The process exited with exit code";
 
-        // This should be identical to the error message found in Strings.resx (except without the process's exit code)
         private const string TaskCanceledMessage = "A task was canceled";
 
         [Fact]
@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             CancellationToken cancellationToken = cancellationTokenSource.Token;
 
             InvalidOperationException invalidOperationException = await Assert.ThrowsAsync<InvalidOperationException>(
-    () => action.ExecuteAsync(options, null, cancellationToken));
+                () => action.ExecuteAsync(options, null, cancellationToken));
             Assert.Contains(NonzeroExitCodeMessage, invalidOperationException.Message);
         }
 
@@ -79,8 +79,44 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             CancellationToken cancellationToken = cancellationTokenSource.Token;
 
             TaskCanceledException invalidOperationException = await Assert.ThrowsAsync<TaskCanceledException>(
-    () => action.ExecuteAsync(options, null, cancellationToken));
+                () => action.ExecuteAsync(options, null, cancellationToken));
             Assert.Contains(TaskCanceledMessage, invalidOperationException.Message);
+        }
+
+        [Fact]
+        public async Task ExecuteAction_TextFileOutput()
+        {
+            ExecuteAction action = new();
+
+            ExecuteOptions options = new();
+
+            DirectoryInfo outputDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "ExecuteAction", Guid.NewGuid().ToString()));
+            string textFileOutputPath = outputDirectory.FullName;
+
+            textFileOutputPath += "\\file.txt";
+
+            const string testMessage = "TestMessage";
+
+            options.Path = DotNetHost.HostExePath;
+            options.Arguments = Assembly.GetExecutingAssembly().Location.Replace(
+                Assembly.GetExecutingAssembly().GetName().Name,
+                "Microsoft.Diagnostics.Monitoring.ExecuteApp") + " TextFileOutput " + textFileOutputPath + " " + testMessage;
+
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationToken);
+
+            Assert.Equal("0", result.OutputValues["ExitCode"]);
+            Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
+
+            try
+            {
+                outputDirectory?.Delete(recursive: true);
+            }
+            catch
+            {
+            }
         }
     }
 }
