@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         private static IServiceCollection RegisterCollectionRuleAction<TAction, TOptions>(this IServiceCollection services, string actionName)
-            where TAction : ICollectionRuleAction<TOptions>
+            where TAction : class, ICollectionRuleAction<TOptions>
             where TOptions : class, new()
         {
             services.AddSingleton<TAction>();
