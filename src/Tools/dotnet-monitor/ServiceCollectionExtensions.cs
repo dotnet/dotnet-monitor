@@ -87,6 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             where TAction : ICollectionRuleAction<TOptions>
             where TOptions : class, new()
         {
+            services.AddSingleton<TAction>();
             services.TryAddSingletonEnumerable<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TAction, TOptions>>(sp => new CollectionRuleActionDescriptor<TAction, TOptions>(actionName));
             // NOTE: When opening colletion rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
