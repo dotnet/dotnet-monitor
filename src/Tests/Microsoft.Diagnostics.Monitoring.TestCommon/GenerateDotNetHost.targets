@@ -21,6 +21,9 @@
       <TemplateContent>$([System.IO.File]::ReadAllText('DotNetHost.cs.template'))</TemplateContent>
       <TransformedContent>$(TemplateContent.Replace('$MicrosoftNetCoreAppVersion$', '$(NetCoreAppVersion)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreAppVersion$', '$(AspNetCoreAppVersion)'))</TransformedContent>
+      <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp31Version$', '$(MicrosoftNETCoreApp31Version)'))</TransformedContent>
+      <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp50Version$', '$(MicrosoftNETCoreApp50Version)'))</TransformedContent>
+      <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp60Version$', '$(MicrosoftNETCoreApp60Version)'))</TransformedContent>
     </PropertyGroup>
     <WriteLinesToFile File="$(DotNetHostGeneratedFileName)" Overwrite="true" Lines="$(TransformedContent)" WriteOnlyWhenDifferent="true" />
   </Target>

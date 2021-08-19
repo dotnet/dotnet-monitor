@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.ExecuteActionApp
 {
@@ -12,26 +15,35 @@ namespace Microsoft.Diagnostics.Monitoring.ExecuteActionApp
         public static int Main(string[] args)
         {
             string testType = args[0];
-            const int DelayMs = 3000; // Must be greater than TokenTimeoutMs in ExecuteActionTests.
+
+            string[] additionalArgs = args.Skip(1).ToArray();
 
             switch (testType)
             {
                 case "ZeroExitCode":
+                    Assert.Equal(1, args.Length);
                     return 0;
 
                 case "NonzeroExitCode":
+                    Assert.Equal(1, args.Length);
                     return -1;
 
-                case "TokenCancellation":
-                    Thread.Sleep(DelayMs);
+                case "Sleep":
+                    Assert.Equal(2, args.Length);
+                    string delayArg = additionalArgs[0];
+                    int delay = int.Parse(delayArg) + 1000; // Add a second delay to the token cancellation time
+                    Thread.Sleep(delay);
                     return 0;
 
                 case "TextFileOutput":
-                    File.WriteAllText(args[1], args[2]);
+                    Assert.Equal(3, args.Length);
+                    string pathArg = additionalArgs[0];
+                    string contentsArg = additionalArgs[1];
+                    File.WriteAllText(pathArg, contentsArg);
                     return 0;
 
                 default:
-                    return -100; // Arbitrary nonzero exit code
+                    throw new ArgumentException("Unknown provided test type.");
             }
         }
     }

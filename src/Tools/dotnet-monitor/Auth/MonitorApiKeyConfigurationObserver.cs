@@ -12,17 +12,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// <summary>
     /// Service that monitors API Key authentication options changes and logs issues with the specified options.
     /// </summary>
-    internal class ApiKeyAuthenticationOptionsObserver :
+    internal class MonitorApiKeyConfigurationObserver :
         IDisposable
     {
-        private readonly ILogger<ApiKeyAuthenticationOptionsObserver> _logger;
-        private readonly IOptionsMonitor<ApiKeyAuthenticationOptions> _options;
+        private readonly ILogger<MonitorApiKeyConfigurationObserver> _logger;
+        private readonly IOptionsMonitor<MonitorApiKeyConfiguration> _options;
 
         private IDisposable _changeRegistration;
 
-        public ApiKeyAuthenticationOptionsObserver(
-            ILogger<ApiKeyAuthenticationOptionsObserver> logger,
-            IOptionsMonitor<ApiKeyAuthenticationOptions> options
+        public MonitorApiKeyConfigurationObserver(
+            ILogger<MonitorApiKeyConfigurationObserver> logger,
+            IOptionsMonitor<MonitorApiKeyConfiguration> options
             )
         {
             _logger = logger;
@@ -31,10 +31,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public void Initialize()
         {
-            _changeRegistration = _options.OnChange(OnApiKeyAuthenticationOptionsChanged);
+            _changeRegistration = _options.OnChange(OnMonitorApiKeyOptionsChanged);
 
             // Write out current validation state of options when starting the tool.
-            CheckApiKeyAuthenticationOptions(_options.CurrentValue);
+            CheckMonitorApiKeyOptions(_options.CurrentValue);
         }
 
         public void Dispose()
@@ -42,19 +42,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _changeRegistration?.Dispose();
         }
 
-        private void OnApiKeyAuthenticationOptionsChanged(ApiKeyAuthenticationOptions options)
+        private void OnMonitorApiKeyOptionsChanged(MonitorApiKeyConfiguration options)
         {
-            _logger.ApiKeyAuthenticationOptionsChanged();
-
-            CheckApiKeyAuthenticationOptions(options);
+            CheckMonitorApiKeyOptions(options);
         }
 
-        private void CheckApiKeyAuthenticationOptions(ApiKeyAuthenticationOptions options)
+        private void CheckMonitorApiKeyOptions(MonitorApiKeyConfiguration options)
         {
             // ValidationErrors will be null if API key authentication is not enabled.
             if (null != options.ValidationErrors && options.ValidationErrors.Any())
             {
                 _logger.ApiKeyValidationFailures(options.ValidationErrors);
+            }
+            else
+            {
+                _logger.ApiKeyAuthenticationOptionsValidated();
             }
         }
     }

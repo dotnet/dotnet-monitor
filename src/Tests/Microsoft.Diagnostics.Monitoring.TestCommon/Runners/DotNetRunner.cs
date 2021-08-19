@@ -42,6 +42,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public IDictionary<string, string> Environment => _process.StartInfo.Environment;
 
         /// <summary>
+        /// Gets a <see cref="bool"/> indicating if <see cref="StartAsync(CancellationToken)"/> has been called and the process has been started.
+        /// </summary>
+        public bool HasStarted { get; private set; } = false;
+
+        /// <summary>
         /// Retrieves the exit code of the process.
         /// </summary>
         public int ExitCode => _process.ExitCode;
@@ -59,13 +64,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// <summary>
         /// Determines if the process has exited.
         /// </summary>
-        public bool HasExited => _process.HasExited;
+        public bool HasExited => HasStarted && _process.HasExited;
 
         /// <summary>
         /// Gets the process ID of the running process.
         /// </summary>
         public int ProcessId => _process.Id;
-        
+
         /// <summary>
         /// Gets a <see cref="StreamReader"/> that reads stderr.
         /// </summary>
@@ -80,6 +85,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// Gets a <see cref="StreamReader"/> that reads stdout.
         /// </summary>
         public StreamReader StandardOutput => _process.StandardOutput;
+
+        /// <summary>
+        /// Get or set the target framework on which the application should run.
+        /// </summary>
+        public TargetFrameworkMoniker TargetFramework { get; set; } = TargetFrameworkMoniker.Current;
 
         /// <summary>
         /// Determines if <see cref="StartAsync(CancellationToken)" /> should wait for the diagnostic pipe to be available.
@@ -118,10 +128,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             switch (FrameworkReference)
             {
                 case DotNetFrameworkReference.Microsoft_AspNetCore_App:
-                    frameworkVersion = DotNetHost.CurrentAspNetCoreVersionString;
+                    frameworkVersion = TargetFramework.GetAspNetCoreFrameworkVersion();
                     break;
                 case DotNetFrameworkReference.Microsoft_NetCore_App:
-                    frameworkVersion = DotNetHost.CurrentNetCoreVersionString;
+                    frameworkVersion = TargetFramework.GetNetCoreAppFrameworkVersion();
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported framework reference: {FrameworkReference}");
@@ -133,6 +143,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             {
                 throw new InvalidOperationException($"Unable to start: {_process.StartInfo.FileName} {_process.StartInfo.Arguments}");
             }
+            HasStarted = true;
 
             if (WaitForDiagnosticPipe)
             {
@@ -161,7 +172,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public async Task WaitForExitAsync(CancellationToken token)
         {
-            if (!_process.HasExited)
+            if (HasStarted && !_process.HasExited)
             {
                 TaskCompletionSource<object> cancellationSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
                 using IDisposable _ = token.Register(() => cancellationSource.TrySetCanceled(token));
@@ -177,7 +188,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public void ForceClose()
         {
-            if (!_process.HasExited)
+            if (HasStarted && !_process.HasExited)
             {
                 _process.Kill();
             }

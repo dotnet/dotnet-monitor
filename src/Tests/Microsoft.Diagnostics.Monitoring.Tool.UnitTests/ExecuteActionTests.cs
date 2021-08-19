@@ -18,9 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ExecuteActionTests
     {
-        private const int TokenTimeoutMs = 2000; // Must be less than DelayMs in the ExecuteApp
-
-        private const string TaskCanceledMessage = "A task was canceled";
+        private const int TokenTimeoutMs = 10000;
 
         [Fact]
         public async Task ExecuteAction_ZeroExitCode()
@@ -32,9 +30,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             options.Path = DotNetHost.HostExePath;
             options.Arguments = GenerateArgumentsString(new string[] { "ZeroExitCode" });
 
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, CreateCancellationToken());
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            Assert.Equal("0", result.OutputValues["ExitCode"]);
+            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
+
+            ValidateActionResult(result, "0");
         }
 
         [Fact]
@@ -47,8 +47,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             options.Path = DotNetHost.HostExePath;
             options.Arguments = GenerateArgumentsString(new string[] { "NonzeroExitCode" });
 
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
             InvalidOperationException invalidOperationException = await Assert.ThrowsAsync<InvalidOperationException>(
-                () => action.ExecuteAsync(options, null, CreateCancellationToken()));
+                () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
 
             Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "-1"), invalidOperationException.Message);
         }
@@ -61,12 +63,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "TokenCancellation" }); ;
+            options.Arguments = GenerateArgumentsString(new string[] { "Sleep", TokenTimeoutMs.ToString() }); ;
+
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
             TaskCanceledException taskCanceledException = await Assert.ThrowsAsync<TaskCanceledException>(
-                () => action.ExecuteAsync(options, null, CreateCancellationToken()));
-
-            Assert.Contains(TaskCanceledMessage, taskCanceledException.Message);
+                () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
         }
 
         [Fact]
@@ -76,25 +78,35 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             ExecuteOptions options = new();
 
-            DirectoryInfo outputDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "ExecuteAction", Guid.NewGuid().ToString()));
-            string textFileOutputPath = outputDirectory.FullName + "\\file.txt";
-
-            const string testMessage = "TestMessage";
-
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "TextFileOutput", textFileOutputPath, testMessage });
-
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, CreateCancellationToken());
-
-            Assert.Equal("0", result.OutputValues["ExitCode"]);
-            Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
+            DirectoryInfo outputDirectory = null;
 
             try
             {
-                outputDirectory?.Delete(recursive: true);
+                outputDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "ExecuteAction", Guid.NewGuid().ToString()));
+                string textFileOutputPath = Path.Combine(outputDirectory.FullName, "file.txt");
+
+                const string testMessage = "TestMessage";
+
+                options.Path = DotNetHost.HostExePath;
+                options.Arguments = GenerateArgumentsString(new string[] { "TextFileOutput", textFileOutputPath, testMessage });
+
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
+                CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
+
+                ValidateActionResult(result, "0");
+
+                Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
             }
-            catch
+            finally
             {
+                try
+                {
+                    outputDirectory?.Delete(recursive: true);
+                }
+                catch
+                {
+                }
             }
         }
 
@@ -110,23 +122,48 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             options.Path = uniquePathName;
             options.Arguments = GenerateArgumentsString(Array.Empty<string>());
 
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
             FileNotFoundException fileNotFoundException = await Assert.ThrowsAsync<FileNotFoundException>(
-                () => action.ExecuteAsync(options, null, CreateCancellationToken()));
+                () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
 
             Assert.Equal(string.Format(Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
         }
 
+        [Fact]
+        public async Task ExecuteAction_IgnoreExitCode()
+        {
+            ExecuteAction action = new();
+
+            ExecuteOptions options = new();
+
+            options.Path = DotNetHost.HostExePath;
+            options.Arguments = GenerateArgumentsString(new string[] { "NonzeroExitCode" });
+            options.IgnoreExitCode = true;
+
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
+            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
+
+            ValidateActionResult(result, "-1");
+        }
+
         private static string GenerateArgumentsString(string[] additionalArgs)
         {
-            return Assembly.GetExecutingAssembly().Location.Replace(
-                Assembly.GetExecutingAssembly().GetName().Name,
+            Assembly currAssembly = Assembly.GetExecutingAssembly();
+
+            return AssemblyHelper.GetAssemblyArtifactBinPath(currAssembly, currAssembly.GetName().Name, TargetFrameworkMoniker.NetCoreApp31).Replace(
+                currAssembly.GetName().Name,
                 "Microsoft.Diagnostics.Monitoring.ExecuteActionApp") + ' ' + string.Join(' ', additionalArgs);
         }
 
-        private static CancellationToken CreateCancellationToken()
+        private static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-            return cancellationTokenSource.Token;
+            string actualExitCode;
+
+            Assert.NotNull(result.OutputValues);
+            Assert.True(result.OutputValues.TryGetValue("ExitCode", out actualExitCode));
+            Assert.Equal(expectedExitCode, actualExitCode);
         }
     }
 }
