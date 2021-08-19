@@ -8,6 +8,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
     internal interface ICollectionRuleActionOptionsProvider
     {
-        bool TryGetOptionsType(string actionType, out Type optionsType);
+        bool TryGetOptionsType(string actionName, out Type optionsType);
     }
 }
