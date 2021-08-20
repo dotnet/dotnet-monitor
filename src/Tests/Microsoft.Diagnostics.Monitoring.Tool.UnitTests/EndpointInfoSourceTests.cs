@@ -109,7 +109,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public async Task ServerSourceAddRemoveSingleConnectionTest(TargetFrameworkMoniker appTfm)
         {
-            await using var source = CreateServerSource(out string transportName);
+            ServerEndpointInfoCallback callback = new(_outputHelper);
+            await using var source = CreateServerSource(out string transportName, callback);
             source.Start();
 
             var endpointInfos = await GetEndpointInfoAsync(source);
@@ -117,7 +118,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             AppRunner runner = CreateAppRunner(transportName, appTfm);
 
-            Task newEndpointInfoTask = source.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {
@@ -149,7 +150,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public async Task ServerSourceAddRemoveMultipleConnectionTest(TargetFrameworkMoniker appTfm)
         {
-            await using var source = CreateServerSource(out string transportName);
+            ServerEndpointInfoCallback callback = new(_outputHelper);
+            await using var source = CreateServerSource(out string transportName, callback);
             source.Start();
 
             var endpointInfos = await GetEndpointInfoAsync(source);
@@ -163,7 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             for (int i = 0; i < appCount; i++)
             {
                 runners[i] = CreateAppRunner(transportName, appTfm, appId: i + 1);
-                newEndpointInfoTasks[i] = source.WaitForNewEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
+                newEndpointInfoTasks[i] = callback.WaitForNewEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
             }
 
             await runners.ExecuteAsync(async () =>
@@ -208,11 +210,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             yield return new object[] { TargetFrameworkMoniker.Net60 };
         }
 
-        private TestServerEndpointInfoSource CreateServerSource(out string transportName)
+        private ServerEndpointInfoSource CreateServerSource(out string transportName, ServerEndpointInfoCallback callback = null)
         {
             DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out transportName);
             _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
-            return new TestServerEndpointInfoSource(transportName, _outputHelper);
+
+            List<IEndpointInfoSourceCallbacks> callbacks = new();
+            if (null != callback)
+            {
+                callbacks.Add(callback);
+            }
+            return new ServerEndpointInfoSource(transportName, callbacks);
         }
 
         private AppRunner CreateAppRunner(string transportName, TargetFrameworkMoniker tfm, int appId = 1)
@@ -243,20 +251,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.NotNull(endpointInfo.Endpoint);
         }
 
-        private sealed class TestServerEndpointInfoSource : ServerEndpointInfoSource
+        private sealed class ServerEndpointInfoCallback : IEndpointInfoSourceCallbacks
         {
             private readonly ITestOutputHelper _outputHelper;
-            private readonly List<Tuple<AppRunner, TaskCompletionSource<EndpointInfo>>> _addedEndpointInfoSources = new();
+            private readonly List<Tuple<AppRunner, TaskCompletionSource<IEndpointInfo>>> _addedEndpointInfoSources = new();
 
-            public TestServerEndpointInfoSource(string transportPath, ITestOutputHelper outputHelper)
-                : base(transportPath)
+            public ServerEndpointInfoCallback(ITestOutputHelper outputHelper)
             {
                 _outputHelper = outputHelper;
             }
 
-            public async Task<EndpointInfo> WaitForNewEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
+            public async Task<IEndpointInfo> WaitForNewEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
             {
-                TaskCompletionSource<EndpointInfo> addedEndpointInfoSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                TaskCompletionSource<IEndpointInfo> addedEndpointInfoSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
                 using CancellationTokenSource timeoutCancellation = new();
                 var token = timeoutCancellation.Token;
                 using var _ = token.Register(() => addedEndpointInfoSource.TrySetCanceled(token));
@@ -269,15 +276,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 _outputHelper.WriteLine($"[Wait] Wait for App{runner.AppId} notification");
                 timeoutCancellation.CancelAfter(timeout);
-                EndpointInfo endpointInfo = await addedEndpointInfoSource.Task;
+                IEndpointInfo endpointInfo = await addedEndpointInfoSource.Task;
                 _outputHelper.WriteLine($"[Wait] Received App{runner.AppId} notification");
 
                 return endpointInfo;
             }
 
-            internal override void OnAddedEndpointInfo(EndpointInfo info)
+            public Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
             {
-                _outputHelper.WriteLine($"[Source] Added: {info.DebuggerDisplay}");
+                return Task.CompletedTask;
+            }
+
+            public void OnAddedEndpointInfo(IEndpointInfo info)
+            {
+                _outputHelper.WriteLine($"[Source] Added: {info.GetDebuggerDisplay()}");
                 
                 lock (_addedEndpointInfoSources)
                 {
@@ -308,9 +320,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
             }
 
-            internal override void OnRemovedEndpointInfo(EndpointInfo info)
+            public void OnRemovedEndpointInfo(IEndpointInfo info)
             {
-                _outputHelper.WriteLine($"[Source] Removed: {info.DebuggerDisplay}");
+                _outputHelper.WriteLine($"[Source] Removed: {info.GetDebuggerDisplay()}");
             }
         }
     }

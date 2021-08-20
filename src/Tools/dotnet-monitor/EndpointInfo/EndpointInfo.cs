@@ -95,6 +95,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public string ProcessArchitecture { get; private set; }
 
-        internal string DebuggerDisplay => FormattableString.Invariant($"PID={ProcessId}, Cookie={RuntimeInstanceCookie}");
+        internal string DebuggerDisplay => this.GetDebuggerDisplay();
     }
 }
