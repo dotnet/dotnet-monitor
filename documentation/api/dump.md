@@ -43,6 +43,7 @@ Allowed schemes:
 | Name | Type | Description | Content Type |
 |---|---|---|---|
 | 200 OK | stream | A managed dump of the process. | `application/octet-stream` |
+| 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many dump requests at this time. Try to request a dump at a later time. | |

@@ -1,16 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
-    </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsLoggingAbstractionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsoleVersion)" />
+    <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
+  </ItemGroup>
 
 </Project>

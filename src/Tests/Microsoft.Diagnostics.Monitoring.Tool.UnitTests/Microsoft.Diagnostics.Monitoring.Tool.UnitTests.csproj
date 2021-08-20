@@ -1,48 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\CorsConfiguration.cs" Link="Options\CorsConfiguration.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\MetricsOptions.cs" Link="Options\MetricsOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\MetricsOptionsDefaults.cs" Link="Options\MetricsOptionsDefaults.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\ProcessFilterOptions.cs" Link="Options\ProcessFilterOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DumpType.cs" Link="Models\DumpType.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\LogsConfiguration.cs" Link="Models\LogsConfiguration.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\EgressOperationStatus.cs" Link="Models\EgressOperationStatus.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessIdentifier.cs" Link="Models\ProcessIdentifier.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\ProcessInfo.cs" Link="Models\ProcessInfo.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\StorageOptions.cs" Link="Options\StorageOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Auth\ApiAuthenticationOptions.cs" Link="Options\ApiAuthenticationOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortOptions.cs" Link="Options\DiagnosticPortOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\DiagnosticPortOptionsDefaults.cs" Link="Options\DiagnosticPortOptionsDefaults.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\EgressOptions.cs" Link="Options\EgressOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProviderOptions.cs" Link="Options\AzureBlobEgressProviderOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\FileSystem\FileSystemEgressProviderOptions.cs" Link="Options\FileSystemEgressProviderOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\IEgressProviderCommonOptions.cs" Link="Options\IEgressProviderCommonOptions.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.FileFormats" Version="$(MicrosoftFileFormatsVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
-    <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
+    <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
   </ItemGroup>
 
 </Project>

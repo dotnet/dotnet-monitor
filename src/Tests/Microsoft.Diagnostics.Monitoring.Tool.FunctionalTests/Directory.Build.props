@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Have Arcade consider this an unit test project. -->
+    <IsUnitTestProject>true</IsUnitTestProject>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\..\Directory.Build.props"/>
+</Project>

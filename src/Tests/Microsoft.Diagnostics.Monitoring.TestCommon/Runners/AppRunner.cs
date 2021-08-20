@@ -2,8 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.UnitTests.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +13,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 {
     /// <summary>
     /// Runner for running the unit test application.
@@ -37,16 +36,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
         private bool _isDiposed;
 
         /// <summary>
-        /// The path of the current test assembly.
-        /// </summary>
-        private string CurrentTestAssembly => _testAssembly.Location;
-
-        /// <summary>
         /// The path to the application.
         /// </summary>
-        private string AppPath =>
-            CurrentTestAssembly
-                .Replace(_testAssembly.GetName().Name, "Microsoft.Diagnostics.Monitoring.UnitTestApp");
+        private string AppPath => AssemblyHelper.GetAssemblyArtifactBinPath(_testAssembly, "Microsoft.Diagnostics.Monitoring.UnitTestApp");
 
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Listen"/>
@@ -75,12 +67,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
 
         public int AppId { get; }
 
-        public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1)
+        public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
             AppId = appId;
 
             _testAssembly = testAssembly;
             _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
+
+            _runner.TargetFramework = tfm;
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;

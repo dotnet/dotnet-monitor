@@ -22,10 +22,12 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.KeyPerFile" Version="$(MicrosoftExtensionsConfigurationKeyPerFileVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsoleVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelTokensJwtVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
@@ -50,11 +52,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
   </ItemGroup>
 
   <ItemGroup>

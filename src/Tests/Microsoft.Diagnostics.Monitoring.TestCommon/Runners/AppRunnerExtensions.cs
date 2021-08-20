@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Monitoring.UnitTests.Runners
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 {
     public static class AppRunnerExtensions
     {

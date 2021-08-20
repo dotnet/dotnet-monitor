@@ -5,14 +5,25 @@
   "type": "object",
   "additionalProperties": {},
   "properties": {
-    "ApiAuthentication": {
+    "Logging": {
       "default": {},
       "oneOf": [
         {
           "type": "null"
         },
         {
-          "$ref": "#/definitions/ApiAuthenticationOptions"
+          "$ref": "#/definitions/LoggingOptions"
+        }
+      ]
+    },
+    "Authentication": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/AuthenticationOptions"
         }
       ]
     },
@@ -23,7 +34,7 @@
           "type": "null"
         },
         {
-          "$ref": "#/definitions/CorsConfiguration"
+          "$ref": "#/definitions/CorsConfigurationOptions"
         }
       ]
     },
@@ -84,28 +95,285 @@
     }
   },
   "definitions": {
-    "ApiAuthenticationOptions": {
+    "LoggingOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "ApiKeyHash",
-        "ApiKeyHashType"
-      ],
       "properties": {
-        "ApiKeyHash": {
-          "type": "string",
-          "description": "API key in hashed form. Each byte should be two hexadecimal-based digits.",
-          "minLength": 64,
-          "pattern": "[0-9a-fA-F]+"
+        "LogLevel": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.",
+          "default": {},
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
+          }
         },
-        "ApiKeyHashType": {
-          "type": "string",
-          "description": "Hash algorithm used to compute ApiKeyHash, typically 'SHA256'. 'SHA1' and 'MD5' are not allowed.",
-          "minLength": 1
+        "Console": {
+          "description": "Logging options for the Console provider.",
+          "default": {},
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ConsoleLoggerOptions"
+            }
+          ]
+        },
+        "EventLog": {
+          "description": "Logging options for the EventLog provider.",
+          "default": {},
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevelOptions"
+            }
+          ]
+        },
+        "Debug": {
+          "description": "Logging options for the Debug provider.",
+          "default": {},
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevelOptions"
+            }
+          ]
+        },
+        "EventSource": {
+          "description": "Logging options for the EventSource provider.",
+          "default": {},
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogLevelOptions"
+            }
+          ]
+        },
+        "CaptureScopes": {
+          "type": "boolean",
+          "description": "Gets or sets whether logging scopes are being captured. Defaults to true.",
+          "default": true
         }
       }
     },
-    "CorsConfiguration": {
+    "LogLevel": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Trace",
+        "Debug",
+        "Information",
+        "Warning",
+        "Error",
+        "Critical",
+        "None"
+      ],
+      "enum": [
+        "Trace",
+        "Debug",
+        "Information",
+        "Warning",
+        "Error",
+        "Critical",
+        "None"
+      ]
+    },
+    "ConsoleLoggerOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "FormatterName": {
+          "description": "Name of the log message formatter to use. Defaults to 'Simple'.",
+          "default": "Simple",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ConsoleLoggerFormat"
+            }
+          ]
+        },
+        "LogToStandardErrorThreshold": {
+          "description": "The minimum level of messages that are written to Console.Error.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/LogLevel"
+            }
+          ]
+        },
+        "FormatterOptions": {
+          "description": "Formatter options for the built-in console log formatter.",
+          "default": {},
+          "oneOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "LogLevel": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies solely to ConsoleLoggerOptions.",
+          "default": {},
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "FormatterName"
+          ],
+          "properties": {
+            "FormatterName": {
+              "const": "Json"
+            },
+            "FormatterOptions": {
+              "$ref": "#/definitions/JsonConsoleFormatterOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "FormatterName"
+          ],
+          "properties": {
+            "FormatterName": {
+              "const": "Simple"
+            },
+            "FormatterOptions": {
+              "$ref": "#/definitions/SimpleConsoleFormatterOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "FormatterName"
+          ],
+          "properties": {
+            "FormatterName": {
+              "const": "Systemd"
+            },
+            "FormatterOptions": {
+              "$ref": "#/definitions/ConsoleFormatterOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "FormatterName": {
+              "type": "null",
+              "default": "Simple"
+            },
+            "FormatterOptions": {
+              "$ref": "#/definitions/SimpleConsoleFormatterOptions"
+            }
+          }
+        }
+      ]
+    },
+    "ConsoleLoggerFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Json",
+        "Simple",
+        "Systemd"
+      ],
+      "enum": [
+        "Json",
+        "Simple",
+        "Systemd"
+      ]
+    },
+    "LogLevelOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "LogLevel": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to the specified provider.",
+          "default": {},
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/LogLevel"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "AuthenticationOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "MonitorApiKey"
+      ],
+      "properties": {
+        "MonitorApiKey": {
+          "description": "The parameters used to validate MonitorApiKey JWT tokens.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MonitorApiKeyOptions"
+            }
+          ]
+        }
+      }
+    },
+    "MonitorApiKeyOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Subject",
+        "PublicKey"
+      ],
+      "properties": {
+        "Subject": {
+          "type": "string",
+          "description": "The value of the 'sub' or Subject field in the JWT (JSON Web Token).",
+          "minLength": 1
+        },
+        "PublicKey": {
+          "type": "string",
+          "description": "The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information.",
+          "minLength": 1,
+          "pattern": "[0-9a-zA-Z_-]+"
+        }
+      }
+    },
+    "CorsConfigurationOptions": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -463,6 +731,145 @@
         "Exact",
         "Contains"
       ]
+    },
+    "JsonConsoleFormatterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "JsonWriterOptions": {
+          "description": "Gets or sets JsonWriterOptions.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/JsonWriterOptions"
+            }
+          ]
+        },
+        "IncludeScopes": {
+          "type": "boolean",
+          "description": "Gets or sets whether scopes should be included or not."
+        },
+        "TimestampFormat": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Gets or sets the format string used to format the timestamp in logging messages. Defaults to null."
+        },
+        "UseUtcTimestamp": {
+          "type": "boolean",
+          "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
+          "default": false
+        }
+      }
+    },
+    "JsonWriterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Encoder": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/JavaScriptEncoder"
+            }
+          ]
+        },
+        "Indented": {
+          "type": "boolean"
+        },
+        "SkipValidation": {
+          "type": "boolean"
+        }
+      }
+    },
+    "JavaScriptEncoder": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/TextEncoder"
+        },
+        {
+          "type": "object",
+          "x-abstract": true,
+          "additionalProperties": false
+        }
+      ]
+    },
+    "TextEncoder": {
+      "type": "object",
+      "x-abstract": true,
+      "additionalProperties": false
+    },
+    "SimpleConsoleFormatterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ColorBehavior": {
+          "description": "Determines when to use color when logging messages.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/LoggerColorBehavior"
+            }
+          ]
+        },
+        "SingleLine": {
+          "type": "boolean",
+          "description": "When false, the entire message gets logged in a single line."
+        },
+        "IncludeScopes": {
+          "type": "boolean",
+          "description": "Gets or sets whether scopes should be included or not."
+        },
+        "TimestampFormat": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Gets or sets the format string used to format the timestamp in logging messages. Defaults to null."
+        },
+        "UseUtcTimestamp": {
+          "type": "boolean",
+          "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
+          "default": false
+        }
+      }
+    },
+    "LoggerColorBehavior": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Default",
+        "Enabled",
+        "Disabled"
+      ],
+      "enum": [
+        "Default",
+        "Enabled",
+        "Disabled"
+      ]
+    },
+    "ConsoleFormatterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "IncludeScopes": {
+          "type": "boolean",
+          "description": "Gets or sets whether scopes should be included or not."
+        },
+        "TimestampFormat": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Gets or sets the format string used to format the timestamp in logging messages. Defaults to null."
+        },
+        "UseUtcTimestamp": {
+          "type": "boolean",
+          "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
+          "default": false
+        }
+      }
     }
   }
 }

@@ -4,7 +4,14 @@
 
 Egress providers must first be named and configured in `dotnet monitor` configuration. They can then be referenced from a request, and will cause an egress based on the provider configuration, rather than directly back to the client.
 
+Egress providers use [operations](./api/operations.md) to provide status.
+
 > **NOTE:** The filesystem provider can be used to egress to [kubernetes volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
+
+### Disabling HTTP Egress
+
+The `--no-http-egress` flag requires users to specify an egress provider by preventing the default HTTP response for logs, traces, dumps, and gcdumps.
+
 
 ## Examples of Egressing a dump to blob storage
 
@@ -15,6 +22,5 @@ GET /dump?egressProvider=monitorBlob HTTP/1.1
 
 ### Sample Response
 ```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-{"uri":"https://examplestorage.blob.core.windows.net/dotnet-monitor/artifacts%2Fcore_20210419_231615"}
+HTTP/1.1 202 Accepted
+Location: https://localhost:52323/operations/26e74e52-0a16-4e84-84bb-27f904bfaf85
