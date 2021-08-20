@@ -19,6 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     public sealed class ExecuteActionTests
     {
         private const int TokenTimeoutMs = 10000;
+        private const int DelayMs = 1000;
 
         [Fact]
         public async Task ExecuteAction_ZeroExitCode()
@@ -52,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             InvalidOperationException invalidOperationException = await Assert.ThrowsAsync<InvalidOperationException>(
                 () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
 
-            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "-1"), invalidOperationException.Message);
+            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
         }
 
         [Fact]
@@ -63,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "Sleep", TokenTimeoutMs.ToString() }); ;
+            options.Arguments = GenerateArgumentsString(new string[] { "Sleep", (TokenTimeoutMs + DelayMs).ToString() }); ;
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
@@ -145,16 +146,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
 
-            ValidateActionResult(result, "-1");
+            ValidateActionResult(result, "1");
         }
 
         private static string GenerateArgumentsString(string[] additionalArgs)
         {
             Assembly currAssembly = Assembly.GetExecutingAssembly();
 
-            return AssemblyHelper.GetAssemblyArtifactBinPath(currAssembly, currAssembly.GetName().Name, TargetFrameworkMoniker.NetCoreApp31).Replace(
-                currAssembly.GetName().Name,
-                "Microsoft.Diagnostics.Monitoring.ExecuteActionApp") + ' ' + string.Join(' ', additionalArgs);
+            return AssemblyHelper.GetAssemblyArtifactBinPath(currAssembly, "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", TargetFrameworkMoniker.NetCoreApp31)
+                + ' ' + string.Join(' ', additionalArgs);
         }
 
         private static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)

@@ -16,34 +16,34 @@ namespace Microsoft.Diagnostics.Monitoring.ExecuteActionApp
         {
             string testType = args[0];
 
-            string[] additionalArgs = args.Skip(1).ToArray();
+            string[] testArgs = args.Skip(1).ToArray();
 
             switch (testType)
             {
                 case "ZeroExitCode":
-                    Assert.Equal(1, args.Length);
+                    Assert.Equal(0, testArgs.Length);
                     return 0;
 
                 case "NonzeroExitCode":
-                    Assert.Equal(1, args.Length);
-                    return -1;
+                    Assert.Equal(0, testArgs.Length);
+                    return 1;
 
                 case "Sleep":
-                    Assert.Equal(2, args.Length);
-                    string delayArg = additionalArgs[0];
-                    int delay = int.Parse(delayArg) + 1000; // Add a second delay to the token cancellation time
+                    Assert.Equal(1, testArgs.Length);
+                    string delayArg = testArgs[0];
+                    int delay = int.Parse(delayArg);
                     Thread.Sleep(delay);
                     return 0;
 
                 case "TextFileOutput":
-                    Assert.Equal(3, args.Length);
-                    string pathArg = additionalArgs[0];
-                    string contentsArg = additionalArgs[1];
+                    Assert.Equal(2, testArgs.Length);
+                    string pathArg = testArgs[0];
+                    string contentsArg = testArgs[1];
                     File.WriteAllText(pathArg, contentsArg);
                     return 0;
 
                 default:
-                    throw new ArgumentException("Unknown provided test type.");
+                    throw new ArgumentException($"Unknown test type {testType}.");
             }
         }
     }
