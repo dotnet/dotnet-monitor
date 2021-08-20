@@ -4,6 +4,8 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
+using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -72,8 +74,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleTrigger<AspNetRequestCountTriggerFactory, AspNetRequestCountOptions>(KnownCollectionRuleTriggers.AspNetRequestCount);
             services.RegisterCollectionRuleTrigger<AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
             services.RegisterCollectionRuleTrigger<AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
-            services.RegisterCollectionRuleTrigger<EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
             services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
+
+            services.AddSingleton<EventPipeTriggerFactory>();
+            services.AddSingleton<ITraceEventTriggerFactory<EventCounterTriggerSettings>, Monitoring.EventPipe.Triggers.EventCounter.EventCounterTriggerFactory>();
 
             services.AddSingleton<CollectionRulesConfigurationProvider>();
             services.AddSingleton<ICollectionRuleActionOperations, CollectionRuleActionOperations>();
@@ -87,7 +92,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        private static IServiceCollection RegisterCollectionRuleAction<TAction, TOptions>(this IServiceCollection services, string actionName)
+        public static IServiceCollection RegisterCollectionRuleAction<TAction, TOptions>(this IServiceCollection services, string actionName)
             where TAction : class, ICollectionRuleAction<TOptions>
             where TOptions : class, new()
         {
@@ -100,7 +105,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        private static IServiceCollection RegisterCollectionRuleTrigger<TFactory>(this IServiceCollection services, string triggerName)
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory>(this IServiceCollection services, string triggerName)
             where TFactory : class, ICollectionRuleTriggerFactory
         {
             services.AddSingleton<TFactory>();
@@ -110,7 +115,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        private static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions>(this IServiceCollection services, string triggerName)
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions>(this IServiceCollection services, string triggerName)
             where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
             where TOptions : class, new()
         {
