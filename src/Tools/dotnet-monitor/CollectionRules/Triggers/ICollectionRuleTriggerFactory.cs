@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 {
@@ -14,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// <summary>
         /// Creates a new instance of the associated trigger.
         /// </summary>
-        ICollectionRuleTrigger Create(IEndpointInfo endpointInfo);
+        ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback);
     }
 
     /// <summary>
@@ -25,6 +26,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// <summary>
         /// Creates a new instance of the associated trigger.
         /// </summary>
-        ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, TOptions options);
+        ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, TOptions options);
     }
 }
