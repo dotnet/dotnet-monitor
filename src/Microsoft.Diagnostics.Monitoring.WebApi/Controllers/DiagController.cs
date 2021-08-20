@@ -36,12 +36,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 #endif
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    public class DiagController : ControllerBase
+    public partial class DiagController : ControllerBase
     {
         public const string ArtifactType_Dump = "dump";
         public const string ArtifactType_GCDump = "gcdump";
         public const string ArtifactType_Logs = "logs";
         public const string ArtifactType_Trace = "trace";
+        public const string ArtifactType_LiveMetrics = "livemetrics";
 
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
         private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);

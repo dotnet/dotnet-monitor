@@ -334,6 +334,55 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
+        public Task<ResponseStreamHolder> CaptureLiveMetricsAsync(int processId, int durationSeconds, int refreshInterval, CancellationToken token)
+        {
+            return CaptureLiveMetricsAsync(processId, durationSeconds, refreshInterval, HttpMethod.Get, content: null, token: token);
+        }
+
+        public Task<ResponseStreamHolder> CaptureLiveMetricsAsync(int processId, int durationSeconds, int refreshInterval, EventMetrics metricsConfiguration, CancellationToken token)
+        {
+            string content = JsonSerializer.Serialize(metricsConfiguration, DefaultJsonSerializeOptions);
+
+            return CaptureLiveMetricsAsync(processId,
+                durationSeconds,
+                refreshInterval,
+                HttpMethod.Post,
+                new StringContent(content, Encoding.UTF8, ContentTypes.ApplicationJson),
+                token);
+        }
+
+        private async Task<ResponseStreamHolder> CaptureLiveMetricsAsync(int processId, int durationSeconds, int refreshInterval, HttpMethod method, HttpContent content, CancellationToken token)
+        {
+            string uri = FormattableString.Invariant($"/livemetrics?pid={processId}&durationSeconds={durationSeconds}&metricsIntervalSeconds={refreshInterval}");
+
+            using HttpRequestMessage request = new(method, uri);
+            request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJsonSequence);
+            request.Content = content;
+
+            using DisposableBox<HttpResponseMessage> responseBox = new(
+                await SendAndLogAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token).ConfigureAwait(false));
+
+            switch (responseBox.Value.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationJsonSequence);
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                case HttpStatusCode.TooManyRequests:
+                    ThrowIfNotSuccess(responseBox.Value);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
+        }
+
         public async Task<HttpResponseMessage> ApiCall(string routeAndQuery, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, routeAndQuery);
