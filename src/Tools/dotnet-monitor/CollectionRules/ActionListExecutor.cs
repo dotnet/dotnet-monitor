@@ -3,14 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,12 +16,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class ActionListExecutor
     {
-        private readonly ICollectionRuleActionOptionsProvider _actionOptionsProvider;
+        ILogger<ActionListExecutor> _logger;
 
         public ActionListExecutor(
-            ICollectionRuleActionOptionsProvider actionOptionsProvider)
+            ILogger<ActionListExecutor> logger)
         {
-            _actionOptionsProvider = actionOptionsProvider;
+            _logger = logger;
         }
 
         public async Task<List<CollectionRuleActionResult>> ExecuteActions(List<CollectionRuleActionOptions> collectionRuleActionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
@@ -33,8 +30,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             foreach (CollectionRuleActionOptions actionOption in collectionRuleActionOptions)
             {
-                CollectionRuleActionResult result = await IdentifyCollectionRuleAction(actionOption, endpointInfo, cancellationToken);
-                actionResults.Add(result);
+                // Not currently accounting for properties from previous executed actions
+
+                try
+                {
+                    CollectionRuleActionResult result = await IdentifyCollectionRuleAction(actionOption, endpointInfo, cancellationToken);
+                    actionResults.Add(result);
+                }
+                catch (FileNotFoundException fileNotFoundException)
+                {
+                    _logger.LogError(fileNotFoundException.Message);
+
+                    return actionResults;
+                }
+                catch (InvalidOperationException invalidOperationException)
+                {
+                    _logger.LogError(invalidOperationException.Message);
+
+                    return actionResults;
+                }
+                catch (TaskCanceledException taskCanceledException)
+                {
+                    _logger.LogError(taskCanceledException.Message);
+
+                    return actionResults;
+                }
             }
 
             return actionResults;
@@ -69,32 +89,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         private async Task<CollectionRuleActionResult> PerformCollectDumpAction(CollectionRuleActionOptions actionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            ExecuteAction action = new();
-            ExecuteOptions options = (ExecuteOptions)(actionOptions.Settings);
+            CollectDumpAction action = new();
+            CollectDumpOptions options = (CollectDumpOptions)(actionOptions.Settings);
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
         }
 
         private async Task<CollectionRuleActionResult> PerformCollectGCDumpAction(CollectionRuleActionOptions actionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            ExecuteAction action = new();
-            ExecuteOptions options = (ExecuteOptions)(actionOptions.Settings);
+            CollectGCDumpAction action = new();
+            CollectGCDumpOptions options = (CollectGCDumpOptions)(actionOptions.Settings);
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
         }
 
         private async Task<CollectionRuleActionResult> PerformCollectLogsAction(CollectionRuleActionOptions actionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            ExecuteAction action = new();
-            ExecuteOptions options = (ExecuteOptions)(actionOptions.Settings);
+            CollectLogsAction action = new();
+            CollectLogsOptions options = (CollectLogsOptions)(actionOptions.Settings);
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
         }
 
         private async Task<CollectionRuleActionResult> PerformCollectTraceAction(CollectionRuleActionOptions actionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            ExecuteAction action = new();
-            ExecuteOptions options = (ExecuteOptions)(actionOptions.Settings);
+            CollectTraceAction action = new();
+            CollectTraceOptions options = (CollectTraceOptions)(actionOptions.Settings);
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
         }

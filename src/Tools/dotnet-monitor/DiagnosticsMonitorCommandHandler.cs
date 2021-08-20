@@ -246,7 +246,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.ConfigureStorage(context.Configuration);
                     services.ConfigureDefaultProcess(context.Configuration);
                     services.ConfigureCollectionRules();
-                    services.AddSingleton<ActionListExecutor>();
                 });
             }
 

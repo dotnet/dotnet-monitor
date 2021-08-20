@@ -11,7 +11,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Threading;
 using System;
 using System.IO;
-using System.Diagnostics;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System.Collections.Generic;
 

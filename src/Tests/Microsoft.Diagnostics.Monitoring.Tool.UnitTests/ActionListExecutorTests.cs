@@ -9,147 +9,104 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using System.Reflection;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Threading;
-using System;
-using System.IO;
-using System.Diagnostics;
-using Microsoft.Diagnostics.Tools.Monitor;
 using System.Collections.Generic;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ActionListExecutorTests
     {
-        [Fact]
-        public async Task ActionListExecutor_MultipleExecute()
+        private const int TokenTimeoutMs = 10000;
+        // private const int DelayMs = 1000;
+
+        // Not sure how to hook into Services for Singleton executor and logger, so currently just making one for the tests
+        private ILogger<ActionListExecutor> _logger = new Logger<ActionListExecutor>(new LoggerFactory());
+        
+        //private ActionListExecutor _executor;
+
+        /*
+         * Experimented with adding in Fixtures similar to FunctionalTests
+         * 
+        public ActionListExecutorTests(ServiceProviderFixture serviceProviderFixture)
         {
-            ActionListExecutor executor = new();
+            _executor = serviceProviderFixture.ServiceProvider.GetService<ActionListExecutor>();
+        }*/
 
+        [Fact]
+        public async Task ActionListExecutor_MultipleExecute_Zero_Zero()
+        {
+            ActionListExecutor executor = new(_logger); // Not using as singleton in tests...is this acceptable, or should I not be instantiating for each test?
 
+            CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode"});
 
-            ExecuteAction action = new();
+            CollectionRuleActionOptions actionOptions2 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode" });
 
-            ExecuteOptions options = new();
-
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "ZeroExitCode" });
+            List<CollectionRuleActionOptions> collectionRuleActionOptions = new() { actionOptions1, actionOptions2 };
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
+            List<CollectionRuleActionResult> results = await executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token);
 
-            ValidateActionResult(result, "0");
-        }
-
-        [Fact]
-        public async Task ExecuteAction_NonzeroExitCode()
-        {
-            ExecuteAction action = new();
-
-            ExecuteOptions options = new();
-
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "NonzeroExitCode" });
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            InvalidOperationException invalidOperationException = await Assert.ThrowsAsync<InvalidOperationException>(
-                () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
-
-            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
-        }
-
-        [Fact]
-        public async Task ExecuteAction_TokenCancellation()
-        {
-            ExecuteAction action = new();
-
-            ExecuteOptions options = new();
-
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "Sleep", (TokenTimeoutMs + DelayMs).ToString() }); ;
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            TaskCanceledException taskCanceledException = await Assert.ThrowsAsync<TaskCanceledException>(
-                () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
-        }
-
-        [Fact]
-        public async Task ExecuteAction_TextFileOutput()
-        {
-            ExecuteAction action = new();
-
-            ExecuteOptions options = new();
-
-            DirectoryInfo outputDirectory = null;
-
-            try
+            foreach (var result in results)
             {
-                outputDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "ExecuteAction", Guid.NewGuid().ToString()));
-                string textFileOutputPath = Path.Combine(outputDirectory.FullName, "file.txt");
-
-                const string testMessage = "TestMessage";
-
-                options.Path = DotNetHost.HostExePath;
-                options.Arguments = GenerateArgumentsString(new string[] { "TextFileOutput", textFileOutputPath, testMessage });
-
-                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-                CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
-
                 ValidateActionResult(result, "0");
-
-                Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
-            }
-            finally
-            {
-                try
-                {
-                    outputDirectory?.Delete(recursive: true);
-                }
-                catch
-                {
-                }
             }
         }
 
         [Fact]
-        public async Task ExecuteAction_InvalidPath()
+        public async Task ActionListExecutor_MultipleExecute_Zero_Nonzero()
         {
-            ExecuteAction action = new();
+            ActionListExecutor executor = new(_logger); // Not using as singleton in tests...is this acceptable, or should I not be instantiating for each test?
 
-            ExecuteOptions options = new();
+            CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode" });
 
-            string uniquePathName = Guid.NewGuid().ToString();
+            CollectionRuleActionOptions actionOptions2 = ConfigureExecuteActionOptions(new string[] { "NonzeroExitCode" });
 
-            options.Path = uniquePathName;
-            options.Arguments = GenerateArgumentsString(Array.Empty<string>());
+            List<CollectionRuleActionOptions> collectionRuleActionOptions = new() { actionOptions1, actionOptions2 };
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            FileNotFoundException fileNotFoundException = await Assert.ThrowsAsync<FileNotFoundException>(
-                () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
+            List<CollectionRuleActionResult> results = await executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token);
 
-            Assert.Equal(string.Format(Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
+            ValidateActionResult(results[0], "0");
+
+            Assert.Single(results);
         }
 
         [Fact]
-        public async Task ExecuteAction_IgnoreExitCode()
+        public async Task ActionListExecutor_MultipleExecute_NonZero_Zero()
         {
-            ExecuteAction action = new();
+            ActionListExecutor executor = new(_logger); // Not using as singleton in tests...is this acceptable, or should I not be instantiating for each test?
 
-            ExecuteOptions options = new();
+            CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "NonzeroExitCode" });
 
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "NonzeroExitCode" });
-            options.IgnoreExitCode = true;
+            CollectionRuleActionOptions actionOptions2 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode" });
+
+            List<CollectionRuleActionOptions> collectionRuleActionOptions = new() { actionOptions1, actionOptions2 };
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
+            List<CollectionRuleActionResult> results = await executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token);
 
-            ValidateActionResult(result, "1");
+            Assert.Empty(results);
+        }
+
+        private static CollectionRuleActionOptions ConfigureExecuteActionOptions(string[] args, string customPath = null)
+        {
+            CollectionRuleActionOptions actionOptions = new();
+
+            actionOptions.Type = KnownCollectionRuleActions.Execute;
+
+            ExecuteOptions options = new();
+
+            options.Path = (customPath != null) ? customPath : DotNetHost.HostExePath;
+            options.Arguments = GenerateArgumentsString(args);
+
+            actionOptions.Settings = options;
+
+            return actionOptions;
         }
 
         private static string GenerateArgumentsString(string[] additionalArgs)
@@ -174,33 +131,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.NotNull(result.OutputValues);
             Assert.True(result.OutputValues.TryGetValue("ExitCode", out actualExitCode));
             Assert.Equal(expectedExitCode, actualExitCode);
-        }
-
-        private async Task Validate()
-        {
-            IHost host = new HostBuilder()
-                .ConfigureServices(services =>
-                {
-                    services.ConfigureCollectionRules();
-                    services.ConfigureEgress();
-                })
-                .Build();
-
-            try
-            {
-                validate(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>());
-            }
-            finally
-            {
-                if (host is IAsyncDisposable asyncDisposable)
-                {
-                    await asyncDisposable.DisposeAsync();
-                }
-                else
-                {
-                    host.Dispose();
-                }
-            }
         }
     }
 }
