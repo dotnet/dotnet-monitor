@@ -13,6 +13,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using Microsoft.Diagnostics.Tools.Monitor;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -153,8 +154,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             Assembly currAssembly = Assembly.GetExecutingAssembly();
 
-            return AssemblyHelper.GetAssemblyArtifactBinPath(currAssembly, "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", TargetFrameworkMoniker.NetCoreApp31)
-                + ' ' + string.Join(' ', additionalArgs);
+            List<string> args = new();
+
+            // Entrypoint assembly
+            args.Add(AssemblyHelper.GetAssemblyArtifactBinPath(currAssembly, "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", TargetFrameworkMoniker.NetCoreApp31));
+
+            // Entrypoint arguments
+            args.AddRange(additionalArgs);
+
+            return string.Join(' ', args);
         }
 
         private static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)
