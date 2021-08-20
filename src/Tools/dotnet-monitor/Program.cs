@@ -22,8 +22,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 name: "generatekey",
                 description: Strings.HelpDescription_CommandGenerateKey)
             {
-                CommandHandler.Create<CancellationToken, int, string, IConsole>(new GenerateApiKeyCommandHandler().GenerateApiKey),
-                HashAlgorithm(), KeyLength()
+                CommandHandler.Create<CancellationToken, OutputFormat, IConsole>(new GenerateApiKeyCommandHandler().GenerateApiKey),
+                Output()
             };
 
         private static Command CollectCommand() =>
@@ -124,20 +124,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 Argument = new Argument<bool>(name: "tempApiKey", getDefaultValue: () => false)
             };
 
-        private static Option HashAlgorithm() =>
+        private static Option Output() =>
             new Option(
-                aliases: new[] { "-h", "--hash-algorithm" },
-                description: Strings.HelpDescription_HashAlgorithm)
+                aliases: new[] { "-o", "--output" },
+                description: Strings.HelpDescription_OutputFormat)
             {
-                Argument = new Argument<string>(name: "hashAlgorithm", getDefaultValue: () => GeneratedApiKey.DefaultHashAlgorithm)
-            };
-
-        private static Option KeyLength() =>
-            new Option(
-                aliases: new[] { "-l", "--key-length" },
-                description: Strings.HelpDescription_KeyLength)
-            {
-                Argument = new Argument<int>(name: "keyLength", getDefaultValue: () => GeneratedApiKey.DefaultKeyLength)
+                Argument = new Argument<OutputFormat>(name: "output", getDefaultValue: () => OutputFormat.Json)
             };
 
         private static Option ConfigLevel() =>
@@ -170,6 +162,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return parser.InvokeAsync(args);
         }
     }
+
     internal enum ConfigDisplayLevel
     {
         Redacted,

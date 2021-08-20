@@ -2,18 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Monitoring.WebApi
+namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    public class CorsConfiguration
+    internal sealed class AuthenticationOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CorsConfiguration_AllowedOrigins))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey))]
         [Required]
-        public string AllowedOrigins { get; set; }
-
-        public string[] GetOrigins() => AllowedOrigins?.Split(';');
+        public MonitorApiKeyOptions MonitorApiKey { get; set; }
     }
 }

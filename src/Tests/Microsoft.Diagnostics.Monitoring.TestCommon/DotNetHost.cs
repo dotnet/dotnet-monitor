@@ -20,5 +20,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static string HostExePath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
             @"..\..\..\..\..\.dotnet\dotnet.exe" :
             "../../../../../.dotnet/dotnet";
+
+        public static TargetFrameworkMoniker BuiltTargetFrameworkMoniker
+        {
+            get
+            {
+                // Update with specific TFM when building this assembly for a new target framework.
+#if NETCOREAPP3_1
+                return TargetFrameworkMoniker.NetCoreApp31;
+#elif NET5_0
+                return TargetFrameworkMoniker.Net50;
+#elif NET6_0
+                return TargetFrameworkMoniker.Net60;
+#endif
+            }
+        }
     }
 }

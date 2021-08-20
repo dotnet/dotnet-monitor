@@ -36,16 +36,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private bool _isDiposed;
 
         /// <summary>
-        /// The path of the current test assembly.
-        /// </summary>
-        private string CurrentTestAssembly => _testAssembly.Location;
-
-        /// <summary>
         /// The path to the application.
         /// </summary>
-        private string AppPath =>
-            CurrentTestAssembly
-                .Replace(_testAssembly.GetName().Name, "Microsoft.Diagnostics.Monitoring.UnitTestApp");
+        private string AppPath => AssemblyHelper.GetAssemblyArtifactBinPath(_testAssembly, "Microsoft.Diagnostics.Monitoring.UnitTestApp");
 
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Listen"/>
@@ -74,12 +67,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public int AppId { get; }
 
-        public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1)
+        public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
             AppId = appId;
 
             _testAssembly = testAssembly;
             _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
+
+            _runner.TargetFramework = tfm;
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;

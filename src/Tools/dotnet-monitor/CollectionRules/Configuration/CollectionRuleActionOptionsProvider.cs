@@ -16,24 +16,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public CollectionRuleActionOptionsProvider(
             ILogger<CollectionRuleActionOptionsProvider> logger,
-            IEnumerable<ICollectionRuleActionProvider> providers)
+            IEnumerable<ICollectionRuleActionDescriptor> descriptors)
         {
-            foreach (ICollectionRuleActionProvider provider in providers)
+            foreach (ICollectionRuleActionDescriptor descriptor in descriptors)
             {
-                if (_optionsMap.ContainsKey(provider.ActionType))
+                if (_optionsMap.ContainsKey(descriptor.ActionName))
                 {
-                    logger.DuplicateCollectionRuleActionIgnored(provider.ActionType);
+                    logger.DuplicateCollectionRuleActionIgnored(descriptor.ActionName);
                 }
                 else
                 {
-                    _optionsMap.Add(provider.ActionType, provider.OptionsType);
+                    _optionsMap.Add(descriptor.ActionName, descriptor.OptionsType);
                 }
             }
         }
 
-        public bool TryGetOptionsType(string actionType, out Type optionsType)
+        public bool TryGetOptionsType(string actionName, out Type optionsType)
         {
-            return _optionsMap.TryGetValue(actionType, out optionsType);
+            return _optionsMap.TryGetValue(actionName, out optionsType);
         }
     }
 }

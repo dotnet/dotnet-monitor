@@ -10,12 +10,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal partial class RootOptions
     {
-        public ApiAuthenticationOptions ApiAuthentication { get; set; }
+        public AuthenticationOptions Authentication { get; set; }
 
         public IDictionary<string, CollectionRuleOptions> CollectionRules { get; }
             = new Dictionary<string, CollectionRuleOptions>(0);
 
-        public CorsConfiguration CorsConfiguration { get; set; }
+        public CorsConfigurationOptions CorsConfiguration { get; set; }
 
         public DiagnosticPortOptions DiagnosticPort { get; set; }
 

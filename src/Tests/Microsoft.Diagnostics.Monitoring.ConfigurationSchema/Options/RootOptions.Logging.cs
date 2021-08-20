@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Monitoring.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    partial class RootOptions
+    internal partial class RootOptions
     {
         public LoggingOptions Logging { get; set; }
     }
