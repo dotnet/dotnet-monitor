@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Tools\dotnet-monitor\TaskCompletionSourceWithCancellation.cs" Link="TaskCompletionSourceWithCancellation.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\TaskExtensions.cs" Link="TaskExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
     <PackageReference Include="Microsoft.DotNet.XUnitExtensions" Version="$(MicrosoftDotNetXUnitExtensionsVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />
