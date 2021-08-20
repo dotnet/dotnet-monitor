@@ -1,0 +1,359 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey" xml:space="preserve">
+    <value>The account key used to access the Azure blob storage account.</value>
+    <comment>The description provided for the AccountKey parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKeyName" xml:space="preserve">
+    <value>The name of the account key used to look up the value from the Egress options Properties map.</value>
+    <comment>The description provided for the AccountKeyName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountUri" xml:space="preserve">
+    <value>The URI of the Azure blob storage account.</value>
+    <comment>The description provided for the AccountUri parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_BlobPrefix" xml:space="preserve">
+    <value>The prefix to prepend to the blob name.</value>
+    <comment>The description provided for the BlobPrefix parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName" xml:space="preserve">
+    <value>The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.</value>
+    <comment>The description provided for the ContainerName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature" xml:space="preserve">
+    <value>The shared access signature (SAS) used to access the azure blob storage account.</value>
+    <comment>The description provided for the SharedAccessSignature parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureName" xml:space="preserve">
+    <value>The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
+    <comment>The description provided for the SharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize" xml:space="preserve">
+    <value>Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.</value>
+    <comment>The description provided for the CopyBufferSize parameter on all egress provider options.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_IncludeScopes" xml:space="preserve">
+    <value>Gets or sets whether scopes should be included or not.</value>
+    <comment>The description provider for the IncludesScopes parameter on FormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat" xml:space="preserve">
+    <value>Gets or sets the format string used to format the timestamp in logging messages. Defaults to null.</value>
+    <comment>The description provider for the TimestampFormat parameter on ConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp" xml:space="preserve">
+    <value>Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.</value>
+    <comment>The description provider for the UseUtcTimestamp parameter on ConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerFormat_Json" xml:space="preserve">
+    <value>Reserved name for Json console formatter.</value>
+    <comment>The description provider for the Json parameter on ConsoleLoggerFormat.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerFormat_Simple" xml:space="preserve">
+    <value>Reserved name for simple console formatter.</value>
+    <comment>The description provider for the Simple parameter on ConsoleLoggerFormat.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerFormat_Systemd" xml:space="preserve">
+    <value>Reserved name for systemd console formatter.</value>
+    <comment>The description provider for the Systemd parameter on ConsoleLoggerFormat.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_FormatterName" xml:space="preserve">
+    <value>Name of the log message formatter to use. Defaults to 'Simple'.</value>
+    <comment>The description provided for the FormatterName parameter on ConsoleLoggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_FormatterOptions" xml:space="preserve">
+    <value>Formatter options for the built-in console log formatter.</value>
+    <comment>The description provider for the FormatterOptions parameter on ConsoleLoggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_LogLevel" xml:space="preserve">
+    <value>A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies solely to ConsoleLoggerOptions.</value>
+    <comment>The description provided for the LogLevel parameter on ConsoleLoggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ConsoleLoggerOptions_LogToStandardErrorThreshold" xml:space="preserve">
+    <value>The minimum level of messages that are written to Console.Error.</value>
+    <comment>The description provided for the LogToStandardErrorThreshold parameter on ConsoleLoggerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey" xml:space="preserve">
+    <value>The parameters used to validate MonitorApiKey JWT tokens.</value>
+    <comment>The description provided for the MonitorApiKey parameter on AuthenticationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CorsConfiguration_AllowedOrigins" xml:space="preserve">
+    <value>List of allowed CORS origins, separated by semicolons.</value>
+    <comment>The description provided for the AllowedOrigins parameter on CorsConfiguration.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode" xml:space="preserve">
+    <value>In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen' mode, the application connects to dotnet-monitor via EndpointName.</value>
+    <comment>The description provided for the ConnectionMode parameter on DiagnosticPortOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_DiagnosticPortOptions_EndpointName" xml:space="preserve">
+    <value>In 'Listen' mode, specifies the name of the named pipe or unix domain socket to use for connecting to the diagnostic server.</value>
+    <comment>The description provided for the EndpointName parameter on DiagnosticPortOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections" xml:space="preserve">
+    <value>In 'Listen' mode, the maximum amount of connections to accept.</value>
+    <comment>The description provided for the MaxConnections parameter on DiagnosticPortOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_AzureBlobStorage" xml:space="preserve">
+    <value>Mapping of Azure blob storage egress provider names to their options.</value>
+    <comment>The description provided for the AzureBlobStorage parameter on EgressOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_FileSystem" xml:space="preserve">
+    <value>Mapping of file system egress provider names to their options.</value>
+    <comment>The description provided for the FileSystem parameter on EgressOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
+    <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
+    <comment>The description provided for the Properties parameter on EgressOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_FileSystemEgressProviderOptions_DirectoryPath" xml:space="preserve">
+    <value>The directory path to which the stream data will be egressed.</value>
+    <comment>The description provided for the DirectoryPath parameter on FileSystemEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectoryPath" xml:space="preserve">
+    <value>The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in DirectoryPath.</value>
+    <comment>The description provided for the IntermediateDirectoryPath parameter on FileSystemEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions" xml:space="preserve">
+    <value>Gets or sets JsonWriterOptions.</value>
+    <comment>The description provided for the JsonWriterOptions parameter on JsonConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_CaptureScopes" xml:space="preserve">
+    <value>Gets or sets whether logging scopes are being captured. Defaults to true.</value>
+    <comment>The description provider for the CaptureScopes parameter on LoggingOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_Console" xml:space="preserve">
+    <value>Logging options for the Console provider.</value>
+    <comment>The description provided for the Console parameter on LoggingOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_Debug" xml:space="preserve">
+    <value>Logging options for the Debug provider.</value>
+    <comment>The description provided for the Debug parameter on LoggingOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_EventLog" xml:space="preserve">
+    <value>Logging options for the EventLog provider.</value>
+    <comment>The description provided for the EventLog parameter on LoggingOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_EventSource" xml:space="preserve">
+    <value>Logging options for the EventSource provider.</value>
+    <comment>The description provided for the EventSource parameter on LoggingOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoggingOptions_LogLevel" xml:space="preserve">
+    <value>A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to no specific provider.</value>
+    <comment>The description provided for the LogLevel parameter on LoggingOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LogLevelOptions_LogLevel" xml:space="preserve">
+    <value>A mapping of logger categories to log levels describing the threshold level at which messages are logged for each category; applies to the specified provider.</value>
+    <comment>The description provided for the LogLevel parameter on LogLevelOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricProvider_CounterNames" xml:space="preserve">
+    <value>Name of custom metrics counters.</value>
+    <comment>The description provided for the CounterNames parameter on MetricProvider.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricProvider_ProviderName" xml:space="preserve">
+    <value>The name of the custom metrics provider.</value>
+    <comment>The description provided for the ProviderName parameter on MetricProvider.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_Enabled" xml:space="preserve">
+    <value>Enable or disable metrics collection.</value>
+    <comment>The description provided for the Enabled parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_Endpoints" xml:space="preserve">
+    <value>Endpoints that expose prometheus metrics. Defaults to http://localhost:52325.</value>
+    <comment>The description provided for the Endpoints parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_IncludeDefaultProviders" xml:space="preserve">
+    <value>Include default providers: System.Runtime, Microsoft.AspNetCore.Hosting, and Grpc.AspNetCore.Server.</value>
+    <comment>The description provided for the IncludeDefaultProviders parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_MetricCount" xml:space="preserve">
+    <value>Amount of data points to store per metric.</value>
+    <comment>The description provided for the MetricCount parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_Providers" xml:space="preserve">
+    <value>Providers for custom metrics.</value>
+    <comment>The description provided for the Providers parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds" xml:space="preserve">
+    <value>How often metrics are collected.</value>
+    <comment>The description provided for the UpdateIntervalSeconds parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MonitorApiKeyOptions_PublicKey" xml:space="preserve">
+    <value>The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information.</value>
+    <comment>The description provided for the PublicKey parameter on MonitorApiKeyOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MonitorApiKeyOptions_Subject" xml:space="preserve">
+    <value>The value of the 'sub' or Subject field in the JWT (JSON Web Token).</value>
+    <comment>The description provided for the Subject parameter on MonitorApiKeyOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_Key" xml:space="preserve">
+    <value>The criteria used to compare against the target process.</value>
+    <comment>The description provided for the Key parameter on ProcessFilterDescriptor.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_MatchType" xml:space="preserve">
+    <value>Type of match to use against the process criteria.</value>
+    <comment>The description provided for the MatchType parameter on ProcessFilterDescriptor.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_Value" xml:space="preserve">
+    <value>The value of the criteria used to compare against the target process.</value>
+    <comment>The description provided for the Value parameter on ProcessFilterDescriptor.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterKey_CommandLine" xml:space="preserve">
+    <value>Performs a match based on the contents of the command passed to launch the process on the system; this typically includes the executable path and arguments to the process.</value>
+    <comment>The description provided for enum ProcessFilterKey's CommandLine value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterKey_ProcessId" xml:space="preserve">
+    <value>Performs a match based on the numerical ID of a process on the system.</value>
+    <comment>The description provided for enum ProcessFilterKey's ProcessId value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterKey_ProcessName" xml:space="preserve">
+    <value>Performs a match based on the name of a process on the system.</value>
+    <comment>The description provided for enum ProcessFilterKey's ProcessName value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterOptions_Filters" xml:space="preserve">
+    <value>Process filters used to determine which process to use if one is not explicitly specified. All filters must match.</value>
+    <comment>The description provided for the Filters parameter on ProcessFilterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterType_Contains" xml:space="preserve">
+    <value>Performs a case-insensitive substring search.</value>
+    <comment>The description provided for enum ProcessFilterType's Contains value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterType_Exact" xml:space="preserve">
+    <value>Performs a case-insensitive string comparison.</value>
+    <comment>The description provided for enum ProcessFilterType's Exact value.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior" xml:space="preserve">
+    <value>Determines when to use color when logging messages.</value>
+    <comment>The description provided for the ColorBehavior parameter on SimpleConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SimpleConsoleFormatterOptions_SingleLine" xml:space="preserve">
+    <value>When false, the entire message gets logged in a single line.</value>
+    <comment>The description provided for the SingleLine parameter on SimpleConsoleFormatterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_StorageOptions_DumpTempFolder" xml:space="preserve">
+    <value>The location for temporary dump files. Defaults to the temp folder.</value>
+    <comment>The description provided for the DumpTempFolder parameter on StorageOptions.</comment>
+  </data>
+  <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
+    <value>The {0} field or the {1} field is required.</value>
+    <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
+2 Format Parameters:
+0. fieldNameOne: The name of the first field that is missing
+1. fieldNameTwo: The name of the second field that is missing</comment>
+  </data>
+</root>

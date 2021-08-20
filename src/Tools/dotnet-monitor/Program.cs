@@ -22,8 +22,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 name: "generatekey",
                 description: Strings.HelpDescription_CommandGenerateKey)
             {
-                CommandHandler.Create<CancellationToken, int, string, IConsole>(new GenerateApiKeyCommandHandler().GenerateApiKey),
-                HashAlgorithm(), KeyLength()
+                CommandHandler.Create<CancellationToken, OutputFormat, IConsole>(new GenerateApiKeyCommandHandler().GenerateApiKey),
+                Output()
             };
 
         private static Command CollectCommand() =>
@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Handler
                 CommandHandler.Create(
                     Delegate.CreateDelegate(
-                        typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, Task<int>>),
+                        typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, bool, Task<int>>),
                         new DiagnosticsMonitorCommandHandler(),
                         nameof(DiagnosticsMonitorCommandHandler.Start))),
                 SharedOptions()
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // Handler
                     CommandHandler.Create(
                         Delegate.CreateDelegate(
-                            typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, ConfigDisplayLevel, Task<int>>),
+                            typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, bool, ConfigDisplayLevel, Task<int>>),
                             new DiagnosticsMonitorCommandHandler(),
                             nameof(DiagnosticsMonitorCommandHandler.ShowConfig))),
                     SharedOptions(),
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static IEnumerable<Option> SharedOptions() => new Option[]
         {
-            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey()
+            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey(), NoHttpEgress()
         };
         
         private static Option Urls() =>
@@ -106,6 +106,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 Argument = new Argument<bool>(name: "noAuth", getDefaultValue: () => false)
             };
 
+        private static Option NoHttpEgress() =>
+            new Option(
+                alias: "--no-http-egress",
+                description: Strings.HelpDescription_OptionNoHttpEgress
+                )
+            {
+                Argument = new Argument<bool>(name: "noHttpEgress", getDefaultValue: () => false)
+            };
+
         private static Option TempApiKey() =>
             new Option(
                 alias: "--temp-apikey",
@@ -115,20 +124,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 Argument = new Argument<bool>(name: "tempApiKey", getDefaultValue: () => false)
             };
 
-        private static Option HashAlgorithm() =>
+        private static Option Output() =>
             new Option(
-                aliases: new[] { "-h", "--hash-algorithm" },
-                description: Strings.HelpDescription_HashAlgorithm)
+                aliases: new[] { "-o", "--output" },
+                description: Strings.HelpDescription_OutputFormat)
             {
-                Argument = new Argument<string>(name: "hashAlgorithm", getDefaultValue: () => GeneratedApiKey.DefaultHashAlgorithm)
-            };
-
-        private static Option KeyLength() =>
-            new Option(
-                aliases: new[] { "-l", "--key-length" },
-                description: Strings.HelpDescription_KeyLength)
-            {
-                Argument = new Argument<int>(name: "keyLength", getDefaultValue: () => GeneratedApiKey.DefaultKeyLength)
+                Argument = new Argument<OutputFormat>(name: "output", getDefaultValue: () => OutputFormat.Json)
             };
 
         private static Option ConfigLevel() =>
@@ -161,6 +162,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return parser.InvokeAsync(args);
         }
     }
+
     internal enum ConfigDisplayLevel
     {
         Redacted,

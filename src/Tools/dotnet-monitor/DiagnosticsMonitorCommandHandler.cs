@@ -3,12 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -63,12 +65,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly string UserSettingsPath = Path.Combine(UserConfigDirectoryPath, SettingsFileName);
 
-        public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey)
+        public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress)
         {
             //CONSIDER The console logger uses the standard AddConsole, and therefore disregards IConsole.
             try
             {
-                using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: false).Build();
+                using IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress, configOnly: false).Build();
                 try
                 {
                     await host.StartAsync(token);
@@ -113,9 +115,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return 0;
         }
 
-        public Task<int> ShowConfig(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, ConfigDisplayLevel level)
+        public Task<int> ShowConfig(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, ConfigDisplayLevel level)
         {
-            IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configOnly: true).Build();
+            IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress, configOnly: true).Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter writer = new ConfigurationJsonWriter(Console.OpenStandardOutput());
             writer.Write(configuration, full: level == ConfigDisplayLevel.Full);
@@ -123,12 +125,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return Task.FromResult(0);
         }
 
-        public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool configOnly)
+        public static IHostBuilder CreateHostBuilder(IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, bool configOnly)
         {
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 
             KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
-            AuthOptions authenticationOptions = new AuthOptions(authMode);
+            AuthConfiguration authenticationOptions = new AuthConfiguration(authMode);
+
+            EgressOutputConfiguration egressConfiguration = new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress);
 
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
@@ -174,28 +178,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     //TODO Many of these service additions should be done through extension methods
 
-                    services.AddSingleton<IAuthOptions>(authenticationOptions);
+                    services.AddSingleton<IAuthConfiguration>(authenticationOptions);
+
+                    services.AddSingleton<IEgressOutputConfiguration>(egressConfiguration);
 
                     // Although this is only observing API key authentication changes, it does handle
                     // the case when API key authentication is not enabled. This class could evolve
                     // to observe other options in the future, at which point it might be good to
                     // refactor the options observers for each into separate implementations and are
                     // orchestrated by this single service.
-                    services.AddSingleton<ApiKeyAuthenticationOptionsObserver>();
+                    services.AddSingleton<MonitorApiKeyConfigurationObserver>();
 
                     List<string> authSchemas = null;
                     if (authenticationOptions.EnableKeyAuth)
                     {
-                        services.ConfigureApiKeyConfiguration(context.Configuration);
-
-                        //Add support for Authentication and Authorization.
-                        AuthenticationBuilder authBuilder = services.AddAuthentication(options =>
-                        {
-                            options.DefaultAuthenticateScheme = AuthConstants.ApiKeySchema;
-                            options.DefaultChallengeScheme = AuthConstants.ApiKeySchema;
-                        })
-                        .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(AuthConstants.ApiKeySchema, _ => { });
-
+                        AuthenticationBuilder authBuilder = services.ConfigureMonitorApiKeyAuthentication(context.Configuration);
+                                                
                         authSchemas = new List<string> { AuthConstants.ApiKeySchema };
 
                         if (authenticationOptions.EnableNegotiate)
@@ -218,7 +216,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                                 builder.AddRequirements(new AuthorizedUserRequirement());
                                 builder.RequireAuthenticatedUser();
                                 builder.AddAuthenticationSchemes(authSchemas.ToArray());
-
                             });
                         }
                         else
@@ -295,14 +292,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return hostBuilder;
         }
 
-        private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, AuthOptions authenticationOptions)
+        private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, AuthConfiguration authenticationOptions)
         {
-            if (authenticationOptions.TemporaryKey != null)
+            if (authenticationOptions.TemporaryJwtKey != null)
             {
                 builder.AddInMemoryCollection(new Dictionary<string, string>
                 {
-                    { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHashType)), authenticationOptions.TemporaryKey.HashAlgorithm },
-                    { ConfigurationPath.Combine(ConfigurationKeys.ApiAuthentication, nameof(ApiAuthenticationOptions.ApiKeyHash)), authenticationOptions.TemporaryKey.HashValue },
+                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)), authenticationOptions.TemporaryJwtKey.Subject },
+                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)), authenticationOptions.TemporaryJwtKey.PublicKey },
                 });
             }
         }

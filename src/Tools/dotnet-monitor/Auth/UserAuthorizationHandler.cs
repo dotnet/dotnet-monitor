@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +21,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// </summary>
     internal sealed class UserAuthorizationHandler : AuthorizationHandler<AuthorizedUserRequirement>
     {
+        private readonly IOptionsMonitor<MonitorApiKeyConfiguration> _apiKeyConfig;
+        public UserAuthorizationHandler(IOptionsMonitor<MonitorApiKeyConfiguration> apiKeyConfig)
+        {
+            _apiKeyConfig = apiKeyConfig;
+        }
+
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizedUserRequirement requirement)
         {
-            // If the schema type is ApiKey, we do not need further authorization.
-            if (context.User.Identity.AuthenticationType == AuthConstants.ApiKeySchema)
+            if (context.User.Identity.AuthenticationType == AuthConstants.FederationAuthType)
             {
-                context.Succeed(requirement);
+                // If we get a FederationAuthType (Bearer from a Jwt Token) we need to check that the user has the specified subject claim.
+                MonitorApiKeyConfiguration configSnapshot = _apiKeyConfig.CurrentValue;
+                if (context.User.HasClaim(ClaimTypes.NameIdentifier, configSnapshot.Subject))
+                {
+                    context.Succeed(requirement);
+                }
             }
             else if ((context.User.Identity.AuthenticationType == AuthConstants.NtlmSchema) ||
                     (context.User.Identity.AuthenticationType == AuthConstants.KerberosSchema) ||

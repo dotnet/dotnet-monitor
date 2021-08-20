@@ -194,6 +194,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Dump)]
+        [EgressValidation]
         public Task<ActionResult> CaptureDump(
             [FromQuery]
             int? pid = null,
@@ -256,6 +257,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_GCDump)]
+        [EgressValidation]
         public Task<ActionResult> CaptureGcDump(
             [FromQuery]
             int? pid = null,
@@ -319,6 +321,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Trace)]
+        [EgressValidation]
         public Task<ActionResult> CaptureTrace(
             [FromQuery]
             int? pid = null,
@@ -386,6 +389,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Trace)]
+        [EgressValidation]
         public Task<ActionResult> CaptureTraceCustom(
             [FromBody][Required]
             Models.EventPipeConfiguration configuration,
@@ -447,6 +451,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Logs)]
+        [EgressValidation]
         public Task<ActionResult> CaptureLogs(
             [FromQuery]
             int? pid = null,
@@ -502,6 +507,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [RequestLimit(LimitKey = ArtifactType_Logs)]
+        [EgressValidation]
         public Task<ActionResult> CaptureLogsCustom(
             [FromBody]
             Models.LogsConfiguration configuration,
