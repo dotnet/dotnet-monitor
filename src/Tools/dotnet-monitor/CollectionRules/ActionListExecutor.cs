@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class ActionListExecutor
     {
-    
+        public async Task<CollectionRuleActionResult> ExecuteActions(List<CollectionRuleActionOptions> collectionRuleActionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
+        {
+            foreach (CollectionRuleActionOptions actionOption in collectionRuleActionOptions)
+            {
+
+
+                Type.GetType(actionOption.Type) options = actionOption.Settings;
+            }
+        }
     }
 }
