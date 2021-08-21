@@ -34,7 +34,7 @@
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21420.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21420.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
-    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rc.2.21420.4</VSRedistCommonNetCoreSharedFrameworkx6460Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rc.2.21420.29</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.240901</MicrosoftFileFormatsVersion>
   </PropertyGroup>
