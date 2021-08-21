@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         protected virtual void Cleanup() {}
 
-        public StreamingCounterLogger(Stream stream)
+        protected StreamingCounterLogger(Stream stream)
         {
             _stream = stream;
         }
