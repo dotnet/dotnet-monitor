@@ -254,7 +254,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private sealed class ServerEndpointInfoCallback : IEndpointInfoSourceCallbacks
         {
             private readonly ITestOutputHelper _outputHelper;
-            private readonly List<Tuple<AppRunner, TaskCompletionSource<IEndpointInfo>>> _addedEndpointInfoSources = new();
+            private readonly List<(AppRunner Runner, TaskCompletionSource<IEndpointInfo> CompletionSource)> _addedEndpointInfoSources = new();
 
             public ServerEndpointInfoCallback(ITestOutputHelper outputHelper)
             {
@@ -270,7 +270,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 lock (_addedEndpointInfoSources)
                 {
-                    _addedEndpointInfoSources.Add(Tuple.Create(runner, addedEndpointInfoSource));
+                    _addedEndpointInfoSources.Add(new (runner, addedEndpointInfoSource));
                     _outputHelper.WriteLine($"[Wait] Register App{runner.AppId}");
                 }
 
@@ -295,16 +295,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     _outputHelper.WriteLine($"[Source] Start notifications for process {info.ProcessId}");
 
-                    foreach (var sourceTuple in _addedEndpointInfoSources)
+                    foreach (var sourceTuple in _addedEndpointInfoSources.ToList())
                     {
-                        AppRunner runner = sourceTuple.Item1;
+                        AppRunner runner = sourceTuple.Runner;
                         _outputHelper.WriteLine($"[Source] Checking App{runner.AppId}");
                         try
                         {
-                            if (info.ProcessId == sourceTuple.Item1.ProcessId)
+                            if (info.ProcessId == runner.ProcessId)
                             {
                                 _outputHelper.WriteLine($"[Source] Notifying App{runner.AppId}");
-                                sourceTuple.Item2.TrySetResult(info);
+                                sourceTuple.CompletionSource.TrySetResult(info);
                                 _addedEndpointInfoSources.Remove(sourceTuple);
                                 break;
                             }
