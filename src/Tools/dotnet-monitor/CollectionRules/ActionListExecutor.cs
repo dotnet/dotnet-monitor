@@ -82,7 +82,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private async Task<CollectionRuleActionResult> PerformExecuteAction(CollectionRuleActionOptions actionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
             ExecuteAction action = new();
-            ExecuteOptions options = (ExecuteOptions)(actionOptions.Settings);
+            ExecuteOptions options = (ExecuteOptions)actionOptions.Settings;
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
         }
@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private async Task<CollectionRuleActionResult> PerformCollectDumpAction(CollectionRuleActionOptions actionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
             CollectDumpAction action = new();
-            CollectDumpOptions options = (CollectDumpOptions)(actionOptions.Settings);
+            CollectDumpOptions options = (CollectDumpOptions)actionOptions.Settings;
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
         }
@@ -98,7 +98,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private async Task<CollectionRuleActionResult> PerformCollectGCDumpAction(CollectionRuleActionOptions actionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
             CollectGCDumpAction action = new();
-            CollectGCDumpOptions options = (CollectGCDumpOptions)(actionOptions.Settings);
+            CollectGCDumpOptions options = (CollectGCDumpOptions)actionOptions.Settings;
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
         }
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private async Task<CollectionRuleActionResult> PerformCollectLogsAction(CollectionRuleActionOptions actionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
             CollectLogsAction action = new();
-            CollectLogsOptions options = (CollectLogsOptions)(actionOptions.Settings);
+            CollectLogsOptions options = (CollectLogsOptions)actionOptions.Settings;
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
         }
@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private async Task<CollectionRuleActionResult> PerformCollectTraceAction(CollectionRuleActionOptions actionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
             CollectTraceAction action = new();
-            CollectTraceOptions options = (CollectTraceOptions)(actionOptions.Settings);
+            CollectTraceOptions options = (CollectTraceOptions)actionOptions.Settings;
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
         }
