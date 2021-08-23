@@ -289,7 +289,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public void OnAddedEndpointInfo(IEndpointInfo info)
             {
-                _outputHelper.WriteLine($"[Source] Added: {info.GetDebuggerDisplay()}");
+                _outputHelper.WriteLine($"[Source] Added: {ToOutputString(info)}");
                 
                 lock (_addedEndpointInfoSources)
                 {
@@ -322,7 +322,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public void OnRemovedEndpointInfo(IEndpointInfo info)
             {
-                _outputHelper.WriteLine($"[Source] Removed: {info.GetDebuggerDisplay()}");
+                _outputHelper.WriteLine($"[Source] Removed: {ToOutputString(info)}");
+            }
+
+            private static string ToOutputString(IEndpointInfo info)
+            {
+                return FormattableString.Invariant($"PID={info.ProcessId}, Cookie={info.RuntimeInstanceCookie}");
             }
         }
     }
