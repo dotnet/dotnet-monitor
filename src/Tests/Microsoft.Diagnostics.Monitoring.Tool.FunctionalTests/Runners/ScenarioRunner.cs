@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 {
-    internal static class ScenarioRunner
+    public static class ScenarioRunner
     {
         public static async Task SingleTarget(
             ITestOutputHelper outputHelper,

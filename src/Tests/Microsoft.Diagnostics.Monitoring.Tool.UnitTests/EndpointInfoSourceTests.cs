@@ -243,7 +243,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.NotNull(endpointInfo.Endpoint);
         }
 
-        private sealed class TestServerEndpointInfoSource : ServerEndpointInfoSource
+        internal sealed class TestServerEndpointInfoSource : ServerEndpointInfoSource
         {
             private readonly ITestOutputHelper _outputHelper;
             private readonly List<Tuple<AppRunner, TaskCompletionSource<EndpointInfo>>> _addedEndpointInfoSources = new();

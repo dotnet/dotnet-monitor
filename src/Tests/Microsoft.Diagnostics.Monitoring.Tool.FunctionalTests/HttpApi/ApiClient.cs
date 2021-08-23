@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return GetProcessAsync(GetProcessQuery(pid: pid, uid: uid, name: name), token);
         }
 
-        private async Task<ProcessInfo> GetProcessAsync(string processQuery, CancellationToken token)
+        public async Task<ProcessInfo> GetProcessAsync(string processQuery, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, $"/process?" + processQuery);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
