@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 case "CollectTrace":
                     return await PerformCollectTraceAction(actionOptions, endpointInfo, cancellationToken);
                 default:
-                    throw new ArgumentException($"Invalid action type {actionOptions.Type}.");
+                    throw new ArgumentException($"Invalid action type {actionOptions.Type}."); // Should move to Strings resx
             }
         }
 
