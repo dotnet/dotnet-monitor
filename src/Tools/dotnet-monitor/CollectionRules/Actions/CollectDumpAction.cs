@@ -59,10 +59,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 dumpFilePath = ((FileStream)dumpStream).Name;
 
-                _logger.WrittenToHttpStream();
+                _logger.WrittenToHttpStream(); // Do we need to do logging for trigger-related dumps?
                 //Compression is done automatically by the response
                 //Chunking is done because the result has no content-length
-                FileStreamResult FileStreamResult = File(dumpStream, ContentTypes.ApplicationOctetStream, dumpFileName);
+                FileStreamResult FileStreamResult = File(dumpStream, ContentTypes.ApplicationOctetStream, dumpFileName); // How and where do we use FileStreamResult? Do we need to call an execute method on the instance, or can we call File without keeping the value?
             }
             else
             {
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 controller: OperationsController.ControllerName, new { operationId = operationId },
                 protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
 
-            return newUrl;
+            return newUrl; // Switched to returning the URL so that we can include it in the CollectionRuleActionResult
             //return Accepted(newUrl);
         }
     }
