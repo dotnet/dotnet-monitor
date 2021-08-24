@@ -1,4 +1,9 @@
-﻿using Microsoft.Diagnostics.Monitoring.WebApi;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 {
@@ -9,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         ICollectionRuleTriggerFactory
     {
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo)
+        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback)
         {
             return new StartupTrigger();
         }

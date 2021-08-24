@@ -13,8 +13,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
     internal interface ICollectionRuleTrigger
     {
         /// <summary>
-        /// Waits for the trigger condition to be satisfied.
+        /// Starts the collection rule trigger.
         /// </summary>
-        Task WaitForSatisfiedConditionAsync(CancellationToken cancellationToken);
+        Task StartAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Stops the collection rule trigger.
+        /// </summary>
+        Task StopAsync(CancellationToken cancellationToken);
     }
 }

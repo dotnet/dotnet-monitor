@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         ICollectionRuleTriggerFactory<AspNetRequestCountOptions>
     {
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, AspNetRequestCountOptions options)
+        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, AspNetRequestCountOptions options)
         {
             throw new NotImplementedException("TODO: Implement AspNetRequestCountTrigger.");
         }
