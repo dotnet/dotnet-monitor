@@ -21,4 +21,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     {
         public Dictionary<string, string> OutputValues { get; set; }
     }
+
+    internal class CollectionRuleActionException : Exception
+    {
+        public CollectionRuleActionException(string message) : base(message)
+        {
+        }
+    }
 }

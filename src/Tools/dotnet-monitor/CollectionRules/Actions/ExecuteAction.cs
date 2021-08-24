@@ -43,7 +43,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 if (!process.Start())
                 {
-                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments));
+                    throw new CollectionRuleActionException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments));
+                    //throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments));
                 }
 
                 await WaitForExitAsync(process, exitedSource.Task, cancellationToken).ConfigureAwait(false);
@@ -78,7 +79,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             if (!File.Exists(path))
             {
-                throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_FileNotFound, path));
+                throw new CollectionRuleActionException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_FileNotFound, path));
+                //throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_FileNotFound, path));
             }
         }
 
@@ -86,7 +88,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             if (!ignoreExitCode && exitCode != 0)
             {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_NonzeroExitCode, exitCode.ToString(CultureInfo.InvariantCulture)));
+                throw new CollectionRuleActionException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_NonzeroExitCode, exitCode.ToString(CultureInfo.InvariantCulture)));
+                //throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_NonzeroExitCode, exitCode.ToString(CultureInfo.InvariantCulture)));
             }
         }
     }

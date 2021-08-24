@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            InvalidOperationException invalidOperationException = await Assert.ThrowsAsync<InvalidOperationException>(
+            CollectionRuleActionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                 () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
 
             Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            FileNotFoundException fileNotFoundException = await Assert.ThrowsAsync<FileNotFoundException>(
+            CollectionRuleActionException fileNotFoundException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                 () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
 
             Assert.Equal(string.Format(Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);

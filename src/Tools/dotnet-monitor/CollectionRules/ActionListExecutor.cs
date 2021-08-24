@@ -28,33 +28,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             List<CollectionRuleActionResult> actionResults = new List<CollectionRuleActionResult>();
 
+            int actionIndex = 0;
+
             foreach (CollectionRuleActionOptions actionOption in collectionRuleActionOptions)
             {
-                // Not currently accounting for properties from previous executed actions
+                // TODO: Not currently accounting for properties from previous executed actions
+
+                _logger.LogInformation($"Action {actionIndex}: {actionOption.Type}");
 
                 try
                 {
                     CollectionRuleActionResult result = await IdentifyCollectionRuleAction(actionOption, endpointInfo, cancellationToken);
                     actionResults.Add(result);
                 }
-                catch (FileNotFoundException fileNotFoundException)
+                catch (CollectionRuleActionException e)
                 {
-                    _logger.LogError(fileNotFoundException.Message);
-
-                    return actionResults;
+                    throw new CollectionRuleActionExecutionException(e.Message, actionIndex);
                 }
-                catch (InvalidOperationException invalidOperationException)
-                {
-                    _logger.LogError(invalidOperationException.Message);
 
-                    return actionResults;
-                }
-                catch (TaskCanceledException taskCanceledException)
-                {
-                    _logger.LogError(taskCanceledException.Message);
+                _logger.LogInformation($"Action {actionIndex}: Completed Successfully");
 
-                    return actionResults;
-                }
+                ++actionIndex;
             }
 
             return actionResults;
@@ -117,6 +111,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             CollectTraceOptions options = (CollectTraceOptions)actionOptions.Settings;
 
             return await action.ExecuteAsync(options, endpointInfo, cancellationToken);
+        }
+    }
+
+    internal class CollectionRuleActionExecutionException : Exception
+    {
+        public int ActionIndex;
+
+        public CollectionRuleActionExecutionException(string message, int actionIndex) : base(message)
+        {
+            ActionIndex = actionIndex;
         }
     }
 }

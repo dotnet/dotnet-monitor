@@ -13,31 +13,21 @@ using System.Collections.Generic;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Extensions.Logging;
+using System;
+using Microsoft.Diagnostics.Tools.Monitor;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ActionListExecutorTests
     {
         private const int TokenTimeoutMs = 10000;
-        // private const int DelayMs = 1000;
 
-        // Not sure how to hook into Services for Singleton executor and logger, so currently just making one for the tests
         private ILogger<ActionListExecutor> _logger = new Logger<ActionListExecutor>(new LoggerFactory());
-        
-        //private ActionListExecutor _executor;
-
-        /*
-         * Experimented with adding in Fixtures similar to FunctionalTests
-         * 
-        public ActionListExecutorTests(ServiceProviderFixture serviceProviderFixture)
-        {
-            _executor = serviceProviderFixture.ServiceProvider.GetService<ActionListExecutor>();
-        }*/
 
         [Fact]
         public async Task ActionListExecutor_MultipleExecute_Zero_Zero()
         {
-            ActionListExecutor executor = new(_logger); // Not using as singleton in tests...is this acceptable, or should I not be instantiating for each test?
+            ActionListExecutor executor = new(_logger);
 
             CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode"});
 
@@ -58,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_MultipleExecute_Zero_Nonzero()
         {
-            ActionListExecutor executor = new(_logger); // Not using as singleton in tests...is this acceptable, or should I not be instantiating for each test?
+            ActionListExecutor executor = new(_logger);
 
             CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode" });
 
@@ -68,17 +58,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            List<CollectionRuleActionResult> results = await executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token);
+            CollectionRuleActionExecutionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
+                () => executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token));
 
-            ValidateActionResult(results[0], "0");
+            Assert.Equal(1, invalidOperationException.ActionIndex);
 
-            Assert.Single(results);
+            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
         }
 
         [Fact]
         public async Task ActionListExecutor_MultipleExecute_NonZero_Zero()
         {
-            ActionListExecutor executor = new(_logger); // Not using as singleton in tests...is this acceptable, or should I not be instantiating for each test?
+            ActionListExecutor executor = new(_logger);
 
             CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "NonzeroExitCode" });
 
@@ -88,9 +79,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            List<CollectionRuleActionResult> results = await executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token);
+            CollectionRuleActionExecutionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
+                () => executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token));
 
-            Assert.Empty(results);
+            Assert.Equal(0, invalidOperationException.ActionIndex);
+
+            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
         }
 
         private static CollectionRuleActionOptions ConfigureExecuteActionOptions(string[] args, string customPath = null)
