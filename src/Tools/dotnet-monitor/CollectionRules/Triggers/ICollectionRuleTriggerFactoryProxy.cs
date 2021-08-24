@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 {
     /// <summary>
     /// A collection rule trigger factory interface with untyped options that
-    /// provides is a proxy to the real trigger factory implementation and verifies
+    /// provides a proxy to the real trigger factory implementation and verifies
     /// that the passed options are of the correct type.
     /// </summary>
     /// <remarks>

@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
 
         /// <inheritdoc/>
-        public void TryValidateOptions(
+        public bool TryValidateOptions(
             string triggerName,
             object options,
             ValidationContext validationContext,
@@ -99,12 +99,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 // If the trigger type does not have options, then skip validation of the options.
                 if (null != descriptor.OptionsType)
                 {
-                    ValidationHelper.TryValidateOptions(descriptor.OptionsType, options, validationContext, results);
+                    return ValidationHelper.TryValidateOptions(descriptor.OptionsType, options, validationContext, results);
                 }
+                return true;
             }
             else
             {
                 results.Add(new ValidationResult(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownTriggerType, triggerName)));
+                return false;
             }
         }
     }

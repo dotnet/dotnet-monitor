@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         /// <inheritdoc/>
-        public void TryValidateOptions(
+        public bool TryValidateOptions(
             string actionName,
             object options,
             ValidationContext validationContext,
@@ -81,11 +81,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             if (_map.TryGetValue(actionName, out ICollectionRuleActionDescriptor descriptor))
             {
-                ValidationHelper.TryValidateOptions(descriptor.OptionsType, options, validationContext, results);
+                return ValidationHelper.TryValidateOptions(descriptor.OptionsType, options, validationContext, results);
             }
             else
             {
                 results.Add(new ValidationResult(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, actionName)));
+                return false;
             }
         }
     }

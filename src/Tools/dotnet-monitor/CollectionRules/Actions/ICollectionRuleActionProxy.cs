@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     /// <summary>
     /// A collection rule action interface with untyped options that
-    /// provides is a proxy to the real action implementation and verifies
+    /// provides a proxy to the real action implementation and verifies
     /// that the passed options are of the correct type.
     /// </summary>
     /// <remarks>

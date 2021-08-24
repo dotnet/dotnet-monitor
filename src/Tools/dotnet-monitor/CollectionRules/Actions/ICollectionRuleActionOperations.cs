@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         /// Attempts to validate an options instance of the options type
         /// associated with the registered action name.
         /// </summary>
-        void TryValidateOptions(
+        bool TryValidateOptions(
             string actionName,
             object options,
             ValidationContext validationContext,

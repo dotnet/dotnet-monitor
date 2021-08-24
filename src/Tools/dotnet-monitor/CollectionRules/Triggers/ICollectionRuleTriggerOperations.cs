@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// Attempts to validate an options instance of the options type
         /// associated with the registered trigger name.
         /// </summary>
-        void TryValidateOptions(
+        bool TryValidateOptions(
             string triggerName,
             object options,
             ValidationContext validationContext,
