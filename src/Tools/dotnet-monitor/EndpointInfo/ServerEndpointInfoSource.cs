@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// <summary>
     /// Aggregates diagnostic endpoints that are established at a transport path via a reversed server.
     /// </summary>
-    internal class ServerEndpointInfoSource : IEndpointInfoSourceInternal, IAsyncDisposable
+    internal sealed class ServerEndpointInfoSource : IEndpointInfoSourceInternal, IAsyncDisposable
     {
         // The amount of time to wait when checking if the a endpoint info should be
         // pruned from the list of endpoint infos. If the runtime doesn't have a viable connection within
@@ -24,6 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly TimeSpan PruneWaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
 
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
+        private readonly IEnumerable<IEndpointInfoSourceCallbacks> _callbacks;
         private readonly IList<EndpointInfo> _endpointInfos = new List<EndpointInfo>();
         private readonly SemaphoreSlim _endpointInfosSemaphore = new SemaphoreSlim(1);
         private readonly string _transportPath;
@@ -41,8 +42,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// On Windows, this can be a full pipe path or the name without the "\\.\pipe\" prefix.
         /// On all other systems, this must be the full file path of the socket.
         /// </param>
-        public ServerEndpointInfoSource(string transportPath)
+        public ServerEndpointInfoSource(string transportPath, IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null)
         {
+            _callbacks = callbacks ?? Enumerable.Empty<IEndpointInfoSourceCallbacks>();
             _transportPath = transportPath;
         }
 
@@ -134,13 +136,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 await Task.WhenAll(checkMap.Values).ConfigureAwait(false);
 
                 // Remove connections for failed checks
-                foreach (KeyValuePair<EndpointInfo, Task<bool>> entry in checkMap)
+                foreach ((EndpointInfo endpointInfo, Task<bool> checkTask) in checkMap)
                 {
-                    if (entry.Value.Result)
+                    if (checkTask.Result)
                     {
-                        _endpointInfos.Remove(entry.Key);
-                        OnRemovedEndpointInfo(entry.Key);
-                        _server?.RemoveConnection(entry.Key.RuntimeInstanceCookie);
+                        _endpointInfos.Remove(endpointInfo);
+
+                        foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
+                        {
+                            callback.OnRemovedEndpointInfo(endpointInfo);
+                        }
+
+                        _server?.RemoveConnection(endpointInfo.RuntimeInstanceCookie);
                     }
                 }
 
@@ -208,6 +215,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             try
             {
+                EndpointInfo endpointInfo = EndpointInfo.FromIpcEndpointInfo(info);
+
+                foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
+                {
+                    await callback.OnBeforeResumeAsync(endpointInfo, token).ConfigureAwait(false);
+                }
+
                 // Send ResumeRuntime message for runtime instances that connect to the server. This will allow
                 // those instances that are configured to pause on start to resume after the diagnostics
                 // connection has been made. Instances that are not configured to pause on startup will ignore
@@ -222,14 +236,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // The runtime likely doesn't understand the ResumeRuntime command.
                 }
 
-                EndpointInfo endpointInfo = EndpointInfo.FromIpcEndpointInfo(info);
-
                 await _endpointInfosSemaphore.WaitAsync(token).ConfigureAwait(false);
                 try
                 {
                     _endpointInfos.Add(endpointInfo);
 
-                    OnAddedEndpointInfo(endpointInfo);
+                    foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
+                    {
+                        callback.OnAddedEndpointInfo(endpointInfo);
+                    }
                 }
                 finally
                 {
@@ -242,14 +257,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 throw;
             }
-        }
-
-        internal virtual void OnAddedEndpointInfo(EndpointInfo info)
-        {
-        }
-
-        internal virtual void OnRemovedEndpointInfo(EndpointInfo info)
-        {
         }
 
         private void VerifyNotDisposed()
