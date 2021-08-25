@@ -544,12 +544,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task TempApiKeyOverridesApiAuthenticationTest()
         {
+            const string signingAlgo = "ES256";
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.UseTempApiKey = true;
 
             // Set API key via key-per-file
             RootOptions options = new();
-            options.UseApiKey("ES256", Guid.NewGuid(), out string apiKey);
+            options.UseApiKey(signingAlgo, Guid.NewGuid(), out string apiKey);
             toolRunner.WriteKeyPerValueConfiguration(options);
 
             await toolRunner.StartAsync();
