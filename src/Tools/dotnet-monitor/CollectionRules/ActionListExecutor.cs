@@ -4,12 +4,10 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     CollectionRuleActionResult result = await action.ExecuteAsync(actionOption.Settings, endpointInfo, cancellationToken);
                     actionResults.Add(result);
                 }
-                catch (CollectionRuleActionException e)
+                catch (Exception e)
                 {
                     throw new CollectionRuleActionExecutionException(e.Message, actionIndex);
                 }

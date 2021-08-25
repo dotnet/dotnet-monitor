@@ -149,7 +149,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ValidateActionResult(result, "1");
         }
 
-        private static string GenerateArgumentsString(string[] additionalArgs)
+        internal static string GenerateArgumentsString(string[] additionalArgs)
         {
             Assembly currAssembly = Assembly.GetExecutingAssembly();
 
@@ -164,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return string.Join(' ', args);
         }
 
-        private static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)
+        internal static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)
         {
             string actualExitCode;
 

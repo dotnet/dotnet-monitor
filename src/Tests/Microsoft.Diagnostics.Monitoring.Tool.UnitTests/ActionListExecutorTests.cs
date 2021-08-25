@@ -16,25 +16,19 @@ using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Hosting;
-using Xunit.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ActionListExecutorTests
     {
         private const int TokenTimeoutMs = 10000;
-        private ITestOutputHelper _outputHelper;
+
         private IServiceProvider _serviceProvider;
+        private ILogger<ActionListExecutor> _logger;
 
-        private ILogger<ActionListExecutor> _logger = new Logger<ActionListExecutor>(new LoggerFactory());
-
-        public ActionListExecutorTests(ITestOutputHelper outputHelper)
+        public ActionListExecutorTests()
         {
-            _outputHelper = outputHelper;
-
             SetUpHost();
         }
 
@@ -49,6 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 .Build();
 
             _serviceProvider = host.Services;
+            _logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<ActionListExecutor>();
         }
 
         [Fact]
@@ -68,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             foreach (var result in results)
             {
-                ValidateActionResult(result, "0");
+                ExecuteActionTests.ValidateActionResult(result, "0");
             }
         }
 
@@ -85,12 +80,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            CollectionRuleActionExecutionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
+            CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
                 () => executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token));
 
-            Assert.Equal(1, invalidOperationException.ActionIndex);
+            Assert.Equal(1, actionExecutionException.ActionIndex);
 
-            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
+            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
         }
 
         [Fact]
@@ -106,12 +101,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            CollectionRuleActionExecutionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
+            CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
                 () => executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token));
 
-            Assert.Equal(0, invalidOperationException.ActionIndex);
+            Assert.Equal(0, actionExecutionException.ActionIndex);
 
-            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
+            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
         }
 
         private static CollectionRuleActionOptions ConfigureExecuteActionOptions(string[] args, string customPath = null)
@@ -123,35 +118,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = (customPath != null) ? customPath : DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(args);
+            options.Arguments = ExecuteActionTests.GenerateArgumentsString(args);
 
             actionOptions.Settings = options;
 
             return actionOptions;
-        }
-
-        private static string GenerateArgumentsString(string[] additionalArgs)
-        {
-            Assembly currAssembly = Assembly.GetExecutingAssembly();
-
-            List<string> args = new();
-
-            // Entrypoint assembly
-            args.Add(AssemblyHelper.GetAssemblyArtifactBinPath(currAssembly, "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", TargetFrameworkMoniker.NetCoreApp31));
-
-            // Entrypoint arguments
-            args.AddRange(additionalArgs);
-
-            return string.Join(' ', args);
-        }
-
-        private static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)
-        {
-            string actualExitCode;
-
-            Assert.NotNull(result.OutputValues);
-            Assert.True(result.OutputValues.TryGetValue("ExitCode", out actualExitCode));
-            Assert.Equal(expectedExitCode, actualExitCode);
         }
     }
 }
