@@ -15,19 +15,46 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Extensions.Hosting;
+using Xunit.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ActionListExecutorTests
     {
         private const int TokenTimeoutMs = 10000;
+        private ITestOutputHelper _outputHelper;
+        private IServiceProvider _serviceProvider;
 
         private ILogger<ActionListExecutor> _logger = new Logger<ActionListExecutor>(new LoggerFactory());
+
+        public ActionListExecutorTests(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
+
+            SetUpHost();
+        }
+
+        internal void SetUpHost()
+        {
+            IHost host = new HostBuilder()
+                .ConfigureServices(services =>
+                {
+                    services.ConfigureCollectionRules();
+                    services.ConfigureEgress();
+                })
+                .Build();
+
+            _serviceProvider = host.Services;
+        }
 
         [Fact]
         public async Task ActionListExecutor_MultipleExecute_Zero_Zero()
         {
-            ActionListExecutor executor = new(_logger);
+            ActionListExecutor executor = new(_logger, _serviceProvider);
 
             CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode"});
 
@@ -48,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_MultipleExecute_Zero_Nonzero()
         {
-            ActionListExecutor executor = new(_logger);
+            ActionListExecutor executor = new(_logger, _serviceProvider);
 
             CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode" });
 
@@ -69,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_MultipleExecute_NonZero_Zero()
         {
-            ActionListExecutor executor = new(_logger);
+            ActionListExecutor executor = new(_logger, _serviceProvider);
 
             CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "NonzeroExitCode" });
 
