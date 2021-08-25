@@ -22,6 +22,7 @@ using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.EndpointInfoSourceT
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System.Reflection;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -32,19 +33,40 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const int TokenTimeoutMs = 60000; // Arbitrarily set to 1 minute -> potentially needs to be bigger...?
         //private const int DelayMs = 1000;
 
+        private IServiceProvider _serviceProvider;
+        private ILogger<CollectDumpAction> _logger;
+        private ITestOutputHelper _outputHelper;
 
-        //private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ITestOutputHelper _outputHelper;
-        private readonly IServiceProvider _serviceProvider;
-        // Not sure how to hook into Services for Singleton executor and logger, so currently just making one for the tests
-        private ILogger<CollectDumpAction> _logger = new Logger<CollectDumpAction>(new LoggerFactory());
-
-        public CollectDumpActionTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        public CollectDumpActionTests(ITestOutputHelper outputHelper)
         {
-            //_httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
-            _serviceProvider = serviceProviderFixture.ServiceProvider;
+            SetUpHost();
         }
+
+        internal void SetUpHost()
+        {
+            IHost host = new HostBuilder()
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton<EgressOperationQueue>();
+                    services.AddSingleton<EgressOperationStore>();
+                    services.AddHostedService<EgressOperationService>();
+
+                    services.AddSingleton<RequestLimitTracker>();
+
+                    services.AddSingleton<WebApi.IEndpointInfoSource, FilteredEndpointInfoSource>();
+                    services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
+                    services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
+                    services.ConfigureCollectionRules();
+                    services.ConfigureEgress();
+                })
+                .Build();
+
+            _serviceProvider = host.Services;
+            _logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<CollectDumpAction>();
+            _outputHelper = host.Services.GetService<ITestOutputHelper>();
+        }
+
 
         [Fact]
         public async Task CollectDumpAction_NoEgressProvider()
@@ -57,10 +79,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-
             ///////////////////
 
-            await using var source = CreateServerSource(out string transportName);
+            ServerEndpointInfoCallback callback = new(_outputHelper);
+            await using var source = CreateServerSource(out string transportName, callback);
             source.Start();
 
             var endpointInfos = await GetEndpointInfoAsync(source);
@@ -68,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             AppRunner runner = CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
 
-            Task newEndpointInfoTask = source.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {
@@ -125,11 +147,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             yield return new object[] { TargetFrameworkMoniker.Net60 };
         }
 
-        private TestServerEndpointInfoSource CreateServerSource(out string transportName)
+        private ServerEndpointInfoSource CreateServerSource(out string transportName, ServerEndpointInfoCallback callback = null)
         {
             DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out transportName);
             _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
-            return new TestServerEndpointInfoSource(transportName, _outputHelper);
+
+            List<IEndpointInfoSourceCallbacks> callbacks = new();
+            if (null != callback)
+            {
+                callbacks.Add(callback);
+            }
+            return new ServerEndpointInfoSource(transportName, callbacks);
         }
 
         private AppRunner CreateAppRunner(string transportName, TargetFrameworkMoniker tfm, int appId = 1)

@@ -14,7 +14,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
     internal sealed class StartupTrigger :
         ICollectionRuleStartupTrigger
     {
-        public Task WaitForSatisfiedConditionAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

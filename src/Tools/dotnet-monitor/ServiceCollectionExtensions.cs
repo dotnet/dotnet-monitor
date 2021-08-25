@@ -75,8 +75,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleTrigger<EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
             services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
 
-            services.AddSingleton<ICollectionRuleActionOptionsProvider, CollectionRuleActionOptionsProvider>();
-            services.AddSingleton<ICollectionRuleTriggerOptionsProvider, CollectionRuleTriggerOptionsProvider>();
+            services.AddSingleton<CollectionRulesConfigurationProvider>();
+            services.AddSingleton<ICollectionRuleActionOperations, CollectionRuleActionOperations>();
+            services.AddSingleton<ICollectionRuleTriggerOperations, CollectionRuleTriggerOperations>();
+
             services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
             services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
 
@@ -88,6 +90,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             where TOptions : class, new()
         {
             services.AddSingleton<TAction>();
+            services.AddSingleton<CollectionRuleActionProxy<TAction, TOptions>>();
             services.TryAddSingletonEnumerable<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TAction, TOptions>>(sp => new CollectionRuleActionDescriptor<TAction, TOptions>(actionName));
             // NOTE: When opening colletion rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
@@ -99,6 +102,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             where TFactory : class, ICollectionRuleTriggerFactory
         {
             services.AddSingleton<TFactory>();
+            services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory>>();
             services.TryAddSingletonEnumerable<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerDescriptor<TFactory>>(
                 sp => new CollectionRuleTriggerDescriptor<TFactory>(triggerName));
             return services;
@@ -109,6 +113,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             where TOptions : class, new()
         {
             services.AddSingleton<TFactory>();
+            services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory, TOptions>>();
             services.TryAddSingletonEnumerable<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerProvider<TFactory, TOptions>>(
                 sp => new CollectionRuleTriggerProvider<TFactory, TOptions>(triggerName));
             // NOTE: When opening colletion rule triggers for extensibility, this should not be added for all registered triggers.

@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
         }
 
-        public static void TryValidateOptions(Type optionsType, object options, ValidationContext validationContext, ICollection<ValidationResult> results)
+        public static bool TryValidateOptions(Type optionsType, object options, ValidationContext validationContext, ICollection<ValidationResult> results)
         {
             RequiredAttribute requiredAttribute = new();
             ValidationResult requiredResult = requiredAttribute.GetValidationResult(options, validationContext);
@@ -38,6 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 Type validateOptionsType = typeof(IValidateOptions<>).MakeGenericType(optionsType);
                 MethodInfo validateMethod = validateOptionsType.GetMethod(nameof(IValidateOptions<object>.Validate));
 
+                bool hasFailedResults = false;
                 IEnumerable<object> validateOptionsImpls = validationContext.GetServices(validateOptionsType);
                 foreach (object validateOptionsImpl in validateOptionsImpls)
                 {
@@ -47,13 +48,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                         foreach (string failure in validateResult.Failures)
                         {
                             results.Add(new ValidationResult(failure));
+                            hasFailedResults = true;
                         }
                     }
                 }
+
+                return hasFailedResults;
             }
             else
             {
                 results.Add(requiredResult);
+                return false;
             }
         }
     }
