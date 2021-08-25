@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -15,19 +15,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class ActionListExecutor
     {
-        ILogger<ActionListExecutor> _logger;
+        readonly ILogger<ActionListExecutor> _logger;
         ICollectionRuleActionOperations _actionOperations;
 
-        public ActionListExecutor(ILogger<ActionListExecutor> logger, IServiceProvider serviceProvider)
+        public ActionListExecutor(ILogger<ActionListExecutor> logger, ICollectionRuleActionOperations actionOperations)
         {
             _logger = logger;
-            _actionOperations = serviceProvider.GetService<ICollectionRuleActionOperations>();
+            _actionOperations = actionOperations;
         }
 
-        public async Task<List<CollectionRuleActionResult>> ExecuteActions(List<CollectionRuleActionOptions> collectionRuleActionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
+        public async Task ExecuteActions(IEnumerable<CollectionRuleActionOptions> collectionRuleActionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            List<CollectionRuleActionResult> actionResults = new List<CollectionRuleActionResult>();
-
             int actionIndex = 0;
 
             foreach (CollectionRuleActionOptions actionOption in collectionRuleActionOptions)
@@ -39,32 +37,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 try
                 {
                     ICollectionRuleActionProxy action;
-                    _actionOperations.TryCreateAction(actionOption.Type, out action);
 
-                    CollectionRuleActionResult result = await action.ExecuteAsync(actionOption.Settings, endpointInfo, cancellationToken);
-                    actionResults.Add(result);
+                    if (!_actionOperations.TryCreateAction(actionOption.Type, out action))
+                    {
+                        throw new InvalidOperationException(Strings.ErrorMessage_CouldNotMapToAction);
+                    }
+
+                    await action.ExecuteAsync(actionOption.Settings, endpointInfo, cancellationToken);
                 }
-                catch (Exception e)
+                catch (Exception ex) when (ex is not OperationCanceledException)
                 {
-                    throw new CollectionRuleActionExecutionException(e.Message, actionIndex);
+                    throw new CollectionRuleActionExecutionException(ex, actionIndex);
                 }
 
                 _logger.LogInformation($"Action {actionIndex}: Completed");
 
                 ++actionIndex;
             }
-
-            return actionResults;
-        }
-    }
-
-    internal class CollectionRuleActionExecutionException : Exception
-    {
-        public readonly int ActionIndex;
-
-        public CollectionRuleActionExecutionException(string message, int actionIndex) : base(message)
-        {
-            ActionIndex = actionIndex;
         }
     }
 }

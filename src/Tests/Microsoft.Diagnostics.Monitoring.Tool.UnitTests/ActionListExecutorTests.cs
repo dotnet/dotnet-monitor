@@ -2,21 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using System.Reflection;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Threading;
-using System.Collections.Generic;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Extensions.Logging;
-using System;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -24,12 +20,61 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const int TokenTimeoutMs = 10000;
 
-        private IServiceProvider _serviceProvider;
-        private ILogger<ActionListExecutor> _logger;
+        private ActionListExecutor _executor;
 
-        public ActionListExecutorTests()
+        [Fact]
+        public async Task ActionListExecutor_MultipleExecute_Zero_Zero()
         {
             SetUpHost();
+
+            CollectionRuleOptions ruleOptions = new RootOptions()
+                .CreateCollectionRule("Default")
+                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "ZeroExitCode" }))
+                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "ZeroExitCode" }));
+
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
+            await _executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token);
+        }
+
+        [Fact]
+        public async Task ActionListExecutor_MultipleExecute_Zero_Nonzero()
+        {
+            SetUpHost();
+
+            CollectionRuleOptions ruleOptions = new RootOptions()
+                .CreateCollectionRule("Default")
+                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "ZeroExitCode" }))
+                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "NonzeroExitCode" }));
+
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
+            CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
+                () => _executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token));
+
+            Assert.Equal(1, actionExecutionException.ActionIndex);
+
+            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
+        }
+
+        [Fact]
+        public async Task ActionListExecutor_MultipleExecute_NonZero_Zero()
+        {
+            SetUpHost();
+
+            CollectionRuleOptions ruleOptions = new RootOptions()
+                .CreateCollectionRule("Default")
+                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "NonzeroExitCode" }))
+                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "ZeroExitCode" }));
+
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
+            CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
+                () => _executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token));
+
+            Assert.Equal(0, actionExecutionException.ActionIndex);
+
+            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
         }
 
         internal void SetUpHost()
@@ -42,87 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 })
                 .Build();
 
-            _serviceProvider = host.Services;
-            _logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<ActionListExecutor>();
-        }
-
-        [Fact]
-        public async Task ActionListExecutor_MultipleExecute_Zero_Zero()
-        {
-            ActionListExecutor executor = new(_logger, _serviceProvider);
-
-            CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode"});
-
-            CollectionRuleActionOptions actionOptions2 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode" });
-
-            List<CollectionRuleActionOptions> collectionRuleActionOptions = new() { actionOptions1, actionOptions2 };
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            List<CollectionRuleActionResult> results = await executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token);
-
-            foreach (var result in results)
-            {
-                ExecuteActionTests.ValidateActionResult(result, "0");
-            }
-        }
-
-        [Fact]
-        public async Task ActionListExecutor_MultipleExecute_Zero_Nonzero()
-        {
-            ActionListExecutor executor = new(_logger, _serviceProvider);
-
-            CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode" });
-
-            CollectionRuleActionOptions actionOptions2 = ConfigureExecuteActionOptions(new string[] { "NonzeroExitCode" });
-
-            List<CollectionRuleActionOptions> collectionRuleActionOptions = new() { actionOptions1, actionOptions2 };
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                () => executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token));
-
-            Assert.Equal(1, actionExecutionException.ActionIndex);
-
-            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
-        }
-
-        [Fact]
-        public async Task ActionListExecutor_MultipleExecute_NonZero_Zero()
-        {
-            ActionListExecutor executor = new(_logger, _serviceProvider);
-
-            CollectionRuleActionOptions actionOptions1 = ConfigureExecuteActionOptions(new string[] { "NonzeroExitCode" });
-
-            CollectionRuleActionOptions actionOptions2 = ConfigureExecuteActionOptions(new string[] { "ZeroExitCode" });
-
-            List<CollectionRuleActionOptions> collectionRuleActionOptions = new() { actionOptions1, actionOptions2 };
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                () => executor.ExecuteActions(collectionRuleActionOptions, null, cancellationTokenSource.Token));
-
-            Assert.Equal(0, actionExecutionException.ActionIndex);
-
-            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
-        }
-
-        private static CollectionRuleActionOptions ConfigureExecuteActionOptions(string[] args, string customPath = null)
-        {
-            CollectionRuleActionOptions actionOptions = new();
-
-            actionOptions.Type = KnownCollectionRuleActions.Execute;
-
-            ExecuteOptions options = new();
-
-            options.Path = (customPath != null) ? customPath : DotNetHost.HostExePath;
-            options.Arguments = ExecuteActionTests.GenerateArgumentsString(args);
-
-            actionOptions.Settings = options;
-
-            return actionOptions;
+            _executor = host.Services.GetService<ActionListExecutor>();
         }
     }
 }
