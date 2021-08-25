@@ -95,7 +95,7 @@ stages:
         # as well as NuGet, SourceLink, and signing validation.
         # The variables get imported from group dotnet-diagnostics-sdl-params
         publishingInfraVersion: 3
-        enableSourceLinkValidation: true
+        enableSourceLinkValidation: false
         enableSigningValidation: true
         enableSymbolValidation: false
         enableNugetValidation: true
@@ -115,3 +115,9 @@ stages:
           -TsaPublish $True'
           artifactNames:
           - 'PackageArtifacts'
+  # This sets up the bits to do a Release.
+  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+    - template: /eng/PrepareRelease.yml
+      parameters:
+        release: true
+

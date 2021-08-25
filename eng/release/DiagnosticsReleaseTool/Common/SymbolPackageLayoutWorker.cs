@@ -7,7 +7,7 @@ namespace ReleaseTool.Core
         public SymbolPackageLayoutWorker(string stagingPath) : base(
             shouldHandleFileFunc: ShouldHandleFile,
             getRelativePublishPathFromFileFunc: GetSymbolPackagePublishRelativePath,
-            getMetadataForFileFunc: (_) => new FileMetadata(FileClass.SymbolPackage),
+            getMetadataForFileFunc: (FileInfo file) => GetDefaultFileMetadata(file, FileClass.SymbolPackage),
             stagingPath
         ) {}
 

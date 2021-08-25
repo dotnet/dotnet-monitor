@@ -39,7 +39,10 @@ namespace DiagnosticsReleaseTool.Impl
 
                 WriteMetadata(writer);
 
-                WriteNugetShippingPackages(writer, filesProcessed);
+                foreach (FileClass fc in Enum.GetValues<FileClass>())
+                {
+                    WriteFiles(writer, filesProcessed, fc);
+                }
 
                 writer.WriteEndObject();
             }
@@ -47,23 +50,25 @@ namespace DiagnosticsReleaseTool.Impl
             return stream;
         }
 
-        private void WriteNugetShippingPackages(Utf8JsonWriter writer, IEnumerable<FileReleaseData> filesProcessed)
+        private void WriteFiles(Utf8JsonWriter writer, IEnumerable<FileReleaseData> filesProcessed, FileClass fileClass)
         {
-            writer.WritePropertyName(FileMetadata.GetDefaultCatgoryForClass(FileClass.Nuget));
+            writer.WritePropertyName(FileMetadata.GetDefaultCatgoryForClass(fileClass));
             writer.WriteStartArray();
 
-            IEnumerable<FileReleaseData> nugetFiles = filesProcessed.Where(file => file.FileMetadata.Class == FileClass.Nuget);
+            IEnumerable<FileReleaseData> nugetFiles = filesProcessed.Where(file => file.FileMetadata.Class == fileClass);
 
             foreach (FileReleaseData fileToRelease in nugetFiles)
             {
                 writer.WriteStartObject();
                 writer.WriteString("PublishRelativePath", fileToRelease.FileMap.RelativeOutputPath);
                 writer.WriteString("PublishedPath", fileToRelease.PublishUri);
+                writer.WriteString("Sha512", fileToRelease.FileMetadata.Sha512);
                 writer.WriteEndObject();
             }
 
             writer.WriteEndArray();
         }
+
 
         private void WriteMetadata(Utf8JsonWriter writer)
         {

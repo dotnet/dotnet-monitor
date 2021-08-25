@@ -18,7 +18,9 @@ namespace ReleaseTool.Core
             _sharePath = sharePath;
         }
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+        }
 
         public async Task<string> PublishFileAsync(FileMapping fileMap, CancellationToken ct)
         {

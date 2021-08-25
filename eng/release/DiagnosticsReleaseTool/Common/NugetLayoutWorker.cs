@@ -1,4 +1,7 @@
+using System;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ReleaseTool.Core
 {
@@ -7,7 +10,7 @@ namespace ReleaseTool.Core
         public NugetLayoutWorker(string stagingPath) : base(
             shouldHandleFileFunc: ShouldHandleFile,
             getRelativePublishPathFromFileFunc: GetNugetPublishRelativePath,
-            getMetadataForFileFunc: (_) => new FileMetadata(FileClass.Nuget),
+            getMetadataForFileFunc: (FileInfo file) => GetDefaultFileMetadata(file, FileClass.Nuget),
             stagingPath
         ) {}
 
