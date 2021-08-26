@@ -60,6 +60,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public int ProcessId => _adapter.ProcessId;
 
+        public Task<int> ProcessIdTask => _adapter.ProcessIdTask;
+
         /// <summary>
         /// Name of the scenario to run in the application.
         /// </summary>
