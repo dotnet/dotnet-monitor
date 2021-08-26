@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions
 {
     internal class CollectionRuleActionExecutionException : MonitoringException
     {
-        public readonly int ActionIndex;
+        public int ActionIndex { get; }
 
         public CollectionRuleActionExecutionException(Exception innerException, int actionIndex) : base(innerException.Message, innerException)
         {

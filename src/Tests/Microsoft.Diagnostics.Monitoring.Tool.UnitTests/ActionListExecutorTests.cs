@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
         }
 
-        internal void SetUpHost()
+        private void SetUpHost()
         {
             IHost host = new HostBuilder()
                 .ConfigureServices(services =>

@@ -15,8 +15,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class ActionListExecutor
     {
-        readonly ILogger<ActionListExecutor> _logger;
-        ICollectionRuleActionOperations _actionOperations;
+        private readonly ILogger<ActionListExecutor> _logger;
+        private ICollectionRuleActionOperations _actionOperations;
 
         public ActionListExecutor(ILogger<ActionListExecutor> logger, ICollectionRuleActionOperations actionOperations)
         {
