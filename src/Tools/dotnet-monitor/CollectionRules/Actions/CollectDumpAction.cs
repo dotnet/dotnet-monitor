@@ -57,12 +57,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 Stream dumpStream = await _diagnosticServices.GetDump(processInfo, dumpType, token);
 
-                dumpFilePath = ((FileStream)dumpStream).Name;
+                //dumpFilePath = ((FileStream)dumpStream).Name; // I believe this gives us the temporary file (and then it gets deleted)
 
                 _logger.WrittenToHttpStream(); // Do we need to do logging for trigger-related dumps?
                 //Compression is done automatically by the response
                 //Chunking is done because the result has no content-length
                 FileStreamResult FileStreamResult = File(dumpStream, ContentTypes.ApplicationOctetStream, dumpFileName); // How and where do we use FileStreamResult? Do we need to call an execute method on the instance, or can we call File without keeping the value?
+
+                dumpFilePath = FileStreamResult.FileDownloadName; // I believe this gives us the actual dump_....dmp name
             }
             else
             {

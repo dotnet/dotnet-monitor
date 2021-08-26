@@ -41,10 +41,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public CollectDumpActionTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
-            SetUpHost();
         }
 
-        internal void SetUpHost()
+        private void SetUpHost(string egressProvider)
         {
             IHost host = new HostBuilder()
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
@@ -58,19 +57,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     services.AddSingleton<EgressOperationQueue>();
                     services.AddSingleton<EgressOperationStore>();
-                    services.AddHostedService<EgressOperationService>();
-
                     services.AddSingleton<RequestLimitTracker>();
-
                     services.AddSingleton<WebApi.IEndpointInfoSource, FilteredEndpointInfoSource>();
-                    services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
-                    services.ConfigureCollectionRules();
-                    services.ConfigureEgress();
-                    services.ConfigureOperationStore();
-                    services.ConfigureMetrics(context.Configuration);
                     services.ConfigureStorage(context.Configuration);
-                    services.ConfigureDefaultProcess(context.Configuration);
+
+
+                    //services.AddHostedService<EgressOperationService>();
+                    //services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
+                    //services.ConfigureCollectionRules();
+                    //services.ConfigureEgress();
+                    //services.ConfigureOperationStore();
+                    //services.ConfigureMetrics(context.Configuration);
+                    //services.ConfigureDefaultProcess(context.Configuration);
 
                 })
                 .Build();
@@ -78,12 +77,36 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _serviceProvider = host.Services;
             _logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<CollectDumpAction>();
             //_outputHelper = host.Services.GetService<ITestOutputHelper>();
+
+
+
+
+
+
+            /*
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectDumpAction(ExpectedDumpType, ExpectedEgressProvider);
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                },
+                ruleOptions =>
+                {
+                    ruleOptions.VerifyCollectDumpAction(0, ExpectedDumpType, ExpectedEgressProvider);
+                });
+            */
         }
 
 
         [Fact]
         public async Task CollectDumpAction_NoEgressProvider()
         {
+            SetUpHost(null);
+
             CollectDumpAction action = new(_logger, _serviceProvider);
 
             CollectDumpOptions options = new();
@@ -135,31 +158,66 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             endpointInfos = await GetEndpointInfoAsync(source);
 
             Assert.Empty(endpointInfos);
-
-
-            ////////////////
-            ///
-            /*
-
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
-
-            string egressPath = result.OutputValues["EgressPath"];
-
-            if (!File.Exists(egressPath))
-            {
-                throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Tools.Monitor.Strings.ErrorMessage_FileNotFound, egressPath));
-            }
-
-            //ValidateActionResult(result, "0");
-            */
         }
 
-
-        public static IEnumerable<object[]> GetTfmsSupportingPortListener()
+        /*
+        [Fact]
+        public async Task CollectDumpAction_FileEgressProvider()
         {
-            yield return new object[] { TargetFrameworkMoniker.Net50 };
-            yield return new object[] { TargetFrameworkMoniker.Net60 };
-        }
+            SetUpHost();
+
+            CollectDumpAction action = new(_logger, _serviceProvider);
+
+            CollectDumpOptions options = new();
+
+            options.Egress = null;
+            //options.Type = WebApi.Models.DumpType.Full;
+
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
+            ///////////////////
+
+            ServerEndpointInfoCallback callback = new(_outputHelper);
+            await using var source = CreateServerSource(out string transportName, callback);
+            source.Start();
+
+            var endpointInfos = await GetEndpointInfoAsync(source);
+            Assert.Empty(endpointInfos);
+
+            AppRunner runner = CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
+
+            Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+            await runner.ExecuteAsync(async () =>
+            {
+                await newEndpointInfoTask;
+
+                endpointInfos = await GetEndpointInfoAsync(source);
+
+                var endpointInfo = Assert.Single(endpointInfos);
+                Assert.NotNull(endpointInfo.CommandLine);
+                Assert.NotNull(endpointInfo.OperatingSystem);
+                Assert.NotNull(endpointInfo.ProcessArchitecture);
+                VerifyConnection(runner, endpointInfo);
+
+                CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+
+                string egressPath = result.OutputValues["EgressPath"];
+
+                if (!File.Exists(egressPath))
+                {
+                    throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Tools.Monitor.Strings.ErrorMessage_FileNotFound, egressPath));
+                }
+
+                await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            });
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            endpointInfos = await GetEndpointInfoAsync(source);
+
+            Assert.Empty(endpointInfos);
+        }*/
 
         private ServerEndpointInfoSource CreateServerSource(out string transportName, ServerEndpointInfoCallback callback = null)
         {
