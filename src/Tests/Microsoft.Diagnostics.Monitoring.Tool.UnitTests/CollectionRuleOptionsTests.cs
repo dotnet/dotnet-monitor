@@ -7,9 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -720,48 +718,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
-        private async Task Validate(
+        private Task Validate(
             Action<RootOptions> setup,
             Action<IOptionsMonitor<CollectionRuleOptions>> validate)
         {
-            IHost host = new HostBuilder()
-                .ConfigureAppConfiguration(builder =>
-                {
-                    RootOptions options = new();
-                    setup(options);
-
-                    IDictionary<string, string> configurationValues = options.ToConfigurationValues();
-                    _outputHelper.WriteLine("Begin Configuration:");
-                    foreach ((string key, string value) in configurationValues)
-                    {
-                        _outputHelper.WriteLine("{0} = {1}", key, value);
-                    }
-                    _outputHelper.WriteLine("End Configuration");
-
-                    builder.AddInMemoryCollection(configurationValues);
-                })
-                .ConfigureServices(services =>
-                {
-                    services.ConfigureCollectionRules();
-                    services.ConfigureEgress();
-                })
-                .Build();
-
-            try
-            {
-                validate(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>());
-            }
-            finally
-            {
-                if (host is IAsyncDisposable asyncDisposable)
-                {
-                    await asyncDisposable.DisposeAsync();
-                }
-                else
-                {
-                    host.Dispose();
-                }
-            }
+            return TestHostHelper.CreateCollectionRulesHost(
+                _outputHelper,
+                setup,
+                host => validate(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>()));
         }
 
         private Task ValidateSuccess(
