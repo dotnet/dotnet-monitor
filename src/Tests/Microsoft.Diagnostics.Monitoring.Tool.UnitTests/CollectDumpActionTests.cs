@@ -23,6 +23,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System.Reflection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -46,7 +47,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         internal void SetUpHost()
         {
             IHost host = new HostBuilder()
-                .ConfigureServices(services =>
+                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
+                {
+                    builder.AddInMemoryCollection(new Dictionary<string, string>
+                    {
+                        {ConfigurationPath.Combine(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
+                    });
+                })
+                .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
                     services.AddSingleton<EgressOperationQueue>();
                     services.AddSingleton<EgressOperationStore>();
@@ -59,12 +67,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();
+                    services.ConfigureOperationStore();
+                    services.ConfigureMetrics(context.Configuration);
+                    services.ConfigureStorage(context.Configuration);
+                    services.ConfigureDefaultProcess(context.Configuration);
+
                 })
                 .Build();
 
             _serviceProvider = host.Services;
             _logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<CollectDumpAction>();
-            _outputHelper = host.Services.GetService<ITestOutputHelper>();
+            //_outputHelper = host.Services.GetService<ITestOutputHelper>();
         }
 
 
@@ -76,6 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             CollectDumpOptions options = new();
 
             options.Egress = null;
+            //options.Type = WebApi.Models.DumpType.Full;
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
