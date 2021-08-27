@@ -7,7 +7,7 @@ using Microsoft.Diagnostics.Monitoring;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions
 {
-    internal class CollectionRuleActionExecutionException : MonitoringException
+    internal sealed class CollectionRuleActionExecutionException : MonitoringException
     {
         public int ActionIndex { get; }
 

@@ -7,7 +7,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions
 {
-    internal class CollectionRuleActionException : MonitoringException
+    internal sealed class CollectionRuleActionException : MonitoringException
     {
         public CollectionRuleActionException(Exception innerException) : base(innerException.Message, innerException)
         {

@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             CollectionRuleActionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                 () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
 
-            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
+            Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
         }
 
         [Fact]
