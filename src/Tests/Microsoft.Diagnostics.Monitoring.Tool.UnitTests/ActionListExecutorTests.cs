@@ -33,11 +33,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_AllActionsSucceed()
         {
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            await TestHostHelper.CreateCollectionRulesHostAsync(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule("Default")
                     .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
-                    .AddExecuteActionAppAction(new string[] { "ZeroExitCode" });
+                    .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
+                    .SetStartupTrigger();
             }, async host =>
             {
                 _executor = host.Services.GetService<ActionListExecutor>();
@@ -51,11 +52,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_SecondActionFail()
         {
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            await TestHostHelper.CreateCollectionRulesHostAsync(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule("Default")
                     .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
-                    .AddExecuteActionAppAction(new string[] { "NonzeroExitCode" });
+                    .AddExecuteActionAppAction(new string[] { "NonzeroExitCode" })
+                    .SetStartupTrigger();
             }, async host =>
             {
                 _executor = host.Services.GetService<ActionListExecutor>();
@@ -74,11 +76,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_FirstActionFail()
         {
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            await TestHostHelper.CreateCollectionRulesHostAsync(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule("Default")
                     .AddExecuteActionAppAction(new string[] { "NonzeroExitCode" })
-                    .AddExecuteActionAppAction(new string[] { "ZeroExitCode" });
+                    .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
+                    .SetStartupTrigger();
             }, async host =>
             {
                 _executor = host.Services.GetService<ActionListExecutor>();
