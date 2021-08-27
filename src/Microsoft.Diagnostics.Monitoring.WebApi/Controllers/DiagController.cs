@@ -157,13 +157,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
-            return InvokeForProcess<Dictionary<string, string>>(processInfo =>
+            return InvokeForProcess<Dictionary<string, string>>(async processInfo =>
             {
                 var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
 
                 try
                 {
-                    Dictionary<string, string> environment = client.GetProcessEnvironment();
+                    Dictionary<string, string> environment = await client.GetProcessEnvironmentAsync(HttpContext.RequestAborted);
 
                     _logger.WrittenToHttpStream();
 
