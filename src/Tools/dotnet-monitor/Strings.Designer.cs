@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A corresponding action could not be found for the input {0}..
+        ///   Looks up a localized string similar to The &apos;{0}&apos; action was not registered correctly..
         /// </summary>
         internal static string ErrorMessage_CouldNotMapToAction {
             get {

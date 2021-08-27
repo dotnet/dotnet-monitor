@@ -165,7 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return string.Join(' ', args);
         }
 
-        internal static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)
+        private static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)
         {
             string actualExitCode;
 

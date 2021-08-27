@@ -20,12 +20,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         public ActionListExecutor(ILogger<ActionListExecutor> logger, ICollectionRuleActionOperations actionOperations)
         {
-            _logger = logger;
-            _actionOperations = actionOperations;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _actionOperations = actionOperations ?? throw new ArgumentNullException(nameof(actionOperations));
         }
 
         public async Task ExecuteActions(IEnumerable<CollectionRuleActionOptions> collectionRuleActionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
+            if (collectionRuleActionOptions == null)
+            {
+                throw new ArgumentNullException(nameof(collectionRuleActionOptions));
+            }
+
             int actionIndex = 0;
 
             foreach (CollectionRuleActionOptions actionOption in collectionRuleActionOptions)

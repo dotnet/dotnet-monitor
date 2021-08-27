@@ -5,7 +5,6 @@
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Threading;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
@@ -23,29 +22,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private ActionListExecutor _executor;
 
         [Fact]
-        public async Task ActionListExecutor_MultipleExecute_Zero_Zero()
+        public async Task ActionListExecutor_AllActionsSucceed()
         {
-            SetUpHost();
+            IHost host = SetUpHost();
 
-            CollectionRuleOptions ruleOptions = new RootOptions()
-                .CreateCollectionRule("Default")
-                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "ZeroExitCode" }))
-                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "ZeroExitCode" }));
+            CollectionRuleOptions ruleOptions = new();
+            ruleOptions.AddExecuteActionAppAction(new string[] { "ZeroExitCode" });
+            ruleOptions.AddExecuteActionAppAction(new string[] { "ZeroExitCode" });
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
             await _executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token);
+
+            host.Dispose();
         }
 
         [Fact]
-        public async Task ActionListExecutor_MultipleExecute_Zero_Nonzero()
+        public async Task ActionListExecutor_SecondActionFail()
         {
-            SetUpHost();
+            IHost host = SetUpHost();
 
-            CollectionRuleOptions ruleOptions = new RootOptions()
-                .CreateCollectionRule("Default")
-                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "ZeroExitCode" }))
-                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "NonzeroExitCode" }));
+            CollectionRuleOptions ruleOptions = new();
+            ruleOptions.AddExecuteActionAppAction(new string[] { "ZeroExitCode" });
+            ruleOptions.AddExecuteActionAppAction(new string[] { "NonzeroExitCode" });
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
@@ -55,17 +54,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(1, actionExecutionException.ActionIndex);
 
             Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
+            
+            host.Dispose();
         }
 
         [Fact]
-        public async Task ActionListExecutor_MultipleExecute_NonZero_Zero()
+        public async Task ActionListExecutor_FirstActionFail()
         {
-            SetUpHost();
+            IHost host = SetUpHost();
 
-            CollectionRuleOptions ruleOptions = new RootOptions()
-                .CreateCollectionRule("Default")
-                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "NonzeroExitCode" }))
-                .AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(new string[] { "ZeroExitCode" }));
+            CollectionRuleOptions ruleOptions = new();
+            ruleOptions.AddExecuteActionAppAction(new string[] { "NonzeroExitCode" });
+            ruleOptions.AddExecuteActionAppAction(new string[] { "ZeroExitCode" });
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
@@ -75,9 +75,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(0, actionExecutionException.ActionIndex);
 
             Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
+
+            host.Dispose();
         }
 
-        private void SetUpHost()
+        private IHost SetUpHost()
         {
             IHost host = new HostBuilder()
                 .ConfigureServices(services =>
@@ -88,6 +90,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 .Build();
 
             _executor = host.Services.GetService<ActionListExecutor>();
+
+            return host;
         }
     }
 }

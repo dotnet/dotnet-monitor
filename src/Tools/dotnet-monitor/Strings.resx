@@ -122,7 +122,7 @@
     <comment>Gets a string similar to "API key authentication not configured.".</comment>
   </data>
   <data name="ErrorMessage_CouldNotMapToAction" xml:space="preserve">
-    <value>A corresponding action could not be found for the input {0}.</value>
+    <value>The '{0}' action was not registered correctly.</value>
     <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleActionProxy.</comment>
   </data>
   <data name="ErrorMessage_DiagnosticPortMissingInListenMode" xml:space="preserve">
