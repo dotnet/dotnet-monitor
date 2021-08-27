@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public async Task<CollectionRuleActionResult> ExecuteAsync(CollectDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
         {
             DumpType dumpType = options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
-            string egressProvider = options.Egress; // Do we need to check this?
+            string egressProvider = options.Egress; // I believe we should be doing a check for a non-null value (or maybe a valid one)?
 
             int pid = endpointInfo.ProcessId;
 

@@ -30,6 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     public sealed class CollectDumpActionTests
     {
         private static readonly TimeSpan GetEndpointInfoTimeout = TimeSpan.FromSeconds(10);
+        //private const string FileProviderName = "files";
 
         private const int TokenTimeoutMs = 60000; // Arbitrarily set to 1 minute -> potentially needs to be bigger...?
         //private const int DelayMs = 1000;
@@ -37,10 +38,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private IServiceProvider _serviceProvider;
         private ILogger<CollectDumpAction> _logger;
         private ITestOutputHelper _outputHelper;
+        private readonly DirectoryInfo _tempEgressPath;
 
         public CollectDumpActionTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
+            _tempEgressPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "Egress", Guid.NewGuid().ToString()));
         }
 
         private void SetUpHost(string egressProvider)
@@ -103,15 +106,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
 
         [Fact]
-        public async Task CollectDumpAction_NoEgressProvider()
+        public async Task CollectDumpAction_FileEgressProvider()
         {
-            SetUpHost(null);
+            SetUpHost(null); // Can potentially remove this param (or need to figure out what it will do for us)
 
             CollectDumpAction action = new(_logger, _serviceProvider);
 
             CollectDumpOptions options = new();
 
-            options.Egress = null;
+            options.Egress = _tempEgressPath.ToString(); // Pay attention to this
             //options.Type = WebApi.Models.DumpType.Full;
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
