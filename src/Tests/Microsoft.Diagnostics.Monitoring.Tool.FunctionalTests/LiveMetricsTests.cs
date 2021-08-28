@@ -53,15 +53,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     using ResponseStreamHolder holder = await apiClient.CaptureLiveMetricsAsync(appRunner.ProcessId,
                         durationSeconds: 10,
                         refreshInterval: 2);
-
+                    
                     var metrics = GetAllMetrics(holder);
-                    await ValidateMetrics(new HashSet<string>{ "System.Runtime" }, new HashSet<string>{
-                        "cpu-usage",
-                        "working-set",
-                        "gc-heap-size",
-                        "threadpool-thread-count",
-                        "threadpool-queue-length"
-                    }, metrics, strict: false);
+                    await ValidateMetrics(new []{ EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
+                        new []
+                        {
+                            "cpu-usage",
+                            "working-set",
+                            "gc-heap-size",
+                            "threadpool-thread-count",
+                            "threadpool-queue-length"
+                        },
+                    metrics, strict: false);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
@@ -76,33 +79,35 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.AsyncWait.Name,
                 async (appRunner, apiClient) =>
                 {
+                    var counterNames = new[] { "cpu-usage", "working-set" };
+
                     using ResponseStreamHolder holder = await apiClient.CaptureLiveMetricsAsync(appRunner.ProcessId,
                         durationSeconds: 10,
                         refreshInterval: 2,
-                        new EventMetrics
+                        new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
-                            EventMetricProviders = new[]
+                            Providers = new[]
                             {
-                                new EventMetricProvider
+                                new EventMetricsProvider
                                 {
-                                    ProviderName = "System.Runtime",
-                                    CounterNames = new[] { "cpu-usage", "working-set" }
+                                    ProviderName = EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName,
+                                    CounterNames = counterNames,
                                 }
                             }
                         });
 
                     var metrics = GetAllMetrics(holder);
-                    await ValidateMetrics(new HashSet<string> { "System.Runtime" }, new HashSet<string>{
-                        "cpu-usage",
-                        "working-set",
-                    }, metrics, strict: true);
+                    await ValidateMetrics(new []{ EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
+                        counterNames,
+                        metrics,
+                        strict: true);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
         }
 
-        private static async Task ValidateMetrics(HashSet<string> expectedProviders, HashSet<string> expectedNames,
+        private static async Task ValidateMetrics(IEnumerable<string> expectedProviders, IEnumerable<string> expectedNames,
             IAsyncEnumerable<CounterPayload> actualMetrics, bool strict)
         {
             HashSet<string> actualProviders = new();
@@ -110,8 +115,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await AggregateMetrics(actualMetrics, actualProviders, actualNames);
 
-            CompareSets(expectedProviders, actualProviders, strict);
-            CompareSets(expectedNames, actualNames, strict);
+            CompareSets(new HashSet<string>(expectedProviders), actualProviders, strict);
+            CompareSets(new HashSet<string>(expectedNames), actualNames, strict);
         }
 
         private static void CompareSets(HashSet<string> expected, HashSet<string> actual, bool strict)
@@ -128,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 expected.ExceptWith(actual);
                 matched = false;
             }
-            Assert.True(matched, "Missing or unexpected elements: " + expected.Aggregate((a, b) => string.Concat(a, ",", b)));
+            Assert.True(matched, "Missing or unexpected elements: " + string.Join(",", expected));
         }
 
         private static async Task AggregateMetrics(IAsyncEnumerable<CounterPayload> actualMetrics,
@@ -152,15 +157,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Equal(StreamingLogger.JsonSequenceRecordSeparator, (byte)entry[0]);
                 yield return JsonSerializer.Deserialize<CounterPayload>(entry.Substring(1));
             }
-        }
-
-        private sealed class CounterPayload
-        {
-            [JsonPropertyName("provider")]
-            public string Provider { get; set; }
-
-            [JsonPropertyName("name")]
-            public string Name { get; set; }
         }
     }
 }

@@ -11,16 +11,17 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
-    public class EventMetrics
+    public class EventMetricsConfiguration
+
     {
         [JsonPropertyName("includeDefaultProviders")]
         public bool IncludeDefaultProviders { get; set; } = true;
 
-        [JsonPropertyName("eventMetricProviders")]
-        public EventMetricProvider[] EventMetricProviders { get; set; }
+        [JsonPropertyName("providers")]
+        public EventMetricsProvider[] Providers { get; set; }
     }
 
-    public class EventMetricProvider
+    public class EventMetricsProvider
     {
         [Required]
         [JsonPropertyName("providerName")]

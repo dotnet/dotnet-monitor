@@ -972,17 +972,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EventMetrics"
+                "$ref": "#/components/schemas/EventMetricsConfiguration"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/EventMetrics"
+                "$ref": "#/components/schemas/EventMetricsConfiguration"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/EventMetrics"
+                "$ref": "#/components/schemas/EventMetricsConfiguration"
               }
             }
           },
@@ -1386,7 +1386,7 @@
         },
         "additionalProperties": false
       },
-      "EventMetricProvider": {
+      "EventMetricsProvider": {
         "required": [
           "providerName"
         ],
@@ -1405,16 +1405,16 @@
         },
         "additionalProperties": false
       },
-      "EventMetrics": {
+      "EventMetricsConfiguration": {
         "type": "object",
         "properties": {
           "includeDefaultProviders": {
             "type": "boolean"
           },
-          "eventMetricProviders": {
+          "providers": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/EventMetricProvider"
+              "$ref": "#/components/schemas/EventMetricsProvider"
             },
             "nullable": true
           }

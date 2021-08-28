@@ -99,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [EgressValidation]
         public Task<ActionResult> LiveMetricsCustom(
             [FromBody][Required]
-            Models.EventMetrics configuration,
+            Models.EventMetricsConfiguration configuration,
             [FromQuery]
             int? pid = null,
             [FromQuery]

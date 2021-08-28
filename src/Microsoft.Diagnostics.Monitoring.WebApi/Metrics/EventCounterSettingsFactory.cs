@@ -32,12 +32,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
 
         public static EventPipeCounterPipelineSettings CreateSettings(int durationSeconds, int refreshInterval,
-            Models.EventMetrics configuration)
+            Models.EventMetricsConfiguration configuration)
         {
             return CreateSettings(configuration.IncludeDefaultProviders,
                 durationSeconds,
                 refreshInterval,
-                () => ConvertCounterGroups(configuration.EventMetricProviders));
+                () => ConvertCounterGroups(configuration.Providers));
         }
 
         private static EventPipeCounterPipelineSettings CreateSettings(bool includeDefaults,
@@ -82,13 +82,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return counterGroups;
         }
 
-        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<Models.EventMetricProvider> providers)
+        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<Models.EventMetricsProvider> providers)
         {
             List<EventPipeCounterGroup> counterGroups = new();
 
             if (providers?.Count > 0)
             {
-                foreach (Models.EventMetricProvider customProvider in providers)
+                foreach (Models.EventMetricsProvider customProvider in providers)
                 {
                     var customCounterGroup = new EventPipeCounterGroup() { ProviderName = customProvider.ProviderName };
                     if (customProvider.CounterNames?.Length > 0)

@@ -339,7 +339,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return CaptureLiveMetricsAsync(processId, durationSeconds, refreshInterval, HttpMethod.Get, content: null, token: token);
         }
 
-        public Task<ResponseStreamHolder> CaptureLiveMetricsAsync(int processId, int durationSeconds, int refreshInterval, EventMetrics metricsConfiguration, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureLiveMetricsAsync(int processId, int durationSeconds, int refreshInterval, EventMetricsConfiguration metricsConfiguration, CancellationToken token)
         {
             string content = JsonSerializer.Serialize(metricsConfiguration, DefaultJsonSerializeOptions);
 
