@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_AllActionsSucceed()
         {
-            await TestHostHelper.CreateCollectionRulesHostAsync(_outputHelper, rootOptions =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule("Default")
                     .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_SecondActionFail()
         {
-            await TestHostHelper.CreateCollectionRulesHostAsync(_outputHelper, rootOptions =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule("Default")
                     .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_FirstActionFail()
         {
-            await TestHostHelper.CreateCollectionRulesHostAsync(_outputHelper, rootOptions =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule("Default")
                     .AddExecuteActionAppAction(new string[] { "NonzeroExitCode" })

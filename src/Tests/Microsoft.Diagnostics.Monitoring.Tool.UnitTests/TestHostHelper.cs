@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     internal static class TestHostHelper
     {
-        public static async Task CreateCollectionRulesHostAsync(
+        public static async Task CreateCollectionRulesHost(
             ITestOutputHelper outputHelper,
             Action<RootOptions> setup,
             Func<IHost, Task> callback)
