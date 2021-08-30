@@ -9,21 +9,20 @@ using System.Threading;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Xunit.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ActionListExecutorTests
     {
         private const int TokenTimeoutMs = 10000;
-
-        private ActionListExecutor _executor;
+        
         private readonly ITestOutputHelper _outputHelper;
+
+        private const string DefaultRuleName = "Default";
 
         public ActionListExecutorTests(ITestOutputHelper outputHelper)
         {
@@ -35,17 +34,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRule("Default")
+                rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
                     .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
                     .SetStartupTrigger();
             }, async host =>
             {
-                _executor = host.Services.GetService<ActionListExecutor>();
+                ActionListExecutor executor = host.Services.GetService<ActionListExecutor>();
 
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-                await _executor.ExecuteActions(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get("Default").Actions, null, cancellationTokenSource.Token);
+                CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+
+                await executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token);
             });
         }
 
@@ -54,18 +55,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRule("Default")
+                rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
                     .AddExecuteActionAppAction(new string[] { "NonzeroExitCode" })
                     .SetStartupTrigger();
             }, async host =>
             {
-                _executor = host.Services.GetService<ActionListExecutor>();
+                ActionListExecutor executor = host.Services.GetService<ActionListExecutor>();
 
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
+                CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                    () => _executor.ExecuteActions(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get("Default").Actions, null, cancellationTokenSource.Token));
+                    () => executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token));
 
                 Assert.Equal(1, actionExecutionException.ActionIndex);
 
@@ -78,18 +81,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRule("Default")
+                rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddExecuteActionAppAction(new string[] { "NonzeroExitCode" })
                     .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
                     .SetStartupTrigger();
             }, async host =>
             {
-                _executor = host.Services.GetService<ActionListExecutor>();
+                ActionListExecutor executor = host.Services.GetService<ActionListExecutor>();
 
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
+                CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                    () => _executor.ExecuteActions(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get("Default").Actions, null, cancellationTokenSource.Token));
+                    () => executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token));
 
                 Assert.Equal(0, actionExecutionException.ActionIndex);
 
