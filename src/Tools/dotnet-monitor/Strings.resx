@@ -121,6 +121,10 @@
     <value>API key authentication not configured.</value>
     <comment>Gets a string similar to "API key authentication not configured.".</comment>
   </data>
+  <data name="ErrorMessage_CouldNotMapToAction" xml:space="preserve">
+    <value>The '{0}' action was not registered correctly.</value>
+    <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleActionProxy.</comment>
+  </data>
   <data name="ErrorMessage_DiagnosticPortMissingInListenMode" xml:space="preserve">
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>

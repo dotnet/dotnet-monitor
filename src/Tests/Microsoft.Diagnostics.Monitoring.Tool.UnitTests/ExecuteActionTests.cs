@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,7 +12,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Threading;
 using System;
 using System.IO;
-using System.Diagnostics;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System.Collections.Generic;
 
@@ -51,10 +51,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            InvalidOperationException invalidOperationException = await Assert.ThrowsAsync<InvalidOperationException>(
+            CollectionRuleActionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                 () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
 
-            Assert.Contains(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
+            Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
         }
 
         [Fact]
@@ -126,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-            FileNotFoundException fileNotFoundException = await Assert.ThrowsAsync<FileNotFoundException>(
+            CollectionRuleActionException fileNotFoundException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                 () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
 
             Assert.Equal(string.Format(Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
@@ -150,7 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ValidateActionResult(result, "1");
         }
 
-        private static string GenerateArgumentsString(string[] additionalArgs)
+        internal static string GenerateArgumentsString(string[] additionalArgs)
         {
             Assembly currAssembly = Assembly.GetExecutingAssembly();
 

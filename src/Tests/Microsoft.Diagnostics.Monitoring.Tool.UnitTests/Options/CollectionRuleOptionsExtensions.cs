@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -117,6 +118,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             executeOptions.Path = path;
 
             actionOptions.Settings = executeOptions;
+
+            return options;
+        }
+
+        public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, params string[] args)
+        {
+            options.AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(args));
 
             return options;
         }
