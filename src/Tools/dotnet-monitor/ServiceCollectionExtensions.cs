@@ -82,6 +82,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
             services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
 
+            services.AddSingleton<ActionListExecutor>();
+
             return services;
         }
 

@@ -17,9 +17,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public static async Task CreateCollectionRulesHost(
             ITestOutputHelper outputHelper,
             Action<RootOptions> setup,
+            Func<IHost, Task> callback)
+        {
+            IHost host = CreateHost(outputHelper, setup);
+
+            try
+            {
+                await callback(host);
+            }
+            finally
+            {
+                await DisposeHost(host);
+            }
+        }
+
+        public static async Task CreateCollectionRulesHost(
+            ITestOutputHelper outputHelper,
+            Action<RootOptions> setup,
             Action<IHost> callback)
         {
-            IHost host = new HostBuilder()
+            IHost host = CreateHost(outputHelper, setup);
+
+            try
+            {
+                callback(host);
+            }
+            finally
+            {
+                await DisposeHost(host);
+            }
+        }
+
+        public static IHost CreateHost(
+            ITestOutputHelper outputHelper,
+            Action<RootOptions> setup)
+        {
+            return new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
                 {
                     RootOptions options = new();
@@ -41,21 +74,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.ConfigureEgress();
                 })
                 .Build();
+        }
 
-            try
+        public static async Task DisposeHost(IHost host)
+        {
+            if (host is IAsyncDisposable asyncDisposable)
             {
-                callback(host);
+                await asyncDisposable.DisposeAsync();
             }
-            finally
+            else
             {
-                if (host is IAsyncDisposable asyncDisposable)
-                {
-                    await asyncDisposable.DisposeAsync();
-                }
-                else
-                {
-                    host.Dispose();
-                }
+                host.Dispose();
             }
         }
     }

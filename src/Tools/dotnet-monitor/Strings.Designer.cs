@@ -70,6 +70,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; action was not registered correctly..
+        /// </summary>
+        internal static string ErrorMessage_CouldNotMapToAction {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CouldNotMapToAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In &apos;Listen&apos; mode, the diagnostic port endpoint name must be specified..
         /// </summary>
         internal static string ErrorMessage_DiagnosticPortMissingInListenMode {
