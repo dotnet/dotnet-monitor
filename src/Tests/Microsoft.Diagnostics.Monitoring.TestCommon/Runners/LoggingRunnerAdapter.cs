@@ -32,12 +32,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public int ExitCode => _exitCode.HasValue ?
             _exitCode.Value : throw new InvalidOperationException("Must call WaitForExitAsync before getting exit code.");
 
-        /// <remarks>
-        /// Only access this property after the <see cref="StartAsync(CancellationToken)"/> method has completed.
-        /// </remarks>
-        public int ProcessId => _processId.HasValue ?
-            _processId.Value : throw new InvalidOperationException("Process was not started.");
-
         public Task<int> ProcessIdTask => _processIdSource.Task;
 
         public event Action<string> ReceivedStandardErrorLine;

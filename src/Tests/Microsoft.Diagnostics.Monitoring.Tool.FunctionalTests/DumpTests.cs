@@ -58,10 +58,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
                 {
-                    ProcessInfo processInfo = await client.GetProcessAsync(runner.ProcessId);
+                    int processId = await runner.ProcessIdTask;
+
+                    ProcessInfo processInfo = await client.GetProcessAsync(processId);
                     Assert.NotNull(processInfo);
 
-                    using ResponseStreamHolder holder = await client.CaptureDumpAsync(runner.ProcessId, type);
+                    using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type);
                     Assert.NotNull(holder);
 
                     byte[] headerBuffer = new byte[64];

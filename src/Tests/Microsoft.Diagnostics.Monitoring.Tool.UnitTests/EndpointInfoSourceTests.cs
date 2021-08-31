@@ -131,7 +131,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.NotNull(endpointInfo.CommandLine);
                 Assert.NotNull(endpointInfo.OperatingSystem);
                 Assert.NotNull(endpointInfo.ProcessArchitecture);
-                VerifyConnection(runner, endpointInfo);
+                await VerifyConnectionAsync(runner, endpointInfo);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
@@ -182,13 +182,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 for (int i = 0; i < appCount; i++)
                 {
-                    IEndpointInfo endpointInfo = endpointInfos.FirstOrDefault(info => info.ProcessId == runners[i].ProcessId);
+                    int processId = await runners[i].ProcessIdTask;
+
+                    IEndpointInfo endpointInfo = endpointInfos.FirstOrDefault(info => info.ProcessId == processId);
                     Assert.NotNull(endpointInfo);
                     Assert.NotNull(endpointInfo.CommandLine);
                     Assert.NotNull(endpointInfo.OperatingSystem);
                     Assert.NotNull(endpointInfo.ProcessArchitecture);
 
-                    VerifyConnection(runners[i], endpointInfo);
+                    await VerifyConnectionAsync(runners[i], endpointInfo);
 
                     await runners[i].SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 }
@@ -244,11 +246,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Verifies basic information on the connection and that it matches the target process from the runner.
         /// </summary>
-        private static void VerifyConnection(AppRunner runner, IEndpointInfo endpointInfo)
+        private static async Task VerifyConnectionAsync(AppRunner runner, IEndpointInfo endpointInfo)
         {
             Assert.NotNull(runner);
             Assert.NotNull(endpointInfo);
-            Assert.Equal(runner.ProcessId, endpointInfo.ProcessId);
+            Assert.Equal(await runner.ProcessIdTask, endpointInfo.ProcessId);
             Assert.NotEqual(Guid.Empty, endpointInfo.RuntimeInstanceCookie);
             Assert.NotNull(endpointInfo.Endpoint);
         }

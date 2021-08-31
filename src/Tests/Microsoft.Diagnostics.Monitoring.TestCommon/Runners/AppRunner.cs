@@ -58,8 +58,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public int ExitCode => _adapter.ExitCode;
 
-        public int ProcessId => _adapter.ProcessId;
-
         public Task<int> ProcessIdTask => _adapter.ProcessIdTask;
 
         /// <summary>

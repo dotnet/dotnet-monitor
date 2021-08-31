@@ -183,7 +183,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         async () =>
                         {
                             using ResponseStreamHolder _ = await client.CaptureLogsAsync(
-                                runner.ProcessId,
+                                await runner.ProcessIdTask,
                                 TestTimeouts.LogsDuration,
                                 LogLevel.None,
                                 logFormat);
@@ -219,7 +219,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         async () =>
                         {
                             using ResponseStreamHolder _ = await client.CaptureLogsAsync(
-                                runner.ProcessId,
+                                await runner.ProcessIdTask,
                                 TestTimeouts.LogsDuration,
                                 new LogsConfiguration() { LogLevel = LogLevel.None },
                                 logFormat);
@@ -406,11 +406,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _httpClientFactory,
                 mode,
                 TestAppScenarios.Logger.Name,
-                appValidate: (runner, client) => ValidateResponseStream(
-                    runner,
-                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, logLevel, logFormat),
-                    callback,
-                    logFormat));
+                appValidate: async (runner, client) => 
+                    await ValidateResponseStream(
+                        runner,
+                        client.CaptureLogsAsync(
+                            await runner.ProcessIdTask,
+                            TestTimeouts.LogsDuration,
+                            logLevel,
+                            logFormat),
+                        callback,
+                        logFormat));
         }
 
         private Task ValidateLogsAsync(
@@ -424,11 +429,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _httpClientFactory,
                 mode,
                 TestAppScenarios.Logger.Name,
-                appValidate: (runner, client) => ValidateResponseStream(
-                    runner,
-                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, configuration, logFormat),
-                    callback,
-                    logFormat));
+                appValidate: async (runner, client) =>
+                    await ValidateResponseStream(
+                        runner,
+                        client.CaptureLogsAsync(
+                            await runner.ProcessIdTask,
+                            TestTimeouts.LogsDuration,
+                            configuration,
+                            logFormat),
+                        callback,
+                        logFormat));
         }
 
         private async Task ValidateResponseStream(AppRunner runner, Task<ResponseStreamHolder> holderTask, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
