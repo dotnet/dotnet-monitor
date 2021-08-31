@@ -256,6 +256,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private sealed class ServerEndpointInfoCallback : IEndpointInfoSourceCallbacks
         {
             private readonly ITestOutputHelper _outputHelper;
+            /// <summary>
+            /// Use to protect the completion list from mutation while processing
+            /// callbacks from it. The processing is done in an async method with async
+            /// calls, which are not allowed in a lock, thus use SemaphoreSlim.
+            /// </summary>
             private readonly SemaphoreSlim _completionEntriesSemaphore = new(1);
             private readonly List<CompletionEntry> _completionEntries = new();
 
