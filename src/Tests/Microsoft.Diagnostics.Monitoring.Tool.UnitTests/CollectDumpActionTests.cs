@@ -24,6 +24,9 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using System.Reflection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Runners;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -35,10 +38,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const int TokenTimeoutMs = 60000; // Arbitrarily set to 1 minute -> potentially needs to be bigger...?
         //private const int DelayMs = 1000;
 
+        private const string DefaultRuleName = "Default";
+
         private IServiceProvider _serviceProvider;
         private ILogger<CollectDumpAction> _logger;
         private ITestOutputHelper _outputHelper;
         private readonly DirectoryInfo _tempEgressPath;
+        private IHttpClientFactory _httpClientFactory;
+
 
         public CollectDumpActionTests(ITestOutputHelper outputHelper)
         {
@@ -79,6 +86,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             _serviceProvider = host.Services;
             _logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<CollectDumpAction>();
+
+            _httpClientFactory = host.Services.GetService<IHttpClientFactory>();
+
             //_outputHelper = host.Services.GetService<ITestOutputHelper>();
 
 
@@ -104,11 +114,87 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             */
         }
 
-
-        [Fact]
-        public async Task CollectDumpAction_FileEgressProvider()
+        [InlineData(DiagnosticPortConnectionMode.Connect)]
+#if NET5_0_OR_GREATER
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+#endif
+        [Theory]
+        public async Task CollectDumpAction_FileEgressProvider(DiagnosticPortConnectionMode mode)
         {
-            SetUpHost(null); // Can potentially remove this param (or need to figure out what it will do for us)
+            SetUpHost(null);
+
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+            const DumpType ExpectedDumpType = DumpType.Mini;
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .SetStartupTrigger()
+                    .AddCollectDumpAction(ExpectedDumpType, ExpectedEgressProvider);
+
+                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+            }, async host =>
+            {
+                _serviceProvider = host.Services;
+                _logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<CollectDumpAction>();
+
+                CollectDumpAction action = new(_logger, _serviceProvider);
+
+                CollectDumpOptions options = new();
+
+                options.Egress = ExpectedEgressProvider; // Pay attention to this
+                options.Type = ExpectedDumpType;
+
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
+                ///////////////////
+
+                ServerEndpointInfoCallback callback = new(_outputHelper);
+                await using var source = CreateServerSource(out string transportName, callback);
+                source.Start();
+
+                var endpointInfos = await GetEndpointInfoAsync(source);
+                Assert.Empty(endpointInfos);
+
+                AppRunner runner = CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
+
+                Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
+                {
+                    await newEndpointInfoTask;
+
+                    endpointInfos = await GetEndpointInfoAsync(source);
+
+                    var endpointInfo = Assert.Single(endpointInfos);
+                    Assert.NotNull(endpointInfo.CommandLine);
+                    Assert.NotNull(endpointInfo.OperatingSystem);
+                    Assert.NotNull(endpointInfo.ProcessArchitecture);
+                    VerifyConnection(runner, endpointInfo);
+
+                    CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+
+                    string egressPath = result.OutputValues["EgressPath"];
+
+                    if (!File.Exists(egressPath))
+                    {
+                        throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Tools.Monitor.Strings.ErrorMessage_FileNotFound, egressPath));
+                    }
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                });
+
+                await Task.Delay(TimeSpan.FromSeconds(1));
+
+                endpointInfos = await GetEndpointInfoAsync(source);
+
+                Assert.Empty(endpointInfos);
+            });
+        });
+
+
+            /*
+            //SetUpHost(null); // Can potentially remove this param (or need to figure out what it will do for us)
 
             CollectDumpAction action = new(_logger, _serviceProvider);
 
@@ -161,6 +247,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             endpointInfos = await GetEndpointInfoAsync(source);
 
             Assert.Empty(endpointInfos);
+
+            */
         }
 
         /*
