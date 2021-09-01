@@ -26,7 +26,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Runners;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -91,11 +90,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             //_outputHelper = host.Services.GetService<ITestOutputHelper>();
 
-
-
-
-
-
             /*
             const string ExpectedEgressProvider = "TmpEgressProvider";
 
@@ -114,14 +108,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             */
         }
 
-        [InlineData(DiagnosticPortConnectionMode.Connect)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-#endif
-        [Theory]
-        public async Task CollectDumpAction_FileEgressProvider(DiagnosticPortConnectionMode mode)
+        [Fact]
+        public async Task CollectDumpAction_FileEgressProvider()
         {
-            SetUpHost(null);
+            // SetUpHost(null);
 
             const string ExpectedEgressProvider = "TmpEgressProvider";
             const DumpType ExpectedDumpType = DumpType.Mini;
@@ -190,125 +180,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 Assert.Empty(endpointInfos);
             });
-        });
-
-
-            /*
-            //SetUpHost(null); // Can potentially remove this param (or need to figure out what it will do for us)
-
-            CollectDumpAction action = new(_logger, _serviceProvider);
-
-            CollectDumpOptions options = new();
-
-            options.Egress = _tempEgressPath.ToString(); // Pay attention to this
-            //options.Type = WebApi.Models.DumpType.Full;
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            ///////////////////
-
-            ServerEndpointInfoCallback callback = new(_outputHelper);
-            await using var source = CreateServerSource(out string transportName, callback);
-            source.Start();
-
-            var endpointInfos = await GetEndpointInfoAsync(source);
-            Assert.Empty(endpointInfos);
-
-            AppRunner runner = CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
-
-            Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-            await runner.ExecuteAsync(async () =>
-            {
-                await newEndpointInfoTask;
-
-                endpointInfos = await GetEndpointInfoAsync(source);
-
-                var endpointInfo = Assert.Single(endpointInfos);
-                Assert.NotNull(endpointInfo.CommandLine);
-                Assert.NotNull(endpointInfo.OperatingSystem);
-                Assert.NotNull(endpointInfo.ProcessArchitecture);
-                VerifyConnection(runner, endpointInfo);
-
-                CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
-
-                string egressPath = result.OutputValues["EgressPath"];
-
-                if (!File.Exists(egressPath))
-                {
-                    throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Tools.Monitor.Strings.ErrorMessage_FileNotFound, egressPath));
-                }
-
-                await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-            });
-
-            await Task.Delay(TimeSpan.FromSeconds(1));
-
-            endpointInfos = await GetEndpointInfoAsync(source);
-
-            Assert.Empty(endpointInfos);
-
-            */
         }
-
-        /*
-        [Fact]
-        public async Task CollectDumpAction_FileEgressProvider()
-        {
-            SetUpHost();
-
-            CollectDumpAction action = new(_logger, _serviceProvider);
-
-            CollectDumpOptions options = new();
-
-            options.Egress = null;
-            //options.Type = WebApi.Models.DumpType.Full;
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            ///////////////////
-
-            ServerEndpointInfoCallback callback = new(_outputHelper);
-            await using var source = CreateServerSource(out string transportName, callback);
-            source.Start();
-
-            var endpointInfos = await GetEndpointInfoAsync(source);
-            Assert.Empty(endpointInfos);
-
-            AppRunner runner = CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
-
-            Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-            await runner.ExecuteAsync(async () =>
-            {
-                await newEndpointInfoTask;
-
-                endpointInfos = await GetEndpointInfoAsync(source);
-
-                var endpointInfo = Assert.Single(endpointInfos);
-                Assert.NotNull(endpointInfo.CommandLine);
-                Assert.NotNull(endpointInfo.OperatingSystem);
-                Assert.NotNull(endpointInfo.ProcessArchitecture);
-                VerifyConnection(runner, endpointInfo);
-
-                CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
-
-                string egressPath = result.OutputValues["EgressPath"];
-
-                if (!File.Exists(egressPath))
-                {
-                    throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Tools.Monitor.Strings.ErrorMessage_FileNotFound, egressPath));
-                }
-
-                await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-            });
-
-            await Task.Delay(TimeSpan.FromSeconds(1));
-
-            endpointInfos = await GetEndpointInfoAsync(source);
-
-            Assert.Empty(endpointInfos);
-        }*/
 
         private ServerEndpointInfoSource CreateServerSource(out string transportName, ServerEndpointInfoCallback callback = null)
         {
