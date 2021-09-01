@@ -353,7 +353,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsDumpSupported))]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
