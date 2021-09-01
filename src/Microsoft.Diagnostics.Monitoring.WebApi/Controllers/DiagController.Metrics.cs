@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     partial class DiagController
     {
         /// <summary>
-        /// Capture live metrics for a process.
+        /// Capture metrics for a process.
         /// </summary>
         /// <param name="pid">Process ID used to identify the target process.</param>
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
@@ -30,13 +30,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
         /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
-        [HttpGet("livemetrics", Name = nameof(LiveMetrics))]
+        [HttpGet("collectmetrics", Name = nameof(CaptureMetrics))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_LiveMetrics)]
+        [RequestLimit(LimitKey = ArtifactType_Metrics)]
         [EgressValidation]
-        public Task<ActionResult> LiveMetrics(
+        public Task<ActionResult> CaptureMetrics(
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -72,17 +72,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     await eventCounterPipeline.RunAsync(token);
                 };
 
-                return await Result(ArtifactType_LiveMetrics,
+                return await Result(ArtifactType_Metrics,
                     egressProvider,
                     action,
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
-            }, processKey, ArtifactType_LiveMetrics);
+            }, processKey, ArtifactType_Metrics);
         }
 
         /// <summary>
-        /// Capture live metrics for a process.
+        /// Capture metrics for a process.
         /// </summary>
         /// <param name="configuration">The metrics configuration describing which metrics to capture.</param>
         /// <param name="pid">Process ID used to identify the target process.</param>
@@ -91,13 +91,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
         /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
-        [HttpPost("livemetrics", Name = nameof(LiveMetricsCustom))]
+        [HttpPost("collectmetrics", Name = nameof(CaptureMetricsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_LiveMetrics)]
+        [RequestLimit(LimitKey = ArtifactType_Metrics)]
         [EgressValidation]
-        public Task<ActionResult> LiveMetricsCustom(
+        public Task<ActionResult> CaptureMetricsCustom(
             [FromBody][Required]
             Models.EventMetricsConfiguration configuration,
             [FromQuery]
@@ -135,13 +135,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     await eventCounterPipeline.RunAsync(token);
                 };
 
-                return await Result(ArtifactType_LiveMetrics,
+                return await Result(ArtifactType_Metrics,
                     egressProvider,
                     action,
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
-            }, processKey, ArtifactType_LiveMetrics);
+            }, processKey, ArtifactType_Metrics);
         }
 
         private static string GetMetricFilename(IProcessInfo processInfo) =>

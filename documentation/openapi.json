@@ -799,13 +799,13 @@
         }
       }
     },
-    "/livemetrics": {
+    "/collectmetrics": {
       "get": {
         "tags": [
           "Diag"
         ],
-        "summary": "Capture live metrics for a process.",
-        "operationId": "LiveMetrics",
+        "summary": "Capture metrics for a process.",
+        "operationId": "CaptureMetrics",
         "parameters": [
           {
             "name": "pid",
@@ -895,8 +895,8 @@
         "tags": [
           "Diag"
         ],
-        "summary": "Capture live metrics for a process.",
-        "operationId": "LiveMetricsCustom",
+        "summary": "Capture metrics for a process.",
+        "operationId": "CaptureMetricsCustom",
         "parameters": [
           {
             "name": "pid",

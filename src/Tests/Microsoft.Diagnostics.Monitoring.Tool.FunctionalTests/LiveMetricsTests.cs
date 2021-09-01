@@ -30,19 +30,19 @@ using Xunit.Abstractions;
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [Collection(DefaultCollectionFixture.Name)]
-    public class LiveMetricsTests
+    public class CollectMetricsTests
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
-        public LiveMetricsTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        public CollectMetricsTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
         }
 
         [Fact]
-        public Task TestDefaultLiveMetrics()
+        public Task TestDefaultMetrics()
         {
             return ScenarioRunner.SingleTarget(_outputHelper,
                 _httpClientFactory,
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.AsyncWait.Name,
                 async (appRunner, apiClient) =>
                 {
-                    using ResponseStreamHolder holder = await apiClient.CaptureLiveMetricsAsync(appRunner.ProcessId,
+                    using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
                         durationSeconds: 10,
                         refreshInterval: 2);
                     
@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         [Fact]
-        public Task TestCustomLiveMetrics()
+        public Task TestCustomMetrics()
         {
             return ScenarioRunner.SingleTarget(_outputHelper,
                 _httpClientFactory,
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     var counterNames = new[] { "cpu-usage", "working-set" };
 
-                    using ResponseStreamHolder holder = await apiClient.CaptureLiveMetricsAsync(appRunner.ProcessId,
+                    using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
                         durationSeconds: 10,
                         refreshInterval: 2,
                         new EventMetricsConfiguration

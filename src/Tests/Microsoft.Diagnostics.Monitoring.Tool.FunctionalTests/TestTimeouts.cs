@@ -33,8 +33,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         public static readonly TimeSpan OperationTimeout = TimeSpan.FromSeconds(30);
 
         /// <summary>
-        /// Timeout for live metrics api.
+        /// Timeout for metrics api.
         /// </summary>
-        public static readonly TimeSpan LiveMetricsTimeout = TimeSpan.FromSeconds(30);
+        public static readonly TimeSpan CaptureMetricsTimeout = TimeSpan.FromSeconds(30);
     }
 }

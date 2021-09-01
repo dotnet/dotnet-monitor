@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         public const string ArtifactType_GCDump = "gcdump";
         public const string ArtifactType_Logs = "logs";
         public const string ArtifactType_Trace = "trace";
-        public const string ArtifactType_LiveMetrics = "livemetrics";
+        public const string ArtifactType_Metrics = "collectmetrics";
 
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
         private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);

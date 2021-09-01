@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     /// <summary>
-    /// Utility class to create metric settings (for both configuration and live metrics).
+    /// Utility class to create metric settings (for both configuration and on demand metrics).
     /// </summary>
     internal static class EventCounterSettingsFactory
     {
