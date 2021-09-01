@@ -353,7 +353,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsDumpSupported))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
@@ -698,7 +698,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 // fail. See https://github.com/dotnet/dotnet-monitor/issues/807 for details.
                 return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
                     DotNetHost.RuntimeVersion.Major != 3 ||
-                    DotNetHost.RuntimeVersion.Major != 1;
+                    DotNetHost.RuntimeVersion.Minor != 1;
             }
         }
 
