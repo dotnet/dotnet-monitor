@@ -44,6 +44,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             string egress = options.Egress; // Need to check for non-null value
 
+            if (string.IsNullOrEmpty(egress))
+            {
+                throw new ArgumentException("No Egress Provider was supplied.");
+            }
+
             int pid = endpointInfo.ProcessId;
 
             ProcessKey? processKey = new ProcessKey(pid);
@@ -55,7 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             Func<CancellationToken, Task<IFastSerializable>> action = async (token) => {
                 var graph = new Graphs.MemoryGraph(50_000);
 
-                EventGCPipelineSettings settings = new EventGCPipelineSettings
+                EventGCPipelineSettings settings = new Monitoring.EventPipe.EventGCPipelineSettings
                 {
                     Duration = Timeout.InfiniteTimeSpan,
                 };
