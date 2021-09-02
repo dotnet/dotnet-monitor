@@ -211,9 +211,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async processInfo =>
             {
-                string dumpFileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    FormattableString.Invariant($"dump_{GetFileNameTimeStampUtcNow()}.dmp") :
-                    FormattableString.Invariant($"core_{GetFileNameTimeStampUtcNow()}");
+                string dumpFileName = GenerateDumpFileName();
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
@@ -582,6 +580,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return assemblyVersionAttribute.InformationalVersion;
             }
+        }
+
+        internal static string GenerateDumpFileName()
+        {
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                FormattableString.Invariant($"dump_{GetFileNameTimeStampUtcNow()}.dmp") :
+                FormattableString.Invariant($"core_{GetFileNameTimeStampUtcNow()}");
+        }
+
+        internal static KeyValueLogScope GetDumpScope(IProcessInfo processInfo)
+        {
+            KeyValueLogScope scope = new KeyValueLogScope();
+            scope.AddArtifactType(ArtifactType_Dump);
+            scope.AddEndpointInfo(processInfo.EndpointInfo);
+
+            return scope;
         }
 
         public DiagnosticPortConnectionMode GetDiagnosticPortMode()

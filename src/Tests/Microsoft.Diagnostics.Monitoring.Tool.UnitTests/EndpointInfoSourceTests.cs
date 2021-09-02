@@ -210,7 +210,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             yield return new object[] { TargetFrameworkMoniker.Net60 };
         }
 
-        private ServerEndpointInfoSource CreateServerSource(out string transportName, ServerEndpointInfoCallback callback = null)
+        internal ServerEndpointInfoSource CreateServerSource(out string transportName, ServerEndpointInfoCallback callback = null)
         {
             DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out transportName);
             _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
@@ -223,7 +223,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return new ServerEndpointInfoSource(transportName, callbacks);
         }
 
-        private AppRunner CreateAppRunner(string transportName, TargetFrameworkMoniker tfm, int appId = 1)
+        internal AppRunner CreateAppRunner(string transportName, TargetFrameworkMoniker tfm, int appId = 1)
         {
             AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId, tfm);
             appRunner.ConnectionMode = DiagnosticPortConnectionMode.Connect;
@@ -232,7 +232,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return appRunner;
         }
 
-        private async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(ServerEndpointInfoSource source)
+        internal async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(ServerEndpointInfoSource source)
         {
             _outputHelper.WriteLine("Getting endpoint infos.");
             using CancellationTokenSource cancellationSource = new(GetEndpointInfoTimeout);
@@ -242,7 +242,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Verifies basic information on the connection and that it matches the target process from the runner.
         /// </summary>
-        private static void VerifyConnection(AppRunner runner, IEndpointInfo endpointInfo)
+        internal static void VerifyConnection(AppRunner runner, IEndpointInfo endpointInfo)
         {
             Assert.NotNull(runner);
             Assert.NotNull(endpointInfo);

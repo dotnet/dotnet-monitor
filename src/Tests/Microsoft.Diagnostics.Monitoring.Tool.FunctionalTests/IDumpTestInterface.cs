@@ -24,59 +24,10 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
-    [Collection(DefaultCollectionFixture.Name)]
-    public class DumpTests : IDumpTestInterface
+    public interface IDumpTestInterface
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ITestOutputHelper _outputHelper;
+        internal const string EnableElfDumpOnMacOS = "COMPlus_DbgEnableElfDumpOnMacOS";
 
-        public DumpTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
-        {
-            _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
-            _outputHelper = outputHelper;
-        }
-
-        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsDumpSupported))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Full)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Mini)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Triage)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.WithHeap)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.Full)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.Mini)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.Triage)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.WithHeap)]
-#endif
-        public Task DumpTest(DiagnosticPortConnectionMode mode, DumpType type)
-        {
-            return ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                mode,
-                TestAppScenarios.AsyncWait.Name,
-                appValidate: async (runner, client) =>
-                {
-                    ProcessInfo processInfo = await client.GetProcessAsync(runner.ProcessId);
-                    Assert.NotNull(processInfo);
-
-                    using ResponseStreamHolder holder = await client.CaptureDumpAsync(runner.ProcessId, type);
-                    Assert.NotNull(holder);
-
-                    await IDumpTestInterface.ValidateDump(runner, holder.Stream);
-
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-                },
-                configureApp: runner =>
-                {
-                    // MachO not supported on .NET 5, only ELF: https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major == 5)
-                    {
-                        runner.Environment.Add(IDumpTestInterface.EnableElfDumpOnMacOS, "1");
-                    }
-                });
-        }
-
-        /*
         public static async Task ValidateDump(AppRunner runner, Stream dumpStream)
         {
             Assert.NotNull(dumpStream);
@@ -149,8 +100,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 throw new NotImplementedException("Dump header check not implemented for this OS platform.");
             }
         }
-        */
 
+        public class MinidumpHeader : TStruct
+        {
+            public uint Signature = 0;
+            public uint Version = 0;
+            public uint NumberOfStreams = 0;
+            public uint StreamDirectoryRva = 0;
+            public uint CheckSum = 0;
+            public uint TimeDateStamp = 0;
+            public ulong Flags = 0;
 
+            // 50,4D,44,4D = PMDM
+            public ValidationRule IsSignatureValid => new ValidationRule("Invalid Signature", () => Signature == 0x504D444DU);
+        }
     }
 }
