@@ -50,36 +50,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     //If metric options change, we need to cancel the existing metrics pipeline and restart with the new settings.
                     using IDisposable monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.Cancel());
 
-                    EventPipeCounterGroup[] counterGroups = Array.Empty<EventPipeCounterGroup>();
-                    if (options.Providers.Count > 0)
-                    {
-                        //In the dotnet-monitor case, custom metrics are additive to the default counters.
-                        var eventPipeCounterGroups = new List<EventPipeCounterGroup>();
-                        if (options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders))
-                        {
-                            eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.SystemRuntimeEventSourceName });
-                            eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.MicrosoftAspNetCoreHostingEventSourceName });
-                            eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.GrpcAspNetCoreServer });
-                        }
+                    EventPipeCounterPipelineSettings counterSettings = EventCounterSettingsFactory.CreateSettings(options);
 
-                        foreach (MetricProvider customProvider in options.Providers)
-                        {
-                            var customCounterGroup = new EventPipeCounterGroup { ProviderName = customProvider.ProviderName };
-                            if (customProvider.CounterNames.Count > 0)
-                            {
-                                customCounterGroup.CounterNames = customProvider.CounterNames.ToArray();
-                            }
-                            eventPipeCounterGroups.Add(customCounterGroup);
-                        }
-                        counterGroups = eventPipeCounterGroups.ToArray();
-                    }
-
-                    _counterPipeline = new EventCounterPipeline(client, new EventPipeCounterPipelineSettings
-                    {
-                        CounterGroups = counterGroups,
-                        Duration = Timeout.InfiniteTimeSpan,
-                        RefreshInterval = TimeSpan.FromSeconds(options.UpdateIntervalSeconds.GetValueOrDefault(MetricsOptionsDefaults.UpdateIntervalSeconds))
-                    }, loggers: new[] { new MetricsLogger(_store.MetricsStore) });
+                    _counterPipeline = new EventCounterPipeline(client, counterSettings, loggers: new[] { new MetricsLogger(_store.MetricsStore) });
 
                     using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, optionsTokenSource.Token);
                     await _counterPipeline.RunAsync(linkedTokenSource.Token);

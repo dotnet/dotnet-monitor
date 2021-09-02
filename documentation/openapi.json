@@ -799,6 +799,211 @@
         }
       }
     },
+    "/collectmetrics": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Capture metrics for a process.",
+        "operationId": "CaptureMetrics",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "durationSeconds",
+            "in": "query",
+            "description": "The duration of the metrics session (in seconds).",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": -1,
+              "type": "integer",
+              "description": "The duration of the metrics session (in seconds).",
+              "format": "int32",
+              "default": 30
+            }
+          },
+          {
+            "name": "metricsIntervalSeconds",
+            "in": "query",
+            "description": "The reporting interval (in seconds) for event counters.",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "description": "The reporting interval (in seconds) for event counters.",
+              "format": "int32",
+              "default": 5
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the metrics are saved.",
+            "schema": {
+              "type": "string",
+              "description": "The egress provider to which the metrics are saved.",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
+          "202": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Capture metrics for a process.",
+        "operationId": "CaptureMetricsCustom",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "durationSeconds",
+            "in": "query",
+            "description": "The duration of the metrics session (in seconds).",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": -1,
+              "type": "integer",
+              "description": "The duration of the metrics session (in seconds).",
+              "format": "int32",
+              "default": 30
+            }
+          },
+          {
+            "name": "metricsIntervalSeconds",
+            "in": "query",
+            "description": "The reporting interval (in seconds) for event counters.",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "description": "The reporting interval (in seconds) for event counters.",
+              "format": "int32",
+              "default": 5
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the metrics are saved.",
+            "schema": {
+              "type": "string",
+              "description": "The egress provider to which the metrics are saved.",
+              "nullable": true
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The metrics configuration describing which metrics to capture.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventMetricsConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventMetricsConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventMetricsConfiguration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
+          "202": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "tags": [
@@ -1176,6 +1381,41 @@
           "diagnosticPortName": {
             "type": "string",
             "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventMetricsProvider": {
+        "required": [
+          "providerName"
+        ],
+        "type": "object",
+        "properties": {
+          "providerName": {
+            "type": "string"
+          },
+          "counterNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventMetricsConfiguration": {
+        "type": "object",
+        "properties": {
+          "includeDefaultProviders": {
+            "type": "boolean"
+          },
+          "providers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventMetricsProvider"
+            },
             "nullable": true
           }
         },
