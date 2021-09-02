@@ -36,6 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             string dumpFilePath = "";
 
+            // Given our options validation, I believe this is probably redundant...should I remove it?
             if (string.IsNullOrEmpty(egressProvider))
             {
                 throw new ArgumentException("No Egress Provider was supplied.");

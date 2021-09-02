@@ -11,13 +11,9 @@ using System;
 using System.IO;
 using System.Globalization;
 using Xunit.Abstractions;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using System.Collections.Generic;
 using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.EndpointInfoSourceTests;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Tools.Monitor;
-using System.Reflection;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests;
@@ -42,10 +38,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(DumpType.Mini)]
         [InlineData(DumpType.Triage)]
         [InlineData(DumpType.WithHeap)]
-        public async Task CollectDumpAction_FileEgressProvider(DumpType dumpType)
+        [InlineData(null)]
+        public async Task CollectDumpAction_Success(DumpType? dumpType)
         {
             const string ExpectedEgressProvider = "TmpEgressProvider";
-            DumpType ExpectedDumpType = dumpType;
+            DumpType ExpectedDumpType = (dumpType != null) ? dumpType.Value : CollectDumpOptionsDefaults.Type;
 
             string uniqueEgressDirectory = TempEgressDirectory + Guid.NewGuid();
 
@@ -65,7 +62,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectDumpOptions options = new();
 
                 options.Egress = ExpectedEgressProvider;
-                options.Type = ExpectedDumpType;
+
+                // This is for the scenario where no DumpType is specified
+                if (dumpType != null)
+                {
+                    options.Type = ExpectedDumpType;
+                }
 
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TestTimeouts.DumpTimeout);
 
@@ -78,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 var endpointInfos = await endpointInfoSourceTests.GetEndpointInfoAsync(source);
                 Assert.Empty(endpointInfos);
 
-                AppRunner runner = endpointInfoSourceTests.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against multiple versions?
+                AppRunner runner = endpointInfoSourceTests.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
 
                 Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
