@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -39,19 +40,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             // Given our options validation, I believe this is probably redundant...should I remove it?
             if (string.IsNullOrEmpty(egressProvider))
             {
+                // Also, I would move this to Strings.resx if we do keep it, but I decided to wait for feedback before doing that.
                 throw new ArgumentException("No Egress Provider was supplied.");
             }
             else
             {
                 KeyValueLogScope scope = DiagController.GetDumpScope(processInfo);
 
-                dumpFilePath = await SendToEgress(new EgressOperation(
-                    token => _diagnosticServices.GetDump(processInfo, dumpType, token),
-                    egressProvider,
-                    dumpFileName,
-                    processInfo.EndpointInfo,
-                    ContentTypes.ApplicationOctetStream,
-                    scope), token);
+                try
+                {
+                    dumpFilePath = await SendToEgress(new EgressOperation(
+                        token => _diagnosticServices.GetDump(processInfo, dumpType, token),
+                        egressProvider,
+                        dumpFileName,
+                        processInfo.EndpointInfo,
+                        ContentTypes.ApplicationOctetStream,
+                        scope), token);
+                }
+                catch (Exception ex)
+                {
+                    throw new CollectionRuleActionException(ex);
+                }
             }
 
             return new CollectionRuleActionResult()

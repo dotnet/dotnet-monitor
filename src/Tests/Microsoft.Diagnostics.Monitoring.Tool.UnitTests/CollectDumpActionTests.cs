@@ -24,8 +24,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const string DefaultRuleName = "Default";
         private const string TempEgressDirectory = "/tmp";
+        private const string ExpectedEgressProvider = "TmpEgressProvider";
 
-        private IServiceProvider _serviceProvider;
         private ITestOutputHelper _outputHelper;
 
         public CollectDumpActionTests(ITestOutputHelper outputHelper)
@@ -41,7 +41,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(null)]
         public async Task CollectDumpAction_Success(DumpType? dumpType)
         {
-            const string ExpectedEgressProvider = "TmpEgressProvider";
             DumpType ExpectedDumpType = (dumpType != null) ? dumpType.Value : CollectDumpOptionsDefaults.Type;
 
             string uniqueEgressDirectory = TempEgressDirectory + Guid.NewGuid();
@@ -55,9 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory);
             }, async host =>
             {
-                _serviceProvider = host.Services;
-
-                CollectDumpAction action = new(_serviceProvider);
+                CollectDumpAction action = new(host.Services);
 
                 CollectDumpOptions options = new();
 
