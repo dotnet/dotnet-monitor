@@ -140,16 +140,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     unmatchedPids.ToArray())).ToList();
                 Assert.NotNull(identifiers);
 
-                _outputHelper.WriteLine("Start enumerating discovered processes.");
                 foreach (ProcessIdentifier identifier in identifiers.ToList())
                 {
-                    _outputHelper.WriteLine($"- PID:  {identifier.Pid}");
-                    _outputHelper.WriteLine($"  UID:  {identifier.Uid}");
-                    _outputHelper.WriteLine($"  Name: {identifier.Name}");
-
                     unmatchedPids.Remove(identifier.Pid);
                 }
-                _outputHelper.WriteLine("End enumerating discovered processes");
 
                 Assert.Empty(unmatchedPids);
                 Assert.Equal(appRunners.Length, identifiers.Count);

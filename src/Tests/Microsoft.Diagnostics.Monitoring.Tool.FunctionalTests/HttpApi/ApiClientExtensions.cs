@@ -57,6 +57,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
                     identifiers = identifiers.Where(i => pidFilters.Contains(i.Pid)).ToList();
                 }
 
+                outputHelper.WriteLine("Discovered processes (after filter):");
+                foreach (ProcessIdentifier identifier in identifiers)
+                {
+                    outputHelper.WriteLine($"- PID:  {identifier.Pid}");
+                    outputHelper.WriteLine($"  UID:  {identifier.Uid}");
+                    outputHelper.WriteLine($"  Name: {identifier.Name}");
+                }
+
                 // In .NET 5+, the process name comes from the command line from the ProcessInfo command, which can fail
                 // or be abandoned if it takes too long to respond. In .NET Core 3.1, the process name comes from the
                 // command line from issuing a very brief event source trace, which can also fail or be abandoned if it
