@@ -6,7 +6,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
-    internal static class TestTimeouts
+    public static class TestTimeouts
     {
         /// <summary>
         /// Default timeout for HTTP API calls

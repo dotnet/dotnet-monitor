@@ -26,10 +26,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private readonly ILogger<CollectDumpAction> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly EgressOperationStore _operationsStore;
+        private readonly IServiceProvider _serviceProvider;
 
         public CollectDumpAction(ILogger<CollectDumpAction> logger,
             IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider;
             _logger = logger;
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
             //_diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
@@ -39,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public async Task<CollectionRuleActionResult> ExecuteAsync(CollectDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
         {
             DumpType dumpType = options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
-            string egressProvider = options.Egress; // I believe we should be doing a check for a non-null value (or maybe a valid one)?
+            string egressProvider = options.Egress;
 
             int pid = endpointInfo.ProcessId;
 
@@ -47,6 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, token);
 
+            // Move into utility method in WebApi
             string dumpFileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                 FormattableString.Invariant($"dump_{GetFileNameTimeStampUtcNow()}.dmp") :
                 FormattableString.Invariant($"core_{GetFileNameTimeStampUtcNow()}");
@@ -59,6 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
             else
             {
+                // Move into utility method in WebApi
                 KeyValueLogScope scope = new KeyValueLogScope();
                 scope.AddArtifactType(ArtifactType_Dump);
                 scope.AddEndpointInfo(processInfo.EndpointInfo);
@@ -69,7 +73,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     dumpFileName,
                     processInfo.EndpointInfo,
                     ContentTypes.ApplicationOctetStream,
-                    scope), limitKey: ArtifactType_Dump);
+                    scope), token);
             }
 
             return new CollectionRuleActionResult()
@@ -86,17 +90,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
 
-        private async Task<string> SendToEgress(EgressOperation egressStreamResult, string limitKey)
+        // Look into IEgressService
+        private async Task<string> SendToEgress(EgressOperation egressStreamResult, CancellationToken token)
         {
+            var result = await egressStreamResult.ExecuteAsync(_serviceProvider, token);
+
+            return result.Result.Value; // Not sure what this is, but is a string
+
+            /*
             // Will throw TooManyRequestsException if there are too many concurrent operations.
             Guid operationId = await _operationsStore.AddOperation(egressStreamResult, limitKey);
-            string newUrl = this.Url.Action(
-                action: nameof(OperationsController.GetOperationStatus),
-                controller: OperationsController.ControllerName, new { operationId = operationId },
-                protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
+            string newUrl = egressStreamResult.
 
             return newUrl; // Switched to returning the URL so that we can include it in the CollectionRuleActionResult
             //return Accepted(newUrl);
+            */
         }
     }
 }

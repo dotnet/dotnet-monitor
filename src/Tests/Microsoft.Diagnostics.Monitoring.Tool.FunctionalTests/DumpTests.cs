@@ -144,7 +144,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private class MinidumpHeader : TStruct
+        public class MinidumpHeader : TStruct
         {
             public uint Signature = 0;
             public uint Version = 0;

@@ -26,6 +26,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.FileFormats;
+using System.Runtime.InteropServices;
+using Microsoft.FileFormats.ELF;
+using Microsoft.FileFormats.MachO;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests;
+using static Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.DumpTests;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -35,86 +41,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         //private const string FileProviderName = "files";
 
         private const int TokenTimeoutMs = 60000; // Arbitrarily set to 1 minute -> potentially needs to be bigger...?
-        //private const int DelayMs = 1000;
+                                                  //private const int DelayMs = 1000;
 
+        private const string EnableElfDumpOnMacOS = "COMPlus_DbgEnableElfDumpOnMacOS";
         private const string DefaultRuleName = "Default";
+        private const string TempEgressDirectory = "/tmp";
 
         private IServiceProvider _serviceProvider;
         private ILogger<CollectDumpAction> _logger;
         private ITestOutputHelper _outputHelper;
-        private readonly DirectoryInfo _tempEgressPath;
-        private IHttpClientFactory _httpClientFactory;
-
 
         public CollectDumpActionTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
-            _tempEgressPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "Egress", Guid.NewGuid().ToString()));
-        }
-
-        private void SetUpHost(string egressProvider)
-        {
-            IHost host = new HostBuilder()
-                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
-                {
-                    builder.AddInMemoryCollection(new Dictionary<string, string>
-                    {
-                        {ConfigurationPath.Combine(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
-                    });
-                })
-                .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
-                {
-                    services.AddSingleton<EgressOperationQueue>();
-                    services.AddSingleton<EgressOperationStore>();
-                    services.AddSingleton<RequestLimitTracker>();
-                    services.AddSingleton<WebApi.IEndpointInfoSource, FilteredEndpointInfoSource>();
-                    services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
-                    services.ConfigureStorage(context.Configuration);
-
-
-                    //services.AddHostedService<EgressOperationService>();
-                    //services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
-                    //services.ConfigureCollectionRules();
-                    //services.ConfigureEgress();
-                    //services.ConfigureOperationStore();
-                    //services.ConfigureMetrics(context.Configuration);
-                    //services.ConfigureDefaultProcess(context.Configuration);
-
-                })
-                .Build();
-
-            _serviceProvider = host.Services;
-            _logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<CollectDumpAction>();
-
-            _httpClientFactory = host.Services.GetService<IHttpClientFactory>();
-
-            //_outputHelper = host.Services.GetService<ITestOutputHelper>();
-
-            /*
-            const string ExpectedEgressProvider = "TmpEgressProvider";
-
-            return ValidateSuccess(
-                rootOptions =>
-                {
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetStartupTrigger()
-                        .AddCollectDumpAction(ExpectedDumpType, ExpectedEgressProvider);
-                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
-                },
-                ruleOptions =>
-                {
-                    ruleOptions.VerifyCollectDumpAction(0, ExpectedDumpType, ExpectedEgressProvider);
-                });
-            */
         }
 
         [Fact]
         public async Task CollectDumpAction_FileEgressProvider()
         {
-            // SetUpHost(null);
-
             const string ExpectedEgressProvider = "TmpEgressProvider";
             const DumpType ExpectedDumpType = DumpType.Mini;
+
+            string uniqueEgressDirectory = TempEgressDirectory + Guid.NewGuid();
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
@@ -122,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     .SetStartupTrigger()
                     .AddCollectDumpAction(ExpectedDumpType, ExpectedEgressProvider);
 
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory);
             }, async host =>
             {
                 _serviceProvider = host.Services;
@@ -132,12 +80,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectDumpOptions options = new();
 
-                options.Egress = ExpectedEgressProvider; // Pay attention to this
+                options.Egress = ExpectedEgressProvider;
                 options.Type = ExpectedDumpType;
 
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-                ///////////////////
 
                 ServerEndpointInfoCallback callback = new(_outputHelper);
                 await using var source = CreateServerSource(out string transportName, callback);
@@ -170,6 +116,84 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     {
                         throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Tools.Monitor.Strings.ErrorMessage_FileNotFound, egressPath));
                     }
+                    else
+                    {
+                        using (StreamReader reader = new StreamReader(egressPath, true))
+                        {
+                            Stream dumpStream = reader.BaseStream;
+
+                            Assert.NotNull(dumpStream);
+
+                            byte[] headerBuffer = new byte[64];
+
+                            // Read enough to deserialize the header.
+                            int read;
+                            int total = 0;
+                            using CancellationTokenSource cancellation = new(TestTimeouts.DumpTimeout);
+                            while (total < headerBuffer.Length && 0 != (read = await dumpStream.ReadAsync(headerBuffer, total, headerBuffer.Length - total, cancellation.Token)))
+                            {
+                                total += read;
+                            }
+                            Assert.Equal(headerBuffer.Length, total);
+
+                            // Read header and validate
+                            using MemoryStream headerStream = new(headerBuffer);
+
+                            StreamAddressSpace dumpAddressSpace = new(headerStream);
+                            Reader dumpReader = new(dumpAddressSpace);
+
+                            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                            {
+                                MinidumpHeader header = dumpReader.Read<MinidumpHeader>(0);
+                                // Validate Signature
+                                Assert.True(header.IsSignatureValid.Check());
+                            }
+                            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                            {
+                                ELFHeaderIdent ident = dumpReader.Read<ELFHeaderIdent>(0);
+                                Assert.True(ident.IsIdentMagicValid.Check());
+                                Assert.True(ident.IsClassValid.Check());
+                                Assert.True(ident.IsDataValid.Check());
+
+                                LayoutManager layoutManager = new();
+                                layoutManager.AddELFTypes(
+                                    isBigEndian: ident.Data == ELFData.BigEndian,
+                                    is64Bit: ident.Class == ELFClass.Class64);
+                                Reader headerReader = new(dumpAddressSpace, layoutManager);
+
+                                ELFHeader header = headerReader.Read<ELFHeader>(0);
+                                // Validate Signature
+                                Assert.True(header.IsIdentMagicValid.Check());
+                                // Validate ELF file is a core dump
+                                Assert.Equal(ELFHeaderType.Core, header.Type);
+                            }
+                            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                            {
+                                if (runner.Environment.ContainsKey(EnableElfDumpOnMacOS))
+                                {
+                                    ELFHeader header = dumpReader.Read<ELFHeader>(0);
+                                    // Validate Signature
+                                    Assert.True(header.IsIdentMagicValid.Check());
+                                    // Validate ELF file is a core dump
+                                    Assert.Equal(ELFHeaderType.Core, header.Type);
+                                }
+                                else
+                                {
+                                    MachHeader header = dumpReader.Read<MachHeader>(0);
+                                    // Validate Signature
+                                    Assert.True(header.IsMagicValid.Check());
+                                    // Validate MachO file is a core dump
+                                    Assert.True(header.IsFileTypeValid.Check());
+                                    Assert.Equal(MachHeaderFileType.Core, header.FileType);
+                                }
+                            }
+                            else
+                            {
+                                throw new NotImplementedException("Dump header check not implemented for this OS platform.");
+                            }
+                        }
+
+                    }
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
@@ -179,6 +203,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 endpointInfos = await GetEndpointInfoAsync(source);
 
                 Assert.Empty(endpointInfos);
+
+                try
+                {
+                    DirectoryInfo outputDirectory = Directory.CreateDirectory(uniqueEgressDirectory);
+
+                    try
+                    {
+                        outputDirectory?.Delete(recursive: true);
+                    }
+                    catch
+                    {
+                    }
+                }
+                catch
+                {
+                }
             });
         }
 
@@ -222,6 +262,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.NotEqual(Guid.Empty, endpointInfo.RuntimeInstanceCookie);
             Assert.NotNull(endpointInfo.Endpoint);
         }
-
     }
 }
