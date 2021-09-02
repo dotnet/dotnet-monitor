@@ -10,7 +10,7 @@ When running a dotnet application, differences in diverse local and production e
 - [Getting Started](#)
     - [Running on a local machine](#)
     - [Running in Docker](#)
-    - [Running in a kubernetes cluster](#)
+    - [Running in a kubernetes cluster](./kubernetes.md)
     - [Enabling SSL](#)
 - [API Endpoints](./api/README.md)
     - [OpenAPI document](./openapi.json)
