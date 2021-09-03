@@ -19,6 +19,7 @@ When running a dotnet application, differences in diverse local and production e
     - [`/gcdump`](./api/gcdump.md)
     - [`/trace`](./api/trace.md)
     - [`/metrics`](./api/metrics.md)
+    - [`/collectmetrics`](./api/collectmetrics.md)
     - [`/logs`](./api/logs.md)
     - [`/info`](./api/info.md)
     - [`/operations`](.api/operations.md)

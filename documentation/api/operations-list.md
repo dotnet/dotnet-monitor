@@ -17,7 +17,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 Authentication is enforced for this route. See [Authentication](./../authentication.md) for further information.
 
 Allowed schemes:
-- `MonitorApiKey`
+- `Bearer`
 - `Negotiate` (Windows only, running as unelevated)
 
 ## Responses
@@ -35,7 +35,7 @@ Allowed schemes:
 ```http
 GET /operations HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 ### Sample Response

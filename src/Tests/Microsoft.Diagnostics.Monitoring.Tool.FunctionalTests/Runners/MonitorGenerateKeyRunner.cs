@@ -207,27 +207,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public Task<string> GetBearerToken(CancellationToken token)
         {
-            return _bearerTokenTaskSource.GetAsync(token);
+            return _bearerTokenTaskSource.Task.WithCancellation(token);
         }
 
         public Task<string> GetFormat(CancellationToken token)
         {
-            return _formatHeaderSource.GetAsync(token);
+            return _formatHeaderSource.Task.WithCancellation(token);
         }
 
         public Task<string> GetOutput(CancellationToken token)
         {
-            return _outputSource.GetAsync(token);
+            return _outputSource.Task.WithCancellation(token);
         }
 
         public Task<string> GetSubject(CancellationToken token)
         {
-            return _subjectSource.GetAsync(token);
+            return _subjectSource.Task.WithCancellation(token);
         }
 
         public Task<string> GetPublicKey(CancellationToken token)
         {
-            return _publicKeySource.GetAsync(token);
+            return _publicKeySource.Task.WithCancellation(token);
         }
     }
 }
