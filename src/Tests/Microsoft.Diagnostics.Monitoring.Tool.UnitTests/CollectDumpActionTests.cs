@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectDumpActionTests
     {
-        private const string DefaultRuleName = "Default";
+        //private const string DefaultRuleName = "Default";
         private const string TempEgressDirectory = "/tmp";
         private const string ExpectedEgressProvider = "TmpEgressProvider";
 
@@ -47,9 +47,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .SetStartupTrigger()
-                    .AddCollectDumpAction(ExpectedDumpType, ExpectedEgressProvider);
+                //rootOptions.CreateCollectionRule(DefaultRuleName)
+                    //.SetStartupTrigger();
+                    //.AddCollectDumpAction(ExpectedDumpType, ExpectedEgressProvider);
 
                 rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory);
             }, async host =>
