@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -31,14 +32,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
         private readonly IOptionsMonitor<StorageOptions> _storageOptions;
         private readonly IOptionsMonitor<ProcessFilterOptions> _defaultProcessOptions;
+        private readonly ILogger<DiagnosticServices> _logger;
 
-        public DiagnosticServices(IEndpointInfoSource endpointInfoSource,
+        public DiagnosticServices(
+            ILogger<DiagnosticServices> logger,
+            IEndpointInfoSource endpointInfoSource,
             IOptionsMonitor<StorageOptions> storageOptions,
             IOptionsMonitor<ProcessFilterOptions> defaultProcessMonitor)
         {
             _endpointInfoSource = (IEndpointInfoSourceInternal)endpointInfoSource;
             _storageOptions = storageOptions;
             _defaultProcessOptions = defaultProcessMonitor;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilterConfig, CancellationToken token)
@@ -57,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     // - .NET Core 3.1 processes, which require issuing a brief event pipe session to get the process commmand
                     //   line information and parse out the process name
                     // - Caching entrypoint information (when that becomes available).
-                    processInfoTasks.Add(ProcessInfo.FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token));
+                    processInfoTasks.Add(ProcessInfo.FromEndpointInfoAsync(_logger, endpointInfo, extendedInfoCancellation.Token));
                 }
 
                 // FromEndpointInfoAsync can fill in the command line for .NET Core 3.1 processes by invoking the
@@ -201,16 +206,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 ProcessName = processName ?? ProcessFieldUnknownValue;
             }
 
-            public static async Task<ProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo)
+            public static async Task<ProcessInfo> FromEndpointInfoAsync(ILogger logger, IEndpointInfo endpointInfo)
             {
                 using CancellationTokenSource extendedInfoCancellation = new CancellationTokenSource(ExtendedProcessInfoTimeout);
-                return await FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token);
+                return await FromEndpointInfoAsync(logger, endpointInfo, extendedInfoCancellation.Token);
             }
 
             // Creates a ProcessInfo object from the IEndpointInfo. Attempts to get the command line using event pipe
             // if the endpoint information doesn't provide it. The cancelation token can be used to timebox this fallback
             // mechansim.
-            public static async Task<ProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken extendedInfoCancellationToken)
+            public static async Task<ProcessInfo> FromEndpointInfoAsync(ILogger logger, IEndpointInfo endpointInfo, CancellationToken extendedInfoCancellationToken)
             {
                 if (null == endpointInfo)
                 {
@@ -222,6 +227,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 string commandLine = endpointInfo.CommandLine;
                 if (string.IsNullOrEmpty(commandLine))
                 {
+                    logger.LogError("[PID:{pid}] Empty command line.", endpointInfo.ProcessId);
                     try
                     {
                         var infoSettings = new EventProcessInfoPipelineSettings
@@ -234,10 +240,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                         await pipeline.RunAsync(extendedInfoCancellationToken);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        logger.LogError("[PID:{pid}] Exception: {ex}", endpointInfo.ProcessId, ex);
                     }
                 }
+
+                logger.LogError("[PID:{pid}] Command line: {cmdLine}", endpointInfo.ProcessId, commandLine ?? "null");
 
                 string processName = null;
                 if (!string.IsNullOrEmpty(commandLine))
@@ -258,6 +267,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         isWindowsProcess = ProcessOperatingSystemWindowsValue.Equals(endpointInfo.OperatingSystem, StringComparison.OrdinalIgnoreCase);
                     }
 
+                    logger.LogError("[PID:{pid}] Is Windows Process: {flag}", endpointInfo.ProcessId, isWindowsProcess);
+
                     string processPath = CommandLineHelper.ExtractExecutablePath(commandLine, isWindowsProcess);
                     if (!string.IsNullOrEmpty(processPath))
                     {
@@ -269,6 +280,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         }
                     }
                 }
+
+                logger.LogError("[PID:{pid}] Name: {name}", endpointInfo.ProcessId, processName ?? "null");
 
                 return new ProcessInfo(
                     endpointInfo,
