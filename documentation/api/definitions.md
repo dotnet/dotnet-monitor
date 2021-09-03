@@ -22,6 +22,22 @@ Enumeration that describes the type of information to capture in a managed dump.
 | `Triage` | A small dump containing only stacks for each thread. |
 | `WithHeap` | A large and relatively comprehensive dump containing module lists, thread lists, all stacks, exception information, handle information, and all memory except for mapped images. |
 
+## EventMetricsConfiguration
+
+Describes custom metrics.
+
+| Name | Type | Description |
+|---|---|---|
+| `includeDefaultProviders` | bool | Determines if the default counter providers should be used (such as System.Runtime). |
+| `providers` | [EventMetricsProvider](#EventMetricsProvider)[] | Array of providers for metrics to collect. |
+
+## EventMetricsProvider
+
+| Name | Type | Description |
+|---|---|---|
+| `providerName` | string | The name of the metric provider. Note this is case-insensitive. |
+| `counterNames` | string[] | Array of providers for metrics to collect. These are case-sensitive. |
+
 ## EventProvider
 
 Object describing which events to capture from a single event provider with keywords and event levels.
@@ -131,6 +147,20 @@ The following configuration will collect logs for the Microsoft.AspNetCore.Hosti
     "useAppFilters": false
 }
 ```
+
+## Metric
+
+Object describing a metric from the application.
+
+| Name | Type | Description |
+|---|---|---|
+| `name`| string | The unique name of this metric. |
+| `displayName` | string | Friendly name for the metric. |
+| `timestamp` | DateTime | Time when the metric was collected. |
+| `provider` | string | The provider name for the metric. |
+| `unit` | string | The unit for the metric. Can be null. |
+| `counterType` | string | The type of metric. This is typically `Rate` or `Metric`. |
+| `value` | double | The value of the metric. |
 
 ## OperationError
 
