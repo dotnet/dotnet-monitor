@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -95,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             await _adapter.DisposeAsync().ConfigureAwait(false);
 
-            CancelCompletionSources(CancellationToken.None);
+            _readySource.TrySetCanceled();
 
             _runner.Dispose();
         }
@@ -130,19 +131,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             await _adapter.StartAsync(token).ConfigureAwait(false);
 
-            using IDisposable _ = token.Register(() => CancelCompletionSources(token));
-
-            await _readySource.Task;
+            await _readySource.WithCancellation(token);
         }
 
         public Task<int> WaitForExitAsync(CancellationToken token)
         {
             return _adapter.WaitForExitAsync(token);
-        }
-
-        private void CancelCompletionSources(CancellationToken token)
-        {
-            _readySource.TrySetCanceled(token);
         }
 
         private void StandardOutputCallback(string line)
@@ -177,7 +171,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _currentCommandSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             _runner.StandardInput.WriteLine(command);
 
-            await _currentCommandSource.GetAsync(token).ConfigureAwait(false);
+            await _currentCommandSource.WithCancellation(token).ConfigureAwait(false);
 
             _currentCommandSource = null;
         }

@@ -187,17 +187,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public Task<string> GetDefaultAddressAsync(CancellationToken token)
         {
-            return _defaultAddressSource.GetAsync(token);
+            return _defaultAddressSource.Task.WithCancellation(token);
         }
 
         public Task<string> GetMetricsAddressAsync(CancellationToken token)
         {
-            return _metricsAddressSource.GetAsync(token);
+            return _metricsAddressSource.Task.WithCancellation(token);
         }
 
         public Task<string> GetMonitorApiKey(CancellationToken token)
         {
-            return _monitorApiKeySource.GetAsync(token);
+            return _monitorApiKeySource.Task.WithCancellation(token);
         }
 
         private void HandleLifetimeEvent(ConsoleLogEvent logEvent)
