@@ -243,7 +243,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                     {
-                        callback.OnAddedEndpointInfo(endpointInfo);
+                        await callback.OnAddedEndpointInfoAsync(endpointInfo, token).ConfigureAwait(false);
                     }
                 }
                 finally

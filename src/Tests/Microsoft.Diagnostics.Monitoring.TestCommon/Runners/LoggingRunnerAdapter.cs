@@ -15,6 +15,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     {
         private readonly CancellationTokenSource _cancellation = new();
         private readonly ITestOutputHelper _outputHelper;
+        private readonly TaskCompletionSource<int> _processIdSource =
+            new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly DotNetRunner _runner;
         private readonly List<string> _standardErrorLines = new();
         private readonly List<string> _standardOutputLines = new();
@@ -30,8 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public int ExitCode => _exitCode.HasValue ?
             _exitCode.Value : throw new InvalidOperationException("Must call WaitForExitAsync before getting exit code.");
 
-        public int ProcessId => _processId.HasValue ?
-            _processId.Value : throw new InvalidOperationException("Process was not started.");
+        public Task<int> ProcessIdTask => _processIdSource.Task;
 
         public event Action<string> ReceivedStandardErrorLine;
 
@@ -55,6 +56,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
 
             _cancellation.Cancel();
+
+            _processIdSource.TrySetCanceled(_cancellation.Token);
 
             // Shutdown the runner
             _outputHelper.WriteLine("Stopping...");
@@ -96,11 +99,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
             _outputHelper.WriteLine("End Environment:");
 
-            _outputHelper.WriteLine("Starting...");
-            await _runner.StartAsync(token).ConfigureAwait(false);
+            using (var _ = token.Register(() => _processIdSource.TrySetCanceled(token)))
+            {
+                _outputHelper.WriteLine("Starting...");
+                await _runner.StartAsync(token).ConfigureAwait(false);
+            }
 
-            _processId = _runner.ProcessId;
             _outputHelper.WriteLine("Process ID: {0}", _runner.ProcessId);
+            _processId = _runner.ProcessId;
+            _processIdSource.TrySetResult(_runner.ProcessId);
 
             _standardErrorTask = ReadLinesAsync(_runner.StandardError, _standardErrorLines, ReceivedStandardErrorLine, _cancellation.Token);
             _standardOutputTask = ReadLinesAsync(_runner.StandardOutput, _standardOutputLines, ReceivedStandardOutputLine, _cancellation.Token);

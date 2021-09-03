@@ -27,21 +27,21 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetXUnitExtensionsVersion>6.0.0-beta.21425.3</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>6.0.0-beta.21451.3</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rc.2.21426.1</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rc.2.21452.1</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21425.4</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21425.4</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21451.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21451.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
-    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rc.2.21425.6</VSRedistCommonNetCoreSharedFrameworkx6460Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rc.2.21452.2</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.242301</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.245101</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
-    <MicrosoftNETCoreApp31Version>3.1.15</MicrosoftNETCoreApp31Version>
+    <MicrosoftNETCoreApp31Version>3.1.18</MicrosoftNETCoreApp31Version>
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
-    <MicrosoftNETCoreApp50Version>5.0.6</MicrosoftNETCoreApp50Version>
+    <MicrosoftNETCoreApp50Version>5.0.9</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
     <MicrosoftNETCoreApp60Version>$(VSRedistCommonNetCoreSharedFrameworkx6460Version)</MicrosoftNETCoreApp60Version>
     <MicrosoftAspNetCoreApp60Version>$(VSRedistCommonAspNetCoreSharedFrameworkx6460Version)</MicrosoftAspNetCoreApp60Version>
