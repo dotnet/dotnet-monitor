@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async Task<IEndpointInfo> WaitForNewEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
         {
             CompletionEntry entry = new(runner);
-            using CancellationTokenSource timeoutCancellation = new();
+            using CancellationTokenSource timeoutCancellation = new(timeout);
 
             await _completionEntriesSemaphore.WaitAsync(timeoutCancellation.Token);
             try
@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private sealed class CompletionEntry
         {
-            private readonly TaskCompletionSourceWithCancellation<IEndpointInfo> _completionSource =
+            private readonly TaskCompletionSource<IEndpointInfo> _completionSource =
                 new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             public CompletionEntry(AppRunner runner)

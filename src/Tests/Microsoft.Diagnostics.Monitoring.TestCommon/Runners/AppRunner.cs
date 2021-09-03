@@ -25,14 +25,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private readonly ITestOutputHelper _outputHelper;
 
-        private readonly TaskCompletionSourceWithCancellation<string> _readySource =
+        private readonly TaskCompletionSource<string> _readySource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private readonly DotNetRunner _runner = new();
 
         private readonly Assembly _testAssembly;
 
-        private TaskCompletionSourceWithCancellation<object> _currentCommandSource;
+        private TaskCompletionSource<object> _currentCommandSource;
 
         private bool _isDiposed;
 
@@ -168,7 +168,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public async Task SendCommandAsync(string command, CancellationToken token)
         {
             Assert.Null(_currentCommandSource);
-            _currentCommandSource = new TaskCompletionSourceWithCancellation<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _currentCommandSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             _runner.StandardInput.WriteLine(command);
 
             await _currentCommandSource.WithCancellation(token).ConfigureAwait(false);

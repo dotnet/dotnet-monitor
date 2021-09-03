@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Tools\dotnet-monitor\TaskCompletionSourceWithCancellation.cs" Link="TaskCompletionSourceWithCancellation.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\TaskCompletionSourceExtensions.cs" Link="TaskCompletionSourceExtensions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\TaskExtensions.cs" Link="TaskExtensions.cs" />
   </ItemGroup>
 
