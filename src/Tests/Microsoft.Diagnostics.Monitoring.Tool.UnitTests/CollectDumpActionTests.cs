@@ -22,7 +22,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectDumpActionTests
     {
-        //private const string DefaultRuleName = "Default";
         private const string TempEgressDirectory = "/tmp";
         private const string ExpectedEgressProvider = "TmpEgressProvider";
 
