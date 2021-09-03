@@ -56,14 +56,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
                 {
+                    int processId = await runner.ProcessIdTask;
+
                     // GET /processes and filter to just the single process
                     IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesWithRetryAsync(
                         _outputHelper,
-                        new[] { runner.ProcessId });
+                        new[] { processId });
                     Assert.NotNull(identifiers);
                     Assert.Single(identifiers);
 
-                    await VerifyProcessAsync(client, identifiers, runner.ProcessId, expectedEnvVarValue);
+                    await VerifyProcessAsync(client, identifiers, processId, expectedEnvVarValue);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -129,7 +131,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 IList<int> unmatchedPids = new List<int>();
                 foreach (AppRunner runner in appRunners)
                 {
-                    unmatchedPids.Add(runner.ProcessId);
+                    unmatchedPids.Add(await runner.ProcessIdTask);
                 }
 
                 // Query for process identifiers
@@ -202,7 +204,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     Assert.True(runner.Environment.TryGetValue(ExpectedEnvVarName, out string expectedEnvVarValue));
 
-                    await VerifyProcessAsync(apiClient, identifiers, runner.ProcessId, expectedEnvVarValue);
+                    await VerifyProcessAsync(apiClient, identifiers, await runner.ProcessIdTask, expectedEnvVarValue);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 }
@@ -218,9 +220,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.NotNull(identifiers);
 
             // Verify none of the apps are reported
+            List<int> runnerProcessIds = new(appCount);
             for (int i = 0; i < appCount; i++)
             {
-                Assert.Null(identifiers.FirstOrDefault(p => p.Pid == appRunners[i].ProcessId));
+                runnerProcessIds.Add(await appRunners[i].ProcessIdTask);
+            }
+
+            foreach (ProcessIdentifier identifier in identifiers)
+            {
+                Assert.DoesNotContain(identifier.Pid, runnerProcessIds);
             }
         }
 

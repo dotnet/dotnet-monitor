@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             if (null != postAppValidate)
             {
-                await postAppValidate(apiClient, appRunner.ProcessId);
+                await postAppValidate(apiClient, await appRunner.ProcessIdTask);
             }
         }
     }

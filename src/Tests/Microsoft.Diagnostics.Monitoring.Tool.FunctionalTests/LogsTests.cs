@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Channels;
@@ -44,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that all log events are collected if log level set to Trace.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 
@@ -90,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that log events with level at or above the specified level are collected.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
@@ -122,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events with a category that doesn't have a specified level are collected
         /// at the log level specified in the request body.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
@@ -163,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the level query parameter.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
@@ -183,7 +184,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         async () =>
                         {
                             using ResponseStreamHolder _ = await client.CaptureLogsAsync(
-                                runner.ProcessId,
+                                await runner.ProcessIdTask,
                                 TestTimeouts.LogsDuration,
                                 LogLevel.None,
                                 logFormat);
@@ -199,7 +200,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the default log level in the request body.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
@@ -219,7 +220,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         async () =>
                         {
                             using ResponseStreamHolder _ = await client.CaptureLogsAsync(
-                                runner.ProcessId,
+                                await runner.ProcessIdTask,
                                 TestTimeouts.LogsDuration,
                                 new LogsConfiguration() { LogLevel = LogLevel.None },
                                 logFormat);
@@ -235,7 +236,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
@@ -269,7 +270,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
@@ -308,7 +309,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events are collected for the categories and levels specified by the application
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
@@ -352,7 +353,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
@@ -406,11 +407,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _httpClientFactory,
                 mode,
                 TestAppScenarios.Logger.Name,
-                appValidate: (runner, client) => ValidateResponseStream(
-                    runner,
-                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, logLevel, logFormat),
-                    callback,
-                    logFormat));
+                appValidate: async (runner, client) => 
+                    await ValidateResponseStream(
+                        runner,
+                        client.CaptureLogsAsync(
+                            await runner.ProcessIdTask,
+                            TestTimeouts.LogsDuration,
+                            logLevel,
+                            logFormat),
+                        callback,
+                        logFormat));
         }
 
         private Task ValidateLogsAsync(
@@ -424,11 +430,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _httpClientFactory,
                 mode,
                 TestAppScenarios.Logger.Name,
-                appValidate: (runner, client) => ValidateResponseStream(
-                    runner,
-                    client.CaptureLogsAsync(runner.ProcessId, TestTimeouts.LogsDuration, configuration, logFormat),
-                    callback,
-                    logFormat));
+                appValidate: async (runner, client) =>
+                    await ValidateResponseStream(
+                        runner,
+                        client.CaptureLogsAsync(
+                            await runner.ProcessIdTask,
+                            TestTimeouts.LogsDuration,
+                            configuration,
+                            logFormat),
+                        callback,
+                        logFormat));
         }
 
         private async Task ValidateResponseStream(AppRunner runner, Task<ResponseStreamHolder> holderTask, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
@@ -676,6 +687,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     { "Message", "Critical message." },
                 }
             };
+        }
+
+        public static bool SkipOnWindowsNetCore31
+        {
+            get
+            {
+                // Skip logs tests for .NET Core 3.1 on Windows; these tests sporadically
+                // fail frequently causing insertions and builds with unrelated changes to
+                // fail. See https://github.com/dotnet/dotnet-monitor/issues/807 for details.
+                return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
+                    DotNetHost.RuntimeVersion.Major != 3 ||
+                    DotNetHost.RuntimeVersion.Minor != 1;
+            }
         }
 
         private static readonly LogEntry Category1TraceEntry =

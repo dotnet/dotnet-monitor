@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken);
 
-        void OnAddedEndpointInfo(IEndpointInfo endpointInfo);
+        Task OnAddedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken);
 
         void OnRemovedEndpointInfo(IEndpointInfo endpointInfo);
     }

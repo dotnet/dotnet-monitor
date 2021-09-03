@@ -60,5 +60,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 localTokenSource.Cancel();
             }
         }
+
+        public static async Task<T> WithCancellation<T>(this Task<T> task, CancellationToken token)
+        {
+            await WithCancellation((Task)task, token);
+
+            return task.Result;
+        }
     }
 }
