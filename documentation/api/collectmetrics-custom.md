@@ -71,7 +71,6 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
                 "counter1",
                 "counter2"
             ]
-
         }
     ]
 }
