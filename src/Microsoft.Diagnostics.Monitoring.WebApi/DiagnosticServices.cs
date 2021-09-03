@@ -54,8 +54,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 using CancellationTokenSource extendedInfoCancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
                 IList<Task<ProcessInfo>> processInfoTasks = new List<Task<ProcessInfo>>();
+                _logger.LogError("[GetProcessesAsync] Enumerating processes.");
                 foreach (IEndpointInfo endpointInfo in await _endpointInfoSource.GetEndpointInfoAsync(token))
                 {
+                    _logger.LogError("[GetProcessesAsync] Converting process {pid}.", endpointInfo.ProcessId);
                     // CONSIDER: Can this processing be pushed into the IEndpointInfoSource implementation and cached
                     // so that extended process information doesn't have to be recalculated for every call. This would be
                     // useful for:
@@ -70,9 +72,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 // so that getting the process list does not take a long time or wait indefinitely.
                 extendedInfoCancellation.CancelAfter(ExtendedProcessInfoTimeout);
 
+                _logger.LogError("[GetProcessesAsync] Begin waiting for extended information.");
                 await Task.WhenAll(processInfoTasks);
+                _logger.LogError("[GetProcessesAsync] End waiting for extended information.");
 
                 processes = processInfoTasks.Select(t => t.Result);
+                _logger.LogError("[GetProcessesAsync] Selected results.");
             }
             catch (UnauthorizedAccessException)
             {
@@ -81,8 +86,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             if (processFilterConfig != null)
             {
+                _logger.LogError("[GetProcessesAsync] Filtering results.");
                 processes = processes.Where(p => processFilterConfig.Filters.All(c => c.MatchFilter(p)));
             }
+
+            _logger.LogError("[GetProcessesAsync] Complete.");
 
             return processes.ToArray();
         }
