@@ -57,24 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
-            Func<CancellationToken, Task<IFastSerializable>> action = async (token) => {
-                var graph = new Graphs.MemoryGraph(50_000);
-
-                EventGCPipelineSettings settings = new Monitoring.EventPipe.EventGCPipelineSettings
-                {
-                    Duration = Timeout.InfiniteTimeSpan,
-                };
-
-                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                await using var pipeline = new EventGCDumpPipeline(client, settings, graph);
-                await pipeline.RunAsync(token);
-
-                return new GCHeapDump(graph)
-                {
-                    CreationTool = "dotnet-monitor"
-                };
-            };
+            Func<CancellationToken, Task<IFastSerializable>> action = async (token) => await DiagController.GetGCHeadDump(endpointInfo, token); 
 
             string gcdumpFilePath = await Result(
                 ArtifactType_GCDump,

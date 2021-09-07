@@ -23,7 +23,6 @@ using System.Reflection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {

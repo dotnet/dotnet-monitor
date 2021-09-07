@@ -303,6 +303,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, ArtifactType_GCDump);
         }
 
+        // This would go into a Utilities class within WebApi
+        internal static async Task<GCHeapDump> GetGCHeadDump(IEndpointInfo endpointInfo, CancellationToken token)
+        {
+            var graph = new Graphs.MemoryGraph(50_000);
+
+            EventGCPipelineSettings settings = new EventGCPipelineSettings
+            {
+                Duration = Timeout.InfiniteTimeSpan,
+            };
+
+            var client = new DiagnosticsClient(endpointInfo.Endpoint);
+
+            await using var pipeline = new EventGCDumpPipeline(client, settings, graph);
+            await pipeline.RunAsync(token);
+
+            return new GCHeapDump(graph)
+            {
+                CreationTool = "dotnet-monitor"
+            };
+        }
+
         /// <summary>
         /// Capture a trace of a process.
         /// </summary>
