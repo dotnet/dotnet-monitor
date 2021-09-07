@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
@@ -206,7 +207,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType)
         {
-            return client.CaptureDumpAsync(pid, dumpType, TestTimeouts.DumpTimeout);
+            return client.CaptureDumpAsync(pid, dumpType, CommonTestTimeouts.DumpTimeout);
         }
 
         /// <summary>

@@ -4,8 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -29,15 +27,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private readonly IEndpointInfoSourceInternal _endpointInfoSource;
         private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
-        private readonly IOptionsMonitor<StorageOptions> _storageOptions;
         private readonly IOptionsMonitor<ProcessFilterOptions> _defaultProcessOptions;
 
         public DiagnosticServices(IEndpointInfoSource endpointInfoSource,
-            IOptionsMonitor<StorageOptions> storageOptions,
             IOptionsMonitor<ProcessFilterOptions> defaultProcessMonitor)
         {
             _endpointInfoSource = (IEndpointInfoSourceInternal)endpointInfoSource;
-            _storageOptions = storageOptions;
             _defaultProcessOptions = defaultProcessMonitor;
         }
 
@@ -80,51 +75,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return processes.ToArray();
-        }
-        public async Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token)
-        {
-            string dumpFilePath = Path.Combine(_storageOptions.CurrentValue.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{pi.EndpointInfo.ProcessId}"));
-            NETCore.Client.DumpType dumpType = MapDumpType(mode);
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // Get the process
-                Process process = Process.GetProcessById(pi.EndpointInfo.ProcessId);
-                await Dumper.CollectDumpAsync(process, dumpFilePath, dumpType);
-            }
-            else
-            {
-                await Task.Run(() =>
-                {
-                    var client = new DiagnosticsClient(pi.EndpointInfo.Endpoint);
-                    client.WriteDump(dumpType, dumpFilePath);
-                });
-            }
-
-            return new AutoDeleteFileStream(dumpFilePath);
-        }
-
-        private static DumpType MapDumpType(Models.DumpType dumpType)
-        {
-            switch (dumpType)
-            {
-                case Models.DumpType.Full:
-                    return DumpType.Full;
-                case Models.DumpType.WithHeap:
-                    return DumpType.WithHeap;
-                case Models.DumpType.Triage:
-                    return DumpType.Triage;
-                case Models.DumpType.Mini:
-                    return DumpType.Normal;
-                default:
-                    throw new ArgumentException(
-                        string.Format(
-                            CultureInfo.InvariantCulture, 
-                            Strings.ErrorMessage_UnexpectedType, 
-                            nameof(DumpType), 
-                            dumpType), 
-                        nameof(dumpType));
-            }
         }
 
         public Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token)
@@ -181,7 +131,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             public override bool CanSeek => false;
         }
-
 
         private sealed class ProcessInfo : IProcessInfo
         {

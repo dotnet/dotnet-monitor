@@ -5,15 +5,14 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.EndpointUtilities;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -21,13 +20,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private static readonly TimeSpan DefaultNegativeVerificationTimeout = TimeSpan.FromSeconds(2);
 
-        private static readonly TimeSpan GetEndpointInfoTimeout = TimeSpan.FromSeconds(10);
-
         private readonly ITestOutputHelper _outputHelper;
+        private readonly EndpointUtilities _endpointUtilities;
 
         public EndpointInfoSourceTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
+            _endpointUtilities = new EndpointUtilities(_outputHelper);
         }
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ServerSourceNoStartTest()
         {
-            await using var source = CreateServerSource(out string transportName);
+            await using var source = _endpointUtilities.CreateServerSource(out string transportName);
             // Intentionally do not call Start
 
             using CancellationTokenSource cancellation = new(DefaultNegativeVerificationTimeout);
@@ -52,10 +51,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ServerSourceNoConnectionsTest()
         {
-            await using var source = CreateServerSource(out _);
+            await using var source = _endpointUtilities.CreateServerSource(out _);
             source.Start();
 
-            var endpointInfos = await GetEndpointInfoAsync(source);
+            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
             Assert.Empty(endpointInfos);
         }
 
@@ -66,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ServerSourceThrowsWhenDisposedTest()
         {
-            var source = CreateServerSource(out _);
+            var source = _endpointUtilities.CreateServerSource(out _);
             source.Start();
 
             await source.DisposeAsync();
@@ -91,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ServerSourceThrowsWhenMultipleStartTest()
         {
-            await using var source = CreateServerSource(out _);
+            await using var source = _endpointUtilities.CreateServerSource(out _);
             source.Start();
 
             Assert.Throws<InvalidOperationException>(
@@ -110,13 +109,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async Task ServerSourceAddRemoveSingleConnectionTest(TargetFrameworkMoniker appTfm)
         {
             ServerEndpointInfoCallback callback = new(_outputHelper);
-            await using var source = CreateServerSource(out string transportName, callback);
+            await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
             source.Start();
 
-            var endpointInfos = await GetEndpointInfoAsync(source);
+            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
             Assert.Empty(endpointInfos);
 
-            AppRunner runner = CreateAppRunner(transportName, appTfm);
+            AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, appTfm);
 
             using CancellationTokenSource cancellation = new(CommonTestTimeouts.StartProcess);
             Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, cancellation.Token);
@@ -125,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 await newEndpointInfoTask;
 
-                endpointInfos = await GetEndpointInfoAsync(source);
+                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
 
                 var endpointInfo = Assert.Single(endpointInfos);
                 Assert.NotNull(endpointInfo.CommandLine);
@@ -138,7 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            endpointInfos = await GetEndpointInfoAsync(source);
+            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
 
             Assert.Empty(endpointInfos);
         }
@@ -152,10 +151,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async Task ServerSourceAddRemoveMultipleConnectionTest(TargetFrameworkMoniker appTfm)
         {
             ServerEndpointInfoCallback callback = new(_outputHelper);
-            await using var source = CreateServerSource(out string transportName, callback);
+            await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
             source.Start();
 
-            var endpointInfos = await GetEndpointInfoAsync(source);
+            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
             Assert.Empty(endpointInfos);
 
             const int appCount = 5;
@@ -166,7 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             using CancellationTokenSource cancellation = new(CommonTestTimeouts.StartProcess);
             for (int i = 0; i < appCount; i++)
             {
-                runners[i] = CreateAppRunner(transportName, appTfm, appId: i + 1);
+                runners[i] = _endpointUtilities.CreateAppRunner(transportName, appTfm, appId: i + 1);
                 newEndpointInfoTasks[i] = callback.WaitForNewEndpointInfoAsync(runners[i], cancellation.Token);
             }
 
@@ -176,7 +175,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await Task.WhenAll(newEndpointInfoTasks);
                 _outputHelper.WriteLine("Received all new endpoint info notifications.");
 
-                endpointInfos = await GetEndpointInfoAsync(source);
+                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
 
                 Assert.Equal(appCount, endpointInfos.Count());
 
@@ -203,7 +202,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            endpointInfos = await GetEndpointInfoAsync(source);
+            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
 
             Assert.Empty(endpointInfos);
         }
@@ -212,164 +211,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             yield return new object[] { TargetFrameworkMoniker.Net50 };
             yield return new object[] { TargetFrameworkMoniker.Net60 };
-        }
-
-        internal ServerEndpointInfoSource CreateServerSource(out string transportName, ServerEndpointInfoCallback callback = null)
-        {
-            DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out transportName);
-            _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
-
-            List<IEndpointInfoSourceCallbacks> callbacks = new();
-            if (null != callback)
-            {
-                callbacks.Add(callback);
-            }
-            return new ServerEndpointInfoSource(transportName, callbacks);
-        }
-
-        internal AppRunner CreateAppRunner(string transportName, TargetFrameworkMoniker tfm, int appId = 1)
-        {
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId, tfm);
-            appRunner.ConnectionMode = DiagnosticPortConnectionMode.Connect;
-            appRunner.DiagnosticPortPath = transportName;
-            appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
-            return appRunner;
-        }
-
-        internal async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(ServerEndpointInfoSource source)
-        {
-            _outputHelper.WriteLine("Getting endpoint infos.");
-            using CancellationTokenSource cancellationSource = new(GetEndpointInfoTimeout);
-            return await source.GetEndpointInfoAsync(cancellationSource.Token);
-        }
-
-        /// <summary>
-        /// Verifies basic information on the connection and that it matches the target process from the runner.
-        /// </summary>
-        internal static async Task VerifyConnectionAsync(AppRunner runner, IEndpointInfo endpointInfo)
-        {
-            Assert.NotNull(runner);
-            Assert.NotNull(endpointInfo);
-            Assert.Equal(await runner.ProcessIdTask, endpointInfo.ProcessId);
-            Assert.NotEqual(Guid.Empty, endpointInfo.RuntimeInstanceCookie);
-            Assert.NotNull(endpointInfo.Endpoint);
-        }
-
-        internal sealed class ServerEndpointInfoCallback : IEndpointInfoSourceCallbacks
-        {
-            private readonly ITestOutputHelper _outputHelper;
-            /// <summary>
-            /// Use to protect the completion list from mutation while processing
-            /// callbacks from it. The processing is done in an async method with async
-            /// calls, which are not allowed in a lock, thus use SemaphoreSlim.
-            /// </summary>
-            private readonly SemaphoreSlim _completionEntriesSemaphore = new(1);
-            private readonly List<CompletionEntry> _completionEntries = new();
-
-            public ServerEndpointInfoCallback(ITestOutputHelper outputHelper)
-            {
-                _outputHelper = outputHelper;
-            }
-
-            public async Task<IEndpointInfo> WaitForNewEndpointInfoAsync(AppRunner runner, CancellationToken token)
-            {
-                CompletionEntry entry = new(runner);
-                using var _ = token.Register(() => entry.CompletionSource.TrySetCanceled(token));
-
-                await _completionEntriesSemaphore.WaitAsync(token);
-                try
-                {
-                    _completionEntries.Add(entry);
-                    _outputHelper.WriteLine($"[Wait] Register App{runner.AppId}");
-                }
-                finally
-                {
-                    _completionEntriesSemaphore.Release();
-                }
-
-                _outputHelper.WriteLine($"[Wait] Wait for App{runner.AppId} notification");
-                IEndpointInfo endpointInfo = await entry.CompletionSource.Task;
-                _outputHelper.WriteLine($"[Wait] Received App{runner.AppId} notification");
-
-                return endpointInfo;
-            }
-
-            public Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken token)
-            {
-                return Task.CompletedTask;
-            }
-
-            public async Task OnAddedEndpointInfoAsync(IEndpointInfo info, CancellationToken token)
-            {
-                _outputHelper.WriteLine($"[Source] Added: {ToOutputString(info)}");
-
-                await _completionEntriesSemaphore.WaitAsync(token);
-                try
-                {
-                    _outputHelper.WriteLine($"[Source] Start notifications for process {info.ProcessId}");
-
-                    // Create a mapping of the process ID tasks to the completion entries
-                    IDictionary<Task<int>, CompletionEntry> map = new Dictionary<Task<int>, CompletionEntry>(_completionEntries.Count);
-                    foreach (CompletionEntry entry in _completionEntries)
-                    {
-                        map.Add(entry.Runner.ProcessIdTask.WithCancellation(token), entry);
-                    }
-
-                    while (map.Count > 0)
-                    {
-                        // Wait for any of the process ID tasks to complete.
-                        Task<int> completedTask = await Task.WhenAny(map.Keys);
-
-                        map.Remove(completedTask, out CompletionEntry entry);
-
-                        _outputHelper.WriteLine($"[Source] Checking App{entry.Runner.AppId}");
-
-                        if (completedTask.IsCompletedSuccessfully)
-                        {
-                            // If the process ID matches the one that was reported via the callback,
-                            // then signal its completion source.
-                            if (info.ProcessId == completedTask.Result)
-                            {
-                                _outputHelper.WriteLine($"[Source] Notifying App{entry.Runner.AppId}");
-                                entry.CompletionSource.TrySetResult(info);
-
-                                _completionEntries.Remove(entry);
-
-                                break;
-                            }
-                        }
-                    }
-
-                    _outputHelper.WriteLine($"[Source] Finished notifications for process {info.ProcessId}");
-                }
-                finally
-                {
-                    _completionEntriesSemaphore.Release();
-                }
-            }
-
-            public void OnRemovedEndpointInfo(IEndpointInfo info)
-            {
-                _outputHelper.WriteLine($"[Source] Removed: {ToOutputString(info)}");
-            }
-
-            private static string ToOutputString(IEndpointInfo info)
-            {
-                return FormattableString.Invariant($"PID={info.ProcessId}, Cookie={info.RuntimeInstanceCookie}");
-            }
-
-            private sealed class CompletionEntry
-            {
-                public CompletionEntry(AppRunner runner)
-                {
-                    Runner = runner;
-                    CompletionSource = new TaskCompletionSource<IEndpointInfo>(TaskCreationOptions.RunContinuationsAsynchronously);
-                }
-
-                public AppRunner Runner { get; }
-
-                public TaskCompletionSource<IEndpointInfo> CompletionSource { get; }
-            }
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,13 +18,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class CollectDumpAction : ICollectionRuleAction<CollectDumpOptions>
     {
-        private readonly IDiagnosticServices _diagnosticServices;
+        private readonly IDumpService _dumpService;
         private readonly IServiceProvider _serviceProvider;
 
         public CollectDumpAction(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
+            _dumpService = serviceProvider.GetRequiredService<IDumpService>();
         }
 
         public async Task<CollectionRuleActionResult> ExecuteAsync(CollectDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
@@ -31,11 +32,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             DumpType dumpType = options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
             string egressProvider = options.Egress;
 
-            IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(new ProcessKey(endpointInfo.ProcessId), token);
+            string dumpFileName = Monitoring.WebApi.Utilities.GenerateDumpFileName();
 
-            string dumpFileName = DiagController.GenerateDumpFileName();
-
-            string dumpFilePath = "";
+            string dumpFilePath = string.Empty;
 
             // Given our options validation, I believe this is probably redundant...should I remove it?
             if (string.IsNullOrEmpty(egressProvider))
@@ -45,17 +44,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
             else
             {
-                KeyValueLogScope scope = DiagController.GetDumpScope(processInfo);
+                KeyValueLogScope scope = DiagController.GetDumpScope(endpointInfo);
 
                 try
                 {
-                    dumpFilePath = await SendToEgress(new EgressOperation(
-                        token => _diagnosticServices.GetDump(processInfo, dumpType, token),
+                    EgressOperation egressOperation = new EgressOperation(
+                        token => _dumpService.DumpAsync(endpointInfo, dumpType, token),
                         egressProvider,
                         dumpFileName,
-                        processInfo.EndpointInfo,
+                        endpointInfo,
                         ContentTypes.ApplicationOctetStream,
-                        scope), token);
+                        scope);
+
+                    ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+
+                    dumpFilePath = result.Result.Value;
+                  
                 }
                 catch (Exception ex)
                 {
@@ -70,13 +74,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     { "EgressPath", dumpFilePath }
                 }
             };
-        }
-
-        private async Task<string> SendToEgress(EgressOperation egressStreamResult, CancellationToken token)
-        {
-            var result = await egressStreamResult.ExecuteAsync(_serviceProvider, token);
-
-            return result.Result.Value;
         }
     }
 }

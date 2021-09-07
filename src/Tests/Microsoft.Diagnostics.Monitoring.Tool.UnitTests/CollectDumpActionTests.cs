@@ -12,11 +12,10 @@ using System.IO;
 using System.Globalization;
 using Xunit.Abstractions;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.EndpointInfoSourceTests;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests;
+using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.EndpointUtilities;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -26,10 +25,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const string ExpectedEgressProvider = "TmpEgressProvider";
 
         private ITestOutputHelper _outputHelper;
+        private readonly EndpointUtilities _endpointUtilities;
 
         public CollectDumpActionTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
+            _endpointUtilities = new(_outputHelper);
         }
 
         [Theory]
@@ -61,16 +62,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     options.Type = ExpectedDumpType;
                 }
 
-                EndpointInfoSourceTests endpointInfoSourceTests = new(_outputHelper);
-
                 ServerEndpointInfoCallback callback = new(_outputHelper);
-                await using var source = endpointInfoSourceTests.CreateServerSource(out string transportName, callback);
+                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
                 source.Start();
 
-                var endpointInfos = await endpointInfoSourceTests.GetEndpointInfoAsync(source);
+                var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
                 Assert.Empty(endpointInfos);
 
-                AppRunner runner = endpointInfoSourceTests.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
 
                 using CancellationTokenSource callbackCancellation = new(CommonTestTimeouts.StartProcess);
                 Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, callbackCancellation.Token);
@@ -79,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     await newEndpointInfoTask;
 
-                    endpointInfos = await endpointInfoSourceTests.GetEndpointInfoAsync(source);
+                    endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
 
                     var endpointInfo = Assert.Single(endpointInfos);
                     Assert.NotNull(endpointInfo.CommandLine);
@@ -87,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotNull(endpointInfo.ProcessArchitecture);
                     await VerifyConnectionAsync(runner, endpointInfo);
 
-                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TestTimeouts.DumpTimeout);
+                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.DumpTimeout);
                     CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
                     string egressPath = result.OutputValues["EgressPath"];
@@ -103,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             Stream dumpStream = reader.BaseStream;
                             Assert.NotNull(dumpStream);
 
-                            await IDumpTestInterface.ValidateDump(runner, dumpStream);
+                            await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), dumpStream);
                         }
                     }
 
@@ -112,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 await Task.Delay(TimeSpan.FromSeconds(1));
 
-                endpointInfos = await endpointInfoSourceTests.GetEndpointInfoAsync(source);
+                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
 
                 Assert.Empty(endpointInfos);
 

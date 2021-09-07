@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// </remarks>
         Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token);
 
-        Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token);
+        //Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token);
     }
 
 

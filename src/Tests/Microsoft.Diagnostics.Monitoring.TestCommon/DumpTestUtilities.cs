@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.FileFormats;
 using Microsoft.FileFormats.ELF;
 using Microsoft.FileFormats.MachO;
@@ -13,13 +12,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    public interface IDumpTestInterface
+    public static class DumpTestUtilities
     {
-        internal const string EnableElfDumpOnMacOS = "COMPlus_DbgEnableElfDumpOnMacOS";
+        public const string EnableElfDumpOnMacOS = "COMPlus_DbgEnableElfDumpOnMacOS";
 
-        public static async Task ValidateDump(AppRunner runner, Stream dumpStream)
+        public static async Task ValidateDump(bool expectElfDump, Stream dumpStream)
         {
             Assert.NotNull(dumpStream);
 
@@ -28,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Read enough to deserialize the header.
             int read;
             int total = 0;
-            using CancellationTokenSource cancellation = new(TestTimeouts.DumpTimeout);
+            using CancellationTokenSource cancellation = new(CommonTestTimeouts.DumpTimeout);
             while (total < headerBuffer.Length && 0 != (read = await dumpStream.ReadAsync(headerBuffer, total, headerBuffer.Length - total, cancellation.Token)))
             {
                 total += read;
@@ -68,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                if (runner.Environment.ContainsKey(EnableElfDumpOnMacOS))
+                if (expectElfDump)
                 {
                     ELFHeader header = dumpReader.Read<ELFHeader>(0);
                     // Validate Signature

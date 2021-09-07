@@ -70,21 +70,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     builder.AddInMemoryCollection(configurationValues);
 
-                    builder.AddInMemoryCollection(new Dictionary<string, string>
-                    {
-                        {ConfigurationPath.Combine(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
-                    });
+                    builder.ConfigureStorageDefaults();
                 })
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();
 
-                    services.AddSingleton<EgressOperationQueue>();
-                    services.AddSingleton<EgressOperationStore>();
-                    services.AddSingleton<RequestLimitTracker>();
-                    services.AddSingleton<WebApi.IEndpointInfoSource, FilteredEndpointInfoSource>();
-                    services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
+                    services.AddSingleton<IDumpService, DumpService>();
                     services.ConfigureStorage(context.Configuration);
                 })
                 .Build();

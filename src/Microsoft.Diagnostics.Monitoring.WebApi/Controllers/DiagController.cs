@@ -52,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly EgressOperationStore _operationsStore;
+        private readonly IDumpService _dumpService;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -60,6 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
+            _dumpService = serviceProvider.GetRequiredService<IDumpService>();
         }
 
         /// <summary>
@@ -211,11 +213,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async processInfo =>
             {
-                string dumpFileName = GenerateDumpFileName();
+                string dumpFileName = Utilities.GenerateDumpFileName();
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
-                    Stream dumpStream = await _diagnosticServices.GetDump(processInfo, type, HttpContext.RequestAborted);
+                    Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, HttpContext.RequestAborted);
 
                     _logger.WrittenToHttpStream();
                     //Compression is done automatically by the response
@@ -224,12 +226,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 else
                 {
-                    KeyValueLogScope scope = new KeyValueLogScope();
-                    scope.AddArtifactType(ArtifactType_Dump);
-                    scope.AddEndpointInfo(processInfo.EndpointInfo);
+                    KeyValueLogScope scope = GetDumpScope(processInfo.EndpointInfo);
 
                     return await SendToEgress(new EgressOperation(
-                        token => _diagnosticServices.GetDump(processInfo, type, token),
+                        token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
                         egressProvider,
                         dumpFileName,
                         processInfo.EndpointInfo,
@@ -270,7 +270,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
+                string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
                 Func<CancellationToken, Task<IFastSerializable>> action = async (token) => {
                     var graph = new Graphs.MemoryGraph(50_000);
@@ -582,18 +582,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        internal static string GenerateDumpFileName()
-        {
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                FormattableString.Invariant($"dump_{GetFileNameTimeStampUtcNow()}.dmp") :
-                FormattableString.Invariant($"core_{GetFileNameTimeStampUtcNow()}");
-        }
-
-        internal static KeyValueLogScope GetDumpScope(IProcessInfo processInfo)
+        internal static KeyValueLogScope GetDumpScope(IEndpointInfo endpointInfo)
         {
             KeyValueLogScope scope = new KeyValueLogScope();
             scope.AddArtifactType(ArtifactType_Dump);
-            scope.AddEndpointInfo(processInfo.EndpointInfo);
+            scope.AddEndpointInfo(endpointInfo);
 
             return scope;
         }
@@ -614,7 +607,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             TimeSpan duration,
             string egressProvider)
         {
-            string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.nettrace");
+            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.nettrace");
 
             Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
             {
@@ -656,7 +649,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
-            string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
+            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
             string contentType = ContentTypes.TextEventStream;
 
             if (format == LogFormat.EventStream)
@@ -704,11 +697,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
         {
             return (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
-        }
-
-        private static string GetFileNameTimeStampUtcNow()
-        {
-            return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
 
         private static LogFormat ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)

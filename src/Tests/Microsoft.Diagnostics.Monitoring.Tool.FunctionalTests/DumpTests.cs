@@ -19,7 +19,7 @@ using Xunit.Abstractions;
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [Collection(DefaultCollectionFixture.Name)]
-    public class DumpTests : IDumpTestInterface
+    public class DumpTests
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type);
                     Assert.NotNull(holder);
 
-                    await IDumpTestInterface.ValidateDump(runner, holder.Stream);
+                    await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), holder.Stream);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     // MachO not supported on .NET 5, only ELF: https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major == 5)
                     {
-                        runner.Environment.Add(IDumpTestInterface.EnableElfDumpOnMacOS, "1");
+                        runner.Environment.Add(DumpTestUtilities.EnableElfDumpOnMacOS, "1");
                     }
                 });
         }
