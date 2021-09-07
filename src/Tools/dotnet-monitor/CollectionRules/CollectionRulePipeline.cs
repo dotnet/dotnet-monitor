@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,6 +24,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // The endpoint that represents the process on which the collection rule is executed.
         private readonly IEndpointInfo _endpointInfo;
 
+        private readonly ILogger<CollectionRuleService> _logger;
+
+        private readonly string _ruleName;
+
         // The rule description that determines the behavior of the pipeline.
         private readonly CollectionRuleOptions _ruleOptions;
         
@@ -34,13 +39,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         public CollectionRulePipeline(
+            ILogger<CollectionRuleService> logger,
             ActionListExecutor actionListExecutor,
             ICollectionRuleTriggerOperations triggerOperations,
+            string ruleName,
             CollectionRuleOptions ruleOptions,
             IEndpointInfo endpointInfo)
         {
             _actionListExecutor = actionListExecutor ?? throw new ArgumentNullException(nameof(actionListExecutor));
             _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _ruleName = ruleName ?? throw new ArgumentNullException(nameof(ruleName));
             _ruleOptions = ruleOptions ?? throw new ArgumentNullException(nameof(ruleOptions));
             _triggerOperations = triggerOperations ?? throw new ArgumentNullException(nameof(triggerOperations));
         }
@@ -55,9 +64,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         /// </remarks>
         public async Task StartAsync(CancellationToken token)
         {
-            var runTask = RunAsync(token);
+            // Wrap the passed CancellationToken into a linked CancellationTokenSource so that the
+            // RunAsync method is only cancellable for the execution of the StartAsync method. Don't
+            // want the caller to be able to cancel the run of the pipeline after having finished
+            // executing the StartAsync method.
+            using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token);
 
-            await _startedSource.WithCancellation(token).ConfigureAwait(false);
+            var runTask = RunAsync(linkedSource.Token);
+
+            await _startedSource.WithCancellation(linkedSource.Token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -106,6 +121,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     ICollectionRuleTrigger trigger = null;
                     try
                     {
+                        KeyValueLogScope triggerScope = new();
+                        triggerScope.AddCollectionRuleTrigger(_ruleOptions.Trigger.Type);
+                        IDisposable triggerScopeRegistration = _logger.BeginScope(triggerScope);
+
+                        _logger.CollectionRuleTriggerStarted(_ruleName, _ruleOptions.Trigger.Type);
+
                         trigger = factory.Create(
                             _endpointInfo,
                             () => triggerSatisfiedSource.TrySetResult(null),
@@ -129,6 +150,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                         // Wait for the trigger to be satisfied.
                         await triggerSatisfiedSource.WithCancellation(linkedToken).ConfigureAwait(false);
+
+                        _logger.CollectionRuleTriggerCompleted(_ruleName, _ruleOptions.Trigger.Type);
                     }
                     finally
                     {
@@ -178,16 +201,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     {
                         executionTimestamps.Enqueue(currentTimestamp);
 
+                        bool actionsCompleted = false;
                         try
                         {
                             // Intentionally not using the linkedToken. Allow the action list to execute gracefully
                             // unless forced by a caller to cancel or stop the running of the pipeline.
-                            await _actionListExecutor.ExecuteActions(_ruleOptions.Actions, _endpointInfo, token);
+                            await _actionListExecutor.ExecuteActions(_ruleName, _ruleOptions.Actions, _endpointInfo, token);
+
+                            actionsCompleted = true;
                         }
                         catch (Exception ex) when (ex is not OperationCanceledException)
                         {
                             // Bad action execution shouldn't fail the pipeline.
-                            // TODO: log that the action execution has failed.
+                            // Logging is already done by executor.
                         }
                         finally
                         {
@@ -198,10 +224,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             completePipeline = actionCountLimit <= executionTimestamps.Count &&
                                 !actionCountWindowDuration.HasValue;
                         }
+
+                        if (actionsCompleted)
+                        {
+                            _logger.CollectionRuleActionsCompleted(_ruleName);
+                        }
                     }
                     else
                     {
-                        // Throttled
+                        _logger.CollectionRuleThrottled(_ruleName);
                     }
 
                     linkedToken.ThrowIfCancellationRequested();

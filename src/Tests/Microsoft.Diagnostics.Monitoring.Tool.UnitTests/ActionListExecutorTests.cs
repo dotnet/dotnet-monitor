@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
 
-                await executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token);
+                await executor.ExecuteActions(null, ruleOptions.Actions, null, cancellationTokenSource.Token);
             });
         }
 
@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
 
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                    () => executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token));
+                    () => executor.ExecuteActions(null, ruleOptions.Actions, null, cancellationTokenSource.Token));
 
                 Assert.Equal(1, actionExecutionException.ActionIndex);
 
@@ -94,7 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
 
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                    () => executor.ExecuteActions(ruleOptions.Actions, null, cancellationTokenSource.Token));
+                    () => executor.ExecuteActions(null, ruleOptions.Actions, null, cancellationTokenSource.Token));
 
                 Assert.Equal(0, actionExecutionException.ActionIndex);
 

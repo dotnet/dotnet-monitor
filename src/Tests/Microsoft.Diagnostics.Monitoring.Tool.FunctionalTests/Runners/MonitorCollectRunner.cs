@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
@@ -19,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     /// <summary>
     /// Runner for the dotnet-monitor tool.
     /// </summary>
-    internal sealed class MonitorCollectRunner : MonitorRunner
+    internal sealed partial class MonitorCollectRunner : MonitorRunner
     {
         // Completion source containing the bound address of the default URL (e.g. provided by --urls argument)
         private readonly TaskCompletionSource<string> _defaultAddressSource =
@@ -171,6 +170,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 case "Microsoft.Diagnostics.Tools.Monitor.Startup":
                     HandleStartupEvent(logEvent);
                     break;
+                case "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.CollectionRuleService":
+                    HandleCollectionRuleEvent(logEvent);
+                    break;
                 default:
                     HandleGenericLogEvent(logEvent);
                     break;
@@ -257,6 +259,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                     }
                     break;
             }
-        }        
+        }
     }
 }

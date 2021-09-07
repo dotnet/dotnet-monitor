@@ -14,6 +14,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -120,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions)
                         .AddAction(CallbackAction.ActionName);
 
-                    // cpu usage greater that 5% for 3 seconds
+                    // cpu usage greater that 5% for 2 seconds
                     eventCounterOptions.ProviderName = "System.Runtime";
                     eventCounterOptions.CounterName = "cpu-usage";
                     eventCounterOptions.GreaterThan = 5;
@@ -370,10 +371,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             host.Services.GetRequiredService<ICollectionRuleTriggerOperations>();
                         IOptionsMonitor<CollectionRuleOptions> optionsMonitor =
                             host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
+                        ILogger<CollectionRuleService> logger =
+                            host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
 
                         await using CollectionRulePipeline pipeline = new(
+                            logger,
                             actionListExecutor,
                             triggerOperations,
+                            collectionRuleName,
                             optionsMonitor.Get(collectionRuleName),
                             endpointInfo);
 

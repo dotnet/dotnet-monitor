@@ -15,16 +15,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class ActionListExecutor
     {
-        private readonly ILogger<ActionListExecutor> _logger;
+        private readonly ILogger<CollectionRuleService> _logger;
         private readonly ICollectionRuleActionOperations _actionOperations;
 
-        public ActionListExecutor(ILogger<ActionListExecutor> logger, ICollectionRuleActionOperations actionOperations)
+        public ActionListExecutor(ILogger<CollectionRuleService> logger, ICollectionRuleActionOperations actionOperations)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _actionOperations = actionOperations ?? throw new ArgumentNullException(nameof(actionOperations));
         }
 
-        public async Task ExecuteActions(IEnumerable<CollectionRuleActionOptions> collectionRuleActionOptions, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
+        public async Task ExecuteActions(
+            string ruleName,
+            IEnumerable<CollectionRuleActionOptions> collectionRuleActionOptions,
+            IEndpointInfo endpointInfo,
+            CancellationToken cancellationToken)
         {
             if (collectionRuleActionOptions == null)
             {
@@ -37,7 +41,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 // TODO: Not currently accounting for properties from previous executed actions
 
-                _logger.LogInformation($"Action {actionIndex}: {actionOption.Type}");
+                KeyValueLogScope actionScope = new();
+                actionScope.AddCollectionRuleAction(actionOption.Type, actionIndex);
+                using IDisposable actionScopeRegistration = _logger.BeginScope(actionScope);
+
+                _logger.CollectionRuleActionStarted(ruleName, actionOption.Type);
 
                 try
                 {
@@ -50,15 +58,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                     await action.ExecuteAsync(actionOption.Settings, endpointInfo, cancellationToken);
                 }
-                catch (Exception ex) when (ex is not OperationCanceledException)
+                catch (Exception ex) when (ShouldHandleException(ex, ruleName, actionOption.Type))
                 {
-                    throw new CollectionRuleActionExecutionException(ex, actionIndex);
+                    throw new CollectionRuleActionExecutionException(ex, actionOption.Type, actionIndex);
                 }
 
-                _logger.LogInformation($"Action {actionIndex}: Completed");
+                _logger.CollectionRuleActionCompleted(ruleName, actionOption.Type);
 
                 ++actionIndex;
             }
+        }
+
+        private bool ShouldHandleException(Exception ex, string ruleName, string actionType)
+        {
+            _logger.CollectionRuleActionFailed(ruleName, actionType, ex);
+
+            return ex is not OperationCanceledException;
         }
     }
 }

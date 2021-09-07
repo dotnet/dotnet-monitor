@@ -352,6 +352,9 @@
     <value>The format to display the output in. Valid values are Json, Text, and EnvVar.</value>
     <comment>Gets the string to display in help that explains what the '--output' option does.</comment>
   </data>
+  <data name="LogFormatString_AllCollectionRulesStarted" xml:space="preserve">
+    <value>All collection rules started.</value>
+  </data>
   <data name="LogFormatString_ApiKeyAuthenticationOptionsValidated" xml:space="preserve">
     <value>{apiAuthenticationConfigKey} settings have changed. The new settings have passed validation.</value>
     <comment>Gets the format string that is printed in the 22:ApiKeyAuthenticationOptionsChanged event.
@@ -384,6 +387,36 @@
     <comment>Gets the format string that is printed in the 17:BoundMetricsAddress event.
 1 Format Parameter:
 1. address: The address the metrics api was bound to</comment>
+  </data>
+  <data name="LogFormatString_CollectionRuleActionCompleted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' action '{actionType}' completed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleActionFailed" xml:space="preserve">
+    <value>Collection rule '{ruleName}' action '{actionType}' failed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleActionsCompleted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' actions completed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleActionStarted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' action '{actionType}' started.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleActionsThrottled" xml:space="preserve">
+    <value>Collection rule '{ruleName}' actions throttled due to action limits.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleCompleted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' completed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleFailed" xml:space="preserve">
+    <value>Collection rule '{ruleName}' failed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleStarted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' started.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleTriggerCompleted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' trigger '{triggerType}' completed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleTriggerStarted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' trigger '{triggerType}' started.</value>
   </data>
   <data name="LogFormatString_DisabledNegotiateWhileElevated" xml:space="preserve">
     <value>Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions.</value>

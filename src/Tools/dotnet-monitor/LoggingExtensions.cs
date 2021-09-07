@@ -154,6 +154,72 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DuplicateCollectionRuleTriggerIgnored);
 
+        private static readonly Action<ILogger, string, Exception> _collectionRuleStarted =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(29, "CollectionRuleStarted"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleStarted);
+
+        private static readonly Action<ILogger, string, Exception> _collectionRuleFailed =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(30, "CollectionRuleFailed"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleFailed);
+
+        private static readonly Action<ILogger, string, Exception> _collectionRuleCompleted =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(31, "CollectionRuleCompleted"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleCompleted);
+
+        private static readonly Action<ILogger, Exception> _allCollectionRulesStarted =
+            LoggerMessage.Define(
+                eventId: new EventId(32, "AllCollectionRulesStarted"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_AllCollectionRulesStarted);
+
+        private static readonly Action<ILogger, string, string, Exception> _collectionRuleActionStarted =
+            LoggerMessage.Define<string, string>(
+                eventId: new EventId(33, "CollectionRuleActionStarted"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleActionStarted);
+
+        private static readonly Action<ILogger, string, string, Exception> _collectionRuleActionCompleted =
+            LoggerMessage.Define<string, string>(
+                eventId: new EventId(34, "CollectionRuleActionCompleted"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleActionCompleted);
+
+        private static readonly Action<ILogger, string, string, Exception> _collectionRuleTriggerStarted =
+            LoggerMessage.Define<string, string>(
+                eventId: new EventId(35, "CollectionRuleTriggerStarted"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleTriggerStarted);
+
+        private static readonly Action<ILogger, string, string, Exception> _collectionRuleTriggerCompleted =
+            LoggerMessage.Define<string, string>(
+                eventId: new EventId(36, "CollectionRuleTriggerCompleted"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleTriggerCompleted);
+
+        private static readonly Action<ILogger, string, Exception> _collectionRuleActionsThrottled =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(37, "CollectionRuleActionsThrottled"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleActionsThrottled);
+
+        private static readonly Action<ILogger, string, string, Exception> _collectionRuleActionFailed =
+            LoggerMessage.Define<string, string>(
+                eventId: new EventId(38, "CollectionRuleActionFailed"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleActionFailed);
+
+        private static readonly Action<ILogger, string, Exception> _collectionRuleActionsCompleted =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(39, "CollectionRuleActionsCompleted"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleActionsCompleted);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -261,6 +327,61 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DuplicateCollectionRuleTriggerIgnored(this ILogger logger, string triggerType)
         {
             _duplicateCollectionRuleTriggerIgnored(logger, triggerType, null);
+        }
+
+        public static void CollectionRuleStarted(this ILogger logger, string ruleName)
+        {
+            _collectionRuleStarted(logger, ruleName, null);
+        }
+
+        public static void CollectionRuleFailed(this ILogger logger, string ruleName, Exception ex)
+        {
+            _collectionRuleFailed(logger, ruleName, ex);
+        }
+
+        public static void CollectionRuleCompleted(this ILogger logger, string ruleName)
+        {
+            _collectionRuleCompleted(logger, ruleName, null);
+        }
+
+        public static void AllCollectionRulesStarted(this ILogger logger)
+        {
+            _allCollectionRulesStarted(logger, null);
+        }
+
+        public static void CollectionRuleActionStarted(this ILogger logger, string ruleName, string actionType)
+        {
+            _collectionRuleActionStarted(logger, ruleName, actionType, null);
+        }
+
+        public static void CollectionRuleActionCompleted(this ILogger logger, string ruleName, string actionType)
+        {
+            _collectionRuleActionCompleted(logger, ruleName, actionType, null);
+        }
+
+        public static void CollectionRuleTriggerStarted(this ILogger logger, string ruleName, string triggerType)
+        {
+            _collectionRuleTriggerStarted(logger, ruleName, triggerType, null);
+        }
+
+        public static void CollectionRuleTriggerCompleted(this ILogger logger, string ruleName, string triggerType)
+        {
+            _collectionRuleTriggerCompleted(logger, ruleName, triggerType, null);
+        }
+
+        public static void CollectionRuleThrottled(this ILogger logger, string ruleName)
+        {
+            _collectionRuleActionsThrottled(logger, ruleName, null);
+        }
+
+        public static void CollectionRuleActionFailed(this ILogger logger, string ruleName, string actionType, Exception ex)
+        {
+            _collectionRuleActionFailed(logger, ruleName, actionType, ex);
+        }
+
+        public static void CollectionRuleActionsCompleted(this ILogger logger, string ruleName)
+        {
+            _collectionRuleActionsCompleted(logger, ruleName, null);
         }
     }
 }

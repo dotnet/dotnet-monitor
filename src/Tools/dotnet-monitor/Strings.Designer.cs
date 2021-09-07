@@ -493,6 +493,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All collection rules started..
+        /// </summary>
+        internal static string LogFormatString_AllCollectionRulesStarted {
+            get {
+                return ResourceManager.GetString("LogFormatString_AllCollectionRulesStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {apiAuthenticationConfigKey} settings have changed. The new settings have passed validation..
         /// </summary>
         internal static string LogFormatString_ApiKeyAuthenticationOptionsValidated {
@@ -534,6 +543,96 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_BoundMetricsAddress {
             get {
                 return ResourceManager.GetString("LogFormatString_BoundMetricsAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; action &apos;{actionType}&apos; completed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionCompleted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; action &apos;{actionType}&apos; failed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; actions completed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionsCompleted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionsCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; action &apos;{actionType}&apos; started..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionStarted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; actions throttled due to action limits..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionsThrottled {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionsThrottled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; completed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleCompleted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; failed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; started..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleStarted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; trigger &apos;{triggerType}&apos; completed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleTriggerCompleted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleTriggerCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; trigger &apos;{triggerType}&apos; started..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleTriggerStarted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleTriggerStarted", resourceCulture);
             }
         }
         
