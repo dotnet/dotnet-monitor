@@ -145,6 +145,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         private static string GetMetricFilename(IProcessInfo processInfo) =>
-            FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.metrics.json");
+            FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.metrics.json");
     }
 }
