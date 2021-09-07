@@ -6,13 +6,15 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using System;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     internal class EndpointInfo : IEndpointInfo
     {
-        public static EndpointInfo FromProcessId(int processId)
+        public static async Task<EndpointInfo> FromProcessIdAsync(int processId, CancellationToken token)
         {
             var client = new DiagnosticsClient(processId);
 
@@ -22,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Primary motivation is to get the runtime instance cookie in order to
                 // keep parity with the FromIpcEndpointInfo implementation; store the
                 // remainder of the information since it already has access to it.
-                processInfo = client.GetProcessInfo();
+                processInfo = await client.GetProcessInfoAsync(token);
 
                 Debug.Assert(processId == unchecked((int)processInfo.ProcessId));
             }
@@ -48,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
         }
 
-        public static EndpointInfo FromIpcEndpointInfo(IpcEndpointInfo info)
+        public static async Task<EndpointInfo> FromIpcEndpointInfoAsync(IpcEndpointInfo info, CancellationToken token)
         {
             var client = new DiagnosticsClient(info.Endpoint);
 
@@ -58,7 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Primary motivation is to keep parity with the FromProcessId implementation,
                 // which provides the additional process information because it already has
                 // access to it.
-                processInfo = client.GetProcessInfo();
+                processInfo = await client.GetProcessInfoAsync(token);
 
                 Debug.Assert(info.ProcessId == unchecked((int)processInfo.ProcessId));
                 Debug.Assert(info.RuntimeInstanceCookie == processInfo.RuntimeInstanceCookie);

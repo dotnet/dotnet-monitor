@@ -33,7 +33,7 @@ If none of `pid`, `uid`, or `name` are specified, a trace of the [default proces
 Authentication is enforced for this route. See [Authentication](./../authentication.md) for further information.
 
 Allowed schemes:
-- `MonitorApiKey`
+- `Bearer`
 - `Negotiate` (Windows only, running as unelevated)
 
 ## Request Body
@@ -61,7 +61,7 @@ The expected content type is `application/json`.
 ```http
 POST /trace?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Content-Type: application/json
 
 {
@@ -82,7 +82,7 @@ or
 ```http
 POST /trace?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Content-Type: application/json
 
 {

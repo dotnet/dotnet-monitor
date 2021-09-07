@@ -215,7 +215,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             try
             {
-                EndpointInfo endpointInfo = EndpointInfo.FromIpcEndpointInfo(info);
+                EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, token);
 
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {
@@ -229,7 +229,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 var client = new DiagnosticsClient(info.Endpoint);
                 try
                 {
-                    client.ResumeRuntime();
+                    await client.ResumeRuntimeAsync(token);
                 }
                 catch (ServerErrorException)
                 {

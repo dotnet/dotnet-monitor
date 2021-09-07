@@ -117,8 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, appTfm);
 
-            using CancellationTokenSource cancellation = new(CommonTestTimeouts.StartProcess);
-            Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, cancellation.Token);
+            Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {
@@ -162,7 +161,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Task[] newEndpointInfoTasks = new Task[appCount];
 
             // Start all app instances
-            using CancellationTokenSource cancellation = new(CommonTestTimeouts.StartProcess);
             for (int i = 0; i < appCount; i++)
             {
                 runners[i] = _endpointUtilities.CreateAppRunner(transportName, appTfm, appId: i + 1);

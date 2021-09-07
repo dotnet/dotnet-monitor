@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         // The amount of time to wait before cancelling get additional process information (e.g. getting
         // the process command line if the IEndpointInfo doesn't provide it).
-        private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromMilliseconds(500);
+        private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromMilliseconds(1000);
 
         private readonly IEndpointInfoSourceInternal _endpointInfoSource;
         private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();

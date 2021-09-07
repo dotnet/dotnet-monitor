@@ -23,5 +23,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// This may need to be adjusted for individual calls that are longer than 30 seconds.
         /// </summary>
         public static readonly TimeSpan OperationTimeout = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// Timeout for metrics api.
+        /// </summary>
+        public static readonly TimeSpan CaptureMetricsTimeout = TimeSpan.FromSeconds(30);
     }
 }
