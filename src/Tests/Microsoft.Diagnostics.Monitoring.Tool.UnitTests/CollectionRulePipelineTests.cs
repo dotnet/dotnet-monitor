@@ -318,10 +318,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private async Task ManualTriggerBurstAsync(ManualTriggerService service)
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
                 service.NotifySubscribers();
-                await Task.Delay(TimeSpan.FromMilliseconds(10));
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
         }
 
