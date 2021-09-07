@@ -17,9 +17,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
     {
         public static readonly string ActionName = nameof(CallbackAction);
 
-        private readonly CallbackActionCallbackService _service;
+        private readonly CallbackActionService _service;
 
-        public CallbackAction(CallbackActionCallbackService service)
+        public CallbackAction(CallbackActionService service)
         {
             _service = service;
         }
@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         }
     }
 
-    internal sealed class CallbackActionCallbackService
+    internal sealed class CallbackActionService
     {
         private readonly List<CompletionEntry> _entries = new();
         private readonly SemaphoreSlim _entriesSemaphore = new(1);
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
 
         private int _nextId = 1;
 
-        public CallbackActionCallbackService(ITestOutputHelper outputHelper)
+        public CallbackActionService(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
         }

@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public Task CollectionRulePipeline_StartupTriggerTest(TargetFrameworkMoniker appTfm)
         {
-            CallbackActionCallbackService callbackService = new(_outputHelper);
+            CallbackActionService callbackService = new(_outputHelper);
 
             return ExecuteScenario(
                 appTfm,
@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public Task CollectionRulePipeline_EventCounterTriggerTest(TargetFrameworkMoniker appTfm)
         {
-            CallbackActionCallbackService callbackService = new(_outputHelper);
+            CallbackActionService callbackService = new(_outputHelper);
 
             return ExecuteScenario(
                 appTfm,
@@ -167,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task CollectionRulePipeline_DurationLimitTest(TargetFrameworkMoniker appTfm)
         {
             ManualTriggerService triggerService = new();
-            CallbackActionCallbackService callbackService = new(_outputHelper);
+            CallbackActionService callbackService = new(_outputHelper);
 
             return ExecuteScenario(
                 appTfm,
@@ -209,7 +209,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const int ExpectedActionExecutionCount = 3;
 
             ManualTriggerService triggerService = new();
-            CallbackActionCallbackService callbackService = new(_outputHelper);
+            CallbackActionService callbackService = new(_outputHelper);
 
             return ExecuteScenario(
                 appTfm,
@@ -256,7 +256,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             TimeSpan SlidingWindowDuration = TimeSpan.FromSeconds(3);
 
             ManualTriggerService triggerService = new();
-            CallbackActionCallbackService callbackService = new(_outputHelper);
+            CallbackActionService callbackService = new(_outputHelper);
 
             return ExecuteScenario(
                 appTfm,
@@ -305,7 +305,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Writes the list of action execution timestamps to the output log.
         /// </summary>
-        private void VerifyExecutionCount(CallbackActionCallbackService service, int expectedCount)
+        private void VerifyExecutionCount(CallbackActionService service, int expectedCount)
         {
             _outputHelper.WriteLine("Action execution times:");
             foreach (DateTime timestamp in service.ExecutionTimestamps)

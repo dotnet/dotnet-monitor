@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
 {
     internal static class ActionsServiceCollectionExtensions
     {
-        public static IServiceCollection RegisterTestAction(this IServiceCollection services, CallbackActionCallbackService callback)
+        public static IServiceCollection RegisterTestAction(this IServiceCollection services, CallbackActionService callback)
         {
             services.AddSingleton(callback);
             services.RegisterCollectionRuleAction<CallbackAction, object>(CallbackAction.ActionName);
