@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
                 while (!continueTask.IsCompleted)
                 {
-                    Thread.SpinWait(10_000_000);
+                    Thread.SpinWait(1_000_000);
                 }
 
                 return 0;
