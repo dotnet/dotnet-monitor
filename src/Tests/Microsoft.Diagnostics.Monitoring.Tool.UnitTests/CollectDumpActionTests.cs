@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     options.Type = ExpectedDumpType;
                 }
 
-                ServerEndpointInfoCallback callback = new(_outputHelper);
+                EndpointInfoSourceCallback callback = new(_outputHelper);
                 await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
                 source.Start();
 
@@ -71,8 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
 
-                using CancellationTokenSource callbackCancellation = new(CommonTestTimeouts.StartProcess);
-                Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, callbackCancellation.Token);
+                Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                 await runner.ExecuteAsync(async () =>
                 {

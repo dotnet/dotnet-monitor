@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public async Task ServerSourceAddRemoveSingleConnectionTest(TargetFrameworkMoniker appTfm)
         {
-            ServerEndpointInfoCallback callback = new(_outputHelper);
+            EndpointInfoSourceCallback callback = new(_outputHelper);
             await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
             source.Start();
 
@@ -149,7 +149,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public async Task ServerSourceAddRemoveMultipleConnectionTest(TargetFrameworkMoniker appTfm)
         {
-            ServerEndpointInfoCallback callback = new(_outputHelper);
+            EndpointInfoSourceCallback callback = new(_outputHelper);
             await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
             source.Start();
 
@@ -164,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             for (int i = 0; i < appCount; i++)
             {
                 runners[i] = _endpointUtilities.CreateAppRunner(transportName, appTfm, appId: i + 1);
-                newEndpointInfoTasks[i] = callback.WaitForNewEndpointInfoAsync(runners[i], cancellation.Token);
+                newEndpointInfoTasks[i] = callback.WaitForNewEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
             }
 
             await runners.ExecuteAsync(async () =>

@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _outputHelper = outputHelper;
         }
 
-        public ServerEndpointInfoSource CreateServerSource(out string transportName, ServerEndpointInfoCallback callback = null)
+        public ServerEndpointInfoSource CreateServerSource(out string transportName, EndpointInfoSourceCallback callback = null)
         {
             DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out transportName);
             _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
@@ -67,123 +67,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(await runner.ProcessIdTask, endpointInfo.ProcessId);
             Assert.NotEqual(Guid.Empty, endpointInfo.RuntimeInstanceCookie);
             Assert.NotNull(endpointInfo.Endpoint);
-        }
-
-        public sealed class ServerEndpointInfoCallback : IEndpointInfoSourceCallbacks
-        {
-            private readonly ITestOutputHelper _outputHelper;
-            /// <summary>
-            /// Use to protect the completion list from mutation while processing
-            /// callbacks from it. The processing is done in an async method with async
-            /// calls, which are not allowed in a lock, thus use SemaphoreSlim.
-            /// </summary>
-            private readonly SemaphoreSlim _completionEntriesSemaphore = new(1);
-            private readonly List<CompletionEntry> _completionEntries = new();
-
-            public ServerEndpointInfoCallback(ITestOutputHelper outputHelper)
-            {
-                _outputHelper = outputHelper;
-            }
-
-            public async Task<IEndpointInfo> WaitForNewEndpointInfoAsync(AppRunner runner, CancellationToken token)
-            {
-                CompletionEntry entry = new(runner);
-                using var _ = token.Register(() => entry.CompletionSource.TrySetCanceled(token));
-
-                await _completionEntriesSemaphore.WaitAsync(token);
-                try
-                {
-                    _completionEntries.Add(entry);
-                    _outputHelper.WriteLine($"[Wait] Register App{runner.AppId}");
-                }
-                finally
-                {
-                    _completionEntriesSemaphore.Release();
-                }
-
-                _outputHelper.WriteLine($"[Wait] Wait for App{runner.AppId} notification");
-                IEndpointInfo endpointInfo = await entry.CompletionSource.Task;
-                _outputHelper.WriteLine($"[Wait] Received App{runner.AppId} notification");
-
-                return endpointInfo;
-            }
-
-            public Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken token)
-            {
-                return Task.CompletedTask;
-            }
-
-            public async Task OnAddedEndpointInfoAsync(IEndpointInfo info, CancellationToken token)
-            {
-                _outputHelper.WriteLine($"[Source] Added: {ToOutputString(info)}");
-
-                await _completionEntriesSemaphore.WaitAsync(token);
-                try
-                {
-                    _outputHelper.WriteLine($"[Source] Start notifications for process {info.ProcessId}");
-
-                    // Create a mapping of the process ID tasks to the completion entries
-                    IDictionary<Task<int>, CompletionEntry> map = new Dictionary<Task<int>, CompletionEntry>(_completionEntries.Count);
-                    foreach (CompletionEntry entry in _completionEntries)
-                    {
-                        map.Add(entry.Runner.ProcessIdTask.WithCancellation(token), entry);
-                    }
-
-                    while (map.Count > 0)
-                    {
-                        // Wait for any of the process ID tasks to complete.
-                        Task<int> completedTask = await Task.WhenAny(map.Keys);
-
-                        map.Remove(completedTask, out CompletionEntry entry);
-
-                        _outputHelper.WriteLine($"[Source] Checking App{entry.Runner.AppId}");
-
-                        if (completedTask.IsCompletedSuccessfully)
-                        {
-                            // If the process ID matches the one that was reported via the callback,
-                            // then signal its completion source.
-                            if (info.ProcessId == completedTask.Result)
-                            {
-                                _outputHelper.WriteLine($"[Source] Notifying App{entry.Runner.AppId}");
-                                entry.CompletionSource.TrySetResult(info);
-
-                                _completionEntries.Remove(entry);
-
-                                break;
-                            }
-                        }
-                    }
-
-                    _outputHelper.WriteLine($"[Source] Finished notifications for process {info.ProcessId}");
-                }
-                finally
-                {
-                    _completionEntriesSemaphore.Release();
-                }
-            }
-
-            public void OnRemovedEndpointInfo(IEndpointInfo info)
-            {
-                _outputHelper.WriteLine($"[Source] Removed: {ToOutputString(info)}");
-            }
-
-            private static string ToOutputString(IEndpointInfo info)
-            {
-                return FormattableString.Invariant($"PID={info.ProcessId}, Cookie={info.RuntimeInstanceCookie}");
-            }
-
-            private sealed class CompletionEntry
-            {
-                public CompletionEntry(AppRunner runner)
-                {
-                    Runner = runner;
-                    CompletionSource = new TaskCompletionSource<IEndpointInfo>(TaskCreationOptions.RunContinuationsAsynchronously);
-                }
-
-                public AppRunner Runner { get; }
-
-                public TaskCompletionSource<IEndpointInfo> CompletionSource { get; }
-            }
         }
     }
 }
