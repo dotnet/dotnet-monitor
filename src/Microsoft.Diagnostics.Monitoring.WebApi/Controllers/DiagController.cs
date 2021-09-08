@@ -38,12 +38,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public partial class DiagController : ControllerBase
     {
-        public const string ArtifactType_Dump = "dump";
-        public const string ArtifactType_GCDump = "gcdump";
-        public const string ArtifactType_Logs = "logs";
-        public const string ArtifactType_Trace = "trace";
-        public const string ArtifactType_Metrics = "collectmetrics";
-
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
         private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);
         private static readonly MediaTypeHeaderValue JsonSequenceHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationJsonSequence);
@@ -196,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_Dump)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_Dump)]
         [EgressValidation]
         public Task<ActionResult> CaptureDump(
             [FromQuery]
@@ -227,7 +221,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 else
                 {
-                    KeyValueLogScope scope = GetDumpScope(processInfo.EndpointInfo);
+                    KeyValueLogScope scope = Utilities.GetScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
 
                     return await SendToEgress(new EgressOperation(
                         token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
@@ -235,9 +229,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         dumpFileName,
                         processInfo.EndpointInfo,
                         ContentTypes.ApplicationOctetStream,
-                        scope), limitKey: ArtifactType_Dump);
+                        scope), limitKey: Utilities.ArtifactType_Dump);
                 }
-            }, processKey, ArtifactType_Dump);
+            }, processKey, Utilities.ArtifactType_Dump);
         }
 
         /// <summary>
@@ -255,7 +249,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_GCDump)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_GCDump)]
         [EgressValidation]
         public Task<ActionResult> CaptureGcDump(
             [FromQuery]
@@ -293,13 +287,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 };
 
                 return Result(
-                    ArtifactType_GCDump,
+                    Utilities.ArtifactType_GCDump,
                     egressProvider,
                     ConvertFastSerializeAction(action),
                     fileName,
                     ContentTypes.ApplicationOctetStream,
                     processInfo.EndpointInfo);
-            }, processKey, ArtifactType_GCDump);
+            }, processKey, Utilities.ArtifactType_GCDump);
         }
 
         /// <summary>
@@ -319,7 +313,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_Trace)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_Trace)]
         [EgressValidation]
         public Task<ActionResult> CaptureTrace(
             [FromQuery]
@@ -368,7 +362,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 var aggregateConfiguration = new AggregateSourceConfiguration(configurations.ToArray());
 
                 return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
-            }, processKey, ArtifactType_Trace);
+            }, processKey, Utilities.ArtifactType_Trace);
         }
 
         /// <summary>
@@ -387,7 +381,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_Trace)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_Trace)]
         [EgressValidation]
         public Task<ActionResult> CaptureTraceCustom(
             [FromBody][Required]
@@ -432,7 +426,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     bufferSizeInMB: configuration.BufferSizeInMB);
 
                 return StartTrace(processInfo, traceConfiguration, duration, egressProvider);
-            }, processKey, ArtifactType_Trace);
+            }, processKey, Utilities.ArtifactType_Trace);
         }
 
         /// <summary>
@@ -449,7 +443,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_Logs)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_Logs)]
         [EgressValidation]
         public Task<ActionResult> CaptureLogs(
             [FromQuery]
@@ -488,7 +482,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
 
                 return StartLogs(processInfo, settings, egressProvider);
-            }, processKey, ArtifactType_Logs);
+            }, processKey, Utilities.ArtifactType_Logs);
         }
 
         /// <summary>
@@ -505,7 +499,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_Logs)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_Logs)]
         [EgressValidation]
         public Task<ActionResult> CaptureLogsCustom(
             [FromBody]
@@ -536,7 +530,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 };
 
                 return StartLogs(processInfo, settings, egressProvider);
-            }, processKey, ArtifactType_Logs);
+            }, processKey, Utilities.ArtifactType_Logs);
         }
 
         /// <summary>
@@ -583,15 +577,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        internal static KeyValueLogScope GetDumpScope(IEndpointInfo endpointInfo)
-        {
-            KeyValueLogScope scope = new KeyValueLogScope();
-            scope.AddArtifactType(ArtifactType_Dump);
-            scope.AddEndpointInfo(endpointInfo);
-
-            return scope;
-        }
-
         public DiagnosticPortConnectionMode GetDiagnosticPortMode()
         {
             return _diagnosticPortOptions.Value.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode);
@@ -631,7 +616,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             };
 
             return Result(
-                ArtifactType_Trace,
+                Utilities.ArtifactType_Trace,
                 egressProvider,
                 action,
                 fileName,
@@ -679,7 +664,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             };
 
             return Result(
-                ArtifactType_Logs,
+                Utilities.ArtifactType_Logs,
                 egressProvider,
                 action,
                 fileName,
@@ -743,9 +728,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             IEndpointInfo endpointInfo,
             bool asAttachment = true)
         {
-            KeyValueLogScope scope = new KeyValueLogScope();
-            scope.AddArtifactType(artifactType);
-            scope.AddEndpointInfo(endpointInfo);
+            KeyValueLogScope scope = Utilities.GetScope(artifactType, endpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
             {

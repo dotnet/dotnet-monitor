@@ -3,16 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
@@ -32,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             DumpType dumpType = options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
             string egressProvider = options.Egress;
 
-            string dumpFileName = Monitoring.WebApi.Utilities.GenerateDumpFileName();
+            string dumpFileName = Utils.GenerateDumpFileName();
 
             string dumpFilePath = string.Empty;
 
@@ -44,7 +43,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
             else
             {
-                KeyValueLogScope scope = DiagController.GetDumpScope(endpointInfo);
+                KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Dump, endpointInfo);
 
                 try
                 {
