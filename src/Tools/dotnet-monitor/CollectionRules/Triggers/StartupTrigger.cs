@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,8 +15,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
     internal sealed class StartupTrigger :
         ICollectionRuleStartupTrigger
     {
+        private readonly Action _callback;
+
+        public StartupTrigger(Action callback)
+        {
+            _callback = callback;
+        }
+
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            _callback();
             return Task.CompletedTask;
         }
 

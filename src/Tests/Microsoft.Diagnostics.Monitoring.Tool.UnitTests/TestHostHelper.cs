@@ -19,13 +19,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public static async Task CreateCollectionRulesHost(
             ITestOutputHelper outputHelper,
             Action<RootOptions> setup,
-            Func<IHost, Task> callback)
+            Func<IHost, Task> hostCallback,
+            Action<IServiceCollection> servicesCallback = null)
         {
-            IHost host = CreateHost(outputHelper, setup);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback);
 
             try
             {
-                await callback(host);
+                await hostCallback(host);
             }
             finally
             {
@@ -36,13 +37,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public static async Task CreateCollectionRulesHost(
             ITestOutputHelper outputHelper,
             Action<RootOptions> setup,
-            Action<IHost> callback)
+            Action<IHost> hostCallback,
+            Action<IServiceCollection> servicesCallback = null)
         {
-            IHost host = CreateHost(outputHelper, setup);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback);
 
             try
             {
-                callback(host);
+                hostCallback(host);
             }
             finally
             {
@@ -52,7 +54,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         public static IHost CreateHost(
             ITestOutputHelper outputHelper,
-            Action<RootOptions> setup)
+            Action<RootOptions> setup,
+            Action<IServiceCollection> servicesCallback)
         {
             return new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
@@ -79,6 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     services.AddSingleton<IDumpService, DumpService>();
                     services.ConfigureStorage(context.Configuration);
+                    servicesCallback?.Invoke(services);
                 })
                 .Build();
         }

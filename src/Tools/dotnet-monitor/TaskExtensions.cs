@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    public static class TaskExtensions
+    internal static class TaskExtensions
     {
         public static async Task WithCancellation(this Task task, CancellationToken token)
         {

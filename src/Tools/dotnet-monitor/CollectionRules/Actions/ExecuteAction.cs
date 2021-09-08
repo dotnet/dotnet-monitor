@@ -68,9 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             if (!process.HasExited)
             {
-                TaskCompletionSource<object> cancellationTaskSource = new();
-                using var _ = token.Register(() => cancellationTaskSource.TrySetCanceled(token));
-                await Task.WhenAny(exitedTask, cancellationTaskSource.Task).Unwrap().ConfigureAwait(false);
+                await exitedTask.WithCancellation(token).ConfigureAwait(false);
             }
         }
 
