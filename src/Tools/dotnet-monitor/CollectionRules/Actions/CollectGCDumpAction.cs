@@ -23,26 +23,22 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
-    internal sealed class CollectGCDumpAction : ControllerBase,
-        ICollectionRuleAction<CollectGCDumpOptions>
+    internal sealed class CollectGCDumpAction : ICollectionRuleAction<CollectGCDumpOptions>
     {
-        private readonly ILogger<CollectGCDumpAction> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
-        private readonly EgressOperationStore _operationsStore;
+        private readonly IServiceProvider _serviceProvider;
 
         public const string ArtifactType_GCDump = "gcdump";
 
-        public CollectGCDumpAction(ILogger<CollectGCDumpAction> logger,
-            IServiceProvider serviceProvider)
+        public CollectGCDumpAction(IServiceProvider serviceProvider)
         {
-            _logger = logger;
+            _serviceProvider = serviceProvider;
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
-            //_diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
-            _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
         }
+
         public async Task<CollectionRuleActionResult> ExecuteAsync(CollectGCDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
         {
-            string egress = options.Egress; // Need to check for non-null value
+            string egress = options.Egress; // Do we need to check for non-null value? -> be consistent with what we do for Dump.
 
             if (string.IsNullOrEmpty(egress))
             {
@@ -55,17 +51,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, token);
 
-            string fileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
+            string gcdumpFileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
-            Func<CancellationToken, Task<IFastSerializable>> action = async (token) => await DiagController.GetGCHeadDump(endpointInfo, token); 
+            string gcdumpFilePath = string.Empty;
 
-            string gcdumpFilePath = await Result(
-                ArtifactType_GCDump,
-                egress,
-                ConvertFastSerializeAction(action),
-                fileName,
-                ContentTypes.ApplicationOctetStream,
-                processInfo.EndpointInfo);
+            Func<CancellationToken, Task<IFastSerializable>> action = async (token) => await DiagController.GetGCHeadDump(endpointInfo, token);
+
+            KeyValueLogScope scope = new KeyValueLogScope();
+            scope.AddArtifactType(ArtifactType_GCDump);
+            scope.AddEndpointInfo(endpointInfo);
+
+            EgressOperation egressOperation = new EgressOperation(
+                        ConvertFastSerializeAction(action),
+                        egress,
+                        gcdumpFileName,
+                        endpointInfo,
+                        ContentTypes.ApplicationOctetStream,
+                        scope);
+
+            ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+
+            gcdumpFilePath = result.Result.Value;
 
             return new CollectionRuleActionResult()
             {
@@ -80,41 +86,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private static string GetFileNameTimeStampUtcNow()
         {
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
-        }
-
-        private async Task<string> Result(
-            string artifactType,
-            string providerName,
-            Func<Stream, CancellationToken, Task> action,
-            string fileName,
-            string contentType,
-            IEndpointInfo endpointInfo,
-            bool asAttachment = true)
-        {
-            KeyValueLogScope scope = new KeyValueLogScope();
-            scope.AddArtifactType(artifactType);
-            scope.AddEndpointInfo(endpointInfo);
-
-            return await SendToEgress(new EgressOperation(
-                action,
-                providerName,
-                fileName,
-                endpointInfo,
-                contentType,
-                scope),
-                limitKey: artifactType);
-        }
-
-        private async Task<string> SendToEgress(EgressOperation egressStreamResult, string limitKey)
-        {
-            // Will throw TooManyRequestsException if there are too many concurrent operations.
-            Guid operationId = await _operationsStore.AddOperation(egressStreamResult, limitKey);
-            string newUrl = this.Url.Action(
-                action: nameof(OperationsController.GetOperationStatus),
-                controller: OperationsController.ControllerName, new { operationId = operationId },
-                protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
-
-            return newUrl; // switched to returning URL so we can include it in the CollectionRuleActionResult
         }
 
         private static Func<Stream, CancellationToken, Task> ConvertFastSerializeAction(Func<CancellationToken, Task<IFastSerializable>> action)
