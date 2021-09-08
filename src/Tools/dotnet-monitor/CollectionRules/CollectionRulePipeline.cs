@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // The executor of the action list for the collection rule.
         private readonly ActionListExecutor _actionListExecutor;
 
-        // The endpiont that represents the process on which the collection rule is executed.
+        // The endpoint that represents the process on which the collection rule is executed.
         private readonly IEndpointInfo _endpointInfo;
 
         // The rule description that determines the behavior of the pipeline.
@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly TaskCompletionSource<object> _startedSource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
         
-        // Operations for getting triger information.
+        // Operations for getting trigger information.
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         public CollectionRulePipeline(
@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     {
                         try
                         {
-                            // Intentially not using the linkedToken. If the linkedToken was signaled
+                            // Intentionally not using the linkedToken. If the linkedToken was signaled
                             // due to pipeline duration expiring, try to stop the trigger gracefully
                             // unless forced by a caller to the pipeline.
                             await trigger.StopAsync(token).ConfigureAwait(false);
@@ -152,7 +152,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         }
                     }
 
-                    DateTime currentTimestamp = DateTime.Now;
+                    DateTime currentTimestamp = DateTime.UtcNow;
 
                     // If rule has an action count window, Remove all execution timestamps that fall outside the window.
                     if (actionCountWindowDuration.HasValue)
