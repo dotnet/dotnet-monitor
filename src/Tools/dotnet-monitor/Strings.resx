@@ -125,6 +125,10 @@
     <value>The '{0}' action was not registered correctly.</value>
     <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleActionProxy.</comment>
   </data>
+  <data name="ErrorMessage_CouldNotMapToTrigger" xml:space="preserve">
+    <value>The '{0}' trigger was not registered correctly.</value>
+    <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleTriggerProxy.</comment>
+  </data>
   <data name="ErrorMessage_DiagnosticPortMissingInListenMode" xml:space="preserve">
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
@@ -251,6 +255,10 @@
     <comment>Gets the format string for rejecting a config param because it is not a jwk type that is accepted.
 1 Format Parameter:
 0. configName: The variable name for the provided string.</comment>
+  </data>
+  <data name="ErrorMessage_TriggerFactoryFailed" xml:space="preserve">
+    <value>The '{0}' trigger factory failed to create a trigger instance.</value>
+    <comment>Gets the format string describing the error condition when a trigger factory does not return a valid trigger instance.</comment>
   </data>
   <data name="ErrorMessage_TwoFieldsCannotBeSpecified" xml:space="preserve">
     <value>Both the {0} field and the {1} field cannot be specified.</value>
