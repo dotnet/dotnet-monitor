@@ -20,6 +20,11 @@
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests"/>
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests"/>
+  </ItemGroup>
+
   <Import Project="GenerateDotNetHost.targets" />
 
 </Project>
