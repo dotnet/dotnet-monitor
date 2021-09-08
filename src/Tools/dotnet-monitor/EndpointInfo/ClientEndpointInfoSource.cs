@@ -22,11 +22,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // a GetProcessInfo command to the runtime instance to get additional information.
             foreach (int pid in DiagnosticsClient.GetPublishedProcesses())
             {
-                endpointInfoTasks.Add(Task.Run(() =>
+                endpointInfoTasks.Add(Task.Run(async () =>
                 {
                     try
                     {
-                        return EndpointInfo.FromProcessId(pid);
+                        return await EndpointInfo.FromProcessIdAsync(pid, token);
                     }
                     // Catch when runtime instance shuts down while attepting to use the established diagnostic port connection.
                     catch (EndOfStreamException)

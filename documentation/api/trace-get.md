@@ -35,7 +35,7 @@ If none of `pid`, `uid`, or `name` are specified, a trace of the [default proces
 Authentication is enforced for this route. See [Authentication](./../authentication.md) for further information.
 
 Allowed schemes:
-- `MonitorApiKey`
+- `Bearer`
 - `Negotiate` (Windows only, running as unelevated)
 
 ## Responses
@@ -57,7 +57,7 @@ Allowed schemes:
 ```http
 GET /trace?pid=21632&profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 or
@@ -65,7 +65,7 @@ or
 ```http
 GET /trace?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&profile=http,metrics&durationSeconds=60&metricsIntervalSeconds=5 HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 ### Sample Response

@@ -38,7 +38,7 @@ If none of `pid`, `uid`, or `name` are specified, a GC dump of the [default proc
 Authentication is enforced for this route. See [Authentication](./../authentication.md) for further information.
 
 Allowed schemes:
-- `MonitorApiKey`
+- `Bearer`
 - `Negotiate` (Windows only, running as unelevated)
 
 ## Responses
@@ -58,7 +58,7 @@ Allowed schemes:
 ```http
 GET /gcdump?pid=21632 HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 or
@@ -66,7 +66,7 @@ or
 ```http
 GET /gcdump?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 ### Sample Response

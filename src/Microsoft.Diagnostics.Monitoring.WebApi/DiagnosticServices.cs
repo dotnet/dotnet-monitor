@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         // The amount of time to wait before cancelling get additional process information (e.g. getting
         // the process command line if the IEndpointInfo doesn't provide it).
-        private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromMilliseconds(500);
+        private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromMilliseconds(1000);
 
         private readonly IEndpointInfoSourceInternal _endpointInfoSource;
         private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public async Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token)
         {
             string dumpFilePath = Path.Combine(_storageOptions.CurrentValue.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{pi.EndpointInfo.ProcessId}"));
-            NETCore.Client.DumpType dumpType = MapDumpType(mode);
+            DumpType dumpType = MapDumpType(mode);
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -94,11 +94,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else
             {
-                await Task.Run(() =>
-                {
-                    var client = new DiagnosticsClient(pi.EndpointInfo.Endpoint);
-                    client.WriteDump(dumpType, dumpFilePath);
-                });
+                var client = new DiagnosticsClient(pi.EndpointInfo.Endpoint);
+                await client.WriteDumpAsync(dumpType, dumpFilePath, logDumpGeneration: false, token);
             }
 
             return new AutoDeleteFileStream(dumpFilePath);

@@ -35,7 +35,7 @@ If none of `pid`, `uid`, or `name` are specified, a dump of the [default process
 Authentication is enforced for this route. See [Authentication](./../authentication.md) for further information.
 
 Allowed schemes:
-- `MonitorApiKey`
+- `Bearer`
 - `Negotiate` (Windows only, running as unelevated)
 
 ## Responses
@@ -55,7 +55,7 @@ Allowed schemes:
 ```http
 GET /dump?pid=21632&type=Full HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 or
@@ -63,7 +63,7 @@ or
 ```http
 GET /dump?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b&type=Full HTTP/1.1
 Host: localhost:52323
-Authorization: MonitorApiKey fffffffffffffffffffffffffffffffffffffffffff=
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```
 
 ### Sample Response

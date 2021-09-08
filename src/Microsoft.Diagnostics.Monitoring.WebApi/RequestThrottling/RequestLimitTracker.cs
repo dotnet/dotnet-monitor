@@ -32,6 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _requestLimitTable.Add(Controllers.DiagController.ArtifactType_GCDump, 1);
             _requestLimitTable.Add(Controllers.DiagController.ArtifactType_Logs, 3);
             _requestLimitTable.Add(Controllers.DiagController.ArtifactType_Trace, 3);
+            _requestLimitTable.Add(Controllers.DiagController.ArtifactType_Metrics, 3);
 
             _logger = logger;
         }

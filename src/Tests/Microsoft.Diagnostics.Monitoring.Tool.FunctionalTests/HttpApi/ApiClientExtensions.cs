@@ -286,6 +286,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.GetMetricsAsync(timeoutSource.Token).ConfigureAwait(false);
         }
 
+        public static async Task<ResponseStreamHolder> CaptureMetricsAsync(this ApiClient client, int processId, int durationSeconds, int refreshInterval)
+        {
+            using CancellationTokenSource timeoutSource = new CancellationTokenSource(TestTimeouts.CaptureMetricsTimeout);
+            return await client.CaptureMetricsAsync(processId, durationSeconds, refreshInterval, token: timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        public static async Task<ResponseStreamHolder> CaptureMetricsAsync(this ApiClient client, int processId, int durationSeconds, int refreshInterval, EventMetricsConfiguration metricsConfiguration)
+        {
+            using CancellationTokenSource timeoutSource = new CancellationTokenSource(TestTimeouts.CaptureMetricsTimeout);
+            return await client.CaptureMetricsAsync(processId, durationSeconds, refreshInterval, metricsConfiguration, token: timeoutSource.Token).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// GET /info
         /// </summary>

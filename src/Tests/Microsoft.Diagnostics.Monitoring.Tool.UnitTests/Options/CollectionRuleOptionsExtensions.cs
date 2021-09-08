@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -129,6 +131,31 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleOptions SetActionLimits(this CollectionRuleOptions options, int? count = null, TimeSpan? slidingWindowDuration = null)
+        {
+            if (null == options.Limits)
+            {
+                options.Limits = new CollectionRuleLimitsOptions();
+            }
+
+            options.Limits.ActionCount = count;
+            options.Limits.ActionCountSlidingWindowDuration = slidingWindowDuration;
+
+            return options;
+        }
+
+        public static CollectionRuleOptions SetDurationLimit(this CollectionRuleOptions options, TimeSpan duration)
+        {
+            if (null == options.Limits)
+            {
+                options.Limits = new CollectionRuleLimitsOptions();
+            }
+            
+            options.Limits.RuleDuration = duration;
+
+            return options;
+        }
+
         public static CollectionRuleOptions SetEventCounterTrigger(this CollectionRuleOptions options, out EventCounterOptions settings)
         {
             SetTrigger(options, KnownCollectionRuleTriggers.EventCounter, out CollectionRuleTriggerOptions triggerOptions);
@@ -136,6 +163,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             settings = new();
 
             triggerOptions.Settings = settings;
+
+            return options;
+        }
+
+        public static CollectionRuleOptions SetManualTrigger(this CollectionRuleOptions options)
+        {
+            SetTrigger(options, ManualTrigger.TriggerName, out _);
 
             return options;
         }

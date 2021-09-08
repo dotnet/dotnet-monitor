@@ -79,6 +79,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; trigger was not registered correctly..
+        /// </summary>
+        internal static string ErrorMessage_CouldNotMapToTrigger {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CouldNotMapToTrigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In &apos;Listen&apos; mode, the diagnostic port endpoint name must be specified..
         /// </summary>
         internal static string ErrorMessage_DiagnosticPortMissingInListenMode {
@@ -282,6 +291,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_RejectedJwk {
             get {
                 return ResourceManager.GetString("ErrorMessage_RejectedJwk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; trigger factory failed to create a trigger instance..
+        /// </summary>
+        internal static string ErrorMessage_TriggerFactoryFailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TriggerFactoryFailed", resourceCulture);
             }
         }
         
