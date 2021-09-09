@@ -22,9 +22,9 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>1e11251dfea77c00eea2228660c1afa011347d17</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.245701">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.245801">
       <Uri>https://github.com/dotnet/symstore</Uri>
-      <Sha>c2287d8e6d638bc5e72a87d8f0225bdab11f3121</Sha>
+      <Sha>c1bbe8c2e25302fb7903908a5f7f38c32dfac623</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rc.2.21458.47">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
