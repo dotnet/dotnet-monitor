@@ -43,11 +43,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             DumpType ExpectedDumpType = (dumpType != null) ? dumpType.Value : CollectDumpOptionsDefaults.Type;
 
-            string uniqueEgressDirectory = TempEgressDirectory + Guid.NewGuid();
+            DirectoryInfo uniqueEgressDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), TempEgressDirectory, Guid.NewGuid().ToString()));
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory);
+                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
             }, async host =>
             {
                 CollectDumpAction action = new(host.Services);
@@ -116,9 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 try
                 {
-                    DirectoryInfo outputDirectory = Directory.CreateDirectory(uniqueEgressDirectory); // Do we have a better way of getting the current directory (to delete it)
-
-                    outputDirectory?.Delete(recursive: true);
+                    uniqueEgressDirectory?.Delete(recursive: true);
                 }
                 catch
                 {
