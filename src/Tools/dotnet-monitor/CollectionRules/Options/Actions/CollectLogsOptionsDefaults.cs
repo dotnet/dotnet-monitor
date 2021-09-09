@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 {
     internal static class CollectLogsOptionsDefaults
@@ -9,5 +11,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public const Extensions.Logging.LogLevel DefaultLevel = Extensions.Logging.LogLevel.Warning;
         public const bool UseAppFilters = true;
         public const string Duration = "00:00:30";
+        public const LogFormat Format = LogFormat.EventStream;
     }
 }

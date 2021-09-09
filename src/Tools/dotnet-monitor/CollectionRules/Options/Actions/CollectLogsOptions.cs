@@ -51,5 +51,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [ValidateEgressProvider]
 #endif
         public string Egress { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLogsOptions_Format))]
+        [DefaultValue(CollectLogsOptionsDefaults.Format)]
+        [EnumDataType(typeof(LogFormat))]
+        public LogFormat? Format { get; set; }
     }
 }

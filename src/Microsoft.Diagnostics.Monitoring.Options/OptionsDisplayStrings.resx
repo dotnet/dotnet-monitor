@@ -548,4 +548,8 @@
 0. fieldNameOne: The name of the first field that is missing
 1. fieldNameTwo: The name of the second field that is missing</comment>
   </data>
+  <data name="DisplayAttributeDescription_CollectLogsOptions_Format" xml:space="preserve">
+    <value>The LogFormat used when egressing logs.</value>
+    <comment>The description provided for the Format parameter on CollectLogsOptions.</comment>
+  </data>
 </root>

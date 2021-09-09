@@ -2,16 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -25,21 +19,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     internal sealed class CollectLogsAction :
         ICollectionRuleAction<CollectLogsOptions>
     {
-        //private readonly IDumpService _dumpService;
         private readonly IServiceProvider _serviceProvider;
 
         public CollectLogsAction(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            //_dumpService = serviceProvider.GetRequiredService<IDumpService>();
         }
 
-        public Task<CollectionRuleActionResult> ExecuteAsync(CollectLogsOptions options, IEndpointInfo endpointInfo, CancellationToken token)
+        public async Task<CollectionRuleActionResult> ExecuteAsync(CollectLogsOptions options, IEndpointInfo endpointInfo, CancellationToken token)
         {
             TimeSpan duration = options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLogsOptionsDefaults.Duration));
             bool useAppFilters = options.UseAppFilters.GetValueOrDefault(CollectLogsOptionsDefaults.UseAppFilters);
-            Extensions.Logging.LogLevel defaultLevel = options.DefaultLevel.GetValueOrDefault(CollectLogsOptionsDefaults.DefaultLevel);
+            LogLevel defaultLevel = options.DefaultLevel.GetValueOrDefault(CollectLogsOptionsDefaults.DefaultLevel);
             string egressProvider = options.Egress;
+            LogFormat logFormat = options.Format.GetValueOrDefault(CollectLogsOptionsDefaults.Format);
 
             var settings = new EventLogsPipelineSettings()
             {
@@ -49,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             settings.LogLevel = defaultLevel;
             settings.UseAppFilters = useAppFilters;
 
-            string logsFilePath = await StartLogs(endpointInfo, settings, egressProvider);
+            string logsFilePath = await StartLogs(endpointInfo, settings, egressProvider, logFormat, token);
 
             return new CollectionRuleActionResult()
             {
@@ -60,17 +53,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             };
         }
 
-        private Task<string> StartLogs(
+        private async Task<string> StartLogs(
             IEndpointInfo endpointInfo,
             EventLogsPipelineSettings settings,
-            string egressProvider)
+            string egressProvider,
+            LogFormat format,
+            CancellationToken token)
         {
-            LogFormat format = ComputeLogFormat(Request.GetTypedHeaders().Accept); // We have no HTTP request, so this might be a problem...? Do we want another parameter for it, or just choose a default?
-            if (format == LogFormat.None)
-            {
-                throw new ...
-            }
-
             string fileName = FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.txt");
             string contentType = ContentTypes.TextEventStream;
 
@@ -108,6 +97,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 endpointInfo,
                 contentType,
                 scope);
+
+            ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+
+            return result.Result.Value;
         }
     }
 }
