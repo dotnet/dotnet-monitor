@@ -30,10 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// situations allow a different process object.
         /// </remarks>
         Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token);
-
-        //Task<Stream> GetDump(IProcessInfo pi, Models.DumpType mode, CancellationToken token);
     }
-
 
     internal interface IProcessInfo
     {

@@ -261,7 +261,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectDumpAction(ExpectedDumpType, ExpectedEgressProvider);
+                        .AddCollectDumpAction(ExpectedEgressProvider, ExpectedDumpType);
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },
                 ruleOptions =>
@@ -278,7 +278,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectDumpAction((DumpType)20, UnknownEgressName);
+                        .AddCollectDumpAction(UnknownEgressName, (DumpType)20);
                 },
                 ex =>
                 {

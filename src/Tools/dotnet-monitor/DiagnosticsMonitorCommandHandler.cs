@@ -141,6 +141,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
+                    builder.ConfigureStorageDefaults();
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
 
@@ -165,7 +166,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     builder.AddKeyPerFileWithChangeTokenSupport(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ConfigPrefix);
-                    builder.ConfigureStorageDefaults();
 
                     if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {

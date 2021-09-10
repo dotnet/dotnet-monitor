@@ -26,22 +26,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType mode, CancellationToken token)
         {
             string dumpFilePath = Path.Combine(_storageOptions.CurrentValue.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{endpointInfo.ProcessId}"));
-            NETCore.Client.DumpType dumpType = MapDumpType(mode);
+            DumpType dumpType = MapDumpType(mode);
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // Get the process
                 Process process = Process.GetProcessById(endpointInfo.ProcessId);
                     await Dumper.CollectDumpAsync(process, dumpFilePath, dumpType);
-                }
-                        else
-                        {
-                            await Task.Run(() =>
-                            {
-                                var client = new DiagnosticsClient(endpointInfo.Endpoint);
-                                client.WriteDump(dumpType, dumpFilePath);
-                            });
-                        }
+            }
+            else
+            {
+                await Task.Run(async () =>
+                {
+                    var client = new DiagnosticsClient(endpointInfo.Endpoint);
+                    await client.WriteDumpAsync(dumpType, dumpFilePath, logDumpGeneration: false, token);
+                });
+            }
 
             return new AutoDeleteFileStream(dumpFilePath);
         }

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    public class Utilities
+    internal static class Utilities
     {
         public const string ArtifactType_Dump = "dump";
         public const string ArtifactType_GCDump = "gcdump";
@@ -15,19 +15,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ArtifactType_Trace = "trace";
         public const string ArtifactType_Metrics = "collectmetrics";
 
-        internal static string GenerateDumpFileName()
+        public static string GenerateDumpFileName()
         {
             return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                 FormattableString.Invariant($"dump_{GetFileNameTimeStampUtcNow()}.dmp") :
                 FormattableString.Invariant($"core_{GetFileNameTimeStampUtcNow()}");
         }
 
-        internal static string GetFileNameTimeStampUtcNow()
+        public static string GetFileNameTimeStampUtcNow()
         {
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
 
-        internal static KeyValueLogScope GetScope(string artifactType, IEndpointInfo endpointInfo)
+        public static KeyValueLogScope GetScope(string artifactType, IEndpointInfo endpointInfo)
         {
             KeyValueLogScope scope = new KeyValueLogScope();
             scope.AddArtifactType(artifactType);
