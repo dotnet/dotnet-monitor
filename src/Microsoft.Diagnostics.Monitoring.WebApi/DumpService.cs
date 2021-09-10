@@ -20,11 +20,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public DumpService(IOptionsMonitor<StorageOptions> storageOptions)
         {
-            _storageOptions = storageOptions;
+            _storageOptions = storageOptions ?? throw new ArgumentNullException(nameof(StorageOptions));
         }
 
         public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType mode, CancellationToken token)
         {
+            if (endpointInfo == null)
+            {
+                throw new ArgumentNullException(nameof(endpointInfo));
+            }
+
             string dumpFilePath = Path.Combine(_storageOptions.CurrentValue.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{endpointInfo.ProcessId}"));
             DumpType dumpType = MapDumpType(mode);
 
@@ -32,15 +37,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 // Get the process
                 Process process = Process.GetProcessById(endpointInfo.ProcessId);
-                    await Dumper.CollectDumpAsync(process, dumpFilePath, dumpType);
+                await Dumper.CollectDumpAsync(process, dumpFilePath, dumpType);
             }
             else
             {
-                await Task.Run(async () =>
-                {
-                    var client = new DiagnosticsClient(endpointInfo.Endpoint);
-                    await client.WriteDumpAsync(dumpType, dumpFilePath, logDumpGeneration: false, token);
-                });
+                var client = new DiagnosticsClient(endpointInfo.Endpoint);
+                await client.WriteDumpAsync(dumpType, dumpFilePath, logDumpGeneration: false, token);
             }
 
             return new AutoDeleteFileStream(dumpFilePath);

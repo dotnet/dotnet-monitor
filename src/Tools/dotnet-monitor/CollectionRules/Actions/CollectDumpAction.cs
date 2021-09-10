@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -20,14 +21,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private readonly IDumpService _dumpService;
         private readonly IServiceProvider _serviceProvider;
 
+        internal const string egressPath = "EgressPath";
+
         public CollectDumpAction(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _dumpService = serviceProvider.GetRequiredService<IDumpService>();
         }
 
         public async Task<CollectionRuleActionResult> ExecuteAsync(CollectDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (endpointInfo == null)
+            {
+                throw new ArgumentNullException(nameof(endpointInfo));
+            }
+
             DumpType dumpType = options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
             string egressProvider = options.Egress;
 
@@ -35,42 +48,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             string dumpFilePath = string.Empty;
 
-            // Given our options validation, I believe this is probably redundant...should I remove it?
-            if (string.IsNullOrEmpty(egressProvider))
+            ValidationContext context = new(options, _serviceProvider, items: null);
+            Validator.ValidateObject(options, context, validateAllProperties: true);
+
+            KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Dump, endpointInfo);
+
+            try
             {
-                // Also, I would move this to Strings.resx if we do keep it, but I decided to wait for feedback before doing that.
-                throw new ArgumentException("No Egress Provider was supplied.");
+                EgressOperation egressOperation = new EgressOperation(
+                    token => _dumpService.DumpAsync(endpointInfo, dumpType, token),
+                    egressProvider,
+                    dumpFileName,
+                    endpointInfo,
+                    ContentTypes.ApplicationOctetStream,
+                    scope);
+
+                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+
+                dumpFilePath = result.Result.Value;
             }
-            else
+            catch (Exception ex)
             {
-                KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Dump, endpointInfo);
-
-                try
-                {
-                    EgressOperation egressOperation = new EgressOperation(
-                        token => _dumpService.DumpAsync(endpointInfo, dumpType, token),
-                        egressProvider,
-                        dumpFileName,
-                        endpointInfo,
-                        ContentTypes.ApplicationOctetStream,
-                        scope);
-
-                    ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-
-                    dumpFilePath = result.Result.Value;
-                  
-                }
-                catch (Exception ex)
-                {
-                    throw new CollectionRuleActionException(ex);
-                }
+                throw new CollectionRuleActionException(ex);
             }
 
             return new CollectionRuleActionResult()
             {
                 OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
-                    { "EgressPath", dumpFilePath }
+                    { egressPath, dumpFilePath }
                 }
             };
         }

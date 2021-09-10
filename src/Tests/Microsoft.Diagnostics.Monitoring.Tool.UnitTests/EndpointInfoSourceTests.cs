@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.EndpointUtilities;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -129,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.NotNull(endpointInfo.CommandLine);
                 Assert.NotNull(endpointInfo.OperatingSystem);
                 Assert.NotNull(endpointInfo.ProcessArchitecture);
-                await VerifyConnectionAsync(runner, endpointInfo);
+                await EndpointUtilities.VerifyConnectionAsync(runner, endpointInfo);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
@@ -187,7 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotNull(endpointInfo.OperatingSystem);
                     Assert.NotNull(endpointInfo.ProcessArchitecture);
 
-                    await VerifyConnectionAsync(runners[i], endpointInfo);
+                    await EndpointUtilities.VerifyConnectionAsync(runners[i], endpointInfo);
 
                     await runners[i].SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 }

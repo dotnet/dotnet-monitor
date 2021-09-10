@@ -2,25 +2,23 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using System.Threading.Tasks;
-using Xunit;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using System.Threading;
-using System;
-using System.IO;
-using System.Globalization;
-using Xunit.Abstractions;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.EndpointUtilities;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Extensions.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -50,8 +48,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             DirectoryInfo uniqueEgressDirectory = null;
 
             try {
-                DumpType? ExpectedDumpType = dumpType;
-
                 uniqueEgressDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), TempEgressDirectory, Guid.NewGuid().ToString()));
 
                 await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
@@ -59,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
 
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddCollectDumpAction(ExpectedEgressProvider, ExpectedDumpType)
+                        .AddCollectDumpAction(ExpectedEgressProvider, dumpType)
                         .SetStartupTrigger();
                 }, async host =>
                 {
@@ -67,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     CollectDumpOptions options = (CollectDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
 
                     ICollectionRuleActionProxy action;
-                    host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectDump, out action);
+                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectDump, out action));
 
                     EndpointInfoSourceCallback callback = new(_outputHelper);
                     await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
@@ -85,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
                         Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue("EgressPath", out string egressPath));
+                        Assert.True(result.OutputValues.TryGetValue(CollectDumpAction.egressPath, out string egressPath));
                         Assert.True(File.Exists(egressPath));
 
                         using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
