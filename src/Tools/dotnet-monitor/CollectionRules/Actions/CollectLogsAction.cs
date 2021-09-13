@@ -28,6 +28,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         public async Task<CollectionRuleActionResult> ExecuteAsync(CollectLogsOptions options, IEndpointInfo endpointInfo, CancellationToken token)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (endpointInfo == null)
+            {
+                throw new ArgumentNullException(nameof(endpointInfo));
+            }
+
+            ValidationContext context = new(options, _serviceProvider, items: null);
+            Validator.ValidateObject(options, context, validateAllProperties: true);
+
             TimeSpan duration = options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLogsOptionsDefaults.Duration));
             bool useAppFilters = options.UseAppFilters.GetValueOrDefault(CollectLogsOptionsDefaults.UseAppFilters);
             LogLevel defaultLevel = options.DefaultLevel.GetValueOrDefault(CollectLogsOptionsDefaults.DefaultLevel);
@@ -53,6 +66,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             };
         }
 
+        // Move this method to Utilities and share it instead of copying it
         private async Task<string> StartLogs(
             IEndpointInfo endpointInfo,
             EventLogsPipelineSettings settings,
