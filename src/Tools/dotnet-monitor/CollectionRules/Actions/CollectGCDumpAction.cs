@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
@@ -27,8 +28,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     {
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IServiceProvider _serviceProvider;
-
-        public const string ArtifactType_GCDump = "gcdump";
 
         public CollectGCDumpAction(IServiceProvider serviceProvider)
         {
@@ -38,28 +37,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         public async Task<CollectionRuleActionResult> ExecuteAsync(CollectGCDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
         {
-            string egress = options.Egress; // Do we need to check for non-null value? -> be consistent with what we do for Dump.
-
-            if (string.IsNullOrEmpty(egress))
+            if (options == null)
             {
-                throw new ArgumentException("No Egress Provider was supplied.");
+                throw new ArgumentNullException(nameof(options));
             }
 
-            int pid = endpointInfo.ProcessId;
+            if (endpointInfo == null)
+            {
+                throw new ArgumentNullException(nameof(endpointInfo));
+            }
 
-            ProcessKey? processKey = new ProcessKey(pid);
+            string egress = options.Egress;
 
-            IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, token);
+            ValidationContext context = new(options, _serviceProvider, items: null);
+            Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            string gcdumpFileName = FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
+            string gcdumpFileName = Utils.GenerateGCDumpFileName; //FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.gcdump");
 
             string gcdumpFilePath = string.Empty;
 
             Func<CancellationToken, Task<IFastSerializable>> action = async (token) => await DiagController.GetGCHeadDump(endpointInfo, token);
 
-            KeyValueLogScope scope = new KeyValueLogScope();
-            scope.AddArtifactType(ArtifactType_GCDump);
-            scope.AddEndpointInfo(endpointInfo);
+            KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Dump, endpointInfo);
 
             EgressOperation egressOperation = new EgressOperation(
                         ConvertFastSerializeAction(action),
@@ -83,11 +82,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         }
 
-        private static string GetFileNameTimeStampUtcNow()
-        {
-            return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
-        }
-
+        // Move this to be a shared method, maybe in Utilities?
         private static Func<Stream, CancellationToken, Task> ConvertFastSerializeAction(Func<CancellationToken, Task<IFastSerializable>> action)
         {
             return async (stream, token) =>

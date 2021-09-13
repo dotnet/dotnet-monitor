@@ -31,6 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const string TempEgressDirectory = "/tmp";
         private const string ExpectedEgressProvider = "TmpEgressProvider";
+        private const string DefaultRuleName = "Default";
 
         private ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
@@ -44,84 +45,59 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task CollectGCDumpAction_Success()
         {
-            string uniqueEgressDirectory = TempEgressDirectory + Guid.NewGuid();
-
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            try
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory);
-            }, async host =>
-            {
-                CollectGCDumpAction action = new(host.Services);
+                string uniqueEgressDirectory = TempEgressDirectory + Guid.NewGuid();
 
-                CollectGCDumpOptions options = new();
-
-                options.Egress = ExpectedEgressProvider;
-
-                EndpointInfoSourceCallback callback = new(_outputHelper);
-                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-                source.Start();
-
-                var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
-                Assert.Empty(endpointInfos);
-
-                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
-
-                Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-                await runner.ExecuteAsync(async () =>
+                await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
                 {
-                    await newEndpointInfoTask;
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory);
 
-                    endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .AddCollectGCDumpAction(ExpectedEgressProvider)
+                        .SetStartupTrigger();
+                }, async host =>
+                {
+                    IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
+                    CollectGCDumpOptions options = (CollectGCDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
 
-                    var endpointInfo = Assert.Single(endpointInfos);
-                    Assert.NotNull(endpointInfo.CommandLine);
-                    Assert.NotNull(endpointInfo.OperatingSystem);
-                    Assert.NotNull(endpointInfo.ProcessArchitecture);
-                    await VerifyConnectionAsync(runner, endpointInfo); // This is in EndpointUtilities as a static method
+                    ICollectionRuleActionProxy action;
+                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectGCDump, out action));
 
-                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.GCDumpTimeout);
-                    CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+                    EndpointInfoSourceCallback callback = new(_outputHelper);
+                    await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+                    source.Start();
 
-                    string egressPath = result.OutputValues["EgressPath"];
+                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
 
-                    if (!File.Exists(egressPath))
+                    Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                    await runner.ExecuteAsync(async () =>
                     {
-                        throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Tools.Monitor.Strings.ErrorMessage_FileNotFound, egressPath));
-                    }
-                    else
-                    {
-                        // Currently not aware of any validation we have for GCDumps so only checking if the file exists
+                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
-                        /*
-                        using (StreamReader reader = new StreamReader(egressPath, true))
-                        {
-                            Stream dumpStream = reader.BaseStream;
-                            Assert.NotNull(dumpStream);
+                        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.GCDumpTimeout);
+                        CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
-                            await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), dumpStream);
-                        }*/
-                    }
+                        // Currently not doing any validation on the validity of the GCDump (just checking that the file exists)
+                        Assert.NotNull(result.OutputValues);
+                        Assert.True(result.OutputValues.TryGetValue(CollectDumpAction.egressPath, out string egressPath));
+                        Assert.True(File.Exists(egressPath));
 
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                        await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                    });
                 });
-
-                await Task.Delay(TimeSpan.FromSeconds(1));
-
-                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
-
-                Assert.Empty(endpointInfos);
-
+            }
+            finally
+            {
                 try
                 {
-                    DirectoryInfo outputDirectory = Directory.CreateDirectory(uniqueEgressDirectory); // Do we have a better way of getting the current directory (to delete it)
-
-                    outputDirectory?.Delete(recursive: true);
+                    uniqueEgressDirectory?.Delete(recursive: true);
                 }
                 catch
                 {
                 }
-            });
+            }
         }
     }
 }
