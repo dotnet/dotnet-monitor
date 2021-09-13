@@ -47,7 +47,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             DirectoryInfo uniqueEgressDirectory = null;
 
-            try {
+            try
+            {
                 uniqueEgressDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), TempEgressDirectory, Guid.NewGuid().ToString()));
 
                 await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
