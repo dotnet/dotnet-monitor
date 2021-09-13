@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private readonly IDumpService _dumpService;
         private readonly IServiceProvider _serviceProvider;
 
-        internal const string egressPath = "EgressPath";
+        internal const string EgressPathOutputValueName = "EgressPath";
 
         public CollectDumpAction(IServiceProvider serviceProvider)
         {
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
-                    { egressPath, dumpFilePath }
+                    { EgressPathOutputValueName, dumpFilePath }
                 }
             };
         }
