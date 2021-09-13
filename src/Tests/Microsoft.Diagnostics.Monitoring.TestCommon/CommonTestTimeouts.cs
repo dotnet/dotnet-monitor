@@ -22,5 +22,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Default timeout for waiting for an executable to exit.
         /// </summary>
         public static readonly TimeSpan WaitForExit = TimeSpan.FromSeconds(15);
+
+        /// <summary>
+        /// Default timeout for acquiring a trace.
+        /// </summary>
+        public static readonly TimeSpan TraceTimeout = TimeSpan.FromMinutes(2);
     }
 }

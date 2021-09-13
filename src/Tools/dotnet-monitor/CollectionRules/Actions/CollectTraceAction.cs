@@ -32,17 +32,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         public async Task<CollectionRuleActionResult> ExecuteAsync(CollectTraceOptions options, IEndpointInfo endpointInfo, CancellationToken token)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (endpointInfo == null)
+            {
+                throw new ArgumentNullException(nameof(endpointInfo));
+            }
+
             TimeSpan duration = options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectTraceOptionsDefaults.Duration));
             string egressProvider = options.Egress;
+
+            ValidationContext context = new(options, _serviceProvider, items: null);
+            Validator.ValidateObject(options, context, validateAllProperties: true);
 
             string traceFilePath = string.Empty;
 
             if (options.Profile != null && options.Providers == null)
             {
+                // Should move into shared Utilities method for reuse
                 TraceProfile profile = options.Profile.Value;
                 int metricsIntervalSeconds = options.MetricsIntervalSeconds.GetValueOrDefault(CollectTraceOptionsDefaults.MetricsIntervalSeconds);
-
-                // "Standard"
 
                 var configurations = new List<MonitoringSourceConfiguration>();
                 if (profile.HasFlag(TraceProfile.Cpu))
@@ -72,17 +84,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
             else if (options.Providers != null && options.Profile == null)
             {
+                // Should move into Utilities method for reuse
+
                 List<Monitoring.WebApi.Models.EventPipeProvider> optionsProviders = options.Providers;
                 bool requestRundown = options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
                 int bufferSizeMegabytes = options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
-
-                // "Custom"
 
                 var providers = new List<NETCore.Client.EventPipeProvider>();
 
                 foreach (Monitoring.WebApi.Models.EventPipeProvider providerModel in optionsProviders)
                 {
-                    // Probably should spike IntegerOrHexStringAttribute into a Utilities method (need Dump to merge for that)
                     if (!IntegerOrHexStringAttribute.TryParse(providerModel.Keywords, out long keywords, out string parseError))
                     {
                         throw new InvalidOperationException(parseError);
@@ -102,7 +113,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     bufferSizeInMB: bufferSizeMegabytes);
 
                 traceFilePath = await StartTrace(endpointInfo, traceConfiguration, duration, egressProvider);
-
             }
             else
             {
