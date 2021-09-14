@@ -36,7 +36,7 @@
     <!-- dotnet/runtime references -->
     <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rc.2.21463.21</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.245801</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.246301</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftNETCoreApp31Version>3.1.18</MicrosoftNETCoreApp31Version>
