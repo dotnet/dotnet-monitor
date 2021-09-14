@@ -22,5 +22,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Default timeout for waiting for an executable to exit.
         /// </summary>
         public static readonly TimeSpan WaitForExit = TimeSpan.FromSeconds(15);
+
+        /// <summary>
+        /// Default timeout for dump collection.
+        /// </summary>
+        /// <remarks>
+        /// Dumps (especially full dumps) can be quite large and take a significant amount of time to transfer.
+        /// </remarks>
+        public static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(3);
     }
 }

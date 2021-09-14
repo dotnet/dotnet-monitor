@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,11 +72,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     outputHelper.WriteLine("End Configuration");
 
                     builder.AddInMemoryCollection(configurationValues);
+
+                    builder.ConfigureStorageDefaults();
                 })
-                .ConfigureServices(services =>
+                .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();
+
+                    services.AddSingleton<IDumpService, DumpService>();
+                    services.ConfigureStorage(context.Configuration);
                     servicesCallback?.Invoke(services);
                 })
                 .Build();
