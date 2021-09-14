@@ -374,13 +374,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ILogger<CollectionRuleService> logger =
                             host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
 
-                        await using CollectionRulePipeline pipeline = new(
-                            logger,
-                            actionListExecutor,
-                            triggerOperations,
+                        CollectionRuleContext context = new(
                             collectionRuleName,
                             optionsMonitor.Get(collectionRuleName),
-                            endpointInfo);
+                            endpointInfo,
+                            logger);
+
+                        await using CollectionRulePipeline pipeline = new(
+                            actionListExecutor,
+                            triggerOperations,
+                            context);
 
                         await pipelineCallback(runner, pipeline);
                     },

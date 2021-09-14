@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Xunit.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -45,8 +47,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+                ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
 
-                await executor.ExecuteActions(null, ruleOptions.Actions, null, cancellationTokenSource.Token);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
+
+                await executor.ExecuteActions(context, cancellationTokenSource.Token);
             });
         }
 
@@ -66,9 +71,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+                ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
 
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                    () => executor.ExecuteActions(null, ruleOptions.Actions, null, cancellationTokenSource.Token));
+                    () => executor.ExecuteActions(context, cancellationTokenSource.Token));
 
                 Assert.Equal(1, actionExecutionException.ActionIndex);
 
@@ -92,9 +100,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+                ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
 
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                    () => executor.ExecuteActions(null, ruleOptions.Actions, null, cancellationTokenSource.Token));
+                    () => executor.ExecuteActions(context, cancellationTokenSource.Token));
 
                 Assert.Equal(0, actionExecutionException.ActionIndex);
 

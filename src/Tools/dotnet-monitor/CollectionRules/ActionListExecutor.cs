@@ -7,7 +7,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,19 +24,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         public async Task ExecuteActions(
-            string ruleName,
-            IEnumerable<CollectionRuleActionOptions> collectionRuleActionOptions,
-            IEndpointInfo endpointInfo,
+            CollectionRuleContext context,
             CancellationToken cancellationToken)
         {
-            if (collectionRuleActionOptions == null)
+            if (context == null)
             {
-                throw new ArgumentNullException(nameof(collectionRuleActionOptions));
+                throw new ArgumentNullException(nameof(context));
             }
 
             int actionIndex = 0;
 
-            foreach (CollectionRuleActionOptions actionOption in collectionRuleActionOptions)
+            foreach (CollectionRuleActionOptions actionOption in context.Options.Actions)
             {
                 // TODO: Not currently accounting for properties from previous executed actions
 
@@ -45,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 actionScope.AddCollectionRuleAction(actionOption.Type, actionIndex);
                 using IDisposable actionScopeRegistration = _logger.BeginScope(actionScope);
 
-                _logger.CollectionRuleActionStarted(ruleName, actionOption.Type);
+                _logger.CollectionRuleActionStarted(context.Name, actionOption.Type);
 
                 try
                 {
@@ -56,14 +53,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         throw new InvalidOperationException(Strings.ErrorMessage_CouldNotMapToAction);
                     }
 
-                    await action.ExecuteAsync(actionOption.Settings, endpointInfo, cancellationToken);
+                    await action.ExecuteAsync(actionOption.Settings, context.EndpointInfo, cancellationToken);
                 }
-                catch (Exception ex) when (ShouldHandleException(ex, ruleName, actionOption.Type))
+                catch (Exception ex) when (ShouldHandleException(ex, context.Name, actionOption.Type))
                 {
                     throw new CollectionRuleActionExecutionException(ex, actionOption.Type, actionIndex);
                 }
 
-                _logger.CollectionRuleActionCompleted(ruleName, actionOption.Type);
+                _logger.CollectionRuleActionCompleted(context.Name, actionOption.Type);
 
                 ++actionIndex;
             }

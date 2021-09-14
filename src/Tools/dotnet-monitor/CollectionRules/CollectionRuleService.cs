@@ -144,13 +144,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleStarted(ruleName);
 
+                CollectionRuleContext context = new(ruleName, options, endpointInfo, _logger);
+
                 await using CollectionRulePipeline pipeline = new(
-                    _logger,
                     actionListExecutor,
                     triggerOperations,
-                    ruleName,
-                    options,
-                    endpointInfo);
+                    context);
 
                 await pipeline.StartAsync(linkedSource.Token);
 
