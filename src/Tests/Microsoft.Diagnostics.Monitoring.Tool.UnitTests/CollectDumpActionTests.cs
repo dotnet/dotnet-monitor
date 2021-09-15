@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -21,7 +22,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    public sealed class CollectGCDumpActionTests
+    public sealed class CollectDumpActionTests
     {
         private const string TempEgressDirectory = "/tmp";
         private const string ExpectedEgressProvider = "TmpEgressProvider";
@@ -30,14 +31,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
-        public CollectGCDumpActionTests(ITestOutputHelper outputHelper)
+        public CollectDumpActionTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
             _endpointUtilities = new(_outputHelper);
         }
 
-        [Fact]
-        public async Task CollectGCDumpAction_Success()
+        [Theory]
+        [InlineData(DumpType.Full)]
+        [InlineData(DumpType.Mini)]
+        [InlineData(DumpType.Triage)]
+        [InlineData(DumpType.WithHeap)]
+        [InlineData(null)]
+        public async Task CollectDumpAction_Success(DumpType? dumpType)
         {
             DirectoryInfo uniqueEgressDirectory = null;
 
@@ -50,15 +56,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
 
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddCollectGCDumpAction(ExpectedEgressProvider)
+                        .AddCollectDumpAction(ExpectedEgressProvider, dumpType)
                         .SetStartupTrigger();
                 }, async host =>
                 {
                     IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                    CollectGCDumpOptions options = (CollectGCDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+                    CollectDumpOptions options = (CollectDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
 
                     ICollectionRuleActionProxy action;
-                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectGCDump, out action));
+                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectDump, out action));
 
                     EndpointInfoSourceCallback callback = new(_outputHelper);
                     await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
@@ -72,13 +78,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     {
                         IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
-                        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.GCDumpTimeout);
+                        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.DumpTimeout);
                         CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
-                        // Currently not doing any validation on the validity of the GCDump (just checking that the file exists)
                         Assert.NotNull(result.OutputValues);
                         Assert.True(result.OutputValues.TryGetValue(CollectDumpAction.EgressPathOutputValueName, out string egressPath));
                         Assert.True(File.Exists(egressPath));
+
+                        using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                        Assert.NotNull(dumpStream);
+
+                        await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), dumpStream);
 
                         await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                     });

@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, DumpType type, string egress)
+        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress, DumpType? type = null)
         {
             options.AddAction(KnownCollectionRuleActions.CollectDump, out CollectionRuleActionOptions actionOptions);
 

@@ -19,14 +19,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         public static readonly TimeSpan LogsDuration = TimeSpan.FromSeconds(10);
 
         /// <summary>
-        /// Default timeout for dump collection.
-        /// </summary>
-        /// <remarks>
-        /// Dumps (especially full dumps) can be quite large and take a significant amount of time to transfer.
-        /// </remarks>
-        public static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(3);
-
-        /// <summary>
         /// Timeout for polling a long running operation to completion.
         /// This may need to be adjusted for individual calls that are longer than 30 seconds.
         /// </summary>
