@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
         /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
-        [HttpGet("collectmetrics", Name = nameof(CaptureMetrics))]
+        [HttpGet("livemetrics", Name = nameof(CaptureMetrics))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
         /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
-        [HttpPost("collectmetrics", Name = nameof(CaptureMetricsCustom))]
+        [HttpPost("livemetrics", Name = nameof(CaptureMetricsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]

@@ -1,13 +1,11 @@
-# Collectmetrics - Get
+# Livemetrics - Get Custom
 
-Captures metrics for a chosen process.
-
-> **NOTE:** For Prometheus style metrics, use the [metrics](./metrics.md) endpoint.
+Captures metrics for a process, with the ability to specify custom metrics.
 
 ## HTTP Route
 
 ```http
-GET /collectmetrics?pid={pid}&uid={uid}&name={name}&metricsIntervalSeconds={metricsIntervalSeconds}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /livemetrics?pid={pid}&uid={uid}&name={name}&metricsIntervalSeconds={metricsIntervalSeconds}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -39,11 +37,17 @@ Allowed schemes:
 - `Bearer`
 - `Negotiate` (Windows only, running as unelevated)
 
+## Request Body
+
+A request body of type [EventMetricsConfiguration](definitions.md#EventMetricsConfiguration) is required.
+
+The expected content type is `application/json`.
+
 ## Responses
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [Metric](./definitions.md/#Metric) | The metrics from the process formatted as json sequence. | `application/json-seq` |
+| 200 OK | [Metric](./definitions.md/#Metric) | The metrics from the process formatted as json sequence. Each JSON object is a [metrics object](./definitions.md/#Metric)| `application/json-seq` |
 | 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
@@ -54,9 +58,22 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /collectmetrics?pid=21632&metricsIntervalSeconds=10&durationSeconds=60 HTTP/1.1
+GET /livemetrics?pid=21632&metricsIntervalSeconds=10&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+
+{
+    "includeDefaultProviders": false,
+    "providers": [
+        {
+            "providerName": "CustomProvider",
+            "counterNames": [
+                "counter1",
+                "counter2"
+            ]
+        }
+    ]
+}
 ```
 
 ### Sample Response
@@ -67,30 +84,21 @@ Content-Type: application/json-seq
 
 {
     "timestamp": "2021-08-31T16:58:39.7514031+00:00",
-    "provider": "System.Runtime",
-    "name": "cpu-usage",
-    "displayName": "CPU Usage",
-    "unit": "%",
+    "provider": "CustomProvider",
+    "name": "counter1",
+    "displayName": "Counter 1",
+    "unit": "B",
     "counterType": "Metric",
     "value": 3
 }
 {
     "timestamp": "2021-08-31T16:58:39.7515128+00:00",
-    "provider": "System.Runtime",
-    "name": "working-set",
-    "displayName": "Working Set",
+    "provider": "CustomProvider",
+    "name": "counter2",
+    "displayName": "Counter 2",
     "unit": "MB",
     "counterType": "Metric",
     "value": 126
-}
-{
-    "timestamp": "2021-08-31T16:58:39.7515232+00:00",
-    "provider": "System.Runtime",
-    "name": "gc-heap-size",
-    "displayName": "GC Heap Size",
-    "unit": "MB",
-    "counterType": "Metric",
-    "value": 16
 }
 ```
 
