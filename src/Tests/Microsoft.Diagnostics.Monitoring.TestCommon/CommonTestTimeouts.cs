@@ -30,5 +30,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Dumps (especially full dumps) can be quite large and take a significant amount of time to transfer.
         /// </remarks>
         public static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(3);
+
+        /// <summary>
+        /// Default timeout for logs collection.
+        /// </summary>
+        public static readonly TimeSpan LogsTimeout = TimeSpan.FromMinutes(3);
+
     }
 }

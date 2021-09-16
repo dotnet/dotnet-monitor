@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                         // Not currently doing any validation on the Logs itself for validity; just checking that the file was created.
                         Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue(CollectLogsAction.egressPath, out string egressPath));
+                        Assert.True(result.OutputValues.TryGetValue(CollectDumpAction.EgressPathOutputValueName, out string egressPath));
                         Assert.True(File.Exists(egressPath));
 
                         await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);

@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
-                    { "EgressPath", logsFilePath }
+                    { CollectDumpAction.EgressPathOutputValueName, logsFilePath }
                 }
             };
         }
