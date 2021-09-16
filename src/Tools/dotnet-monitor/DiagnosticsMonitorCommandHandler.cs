@@ -141,7 +141,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
-                    ConfigureStorageDefaults(builder);
+                    builder.ConfigureStorageDefaults();
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
 
@@ -239,6 +239,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                     services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
+                    services.AddSingleton<IDumpService, DumpService>();
                     services.AddSingleton<RequestLimitTracker>();
                     services.ConfigureOperationStore();
                     services.ConfigureEgress();
@@ -304,14 +305,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)), authenticationOptions.TemporaryJwtKey.PublicKey },
                 });
             }
-        }
-
-        private static void ConfigureStorageDefaults(IConfigurationBuilder builder)
-        {
-            builder.AddInMemoryCollection(new Dictionary<string, string>
-            {
-                {ConfigurationPath.Combine(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
-            });
         }
 
         private static void ConfigureMetricsEndpoint(IConfigurationBuilder builder, bool enableMetrics, string[] metricEndpoints)

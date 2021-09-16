@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     public sealed class ActionListExecutorTests
     {
         private const int TokenTimeoutMs = 10000;
-        
+
         private readonly ITestOutputHelper _outputHelper;
 
         private const string DefaultRuleName = "Default";

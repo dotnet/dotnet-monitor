@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_Metrics)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_Metrics)]
         [EgressValidation]
         public Task<ActionResult> CaptureMetrics(
             [FromQuery]
@@ -72,13 +72,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     await eventCounterPipeline.RunAsync(token);
                 };
 
-                return await Result(ArtifactType_Metrics,
+                return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
                     action,
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
-            }, processKey, ArtifactType_Metrics);
+            }, processKey, Utilities.ArtifactType_Metrics);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = ArtifactType_Metrics)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_Metrics)]
         [EgressValidation]
         public Task<ActionResult> CaptureMetricsCustom(
             [FromBody][Required]
@@ -135,16 +135,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     await eventCounterPipeline.RunAsync(token);
                 };
 
-                return await Result(ArtifactType_Metrics,
+                return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
                     action,
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
-            }, processKey, ArtifactType_Metrics);
+            }, processKey, Utilities.ArtifactType_Metrics);
         }
 
         private static string GetMetricFilename(IProcessInfo processInfo) =>
-            FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.metrics.json");
+            FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.metrics.json");
     }
 }
