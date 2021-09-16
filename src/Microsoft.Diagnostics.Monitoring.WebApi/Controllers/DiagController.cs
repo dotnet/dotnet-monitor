@@ -633,32 +633,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
 
             string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
-            string contentType = ContentTypes.TextEventStream;
+            string contentType = Utilities.GetLogsContentType(format);
 
-            if (format == LogFormat.EventStream)
-            {
-                contentType = ContentTypes.TextEventStream;
-            }
-            else if (format == LogFormat.NDJson)
-            {
-                contentType = ContentTypes.ApplicationNdJson;
-            }
-            else if (format == LogFormat.JsonSequence)
-            {
-                contentType = ContentTypes.ApplicationJsonSequence;
-            }
-
-            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-            {
-                using var loggerFactory = new LoggerFactory();
-
-                loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
-
-                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
-                await pipeline.RunAsync(token);
-            };
+            Func<Stream, CancellationToken, Task> action = Utilities.GetLogsAction(format, processInfo.EndpointInfo, settings);
 
             return Result(
                 Utilities.ArtifactType_Logs,

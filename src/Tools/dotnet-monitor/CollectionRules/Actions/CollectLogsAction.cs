@@ -4,7 +4,6 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -76,32 +75,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             CancellationToken token)
         {
             string fileName = FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.txt");
-            string contentType = ContentTypes.TextEventStream;
+            string contentType = Utils.GetLogsContentType(format);
 
-            if (format == LogFormat.EventStream)
-            {
-                contentType = ContentTypes.TextEventStream;
-            }
-            else if (format == LogFormat.NDJson)
-            {
-                contentType = ContentTypes.ApplicationNdJson;
-            }
-            else if (format == LogFormat.JsonSequence)
-            {
-                contentType = ContentTypes.ApplicationJsonSequence;
-            }
-
-            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-            {
-                using var loggerFactory = new LoggerFactory();
-
-                loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
-
-                var client = new DiagnosticsClient(endpointInfo.Endpoint);
-
-                await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
-                await pipeline.RunAsync(token);
-            };
+            Func<Stream, CancellationToken, Task> action = Utils.GetLogsAction(format, endpointInfo, settings);
 
             KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Logs, endpointInfo);
 

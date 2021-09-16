@@ -2,8 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -34,6 +40,41 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             scope.AddEndpointInfo(endpointInfo);
 
             return scope;
+        }
+
+        public static string GetLogsContentType(LogFormat format)
+        {
+            if (format == LogFormat.EventStream)
+            {
+                return ContentTypes.TextEventStream;
+            }
+            else if (format == LogFormat.NDJson)
+            {
+                return ContentTypes.ApplicationNdJson;
+            }
+            else if (format == LogFormat.JsonSequence)
+            {
+                return ContentTypes.ApplicationJsonSequence;
+            }
+            else
+            {
+                return ContentTypes.TextEventStream;
+            }
+        }
+
+        public static Func<Stream, CancellationToken, Task> GetLogsAction(LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings)
+        {
+            return async (outputStream, token) =>
+            {
+                using var loggerFactory = new LoggerFactory();
+
+                loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
+
+                var client = new DiagnosticsClient(endpointInfo.Endpoint);
+
+                await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
+                await pipeline.RunAsync(token);
+            };
         }
     }
 }
