@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ArtifactType_GCDump = "gcdump";
         public const string ArtifactType_Logs = "logs";
         public const string ArtifactType_Trace = "trace";
-        public const string ArtifactType_Metrics = "collectmetrics";
+        public const string ArtifactType_Metrics = "livemetrics";
 
         public static string GenerateDumpFileName()
         {
