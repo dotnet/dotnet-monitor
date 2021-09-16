@@ -5,15 +5,11 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
-using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -70,14 +66,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
             else
             {
-                throw new ArgumentException("One of the Profile and Providers fields must be provided."); // Temporary message -> would be put into Strings.resx if we keep the validation
+                throw new ArgumentException("One of the Profile and Providers fields must be provided."); // Temporary message -> put into Strings.resx if we keep the validation
             }
 
             return new CollectionRuleActionResult()
             {
                 OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
-                    { "EgressPath", traceFilePath }
+                    { CollectionRuleActionConstants.EgressPathOutputValueName, traceFilePath }
                 }
             };
         }
@@ -91,25 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             string fileName = FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
 
-            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-            {
-                Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
-                {
-                    //Buffer size matches FileStreamResult
-                    //CONSIDER Should we allow client to change the buffer size?
-                    await eventStream.CopyToAsync(outputStream, 0x10000, token);
-                };
-
-                var client = new DiagnosticsClient(endpointInfo.Endpoint);
-
-                await using EventTracePipeline pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
-                {
-                    Configuration = configuration,
-                    Duration = duration,
-                }, streamAvailable);
-
-                await pipeProcessor.RunAsync(token);
-            };
+            Func<Stream, CancellationToken, Task> action = Utils.GetTraceAction(endpointInfo, configuration, duration);
 
             KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Trace, endpointInfo);
 

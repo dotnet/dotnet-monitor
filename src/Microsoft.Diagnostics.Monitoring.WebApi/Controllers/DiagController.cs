@@ -550,25 +550,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.nettrace");
 
-            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-            {
-                Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
-                {
-                    //Buffer size matches FileStreamResult
-                    //CONSIDER Should we allow client to change the buffer size?
-                    await eventStream.CopyToAsync(outputStream, 0x10000, token);
-                };
-
-                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                await using EventTracePipeline pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
-                {
-                    Configuration = configuration,
-                    Duration = duration,
-                }, streamAvailable);
-
-                await pipeProcessor.RunAsync(token);
-            };
+            Func<Stream, CancellationToken, Task> action = Utilities.GetTraceAction(processInfo.EndpointInfo, configuration, duration);
 
             return Result(
                 Utilities.ArtifactType_Trace,

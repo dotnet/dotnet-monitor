@@ -8,8 +8,11 @@ using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -92,6 +95,31 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 providers: providers.ToArray(),
                 requestRundown: requestRundown,
                 bufferSizeInMB: bufferSizeInMB);
+        }
+
+        public static Func<Stream, CancellationToken, Task> GetTraceAction(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration)
+        {
+            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
+            {
+                Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
+                {
+                    //Buffer size matches FileStreamResult
+                    //CONSIDER Should we allow client to change the buffer size?
+                    await eventStream.CopyToAsync(outputStream, 0x10000, token);
+                };
+
+                var client = new DiagnosticsClient(endpointInfo.Endpoint);
+
+                await using EventTracePipeline pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
+                {
+                    Configuration = configuration,
+                    Duration = duration,
+                }, streamAvailable);
+
+                await pipeProcessor.RunAsync(token);
+            };
+
+            return action;
         }
     }
 }

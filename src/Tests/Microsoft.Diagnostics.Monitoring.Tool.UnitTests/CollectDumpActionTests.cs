@@ -82,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
                         Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue(CollectDumpAction.EgressPathOutputValueName, out string egressPath));
+                        Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
                         Assert.True(File.Exists(egressPath));
 
                         using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
