@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -21,13 +22,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class CollectTraceAction : ICollectionRuleAction<CollectTraceOptions>
     {
-        //private readonly IDumpService _dumpService;
         private readonly IServiceProvider _serviceProvider;
 
         public CollectTraceAction(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            //_dumpService = serviceProvider.GetRequiredService<IDumpService>();
         }
 
         public async Task<CollectionRuleActionResult> ExecuteAsync(CollectTraceOptions options, IEndpointInfo endpointInfo, CancellationToken token)
@@ -52,67 +51,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             if (options.Profile != null && options.Providers == null)
             {
-                // Should move into shared Utilities method for reuse
                 TraceProfile profile = options.Profile.Value;
                 int metricsIntervalSeconds = options.MetricsIntervalSeconds.GetValueOrDefault(CollectTraceOptionsDefaults.MetricsIntervalSeconds);
 
-                var configurations = new List<MonitoringSourceConfiguration>();
-                if (profile.HasFlag(TraceProfile.Cpu))
-                {
-                    configurations.Add(new CpuProfileConfiguration());
-                }
-                if (profile.HasFlag(TraceProfile.Http))
-                {
-                    configurations.Add(new HttpRequestSourceConfiguration());
-                }
-                if (profile.HasFlag(TraceProfile.Logs))
-                {
-                    configurations.Add(new LoggingSourceConfiguration(
-                        LogLevel.Trace,
-                        LogMessageType.FormattedMessage | LogMessageType.JsonMessage,
-                        filterSpecs: null,
-                        useAppFilters: true));
-                }
-                if (profile.HasFlag(TraceProfile.Metrics))
-                {
-                    configurations.Add(new MetricSourceConfiguration(metricsIntervalSeconds, Enumerable.Empty<string>()));
-                }
+                var aggregateConfiguration = Utils.GetTraceConfiguration(profile, metricsIntervalSeconds);
 
-                var aggregateConfiguration = new AggregateSourceConfiguration(configurations.ToArray());
-
-                traceFilePath = await StartTrace(endpointInfo, aggregateConfiguration, duration, egressProvider);
+                traceFilePath = await StartTrace(endpointInfo, aggregateConfiguration, duration, egressProvider, token);
             }
             else if (options.Providers != null && options.Profile == null)
             {
-                // Should move into Utilities method for reuse
-
-                List<Monitoring.WebApi.Models.EventPipeProvider> optionsProviders = options.Providers;
+                Monitoring.WebApi.Models.EventPipeProvider[] optionsProviders = options.Providers.ToArray();
                 bool requestRundown = options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
                 int bufferSizeMegabytes = options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
 
-                var providers = new List<NETCore.Client.EventPipeProvider>();
+                var traceConfiguration = Utils.GetCustomTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
 
-                foreach (Monitoring.WebApi.Models.EventPipeProvider providerModel in optionsProviders)
-                {
-                    if (!IntegerOrHexStringAttribute.TryParse(providerModel.Keywords, out long keywords, out string parseError))
-                    {
-                        throw new InvalidOperationException(parseError);
-                    }
-
-                    providers.Add(new Microsoft.Diagnostics.NETCore.Client.EventPipeProvider(
-                        providerModel.Name,
-                        providerModel.EventLevel,
-                        keywords,
-                        providerModel.Arguments
-                        ));
-                }
-
-                var traceConfiguration = new EventPipeProviderSourceConfiguration(
-                    providers: providers.ToArray(),
-                    requestRundown: requestRundown,
-                    bufferSizeInMB: bufferSizeMegabytes);
-
-                traceFilePath = await StartTrace(endpointInfo, traceConfiguration, duration, egressProvider);
+                traceFilePath = await StartTrace(endpointInfo, traceConfiguration, duration, egressProvider, token);
             }
             else
             {
@@ -132,7 +86,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             IEndpointInfo endpointInfo,
             MonitoringSourceConfiguration configuration,
             TimeSpan duration,
-            string egressProvider)
+            string egressProvider,
+            CancellationToken token)
         {
             string fileName = FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
 
@@ -166,9 +121,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 ContentTypes.ApplicationOctetStream,
                 scope);
 
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.HttpApi);
-
-            ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, cancellationTokenSource.Token);
+            ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
 
             string traceFilePath = result.Result.Value;
 

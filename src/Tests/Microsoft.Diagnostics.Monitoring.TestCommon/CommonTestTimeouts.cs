@@ -27,5 +27,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Default timeout for acquiring a trace.
         /// </summary>
         public static readonly TimeSpan TraceTimeout = TimeSpan.FromMinutes(2);
+
+        /// Default timeout for dump collection.
+        /// </summary>
+        /// <remarks>
+        /// Dumps (especially full dumps) can be quite large and take a significant amount of time to transfer.
+        /// </remarks>
+        public static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(3);
     }
 }
