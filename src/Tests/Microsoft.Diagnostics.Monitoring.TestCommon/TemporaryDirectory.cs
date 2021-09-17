@@ -18,10 +18,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             _outputHelper = outputhelper;
 
             _directoryInfo = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
-            _directoryInfo.Delete();
             _directoryInfo.Create();
 
-            _outputHelper.WriteLine("Created temporary directory: {0}", FullName);
+            _outputHelper.WriteLine("Created temporary directory '{0}'", FullName);
         }
 
         public void Dispose()
@@ -29,10 +28,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             try
             {
                 _directoryInfo?.Delete(recursive: true);
-                _outputHelper.WriteLine("Removed temporary directory: {0}", FullName);
+                _outputHelper.WriteLine("Removed temporary directory '{0}'", FullName);
             }
-            catch
+            catch (Exception ex)
             {
+                _outputHelper.WriteLine("Failed to remove temporary directory '{0}': {1}", FullName, ex.Message);
             }
         }
 
