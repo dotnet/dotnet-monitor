@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 #else
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
@@ -28,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             finally
             {
                 // Cancel to make sure Task.Delay token registration is removed.
-                localTokenSource.Cancel();
+                localTokenSource.SafeCancel();
             }
         }
 

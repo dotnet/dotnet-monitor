@@ -26,7 +26,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromMilliseconds(1000);
 
         private readonly IEndpointInfoSourceInternal _endpointInfoSource;
-        private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
         private readonly IOptionsMonitor<ProcessFilterOptions> _defaultProcessOptions;
 
         public DiagnosticServices(IEndpointInfoSource endpointInfoSource,
@@ -110,11 +109,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 default:
                     throw new ArgumentException(Strings.ErrorMessage_MultipleTargetProcesses);
             }
-        }
-
-        public void Dispose()
-        {
-            _tokenSource.Cancel();
         }
 
         /// <summary>

@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 _disposed = true;
             }
 
-            _disposalTokenSource.Cancel();
+            _disposalTokenSource.SafeCancel();
 
             await Task.WhenAll(_runTasks.ToArray());
 
