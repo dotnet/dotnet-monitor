@@ -70,7 +70,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             }
         }
 
-        public async Task WaitWithCancellationAsync(CancellationToken token)
+        /// <summary>
+        /// Registers a callback with the Callback action that will complete when
+        /// the Callback action is invoked.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task{Task}"/> that completes when the callback has finished
+        /// being registered. The inner <see cref="Task"/> will complete when the callback
+        /// is invoked.
+        /// </returns>
+        /// <remarks>
+        /// Await this method to wait for the callback to be registered; await the inner
+        /// task to wait for the callback to be invoked. The <paramref name="token"/> parameter
+        /// only cancels registration if the registration has not completed; it does not cancel
+        /// the inner task that represents the callback invocation.
+        /// </remarks>
+        public async Task<Task> StartWaitForCallbackAsync(CancellationToken token)
         {
             int id = _nextId++;
             string name = $"Callback{id}";
@@ -89,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
                 _entriesSemaphore.Release();
             }
 
-            await entry.WithCancellation(token);
+            return entry.Task;
         }
 
         public IReadOnlyCollection<DateTime> ExecutionTimestamps
@@ -126,12 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
                 _outputHelper.WriteLine("[Callback] End completing {0}.", _name);
             }
 
-            public async Task WithCancellation(CancellationToken token)
-            {
-                _outputHelper.WriteLine("[Test] Begin waiting for {0} completion.", _name);
-                await _completionSource.WithCancellation(token);
-                _outputHelper.WriteLine("[Test] End waiting for {0} completion.", _name);
-            }
+            public Task Task => _completionSource.Task;
         }
     }
 }

@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     // Register first callback before pipeline starts. This callback should be completed before
                     // the pipeline finishes starting.
-                    Task callback1Task = callbackService.WaitWithCancellationAsync(cancellationSource.Token);
+                    Task callback1Task = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
 
                     // Startup trigger will cause the the pipeline to complete the start phase
                     // after the action list has been completed.
@@ -73,12 +73,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // completed because it was registered after the pipeline had finished starting. Since
                     // the action list is only ever executed once and is executed before the pipeline finishes
                     // starting, thus subsequent invocations of the action list should not occur.
-                    Task callback2Task = callbackService.WaitWithCancellationAsync(cancellationSource.Token);
+                    Task callback2Task = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
 
                     // Since the action list was completed before the pipeline finished starting,
                     // the action should have invoked it's callback.
-                    using CancellationTokenSource callbackCancellationSource = new(TimeSpan.FromMilliseconds(50));
-                    await callback1Task.WithCancellation(callbackCancellationSource.Token);
+                    await callback1Task.WithCancellation(cancellationSource.Token);
 
                     // Regardless of the action list constraints, the pipeline should have only
                     // executed the action list once due to the use of a startup trigger.
@@ -133,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     // Register first callback before pipeline starts. This callback should be completed after
                     // the pipeline finishes starting.
-                    Task callbackTask = callbackService.WaitWithCancellationAsync(cancellationSource.Token);
+                    Task callbackTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
 
                     // Start pipeline with EventCounter trigger.
                     await pipeline.StartAsync(cancellationSource.Token);
@@ -141,7 +140,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StartSpin);
 
                     // This should not complete until the trigger conditions are satisfied for the first time.
-                    await callbackTask;
+                    await callbackTask.WithCancellation(cancellationSource.Token);
 
                     VerifyExecutionCount(callbackService, 1);
 
