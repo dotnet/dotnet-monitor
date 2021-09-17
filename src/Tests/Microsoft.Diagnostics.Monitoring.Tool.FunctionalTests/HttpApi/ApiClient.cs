@@ -353,7 +353,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         private async Task<ResponseStreamHolder> CaptureMetricsAsync(int processId, int durationSeconds, int refreshInterval, HttpMethod method, HttpContent content, CancellationToken token)
         {
-            string uri = FormattableString.Invariant($"/collectmetrics?pid={processId}&durationSeconds={durationSeconds}&metricsIntervalSeconds={refreshInterval}");
+            string uri = FormattableString.Invariant($"/livemetrics?pid={processId}&durationSeconds={durationSeconds}&metricsIntervalSeconds={refreshInterval}");
 
             using HttpRequestMessage request = new(method, uri);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJsonSequence);
