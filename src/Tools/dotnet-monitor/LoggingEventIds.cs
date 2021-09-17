@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const int CollectionRuleStarted = 29;
         public const int CollectionRuleFailed = 30;
         public const int CollectionRuleCompleted = 31;
-        public const int AllCollectionRulesStarted = 32;
+        public const int CollectionRulesStarted = 32;
         public const int CollectionRuleActionStarted = 33;
         public const int CollectionRuleActionCompleted = 34;
         public const int CollectionRuleTriggerStarted = 35;
@@ -47,5 +47,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const int CollectionRuleActionsThrottled = 37;
         public const int CollectionRuleActionFailed = 38;
         public const int CollectionRuleActionsCompleted = 39;
+        public const int ApplyingCollectionRules = 40;
     }
 }

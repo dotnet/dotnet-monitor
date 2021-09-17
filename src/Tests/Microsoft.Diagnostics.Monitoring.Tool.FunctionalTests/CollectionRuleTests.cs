@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_ActionLimit(DiagnosticPortConnectionMode mode)
+        public async Task CollectionRule_ActionLimitTest(DiagnosticPortConnectionMode mode)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");

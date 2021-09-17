@@ -148,7 +148,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly Action<ILogger, string, Exception> _collectionRuleFailed =
             LoggerMessage.Define<string>(
                 eventId: new EventId(LoggingEventIds.CollectionRuleFailed, "CollectionRuleFailed"),
-                logLevel: LogLevel.Information,
+                logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_CollectionRuleFailed);
 
         private static readonly Action<ILogger, string, Exception> _collectionRuleCompleted =
@@ -157,11 +157,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleCompleted);
 
-        private static readonly Action<ILogger, Exception> _allCollectionRulesStarted =
+        private static readonly Action<ILogger, Exception> _collectionRulesStarted =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.AllCollectionRulesStarted, "AllCollectionRulesStarted"),
+                eventId: new EventId(LoggingEventIds.CollectionRulesStarted, "CollectionRulesStarted"),
                 logLevel: LogLevel.Information,
-                formatString: Strings.LogFormatString_AllCollectionRulesStarted);
+                formatString: Strings.LogFormatString_CollectionRulesStarted);
 
         private static readonly Action<ILogger, string, string, Exception> _collectionRuleActionStarted =
             LoggerMessage.Define<string, string>(
@@ -190,13 +190,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly Action<ILogger, string, Exception> _collectionRuleActionsThrottled =
             LoggerMessage.Define<string>(
                 eventId: new EventId(LoggingEventIds.CollectionRuleActionsThrottled, "CollectionRuleActionsThrottled"),
-                logLevel: LogLevel.Information,
+                logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_CollectionRuleActionsThrottled);
 
         private static readonly Action<ILogger, string, string, Exception> _collectionRuleActionFailed =
             LoggerMessage.Define<string, string>(
                 eventId: new EventId(LoggingEventIds.CollectionRuleActionFailed, "CollectionRuleActionFailed"),
-                logLevel: LogLevel.Information,
+                logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_CollectionRuleActionFailed);
 
         private static readonly Action<ILogger, string, Exception> _collectionRuleActionsCompleted =
@@ -204,6 +204,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: new EventId(LoggingEventIds.CollectionRuleActionsCompleted, "CollectionRuleActionsCompleted"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleActionsCompleted);
+
+        private static readonly Action<ILogger, Exception> _applyingCollectionRules =
+            LoggerMessage.Define(
+                eventId: new EventId(LoggingEventIds.ApplyingCollectionRules, "ApplyingCollectionRules"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ApplyingCollectionRules);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
@@ -329,9 +335,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _collectionRuleCompleted(logger, ruleName, null);
         }
 
-        public static void AllCollectionRulesStarted(this ILogger logger)
+        public static void CollectionRulesStarted(this ILogger logger)
         {
-            _allCollectionRulesStarted(logger, null);
+            _collectionRulesStarted(logger, null);
         }
 
         public static void CollectionRuleActionStarted(this ILogger logger, string ruleName, string actionType)
@@ -367,6 +373,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void CollectionRuleActionsCompleted(this ILogger logger, string ruleName)
         {
             _collectionRuleActionsCompleted(logger, ruleName, null);
+        }
+
+        public static void ApplyingCollectionRules(this ILogger logger)
+        {
+            _applyingCollectionRules(logger, null);
         }
     }
 }

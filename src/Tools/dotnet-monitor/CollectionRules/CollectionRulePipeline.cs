@@ -21,10 +21,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ActionListExecutor _actionListExecutor;
 
         private readonly CollectionRuleContext _context;
-        
+
         // Task completion source for signalling when the pipeline has finished starting.
-        private readonly TaskCompletionSource<object> _startedSource =
-            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly Action _startCallback;
         
         // Operations for getting trigger information.
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
@@ -32,32 +31,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
             ICollectionRuleTriggerOperations triggerOperations,
-            CollectionRuleContext context)
+            CollectionRuleContext context,
+            Action startCallback)
         {
             _actionListExecutor = actionListExecutor ?? throw new ArgumentNullException(nameof(actionListExecutor));
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _startCallback = startCallback;
             _triggerOperations = triggerOperations ?? throw new ArgumentNullException(nameof(triggerOperations));
-        }
-
-        /// <summary>
-        /// Starts the execution of the pipeline without waiting for it to run to completion.
-        /// </summary>
-        /// <remarks>
-        /// If the specified trigger is a startup trigger, this method will complete when the
-        /// action list has completed execution. If the specified trigger is not a startup
-        /// trigger, this method will complete after the trigger has been started.
-        /// </remarks>
-        public async Task StartAsync(CancellationToken token)
-        {
-            // Wrap the passed CancellationToken into a linked CancellationTokenSource so that the
-            // RunAsync method is only cancellable for the execution of the StartAsync method. Don't
-            // want the caller to be able to cancel the run of the pipeline after having finished
-            // executing the StartAsync method.
-            using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-
-            var runTask = RunAsync(linkedSource.Token);
-
-            await _startedSource.WithCancellation(linkedSource.Token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -130,7 +110,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         if (trigger is not ICollectionRuleStartupTrigger)
                         {
                             // Signal that the pipeline trigger is initialized.
-                            _startedSource.TrySetResult(null);
+                            _startCallback?.Invoke();
                         }
 
                         // Wait for the trigger to be satisfied.
@@ -227,7 +207,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     if (trigger is ICollectionRuleStartupTrigger)
                     {
                         // Signal that the pipeline trigger is initialized.
-                        _startedSource.TrySetResult(null);
+                        _startCallback?.Invoke();
 
                         // Complete the pipeline since the action list is only executed once
                         // for collection rules with startup triggers.
@@ -240,13 +220,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 // This exception is caused by the pipeline duration expiring.
                 // Handle it to allow pipeline to be in completed state.
             }
-        }
-
-        protected override Task OnCleanup()
-        {
-            _startedSource.TrySetCanceled();
-
-            return base.OnCleanup();
         }
 
         // Temporary until Pipeline APIs are public or get an InternalsVisibleTo for the tests

@@ -15,6 +15,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class TaskExtensions
     {
+        /// <summary>
+        /// Creates a <see cref="Task"/> that completes when the provided <see cref="Task"/> completes, regardless
+        /// of the completion state (success, faulted, cancelled).
+        /// </summary>
+        public static Task SafeAwait(this Task task)
+        {
+            return task.ContinueWith(_ => { }, TaskContinuationOptions.ExecuteSynchronously);
+        }
+
         public static async Task WithCancellation(this Task task, CancellationToken token)
         {
             using CancellationTokenSource localTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);

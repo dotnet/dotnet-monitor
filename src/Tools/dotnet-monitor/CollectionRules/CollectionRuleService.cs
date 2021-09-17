@@ -76,6 +76,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 throw new ArgumentNullException(nameof(endpointInfo));
             }
 
+            KeyValueLogScope scope = new();
+            scope.AddCollectionRuleEndpointInfo(endpointInfo);
+            // Constrain the scope of the log scope to just the log call so that the log scope
+            // is not captured by the rule execution method.
+            using (_logger.BeginScope(scope))
+            {
+                _logger.ApplyingCollectionRules();
+            }
+
             IReadOnlyCollection<string> ruleNames = _provider.GetCollectionRuleNames();
             List<TaskCompletionSource<object>> startedSources = new(ruleNames.Count);
 
@@ -91,6 +100,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 startedSources.Add(startedSource);
 
+                // Start running the rule and wrap running task
+                // in a safe awaitable task so that shutdown isn't
+                // failed due to failing or cancelled pipelines.
                 _runTasks.Add(RunRuleAsync(
                     _actionListExecutor,
                     _triggerOperations,
@@ -98,16 +110,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     endpointInfo,
                     ruleName,
                     startedSource,
-                    linkedSource.Token));
+                    linkedSource.Token).SafeAwait());
             }
 
-            await Task.WhenAll(startedSources.Select(s => s.Task).ToArray());
+            // Wait for all started sources to complete before finishing rule application
+            await Task.WhenAll(startedSources.Select(s => s.Task.SafeAwait()).ToArray());
 
-            KeyValueLogScope scope = new();
-            scope.AddCollectionRuleEndpointInfo(endpointInfo);
-            using IDisposable loggerScope = _logger.BeginScope(scope);
-
-            _logger.AllCollectionRulesStarted();
+            using (_logger.BeginScope(scope))
+            {
+                _logger.CollectionRulesStarted();
+            }
         }
 
         private async Task RunRuleAsync(
@@ -149,11 +161,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 await using CollectionRulePipeline pipeline = new(
                     actionListExecutor,
                     triggerOperations,
-                    context);
-
-                await pipeline.StartAsync(linkedSource.Token);
-
-                startedSource.TrySetResult(null);
+                    context,
+                    () => startedSource.TrySetResult(null));
 
                 await pipeline.RunAsync(linkedSource.Token);
 
@@ -163,7 +172,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 startedSource.TrySetCanceled(ex.CancellationToken);
 
-                throw;
+                // Rethrow if the service is not shutting down; otherwise, handle
+                // the exception and allow the method to complete successfully.
+                if (!_disposalTokenSource.IsCancellationRequested)
+                {
+                    throw;
+                }
             }
             catch (Exception ex)
             {

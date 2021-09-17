@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetStartupTrigger()
                         .AddAction(CallbackAction.ActionName);
                 },
-                async (runner, pipeline) =>
+                async (runner, pipeline, startedTask) =>
                 {
                     using CancellationTokenSource cancellationSource = new(DefaultPipelineTimeout);
 
@@ -67,7 +67,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     // Startup trigger will cause the the pipeline to complete the start phase
                     // after the action list has been completed.
-                    await pipeline.StartAsync(cancellationSource.Token);
+                    Task runTask = pipeline.RunAsync(cancellationSource.Token);
+
+                    await startedTask.WithCancellation(cancellationSource.Token);
 
                     // Register second callback after pipeline starts. The second callback should not be
                     // completed because it was registered after the pipeline had finished starting. Since
@@ -88,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     // Pipeline should have completed shortly after finished starting. This should only
                     // wait for a very short time, if at all.
-                    await pipeline.RunAsync(cancellationSource.Token);
+                    await runTask.WithCancellation(cancellationSource.Token);
 
                     // Validate that the action list was not executed a second time.
                     Assert.False(callback2Task.IsCompletedSuccessfully);
@@ -126,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     eventCounterOptions.GreaterThan = 5;
                     eventCounterOptions.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                 },
-                async (runner, pipeline) =>
+                async (runner, pipeline, startedTask) =>
                 {
                     using CancellationTokenSource cancellationSource = new(DefaultPipelineTimeout);
 
@@ -135,7 +137,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Task callbackTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
 
                     // Start pipeline with EventCounter trigger.
-                    await pipeline.StartAsync(cancellationSource.Token);
+                    Task runTask = pipeline.RunAsync(cancellationSource.Token);
+
+                    await startedTask.WithCancellation(cancellationSource.Token);
 
                     await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StartSpin);
 
@@ -148,7 +152,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     // Validate that the pipeline is not in a completed state.
                     // The pipeline should already be running since it was started.
-                    Task runTask = pipeline.RunAsync(cancellationSource.Token);
                     Assert.False(runTask.IsCompleted);
 
                     await pipeline.StopAsync(cancellationSource.Token);
@@ -180,7 +183,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .AddAction(CallbackAction.ActionName)
                         .SetDurationLimit(TimeSpan.FromSeconds(3));
                 },
-                async (runner, pipeline) =>
+                async (runner, pipeline, _) =>
                 {
                     using CancellationTokenSource cancellationSource = new(DefaultPipelineTimeout);
 
@@ -222,16 +225,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .AddAction(CallbackAction.ActionName)
                         .SetActionLimits(count: ExpectedActionExecutionCount);
                 },
-                async (runner, pipeline) =>
+                async (runner, pipeline, startedTask) =>
                 {
                     using CancellationTokenSource cancellationSource = new(DefaultPipelineTimeout);
 
-                    await pipeline.StartAsync(cancellationSource.Token);
+                    Task runTask = pipeline.RunAsync(cancellationSource.Token);
+
+                    await startedTask.WithCancellation(cancellationSource.Token);
 
                     await ManualTriggerBurstAsync(triggerService);
 
                     // Pipeline should run to completion due to action count limit without sliding window.
-                    await pipeline.RunAsync(cancellationSource.Token);
+                    await runTask.WithCancellation(cancellationSource.Token);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
@@ -271,12 +276,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             count: ExpectedActionExecutionCount,
                             slidingWindowDuration: SlidingWindowDuration);
                 },
-                async (runner, pipeline) =>
+                async (runner, pipeline, startedTask) =>
                 {
                     using CancellationTokenSource cancellationSource = new(DefaultPipelineTimeout);
 
-                    // Pipeline should run to completion due to action count limit without sliding window.
-                    await pipeline.StartAsync(cancellationSource.Token);
+                    Task runTask = pipeline.RunAsync(cancellationSource.Token);
+
+                    await startedTask.WithCancellation(cancellationSource.Token);
 
                     await ManualTriggerBurstAsync(triggerService);
 
@@ -290,6 +296,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     // Expect total action invocation count to be twice the limit
                     VerifyExecutionCount(callbackService, 2 * ExpectedActionExecutionCount);
+
+                    // Pipeline should not run to completion due to sliding window existance.
+                    Assert.False(runTask.IsCompleted);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
@@ -336,7 +345,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string scenarioName,
             string collectionRuleName,
             Action<Tools.Monitor.RootOptions> setup,
-            Func<AppRunner, CollectionRulePipeline, Task> pipelineCallback,
+            Func<AppRunner, CollectionRulePipeline, Task, Task> pipelineCallback,
             Action<IServiceCollection> servicesCallback = null)
         {
             DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out string transportName);
@@ -379,12 +388,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             endpointInfo,
                             logger);
 
+                        TaskCompletionSource<object> startedSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
                         await using CollectionRulePipeline pipeline = new(
                             actionListExecutor,
                             triggerOperations,
-                            context);
+                            context,
+                            () => startedSource.TrySetResult(null));
 
-                        await pipelineCallback(runner, pipeline);
+                        await pipelineCallback(runner, pipeline, startedSource.Task);
                     },
                     servicesCallback);
             });

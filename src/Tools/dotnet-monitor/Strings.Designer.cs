@@ -493,15 +493,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All collection rules started..
-        /// </summary>
-        internal static string LogFormatString_AllCollectionRulesStarted {
-            get {
-                return ResourceManager.GetString("LogFormatString_AllCollectionRulesStarted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {apiAuthenticationConfigKey} settings have changed. The new settings have passed validation..
         /// </summary>
         internal static string LogFormatString_ApiKeyAuthenticationOptionsValidated {
@@ -525,6 +516,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_ApiKeyValidationFailure {
             get {
                 return ResourceManager.GetString("LogFormatString_ApiKeyValidationFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applying collection rules..
+        /// </summary>
+        internal static string LogFormatString_ApplyingCollectionRules {
+            get {
+                return ResourceManager.GetString("LogFormatString_ApplyingCollectionRules", resourceCulture);
             }
         }
         
@@ -606,6 +606,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_CollectionRuleFailed {
             get {
                 return ResourceManager.GetString("LogFormatString_CollectionRuleFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All collection rules started..
+        /// </summary>
+        internal static string LogFormatString_CollectionRulesStarted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRulesStarted", resourceCulture);
             }
         }
         
