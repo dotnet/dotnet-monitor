@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -56,13 +57,85 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
 
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddCollectTraceAction(traceProfile, ExpectedEgressProvider)
+                        .AddCollectTraceAction(traceProfile, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
                         .SetStartupTrigger();
+
+                    collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
                 }, async host =>
                 {
                     IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
                     CollectTraceOptions options = (CollectTraceOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
-                    options.Duration = TimeSpan.FromSeconds(2); // Doing this to reduce testing duration (uses default trace duration otherwise)
+
+                    ICollectionRuleActionProxy action;
+                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectTrace, out action));
+
+                    EndpointInfoSourceCallback callback = new(_outputHelper);
+                    await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+                    source.Start();
+
+                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
+
+                    Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                    await runner.ExecuteAsync(async () =>
+                    {
+                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.TraceTimeout);
+                        CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+
+                        Assert.NotNull(result.OutputValues);
+                        Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
+                        Assert.True(File.Exists(egressPath));
+
+                        using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                        Assert.NotNull(traceStream);
+
+                        await ValidateTrace(traceStream);
+
+                        await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                    });
+                });
+            }
+            finally
+            {
+                try
+                {
+                    uniqueEgressDirectory?.Delete(recursive: true);
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CollectTraceAction_ProvidersSuccess()
+        {
+            List<EventPipeProvider> ExpectedProviders = new()
+            {
+                new() { Name = "Microsoft-Extensions-Logging" }
+            };
+
+            DirectoryInfo uniqueEgressDirectory = null;
+
+            try
+            {
+                uniqueEgressDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), TempEgressDirectory, Guid.NewGuid().ToString()));
+
+                await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+                {
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
+
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                        .SetStartupTrigger();
+
+                    collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
+                }, async host =>
+                {
+                    IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
+                    CollectTraceOptions options = (CollectTraceOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
 
                     ICollectionRuleActionProxy action;
                     Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectTrace, out action));
