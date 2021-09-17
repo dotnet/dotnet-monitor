@@ -439,6 +439,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancelled waiting for diagnostic response from runtime in process {processId}..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticRequestCancelled {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticRequestCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions..
         /// </summary>
         internal static string LogFormatString_DisabledNegotiateWhileElevated {

@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,8 +18,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         // The amount of time to wait before abandoning the attempt to create an EndpointInfo from
         // the enumerated processes. This may happen if a runtime instance is unresponsive to
-        // diagnostic pipe commands.
-        private readonly TimeSpan AbandonProcessTimeout = TimeSpan.FromSeconds(1);
+        // diagnostic pipe commands. Give a generous amount of time, but not too long since a single
+        // unresponsive process will cause all HTTP requests to be delayed by the timeout period.
+        private static readonly TimeSpan AbandonProcessTimeout = TimeSpan.FromSeconds(3);
+
+        private readonly ILogger<ClientEndpointInfoSource> _logger;
+
+        public ClientEndpointInfoSource(ILogger<ClientEndpointInfoSource> logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
         public async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(CancellationToken token)
         {
@@ -45,6 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // for these processes.
                     catch (OperationCanceledException) when (timeoutToken.IsCancellationRequested)
                     {
+                        _logger.DiagnosticRequestCancelled(pid);
                         return null;
                     }
                     // Catch when runtime instance shuts down while attepting to use the established diagnostic port connection.

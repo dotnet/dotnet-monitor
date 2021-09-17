@@ -142,6 +142,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_NotifyPrivateKey);
 
+        private static readonly Action<ILogger, int, Exception> _diagnosticRequestCancelled =
+            LoggerMessage.Define<int>(
+                eventId: new EventId(41, "DiagnosticRequestCancelled"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticRequestCancelled);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -239,6 +245,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void NotifyPrivateKey(this ILogger logger, string fieldName)
         {
             _notifyPrivateKey(logger, fieldName, null);
+        }
+
+        public static void DiagnosticRequestCancelled(this ILogger logger, int processId)
+        {
+            _diagnosticRequestCancelled(logger, processId, null);
         }
     }
 }
