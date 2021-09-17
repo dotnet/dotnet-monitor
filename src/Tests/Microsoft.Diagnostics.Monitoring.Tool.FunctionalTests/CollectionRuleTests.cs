@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         .SetStartupTrigger()
                         .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
 
-                    ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName, CancellationToken.None);
+                    ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
         }
 
@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     eventCounterOptions.GreaterThan = 5;
                     eventCounterOptions.SlidingWindowDuration = TimeSpan.FromSeconds(2);
 
-                    ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName, CancellationToken.None);
+                    ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
         }
 #endif
