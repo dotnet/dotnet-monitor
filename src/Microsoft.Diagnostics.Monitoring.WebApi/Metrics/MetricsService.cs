@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     using var optionsTokenSource = new CancellationTokenSource();
 
                     //If metric options change, we need to cancel the existing metrics pipeline and restart with the new settings.
-                    using IDisposable monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.Cancel());
+                    using IDisposable monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.SafeCancel());
 
                     EventPipeCounterPipelineSettings counterSettings = EventCounterSettingsFactory.CreateSettings(options);
 

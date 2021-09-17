@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
-        private readonly DirectoryInfo _tempEgressPath;
+        private readonly TemporaryDirectory _tempDirectory;
 
         private const string FileProviderName = "files";
 
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
-            _tempEgressPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "Egress", Guid.NewGuid().ToString()));
+            _tempDirectory = new(outputHelper);
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: (toolRunner) =>
                 {
-                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 });
         }
 
@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: (toolRunner) =>
                 {
-                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 });
         }
 
@@ -138,7 +138,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: (toolRunner) =>
                 {
-                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 });
         }
 
@@ -174,7 +174,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: (toolRunner) =>
                 {
-                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 });
         }
 
@@ -218,7 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: (toolRunner) =>
                 {
-                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempEgressPath.FullName));
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 });
         }
 
@@ -306,13 +306,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         public void Dispose()
         {
-            try
-            {
-                _tempEgressPath?.Delete(recursive: true);
-            }
-            catch
-            {
-            }
+            _tempDirectory.Dispose();
         }
     }
 }

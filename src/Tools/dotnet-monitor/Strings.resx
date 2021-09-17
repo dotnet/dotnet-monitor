@@ -121,6 +121,14 @@
     <value>API key authentication not configured.</value>
     <comment>Gets a string similar to "API key authentication not configured.".</comment>
   </data>
+  <data name="ErrorMessage_CouldNotMapToAction" xml:space="preserve">
+    <value>The '{0}' action was not registered correctly.</value>
+    <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleActionProxy.</comment>
+  </data>
+  <data name="ErrorMessage_CouldNotMapToTrigger" xml:space="preserve">
+    <value>The '{0}' trigger was not registered correctly.</value>
+    <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleTriggerProxy.</comment>
+  </data>
   <data name="ErrorMessage_DiagnosticPortMissingInListenMode" xml:space="preserve">
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
@@ -167,6 +175,18 @@
 1 Format Parameter:
 0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
   </data>
+  <data name="ErrorMessage_FieldMustBeLessThanOtherField" xml:space="preserve">
+    <value>The value of field {0} must be less than the value of field {1}.</value>
+    <comment>{0} = Field name that must be lower.
+{1} = Field name that must be higher.</comment>
+  </data>
+  <data name="ErrorMessage_FieldNotAllowed" xml:space="preserve">
+    <value>The {0} field value '{1}' is not allowed.</value>
+    <comment>Gets the format string for rejecting a field value.
+2 Format Parameters:
+0. fieldName: The name of the field that failed validation
+1. fieldValue: The value in the field that was rejected</comment>
+  </data>
   <data name="ErrorMessage_FieldNotHex" xml:space="preserve">
     <value>The {0} field could not be decoded as hex string.</value>
     <comment>Gets the format string for rejecting a field because it is not hex.
@@ -178,6 +198,10 @@
     <comment>Gets the format string for rejecting a field because it must have an even numbered length.
 1 Format Parameter:
 0. fieldName: The name of the field that failed validation</comment>
+  </data>
+  <data name="ErrorMessage_FileNotFound" xml:space="preserve">
+    <value>A file could not be found at the provided path: {0}</value>
+    <comment>{0} = Provided path to executable.</comment>
   </data>
   <data name="ErrorMessage_InvalidApiKey" xml:space="preserve">
     <value>Invalid API key.</value>
@@ -198,6 +222,10 @@
 0. configName: The variable name for the provided string.
 1. value: The value of the string that could not be parsed.
 2. errorMessage: Additional error message text.</comment>
+  </data>
+  <data name="ErrorMessage_NonzeroExitCode" xml:space="preserve">
+    <value>The process exited with exit code {0}</value>
+    <comment>{0} = Nonzero exit code.</comment>
   </data>
   <data name="ErrorMessage_NotBase64" xml:space="preserve">
     <value>The configuration parameter {0} must be base64Url encoded, the value '{1}' could not be parsed as a base64Url-encoded string.</value>
@@ -228,6 +256,15 @@
 1 Format Parameter:
 0. configName: The variable name for the provided string.</comment>
   </data>
+  <data name="ErrorMessage_TriggerFactoryFailed" xml:space="preserve">
+    <value>The '{0}' trigger factory failed to create a trigger instance.</value>
+    <comment>Gets the format string describing the error condition when a trigger factory does not return a valid trigger instance.</comment>
+  </data>
+  <data name="ErrorMessage_TwoFieldsCannotBeSpecified" xml:space="preserve">
+    <value>Both the {0} field and the {1} field cannot be specified.</value>
+    <comment>{0} = Name of first field that must not be specified if second field is specified.
+{1} = Name of second field that must not be specified if first field is specified.</comment>
+  </data>
   <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
     <value>The {0} field or the {1} field is required.</value>
     <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
@@ -239,17 +276,29 @@
     <value>Unable to bind any urls.</value>
     <comment>Gets a string similar to "Unable to bind any urls.".</comment>
   </data>
+  <data name="ErrorMessage_UnableToStartProcess" xml:space="preserve">
+    <value>Unable to start: {0} {1}</value>
+    <comment>{0} = FileName, {1} = Process's Arguments</comment>
+  </data>
   <data name="ErrorMessage_UnhandledConnectionMode" xml:space="preserve">
     <value>Unhandled connection mode: {0}</value>
     <comment>Gets the format string for egress provider failure due to missing provider.
 1 Format Parameter:
 0. connectionMode: The provided DiagnosticPortConnectionMode that could not be parsed.</comment>
   </data>
+  <data name="ErrorMessage_UnknownActionType" xml:space="preserve">
+    <value>'{0}' is not a known action type.</value>
+    <comment>{0} = The type of action that is unknown.</comment>
+  </data>
   <data name="ErrorMessage_UnknownFormat" xml:space="preserve">
     <value>Unknown output format type: {0}</value>
     <comment>Gets the format string for an unknown output format.
 1 Format Parameter:
 0. formatType: The value of the unknown OutputFormat type.</comment>
+  </data>
+  <data name="ErrorMessage_UnknownTriggerType" xml:space="preserve">
+    <value>'{0}' is not a known trigger type.</value>
+    <comment>{0} = The type of trigger that is unknown.</comment>
   </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
@@ -324,6 +373,9 @@
 1. apiAuthenticationConfigKey: The string key of ApiAuthentication object in configuration.
 2. validationFailure: The error message of why the provided ApiAuthentication object is invalid.</comment>
   </data>
+  <data name="LogFormatString_ApplyingCollectionRules" xml:space="preserve">
+    <value>Applying collection rules.</value>
+  </data>
   <data name="LogFormatString_BoundDefaultAddress" xml:space="preserve">
     <value>Bound default address: {address}</value>
     <comment>Gets the format string that is printed in the 16:BoundDefaultAddress event.
@@ -336,6 +388,39 @@
 1 Format Parameter:
 1. address: The address the metrics api was bound to</comment>
   </data>
+  <data name="LogFormatString_CollectionRuleActionCompleted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' action '{actionType}' completed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleActionFailed" xml:space="preserve">
+    <value>Collection rule '{ruleName}' action '{actionType}' failed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleActionsCompleted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' actions completed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleActionStarted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' action '{actionType}' started.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleActionsThrottled" xml:space="preserve">
+    <value>Collection rule '{ruleName}' actions throttled due to action limits.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleCompleted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' completed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleFailed" xml:space="preserve">
+    <value>Collection rule '{ruleName}' failed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRulesStarted" xml:space="preserve">
+    <value>All collection rules started.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleStarted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' started.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleTriggerCompleted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' trigger '{triggerType}' completed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleTriggerStarted" xml:space="preserve">
+    <value>Collection rule '{ruleName}' trigger '{triggerType}' started.</value>
+  </data>
   <data name="LogFormatString_DiagnosticRequestCancelled" xml:space="preserve">
     <value>Cancelled waiting for diagnostic response from runtime in process {processId}.</value>
   </data>
@@ -343,6 +428,18 @@
     <value>Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions.</value>
     <comment>Gets the format string that is printed in the 20:DisabledNegotiateWhileElevated event.
 0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_DuplicateCollectionRuleActionIgnored" xml:space="preserve">
+    <value>Collection rule action '{actionType}' was previously registered; the new registration will be ignored.</value>
+    <comment>Gets the format string that is printed in the 27:DuplicateCollectionRuleActionIgnored event.
+1 Format Parameter:
+1. actionType: The registration name of the collection rule action.</comment>
+  </data>
+  <data name="LogFormatString_DuplicateCollectionRuleTriggerIgnored" xml:space="preserve">
+    <value>Collection rule trigger '{triggerType}' was previously registered; the new registration will be ignored.</value>
+    <comment>Gets the format string that is printed in the 28:DuplicateCollectionRuleTriggerIgnored event.
+1 Format Parameter:
+1. triggerType: The registration name of the collection rule trigger.</comment>
   </data>
   <data name="LogFormatString_DuplicateEgressProviderIgnored" xml:space="preserve">
     <value>New provider '{providerName}' under type '{providerType}' was already registered with type '{existingProviderType}' and will be ignored.</value>

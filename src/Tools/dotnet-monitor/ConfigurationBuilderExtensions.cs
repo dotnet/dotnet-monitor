@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.KeyPerFile;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -28,6 +30,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 source.Optional = optional;
                 source.ReloadOnChange = reloadOnChange;
+            });
+        }
+
+        public static IConfigurationBuilder ConfigureStorageDefaults(this IConfigurationBuilder builder)
+        {
+            return builder.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                {ConfigurationPath.Combine(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
             });
         }
 

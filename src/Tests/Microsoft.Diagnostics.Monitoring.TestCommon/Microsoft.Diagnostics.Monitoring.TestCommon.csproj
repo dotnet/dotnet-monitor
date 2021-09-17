@@ -6,18 +6,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\CancellationTokenSourceExtensions.cs" Link="CancellationTokenSourceExtensions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\TaskCompletionSourceExtensions.cs" Link="TaskCompletionSourceExtensions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\TaskExtensions.cs" Link="TaskExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
     <PackageReference Include="Microsoft.DotNet.XUnitExtensions" Version="$(MicrosoftDotNetXUnitExtensionsVersion)" />
+    <PackageReference Include="Microsoft.FileFormats" Version="$(MicrosoftFileFormatsVersion)" />
+    <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
   </ItemGroup>
 
   <Import Project="GenerateDotNetHost.targets" />

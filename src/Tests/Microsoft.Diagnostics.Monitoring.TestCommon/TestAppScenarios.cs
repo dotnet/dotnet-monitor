@@ -46,5 +46,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string StartLogging = nameof(StartLogging);
             }
         }
+
+        public static class SpinWait
+        {
+            public const string Name = nameof(SpinWait);
+
+            public static class Commands
+            {
+                public const string StartSpin = nameof(StartSpin);
+
+                public const string StopSpin = nameof(StopSpin);
+            }
+        }
     }
 }

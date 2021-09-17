@@ -4,9 +4,9 @@
 
 using System.Text.Json;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    internal static class JsonSerializerOptionsFactory
+    public static class JsonSerializerOptionsFactory
     {
         public static JsonSerializerOptions Create(JsonIgnoreCondition ignoreCondition)
         {

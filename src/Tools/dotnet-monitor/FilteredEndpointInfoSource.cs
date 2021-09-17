@@ -28,6 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly IEndpointInfoSourceInternal _source;
 
         public FilteredEndpointInfoSource(
+            IEnumerable<IEndpointInfoSourceCallbacks> callbacks,
             IOptions<DiagnosticPortOptions> portOptions,
             ILogger<ClientEndpointInfoSource> clientSourceLogger)
         {
@@ -41,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     _source = new ClientEndpointInfoSource(clientSourceLogger);
                     break;
                 case DiagnosticPortConnectionMode.Listen:
-                    _source = new ServerEndpointInfoSource(_portOptions.EndpointName);
+                    _source = new ServerEndpointInfoSource(_portOptions.EndpointName, callbacks);
                     break;
                 default:
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_UnhandledConnectionMode, connectionMode));
