@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -221,21 +222,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             switch (logEvent.EventId)
             {
-                case 16: // Bound default address: {address}
+                case LoggingEventIds.BoundDefaultAddress:
                     if (logEvent.State.TryGetValue("address", out string defaultAddress))
                     {
                         _outputHelper.WriteLine("Default Address: {0}", defaultAddress);
                         Assert.True(_defaultAddressSource.TrySetResult(defaultAddress));
                     }
                     break;
-                case 17: // Bound metrics address: {address}
+                case LoggingEventIds.BoundMetricsAddress:
                     if (logEvent.State.TryGetValue("address", out string metricsAddress))
                     {
                         _outputHelper.WriteLine("Metrics Address: {0}", metricsAddress);
                         Assert.True(_metricsAddressSource.TrySetResult(metricsAddress));
                     }
                     break;
-                case 23:
+                case LoggingEventIds.LogTempApiKey:
                     if (logEvent.State.TryGetValue("MonitorApiKey", out string monitorApiKey))
                     {
                         _outputHelper.WriteLine("MonitorApiKey: {0}", monitorApiKey);
@@ -249,9 +250,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             switch (logEvent.EventId)
             {
-                // 26: NotifyPrivateKey
-                // The configuration field {fieldName} contains private key information. The private key information is not required for dotnet-monitor to verify a token signature and it is strongly recomended to only provide the public key.
-                case 26:
+                case LoggingEventIds.NotifyPrivateKey:
                     if (logEvent.State.TryGetValue("fieldName", out string fieldName))
                     {
                         _outputHelper.WriteLine("Private Key data detected in field: {0}", fieldName);

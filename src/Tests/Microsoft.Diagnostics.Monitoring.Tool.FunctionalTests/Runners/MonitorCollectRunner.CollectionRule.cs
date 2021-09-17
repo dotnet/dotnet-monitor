@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,17 +15,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 {
     partial class MonitorCollectRunner
     {
-        private const int CollectionRuleCompletedEventId = 31;
-        private const int CollectionRuleFailedEventId = 30;
-
         private readonly ConcurrentDictionary<CollectionRuleKey, List<TaskCompletionSource<object>>> _collectionRuleCallbacks = new();
 
         public async Task WaitForCollectionRuleCompleteAsync(string ruleName, CancellationToken token)
         {
             TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            CollectionRuleKey completedKey = new(CollectionRuleCompletedEventId, ruleName);
-            CollectionRuleKey failedKey = new(CollectionRuleFailedEventId, ruleName);
+            CollectionRuleKey completedKey = new(LoggingEventIds.CollectionRuleCompleted, ruleName);
+            CollectionRuleKey failedKey = new(LoggingEventIds.CollectionRuleFailed, ruleName);
 
             AddCollectionRuleCallback(completedKey, tcs);
             AddCollectionRuleCallback(failedKey, tcs);
@@ -47,10 +45,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 CollectionRuleKey key = new(logEvent.EventId, ruleName);
                 switch (logEvent.EventId)
                 {
-                    case CollectionRuleFailedEventId: // CollectionRuleFailed
+                    case LoggingEventIds.CollectionRuleFailed:
                         FailCollectionRuleCallbacks(key, logEvent.Exception);
                         break;
-                    case CollectionRuleCompletedEventId: // CollectionRuleCompleted
+                    case LoggingEventIds.CollectionRuleCompleted:
                         CompleteCollectionRuleCallbacks(key);
                         break;
                 }
