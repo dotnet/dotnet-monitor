@@ -264,24 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
-                Func<CancellationToken, Task<IFastSerializable>> action = async (token) => {
-                    var graph = new Graphs.MemoryGraph(50_000);
-
-                    EventGCPipelineSettings settings = new EventGCPipelineSettings
-                    {
-                        Duration = Timeout.InfiniteTimeSpan,
-                    };
-
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                    await using var pipeline = new EventGCDumpPipeline(client, settings, graph);
-                    await pipeline.RunAsync(token);
-
-                    return new GCHeapDump(graph)
-                    {
-                        CreationTool = "dotnet-monitor"
-                    };
-                };
+                Func<CancellationToken, Task<IFastSerializable>> action = Utilities.GetGCHeadDump(processInfo.EndpointInfo);
 
                 return Result(
                     Utilities.ArtifactType_GCDump,
@@ -291,27 +274,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     ContentTypes.ApplicationOctetStream,
                     processInfo.EndpointInfo);
             }, processKey, Utilities.ArtifactType_GCDump);
-        }
-
-        // This would go into a Utilities class within WebApi
-        internal static async Task<GCHeapDump> GetGCHeadDump(IEndpointInfo endpointInfo, CancellationToken token)
-        {
-            var graph = new Graphs.MemoryGraph(50_000);
-
-            EventGCPipelineSettings settings = new EventGCPipelineSettings
-            {
-                Duration = Timeout.InfiniteTimeSpan,
-            };
-
-            var client = new DiagnosticsClient(endpointInfo.Endpoint);
-
-            await using var pipeline = new EventGCDumpPipeline(client, settings, graph);
-            await pipeline.RunAsync(token);
-
-            return new GCHeapDump(graph)
-            {
-                CreationTool = "dotnet-monitor"
-            };
         }
 
         /// <summary>

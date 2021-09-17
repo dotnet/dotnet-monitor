@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -75,10 +76,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.GCDumpTimeout);
                         CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
-                        // Currently not doing any validation on the validity of the GCDump (just checking that the file exists)
                         Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue(CollectDumpAction.EgressPathOutputValueName, out string egressPath));
+                        Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
                         Assert.True(File.Exists(egressPath));
+
+                        using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                        Assert.NotNull(gcdumpStream);
+
+                        await ValidateGCDump(gcdumpStream);
 
                         await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                     });
@@ -94,6 +99,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                 }
             }
+        }
+
+        private static async Task ValidateGCDump(Stream gcdumpStream)
+        {
+            byte[] buffer = new byte[24];
+
+            const string knownHeaderText = "!FastSerialization.1";
+
+            // Read enough to deserialize known header text.
+            int read;
+            int total = 0;
+            using CancellationTokenSource cancellation = new(CommonTestTimeouts.GCDumpTimeout);
+            while (total < buffer.Length && 0 != (read = await gcdumpStream.ReadAsync(buffer, total, buffer.Length - total, cancellation.Token)))
+            {
+                total += read;
+            }
+
+            byte[] subarray = new byte[knownHeaderText.Length];
+            Array.Copy(buffer, 4, subarray, 0, subarray.Length); // The first header text character begins at the 4th index
+
+            string headerText = Encoding.ASCII.GetString(subarray);
+
+            Assert.Equal(knownHeaderText, headerText);
         }
     }
 }

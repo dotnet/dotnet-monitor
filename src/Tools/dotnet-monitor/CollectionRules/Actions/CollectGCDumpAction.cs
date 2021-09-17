@@ -41,13 +41,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            string gcdumpFileName = Utils.GenerateGcDumpFileName(endpointInfo);
+            string gcdumpFileName = Utils.GenerateGCDumpFileName(endpointInfo);
 
             string gcdumpFilePath = string.Empty;
 
-            Func<CancellationToken, Task<IFastSerializable>> action = async (token) => await DiagController.GetGCHeadDump(endpointInfo, token);
+            Func<CancellationToken, Task<IFastSerializable>> action = Utils.GetGCHeadDump(endpointInfo);
 
-            KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Dump, endpointInfo);
+            KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_GCDump, endpointInfo);
 
             EgressOperation egressOperation = new EgressOperation(
                         Utils.ConvertFastSerializeAction(action),
@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
-                    { "EgressPath", gcdumpFilePath }
+                    { CollectionRuleActionConstants.EgressPathOutputValueName, gcdumpFilePath }
                 }
             };
         }

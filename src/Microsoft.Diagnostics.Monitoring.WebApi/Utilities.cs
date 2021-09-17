@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using FastSerialization;
+using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.NETCore.Client;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -26,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 FormattableString.Invariant($"core_{GetFileNameTimeStampUtcNow()}");
         }
 
-        public static string GenerateGcDumpFileName(IEndpointInfo endpointInfo)
+        public static string GenerateGCDumpFileName(IEndpointInfo endpointInfo)
         {
             return FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.gcdump");
         }
@@ -82,6 +84,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     var serializer = new Serializer(stream, fastSerializable, leaveOpen: true);
                     serializer.Close();
                 }
+            };
+        }
+
+        internal static Func<CancellationToken, Task<IFastSerializable>> GetGCHeadDump(IEndpointInfo endpointInfo)
+        {
+            return async (token) =>
+            {
+                var graph = new Graphs.MemoryGraph(50_000);
+
+                EventGCPipelineSettings settings = new EventGCPipelineSettings
+                {
+                    Duration = Timeout.InfiniteTimeSpan,
+                };
+
+                var client = new DiagnosticsClient(endpointInfo.Endpoint);
+
+                await using var pipeline = new EventGCDumpPipeline(client, settings, graph);
+                await pipeline.RunAsync(token);
+
+                return new GCHeapDump(graph)
+                {
+                    CreationTool = "dotnet-monitor"
+                };
             };
         }
     }
