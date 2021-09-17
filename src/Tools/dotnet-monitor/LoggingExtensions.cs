@@ -211,6 +211,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ApplyingCollectionRules);
 
+        private static readonly Action<ILogger, int, Exception> _diagnosticRequestCancelled =
+            LoggerMessage.Define<int>(
+                eventId: new EventId(LoggingEventIds.DiagnosticRequestCancelled, "DiagnosticRequestCancelled"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticRequestCancelled);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -378,6 +384,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ApplyingCollectionRules(this ILogger logger)
         {
             _applyingCollectionRules(logger, null);
+        }
+
+        public static void DiagnosticRequestCancelled(this ILogger logger, int processId)
+        {
+            _diagnosticRequestCancelled(logger, processId, null);
         }
     }
 }
