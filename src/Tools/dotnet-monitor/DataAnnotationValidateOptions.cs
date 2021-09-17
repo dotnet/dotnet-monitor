@@ -1,25 +1,25 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
+namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    /// <summary>
-    /// Validates the settings within a <typeparamref name="TOptions"/> instance
-    /// using data annotation validation.
-    /// </summary>
-    internal sealed class EgressProviderValidateOptions<TOptions> :
-        IValidateOptions<TOptions> where TOptions : class
+    internal sealed class DataAnnotationValidateOptions<TOptions> :
+        IValidateOptions<TOptions>
+        where TOptions : class
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public DataAnnotationValidateOptions(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public ValidateOptionsResult Validate(string name, TOptions options)
         {
-            ValidationContext validationContext = new ValidationContext(options);
+            ValidationContext validationContext = new(options, _serviceProvider, null);
             ICollection<ValidationResult> results = new Collection<ValidationResult>();
             if (!Validator.TryValidateObject(options, validationContext, results, validateAllProperties: true))
             {

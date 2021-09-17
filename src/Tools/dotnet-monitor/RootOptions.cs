@@ -3,12 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal partial class RootOptions
     {
         public AuthenticationOptions Authentication { get; set; }
+
+        public IDictionary<string, CollectionRuleOptions> CollectionRules { get; }
+            = new Dictionary<string, CollectionRuleOptions>(0);
 
         public CorsConfigurationOptions CorsConfiguration { get; set; }
 

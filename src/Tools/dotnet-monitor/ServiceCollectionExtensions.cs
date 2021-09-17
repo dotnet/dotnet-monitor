@@ -4,7 +4,16 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
+using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
@@ -54,6 +63,74 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return builder;
         }
 
+        public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
+        {
+            services.RegisterCollectionRuleAction<CollectDumpAction, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
+            services.RegisterCollectionRuleAction<CollectGCDumpAction, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
+            services.RegisterCollectionRuleAction<CollectLogsAction, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
+            services.RegisterCollectionRuleAction<CollectTraceAction, CollectTraceOptions>(KnownCollectionRuleActions.CollectTrace);
+            services.RegisterCollectionRuleAction<ExecuteAction, ExecuteOptions>(KnownCollectionRuleActions.Execute);
+
+            services.RegisterCollectionRuleTrigger<AspNetRequestCountTriggerFactory, AspNetRequestCountOptions>(KnownCollectionRuleTriggers.AspNetRequestCount);
+            services.RegisterCollectionRuleTrigger<AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
+            services.RegisterCollectionRuleTrigger<AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
+            services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
+
+            services.AddSingleton<EventPipeTriggerFactory>();
+            services.AddSingleton<ITraceEventTriggerFactory<EventCounterTriggerSettings>, Monitoring.EventPipe.Triggers.EventCounter.EventCounterTriggerFactory>();
+
+            services.AddSingleton<CollectionRulesConfigurationProvider>();
+            services.AddSingleton<ICollectionRuleActionOperations, CollectionRuleActionOperations>();
+            services.AddSingleton<ICollectionRuleTriggerOperations, CollectionRuleTriggerOperations>();
+
+            services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
+            services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
+
+            services.AddSingleton<ActionListExecutor>();
+            services.AddSingleton<CollectionRuleService>();
+            services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
+
+            return services;
+        }
+
+        public static IServiceCollection RegisterCollectionRuleAction<TAction, TOptions>(this IServiceCollection services, string actionName)
+            where TAction : class, ICollectionRuleAction<TOptions>
+            where TOptions : class, new()
+        {
+            services.AddSingleton<TAction>();
+            services.AddSingleton<CollectionRuleActionProxy<TAction, TOptions>>();
+            services.AddSingleton<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TAction, TOptions>>(sp => new CollectionRuleActionDescriptor<TAction, TOptions>(actionName));
+            // NOTE: When opening colletion rule actions for extensibility, this should not be added for all registered actions.
+            // Each action should register its own IValidateOptions<> implementation (if it needs one).
+            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+            return services;
+        }
+
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory>(this IServiceCollection services, string triggerName)
+            where TFactory : class, ICollectionRuleTriggerFactory
+        {
+            services.AddSingleton<TFactory>();
+            services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory>>();
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerDescriptor<TFactory>>(
+                sp => new CollectionRuleTriggerDescriptor<TFactory>(triggerName));
+            return services;
+        }
+
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions>(this IServiceCollection services, string triggerName)
+            where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
+            where TOptions : class, new()
+        {
+            services.AddSingleton<TFactory>();
+            services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory, TOptions>>();
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerProvider<TFactory, TOptions>>(
+                sp => new CollectionRuleTriggerProvider<TFactory, TOptions>(triggerName));
+            // NOTE: When opening colletion rule triggers for extensibility, this should not be added for all registered triggers.
+            // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
+            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+            return services;
+        }
+
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
@@ -69,7 +146,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services.Configure<T>(configuration.GetSection(key));
         }
 
-        public static IServiceCollection ConfigureEgress(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection ConfigureEgress(this IServiceCollection services)
         {
             // Register IEgressService implementation that provides egressing
             // of artifacts for the REST server.
@@ -95,11 +172,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Add services to provide raw configuration for the options type
             services.AddSingleton(sp => new EgressProviderConfigurationProvider<TOptions>(sp.GetRequiredService<IConfiguration>(), name));
             services.AddSingletonForwarder<IEgressProviderConfigurationProvider<TOptions>, EgressProviderConfigurationProvider<TOptions>>();
-            services.TryAddSingletonEnumerableForwarder<IEgressProviderConfigurationProvider, EgressProviderConfigurationProvider<TOptions>>();
+            services.AddSingletonForwarder<IEgressProviderConfigurationProvider, EgressProviderConfigurationProvider<TOptions>>();
 
             // Add options services for configuring the options type
             services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
-            services.AddSingleton<IValidateOptions<TOptions>, EgressProviderValidateOptions<TOptions>>();
+            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
 
             // Register change sources for the options type
             services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();
@@ -118,16 +195,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {
             services.AddSingleton<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
-        }
-
-        private static void TryAddSingletonEnumerableForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
-        {
-            services.TryAddSingletonEnumerable<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
-        }
-
-        private static void TryAddSingletonEnumerable<TService, TImplementation>(this IServiceCollection services, Func<IServiceProvider, TImplementation> func) where TImplementation : class, TService where TService : class
-        {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<TService, TImplementation>(func));
         }
     }
 }

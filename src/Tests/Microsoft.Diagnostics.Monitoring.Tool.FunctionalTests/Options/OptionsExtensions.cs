@@ -2,17 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
@@ -33,6 +33,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 }
             };
 
+            return options;
+        }
+
+        public static CollectionRuleOptions CreateCollectionRule(this RootOptions rootOptions, string name)
+        {
+            CollectionRuleOptions options = new();
+            rootOptions.CollectionRules.Add(name, options);
             return options;
         }
 

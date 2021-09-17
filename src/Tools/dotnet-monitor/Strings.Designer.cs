@@ -70,6 +70,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; action was not registered correctly..
+        /// </summary>
+        internal static string ErrorMessage_CouldNotMapToAction {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CouldNotMapToAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; trigger was not registered correctly..
+        /// </summary>
+        internal static string ErrorMessage_CouldNotMapToTrigger {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CouldNotMapToTrigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In &apos;Listen&apos; mode, the diagnostic port endpoint name must be specified..
         /// </summary>
         internal static string ErrorMessage_DiagnosticPortMissingInListenMode {
@@ -151,6 +169,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value of field {0} must be less than the value of field {1}..
+        /// </summary>
+        internal static string ErrorMessage_FieldMustBeLessThanOtherField {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FieldMustBeLessThanOtherField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field value &apos;{1}&apos; is not allowed..
+        /// </summary>
+        internal static string ErrorMessage_FieldNotAllowed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FieldNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field could not be decoded as hex string..
         /// </summary>
         internal static string ErrorMessage_FieldNotHex {
@@ -165,6 +201,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_FieldOddLengh {
             get {
                 return ResourceManager.GetString("ErrorMessage_FieldOddLengh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A file could not be found at the provided path: {0}.
+        /// </summary>
+        internal static string ErrorMessage_FileNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FileNotFound", resourceCulture);
             }
         }
         
@@ -205,6 +250,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The process exited with exit code {0}.
+        /// </summary>
+        internal static string ErrorMessage_NonzeroExitCode {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NonzeroExitCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The configuration parameter {0} must be base64Url encoded, the value &apos;{1}&apos; could not be parsed as a base64Url-encoded string..
         /// </summary>
         internal static string ErrorMessage_NotBase64 {
@@ -241,6 +295,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; trigger factory failed to create a trigger instance..
+        /// </summary>
+        internal static string ErrorMessage_TriggerFactoryFailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TriggerFactoryFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Both the {0} field and the {1} field cannot be specified..
+        /// </summary>
+        internal static string ErrorMessage_TwoFieldsCannotBeSpecified {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TwoFieldsCannotBeSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field or the {1} field is required..
         /// </summary>
         internal static string ErrorMessage_TwoFieldsMissing {
@@ -259,6 +331,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to start: {0} {1}.
+        /// </summary>
+        internal static string ErrorMessage_UnableToStartProcess {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnableToStartProcess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unhandled connection mode: {0}.
         /// </summary>
         internal static string ErrorMessage_UnhandledConnectionMode {
@@ -268,11 +349,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a known action type..
+        /// </summary>
+        internal static string ErrorMessage_UnknownActionType {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnknownActionType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown output format type: {0}.
         /// </summary>
         internal static string ErrorMessage_UnknownFormat {
             get {
                 return ResourceManager.GetString("ErrorMessage_UnknownFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a known trigger type..
+        /// </summary>
+        internal static string ErrorMessage_UnknownTriggerType {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnknownTriggerType", resourceCulture);
             }
         }
         
@@ -421,6 +520,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applying collection rules..
+        /// </summary>
+        internal static string LogFormatString_ApplyingCollectionRules {
+            get {
+                return ResourceManager.GetString("LogFormatString_ApplyingCollectionRules", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bound default address: {address}.
         /// </summary>
         internal static string LogFormatString_BoundDefaultAddress {
@@ -439,11 +547,128 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; action &apos;{actionType}&apos; completed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionCompleted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; action &apos;{actionType}&apos; failed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; actions completed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionsCompleted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionsCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; action &apos;{actionType}&apos; started..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionStarted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; actions throttled due to action limits..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleActionsThrottled {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleActionsThrottled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; completed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleCompleted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; failed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All collection rules started..
+        /// </summary>
+        internal static string LogFormatString_CollectionRulesStarted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRulesStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; started..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleStarted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; trigger &apos;{triggerType}&apos; completed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleTriggerCompleted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleTriggerCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; trigger &apos;{triggerType}&apos; started..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleTriggerStarted {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleTriggerStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions..
         /// </summary>
         internal static string LogFormatString_DisabledNegotiateWhileElevated {
             get {
                 return ResourceManager.GetString("LogFormatString_DisabledNegotiateWhileElevated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule action &apos;{actionType}&apos; was previously registered; the new registration will be ignored..
+        /// </summary>
+        internal static string LogFormatString_DuplicateCollectionRuleActionIgnored {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateCollectionRuleActionIgnored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection rule trigger &apos;{triggerType}&apos; was previously registered; the new registration will be ignored..
+        /// </summary>
+        internal static string LogFormatString_DuplicateCollectionRuleTriggerIgnored {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateCollectionRuleTriggerIgnored", resourceCulture);
             }
         }
         
