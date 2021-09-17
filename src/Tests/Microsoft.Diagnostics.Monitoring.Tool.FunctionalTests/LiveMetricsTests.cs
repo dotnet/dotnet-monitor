@@ -30,12 +30,12 @@ using Xunit.Abstractions;
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [Collection(DefaultCollectionFixture.Name)]
-    public class CollectMetricsTests
+    public class LiveMetricsTests
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
-        public CollectMetricsTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        public LiveMetricsTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
