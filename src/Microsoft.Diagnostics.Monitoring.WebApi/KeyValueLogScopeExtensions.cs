@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             scope.Values.Add("ArtifactType", artifactType);
         }
 
-        public static void AddEndpointInfo(this KeyValueLogScope scope, IEndpointInfo endpointInfo)
+        public static void AddArtifactEndpointInfo(this KeyValueLogScope scope, IEndpointInfo endpointInfo)
         {
             scope.Values.Add(
                 ArtifactMetadataNames.ArtifactSource.ProcessId,

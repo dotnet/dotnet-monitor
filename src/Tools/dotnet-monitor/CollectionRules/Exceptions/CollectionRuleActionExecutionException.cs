@@ -11,9 +11,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions
     {
         public int ActionIndex { get; }
 
-        public CollectionRuleActionExecutionException(Exception innerException, int actionIndex) : base(innerException.Message, innerException)
+        public string ActionType { get; }
+
+        public CollectionRuleActionExecutionException(Exception innerException, string actionType, int actionIndex)
+            : base(innerException.Message, innerException)
         {
             ActionIndex = actionIndex;
+            ActionType = actionType;
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Dump, endpointInfo);
+            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, endpointInfo);
 
             try
             {

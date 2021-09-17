@@ -88,6 +88,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
 
             services.AddSingleton<ActionListExecutor>();
+            services.AddSingleton<CollectionRuleService>();
+            services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 
             return services;
         }
@@ -98,7 +100,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             services.AddSingleton<TAction>();
             services.AddSingleton<CollectionRuleActionProxy<TAction, TOptions>>();
-            services.TryAddSingletonEnumerable<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TAction, TOptions>>(sp => new CollectionRuleActionDescriptor<TAction, TOptions>(actionName));
+            services.AddSingleton<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TAction, TOptions>>(sp => new CollectionRuleActionDescriptor<TAction, TOptions>(actionName));
             // NOTE: When opening colletion rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
@@ -110,7 +112,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory>>();
-            services.TryAddSingletonEnumerable<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerDescriptor<TFactory>>(
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerDescriptor<TFactory>>(
                 sp => new CollectionRuleTriggerDescriptor<TFactory>(triggerName));
             return services;
         }
@@ -121,7 +123,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory, TOptions>>();
-            services.TryAddSingletonEnumerable<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerProvider<TFactory, TOptions>>(
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerProvider<TFactory, TOptions>>(
                 sp => new CollectionRuleTriggerProvider<TFactory, TOptions>(triggerName));
             // NOTE: When opening colletion rule triggers for extensibility, this should not be added for all registered triggers.
             // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
@@ -170,7 +172,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Add services to provide raw configuration for the options type
             services.AddSingleton(sp => new EgressProviderConfigurationProvider<TOptions>(sp.GetRequiredService<IConfiguration>(), name));
             services.AddSingletonForwarder<IEgressProviderConfigurationProvider<TOptions>, EgressProviderConfigurationProvider<TOptions>>();
-            services.TryAddSingletonEnumerableForwarder<IEgressProviderConfigurationProvider, EgressProviderConfigurationProvider<TOptions>>();
+            services.AddSingletonForwarder<IEgressProviderConfigurationProvider, EgressProviderConfigurationProvider<TOptions>>();
 
             // Add options services for configuring the options type
             services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
@@ -193,16 +195,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {
             services.AddSingleton<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
-        }
-
-        private static void TryAddSingletonEnumerableForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
-        {
-            services.TryAddSingletonEnumerable<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
-        }
-
-        private static void TryAddSingletonEnumerable<TService, TImplementation>(this IServiceCollection services, Func<IServiceProvider, TImplementation> func) where TImplementation : class, TService where TService : class
-        {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<TService, TImplementation>(func));
         }
     }
 }

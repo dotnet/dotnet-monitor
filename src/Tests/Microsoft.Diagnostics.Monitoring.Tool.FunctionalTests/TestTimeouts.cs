@@ -28,5 +28,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Timeout for metrics api.
         /// </summary>
         public static readonly TimeSpan CaptureMetricsTimeout = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// Timeout for waiting for a collection rule to complete.
+        /// </summary>
+        public static readonly TimeSpan CollectionRuleCompletionTimeout = TimeSpan.FromSeconds(30);
     }
 }
