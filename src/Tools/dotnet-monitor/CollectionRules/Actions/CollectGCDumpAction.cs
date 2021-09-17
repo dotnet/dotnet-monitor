@@ -4,7 +4,6 @@
 
 using FastSerialization;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Collections.Generic;
@@ -45,9 +44,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             string gcdumpFilePath = string.Empty;
 
-            Func<CancellationToken, Task<IFastSerializable>> action = Utils.GetGCHeadDump(endpointInfo);
+            Func<CancellationToken, Task<IFastSerializable>> action = Utils.GetGCHeapDump(endpointInfo);
 
-            KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_GCDump, endpointInfo);
+            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_GCDump, endpointInfo);
 
             EgressOperation egressOperation = new EgressOperation(
                         Utils.ConvertFastSerializeAction(action),

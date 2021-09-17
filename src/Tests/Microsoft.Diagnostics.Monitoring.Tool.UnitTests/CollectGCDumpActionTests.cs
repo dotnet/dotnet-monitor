@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
                     source.Start();
 
-                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
+                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
 
                     Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 

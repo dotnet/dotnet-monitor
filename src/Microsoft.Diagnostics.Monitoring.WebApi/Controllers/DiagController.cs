@@ -264,7 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
-                Func<CancellationToken, Task<IFastSerializable>> action = Utilities.GetGCHeadDump(processInfo.EndpointInfo);
+                Func<CancellationToken, Task<IFastSerializable>> action = Utilities.GetGCHeapDump(processInfo.EndpointInfo);
 
                 return Result(
                     Utilities.ArtifactType_GCDump,

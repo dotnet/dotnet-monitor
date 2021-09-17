@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             };
         }
 
-        internal static Func<CancellationToken, Task<IFastSerializable>> GetGCHeadDump(IEndpointInfo endpointInfo)
+        internal static Func<CancellationToken, Task<IFastSerializable>> GetGCHeapDump(IEndpointInfo endpointInfo)
         {
             return async (token) =>
             {
