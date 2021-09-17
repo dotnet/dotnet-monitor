@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         /// <summary>
         /// Gets the list of configured collection rule names.
         /// </summary>
-        public IEnumerable<string> GetCollectionRuleNames()
+        public IReadOnlyCollection<string> GetCollectionRuleNames()
         {
             List<string> names = new();
 

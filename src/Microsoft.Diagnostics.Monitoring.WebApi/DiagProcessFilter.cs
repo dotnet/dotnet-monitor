@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -36,8 +34,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static DiagProcessFilter FromConfiguration(ProcessFilterOptions options)
         {
+            return FromConfiguration(options.Filters);
+        }
+
+        public static DiagProcessFilter FromConfiguration(IEnumerable<ProcessFilterDescriptor> filters)
+        {
             var filter = new DiagProcessFilter();
-            foreach(ProcessFilterDescriptor processFilter in options.Filters)
+            foreach (ProcessFilterDescriptor processFilter in filters)
             {
                 filter.Filters.Add(TransformDescriptor(processFilter));
             }

@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -12,11 +10,12 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
-    internal static class CollectionRuleOptionsExtensions
+    internal static partial class CollectionRuleOptionsExtensions
     {
         public static CollectionRuleOptions AddAction(this CollectionRuleOptions options, string type)
         {
@@ -126,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 
         public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, params string[] args)
         {
-            options.AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTests.GenerateArgumentsString(args));
+            options.AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTestHelper.GenerateArgumentsString(args));
 
             return options;
         }
@@ -163,13 +162,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             settings = new();
 
             triggerOptions.Settings = settings;
-
-            return options;
-        }
-
-        public static CollectionRuleOptions SetManualTrigger(this CollectionRuleOptions options)
-        {
-            SetTrigger(options, ManualTrigger.TriggerName, out _);
 
             return options;
         }

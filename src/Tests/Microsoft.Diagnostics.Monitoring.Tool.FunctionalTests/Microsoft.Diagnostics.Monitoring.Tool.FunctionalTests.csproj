@@ -12,6 +12,8 @@
   <ItemGroup>
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Auth\AuthConstants.cs" Link="Auth\AuthConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Auth\JwtAlgorithmChecker.cs" Link="Auth\JwtAlgorithmChecker.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleActions.cs" Link="Options\CollectionRules\KnownCollectionRuleActions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleTriggers.cs" Link="Options\CollectionRules\KnownCollectionRuleTriggers.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ActionOptionsConstants.cs" Link="Options\CollectionRules\Actions\ActionOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectDumpOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectDumpOptionsDefaults.cs" />
@@ -39,8 +41,11 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\IAspNetActionPathFilters.cs" Link="Options\CollectionRules\Triggers\IAspNetActionPathFilters.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\TriggerOptionsConstants.cs" Link="Options\CollectionRules\Triggers\TriggerOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CommonOptionsExtensions.cs" Link="Options\CommonOptionsExtensions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="LoggingEventIds.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\OutputFormat.cs" Link="Options\OutputFormat.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\ExecuteActionTestHelper.cs" Link="ExecuteActionTestHelper.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Options\CollectionRuleOptionsExtensions.cs" Link="Options\CollectionRuleOptionsExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>

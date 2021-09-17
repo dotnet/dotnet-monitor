@@ -20,15 +20,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // The executor of the action list for the collection rule.
         private readonly ActionListExecutor _actionListExecutor;
 
-        // The endpoint that represents the process on which the collection rule is executed.
-        private readonly IEndpointInfo _endpointInfo;
+        private readonly CollectionRuleContext _context;
 
-        // The rule description that determines the behavior of the pipeline.
-        private readonly CollectionRuleOptions _ruleOptions;
-        
         // Task completion source for signalling when the pipeline has finished starting.
-        private readonly TaskCompletionSource<object> _startedSource =
-            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly Action _startCallback;
         
         // Operations for getting trigger information.
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
@@ -36,28 +31,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
             ICollectionRuleTriggerOperations triggerOperations,
-            CollectionRuleOptions ruleOptions,
-            IEndpointInfo endpointInfo)
+            CollectionRuleContext context,
+            Action startCallback)
         {
             _actionListExecutor = actionListExecutor ?? throw new ArgumentNullException(nameof(actionListExecutor));
-            _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
-            _ruleOptions = ruleOptions ?? throw new ArgumentNullException(nameof(ruleOptions));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _startCallback = startCallback;
             _triggerOperations = triggerOperations ?? throw new ArgumentNullException(nameof(triggerOperations));
-        }
-
-        /// <summary>
-        /// Starts the execution of the pipeline without waiting for it to run to completion.
-        /// </summary>
-        /// <remarks>
-        /// If the specified trigger is a startup trigger, this method will complete when the
-        /// action list has completed execution. If the specified trigger is not a startup
-        /// trigger, this method will complete after the trigger has been started.
-        /// </remarks>
-        public async Task StartAsync(CancellationToken token)
-        {
-            var runTask = RunAsync(token);
-
-            await _startedSource.WithCancellation(token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -70,9 +50,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         /// </remarks>
         protected override async Task OnRun(CancellationToken token)
         {
-            if (!_triggerOperations.TryCreateFactory(_ruleOptions.Trigger.Type, out ICollectionRuleTriggerFactoryProxy factory))
+            if (!_triggerOperations.TryCreateFactory(_context.Options.Trigger.Type, out ICollectionRuleTriggerFactoryProxy factory))
             {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_CouldNotMapToTrigger, _ruleOptions.Trigger.Type));
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_CouldNotMapToTrigger, _context.Options.Trigger.Type));
             }
 
             using CancellationTokenSource durationCancellationSource = new();
@@ -82,14 +62,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             CancellationToken linkedToken = linkedCancellationSource.Token;
 
-            TimeSpan? actionCountWindowDuration = _ruleOptions.Limits?.ActionCountSlidingWindowDuration;
-            int actionCountLimit = (_ruleOptions.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
+            TimeSpan? actionCountWindowDuration = _context.Options.Limits?.ActionCountSlidingWindowDuration;
+            int actionCountLimit = (_context.Options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
             Queue<DateTime> executionTimestamps = new(actionCountLimit);
 
             // Start cancellation timer for graceful stop of the collection rule
             // when the rule duration has been specified. Conditionally enable this
             // based on if the rule has a duration limit.
-            TimeSpan? ruleDuration = _ruleOptions.Limits?.RuleDuration;
+            TimeSpan? ruleDuration = _context.Options.Limits?.RuleDuration;
             if (ruleDuration.HasValue)
             {
                 durationCancellationSource.CancelAfter(ruleDuration.Value);
@@ -106,14 +86,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     ICollectionRuleTrigger trigger = null;
                     try
                     {
+                        KeyValueLogScope triggerScope = new();
+                        triggerScope.AddCollectionRuleTrigger(_context.Options.Trigger.Type);
+                        IDisposable triggerScopeRegistration = _context.Logger.BeginScope(triggerScope);
+
+                        _context.Logger.CollectionRuleTriggerStarted(_context.Name, _context.Options.Trigger.Type);
+
                         trigger = factory.Create(
-                            _endpointInfo,
+                            _context.EndpointInfo,
                             () => triggerSatisfiedSource.TrySetResult(null),
-                            _ruleOptions.Trigger.Settings);
+                            _context.Options.Trigger.Settings);
 
                         if (null == trigger)
                         {
-                            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_TriggerFactoryFailed, _ruleOptions.Trigger.Type));
+                            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_TriggerFactoryFailed, _context.Options.Trigger.Type));
                         }
 
                         // Start the trigger.
@@ -124,11 +110,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         if (trigger is not ICollectionRuleStartupTrigger)
                         {
                             // Signal that the pipeline trigger is initialized.
-                            _startedSource.TrySetResult(null);
+                            _startCallback?.Invoke();
                         }
 
                         // Wait for the trigger to be satisfied.
                         await triggerSatisfiedSource.WithCancellation(linkedToken).ConfigureAwait(false);
+
+                        _context.Logger.CollectionRuleTriggerCompleted(_context.Name, _context.Options.Trigger.Type);
                     }
                     finally
                     {
@@ -178,16 +166,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     {
                         executionTimestamps.Enqueue(currentTimestamp);
 
+                        bool actionsCompleted = false;
                         try
                         {
                             // Intentionally not using the linkedToken. Allow the action list to execute gracefully
                             // unless forced by a caller to cancel or stop the running of the pipeline.
-                            await _actionListExecutor.ExecuteActions(_ruleOptions.Actions, _endpointInfo, token);
+                            await _actionListExecutor.ExecuteActions(_context, token);
+
+                            actionsCompleted = true;
                         }
                         catch (Exception ex) when (ex is not OperationCanceledException)
                         {
                             // Bad action execution shouldn't fail the pipeline.
-                            // TODO: log that the action execution has failed.
+                            // Logging is already done by executor.
                         }
                         finally
                         {
@@ -198,10 +189,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             completePipeline = actionCountLimit <= executionTimestamps.Count &&
                                 !actionCountWindowDuration.HasValue;
                         }
+
+                        if (actionsCompleted)
+                        {
+                            _context.Logger.CollectionRuleActionsCompleted(_context.Name);
+                        }
                     }
                     else
                     {
-                        // Throttled
+                        _context.Logger.CollectionRuleThrottled(_context.Name);
                     }
 
                     linkedToken.ThrowIfCancellationRequested();
@@ -211,7 +207,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     if (trigger is ICollectionRuleStartupTrigger)
                     {
                         // Signal that the pipeline trigger is initialized.
-                        _startedSource.TrySetResult(null);
+                        _startCallback?.Invoke();
 
                         // Complete the pipeline since the action list is only executed once
                         // for collection rules with startup triggers.
@@ -224,13 +220,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 // This exception is caused by the pipeline duration expiring.
                 // Handle it to allow pipeline to be in completed state.
             }
-        }
-
-        protected override Task OnCleanup()
-        {
-            _startedSource.TrySetCanceled();
-
-            return base.OnCleanup();
         }
 
         // Temporary until Pipeline APIs are public or get an InternalsVisibleTo for the tests

@@ -8,11 +8,22 @@ using System.Threading.Tasks;
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 #else
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
     internal static class TaskExtensions
     {
+        /// <summary>
+        /// Creates a <see cref="Task"/> that completes when the provided <see cref="Task"/> completes, regardless
+        /// of the completion state (success, faulted, cancelled).
+        /// </summary>
+        public static Task SafeAwait(this Task task)
+        {
+            return task.ContinueWith(_ => { }, TaskContinuationOptions.ExecuteSynchronously);
+        }
+
         public static async Task WithCancellation(this Task task, CancellationToken token)
         {
             using CancellationTokenSource localTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -28,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             finally
             {
                 // Cancel to make sure Task.Delay token registration is removed.
-                localTokenSource.Cancel();
+                localTokenSource.SafeCancel();
             }
         }
 
