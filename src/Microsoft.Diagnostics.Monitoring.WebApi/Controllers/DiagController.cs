@@ -632,7 +632,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
-            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
+            string fileName = Utilities.GenerateLogsFileName(processInfo.EndpointInfo);
             string contentType = Utilities.GetLogsContentType(format);
 
             Func<Stream, CancellationToken, Task> action = Utilities.GetLogsAction(format, processInfo.EndpointInfo, settings);

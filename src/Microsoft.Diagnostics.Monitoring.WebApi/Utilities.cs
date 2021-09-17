@@ -21,6 +21,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ArtifactType_Trace = "trace";
         public const string ArtifactType_Metrics = "collectmetrics";
 
+        public static string GenerateLogsFileName(IEndpointInfo endpointInfo)
+        {
+            return FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.txt");
+        }
+
         public static string GenerateDumpFileName()
         {
             return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?

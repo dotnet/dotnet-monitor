@@ -49,11 +49,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             var settings = new EventLogsPipelineSettings()
             {
-                Duration = duration
+                Duration = duration,
+                LogLevel = defaultLevel,
+                UseAppFilters = useAppFilters
             };
-
-            settings.LogLevel = defaultLevel;
-            settings.UseAppFilters = useAppFilters;
 
             string logsFilePath = await StartLogs(endpointInfo, settings, egressProvider, logFormat, token);
 
@@ -61,12 +60,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
-                    { CollectDumpAction.EgressPathOutputValueName, logsFilePath }
+                    { CollectionRuleActionConstants.EgressPathOutputValueName, logsFilePath }
                 }
             };
         }
 
-        // Move this method to Utilities and share it instead of copying it
         private async Task<string> StartLogs(
             IEndpointInfo endpointInfo,
             EventLogsPipelineSettings settings,
@@ -74,7 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             LogFormat format,
             CancellationToken token)
         {
-            string fileName = FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.txt");
+            string fileName = Utils.GenerateLogsFileName(endpointInfo);
             string contentType = Utils.GetLogsContentType(format);
 
             Func<Stream, CancellationToken, Task> action = Utils.GetLogsAction(format, endpointInfo, settings);

@@ -51,8 +51,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
 
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddCollectLogsAction(ExpectedEgressProvider)
+                        .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
                         .SetStartupTrigger();
+
+                    collectLogsOptions.Duration = TimeSpan.FromSeconds(2);
                 }, async host =>
                 {
                     IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
@@ -65,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
                     source.Start();
 
-                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
+                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
 
                     Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
@@ -76,9 +78,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
                         CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
-                        // Not currently doing any validation on the Logs itself for validity; just checking that the file was created.
+                        // Not currently doing any validation on the Logs itself for validity; just checking that the file was created. Should this use the existing Logs tests?
                         Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue(CollectDumpAction.EgressPathOutputValueName, out string egressPath));
+                        Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
                         Assert.True(File.Exists(egressPath));
 
                         await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
@@ -90,7 +92,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 try
                 {
                     uniqueEgressDirectory?.Delete(recursive: true);
-
                 }
                 catch
                 {
