@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class ClientEndpointInfoSource : IEndpointInfoSourceInternal
+    internal sealed class ClientEndpointInfoSource : IEndpointInfoSource
     {
         // The amount of time to wait before abandoning the attempt to create an EndpointInfo from
         // the enumerated processes. This may happen if a runtime instance is unresponsive to

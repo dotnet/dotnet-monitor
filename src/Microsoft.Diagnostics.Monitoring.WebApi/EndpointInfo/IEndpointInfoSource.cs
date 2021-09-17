@@ -23,13 +23,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         string OperatingSystem { get; }
 
         string ProcessArchitecture { get; }
+
+        string ProcessName { get; }
     }
 
-    public interface IEndpointInfoSource
-    {
-    }
-
-    internal interface IEndpointInfoSourceInternal : IEndpointInfoSource
+    internal interface IEndpointInfoSource
     {
         Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(CancellationToken token);
     }

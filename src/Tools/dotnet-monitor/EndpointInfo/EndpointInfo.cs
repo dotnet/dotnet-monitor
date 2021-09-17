@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +17,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     internal class EndpointInfo : IEndpointInfo
     {
-        public static async Task<EndpointInfo> FromProcessIdAsync(int processId, CancellationToken token)
+        // The amount of time to wait before cancelling get additional process information (e.g. getting
+        // the process command line if the IEndpointInfo doesn't provide it).
+        private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromSeconds(1);
+
+        // String returned for a process field when its value could not be retrieved. This is the same
+        // value that is returned by the runtime when it could not determine the value for each of those fields.
+        private static readonly string ProcessFieldUnknownValue = "unknown";
+
+        // The value of the operating system field of the ProcessInfo result when the target process is running
+        // on a Windows operating system.
+        private const string ProcessOperatingSystemWindowsValue = "windows";
+
+        public static async Task<EndpointInfo> FromProcessIdAsync(
+            int processId,
+            CancellationToken token)
         {
             var client = new DiagnosticsClient(processId);
 
@@ -39,7 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             // CONSIDER: Generate a runtime instance identifier based on the pipe name
             // for .NET Core 3.1 e.g. pid + disambiguator in GUID form.
-            return new EndpointInfo()
+            EndpointInfo endpointInfo = new()
             {
                 Endpoint = new PidIpcEndpoint(processId),
                 ProcessId = processId,
@@ -48,9 +65,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 OperatingSystem = processInfo?.OperatingSystem,
                 ProcessArchitecture = processInfo?.ProcessArchitecture
             };
+
+            await FillExtraAsync(client, endpointInfo, token);
+
+            return endpointInfo;
         }
 
-        public static async Task<EndpointInfo> FromIpcEndpointInfoAsync(IpcEndpointInfo info, CancellationToken token)
+        public static async Task<EndpointInfo> FromIpcEndpointInfoAsync(
+            IpcEndpointInfo info,
+            CancellationToken token)
         {
             var client = new DiagnosticsClient(info.Endpoint);
 
@@ -74,7 +97,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Runtime didn't respond within client timeout.
             }
 
-            return new EndpointInfo()
+            EndpointInfo endpointInfo = new()
             {
                 Endpoint = info.Endpoint,
                 ProcessId = info.ProcessId,
@@ -83,6 +106,66 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 OperatingSystem = processInfo?.OperatingSystem,
                 ProcessArchitecture = processInfo?.ProcessArchitecture
             };
+
+            await FillExtraAsync(client, endpointInfo, token);
+
+            return endpointInfo;
+        }
+
+        private static async Task FillExtraAsync(
+            DiagnosticsClient client,
+            EndpointInfo endpointInfo,
+            CancellationToken token)
+        {
+            string commandLine = endpointInfo.CommandLine;
+            if (string.IsNullOrEmpty(commandLine))
+            {
+                EventProcessInfoPipelineSettings infoSettings = new()
+                {
+                    Duration = ExtendedProcessInfoTimeout,
+                };
+
+                await using EventProcessInfoPipeline pipeline = new(
+                    client,
+                    infoSettings,
+                    (cmdLine, token) => { commandLine = cmdLine; return Task.CompletedTask; });
+
+                await pipeline.RunAsync(token);
+            }
+
+            string processName = null;
+            if (!string.IsNullOrEmpty(commandLine))
+            {
+                // Get the process name from the command line
+                bool isWindowsProcess = false;
+                if (string.IsNullOrEmpty(endpointInfo.OperatingSystem))
+                {
+                    // If operating system is null, the process is likely .NET Core 3.1 (which doesn't have the GetProcessInfo command).
+                    // Since the underlying diagnostic communication channel used by the .NET runtime requires that the diagnostic process
+                    // must be running on the same type of operating system as the target process (e.g. dotnet-monitor must be running on Windows
+                    // if the target process is running on Windows), then checking the local operating system should be a sufficient heuristic
+                    // to determine the operating system of the target process.
+                    isWindowsProcess = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                }
+                else
+                {
+                    isWindowsProcess = ProcessOperatingSystemWindowsValue.Equals(endpointInfo.OperatingSystem, StringComparison.OrdinalIgnoreCase);
+                }
+
+                string processPath = CommandLineHelper.ExtractExecutablePath(commandLine, isWindowsProcess);
+                if (!string.IsNullOrEmpty(processPath))
+                {
+                    processName = Path.GetFileName(processPath);
+                    if (isWindowsProcess)
+                    {
+                        // Remove the extension on Windows to match the behavior of Process.ProcessName
+                        processName = Path.GetFileNameWithoutExtension(processName);
+                    }
+                }
+            }
+
+            endpointInfo.CommandLine = commandLine ?? ProcessFieldUnknownValue;
+            endpointInfo.ProcessName = processName ?? ProcessFieldUnknownValue;
         }
 
         public IpcEndpoint Endpoint { get; private set; }
@@ -96,6 +179,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public string OperatingSystem { get; private set; }
 
         public string ProcessArchitecture { get; private set; }
+
+        public string ProcessName { get; private set; }
 
         internal string DebuggerDisplay => FormattableString.Invariant($"PID={ProcessId}, Cookie={RuntimeInstanceCookie}");
     }

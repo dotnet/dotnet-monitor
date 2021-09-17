@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return this.InvokeService(async () =>
             {
-                IProcessInfo defaultProcessInfo = null;
+                IEndpointInfo defaultProcessInfo = null;
                 try
                 {
                     defaultProcessInfo = await _diagnosticServices.GetProcessAsync(null, HttpContext.RequestAborted);
@@ -77,16 +77,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
 
                 IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
-                foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(processFilter: null, HttpContext.RequestAborted))
+                foreach (IEndpointInfo p in await _diagnosticServices.GetProcessesAsync(processFilter: null, HttpContext.RequestAborted))
                 {
                     processesIdentifiers.Add(new Models.ProcessIdentifier()
                     {
-                        Pid = p.EndpointInfo.ProcessId,
-                        Uid = p.EndpointInfo.RuntimeInstanceCookie,
+                        Pid = p.ProcessId,
+                        Uid = p.RuntimeInstanceCookie,
                         Name = p.ProcessName,
                         IsDefault = (defaultProcessInfo != null &&
-                            p.EndpointInfo.ProcessId == defaultProcessInfo.EndpointInfo.ProcessId &&
-                            p.EndpointInfo.RuntimeInstanceCookie == defaultProcessInfo.EndpointInfo.RuntimeInstanceCookie)
+                            p.ProcessId == defaultProcessInfo.ProcessId &&
+                            p.RuntimeInstanceCookie == defaultProcessInfo.RuntimeInstanceCookie)
                     });
                 }
                 _logger.WrittenToHttpStream();
@@ -121,8 +121,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     Name = processInfo.ProcessName,
                     OperatingSystem = processInfo.OperatingSystem,
                     ProcessArchitecture = processInfo.ProcessArchitecture,
-                    Pid = processInfo.EndpointInfo.ProcessId,
-                    Uid = processInfo.EndpointInfo.RuntimeInstanceCookie
+                    Pid = processInfo.ProcessId,
+                    Uid = processInfo.RuntimeInstanceCookie
                 };
 
                 _logger.WrittenToHttpStream();
@@ -153,7 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess<Dictionary<string, string>>(async processInfo =>
             {
-                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
+                var client = new DiagnosticsClient(processInfo.Endpoint);
 
                 try
                 {
@@ -209,7 +209,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
-                    Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, HttpContext.RequestAborted);
+                    Stream dumpStream = await _dumpService.DumpAsync(processInfo, type, HttpContext.RequestAborted);
 
                     _logger.WrittenToHttpStream();
                     //Compression is done automatically by the response
@@ -218,13 +218,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 else
                 {
-                    KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
+                    KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo);
 
                     return await SendToEgress(new EgressOperation(
-                        token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
+                        token => _dumpService.DumpAsync(processInfo, type, token),
                         egressProvider,
                         dumpFileName,
-                        processInfo.EndpointInfo,
+                        processInfo,
                         ContentTypes.ApplicationOctetStream,
                         scope), limitKey: Utilities.ArtifactType_Dump);
                 }
@@ -262,7 +262,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
+                string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.ProcessId}.gcdump");
 
                 Func<CancellationToken, Task<IFastSerializable>> action = async (token) => {
                     var graph = new Graphs.MemoryGraph(50_000);
@@ -272,7 +272,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         Duration = Timeout.InfiniteTimeSpan,
                     };
 
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
+                    var client = new DiagnosticsClient(processInfo.Endpoint);
 
                     await using var pipeline = new EventGCDumpPipeline(client, settings, graph);
                     await pipeline.RunAsync(token);
@@ -289,7 +289,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     ConvertFastSerializeAction(action),
                     fileName,
                     ContentTypes.ApplicationOctetStream,
-                    processInfo.EndpointInfo);
+                    processInfo);
             }, processKey, Utilities.ArtifactType_GCDump);
         }
 
@@ -585,12 +585,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         private Task<ActionResult> StartTrace(
-            IProcessInfo processInfo,
+            IEndpointInfo processInfo,
             MonitoringSourceConfiguration configuration,
             TimeSpan duration,
             string egressProvider)
         {
-            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.nettrace");
+            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.ProcessId}.nettrace");
 
             Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
             {
@@ -601,7 +601,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     await eventStream.CopyToAsync(outputStream, 0x10000, token);
                 };
 
-                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
+                var client = new DiagnosticsClient(processInfo.Endpoint);
 
                 await using EventTracePipeline pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
                 {
@@ -618,11 +618,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 action,
                 fileName,
                 ContentTypes.ApplicationOctetStream,
-                processInfo.EndpointInfo);
+                processInfo);
         }
 
         private Task<ActionResult> StartLogs(
-            IProcessInfo processInfo,
+            IEndpointInfo processInfo,
             EventLogsPipelineSettings settings,
             string egressProvider)
         {
@@ -632,7 +632,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
-            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
+            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.ProcessId}.txt");
             string contentType = ContentTypes.TextEventStream;
 
             if (format == LogFormat.EventStream)
@@ -654,7 +654,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
 
-                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
+                var client = new DiagnosticsClient(processInfo.Endpoint);
 
                 await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
                 await pipeline.RunAsync(token);
@@ -666,7 +666,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 action,
                 fileName,
                 contentType,
-                processInfo.EndpointInfo,
+                processInfo,
                 format != LogFormat.EventStream);
         }
 
@@ -800,27 +800,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             };
         }
 
-        private Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string artifactType = null)
+        private Task<ActionResult> InvokeForProcess(Func<IEndpointInfo, ActionResult> func, ProcessKey? processKey, string artifactType = null)
         {
-            Func<IProcessInfo, Task<ActionResult>> asyncFunc =
+            Func<IEndpointInfo, Task<ActionResult>> asyncFunc =
                 processInfo => Task.FromResult(func(processInfo));
 
             return InvokeForProcess(asyncFunc, processKey, artifactType);
         }
 
-        private async Task<ActionResult> InvokeForProcess(Func<IProcessInfo, Task<ActionResult>> func, ProcessKey? processKey, string artifactType)
+        private async Task<ActionResult> InvokeForProcess(Func<IEndpointInfo, Task<ActionResult>> func, ProcessKey? processKey, string artifactType)
         {
             ActionResult<object> result = await InvokeForProcess<object>(async processInfo => await func(processInfo), processKey, artifactType);
 
             return result.Result;
         }
 
-        private Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, ActionResult<T>> func, ProcessKey? processKey, string artifactType = null)
+        private Task<ActionResult<T>> InvokeForProcess<T>(Func<IEndpointInfo, ActionResult<T>> func, ProcessKey? processKey, string artifactType = null)
         {
             return InvokeForProcess(processInfo => Task.FromResult(func(processInfo)), processKey, artifactType);
         }
 
-        private async Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, Task<ActionResult<T>>> func, ProcessKey? processKey, string artifactType = null)
+        private async Task<ActionResult<T>> InvokeForProcess<T>(Func<IEndpointInfo, Task<ActionResult<T>>> func, ProcessKey? processKey, string artifactType = null)
         {
             IDisposable artifactTypeRegistration = null;
             if (!string.IsNullOrEmpty(artifactType))
@@ -834,10 +834,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return await this.InvokeService(async () =>
                 {
-                    IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, HttpContext.RequestAborted);
+                    IEndpointInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, HttpContext.RequestAborted);
 
                     KeyValueLogScope processInfoScope = new KeyValueLogScope();
-                    processInfoScope.AddArtifactEndpointInfo(processInfo.EndpointInfo);
+                    processInfoScope.AddArtifactEndpointInfo(processInfo);
                     using var _ = _logger.BeginScope(processInfoScope);
 
                     _logger.ResolvedTargetProcess();

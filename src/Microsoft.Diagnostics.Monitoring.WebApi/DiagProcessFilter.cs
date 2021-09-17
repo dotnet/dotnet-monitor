@@ -112,14 +112,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public DiagProcessFilterMatchType MatchType { get; set; }
 
-        public bool MatchFilter(IProcessInfo processInfo)
+        public bool MatchFilter(IEndpointInfo processInfo)
         {
             switch (this.Criteria)
             {
                 case DiagProcessFilterCriteria.ProcessId:
-                    return ExactCompare(processInfo.EndpointInfo.ProcessId.ToString(CultureInfo.InvariantCulture));
+                    return ExactCompare(processInfo.ProcessId.ToString(CultureInfo.InvariantCulture));
                 case DiagProcessFilterCriteria.RuntimeId:
-                    return ExactCompare(processInfo.EndpointInfo.RuntimeInstanceCookie.ToString("D"));
+                    return ExactCompare(processInfo.RuntimeInstanceCookie.ToString("D"));
                 case DiagProcessFilterCriteria.CommandLine:
                     return Compare(processInfo.CommandLine);
                 case DiagProcessFilterCriteria.ProcessName:

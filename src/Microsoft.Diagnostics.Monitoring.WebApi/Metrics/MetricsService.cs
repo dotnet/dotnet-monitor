@@ -6,9 +6,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,8 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 try
                 {
-                    IProcessInfo pi = await _services.GetProcessAsync(processKey: null, stoppingToken);
-                    var client = new DiagnosticsClient(pi.EndpointInfo.Endpoint);
+                    IEndpointInfo pi = await _services.GetProcessAsync(processKey: null, stoppingToken);
+                    var client = new DiagnosticsClient(pi.Endpoint);
 
                     MetricsOptions options = _optionsMonitor.CurrentValue;
                     using var optionsTokenSource = new CancellationTokenSource();

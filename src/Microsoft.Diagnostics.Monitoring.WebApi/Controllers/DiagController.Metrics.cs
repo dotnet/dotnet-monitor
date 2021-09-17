@@ -5,17 +5,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -58,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
                 {
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
+                    var client = new DiagnosticsClient(processInfo.Endpoint);
                     EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
                         includeDefaults: true,
                         durationSeconds: durationSeconds,
@@ -77,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     action,
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
-                    processInfo.EndpointInfo);
+                    processInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
         }
 
@@ -121,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
                 {
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
+                    var client = new DiagnosticsClient(processInfo.Endpoint);
                     EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
                         durationSeconds,
                         metricsIntervalSeconds,
@@ -140,11 +135,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     action,
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
-                    processInfo.EndpointInfo);
+                    processInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
         }
 
-        private static string GetMetricFilename(IProcessInfo processInfo) =>
-            FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.metrics.json");
+        private static string GetMetricFilename(IEndpointInfo processInfo) =>
+            FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.ProcessId}.metrics.json");
     }
 }

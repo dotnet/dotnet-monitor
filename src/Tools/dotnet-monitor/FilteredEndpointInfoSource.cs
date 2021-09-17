@@ -20,12 +20,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// Wraps an <see cref="IEndpointInfoSource"/> based on the provided configuration
     /// and filters the current process from consideration.
     /// </summary>
-    internal class FilteredEndpointInfoSource : IEndpointInfoSourceInternal, IAsyncDisposable
+    internal class FilteredEndpointInfoSource : IEndpointInfoSource, IAsyncDisposable
     {
         private readonly DiagnosticPortOptions _portOptions;
         private readonly int? _processIdToFilterOut;
         private readonly Guid? _runtimeInstanceCookieToFilterOut;
-        private readonly IEndpointInfoSourceInternal _source;
+        private readonly IEndpointInfoSource _source;
 
         public FilteredEndpointInfoSource(
             IEnumerable<IEndpointInfoSourceCallbacks> callbacks,

@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// <summary>
     /// Aggregates diagnostic endpoints that are established at a transport path via a reversed server.
     /// </summary>
-    internal sealed class ServerEndpointInfoSource : IEndpointInfoSourceInternal, IAsyncDisposable
+    internal sealed class ServerEndpointInfoSource : IEndpointInfoSource, IAsyncDisposable
     {
         // The amount of time to wait when checking if the a endpoint info should be
         // pruned from the list of endpoint infos. If the runtime doesn't have a viable connection within
