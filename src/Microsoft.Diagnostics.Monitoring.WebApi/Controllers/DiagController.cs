@@ -548,7 +548,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             TimeSpan duration,
             string egressProvider)
         {
-            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.nettrace");
+            string fileName = Utilities.GenerateTraceFileName(processInfo.EndpointInfo);
 
             Func<Stream, CancellationToken, Task> action = Utilities.GetTraceAction(processInfo.EndpointInfo, configuration, duration);
 

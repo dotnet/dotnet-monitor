@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -61,6 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
                     CollectTraceOptions options = (CollectTraceOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+                    options.Duration = TimeSpan.FromSeconds(2); // Doing this to reduce testing duration (uses default trace duration otherwise)
 
                     ICollectionRuleActionProxy action;
                     Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectTrace, out action));
@@ -69,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
                     source.Start();
 
-                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
+                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
 
                     Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
@@ -80,10 +82,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.TraceTimeout);
                         CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
-                        // Not currently doing any validation on the Trace itself for validity; just checking that the file was created.
                         Assert.NotNull(result.OutputValues);
                         Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
                         Assert.True(File.Exists(egressPath));
+
+                        using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                        Assert.NotNull(traceStream);
+
+                        await ValidateTrace(traceStream);
 
                         await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                     });
@@ -94,12 +100,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 try
                 {
                     uniqueEgressDirectory?.Delete(recursive: true);
-
                 }
                 catch
                 {
                 }
             }
+        }
+
+        private static async Task ValidateTrace(Stream traceStream)
+        {
+            byte[] buffer = new byte[32];
+
+            const string firstKnownHeaderText = "Nettrace";
+            const string secondKnownHeaderText = "!FastSerialization.1";
+
+            // Read enough to deserialize known header texts.
+            int read;
+            int total = 0;
+            using CancellationTokenSource cancellation = new(CommonTestTimeouts.TraceTimeout);
+            while (total < buffer.Length && 0 != (read = await traceStream.ReadAsync(buffer, total, buffer.Length - total, cancellation.Token)))
+            {
+                total += read;
+            }
+
+            byte[] firstSubarray = new byte[firstKnownHeaderText.Length];
+            Array.Copy(buffer, 0, firstSubarray, 0, firstSubarray.Length); // The first header text begins at the 0th index
+
+            string firstHeaderText = Encoding.ASCII.GetString(firstSubarray);
+
+            Assert.Equal(firstKnownHeaderText, firstHeaderText);
+
+            byte[] secondSubarray = new byte[secondKnownHeaderText.Length];
+            Array.Copy(buffer, 12, secondSubarray, 0, secondSubarray.Length); // The second header text begins at the 12th index
+
+            string secondHeaderText = Encoding.ASCII.GetString(secondSubarray);
+
+            Assert.Equal(secondKnownHeaderText, secondHeaderText);
         }
     }
 }

@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             string egressProvider,
             CancellationToken token)
         {
-            string fileName = FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
+            string fileName = Utils.GenerateTraceFileName(endpointInfo);
 
             Func<Stream, CancellationToken, Task> action = Utils.GetTraceAction(endpointInfo, configuration, duration);
 

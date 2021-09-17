@@ -36,6 +36,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
 
+        public static string GenerateTraceFileName(IEndpointInfo endpointInfo)
+        {
+            return FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
+        }
+
         public static KeyValueLogScope GetScope(string artifactType, IEndpointInfo endpointInfo)
         {
             KeyValueLogScope scope = new KeyValueLogScope();
