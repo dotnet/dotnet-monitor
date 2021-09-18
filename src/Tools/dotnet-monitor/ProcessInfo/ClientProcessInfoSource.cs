@@ -22,6 +22,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // unresponsive process will cause all HTTP requests to be delayed by the timeout period.
         private static readonly TimeSpan AbandonProcessTimeout = TimeSpan.FromSeconds(3);
 
+        // The amount of time to wait before cancelling get additional process information (e.g. getting
+        // the process command line if the GetProcessInfo command doesn't provide it).
+        private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromSeconds(1);
+
         private readonly ILogger<ClientProcessInfoSource> _logger;
 
         public ClientProcessInfoSource(ILogger<ClientProcessInfoSource> logger)
@@ -31,10 +35,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public async Task<IEnumerable<IProcessInfo>> GetProcessInfoAsync(CancellationToken token)
         {
+            using CancellationTokenSource extendedInfoTokenSource = new();
             using CancellationTokenSource timeoutTokenSource = new();
             using CancellationTokenSource linkedTokenSource =
                 CancellationTokenSource.CreateLinkedTokenSource(token, timeoutTokenSource.Token);
 
+            CancellationToken extendedInfoToken = extendedInfoTokenSource.Token;
             CancellationToken timeoutToken = timeoutTokenSource.Token;
             CancellationToken linkedToken = linkedTokenSource.Token;
 
@@ -47,7 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     try
                     {
-                        return await ProcessInfoImpl.FromProcessIdAsync(pid, linkedToken);
+                        return await ProcessInfoImpl.FromProcessIdAsync(pid, extendedInfoToken, linkedToken);
                     }
                     // Catch when timeout on waiting for ProcessInfo creation. Some runtime instances may be
                     // in a bad state and hang all requests to their diagnostic pipe; gracefully abandon waiting
@@ -76,6 +82,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }, linkedToken));
             }
 
+            extendedInfoTokenSource.CancelAfter(ExtendedProcessInfoTimeout);
             timeoutTokenSource.CancelAfter(AbandonProcessTimeout);
 
             await Task.WhenAll(processInfoTasks);

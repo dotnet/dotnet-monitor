@@ -19,10 +19,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     internal class ProcessInfoImpl : IProcessInfo
     {
-        // The amount of time to wait before cancelling get additional process information (e.g. getting
-        // the process command line if the IProcessInfo doesn't provide it).
-        private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromSeconds(1);
-
         // String returned for a process field when its value could not be retrieved. This is the same
         // value that is returned by the runtime when it could not determine the value for each of those fields.
         private static readonly string ProcessFieldUnknownValue = "unknown";
@@ -33,6 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static async Task<IProcessInfo> FromProcessIdAsync(
             int processId,
+            CancellationToken extendedInfoToken,
             CancellationToken token)
         {
             var client = new DiagnosticsClient(processId);
@@ -68,13 +65,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ProcessArchitecture = processInfo?.ProcessArchitecture
             };
 
-            await FillExtraAsync(client, processInfoImpl, token);
+            await FillExtraAsync(client, processInfoImpl, extendedInfoToken);
 
             return processInfoImpl;
         }
 
         public static async Task<IProcessInfo> FromIpcEndpointInfoAsync(
             IpcEndpointInfo info,
+            CancellationToken extendedInfoToken,
             CancellationToken token)
         {
             var client = new DiagnosticsClient(info.Endpoint);
@@ -109,7 +107,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ProcessArchitecture = processInfo?.ProcessArchitecture
             };
 
-            await FillExtraAsync(client, processInfoImpl, token);
+            await FillExtraAsync(client, processInfoImpl, extendedInfoToken);
 
             return processInfoImpl;
         }
@@ -117,22 +115,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static async Task FillExtraAsync(
             DiagnosticsClient client,
             ProcessInfoImpl processInfoImpl,
-            CancellationToken token)
+            CancellationToken extendedInfoToken)
         {
             string commandLine = processInfoImpl.CommandLine;
             if (string.IsNullOrEmpty(commandLine))
             {
-                EventProcessInfoPipelineSettings infoSettings = new()
+                try
                 {
-                    Duration = ExtendedProcessInfoTimeout,
-                };
+                    EventProcessInfoPipelineSettings infoSettings = new()
+                    {
+                        Duration = Timeout.InfiniteTimeSpan,
+                    };
 
-                await using EventProcessInfoPipeline pipeline = new(
-                    client,
-                    infoSettings,
-                    (cmdLine, token) => { commandLine = cmdLine; return Task.CompletedTask; });
+                    await using EventProcessInfoPipeline pipeline = new(
+                        client,
+                        infoSettings,
+                        (cmdLine, token) => { commandLine = cmdLine; return Task.CompletedTask; });
 
-                await pipeline.RunAsync(token);
+                    await pipeline.RunAsync(extendedInfoToken);
+                }
+                catch
+                {
+                }
             }
 
             string processName = null;

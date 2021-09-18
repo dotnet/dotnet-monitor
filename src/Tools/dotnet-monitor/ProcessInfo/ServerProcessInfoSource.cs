@@ -215,7 +215,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             try
             {
-                IProcessInfo processInfo = await ProcessInfoImpl.FromIpcEndpointInfoAsync(info, token);
+                IProcessInfo processInfo = await ProcessInfoImpl.FromIpcEndpointInfoAsync(info, token, token);
 
                 foreach (IProcessInfoSourceCallbacks callback in _callbacks)
                 {
