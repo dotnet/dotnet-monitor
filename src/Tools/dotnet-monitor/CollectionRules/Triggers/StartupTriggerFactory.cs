@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         ICollectionRuleTriggerFactory
     {
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback)
+        public ICollectionRuleTrigger Create(IProcessInfo processInfo, Action callback)
         {
             return new StartupTrigger(callback);
         }

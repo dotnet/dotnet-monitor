@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Trigge
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback)
+        public ICollectionRuleTrigger Create(IProcessInfo processInfo, Action callback)
         {
             return new ManualTrigger(_service, callback);
         }

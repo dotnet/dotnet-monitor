@@ -139,7 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Metrics);
         }
 
-        private static string GetMetricFilename(IEndpointInfo processInfo) =>
+        private static string GetMetricFilename(IProcessInfo processInfo) =>
             FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.ProcessId}.metrics.json");
     }
 }

@@ -15,33 +15,33 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    public class EndpointInfoSourceTests
+    public class ProcessInfoSourceTests
     {
         private static readonly TimeSpan DefaultNegativeVerificationTimeout = TimeSpan.FromSeconds(2);
 
         private readonly ITestOutputHelper _outputHelper;
-        private readonly EndpointUtilities _endpointUtilities;
+        private readonly ProcessInfoUtilities _processInfoUtilities;
 
-        public EndpointInfoSourceTests(ITestOutputHelper outputHelper)
+        public ProcessInfoSourceTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
-            _endpointUtilities = new EndpointUtilities(_outputHelper);
+            _processInfoUtilities = new ProcessInfoUtilities(_outputHelper);
         }
 
         /// <summary>
-        /// Tests that other <see cref="ServerEndpointInfoSource"> methods throw if
-        /// <see cref="ServerEndpointInfoSource.Start"/> is not called.
+        /// Tests that other <see cref="ServerProcessInfoSource"> methods throw if
+        /// <see cref="ServerProcessInfoSource.Start"/> is not called.
         /// </summary>
         [Fact]
         public async Task ServerSourceNoStartTest()
         {
-            await using var source = _endpointUtilities.CreateServerSource(out string transportName);
+            await using var source = _processInfoUtilities.CreateServerSource(out string transportName);
             // Intentionally do not call Start
 
             using CancellationTokenSource cancellation = new(DefaultNegativeVerificationTimeout);
 
             await Assert.ThrowsAsync<InvalidOperationException>(
-                () => source.GetEndpointInfoAsync(cancellation.Token));
+                () => source.GetProcessInfoAsync(cancellation.Token));
         }
 
         /// <summary>
@@ -50,11 +50,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ServerSourceNoConnectionsTest()
         {
-            await using var source = _endpointUtilities.CreateServerSource(out _);
+            await using var source = _processInfoUtilities.CreateServerSource(out _);
             source.Start();
 
-            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
-            Assert.Empty(endpointInfos);
+            var processInfos = await _processInfoUtilities.GetProcessInfoAsync(source);
+            Assert.Empty(processInfos);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ServerSourceThrowsWhenDisposedTest()
         {
-            var source = _endpointUtilities.CreateServerSource(out _);
+            var source = _processInfoUtilities.CreateServerSource(out _);
             source.Start();
 
             await source.DisposeAsync();
@@ -78,18 +78,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using CancellationTokenSource cancellation = new(DefaultNegativeVerificationTimeout);
             await Assert.ThrowsAsync<ObjectDisposedException>(
-                () => source.GetEndpointInfoAsync(cancellation.Token));
+                () => source.GetProcessInfoAsync(cancellation.Token));
         }
 
         /// <summary>
         /// Tests that server endpoint info source should throw an exception from
-        /// <see cref="ServerEndpointInfoSource.Start"/> and
-        /// <see cref="ServerEndpointInfoSource.Start(int)"/> after listening was already started.
+        /// <see cref="ServerProcessInfoSource.Start"/> and
+        /// <see cref="ServerProcessInfoSource.Start(int)"/> after listening was already started.
         /// </summary>
         [Fact]
         public async Task ServerSourceThrowsWhenMultipleStartTest()
         {
-            await using var source = _endpointUtilities.CreateServerSource(out _);
+            await using var source = _processInfoUtilities.CreateServerSource(out _);
             source.Start();
 
             Assert.Throws<InvalidOperationException>(
@@ -107,37 +107,37 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public async Task ServerSourceAddRemoveSingleConnectionTest(TargetFrameworkMoniker appTfm)
         {
-            EndpointInfoSourceCallback callback = new(_outputHelper);
-            await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+            ProcessInfoSourceCallback callback = new(_outputHelper);
+            await using var source = _processInfoUtilities.CreateServerSource(out string transportName, callback);
             source.Start();
 
-            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
-            Assert.Empty(endpointInfos);
+            var processInfos = await _processInfoUtilities.GetProcessInfoAsync(source);
+            Assert.Empty(processInfos);
 
-            AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, appTfm);
+            AppRunner runner = _processInfoUtilities.CreateAppRunner(transportName, appTfm);
 
-            Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task newProcessInfoTask = callback.WaitForNewProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {
-                await newEndpointInfoTask;
+                await newProcessInfoTask;
 
-                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+                processInfos = await _processInfoUtilities.GetProcessInfoAsync(source);
 
-                var endpointInfo = Assert.Single(endpointInfos);
-                Assert.NotNull(endpointInfo.CommandLine);
-                Assert.NotNull(endpointInfo.OperatingSystem);
-                Assert.NotNull(endpointInfo.ProcessArchitecture);
-                await EndpointUtilities.VerifyConnectionAsync(runner, endpointInfo);
+                var processInfo = Assert.Single(processInfos);
+                Assert.NotNull(processInfo.CommandLine);
+                Assert.NotNull(processInfo.OperatingSystem);
+                Assert.NotNull(processInfo.ProcessArchitecture);
+                await ProcessInfoUtilities.VerifyConnectionAsync(runner, processInfo);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
 
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+            processInfos = await _processInfoUtilities.GetProcessInfoAsync(source);
 
-            Assert.Empty(endpointInfos);
+            Assert.Empty(processInfos);
         }
 
         /// <summary>
@@ -148,45 +148,45 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public async Task ServerSourceAddRemoveMultipleConnectionTest(TargetFrameworkMoniker appTfm)
         {
-            EndpointInfoSourceCallback callback = new(_outputHelper);
-            await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+            ProcessInfoSourceCallback callback = new(_outputHelper);
+            await using var source = _processInfoUtilities.CreateServerSource(out string transportName, callback);
             source.Start();
 
-            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
-            Assert.Empty(endpointInfos);
+            var processInfos = await _processInfoUtilities.GetProcessInfoAsync(source);
+            Assert.Empty(processInfos);
 
             const int appCount = 5;
             AppRunner[] runners = new AppRunner[appCount];
-            Task[] newEndpointInfoTasks = new Task[appCount];
+            Task[] newProcessInfoTasks = new Task[appCount];
 
             // Start all app instances
             for (int i = 0; i < appCount; i++)
             {
-                runners[i] = _endpointUtilities.CreateAppRunner(transportName, appTfm, appId: i + 1);
-                newEndpointInfoTasks[i] = callback.WaitForNewEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
+                runners[i] = _processInfoUtilities.CreateAppRunner(transportName, appTfm, appId: i + 1);
+                newProcessInfoTasks[i] = callback.WaitForNewProcessInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
             }
 
             await runners.ExecuteAsync(async () =>
             {
                 _outputHelper.WriteLine("Waiting for all new endpoint info notifications.");
-                await Task.WhenAll(newEndpointInfoTasks);
+                await Task.WhenAll(newProcessInfoTasks);
                 _outputHelper.WriteLine("Received all new endpoint info notifications.");
 
-                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+                processInfos = await _processInfoUtilities.GetProcessInfoAsync(source);
 
-                Assert.Equal(appCount, endpointInfos.Count());
+                Assert.Equal(appCount, processInfos.Count());
 
                 for (int i = 0; i < appCount; i++)
                 {
                     int processId = await runners[i].ProcessIdTask;
 
-                    IEndpointInfo endpointInfo = endpointInfos.FirstOrDefault(info => info.ProcessId == processId);
-                    Assert.NotNull(endpointInfo);
-                    Assert.NotNull(endpointInfo.CommandLine);
-                    Assert.NotNull(endpointInfo.OperatingSystem);
-                    Assert.NotNull(endpointInfo.ProcessArchitecture);
+                    IProcessInfo processInfo = processInfos.FirstOrDefault(info => info.ProcessId == processId);
+                    Assert.NotNull(processInfo);
+                    Assert.NotNull(processInfo.CommandLine);
+                    Assert.NotNull(processInfo.OperatingSystem);
+                    Assert.NotNull(processInfo.ProcessArchitecture);
 
-                    await EndpointUtilities.VerifyConnectionAsync(runners[i], endpointInfo);
+                    await ProcessInfoUtilities.VerifyConnectionAsync(runners[i], processInfo);
 
                     await runners[i].SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 }
@@ -199,9 +199,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+            processInfos = await _processInfoUtilities.GetProcessInfoAsync(source);
 
-            Assert.Empty(endpointInfos);
+            Assert.Empty(processInfos);
         }
 
         public static IEnumerable<object[]> GetTfmsSupportingPortListener()

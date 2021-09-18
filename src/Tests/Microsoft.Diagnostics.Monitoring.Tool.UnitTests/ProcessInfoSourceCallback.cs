@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal sealed class EndpointInfoSourceCallback : IEndpointInfoSourceCallbacks
+    internal sealed class ProcessInfoSourceCallback : IProcessInfoSourceCallbacks
     {
         private readonly ITestOutputHelper _outputHelper;
         /// <summary>
@@ -25,12 +25,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private readonly SemaphoreSlim _completionEntriesSemaphore = new(1);
         private readonly List<CompletionEntry> _completionEntries = new();
 
-        public EndpointInfoSourceCallback(ITestOutputHelper outputHelper)
+        public ProcessInfoSourceCallback(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
 
-        public async Task<IEndpointInfo> WaitForNewEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
+        public async Task<IProcessInfo> WaitForNewProcessInfoAsync(AppRunner runner, TimeSpan timeout)
         {
             CompletionEntry entry = new(runner);
             using CancellationTokenSource timeoutCancellation = new(timeout);
@@ -47,25 +47,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
 
             _outputHelper.WriteLine($"[Wait] Wait for App{runner.AppId} notification");
-            IEndpointInfo endpointInfo = await entry.WithCancellation(timeoutCancellation.Token);
+            IProcessInfo processInfo = await entry.WithCancellation(timeoutCancellation.Token);
             _outputHelper.WriteLine($"[Wait] Received App{runner.AppId} notification");
 
-            return endpointInfo;
+            return processInfo;
         }
 
-        public Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken token)
+        public Task OnBeforeResumeAsync(IProcessInfo processInfo, CancellationToken token)
         {
             return Task.CompletedTask;
         }
 
-        public async Task OnAddedEndpointInfoAsync(IEndpointInfo info, CancellationToken token)
+        public async Task OnAddedProcessInfoAsync(IProcessInfo processInfo, CancellationToken token)
         {
-            _outputHelper.WriteLine($"[Source] Added: {ToOutputString(info)}");
+            _outputHelper.WriteLine($"[Source] Added: {ToOutputString(processInfo)}");
 
             await _completionEntriesSemaphore.WaitAsync(token);
             try
             {
-                _outputHelper.WriteLine($"[Source] Start notifications for process {info.ProcessId}");
+                _outputHelper.WriteLine($"[Source] Start notifications for process {processInfo.ProcessId}");
 
                 // Create a mapping of the process ID tasks to the completion entries
                 IDictionary<Task<int>, CompletionEntry> map = new Dictionary<Task<int>, CompletionEntry>(_completionEntries.Count);
@@ -87,10 +87,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     {
                         // If the process ID matches the one that was reported via the callback,
                         // then signal its completion source.
-                        if (info.ProcessId == completedTask.Result)
+                        if (processInfo.ProcessId == completedTask.Result)
                         {
                             _outputHelper.WriteLine($"[Source] Notifying App{entry.Runner.AppId}");
-                            entry.Complete(info);
+                            entry.Complete(processInfo);
 
                             _completionEntries.Remove(entry);
 
@@ -99,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     }
                 }
 
-                _outputHelper.WriteLine($"[Source] Finished notifications for process {info.ProcessId}");
+                _outputHelper.WriteLine($"[Source] Finished notifications for process {processInfo.ProcessId}");
             }
             finally
             {
@@ -107,19 +107,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
-        public void OnRemovedEndpointInfo(IEndpointInfo info)
+        public void OnRemovedProcessInfo(IProcessInfo processInfo)
         {
-            _outputHelper.WriteLine($"[Source] Removed: {ToOutputString(info)}");
+            _outputHelper.WriteLine($"[Source] Removed: {ToOutputString(processInfo)}");
         }
 
-        private static string ToOutputString(IEndpointInfo info)
+        private static string ToOutputString(IProcessInfo processInfo)
         {
-            return FormattableString.Invariant($"PID={info.ProcessId}, Cookie={info.RuntimeInstanceCookie}");
+            return FormattableString.Invariant($"PID={processInfo.ProcessId}, Cookie={processInfo.RuntimeInstanceCookie}");
         }
 
         private sealed class CompletionEntry
         {
-            private readonly TaskCompletionSource<IEndpointInfo> _completionSource =
+            private readonly TaskCompletionSource<IProcessInfo> _completionSource =
                 new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             public CompletionEntry(AppRunner runner)
@@ -129,12 +129,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public AppRunner Runner { get; }
 
-            public void Complete(IEndpointInfo endpointInfo)
+            public void Complete(IProcessInfo processInfo)
             {
-                _completionSource.TrySetResult(endpointInfo);
+                _completionSource.TrySetResult(processInfo);
             }
 
-            public Task<IEndpointInfo> WithCancellation(CancellationToken token)
+            public Task<IProcessInfo> WithCancellation(CancellationToken token)
             {
                 return _completionSource.WithCancellation(token);
             }

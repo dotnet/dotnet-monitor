@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     internal sealed class CollectLogsAction :
         ICollectionRuleAction<CollectLogsOptions>
     {
-        public Task<CollectionRuleActionResult> ExecuteAsync(CollectLogsOptions options, IEndpointInfo endpointInfo, CancellationToken token)
+        public Task<CollectionRuleActionResult> ExecuteAsync(CollectLogsOptions options, IProcessInfo processInfo, CancellationToken token)
         {
             throw new NotImplementedException("TODO: Implement action");
         }

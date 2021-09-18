@@ -23,9 +23,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
 
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, object options)
+        public ICollectionRuleTrigger Create(IProcessInfo processInfo, Action callback, object options)
         {
-            return _factory.Create(endpointInfo, callback);
+            return _factory.Create(processInfo, callback);
         }
     }
 
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
 
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, object options)
+        public ICollectionRuleTrigger Create(IProcessInfo processInfo, Action callback, object options)
         {
             // The options either need to be null or of the type that the factory expects.
             TOptions typedOptions = options as TOptions;
@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 throw new ArgumentException(nameof(options));
             }
 
-            return _factory.Create(endpointInfo, callback, typedOptions);
+            return _factory.Create(processInfo, callback, typedOptions);
         }
     }
 }

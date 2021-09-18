@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         /// <inheritdoc/>
-        public Task<CollectionRuleActionResult> ExecuteAsync(object options, IEndpointInfo endpointInfo, CancellationToken token)
+        public Task<CollectionRuleActionResult> ExecuteAsync(object options, IProcessInfo processInfo, CancellationToken token)
         {
             TOptions typedOptions = options as TOptions;
             if (null != options && null == typedOptions)
@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentException(nameof(options));
             }
 
-            return _action.ExecuteAsync(typedOptions, endpointInfo, token);
+            return _action.ExecuteAsync(typedOptions, processInfo, token);
         }
     }
 }

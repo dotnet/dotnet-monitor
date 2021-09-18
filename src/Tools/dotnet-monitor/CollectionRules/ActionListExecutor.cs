@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         throw new InvalidOperationException(Strings.ErrorMessage_CouldNotMapToAction);
                     }
 
-                    await action.ExecuteAsync(actionOption.Settings, context.EndpointInfo, cancellationToken);
+                    await action.ExecuteAsync(actionOption.Settings, context.ProcessInfo, cancellationToken);
                 }
                 catch (Exception ex) when (ShouldHandleException(ex, context.Name, actionOption.Type))
                 {

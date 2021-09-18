@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal interface IEndpointInfo
+    internal interface IProcessInfo
     {
         IpcEndpoint Endpoint { get; }
 
@@ -27,8 +27,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         string ProcessName { get; }
     }
 
-    internal interface IEndpointInfoSource
+    internal interface IProcessInfoSource
     {
-        Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(CancellationToken token);
+        Task<IEnumerable<IProcessInfo>> GetProcessInfoAsync(CancellationToken token);
     }
 }

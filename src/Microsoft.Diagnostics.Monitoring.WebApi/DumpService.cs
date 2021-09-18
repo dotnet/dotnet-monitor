@@ -23,25 +23,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _storageOptions = storageOptions ?? throw new ArgumentNullException(nameof(StorageOptions));
         }
 
-        public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType mode, CancellationToken token)
+        public async Task<Stream> DumpAsync(IProcessInfo processInfo, Models.DumpType mode, CancellationToken token)
         {
-            if (endpointInfo == null)
+            if (processInfo == null)
             {
-                throw new ArgumentNullException(nameof(endpointInfo));
+                throw new ArgumentNullException(nameof(processInfo));
             }
 
-            string dumpFilePath = Path.Combine(_storageOptions.CurrentValue.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{endpointInfo.ProcessId}"));
+            string dumpFilePath = Path.Combine(_storageOptions.CurrentValue.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{processInfo.ProcessId}"));
             DumpType dumpType = MapDumpType(mode);
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // Get the process
-                Process process = Process.GetProcessById(endpointInfo.ProcessId);
+                Process process = Process.GetProcessById(processInfo.ProcessId);
                 await Dumper.CollectDumpAsync(process, dumpFilePath, dumpType);
             }
             else
             {
-                var client = new DiagnosticsClient(endpointInfo.Endpoint);
+                var client = new DiagnosticsClient(processInfo.Endpoint);
                 await client.WriteDumpAsync(dumpType, dumpFilePath, logDumpGeneration: false, token);
             }
 

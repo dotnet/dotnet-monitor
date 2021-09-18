@@ -16,28 +16,28 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal class EndpointUtilities
+    internal class ProcessInfoUtilities
     {
         private readonly ITestOutputHelper _outputHelper;
 
-        private static readonly TimeSpan GetEndpointInfoTimeout = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan GetProcessInfoTimeout = TimeSpan.FromSeconds(10);
 
-        public EndpointUtilities(ITestOutputHelper outputHelper)
+        public ProcessInfoUtilities(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
 
-        public ServerEndpointInfoSource CreateServerSource(out string transportName, EndpointInfoSourceCallback callback = null)
+        public ServerProcessInfoSource CreateServerSource(out string transportName, ProcessInfoSourceCallback callback = null)
         {
             DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out transportName);
             _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
 
-            List<IEndpointInfoSourceCallbacks> callbacks = new();
+            List<IProcessInfoSourceCallbacks> callbacks = new();
             if (null != callback)
             {
                 callbacks.Add(callback);
             }
-            return new ServerEndpointInfoSource(transportName, callbacks);
+            return new ServerProcessInfoSource(transportName, callbacks);
         }
 
         public AppRunner CreateAppRunner(string transportName, TargetFrameworkMoniker tfm, int appId = 1)
@@ -49,23 +49,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return appRunner;
         }
 
-        public async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(ServerEndpointInfoSource source)
+        public async Task<IEnumerable<IProcessInfo>> GetProcessInfoAsync(ServerProcessInfoSource source)
         {
-            _outputHelper.WriteLine("Getting endpoint infos.");
-            using CancellationTokenSource cancellationSource = new(GetEndpointInfoTimeout);
-            return await source.GetEndpointInfoAsync(cancellationSource.Token);
+            _outputHelper.WriteLine("Getting process infos.");
+            using CancellationTokenSource cancellationSource = new(GetProcessInfoTimeout);
+            return await source.GetProcessInfoAsync(cancellationSource.Token);
         }
 
         /// <summary>
         /// Verifies basic information on the connection and that it matches the target process from the runner.
         /// </summary>
-        public static async Task VerifyConnectionAsync(AppRunner runner, IEndpointInfo endpointInfo)
+        public static async Task VerifyConnectionAsync(AppRunner runner, IProcessInfo processInfo)
         {
             Assert.NotNull(runner);
-            Assert.NotNull(endpointInfo);
-            Assert.Equal(await runner.ProcessIdTask, endpointInfo.ProcessId);
-            Assert.NotEqual(Guid.Empty, endpointInfo.RuntimeInstanceCookie);
-            Assert.NotNull(endpointInfo.Endpoint);
+            Assert.NotNull(processInfo);
+            Assert.Equal(await runner.ProcessIdTask, processInfo.ProcessId);
+            Assert.NotEqual(Guid.Empty, processInfo.RuntimeInstanceCookie);
+            Assert.NotNull(processInfo.Endpoint);
         }
     }
 }

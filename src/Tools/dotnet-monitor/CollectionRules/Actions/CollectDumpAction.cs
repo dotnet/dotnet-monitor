@@ -29,16 +29,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _dumpService = serviceProvider.GetRequiredService<IDumpService>();
         }
 
-        public async Task<CollectionRuleActionResult> ExecuteAsync(CollectDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
+        public async Task<CollectionRuleActionResult> ExecuteAsync(CollectDumpOptions options, IProcessInfo processInfo, CancellationToken token)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (endpointInfo == null)
+            if (processInfo == null)
             {
-                throw new ArgumentNullException(nameof(endpointInfo));
+                throw new ArgumentNullException(nameof(processInfo));
             }
 
             DumpType dumpType = options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
@@ -51,15 +51,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, endpointInfo);
+            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, processInfo);
 
             try
             {
                 EgressOperation egressOperation = new EgressOperation(
-                    token => _dumpService.DumpAsync(endpointInfo, dumpType, token),
+                    token => _dumpService.DumpAsync(processInfo, dumpType, token),
                     egressProvider,
                     dumpFileName,
-                    endpointInfo,
+                    processInfo,
                     ContentTypes.ApplicationOctetStream,
                     scope);
 

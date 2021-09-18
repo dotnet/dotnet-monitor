@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         }
 
         public async Task ApplyRules(
-            IEndpointInfo endpointInfo,
+            IProcessInfo processInfo,
             CancellationToken token)
         {
             if (_disposed)
@@ -71,13 +71,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 throw new ObjectDisposedException(typeof(CollectionRuleService).FullName);
             }
 
-            if (null == endpointInfo)
+            if (null == processInfo)
             {
-                throw new ArgumentNullException(nameof(endpointInfo));
+                throw new ArgumentNullException(nameof(processInfo));
             }
 
             KeyValueLogScope scope = new();
-            scope.AddCollectionRuleEndpointInfo(endpointInfo);
+            scope.AddCollectionRuleProcessInfo(processInfo);
             // Constrain the scope of the log scope to just the log call so that the log scope
             // is not captured by the rule execution method.
             using (_logger.BeginScope(scope))
@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     _actionListExecutor,
                     _triggerOperations,
                     _optionsMonitor,
-                    endpointInfo,
+                    processInfo,
                     ruleName,
                     startedSource,
                     linkedSource.Token).SafeAwait());
@@ -126,13 +126,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             ActionListExecutor actionListExecutor,
             ICollectionRuleTriggerOperations triggerOperations,
             IOptionsMonitor<CollectionRuleOptions> optionsMonitor,
-            IEndpointInfo endpointInfo,
+            IProcessInfo processInfo,
             string ruleName,
             TaskCompletionSource<object> startedSource,
             CancellationToken token)
         {
             KeyValueLogScope scope = new();
-            scope.AddCollectionRuleEndpointInfo(endpointInfo);
+            scope.AddCollectionRuleProcessInfo(processInfo);
             scope.AddCollectionRuleName(ruleName);
             using IDisposable loggerScope = _logger.BeginScope(scope);
 
@@ -148,15 +148,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 {
                     DiagProcessFilter filter = DiagProcessFilter.FromConfiguration(options.Filters);
                     // TODO: Filter collection rules by process information; this requires pushing
-                    // more of the process information into IEndpointInfo. IProcessInfo is only
+                    // more of the process information into IProcessInfo. IProcessInfo is only
                     // available through the IDiagnosticServices implementation, which is created from
-                    // the entries in the IEndpointInfoSource implementation. The collection rules
-                    // are started before the process is registered with the IEndpointInfoSource.
+                    // the entries in the IProcessInfoSource implementation. The collection rules
+                    // are started before the process is registered with the IProcessInfoSource.
                 }
 
                 _logger.CollectionRuleStarted(ruleName);
 
-                CollectionRuleContext context = new(ruleName, options, endpointInfo, _logger);
+                CollectionRuleContext context = new(ruleName, options, processInfo, _logger);
 
                 await using CollectionRulePipeline pipeline = new(
                     actionListExecutor,

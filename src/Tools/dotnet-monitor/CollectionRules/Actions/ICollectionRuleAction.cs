@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal interface ICollectionRuleAction<TOptions>
     {
-        Task<CollectionRuleActionResult> ExecuteAsync(TOptions options, IEndpointInfo endpointInfo, CancellationToken token);
+        Task<CollectionRuleActionResult> ExecuteAsync(TOptions options, IProcessInfo processInfo, CancellationToken token);
     }
 
     internal struct CollectionRuleActionResult

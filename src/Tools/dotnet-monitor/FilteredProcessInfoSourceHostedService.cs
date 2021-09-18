@@ -10,16 +10,16 @@ using Microsoft.Extensions.Hosting;
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     /// <summary>
-    /// A hosted service that ensures the <see cref="FilteredEndpointInfoSource"/>
+    /// A hosted service that ensures the <see cref="FilteredProcessInfoSource"/>
     /// starts monitoring for connectable processes.
     /// </summary>
-    internal class FilteredEndpointInfoSourceHostedService : IHostedService
+    internal class FilteredProcessInfoSourceHostedService : IHostedService
     {
-        private readonly FilteredEndpointInfoSource _source;
+        private readonly FilteredProcessInfoSource _source;
 
-        public FilteredEndpointInfoSourceHostedService(IEndpointInfoSource source)
+        public FilteredProcessInfoSourceHostedService(IProcessInfoSource source)
         {
-            _source = (FilteredEndpointInfoSource)source;
+            _source = (FilteredProcessInfoSource)source;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

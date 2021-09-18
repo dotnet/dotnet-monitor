@@ -14,11 +14,13 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
+    // Named "ProcessInfoImpl" to avoid collisions with
+    // Microsoft.Diagnostics.NETCore.Client.ProcessInfo data structure.
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    internal class EndpointInfo : IEndpointInfo
+    internal class ProcessInfoImpl : IProcessInfo
     {
         // The amount of time to wait before cancelling get additional process information (e.g. getting
-        // the process command line if the IEndpointInfo doesn't provide it).
+        // the process command line if the IProcessInfo doesn't provide it).
         private static readonly TimeSpan ExtendedProcessInfoTimeout = TimeSpan.FromSeconds(1);
 
         // String returned for a process field when its value could not be retrieved. This is the same
@@ -29,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // on a Windows operating system.
         private const string ProcessOperatingSystemWindowsValue = "windows";
 
-        public static async Task<EndpointInfo> FromProcessIdAsync(
+        public static async Task<IProcessInfo> FromProcessIdAsync(
             int processId,
             CancellationToken token)
         {
@@ -56,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             // CONSIDER: Generate a runtime instance identifier based on the pipe name
             // for .NET Core 3.1 e.g. pid + disambiguator in GUID form.
-            EndpointInfo endpointInfo = new()
+            ProcessInfoImpl processInfoImpl = new()
             {
                 Endpoint = new PidIpcEndpoint(processId),
                 ProcessId = processId,
@@ -66,12 +68,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ProcessArchitecture = processInfo?.ProcessArchitecture
             };
 
-            await FillExtraAsync(client, endpointInfo, token);
+            await FillExtraAsync(client, processInfoImpl, token);
 
-            return endpointInfo;
+            return processInfoImpl;
         }
 
-        public static async Task<EndpointInfo> FromIpcEndpointInfoAsync(
+        public static async Task<IProcessInfo> FromIpcEndpointInfoAsync(
             IpcEndpointInfo info,
             CancellationToken token)
         {
@@ -97,7 +99,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Runtime didn't respond within client timeout.
             }
 
-            EndpointInfo endpointInfo = new()
+            ProcessInfoImpl processInfoImpl = new()
             {
                 Endpoint = info.Endpoint,
                 ProcessId = info.ProcessId,
@@ -107,17 +109,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ProcessArchitecture = processInfo?.ProcessArchitecture
             };
 
-            await FillExtraAsync(client, endpointInfo, token);
+            await FillExtraAsync(client, processInfoImpl, token);
 
-            return endpointInfo;
+            return processInfoImpl;
         }
 
         private static async Task FillExtraAsync(
             DiagnosticsClient client,
-            EndpointInfo endpointInfo,
+            ProcessInfoImpl processInfoImpl,
             CancellationToken token)
         {
-            string commandLine = endpointInfo.CommandLine;
+            string commandLine = processInfoImpl.CommandLine;
             if (string.IsNullOrEmpty(commandLine))
             {
                 EventProcessInfoPipelineSettings infoSettings = new()
@@ -138,7 +140,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 // Get the process name from the command line
                 bool isWindowsProcess = false;
-                if (string.IsNullOrEmpty(endpointInfo.OperatingSystem))
+                if (string.IsNullOrEmpty(processInfoImpl.OperatingSystem))
                 {
                     // If operating system is null, the process is likely .NET Core 3.1 (which doesn't have the GetProcessInfo command).
                     // Since the underlying diagnostic communication channel used by the .NET runtime requires that the diagnostic process
@@ -149,7 +151,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 else
                 {
-                    isWindowsProcess = ProcessOperatingSystemWindowsValue.Equals(endpointInfo.OperatingSystem, StringComparison.OrdinalIgnoreCase);
+                    isWindowsProcess = ProcessOperatingSystemWindowsValue.Equals(processInfoImpl.OperatingSystem, StringComparison.OrdinalIgnoreCase);
                 }
 
                 string processPath = CommandLineHelper.ExtractExecutablePath(commandLine, isWindowsProcess);
@@ -164,8 +166,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
             }
 
-            endpointInfo.CommandLine = commandLine ?? ProcessFieldUnknownValue;
-            endpointInfo.ProcessName = processName ?? ProcessFieldUnknownValue;
+            processInfoImpl.CommandLine = commandLine ?? ProcessFieldUnknownValue;
+            processInfoImpl.ProcessName = processName ?? ProcessFieldUnknownValue;
         }
 
         public IpcEndpoint Endpoint { get; private set; }

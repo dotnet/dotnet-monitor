@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     internal sealed class CollectGCDumpAction :
         ICollectionRuleAction<CollectGCDumpOptions>
     {
-        public Task<CollectionRuleActionResult> ExecuteAsync(CollectGCDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
+        public Task<CollectionRuleActionResult> ExecuteAsync(CollectGCDumpOptions options, IProcessInfo processInfo, CancellationToken token)
         {
             throw new NotImplementedException("TODO: Implement action");
         }

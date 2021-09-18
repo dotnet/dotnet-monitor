@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         ICollectionRuleTriggerFactory<AspNetResponseStatusOptions>
     {
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, AspNetResponseStatusOptions options)
+        public ICollectionRuleTrigger Create(IProcessInfo processInfo, Action callback, AspNetResponseStatusOptions options)
         {
             throw new NotImplementedException("TODO: Implement AspNetResponseStatusTrigger.");
         }

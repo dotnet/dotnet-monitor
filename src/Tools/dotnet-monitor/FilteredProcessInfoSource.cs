@@ -17,20 +17,20 @@ using System.Threading.Tasks;
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     /// <summary>
-    /// Wraps an <see cref="IEndpointInfoSource"/> based on the provided configuration
+    /// Wraps an <see cref="IProcessInfoSource"/> based on the provided configuration
     /// and filters the current process from consideration.
     /// </summary>
-    internal class FilteredEndpointInfoSource : IEndpointInfoSource, IAsyncDisposable
+    internal class FilteredProcessInfoSource : IProcessInfoSource, IAsyncDisposable
     {
         private readonly DiagnosticPortOptions _portOptions;
         private readonly int? _processIdToFilterOut;
         private readonly Guid? _runtimeInstanceCookieToFilterOut;
-        private readonly IEndpointInfoSource _source;
+        private readonly IProcessInfoSource _source;
 
-        public FilteredEndpointInfoSource(
-            IEnumerable<IEndpointInfoSourceCallbacks> callbacks,
+        public FilteredProcessInfoSource(
+            IEnumerable<IProcessInfoSourceCallbacks> callbacks,
             IOptions<DiagnosticPortOptions> portOptions,
-            ILogger<ClientEndpointInfoSource> clientSourceLogger)
+            ILogger<ClientProcessInfoSource> clientSourceLogger)
         {
             _portOptions = portOptions.Value;
 
@@ -39,10 +39,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             switch (connectionMode)
             {
                 case DiagnosticPortConnectionMode.Connect:
-                    _source = new ClientEndpointInfoSource(clientSourceLogger);
+                    _source = new ClientProcessInfoSource(clientSourceLogger);
                     break;
                 case DiagnosticPortConnectionMode.Listen:
-                    _source = new ServerEndpointInfoSource(_portOptions.EndpointName, callbacks);
+                    _source = new ServerProcessInfoSource(_portOptions.EndpointName, callbacks);
                     break;
                 default:
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_UnhandledConnectionMode, connectionMode));
@@ -76,23 +76,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        public async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(CancellationToken token)
+        public async Task<IEnumerable<IProcessInfo>> GetProcessInfoAsync(CancellationToken token)
         {
-            var endpointInfos = await _source.GetEndpointInfoAsync(token);
+            var processInfos = await _source.GetProcessInfoAsync(token);
 
             // Apply process ID filter
             if (_processIdToFilterOut.HasValue)
             {
-                endpointInfos = endpointInfos.Where(info => info.ProcessId != _processIdToFilterOut.Value);
+                processInfos = processInfos.Where(info => info.ProcessId != _processIdToFilterOut.Value);
             }
 
             // Apply runtime instance cookie filter
             if (_runtimeInstanceCookieToFilterOut.HasValue)
             {
-                endpointInfos = endpointInfos.Where(info => info.RuntimeInstanceCookie != _runtimeInstanceCookieToFilterOut.Value);
+                processInfos = processInfos.Where(info => info.RuntimeInstanceCookie != _runtimeInstanceCookieToFilterOut.Value);
             }
 
-            return endpointInfos;
+            return processInfos;
         }
 
         public async ValueTask DisposeAsync()
@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public void Start()
         {
-            if (_source is ServerEndpointInfoSource source)
+            if (_source is ServerProcessInfoSource source)
             {
                 source.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));
             }

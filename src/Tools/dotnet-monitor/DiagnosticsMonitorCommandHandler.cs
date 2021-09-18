@@ -22,7 +22,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using IEndpointInfoSource = Microsoft.Diagnostics.Monitoring.WebApi.IEndpointInfoSource;
+using IProcessInfoSource = Microsoft.Diagnostics.Monitoring.WebApi.IProcessInfoSource;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -139,7 +139,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
-                    ConfigureEndpointInfoSource(builder, diagnosticPort);
+                    ConfigureProcessInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
                     builder.ConfigureStorageDefaults();
 
@@ -236,8 +236,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
                     services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
 
-                    services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
-                    services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
+                    services.AddSingleton<IProcessInfoSource, FilteredProcessInfoSource>();
+                    services.AddHostedService<FilteredProcessInfoSourceHostedService>();
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                     services.AddSingleton<IDumpService, DumpService>();
                     services.AddSingleton<RequestLimitTracker>();
@@ -319,7 +319,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             });
         }
 
-        private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
+        private static void ConfigureProcessInfoSource(IConfigurationBuilder builder, string diagnosticPort)
         {
             DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
             builder.AddInMemoryCollection(new Dictionary<string, string>

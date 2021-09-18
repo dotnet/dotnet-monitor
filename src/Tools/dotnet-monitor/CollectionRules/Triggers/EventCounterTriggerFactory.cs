@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
 
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, EventCounterOptions options)
+        public ICollectionRuleTrigger Create(IProcessInfo processInfo, Action callback, EventCounterOptions options)
         {
             EventCounterTriggerSettings settings = new()
             {
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             };
 
             return _eventPipeTriggerFactory.Create(
-                endpointInfo,
+                processInfo,
                 EventCounterTrigger.CreateConfiguration(settings),
                 _traceEventTriggerFactory,
                 settings,

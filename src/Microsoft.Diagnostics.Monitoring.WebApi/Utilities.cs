@@ -27,11 +27,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
         }
 
-        public static KeyValueLogScope CreateArtifactScope(string artifactType, IEndpointInfo endpointInfo)
+        public static KeyValueLogScope CreateArtifactScope(string artifactType, IProcessInfo processInfo)
         {
             KeyValueLogScope scope = new KeyValueLogScope();
             scope.AddArtifactType(artifactType);
-            scope.AddArtifactEndpointInfo(endpointInfo);
+            scope.AddArtifactProcessInfo(processInfo);
             return scope;
         }
     }

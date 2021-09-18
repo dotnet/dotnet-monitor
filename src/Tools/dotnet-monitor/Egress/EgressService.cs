@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             }
         }
 
-        public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
+        public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IProcessInfo source, CancellationToken token)
         {
             string value = await GetProvider(providerName).EgressAsync(
                 providerName,
@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return new EgressResult(value);
         }
 
-        public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
+        public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IProcessInfo source, CancellationToken token)
         {
             string value = await GetProvider(providerName).EgressAsync(
                 providerName,
@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 typeof(IEgressProviderInternal<>).MakeGenericType(optionsType));
         }
 
-        private static EgressArtifactSettings CreateSettings(IEndpointInfo source, string fileName, string contentType)
+        private static EgressArtifactSettings CreateSettings(IProcessInfo source, string fileName, string contentType)
         {
             EgressArtifactSettings settings = new();
             settings.Name = fileName;

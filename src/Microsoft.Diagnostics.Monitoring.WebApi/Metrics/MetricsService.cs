@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 try
                 {
-                    IEndpointInfo pi = await _services.GetProcessAsync(processKey: null, stoppingToken);
+                    IProcessInfo pi = await _services.GetProcessAsync(processKey: null, stoppingToken);
                     var client = new DiagnosticsClient(pi.Endpoint);
 
                     MetricsOptions options = _optionsMonitor.CurrentValue;

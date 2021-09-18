@@ -23,6 +23,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         /// Executes the underlying action with the specified parameters, verifying
         /// that the passed options are of the correct type.
         /// </summary>
-        Task<CollectionRuleActionResult> ExecuteAsync(object options, IEndpointInfo endpointInfo, CancellationToken token);
+        Task<CollectionRuleActionResult> ExecuteAsync(object options, IProcessInfo processInfo, CancellationToken token);
     }
 }

@@ -9,27 +9,27 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
-    internal class CollectionRuleEndpointInfoSourceCallbacks :
-        IEndpointInfoSourceCallbacks
+    internal class CollectionRuleProcessInfoSourceCallbacks :
+        IProcessInfoSourceCallbacks
     {
         private readonly CollectionRuleService _service;
 
-        public CollectionRuleEndpointInfoSourceCallbacks(CollectionRuleService service)
+        public CollectionRuleProcessInfoSourceCallbacks(CollectionRuleService service)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
-        public Task OnAddedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
+        public Task OnAddedProcessInfoAsync(IProcessInfo processInfo, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
-        public Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
+        public Task OnBeforeResumeAsync(IProcessInfo processInfo, CancellationToken cancellationToken)
         {
-            return _service.ApplyRules(endpointInfo, cancellationToken);
+            return _service.ApplyRules(processInfo, cancellationToken);
         }
 
-        public void OnRemovedEndpointInfo(IEndpointInfo endpointInfo)
+        public void OnRemovedProcessInfo(IProcessInfo processInfo)
         {
         }
     }

@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// <summary>
         /// Creates a new instance of the associated trigger.
         /// </summary>
-        ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback);
+        ICollectionRuleTrigger Create(IProcessInfo processInfo, Action callback);
     }
 
     /// <summary>
@@ -26,6 +26,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// <summary>
         /// Creates a new instance of the associated trigger.
         /// </summary>
-        ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, TOptions options);
+        ICollectionRuleTrigger Create(IProcessInfo processInfo, Action callback, TOptions options);
     }
 }

@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class ExecuteAction : ICollectionRuleAction<ExecuteOptions>
     {
-        public async Task<CollectionRuleActionResult> ExecuteAsync(ExecuteOptions options, IEndpointInfo endpointInfo, CancellationToken cancellationToken)
+        public async Task<CollectionRuleActionResult> ExecuteAsync(ExecuteOptions options, IProcessInfo processInfo, CancellationToken cancellationToken)
         {
             string path = options.Path;
             string arguments = options.Arguments;

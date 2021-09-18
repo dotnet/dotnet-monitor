@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const string DefaultRuleName = "Default";
 
         private ITestOutputHelper _outputHelper;
-        private readonly EndpointUtilities _endpointUtilities;
+        private readonly ProcessInfoUtilities _endpointUtilities;
 
         public CollectDumpActionTests(ITestOutputHelper outputHelper)
         {
@@ -66,20 +66,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     ICollectionRuleActionProxy action;
                     Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectDump, out action));
 
-                    EndpointInfoSourceCallback callback = new(_outputHelper);
+                    ProcessInfoSourceCallback callback = new(_outputHelper);
                     await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
                     source.Start();
 
                     AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
 
-                    Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                    Task<IProcessInfo> newProcessInfoTask = callback.WaitForNewProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                     await runner.ExecuteAsync(async () =>
                     {
-                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
+                        IProcessInfo processInfo = await newProcessInfoTask;
 
                         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.DumpTimeout);
-                        CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+                        CollectionRuleActionResult result = await action.ExecuteAsync(options, processInfo, cancellationTokenSource.Token);
 
                         Assert.NotNull(result.OutputValues);
                         Assert.True(result.OutputValues.TryGetValue(CollectDumpAction.EgressPathOutputValueName, out string egressPath));

@@ -356,17 +356,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             runner.DiagnosticPortPath = transportName;
             runner.ScenarioName = scenarioName;
 
-            EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
-            List<Tools.Monitor.IEndpointInfoSourceCallbacks> callbacks = new();
-            callbacks.Add(endpointInfoCallback);
-            Tools.Monitor.ServerEndpointInfoSource source = new(transportName, callbacks);
+            ProcessInfoSourceCallback callback = new(_outputHelper);
+            List<Tools.Monitor.IProcessInfoSourceCallbacks> callbacks = new();
+            callbacks.Add(callback);
+            Tools.Monitor.ServerProcessInfoSource source = new(transportName, callbacks);
             source.Start();
 
-            Task<IEndpointInfo> endpointInfoTask = endpointInfoCallback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task<IProcessInfo> processInfoTask = callback.WaitForNewProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {
-                IEndpointInfo endpointInfo = await endpointInfoTask;
+                IProcessInfo processInfo = await processInfoTask;
 
                 await TestHostHelper.CreateCollectionRulesHost(
                     _outputHelper,
@@ -385,7 +385,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         CollectionRuleContext context = new(
                             collectionRuleName,
                             optionsMonitor.Get(collectionRuleName),
-                            endpointInfo,
+                            processInfo,
                             logger);
 
                         TaskCompletionSource<object> startedSource = new(TaskCreationOptions.RunContinuationsAsynchronously);

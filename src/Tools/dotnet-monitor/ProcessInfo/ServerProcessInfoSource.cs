@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// <summary>
     /// Aggregates diagnostic endpoints that are established at a transport path via a reversed server.
     /// </summary>
-    internal sealed class ServerEndpointInfoSource : IEndpointInfoSource, IAsyncDisposable
+    internal sealed class ServerProcessInfoSource : IProcessInfoSource, IAsyncDisposable
     {
         // The amount of time to wait when checking if the a endpoint info should be
         // pruned from the list of endpoint infos. If the runtime doesn't have a viable connection within
@@ -24,9 +24,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly TimeSpan PruneWaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
 
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
-        private readonly IEnumerable<IEndpointInfoSourceCallbacks> _callbacks;
-        private readonly IList<EndpointInfo> _endpointInfos = new List<EndpointInfo>();
-        private readonly SemaphoreSlim _endpointInfosSemaphore = new SemaphoreSlim(1);
+        private readonly IEnumerable<IProcessInfoSourceCallbacks> _callbacks;
+        private readonly IList<IProcessInfo> _processInfos = new List<IProcessInfo>();
+        private readonly SemaphoreSlim _processInfosSemaphore = new SemaphoreSlim(1);
         private readonly string _transportPath;
 
         private Task _listenTask;
@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private ReversedDiagnosticsServer _server;
 
         /// <summary>
-        /// Constructs a <see cref="ServerEndpointInfoSource"/> that aggreates diagnostic endpoints
+        /// Constructs a <see cref="ServerProcessInfoSource"/> that aggreates diagnostic endpoints
         /// from a reversed diagnostics server at path specified by <paramref name="transportPath"/>.
         /// </summary>
         /// <param name="transportPath">
@@ -42,9 +42,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// On Windows, this can be a full pipe path or the name without the "\\.\pipe\" prefix.
         /// On all other systems, this must be the full file path of the socket.
         /// </param>
-        public ServerEndpointInfoSource(string transportPath, IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null)
+        public ServerProcessInfoSource(string transportPath, IEnumerable<IProcessInfoSourceCallbacks> callbacks = null)
         {
-            _callbacks = callbacks ?? Enumerable.Empty<IEndpointInfoSourceCallbacks>();
+            _callbacks = callbacks ?? Enumerable.Empty<IProcessInfoSourceCallbacks>();
             _transportPath = transportPath;
         }
 
@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     await _server.DisposeAsync().ConfigureAwait(false);
                 }
 
-                _endpointInfosSemaphore.Dispose();
+                _processInfosSemaphore.Dispose();
 
                 _cancellation.Dispose();
 
@@ -97,7 +97,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (IsListening)
             {
-                throw new InvalidOperationException(nameof(ServerEndpointInfoSource.Start) + " method can only be called once.");
+                throw new InvalidOperationException(nameof(ServerProcessInfoSource.Start) + " method can only be called once.");
             }
 
             _server = new ReversedDiagnosticsServer(_transportPath);
@@ -109,8 +109,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// Gets the list of <see cref="IpcEndpointInfo"/> served from the reversed diagnostics server.
         /// </summary>
         /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>A list of active <see cref="IEndpointInfo"/> instances.</returns>
-        public async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(CancellationToken token)
+        /// <returns>A list of active <see cref="IProcessInfo"/> instances.</returns>
+        public async Task<IEnumerable<IProcessInfo>> GetProcessInfoAsync(CancellationToken token)
         {
             VerifyNotDisposed();
 
@@ -121,13 +121,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             // Prune connections that no longer have an active runtime instance before
             // returning the list of connections.
-            await _endpointInfosSemaphore.WaitAsync(linkedToken).ConfigureAwait(false);
+            await _processInfosSemaphore.WaitAsync(linkedToken).ConfigureAwait(false);
 
             try
             {
                 // Check the transport for each endpoint info and remove it if the check fails.
-                IDictionary<EndpointInfo, Task<bool>> checkMap = new Dictionary<EndpointInfo, Task<bool>>();
-                foreach (EndpointInfo info in _endpointInfos)
+                IDictionary<IProcessInfo, Task<bool>> checkMap = new Dictionary<IProcessInfo, Task<bool>>();
+                foreach (IProcessInfo info in _processInfos)
                 {
                     checkMap.Add(info, Task.Run(() => CheckNotViable(info, linkedToken), linkedToken));
                 }
@@ -136,33 +136,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 await Task.WhenAll(checkMap.Values).ConfigureAwait(false);
 
                 // Remove connections for failed checks
-                foreach ((EndpointInfo endpointInfo, Task<bool> checkTask) in checkMap)
+                foreach ((IProcessInfo processInfo, Task<bool> checkTask) in checkMap)
                 {
                     if (checkTask.Result)
                     {
-                        _endpointInfos.Remove(endpointInfo);
+                        _processInfos.Remove(processInfo);
 
-                        foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
+                        foreach (IProcessInfoSourceCallbacks callback in _callbacks)
                         {
-                            callback.OnRemovedEndpointInfo(endpointInfo);
+                            callback.OnRemovedProcessInfo(processInfo);
                         }
 
-                        _server?.RemoveConnection(endpointInfo.RuntimeInstanceCookie);
+                        _server?.RemoveConnection(processInfo.RuntimeInstanceCookie);
                     }
                 }
 
-                return _endpointInfos.ToList();
+                return _processInfos.ToList();
             }
             finally
             {
-                _endpointInfosSemaphore.Release();
+                _processInfosSemaphore.Release();
             }
         }
 
         /// <summary>
         /// Returns true if the connection is not longer viable.
         /// </summary>
-        private static async Task<bool> CheckNotViable(EndpointInfo info, CancellationToken token)
+        private static async Task<bool> CheckNotViable(IProcessInfo info, CancellationToken token)
         {
             using var timeoutSource = new CancellationTokenSource();
             using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutSource.Token);
@@ -203,7 +203,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     IpcEndpointInfo info = await _server.AcceptAsync(token).ConfigureAwait(false);
 
-                    _ = Task.Run(() => ResumeAndQueueEndpointInfo(info, token), token);
+                    _ = Task.Run(() => ResumeAndQueueProcessInfo(info, token), token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -211,15 +211,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private async Task ResumeAndQueueEndpointInfo(IpcEndpointInfo info, CancellationToken token)
+        private async Task ResumeAndQueueProcessInfo(IpcEndpointInfo info, CancellationToken token)
         {
             try
             {
-                EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, token);
+                IProcessInfo processInfo = await ProcessInfoImpl.FromIpcEndpointInfoAsync(info, token);
 
-                foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
+                foreach (IProcessInfoSourceCallbacks callback in _callbacks)
                 {
-                    await callback.OnBeforeResumeAsync(endpointInfo, token).ConfigureAwait(false);
+                    await callback.OnBeforeResumeAsync(processInfo, token).ConfigureAwait(false);
                 }
 
                 // Send ResumeRuntime message for runtime instances that connect to the server. This will allow
@@ -236,19 +236,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // The runtime likely doesn't understand the ResumeRuntime command.
                 }
 
-                await _endpointInfosSemaphore.WaitAsync(token).ConfigureAwait(false);
+                await _processInfosSemaphore.WaitAsync(token).ConfigureAwait(false);
                 try
                 {
-                    _endpointInfos.Add(endpointInfo);
+                    _processInfos.Add(processInfo);
 
-                    foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
+                    foreach (IProcessInfoSourceCallbacks callback in _callbacks)
                     {
-                        await callback.OnAddedEndpointInfoAsync(endpointInfo, token).ConfigureAwait(false);
+                        await callback.OnAddedProcessInfoAsync(processInfo, token).ConfigureAwait(false);
                     }
                 }
                 finally
                 {
-                    _endpointInfosSemaphore.Release();
+                    _processInfosSemaphore.Release();
                 }
             }
             catch (Exception)
@@ -263,7 +263,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(ServerEndpointInfoSource));
+                throw new ObjectDisposedException(nameof(ServerProcessInfoSource));
             }
         }
 
@@ -271,7 +271,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             if (!IsListening)
             {
-                throw new InvalidOperationException(nameof(ServerEndpointInfoSource.Start) + " method must be called before invoking this operation.");
+                throw new InvalidOperationException(nameof(ServerProcessInfoSource.Start) + " method must be called before invoking this operation.");
             }
         }
 

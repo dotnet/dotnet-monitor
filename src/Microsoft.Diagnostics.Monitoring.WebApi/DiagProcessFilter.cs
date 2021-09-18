@@ -112,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public DiagProcessFilterMatchType MatchType { get; set; }
 
-        public bool MatchFilter(IEndpointInfo processInfo)
+        public bool MatchFilter(IProcessInfo processInfo)
         {
             switch (this.Criteria)
             {

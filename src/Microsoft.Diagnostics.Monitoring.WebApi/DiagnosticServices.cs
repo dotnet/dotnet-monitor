@@ -13,21 +13,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal sealed class DiagnosticServices : IDiagnosticServices
     {
-        private readonly IEndpointInfoSource _endpointInfoSource;
+        private readonly IProcessInfoSource _processInfoSource;
         private readonly IOptionsMonitor<ProcessFilterOptions> _defaultProcessOptions;
 
-        public DiagnosticServices(IEndpointInfoSource endpointInfoSource,
+        public DiagnosticServices(
+            IProcessInfoSource processInfoSource,
             IOptionsMonitor<ProcessFilterOptions> defaultProcessMonitor)
         {
-            _endpointInfoSource = endpointInfoSource;
+            _processInfoSource = processInfoSource;
             _defaultProcessOptions = defaultProcessMonitor;
         }
 
-        public async Task<IEnumerable<IEndpointInfo>> GetProcessesAsync(DiagProcessFilter processFilterConfig, CancellationToken token)
+        public async Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilterConfig, CancellationToken token)
         {
             try
             {
-                IEnumerable<IEndpointInfo> processes = await _endpointInfoSource.GetEndpointInfoAsync(token);
+                IEnumerable<IProcessInfo> processes = await _processInfoSource.GetProcessInfoAsync(token);
 
                 if (processFilterConfig != null)
                 {
@@ -42,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public Task<IEndpointInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token)
+        public Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token)
         {
             DiagProcessFilter filterOptions = null;
             if (processKey.HasValue)
@@ -57,14 +58,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return GetProcessAsync(filterOptions, token);
         }
 
-        private async Task<IEndpointInfo> GetProcessAsync(DiagProcessFilter processFilterConfig, CancellationToken token)
+        private async Task<IProcessInfo> GetProcessAsync(DiagProcessFilter processFilterConfig, CancellationToken token)
         {
             //Short circuit when we are missing default process config
             if (!processFilterConfig.Filters.Any())
             {
                 throw new InvalidOperationException(Strings.ErrorMessage_NoDefaultProcessConfig);
             }
-            IEnumerable<IEndpointInfo> matchingProcesses = await GetProcessesAsync(processFilterConfig, token);
+            IEnumerable<IProcessInfo> matchingProcesses = await GetProcessesAsync(processFilterConfig, token);
 
             switch (matchingProcesses.Count())
             {

@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         ICollectionRuleTriggerFactory<AspNetRequestDurationOptions>
     {
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, AspNetRequestDurationOptions options)
+        public ICollectionRuleTrigger Create(IProcessInfo processInfo, Action callback, AspNetRequestDurationOptions options)
         {
             throw new NotImplementedException("TODO: Implement AspNetRequestDurationTrigger.");
         }

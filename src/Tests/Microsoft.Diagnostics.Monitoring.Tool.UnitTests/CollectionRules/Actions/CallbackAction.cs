@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
-        public async Task<CollectionRuleActionResult> ExecuteAsync(object options, IEndpointInfo endpointInfo, CancellationToken token)
+        public async Task<CollectionRuleActionResult> ExecuteAsync(object options, IProcessInfo processInfo, CancellationToken token)
         {
             await _service.NotifyListeners(token);
 

@@ -18,13 +18,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly Func<IEgressService, CancellationToken, Task<EgressResult>> _egress;
         private readonly KeyValueLogScope _scope;
 
-        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope)
+        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo source, string contentType, KeyValueLogScope scope)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, token);
             _scope = scope;
         }
 
-        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope)
+        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IProcessInfo source, string contentType, KeyValueLogScope scope)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, token);
             _scope = scope;

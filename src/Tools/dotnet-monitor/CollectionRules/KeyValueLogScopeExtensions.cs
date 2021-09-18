@@ -8,14 +8,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class KeyValueLogScopeExtensions
     {
-        public static void AddCollectionRuleEndpointInfo(this KeyValueLogScope scope, IEndpointInfo endpointInfo)
+        public static void AddCollectionRuleProcessInfo(this KeyValueLogScope scope, IProcessInfo processInfo)
         {
             scope.Values.Add(
                 "TargetProcessId",
-                endpointInfo.ProcessId.ToString(CultureInfo.InvariantCulture));
+                processInfo.ProcessId.ToString(CultureInfo.InvariantCulture));
             scope.Values.Add(
                 "TargetRuntimeInstanceCookie",
-                endpointInfo.RuntimeInstanceCookie.ToString("N"));
+                processInfo.RuntimeInstanceCookie.ToString("N"));
         }
 
         public static void AddCollectionRuleName(this KeyValueLogScope scope, string ruleName)

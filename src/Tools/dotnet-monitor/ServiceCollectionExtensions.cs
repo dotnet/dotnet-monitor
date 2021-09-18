@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             services.AddSingleton<ActionListExecutor>();
             services.AddSingleton<CollectionRuleService>();
-            services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
+            services.AddSingleton<IProcessInfoSourceCallbacks, CollectionRuleProcessInfoSourceCallbacks>();
 
             return services;
         }

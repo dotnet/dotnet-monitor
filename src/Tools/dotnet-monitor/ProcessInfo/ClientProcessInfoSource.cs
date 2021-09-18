@@ -14,22 +14,22 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class ClientEndpointInfoSource : IEndpointInfoSource
+    internal sealed class ClientProcessInfoSource : IProcessInfoSource
     {
-        // The amount of time to wait before abandoning the attempt to create an EndpointInfo from
+        // The amount of time to wait before abandoning the attempt to create an ProcessInfo from
         // the enumerated processes. This may happen if a runtime instance is unresponsive to
         // diagnostic pipe commands. Give a generous amount of time, but not too long since a single
         // unresponsive process will cause all HTTP requests to be delayed by the timeout period.
         private static readonly TimeSpan AbandonProcessTimeout = TimeSpan.FromSeconds(3);
 
-        private readonly ILogger<ClientEndpointInfoSource> _logger;
+        private readonly ILogger<ClientProcessInfoSource> _logger;
 
-        public ClientEndpointInfoSource(ILogger<ClientEndpointInfoSource> logger)
+        public ClientProcessInfoSource(ILogger<ClientProcessInfoSource> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(CancellationToken token)
+        public async Task<IEnumerable<IProcessInfo>> GetProcessInfoAsync(CancellationToken token)
         {
             using CancellationTokenSource timeoutTokenSource = new();
             using CancellationTokenSource linkedTokenSource =
@@ -38,18 +38,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             CancellationToken timeoutToken = timeoutTokenSource.Token;
             CancellationToken linkedToken = linkedTokenSource.Token;
 
-            var endpointInfoTasks = new List<Task<EndpointInfo>>();
-            // Run the EndpointInfo creation parallel. The call to FromProcessId sends
+            var processInfoTasks = new List<Task<IProcessInfo>>();
+            // Run the ProcessInfo creation parallel. The call to FromProcessIdAsync sends
             // a GetProcessInfo command to the runtime instance to get additional information.
             foreach (int pid in DiagnosticsClient.GetPublishedProcesses())
             {
-                endpointInfoTasks.Add(Task.Run(async () =>
+                processInfoTasks.Add(Task.Run(async () =>
                 {
                     try
                     {
-                        return await EndpointInfo.FromProcessIdAsync(pid, linkedToken);
+                        return await ProcessInfoImpl.FromProcessIdAsync(pid, linkedToken);
                     }
-                    // Catch when timeout on waiting for EndpointInfo creation. Some runtime instances may be
+                    // Catch when timeout on waiting for ProcessInfo creation. Some runtime instances may be
                     // in a bad state and hang all requests to their diagnostic pipe; gracefully abandon waiting
                     // for these processes.
                     catch (OperationCanceledException) when (timeoutToken.IsCancellationRequested)
@@ -78,9 +78,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             timeoutTokenSource.CancelAfter(AbandonProcessTimeout);
 
-            await Task.WhenAll(endpointInfoTasks);
+            await Task.WhenAll(processInfoTasks);
 
-            return endpointInfoTasks.Where(t => t.Result != null).Select(t => t.Result);
+            return processInfoTasks.Where(t => t.Result != null).Select(t => t.Result);
         }
     }
 }

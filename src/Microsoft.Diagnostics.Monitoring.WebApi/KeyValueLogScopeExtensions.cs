@@ -13,14 +13,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             scope.Values.Add("ArtifactType", artifactType);
         }
 
-        public static void AddArtifactEndpointInfo(this KeyValueLogScope scope, IEndpointInfo endpointInfo)
+        public static void AddArtifactProcessInfo(this KeyValueLogScope scope, IProcessInfo processInfo)
         {
             scope.Values.Add(
                 ArtifactMetadataNames.ArtifactSource.ProcessId,
-                endpointInfo.ProcessId.ToString(CultureInfo.InvariantCulture));
+                processInfo.ProcessId.ToString(CultureInfo.InvariantCulture));
             scope.Values.Add(
                 ArtifactMetadataNames.ArtifactSource.RuntimeInstanceCookie,
-                endpointInfo.RuntimeInstanceCookie.ToString("N"));
+                processInfo.RuntimeInstanceCookie.ToString("N"));
         }
     }
 }

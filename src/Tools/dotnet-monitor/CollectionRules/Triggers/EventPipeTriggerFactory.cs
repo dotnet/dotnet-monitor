@@ -20,14 +20,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// process represented by the specified endpoint.
         /// </summary>
         public ICollectionRuleTrigger Create<TSettings>(
-            IEndpointInfo endpointInfo,
+            IProcessInfo processInfo,
             MonitoringSourceConfiguration configuration,
             ITraceEventTriggerFactory<TSettings> factory,
             TSettings settings,
             Action callback)
         {
             return new EventPipeTrigger<TSettings>(
-                endpointInfo,
+                processInfo,
                 configuration,
                 factory,
                 settings,
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             private readonly EventPipeTriggerPipeline<TSettings> _pipeline;
 
             public EventPipeTrigger(
-                IEndpointInfo endpointInfo,
+                IProcessInfo processInfo,
                 MonitoringSourceConfiguration configuration,
                 ITraceEventTriggerFactory<TSettings> factory,
                 TSettings settings,
@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 };
 
                 _pipeline = new EventPipeTriggerPipeline<TSettings>(
-                    new DiagnosticsClient(endpointInfo.Endpoint),
+                    new DiagnosticsClient(processInfo.Endpoint),
                     pipelineSettings,
                     _ => callback());
             }
