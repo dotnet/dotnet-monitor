@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     /// Named "ProcessInfoImpl" to disambiguate from Microsoft.Diagnostics.NETCore.client ProcessInfo
-    /// class returned from issuing GetProcesssInfo command on diagnostic pipe.
+    /// class returned from issuing GetProcessInfo command on diagnostic pipe.
     internal sealed class ProcessInfoImpl : IProcessInfo
     {
         // The amount of time to wait before cancelling get additional process information (e.g. getting
@@ -49,9 +49,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return await FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token);
         }
 
-        // Creates a ProcessInfo object from the IEndpointInfo. Attempts to get the command line using event pipe
+        // Creates an IProcessInfo object from the IEndpointInfo. Attempts to get the command line using event pipe
         // if the endpoint information doesn't provide it. The cancelation token can be used to timebox this fallback
-        // mechansim.
+        // mechanism.
         public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken extendedInfoCancellationToken)
         {
             if (null == endpointInfo)

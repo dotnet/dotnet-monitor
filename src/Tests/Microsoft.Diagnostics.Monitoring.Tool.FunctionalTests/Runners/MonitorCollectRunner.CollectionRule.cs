@@ -17,14 +17,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     {
         private readonly ConcurrentDictionary<CollectionRuleKey, List<TaskCompletionSource<object>>> _collectionRuleCallbacks = new();
 
-        public async Task WaitForCollectionRuleCompleteAsync(string ruleName, CancellationToken token)
+        public Task WaitForCollectionRuleCompleteAsync(string ruleName, CancellationToken token)
+        {
+            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleCompleted, ruleName, token);
+        }
+
+        public Task WaitForCollectionRuleUnmatchedFiltersAsync(string ruleName, CancellationToken token)
+        {
+            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleUnmatchedFilters, ruleName, token);
+        }
+
+        public Task WaitForCollectionRuleStartedAsync(string ruleName, CancellationToken token)
+        {
+            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleStarted, ruleName, token);
+        }
+
+        private async Task WaitForCollectionRuleEventAsync(int eventId, string ruleName, CancellationToken token)
         {
             TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            CollectionRuleKey completedKey = new(LoggingEventIds.CollectionRuleCompleted, ruleName);
+            CollectionRuleKey eventKey = new(eventId, ruleName);
             CollectionRuleKey failedKey = new(LoggingEventIds.CollectionRuleFailed, ruleName);
 
-            AddCollectionRuleCallback(completedKey, tcs);
+            AddCollectionRuleCallback(eventKey, tcs);
             AddCollectionRuleCallback(failedKey, tcs);
 
             try
@@ -33,44 +48,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
             finally
             {
-                RemoveCollectionRuleCallback(completedKey, tcs);
+                RemoveCollectionRuleCallback(eventKey, tcs);
                 RemoveCollectionRuleCallback(failedKey, tcs);
-            }
-        }
-
-        public async Task WaitForCollectionRuleUnmatchedFiltersAsync(string ruleName, CancellationToken token)
-        {
-            TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            CollectionRuleKey key = new(LoggingEventIds.CollectionRuleUnmatchedFilters, ruleName);
-
-            AddCollectionRuleCallback(key, tcs);
-
-            try
-            {
-                await tcs.WithCancellation(token);
-            }
-            finally
-            {
-                RemoveCollectionRuleCallback(key, tcs);
-            }
-        }
-
-        public async Task WaitForCollectionRuleStartedAsync(string ruleName, CancellationToken token)
-        {
-            TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            CollectionRuleKey key = new(LoggingEventIds.CollectionRuleStarted, ruleName);
-
-            AddCollectionRuleCallback(key, tcs);
-
-            try
-            {
-                await tcs.WithCancellation(token);
-            }
-            finally
-            {
-                RemoveCollectionRuleCallback(key, tcs);
             }
         }
 
