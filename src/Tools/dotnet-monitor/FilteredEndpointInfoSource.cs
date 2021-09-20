@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public FilteredEndpointInfoSource(
             IEnumerable<IEndpointInfoSourceCallbacks> callbacks,
-            IOptions<DiagnosticPortOptions> portOptions)
+            IOptions<DiagnosticPortOptions> portOptions,
+            ILogger<ClientEndpointInfoSource> clientSourceLogger)
         {
             _portOptions = portOptions.Value;
 
@@ -37,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             switch (connectionMode)
             {
                 case DiagnosticPortConnectionMode.Connect:
-                    _source = new ClientEndpointInfoSource();
+                    _source = new ClientEndpointInfoSource(clientSourceLogger);
                     break;
                 case DiagnosticPortConnectionMode.Listen:
                     _source = new ServerEndpointInfoSource(_portOptions.EndpointName, callbacks);
