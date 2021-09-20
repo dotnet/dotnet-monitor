@@ -21,6 +21,7 @@ using Xunit;
 using Xunit.Abstractions;
 using System.Text;
 using System.Collections.Generic;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -63,38 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
                 }, async host =>
                 {
-                    IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                    CollectTraceOptions options = (CollectTraceOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
-
-                    ICollectionRuleActionProxy action;
-                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectTrace, out action));
-
-                    EndpointInfoSourceCallback callback = new(_outputHelper);
-                    await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-                    source.Start();
-
-                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
-
-                    Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-                    await runner.ExecuteAsync(async () =>
-                    {
-                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
-
-                        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.TraceTimeout);
-                        CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
-
-                        Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-                        Assert.True(File.Exists(egressPath));
-
-                        using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
-                        Assert.NotNull(traceStream);
-
-                        await ValidateTrace(traceStream);
-
-                        await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-                    });
+                    await PerformTrace(host);
                 });
             }
             finally
@@ -134,38 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
                 }, async host =>
                 {
-                    IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                    CollectTraceOptions options = (CollectTraceOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
-
-                    ICollectionRuleActionProxy action;
-                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectTrace, out action));
-
-                    EndpointInfoSourceCallback callback = new(_outputHelper);
-                    await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-                    source.Start();
-
-                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
-
-                    Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-                    await runner.ExecuteAsync(async () =>
-                    {
-                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
-
-                        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.TraceTimeout);
-                        CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
-
-                        Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-                        Assert.True(File.Exists(egressPath));
-
-                        using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
-                        Assert.NotNull(traceStream);
-
-                        await ValidateTrace(traceStream);
-
-                        await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-                    });
+                    await PerformTrace(host);
                 });
             }
             finally
@@ -178,6 +117,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                 }
             }
+        }
+
+        private async Task PerformTrace(IHost host)
+        {
+            IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
+            CollectTraceOptions options = (CollectTraceOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+
+            ICollectionRuleActionProxy action;
+            Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectTrace, out action));
+
+            EndpointInfoSourceCallback callback = new(_outputHelper);
+            await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+            source.Start();
+
+            AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
+
+            Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+            await runner.ExecuteAsync(async () =>
+            {
+                IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.TraceTimeout);
+                CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+
+                Assert.NotNull(result.OutputValues);
+                Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
+                Assert.True(File.Exists(egressPath));
+
+                using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                Assert.NotNull(traceStream);
+
+                await ValidateTrace(traceStream);
+
+                await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            });
         }
 
         private static async Task ValidateTrace(Stream traceStream)
