@@ -38,6 +38,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
         }
 
+        public async Task WaitForCollectionRuleUnmatchedFiltersAsync(string ruleName, CancellationToken token)
+        {
+            TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            CollectionRuleKey key = new(LoggingEventIds.CollectionRuleUnmatchedFilters, ruleName);
+
+            AddCollectionRuleCallback(key, tcs);
+
+            try
+            {
+                await tcs.WithCancellation(token);
+            }
+            finally
+            {
+                RemoveCollectionRuleCallback(key, tcs);
+            }
+        }
+
+        public async Task WaitForCollectionRuleStartedAsync(string ruleName, CancellationToken token)
+        {
+            TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            CollectionRuleKey key = new(LoggingEventIds.CollectionRuleStarted, ruleName);
+
+            AddCollectionRuleCallback(key, tcs);
+
+            try
+            {
+                await tcs.WithCancellation(token);
+            }
+            finally
+            {
+                RemoveCollectionRuleCallback(key, tcs);
+            }
+        }
+
         private void HandleCollectionRuleEvent(ConsoleLogEvent logEvent)
         {
             if (logEvent.State.TryGetValue("ruleName", out string ruleName))
@@ -45,11 +81,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 CollectionRuleKey key = new(logEvent.EventId, ruleName);
                 switch (logEvent.EventId)
                 {
+                    case LoggingEventIds.CollectionRuleCompleted:
+                    case LoggingEventIds.CollectionRuleUnmatchedFilters:
+                    case LoggingEventIds.CollectionRuleStarted:
+                        CompleteCollectionRuleCallbacks(key);
+                        break;
                     case LoggingEventIds.CollectionRuleFailed:
                         FailCollectionRuleCallbacks(key, logEvent.Exception);
-                        break;
-                    case LoggingEventIds.CollectionRuleCompleted:
-                        CompleteCollectionRuleCallbacks(key);
                         break;
                 }
             }

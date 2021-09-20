@@ -146,12 +146,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 if (null != options.Filters)
                 {
+                    IProcessInfo processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo);
+
                     DiagProcessFilter filter = DiagProcessFilter.FromConfiguration(options.Filters);
-                    // TODO: Filter collection rules by process information; this requires pushing
-                    // more of the process information into IEndpointInfo. IProcessInfo is only
-                    // available through the IDiagnosticServices implementation, which is created from
-                    // the entries in the IEndpointInfoSource implementation. The collection rules
-                    // are started before the process is registered with the IEndpointInfoSource.
+
+                    if (!filter.Filters.All(f => f.MatchFilter(processInfo)))
+                    {
+                        // Collection rule filter does not match target process
+                        _logger.CollectionRuleUnmatchedFilters(ruleName);
+
+                        // Signal rule has "started" in order to not block
+                        // resumption of the runtime instance.
+                        startedSource.TrySetResult(null);
+
+                        return;
+                    }
                 }
 
                 _logger.CollectionRuleStarted(ruleName);

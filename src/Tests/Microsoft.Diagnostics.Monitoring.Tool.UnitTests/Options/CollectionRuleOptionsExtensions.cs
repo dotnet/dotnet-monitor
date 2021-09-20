@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -17,6 +18,30 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
     internal static partial class CollectionRuleOptionsExtensions
     {
+        public static CollectionRuleOptions AddCommandLineFilter(this CollectionRuleOptions options, string value, ProcessFilterType matchType = ProcessFilterType.Contains)
+        {
+            options.Filters.Add(new ProcessFilterDescriptor()
+            {
+                Key = ProcessFilterKey.CommandLine,
+                Value = value,
+                MatchType = matchType
+            });
+
+            return options;
+        }
+
+        public static CollectionRuleOptions AddProcessNameFilter(this CollectionRuleOptions options, string name)
+        {
+            options.Filters.Add(new ProcessFilterDescriptor()
+            {
+                Key = ProcessFilterKey.ProcessName,
+                Value = name,
+                MatchType = ProcessFilterType.Exact
+            });
+
+            return options;
+        }
+
         public static CollectionRuleOptions AddAction(this CollectionRuleOptions options, string type)
         {
             return options.AddAction(type, out _);

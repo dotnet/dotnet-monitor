@@ -217,6 +217,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticRequestCancelled);
 
+        private static readonly Action<ILogger, string, Exception> _collectionRuleUnmatchedFilters =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(LoggingEventIds.CollectionRuleUnmatchedFilters, "CollectionRuleUnmatchedFilters"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleUnmatchedFilters);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -389,6 +395,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticRequestCancelled(this ILogger logger, int processId)
         {
             _diagnosticRequestCancelled(logger, processId, null);
+        }
+
+        public static void CollectionRuleUnmatchedFilters(this ILogger logger, string ruleName)
+        {
+            _collectionRuleUnmatchedFilters(logger, ruleName, null);
         }
     }
 }
