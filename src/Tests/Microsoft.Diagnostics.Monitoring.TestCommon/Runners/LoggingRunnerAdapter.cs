@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 _isDiposed = true;
             }
 
-            _cancellation.Cancel();
+            _cancellation.SafeCancel();
 
             _processIdSource.TrySetCanceled(_cancellation.Token);
 

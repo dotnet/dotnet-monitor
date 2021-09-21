@@ -218,7 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 else
                 {
-                    KeyValueLogScope scope = Utilities.GetScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
+                    KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
 
                     return await SendToEgress(new EgressOperation(
                         token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
@@ -702,7 +702,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             IEndpointInfo endpointInfo,
             bool asAttachment = true)
         {
-            KeyValueLogScope scope = Utilities.GetScope(artifactType, endpointInfo);
+            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, endpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
             {
@@ -814,7 +814,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, HttpContext.RequestAborted);
 
                     KeyValueLogScope processInfoScope = new KeyValueLogScope();
-                    processInfoScope.AddEndpointInfo(processInfo.EndpointInfo);
+                    processInfoScope.AddArtifactEndpointInfo(processInfo.EndpointInfo);
                     using var _ = _logger.BeginScope(processInfoScope);
 
                     _logger.ResolvedTargetProcess();

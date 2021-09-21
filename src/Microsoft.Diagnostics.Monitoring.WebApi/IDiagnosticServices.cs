@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// Set of services provided by the monitoring tool. These are consumed by
     /// the REST Api.
     /// </summary>
-    internal interface IDiagnosticServices : IDisposable
+    internal interface IDiagnosticServices
     {
         /// <summary>
         /// Returns running processes, optionally based on filter criteria.

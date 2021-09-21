@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             using Process process = new Process();
 
             process.StartInfo = new ProcessStartInfo(path, arguments);
-            process.EnableRaisingEvents = true;
+            process.StartInfo.RedirectStandardOutput = true;
 
             // Completion source that is signaled when the process exits
             TaskCompletionSource<int> exitedSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
