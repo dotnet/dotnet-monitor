@@ -4,8 +4,6 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
@@ -13,20 +11,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     /// A proxy that allows invoking the action without
     /// having to specify a typed options instance.
     /// </summary>
-    internal sealed class CollectionRuleActionProxy<TAction, TOptions> :
-        ICollectionRuleActionProxy
-        where TAction : ICollectionRuleAction<TOptions>
+    internal sealed class CollectionRuleActionFactoryProxy<TFactory, TOptions> :
+        ICollectionRuleActionFactoryProxy
+        where TFactory : ICollectionRuleActionFactory<TOptions>
         where TOptions : class
     {
-        private readonly TAction _action;
+        private readonly TFactory _factory;
 
-        public CollectionRuleActionProxy(TAction action)
+        public CollectionRuleActionFactoryProxy(TFactory factory)
         {
-            _action = action;
+            _factory = factory;
         }
 
         /// <inheritdoc/>
-        public Task<CollectionRuleActionResult> ExecuteAsync(object options, IEndpointInfo endpointInfo, CancellationToken token)
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, object options)
         {
             TOptions typedOptions = options as TOptions;
             if (null != options && null == typedOptions)
@@ -34,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentException(nameof(options));
             }
 
-            return _action.ExecuteAsync(typedOptions, endpointInfo, token);
+            return _factory.Create(endpointInfo, typedOptions);
         }
     }
 }

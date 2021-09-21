@@ -16,9 +16,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         /// Attempts to create a proxy for the action instance
         /// associated with the registered action name.
         /// </summary>
-        bool TryCreateAction(
+        bool TryCreateFactory(
             string actionName,
-            out ICollectionRuleActionProxy action);
+            out ICollectionRuleActionFactoryProxy action);
 
         /// <summary>
         /// Attempts to create an options instance of the options type

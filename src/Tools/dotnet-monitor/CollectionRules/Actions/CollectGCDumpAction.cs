@@ -10,12 +10,26 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
-    internal sealed class CollectGCDumpAction :
-        ICollectionRuleAction<CollectGCDumpOptions>
+    internal sealed class CollectGCDumpActionFactory :
+        ICollectionRuleActionFactory<CollectGCDumpOptions>
     {
-        public Task<CollectionRuleActionResult> ExecuteAsync(CollectGCDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectGCDumpOptions options)
         {
-            throw new NotImplementedException("TODO: Implement action");
+            return new CollectGCDumpAction();
+        }
+
+        private sealed class CollectGCDumpAction :
+            ICollectionRuleAction
+        {
+            public Task StartAsync(CancellationToken token)
+            {
+                throw new NotImplementedException("TODO: Implement");
+            }
+
+            public Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
+            {
+                throw new NotImplementedException("TODO: Implement");
+            }
         }
     }
 }

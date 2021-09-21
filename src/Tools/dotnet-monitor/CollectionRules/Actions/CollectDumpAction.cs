@@ -16,69 +16,129 @@ using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
-    internal sealed class CollectDumpAction : ICollectionRuleAction<CollectDumpOptions>
+    internal sealed class CollectDumpActionFactory :
+        ICollectionRuleActionFactory<CollectDumpOptions>
     {
-        private readonly IDumpService _dumpService;
-        private readonly IServiceProvider _serviceProvider;
-
         internal const string EgressPathOutputValueName = "EgressPath";
 
-        public CollectDumpAction(IServiceProvider serviceProvider)
+        private readonly IServiceProvider _serviceProvider;
+
+        public CollectDumpActionFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            _dumpService = serviceProvider.GetRequiredService<IDumpService>();
         }
 
-        public async Task<CollectionRuleActionResult> ExecuteAsync(CollectDumpOptions options, IEndpointInfo endpointInfo, CancellationToken token)
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectDumpOptions options)
         {
-            if (options == null)
+            if (null == options)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (endpointInfo == null)
-            {
-                throw new ArgumentNullException(nameof(endpointInfo));
-            }
-
-            DumpType dumpType = options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
-            string egressProvider = options.Egress;
-
-            string dumpFileName = Utils.GenerateDumpFileName();
-
-            string dumpFilePath = string.Empty;
-
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, endpointInfo);
+            return new CollectDumpAction(_serviceProvider, endpointInfo, options);
+        }
 
-            try
+        internal sealed class CollectDumpAction :
+            ICollectionRuleAction,
+            IAsyncDisposable
+        {
+            private readonly CancellationTokenSource _disposalTokenSource = new();
+            private readonly IDumpService _dumpService;
+            private readonly IEndpointInfo _endpointInfo;
+            private readonly CollectDumpOptions _options;
+            private readonly IServiceProvider _serviceProvider;
+
+            private Task<CollectionRuleActionResult> _completionTask;
+
+            public CollectDumpAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectDumpOptions options)
             {
-                EgressOperation egressOperation = new EgressOperation(
-                    token => _dumpService.DumpAsync(endpointInfo, dumpType, token),
-                    egressProvider,
-                    dumpFileName,
-                    endpointInfo,
-                    ContentTypes.ApplicationOctetStream,
-                    scope);
-
-                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-
-                dumpFilePath = result.Result.Value;
+                _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
+                _options = options ?? throw new ArgumentNullException(nameof(options));
+                _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+                _dumpService = serviceProvider.GetRequiredService<IDumpService>();
             }
-            catch (Exception ex)
+
+            public async ValueTask DisposeAsync()
             {
-                throw new CollectionRuleActionException(ex);
+                _disposalTokenSource.SafeCancel();
+
+                await _completionTask.SafeAwait();
+
+                _disposalTokenSource.Dispose();
             }
 
-            return new CollectionRuleActionResult()
+            public async Task StartAsync(CancellationToken token)
             {
-                OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
+                TaskCompletionSource<object> startCompleteSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+                CancellationToken disposalToken = _disposalTokenSource.Token;
+                _completionTask = Task.Run(() => ExecuteAsync(startCompleteSource, disposalToken), disposalToken);
+
+                await startCompleteSource.WithCancellation(token);
+            }
+
+            public async Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
+            {
+                return await _completionTask.WithCancellation(token);
+            }
+
+            private async Task<CollectionRuleActionResult> ExecuteAsync(TaskCompletionSource<object> startCompletionSource, CancellationToken token)
+            {
+                try
                 {
-                    { EgressPathOutputValueName, dumpFilePath }
+                    DumpType dumpType = _options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
+                    string egressProvider = _options.Egress;
+
+                    string dumpFileName = Utils.GenerateDumpFileName();
+
+                    string dumpFilePath = string.Empty;
+
+                    KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, _endpointInfo);
+
+                    try
+                    {
+                        EgressOperation egressOperation = new EgressOperation(
+                            token => {
+                                startCompletionSource.TrySetResult(null);
+                                return _dumpService.DumpAsync(_endpointInfo, dumpType, token);
+                            },
+                            egressProvider,
+                            dumpFileName,
+                            _endpointInfo,
+                            ContentTypes.ApplicationOctetStream,
+                            scope);
+
+                        ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+
+                        dumpFilePath = result.Result.Value;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new CollectionRuleActionException(ex);
+                    }
+
+                    return new CollectionRuleActionResult()
+                    {
+                        OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
+                        {
+                            { EgressPathOutputValueName, dumpFilePath }
+                        }
+                    };
                 }
-            };
+                catch (Exception ex) when (TrySetExceptionReturnFalse(startCompletionSource, ex))
+                {
+                    throw;
+                }
+            }
+
+            private static bool TrySetExceptionReturnFalse(TaskCompletionSource<object> source, Exception ex)
+            {
+                source.TrySetException(ex);
+                return false;
+            }
         }
     }
 }

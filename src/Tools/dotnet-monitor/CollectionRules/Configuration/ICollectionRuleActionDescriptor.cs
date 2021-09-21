@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
     {
         string ActionName { get; }
 
-        Type ActionType { get; }
+        Type FactoryType { get; }
 
         Type OptionsType { get; }
     }

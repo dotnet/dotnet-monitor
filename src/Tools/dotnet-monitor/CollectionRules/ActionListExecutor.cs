@@ -46,14 +46,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 try
                 {
-                    ICollectionRuleActionProxy action;
+                    ICollectionRuleActionFactoryProxy factory;
 
-                    if (!_actionOperations.TryCreateAction(actionOption.Type, out action))
+                    if (!_actionOperations.TryCreateFactory(actionOption.Type, out factory))
                     {
                         throw new InvalidOperationException(Strings.ErrorMessage_CouldNotMapToAction);
                     }
 
-                    await action.ExecuteAsync(actionOption.Settings, context.EndpointInfo, cancellationToken);
+                    ICollectionRuleAction action = factory.Create(context.EndpointInfo, actionOption.Settings);
+
+                    try
+                    {
+                        await action.StartAsync(cancellationToken);
+
+                        await action.WaitForCompletionAsync(cancellationToken);
+                    }
+                    finally
+                    {
+                        if (action is IAsyncDisposable asyncDisposableAction)
+                        {
+                            await asyncDisposableAction.DisposeAsync();
+                        }
+                        else if (action is IDisposable disposableAction)
+                        {
+                            disposableAction.Dispose();
+                        }
+                    }
                 }
                 catch (Exception ex) when (ShouldHandleException(ex, context.Name, actionOption.Type))
                 {

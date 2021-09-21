@@ -10,12 +10,26 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
-    internal sealed class CollectTraceAction :
-        ICollectionRuleAction<CollectTraceOptions>
+    internal sealed class CollectTraceActionFactory :
+        ICollectionRuleActionFactory<CollectTraceOptions>
     {
-        public Task<CollectionRuleActionResult> ExecuteAsync(CollectTraceOptions options, IEndpointInfo endpointInfo, CancellationToken token)
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectTraceOptions options)
         {
-            throw new NotImplementedException("TODO: Implement action");
+            return new CollectTraceAction();
+        }
+
+        private sealed class CollectTraceAction :
+            ICollectionRuleAction
+        {
+            public Task StartAsync(CancellationToken token)
+            {
+                throw new NotImplementedException("TODO: Implement");
+            }
+
+            public Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
+            {
+                throw new NotImplementedException("TODO: Implement");
+            }
         }
     }
 }
