@@ -19,8 +19,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     internal sealed class CollectDumpActionFactory :
         ICollectionRuleActionFactory<CollectDumpOptions>
     {
-        internal const string EgressPathOutputValueName = "EgressPath";
-
         private readonly IServiceProvider _serviceProvider;
 
         public CollectDumpActionFactory(IServiceProvider serviceProvider)

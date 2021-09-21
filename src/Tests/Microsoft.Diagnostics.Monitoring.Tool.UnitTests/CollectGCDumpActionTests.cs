@@ -53,8 +53,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
                 CollectGCDumpOptions options = (CollectGCDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
 
-                ICollectionRuleActionProxy action;
-                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectGCDump, out action));
+                ICollectionRuleActionFactoryProxy factory;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectGCDump, out factory));
 
                 EndpointInfoSourceCallback callback = new(_outputHelper);
                 await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
@@ -68,8 +68,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
+                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
                     using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.GCDumpTimeout);
-                    CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+                    CollectionRuleActionResult result;
+                    try
+                    {
+                        await action.StartAsync(cancellationTokenSource.Token);
+
+                        result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
+                    }
+                    finally
+                    {
+                        if (action is IAsyncDisposable asyncDisposableAction)
+                        {
+                            await asyncDisposableAction.DisposeAsync();
+                        }
+                        else if (action is IDisposable disposableAction)
+                        {
+                            disposableAction.Dispose();
+                        }
+                    }
 
                     Assert.NotNull(result.OutputValues);
                     Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
