@@ -646,6 +646,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; filters do not match the process..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleUnmatchedFilters {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleUnmatchedFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancelled waiting for diagnostic response from runtime in process {processId}..
         /// </summary>
         internal static string LogFormatString_DiagnosticRequestCancelled {

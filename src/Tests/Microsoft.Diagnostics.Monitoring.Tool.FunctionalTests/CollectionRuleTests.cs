@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -119,6 +120,139 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
         }
+
+        /// <summary>
+        /// Validates that a collection rule with a command line filter can be matched to the
+        /// target process.
+        /// </summary>
+        [ConditionalTheory(nameof(IsNotNet5OrGreaterOnUnix))]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRule_CommandLineFilterMatchTest(DiagnosticPortConnectionMode mode)
+        {
+            Task startedTask = null;
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await startedTask;
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCommandLineFilter(TestAppScenarios.AsyncWait.Name);
+
+                    startedTask = runner.WaitForCollectionRuleStartedAsync(DefaultRuleName);
+                });
+        }
+
+        /// <summary>
+        /// Validates that a collection rule with a command line filter can fail to match the
+        /// target process.
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRule_CommandLineFilterNoMatchTest(DiagnosticPortConnectionMode mode)
+        {
+            Task filteredTask = null;
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await filteredTask;
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    // Note that the process name filter is specified as "SpinWait" whereas the
+                    // actual command line of the target process will contain "AsyncWait".
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddProcessNameFilter(TestAppScenarios.SpinWait.Name);
+
+                    filteredTask = runner.WaitForCollectionRuleUnmatchedFiltersAsync(DefaultRuleName);
+                });
+        }
+
+        /// <summary>
+        /// Validates that a collection rule with a process name filter can be matched to the
+        /// target process.
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRule_ProcessNameFilterMatchTest(DiagnosticPortConnectionMode mode)
+        {
+            Task startedTask = null;
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await startedTask;
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddProcessNameFilter(DotNetHost.HostExeNameWithoutExtension);
+
+                    startedTask = runner.WaitForCollectionRuleStartedAsync(DefaultRuleName);
+                });
+        }
+
+        /// <summary>
+        /// Validates that a collection rule with a process name filter can fail to match the
+        /// target process.
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRule_ProcessNameFilterNoMatchTest(DiagnosticPortConnectionMode mode)
+        {
+            Task filteredTask = null;
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await filteredTask;
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddProcessNameFilter("UmatchedName");
+
+                    filteredTask = runner.WaitForCollectionRuleUnmatchedFiltersAsync(DefaultRuleName);
+                });
+        }
+
+        // The GetProcessInfo command is not providing command line arguments (only the process name)
+        // for .NET 5+ process on non-Windows when suspended. See https://github.com/dotnet/dotnet-monitor/issues/885
+        private static bool IsNotNet5OrGreaterOnUnix =>
+            DotNetHost.RuntimeVersion.Major < 5 ||
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
 #endif
     }
 }
