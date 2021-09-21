@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -32,6 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private Task _listenTask;
         private bool _disposed = false;
         private ReversedDiagnosticsServer _server;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Constructs a <see cref="ServerEndpointInfoSource"/> that aggreates diagnostic endpoints
@@ -42,10 +44,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// On Windows, this can be a full pipe path or the name without the "\\.\pipe\" prefix.
         /// On all other systems, this must be the full file path of the socket.
         /// </param>
-        public ServerEndpointInfoSource(string transportPath, IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null)
+        public ServerEndpointInfoSource(
+            string transportPath,
+            IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null,
+            ILogger logger = null)
         {
             _callbacks = callbacks ?? Enumerable.Empty<IEndpointInfoSourceCallbacks>();
             _transportPath = transportPath;
+            _logger = logger;
         }
 
         public async ValueTask DisposeAsync()
@@ -215,7 +221,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             try
             {
-                EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, token);
+                EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, _logger, token);
 
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {

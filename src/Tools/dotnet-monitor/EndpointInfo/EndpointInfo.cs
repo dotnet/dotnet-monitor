@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -50,29 +51,36 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
         }
 
-        public static async Task<EndpointInfo> FromIpcEndpointInfoAsync(IpcEndpointInfo info, CancellationToken token)
+        public static async Task<EndpointInfo> FromIpcEndpointInfoAsync(IpcEndpointInfo info, ILogger logger, CancellationToken token)
         {
             var client = new DiagnosticsClient(info.Endpoint);
 
             ProcessInfo processInfo = null;
             try
             {
+                logger?.LogError("[EndpointInfo][{pid}] Call {name}", info.ProcessId, nameof(DiagnosticsClient.GetProcessInfoAsync));
                 // Primary motivation is to keep parity with the FromProcessId implementation,
                 // which provides the additional process information because it already has
                 // access to it.
                 processInfo = await client.GetProcessInfoAsync(token);
 
+                logger?.LogError("[EndpointInfo][{pid}] End {name}", info.ProcessId, nameof(DiagnosticsClient.GetProcessInfoAsync));
+
                 Debug.Assert(info.ProcessId == unchecked((int)processInfo.ProcessId));
                 Debug.Assert(info.RuntimeInstanceCookie == processInfo.RuntimeInstanceCookie);
             }
-            catch (ServerErrorException)
+            catch (ServerErrorException ex)
             {
+                logger?.LogError(ex, "[EndpointInfo][{pid}] Exception", info.ProcessId);
                 // The runtime likely doesn't understand the GetProcessInfo command.
             }
-            catch (TimeoutException)
+            catch (TimeoutException ex)
             {
+                logger?.LogError(ex, "[EndpointInfo][{pid}] Exception", info.ProcessId);
                 // Runtime didn't respond within client timeout.
             }
+
+            logger?.LogError("[EndpointInfo][{pid}] CommandLine: {commandLine}", info.ProcessId, processInfo?.CommandLine);
 
             return new EndpointInfo()
             {

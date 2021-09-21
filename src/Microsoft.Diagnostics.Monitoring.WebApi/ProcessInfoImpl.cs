@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -43,16 +44,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ProcessName = processName ?? ProcessFieldUnknownValue;
         }
 
-        public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo)
+        public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, ILogger logger = null)
         {
             using CancellationTokenSource extendedInfoCancellation = new(ExtendedProcessInfoTimeout);
-            return await FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token);
+            return await FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token, logger);
         }
 
         // Creates an IProcessInfo object from the IEndpointInfo. Attempts to get the command line using event pipe
         // if the endpoint information doesn't provide it. The cancelation token can be used to timebox this fallback
         // mechanism.
-        public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken extendedInfoCancellationToken)
+        public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken extendedInfoCancellationToken, ILogger logger = null)
         {
             if (null == endpointInfo)
             {
@@ -62,6 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             DiagnosticsClient client = new(endpointInfo.Endpoint);
 
             string commandLine = endpointInfo.CommandLine;
+            logger?.LogError("[ProcessInfoImpl][{pid}] CommandLine Before: {commandLine}", endpointInfo.ProcessId, commandLine);
             if (string.IsNullOrEmpty(commandLine))
             {
                 try
@@ -80,6 +82,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                 }
             }
+
+            logger?.LogError("[ProcessInfoImpl][{pid}] CommandLine After: {commandLine}", endpointInfo.ProcessId, commandLine);
 
             string processName = null;
             if (!string.IsNullOrEmpty(commandLine))
