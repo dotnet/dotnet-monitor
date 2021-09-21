@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             Func<Stream, CancellationToken, Task> action = Utils.GetLogsAction(format, endpointInfo, settings);
 
-            KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Logs, endpointInfo);
+            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, endpointInfo);
 
             EgressOperation egressOperation = new EgressOperation(
                 action,

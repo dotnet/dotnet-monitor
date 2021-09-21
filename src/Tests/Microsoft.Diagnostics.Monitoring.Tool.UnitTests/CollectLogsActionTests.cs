@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -24,7 +23,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectLogsActionTests
     {
-        private const string TempEgressDirectory = "/tmp";
         private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "Default";
 
@@ -40,63 +38,48 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task CollectLogsAction_Success()
         {
-            DirectoryInfo uniqueEgressDirectory = null;
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
 
-            try
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                uniqueEgressDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), TempEgressDirectory, Guid.NewGuid().ToString()));
+                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
 
-                await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
+                    .SetStartupTrigger();
+
+                collectLogsOptions.Duration = TimeSpan.FromSeconds(2);
+            }, async host =>
+            {
+                IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
+                CollectLogsOptions options = (CollectLogsOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+
+                ICollectionRuleActionProxy action;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectLogs, out action));
+
+                EndpointInfoSourceCallback callback = new(_outputHelper);
+                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+                source.Start();
+
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
+
+                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
                 {
-                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
+                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
-                        .SetStartupTrigger();
+                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
+                    CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
-                    collectLogsOptions.Duration = TimeSpan.FromSeconds(2);
-                }, async host =>
-                {
-                    IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                    CollectLogsOptions options = (CollectLogsOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+                    // Not currently doing any validation on the Logs itself for validity; just checking that the file was created. Should this use the existing Logs tests?
+                    Assert.NotNull(result.OutputValues);
+                    Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
+                    Assert.True(File.Exists(egressPath));
 
-                    ICollectionRuleActionProxy action;
-                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectLogs, out action));
-
-                    EndpointInfoSourceCallback callback = new(_outputHelper);
-                    await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-                    source.Start();
-
-                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
-
-                    Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-                    await runner.ExecuteAsync(async () =>
-                    {
-                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
-
-                        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
-                        CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
-
-                        // Not currently doing any validation on the Logs itself for validity; just checking that the file was created. Should this use the existing Logs tests?
-                        Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-                        Assert.True(File.Exists(egressPath));
-
-                        await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-                    });
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
-            }
-            finally
-            {
-                try
-                {
-                    uniqueEgressDirectory?.Delete(recursive: true);
-                }
-                catch
-                {
-                }
-            }
+            });
         }
     }
 }
