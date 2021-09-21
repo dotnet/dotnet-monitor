@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -124,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Validates that a collection rule with a command line filter can be matched to the
         /// target process.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(IsNotNet5OnUnix))]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRule_CommandLineFilterMatchTest(DiagnosticPortConnectionMode mode)
         {
@@ -246,5 +247,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 #endif
+
+        // The GetProcessInfo command is not providing command line arguments (only the process name)
+        // for .NET 5 process on non-Windows when suspended. See https://github.com/dotnet/dotnet-monitor/issues/885
+        private static bool IsNotNet5OnUnix =>
+            DotNetHost.RuntimeVersion.Major != 5 ||
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     }
 }
