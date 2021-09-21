@@ -264,12 +264,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
-                Func<CancellationToken, Task<IFastSerializable>> action = Utilities.GetGCHeapDump(processInfo.EndpointInfo);
-
                 return Result(
                     Utilities.ArtifactType_GCDump,
                     egressProvider,
-                    Utilities.ConvertFastSerializeAction(action),
+                    (stream, token) => Utilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token),
                     fileName,
                     ContentTypes.ApplicationOctetStream,
                     processInfo.EndpointInfo);

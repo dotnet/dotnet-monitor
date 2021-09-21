@@ -42,14 +42,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             string gcdumpFileName = Utils.GenerateGCDumpFileName(endpointInfo);
 
-            string gcdumpFilePath = string.Empty;
-
-            Func<CancellationToken, Task<IFastSerializable>> action = Utils.GetGCHeapDump(endpointInfo);
-
             KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_GCDump, endpointInfo);
 
             EgressOperation egressOperation = new EgressOperation(
-                        Utils.ConvertFastSerializeAction(action),
+                        (stream, token) => Utils.CaptureGCDumpAsync(endpointInfo, stream, token),
                         egress,
                         gcdumpFileName,
                         endpointInfo,
@@ -58,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
 
-            gcdumpFilePath = result.Result.Value;
+            string gcdumpFilePath = result.Result.Value;
 
             return new CollectionRuleActionResult()
             {

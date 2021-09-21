@@ -24,7 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectGCDumpActionTests
     {
-        private const string TempEgressDirectory = "/tmp";
         private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "Default";
 
@@ -40,86 +39,62 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task CollectGCDumpAction_Success()
         {
-            DirectoryInfo uniqueEgressDirectory = null;
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
 
-            try
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                uniqueEgressDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), TempEgressDirectory, Guid.NewGuid().ToString()));
+                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
 
-                await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectGCDumpAction(ExpectedEgressProvider)
+                    .SetStartupTrigger();
+            }, async host =>
+            {
+                IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
+                CollectGCDumpOptions options = (CollectGCDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+
+                ICollectionRuleActionProxy action;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectGCDump, out action));
+
+                EndpointInfoSourceCallback callback = new(_outputHelper);
+                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+                source.Start();
+
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
+
+                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
                 {
-                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
+                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddCollectGCDumpAction(ExpectedEgressProvider)
-                        .SetStartupTrigger();
-                }, async host =>
-                {
-                    IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                    CollectGCDumpOptions options = (CollectGCDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.GCDumpTimeout);
+                    CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
 
-                    ICollectionRuleActionProxy action;
-                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectGCDump, out action));
+                    Assert.NotNull(result.OutputValues);
+                    Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
+                    Assert.True(File.Exists(egressPath));
 
-                    EndpointInfoSourceCallback callback = new(_outputHelper);
-                    await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-                    source.Start();
+                    using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                    Assert.NotNull(gcdumpStream);
 
-                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
+                    ValidateGCDump(gcdumpStream);
 
-                    Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-                    await runner.ExecuteAsync(async () =>
-                    {
-                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
-
-                        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.GCDumpTimeout);
-                        CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
-
-                        Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-                        Assert.True(File.Exists(egressPath));
-
-                        using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
-                        Assert.NotNull(gcdumpStream);
-
-                        await ValidateGCDump(gcdumpStream);
-
-                        await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-                    });
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
-            }
-            finally
-            {
-                try
-                {
-                    uniqueEgressDirectory?.Delete(recursive: true);
-                }
-                catch
-                {
-                }
-            }
+            });
         }
 
-        private static async Task ValidateGCDump(Stream gcdumpStream)
+        private static async void ValidateGCDump(Stream gcdumpStream)
         {
-            byte[] buffer = new byte[24];
+            using CancellationTokenSource cancellation = new(CommonTestTimeouts.GCDumpTimeout);
+            byte[] buffer = await gcdumpStream.ReadBytesAsync(24, cancellation.Token);
 
             const string knownHeaderText = "!FastSerialization.1";
 
-            // Read enough to deserialize known header text.
-            int read;
-            int total = 0;
-            using CancellationTokenSource cancellation = new(CommonTestTimeouts.GCDumpTimeout);
-            while (total < buffer.Length && 0 != (read = await gcdumpStream.ReadAsync(buffer, total, buffer.Length - total, cancellation.Token)))
-            {
-                total += read;
-            }
+            Encoding enc8 = Encoding.UTF8;
 
-            byte[] subarray = new byte[knownHeaderText.Length];
-            Array.Copy(buffer, 4, subarray, 0, subarray.Length); // The first header text character begins at the 4th index
-
-            string headerText = Encoding.ASCII.GetString(subarray);
+            string headerText = enc8.GetString(buffer, 4, knownHeaderText.Length);
 
             Assert.Equal(knownHeaderText, headerText);
         }

@@ -46,67 +46,64 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return scope;
         }
 
-        public static Func<Stream, CancellationToken, Task> ConvertFastSerializeAction(Func<CancellationToken, Task<IFastSerializable>> action)
+        public static async Task CaptureGCDumpAsync(IEndpointInfo endpointInfo, Stream targetStream, CancellationToken token)
         {
-            return async (stream, token) =>
+            await WriteToStream(await GetGCDumpAsync(endpointInfo, token), targetStream, token);
+        }
+
+        private static async Task<GCHeapDump> GetGCDumpAsync(IEndpointInfo endpointInfo, CancellationToken token)
+        {
+            var graph = new Graphs.MemoryGraph(50_000);
+
+            EventGCPipelineSettings settings = new EventGCPipelineSettings
             {
-                IFastSerializable fastSerializable = await action(token);
+                Duration = Timeout.InfiniteTimeSpan,
+            };
 
-                // FastSerialization requests the length of the stream before serializing to the stream.
-                // If the stream is a response stream, requesting the length or setting the position is
-                // not supported. Create an intermediate buffer if testing the stream fails.
-                // This can use a huge amount of memory if the IFastSerializable is very large.
-                // CONSIDER: Update FastSerialization to not get the length or attempt to reset the position.
-                bool useIntermediateStream = false;
-                try
-                {
-                    _ = stream.Length;
-                }
-                catch (NotSupportedException)
-                {
-                    useIntermediateStream = true;
-                }
+            var client = new DiagnosticsClient(endpointInfo.Endpoint);
 
-                if (useIntermediateStream)
-                {
-                    using var intermediateStream = new MemoryStream();
+            await using var pipeline = new EventGCDumpPipeline(client, settings, graph);
+            await pipeline.RunAsync(token);
 
-                    var serializer = new Serializer(intermediateStream, fastSerializable, leaveOpen: true);
-                    serializer.Close();
-
-                    intermediateStream.Position = 0;
-
-                    await intermediateStream.CopyToAsync(stream, 0x10000, token);
-                }
-                else
-                {
-                    var serializer = new Serializer(stream, fastSerializable, leaveOpen: true);
-                    serializer.Close();
-                }
+            return new GCHeapDump(graph)
+            {
+                CreationTool = "dotnet-monitor"
             };
         }
 
-        internal static Func<CancellationToken, Task<IFastSerializable>> GetGCHeapDump(IEndpointInfo endpointInfo)
+        private static async Task WriteToStream(IFastSerializable serializable, Stream targetStream, CancellationToken token)
         {
-            return async (token) =>
+            // FastSerialization requests the length of the stream before serializing to the stream.
+            // If the stream is a response stream, requesting the length or setting the position is
+            // not supported. Create an intermediate buffer if testing the stream fails.
+            // This can use a huge amount of memory if the IFastSerializable is very large.
+            // CONSIDER: Update FastSerialization to not get the length or attempt to reset the position.
+            bool useIntermediateStream = false;
+            try
             {
-                var graph = new Graphs.MemoryGraph(50_000);
+                _ = targetStream.Length;
+            }
+            catch (NotSupportedException)
+            {
+                useIntermediateStream = true;
+            }
 
-                EventGCPipelineSettings settings = new EventGCPipelineSettings
-                {
-                    Duration = Timeout.InfiniteTimeSpan,
-                };
+            if (useIntermediateStream)
+            {
+                using var intermediateStream = new MemoryStream();
 
-                var client = new DiagnosticsClient(endpointInfo.Endpoint);
+                var serializer = new Serializer(intermediateStream, serializable, leaveOpen: true);
+                serializer.Close();
 
-                await using var pipeline = new EventGCDumpPipeline(client, settings, graph);
-                await pipeline.RunAsync(token);
+                intermediateStream.Position = 0;
 
-                return new GCHeapDump(graph)
-                {
-                    CreationTool = "dotnet-monitor"
-                };
-            };
+                await intermediateStream.CopyToAsync(targetStream, 0x10000, token);
+            }
+            else
+            {
+                var serializer = new Serializer(targetStream, serializable, leaveOpen: true);
+                serializer.Close();
+            }
         }
     }
 }
