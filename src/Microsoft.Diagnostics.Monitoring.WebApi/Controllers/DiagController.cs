@@ -264,29 +264,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
-                Func<CancellationToken, Task<IFastSerializable>> action = async (token) => {
-                    var graph = new Graphs.MemoryGraph(50_000);
-
-                    EventGCPipelineSettings settings = new EventGCPipelineSettings
-                    {
-                        Duration = Timeout.InfiniteTimeSpan,
-                    };
-
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                    await using var pipeline = new EventGCDumpPipeline(client, settings, graph);
-                    await pipeline.RunAsync(token);
-
-                    return new GCHeapDump(graph)
-                    {
-                        CreationTool = "dotnet-monitor"
-                    };
-                };
-
                 return Result(
                     Utilities.ArtifactType_GCDump,
                     egressProvider,
-                    ConvertFastSerializeAction(action),
+                    (stream, token) => Utilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token),
                     fileName,
                     ContentTypes.ApplicationOctetStream,
                     processInfo.EndpointInfo);
@@ -758,46 +739,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
 
             return Accepted(newUrl);
-        }
-
-        private static Func<Stream, CancellationToken, Task> ConvertFastSerializeAction(Func<CancellationToken, Task<IFastSerializable>> action)
-        {
-            return async (stream, token) =>
-            {
-                IFastSerializable fastSerializable = await action(token);
-
-                // FastSerialization requests the length of the stream before serializing to the stream.
-                // If the stream is a response stream, requesting the length or setting the position is
-                // not supported. Create an intermediate buffer if testing the stream fails.
-                // This can use a huge amount of memory if the IFastSerializable is very large.
-                // CONSIDER: Update FastSerialization to not get the length or attempt to reset the position.
-                bool useIntermediateStream = false;
-                try
-                {
-                    _ = stream.Length;
-                }
-                catch (NotSupportedException)
-                {
-                    useIntermediateStream = true;
-                }
-
-                if (useIntermediateStream)
-                {
-                    using var intermediateStream = new MemoryStream();
-
-                    var serializer = new Serializer(intermediateStream, fastSerializable, leaveOpen: true);
-                    serializer.Close();
-
-                    intermediateStream.Position = 0;
-
-                    await intermediateStream.CopyToAsync(stream, 0x10000, token);
-                }
-                else
-                {
-                    var serializer = new Serializer(stream, fastSerializable, leaveOpen: true);
-                    serializer.Close();
-                }
-            };
         }
 
         private Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string artifactType = null)
