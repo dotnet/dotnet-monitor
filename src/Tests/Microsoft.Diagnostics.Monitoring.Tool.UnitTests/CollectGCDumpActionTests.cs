@@ -25,9 +25,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     public sealed class CollectGCDumpActionTests
     {
         private const string ExpectedEgressProvider = "TmpEgressProvider";
-        private const string DefaultRuleName = "Default";
+        private const string DefaultRuleName = "GCDumpTestRule";
 
-        private ITestOutputHelper _outputHelper;
+        readonly private ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
         public CollectGCDumpActionTests(ITestOutputHelper outputHelper)
@@ -78,14 +78,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(gcdumpStream);
 
-                    ValidateGCDump(gcdumpStream);
+                    await ValidateGCDump(gcdumpStream);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
             });
         }
 
-        private static async void ValidateGCDump(Stream gcdumpStream)
+        private static async Task ValidateGCDump(Stream gcdumpStream)
         {
             using CancellationTokenSource cancellation = new(CommonTestTimeouts.GCDumpTimeout);
             byte[] buffer = await gcdumpStream.ReadBytesAsync(24, cancellation.Token);
