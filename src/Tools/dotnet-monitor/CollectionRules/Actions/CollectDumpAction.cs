@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     {
                         OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                         {
-                            { EgressPathOutputValueName, dumpFilePath }
+                            { CollectionRuleActionConstants.EgressPathOutputValueName, dumpFilePath }
                         }
                     };
                 }

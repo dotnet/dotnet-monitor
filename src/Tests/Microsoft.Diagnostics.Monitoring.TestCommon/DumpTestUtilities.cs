@@ -22,17 +22,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             Assert.NotNull(dumpStream);
 
-            byte[] headerBuffer = new byte[64];
-
-            // Read enough to deserialize the header.
-            int read;
-            int total = 0;
             using CancellationTokenSource cancellation = new(CommonTestTimeouts.DumpTimeout);
-            while (total < headerBuffer.Length && 0 != (read = await dumpStream.ReadAsync(headerBuffer, total, headerBuffer.Length - total, cancellation.Token)))
-            {
-                total += read;
-            }
-            Assert.Equal(headerBuffer.Length, total);
+            byte[] headerBuffer = await dumpStream.ReadBytesAsync(64, cancellation.Token);
 
             // Read header and validate
             using MemoryStream headerStream = new(headerBuffer);
