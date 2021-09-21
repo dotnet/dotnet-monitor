@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             if (!_disposed)
             {
-                _cancellation.Cancel();
+                _cancellation.SafeCancel();
 
                 if (null != _listenTask)
                 {

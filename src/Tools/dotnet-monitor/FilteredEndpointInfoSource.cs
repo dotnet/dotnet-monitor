@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly Guid? _runtimeInstanceCookieToFilterOut;
         private readonly IEndpointInfoSourceInternal _source;
 
-        public FilteredEndpointInfoSource(IOptions<DiagnosticPortOptions> portOptions)
+        public FilteredEndpointInfoSource(
+            IEnumerable<IEndpointInfoSourceCallbacks> callbacks,
+            IOptions<DiagnosticPortOptions> portOptions,
+            ILogger<ClientEndpointInfoSource> clientSourceLogger)
         {
             _portOptions = portOptions.Value;
 
@@ -35,10 +39,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             switch (connectionMode)
             {
                 case DiagnosticPortConnectionMode.Connect:
-                    _source = new ClientEndpointInfoSource();
+                    _source = new ClientEndpointInfoSource(clientSourceLogger);
                     break;
                 case DiagnosticPortConnectionMode.Listen:
-                    _source = new ServerEndpointInfoSource(_portOptions.EndpointName);
+                    _source = new ServerEndpointInfoSource(_portOptions.EndpointName, callbacks);
                     break;
                 default:
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_UnhandledConnectionMode, connectionMode));

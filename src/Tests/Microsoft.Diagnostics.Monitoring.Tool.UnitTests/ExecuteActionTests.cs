@@ -2,18 +2,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using System.Threading.Tasks;
-using Xunit;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using System.Reflection;
-using Microsoft.Diagnostics.Monitoring.TestCommon;
-using System.Threading;
 using System;
 using System.IO;
-using Microsoft.Diagnostics.Tools.Monitor;
-using System.Collections.Generic;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -21,6 +21,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const int TokenTimeoutMs = 10000;
         private const int DelayMs = 1000;
+
+        private readonly ITestOutputHelper _outputHelper;
+
+        public ExecuteActionTests(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
+        }
 
         [Fact]
         public async Task ExecuteAction_ZeroExitCode()
@@ -30,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "ZeroExitCode" });
+            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "ZeroExitCode" });
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
@@ -47,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "NonzeroExitCode" });
+            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "NonzeroExitCode" });
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
@@ -65,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "Sleep", (TokenTimeoutMs + DelayMs).ToString() }); ;
+            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "Sleep", (TokenTimeoutMs + DelayMs).ToString() }); ;
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
@@ -80,36 +87,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             ExecuteOptions options = new();
 
-            DirectoryInfo outputDirectory = null;
+            using TemporaryDirectory outputDirectory = new(_outputHelper);
 
-            try
-            {
-                outputDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "ExecuteAction", Guid.NewGuid().ToString()));
-                string textFileOutputPath = Path.Combine(outputDirectory.FullName, "file.txt");
+            string textFileOutputPath = Path.Combine(outputDirectory.FullName, "file.txt");
 
-                const string testMessage = "TestMessage";
+            const string testMessage = "TestMessage";
 
-                options.Path = DotNetHost.HostExePath;
-                options.Arguments = GenerateArgumentsString(new string[] { "TextFileOutput", textFileOutputPath, testMessage });
+            options.Path = DotNetHost.HostExePath;
+            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "TextFileOutput", textFileOutputPath, testMessage });
 
-                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
-                CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
+            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
 
-                ValidateActionResult(result, "0");
+            ValidateActionResult(result, "0");
 
-                Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
-            }
-            finally
-            {
-                try
-                {
-                    outputDirectory?.Delete(recursive: true);
-                }
-                catch
-                {
-                }
-            }
+            Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
         }
 
         [Fact]
@@ -122,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string uniquePathName = Guid.NewGuid().ToString();
 
             options.Path = uniquePathName;
-            options.Arguments = GenerateArgumentsString(Array.Empty<string>());
+            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Array.Empty<string>());
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
 
@@ -140,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecuteOptions options = new();
 
             options.Path = DotNetHost.HostExePath;
-            options.Arguments = GenerateArgumentsString(new string[] { "NonzeroExitCode" });
+            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "NonzeroExitCode" });
             options.IgnoreExitCode = true;
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
@@ -148,21 +141,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
 
             ValidateActionResult(result, "1");
-        }
-
-        internal static string GenerateArgumentsString(string[] additionalArgs)
-        {
-            Assembly currAssembly = Assembly.GetExecutingAssembly();
-
-            List<string> args = new();
-
-            // Entrypoint assembly
-            args.Add(AssemblyHelper.GetAssemblyArtifactBinPath(currAssembly, "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", TargetFrameworkMoniker.NetCoreApp31));
-
-            // Entrypoint arguments
-            args.AddRange(additionalArgs);
-
-            return string.Join(' ', args);
         }
 
         private static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)

@@ -27,7 +27,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectTraceActionTests
     {
-        private const string TempEgressDirectory = "/tmp";
         private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "Default";
 
@@ -47,36 +46,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(TraceProfile.Metrics)]
         public async Task CollectTraceAction_ProfileSuccess(TraceProfile traceProfile)
         {
-            DirectoryInfo uniqueEgressDirectory = null;
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
 
-            try
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                uniqueEgressDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), TempEgressDirectory, Guid.NewGuid().ToString()));
+                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
 
-                await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
-                {
-                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectTraceAction(traceProfile, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .SetStartupTrigger();
 
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddCollectTraceAction(traceProfile, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
-                        .SetStartupTrigger();
-
-                    collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
-                }, async host =>
-                {
-                    await PerformTrace(host);
-                });
-            }
-            finally
+                collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
+            }, async host =>
             {
-                try
-                {
-                    uniqueEgressDirectory?.Delete(recursive: true);
-                }
-                catch
-                {
-                }
-            }
+                await PerformTrace(host);
+            });
         }
 
         [Fact]
@@ -87,36 +71,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 new() { Name = "Microsoft-Extensions-Logging" }
             };
 
-            DirectoryInfo uniqueEgressDirectory = null;
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
 
-            try
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                uniqueEgressDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), TempEgressDirectory, Guid.NewGuid().ToString()));
+                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
 
-                await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
-                {
-                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .SetStartupTrigger();
 
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
-                        .SetStartupTrigger();
-
-                    collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
-                }, async host =>
-                {
-                    await PerformTrace(host);
-                });
-            }
-            finally
+                collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
+            }, async host =>
             {
-                try
-                {
-                    uniqueEgressDirectory?.Delete(recursive: true);
-                }
-                catch
-                {
-                }
-            }
+                await PerformTrace(host);
+            });
         }
 
         private async Task PerformTrace(IHost host)
@@ -155,8 +124,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
+        // THIS NEEDS TO BE UPDATED TO TAKE ADVANTAGE OF NEW UTILITY FOR DESERIALIZING
         private static async Task ValidateTrace(Stream traceStream)
         {
+            // using CancellationTokenSource cancellation = new(CommonTestTimeouts.TraceTimeout);
+            // byte[] buffer = await gcdumpStream.ReadBytesAsync(32, cancellation.Token);
+
             byte[] buffer = new byte[32];
 
             const string firstKnownHeaderText = "Nettrace";
@@ -171,18 +144,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 total += read;
             }
 
+            Encoding enc8 = Encoding.UTF8;
+
             byte[] firstSubarray = new byte[firstKnownHeaderText.Length];
-            Array.Copy(buffer, 0, firstSubarray, 0, firstSubarray.Length); // The first header text begins at the 0th index
-
-            string firstHeaderText = Encoding.ASCII.GetString(firstSubarray);
-
+            string firstHeaderText = enc8.GetString(buffer, 0, firstSubarray.Length);
             Assert.Equal(firstKnownHeaderText, firstHeaderText);
 
             byte[] secondSubarray = new byte[secondKnownHeaderText.Length];
-            Array.Copy(buffer, 12, secondSubarray, 0, secondSubarray.Length); // The second header text begins at the 12th index
-
-            string secondHeaderText = Encoding.ASCII.GetString(secondSubarray);
-
+            string secondHeaderText = enc8.GetString(buffer, 12, secondSubarray.Length);
             Assert.Equal(secondKnownHeaderText, secondHeaderText);
         }
     }

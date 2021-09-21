@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
             else if (options.Providers != null && options.Profile == null)
             {
-                Monitoring.WebApi.Models.EventPipeProvider[] optionsProviders = options.Providers.ToArray();
+                EventPipeProvider[] optionsProviders = options.Providers.ToArray();
                 bool requestRundown = options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
                 int bufferSizeMegabytes = options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
 
@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             Func<Stream, CancellationToken, Task> action = Utils.GetTraceAction(endpointInfo, configuration, duration);
 
-            KeyValueLogScope scope = Utils.GetScope(Utils.ArtifactType_Trace, endpointInfo);
+            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Trace, endpointInfo);
 
             EgressOperation egressOperation = new EgressOperation(
                 action,

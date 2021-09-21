@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ArtifactType_GCDump = "gcdump";
         public const string ArtifactType_Logs = "logs";
         public const string ArtifactType_Trace = "trace";
-        public const string ArtifactType_Metrics = "collectmetrics";
+        public const string ArtifactType_Metrics = "livemetrics";
 
         public static string GenerateDumpFileName()
         {
@@ -41,12 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
         }
 
-        public static KeyValueLogScope GetScope(string artifactType, IEndpointInfo endpointInfo)
+        public static KeyValueLogScope CreateArtifactScope(string artifactType, IEndpointInfo endpointInfo)
         {
             KeyValueLogScope scope = new KeyValueLogScope();
             scope.AddArtifactType(artifactType);
-            scope.AddEndpointInfo(endpointInfo);
-
+            scope.AddArtifactEndpointInfo(endpointInfo);
             return scope;
         }
 

@@ -799,7 +799,7 @@
         }
       }
     },
-    "/collectmetrics": {
+    "/livemetrics": {
       "get": {
         "tags": [
           "Diag"
