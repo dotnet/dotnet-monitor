@@ -89,10 +89,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             List<TaskCompletionSource<object>> startedSources = new(ruleNames.Count);
 
             // Wrap the passed CancellationToken into a linked CancellationTokenSource so that the
-            // RunRuleAsync method is only cancellable for the execution of the StartAsync method. Don't
-            // want the caller to be able to cancel the run of the rules after having finished
+            // RunRuleAsync method is only cancellable for the execution of the ApplyRules method.
+            // Don't want the caller to be able to cancel the run of the rules after having finished
             // executing the ApplyRules method.
             using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+
+            IProcessInfo processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo);
 
             foreach (string ruleName in ruleNames)
             {
@@ -107,7 +109,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     _actionListExecutor,
                     _triggerOperations,
                     _optionsMonitor,
-                    endpointInfo,
+                    processInfo,
                     ruleName,
                     startedSource,
                     linkedSource.Token).SafeAwait());
@@ -126,13 +128,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             ActionListExecutor actionListExecutor,
             ICollectionRuleTriggerOperations triggerOperations,
             IOptionsMonitor<CollectionRuleOptions> optionsMonitor,
-            IEndpointInfo endpointInfo,
+            IProcessInfo processInfo,
             string ruleName,
             TaskCompletionSource<object> startedSource,
             CancellationToken token)
         {
             KeyValueLogScope scope = new();
-            scope.AddCollectionRuleEndpointInfo(endpointInfo);
+            scope.AddCollectionRuleEndpointInfo(processInfo.EndpointInfo);
             scope.AddCollectionRuleName(ruleName);
             using IDisposable loggerScope = _logger.BeginScope(scope);
 
@@ -146,8 +148,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 if (null != options.Filters)
                 {
-                    IProcessInfo processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo);
-
                     DiagProcessFilter filter = DiagProcessFilter.FromConfiguration(options.Filters);
 
                     if (!filter.Filters.All(f => f.MatchFilter(processInfo)))
@@ -165,7 +165,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleStarted(ruleName);
 
-                CollectionRuleContext context = new(ruleName, options, endpointInfo, _logger);
+                CollectionRuleContext context = new(ruleName, options, processInfo.EndpointInfo, _logger);
 
                 await using CollectionRulePipeline pipeline = new(
                     actionListExecutor,
