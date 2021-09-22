@@ -589,6 +589,13 @@
         "Type"
       ],
       "properties": {
+        "Name": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name used to refer to the action."
+        },
         "Type": {
           "type": "string",
           "description": "The type of action to execute.",
@@ -607,6 +614,14 @@
               "type": "null"
             }
           ]
+        },
+        "WaitForCompletion": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Wait for the current action to complete before starting the next action.",
+          "default": false
         }
       },
       "oneOf": [
