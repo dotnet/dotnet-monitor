@@ -27,7 +27,7 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.21470.4</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.21471.3</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21471.45</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/diagnostics references -->
