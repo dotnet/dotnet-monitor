@@ -49,5 +49,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const int CollectionRuleActionsCompleted = 39;
         public const int ApplyingCollectionRules = 40;
         public const int DiagnosticRequestCancelled = 41;
+        public const int CollectionRuleUnmatchedFilters = 42;
     }
 }

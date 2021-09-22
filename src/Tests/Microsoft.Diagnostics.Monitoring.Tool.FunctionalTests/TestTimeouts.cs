@@ -33,5 +33,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Timeout for waiting for a collection rule to complete.
         /// </summary>
         public static readonly TimeSpan CollectionRuleCompletionTimeout = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// Timeout for waiting for a collection rule to be filtered.
+        /// </summary>
+        public static readonly TimeSpan CollectionRuleFilteredTimeout = TimeSpan.FromSeconds(10);
     }
 }

@@ -28,6 +28,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// </summary>
         public static readonly TimeSpan TraceTimeout = TimeSpan.FromMinutes(2);
 
+        /// Default timeout for gcdump collection.
+        /// </summary>
+        /// <remarks>
+        /// GCDumps can be quite large and take a significant amount of time to transfer.
+        /// </remarks>
+        public static readonly TimeSpan GCDumpTimeout = TimeSpan.FromMinutes(3);
+
+        /// <summary>
         /// Default timeout for dump collection.
         /// </summary>
         /// <remarks>

@@ -15,11 +15,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     internal sealed class AspNetResponseStatusOptions :
         IAspNetActionPathFilters
     {
+        private const string StatusCodeRegex = "[1-5][0-9]{2}";
+        private const string StatusCodesRegex = StatusCodeRegex + "(-" + StatusCodeRegex + ")?";
+
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes))]
         [Required]
         [MinLength(1)]
+        [RegularExpressions(StatusCodesRegex)]
         public string[] StatusCodes { get; set; }
 
         [Display(
