@@ -127,22 +127,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         // THIS NEEDS TO BE UPDATED TO TAKE ADVANTAGE OF NEW UTILITY FOR DESERIALIZING
         private static async Task ValidateTrace(Stream traceStream)
         {
-            // using CancellationTokenSource cancellation = new(CommonTestTimeouts.TraceTimeout);
-            // byte[] buffer = await gcdumpStream.ReadBytesAsync(32, cancellation.Token);
-
-            byte[] buffer = new byte[32];
+            using CancellationTokenSource cancellation = new(CommonTestTimeouts.TraceTimeout);
+            byte[] buffer = await traceStream.ReadBytesAsync(32, cancellation.Token);
 
             const string firstKnownHeaderText = "Nettrace";
             const string secondKnownHeaderText = "!FastSerialization.1";
-
-            // Read enough to deserialize known header texts.
-            int read;
-            int total = 0;
-            using CancellationTokenSource cancellation = new(CommonTestTimeouts.TraceTimeout);
-            while (total < buffer.Length && 0 != (read = await traceStream.ReadAsync(buffer, total, buffer.Length - total, cancellation.Token)))
-            {
-                total += read;
-            }
 
             Encoding enc8 = Encoding.UTF8;
 
