@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             string traceFilePath = string.Empty;
 
-            if (options.Profile != null && options.Providers == null)
+            if (null != options.Profile && null == options.Providers)
             {
                 TraceProfile profile = options.Profile.Value;
                 int metricsIntervalSeconds = options.MetricsIntervalSeconds.GetValueOrDefault(CollectTraceOptionsDefaults.MetricsIntervalSeconds);
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 traceFilePath = await StartTrace(endpointInfo, aggregateConfiguration, duration, egressProvider, token);
             }
-            else if (options.Providers != null && options.Profile == null)
+            else if (null != options.Providers && null == options.Profile)
             {
                 EventPipeProvider[] optionsProviders = options.Providers.ToArray();
                 bool requestRundown = options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
@@ -63,10 +63,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 var traceConfiguration = Utils.GetCustomTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
 
                 traceFilePath = await StartTrace(endpointInfo, traceConfiguration, duration, egressProvider, token);
-            }
-            else
-            {
-                throw new ArgumentException("One of the Profile and Providers fields must be provided."); // Temporary message -> put into Strings.resx if we keep the validation
             }
 
             return new CollectionRuleActionResult()

@@ -124,7 +124,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        // THIS NEEDS TO BE UPDATED TO TAKE ADVANTAGE OF NEW UTILITY FOR DESERIALIZING
         private static async Task ValidateTrace(Stream traceStream)
         {
             using CancellationTokenSource cancellation = new(CommonTestTimeouts.TraceTimeout);

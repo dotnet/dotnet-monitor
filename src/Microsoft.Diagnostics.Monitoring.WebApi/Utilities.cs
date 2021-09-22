@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static string GenerateTraceFileName(IEndpointInfo endpointInfo)
         {
-            return FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
+            return FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
         }
 
         public static KeyValueLogScope CreateArtifactScope(string artifactType, IEndpointInfo endpointInfo)
