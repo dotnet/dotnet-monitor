@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.ExecuteActionApp
 {
     internal class Program
     {
+        private static readonly ILogger _logger;
+
         public static int Main(string[] args)
         {
             string testType = args[0];
@@ -40,6 +43,16 @@ namespace Microsoft.Diagnostics.Monitoring.ExecuteActionApp
                     string pathArg = testArgs[0];
                     string contentsArg = testArgs[1];
                     File.WriteAllText(pathArg, contentsArg);
+                    return 0;
+
+                case "Logging":
+                    _logger.LogInformation("This is a test 1.");
+                    Thread.Sleep(2000);
+                    _logger.LogInformation("This is a test 2.");
+                    Thread.Sleep(2000);
+                    _logger.LogInformation("This is a test 3.");
+                    Thread.Sleep(10000);
+
                     return 0;
 
                 default:
