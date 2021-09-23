@@ -34,14 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public async ValueTask DisposeAsync()
         {
-            lock (_containers)
-            {
-                if (_disposed)
-                {
-                    return;
-                }
-                _disposed = true;
-            }
+            _disposed = true;
 
             foreach (CollectionRuleContainer container in _containers)
             {
