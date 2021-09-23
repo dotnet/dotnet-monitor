@@ -129,14 +129,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         }
                         finally
                         {
-                            if (trigger is IAsyncDisposable asyncDisposableTrigger)
-                            {
-                                await asyncDisposableTrigger.DisposeAsync().ConfigureAwait(false);
-                            }
-                            else if (trigger is IDisposable disposableTrigger)
-                            {
-                                disposableTrigger.Dispose();
-                            }
+                            await DisposableHelper.DisposeAsync(trigger);
                         }
                     }
 

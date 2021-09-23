@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
@@ -63,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     CollectionRuleActionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                         () => action.WaitForCompletionAsync(token));
 
-                    Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
+                    Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
                 });
         }
 
@@ -128,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     CollectionRuleActionException fileNotFoundException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                         () => action.StartAsync(token));
 
-                    Assert.Equal(string.Format(Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
+                    Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
                 });
         }
 
@@ -179,14 +178,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
             finally
             {
-                if (action is IAsyncDisposable asyncDisposableAction)
-                {
-                    await asyncDisposableAction.DisposeAsync();
-                }
-                else if (action is IDisposable disposableAction)
-                {
-                    disposableAction.Dispose();
-                }
+                await DisposableHelper.DisposeAsync(action);
             }
         }
     }

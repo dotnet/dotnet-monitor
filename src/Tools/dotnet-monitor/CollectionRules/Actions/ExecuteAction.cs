@@ -30,100 +30,59 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, null, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new ExecuteAction(options);
+            return new ExecuteAction(endpointInfo, options);
         }
 
         internal sealed class ExecuteAction :
-            ICollectionRuleAction,
-            IAsyncDisposable
+            CollectionRuleActionBase<ExecuteOptions>
         {
-            private readonly CancellationTokenSource _disposalTokenSource = new();
-            private readonly ExecuteOptions _options;
-
-            private Task<CollectionRuleActionResult> _completionTask;
-
-            public ExecuteAction(ExecuteOptions options)
+            public ExecuteAction(IEndpointInfo endpointInfo, ExecuteOptions options)
+                : base(endpointInfo, options)
             {
-                _options = options ?? throw new ArgumentNullException(nameof(options));
             }
 
-            public async ValueTask DisposeAsync()
+            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
+                TaskCompletionSource<object> startCompleteSource,
+                CancellationToken token)
             {
-                _disposalTokenSource.SafeCancel();
+                string path = Options.Path;
+                string arguments = Options.Arguments;
+                bool IgnoreExitCode = Options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
 
-                await _completionTask.SafeAwait();
+                ValidateFilePath(path);
 
-                _disposalTokenSource.Dispose();
-            }
+                // May want to capture stdout and stderr and return as part of the result in the future
+                using Process process = new Process();
 
-            public async Task StartAsync(CancellationToken token)
-            {
-                TaskCompletionSource<object> startCompleteSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                process.StartInfo = new ProcessStartInfo(path, arguments);
+                process.StartInfo.RedirectStandardOutput = true;
 
-                CancellationToken disposalToken = _disposalTokenSource.Token;
-                _completionTask = Task.Run(() => ExecuteAsync(startCompleteSource, disposalToken), disposalToken);
+                process.EnableRaisingEvents = true;
 
-                await startCompleteSource.WithCancellation(token);
-            }
+                // Signaled when process exits
+                using EventTaskSource<EventHandler> exitedSource = new(
+                    complete => (s, e) => complete(),
+                    handler => process.Exited += handler,
+                    handler => process.Exited -= handler);
 
-            public Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
-            {
-                return _completionTask.WithCancellation(token);
-            }
-
-            private async Task<CollectionRuleActionResult> ExecuteAsync(TaskCompletionSource<object> startCompleteSource, CancellationToken token)
-            {
-                try
+                if (!process.Start())
                 {
-                    string path = _options.Path;
-                    string arguments = _options.Arguments;
-                    bool IgnoreExitCode = _options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
+                    throw new CollectionRuleActionException(new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments)));
+                }
 
-                    ValidateFilePath(path);
+                startCompleteSource.TrySetResult(null);
 
-                    // May want to capture stdout and stderr and return as part of the result in the future
-                    using Process process = new Process();
+                await WaitForExitAsync(process, exitedSource.Task, token).ConfigureAwait(false);
 
-                    process.StartInfo = new ProcessStartInfo(path, arguments);
-                    process.StartInfo.RedirectStandardOutput = true;
+                ValidateExitCode(IgnoreExitCode, process.ExitCode);
 
-                    process.EnableRaisingEvents = true;
-
-                    // Signaled when process exits
-                    using EventTaskSource<EventHandler> exitedSource = new(
-                        complete => (s, e) => complete(),
-                        handler => process.Exited += handler,
-                        handler => process.Exited -= handler);
-
-                    if (!process.Start())
+                return new CollectionRuleActionResult()
+                {
+                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
-                        throw new CollectionRuleActionException(new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments)));
+                        { "ExitCode", process.ExitCode.ToString(CultureInfo.InvariantCulture) }
                     }
-
-                    startCompleteSource.TrySetResult(null);
-
-                    await WaitForExitAsync(process, exitedSource.Task, token).ConfigureAwait(false);
-
-                    ValidateExitCode(IgnoreExitCode, process.ExitCode);
-
-                    return new CollectionRuleActionResult()
-                    {
-                        OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                        {
-                            { "ExitCode", process.ExitCode.ToString(CultureInfo.InvariantCulture) }
-                        }
-                    };
-                }
-                catch (Exception ex) when (TrySetExceptionReturnFalse(startCompleteSource, ex))
-                {
-                    throw;
-                }
-            }
-
-            private static bool TrySetExceptionReturnFalse(TaskCompletionSource<object> source, Exception ex)
-            {
-                source.TrySetException(ex);
-                return false;
+                };
             }
 
             public async Task WaitForExitAsync(Process process, Task exitedTask, CancellationToken token)

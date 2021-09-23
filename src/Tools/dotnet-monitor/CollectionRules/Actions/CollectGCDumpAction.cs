@@ -37,64 +37,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         private sealed class CollectGCDumpAction :
-            ICollectionRuleAction,
-            IAsyncDisposable
+            CollectionRuleActionBase<CollectGCDumpOptions>
         {
-            private readonly CancellationTokenSource _disposalTokenSource = new();
-            private readonly IEndpointInfo _endpointInfo;
-            private readonly CollectGCDumpOptions _options;
             private readonly IServiceProvider _serviceProvider;
 
-            private Task<CollectionRuleActionResult> _completionTask;
-
             public CollectGCDumpAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectGCDumpOptions options)
+                : base(endpointInfo, options)
             {
-                _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
-                _options = options ?? throw new ArgumentNullException(nameof(options));
                 _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             }
 
-            public async ValueTask DisposeAsync()
+            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
+                TaskCompletionSource<object> startCompleteSource,
+                CancellationToken token)
             {
-                _disposalTokenSource.SafeCancel();
+                string egress = Options.Egress;
 
-                await _completionTask.SafeAwait();
+                string gcdumpFileName = Utils.GenerateGCDumpFileName(EndpointInfo);
 
-                _disposalTokenSource.Dispose();
-            }
-
-            public async Task StartAsync(CancellationToken token)
-            {
-                TaskCompletionSource<object> startCompleteSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-                CancellationToken disposalToken = _disposalTokenSource.Token;
-                _completionTask = Task.Run(() => ExecuteAsync(startCompleteSource, disposalToken), disposalToken);
-
-                await startCompleteSource.WithCancellation(token);
-            }
-
-            public async Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
-            {
-                return await _completionTask.WithCancellation(token);
-            }
-
-            private async Task<CollectionRuleActionResult> ExecuteAsync(TaskCompletionSource<object> startCompleteSource, CancellationToken token)
-            {
-                string egress = _options.Egress;
-
-                string gcdumpFileName = Utils.GenerateGCDumpFileName(_endpointInfo);
-
-                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_GCDump, _endpointInfo);
+                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_GCDump, EndpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
                     (stream, token) =>
                     {
                         startCompleteSource.TrySetResult(null);
-                        return Utils.CaptureGCDumpAsync(_endpointInfo, stream, token);
+                        return Utils.CaptureGCDumpAsync(EndpointInfo, stream, token);
                     },
                     egress,
                     gcdumpFileName,
-                    _endpointInfo,
+                    EndpointInfo,
                     ContentTypes.ApplicationOctetStream,
                     scope);
 

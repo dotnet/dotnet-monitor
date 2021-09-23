@@ -40,102 +40,60 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         internal sealed class CollectDumpAction :
-            ICollectionRuleAction,
-            IAsyncDisposable
+            CollectionRuleActionBase<CollectDumpOptions>
         {
-            private readonly CancellationTokenSource _disposalTokenSource = new();
             private readonly IDumpService _dumpService;
-            private readonly IEndpointInfo _endpointInfo;
-            private readonly CollectDumpOptions _options;
             private readonly IServiceProvider _serviceProvider;
 
-            private Task<CollectionRuleActionResult> _completionTask;
-
             public CollectDumpAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectDumpOptions options)
+                : base(endpointInfo, options)
             {
-                _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
-                _options = options ?? throw new ArgumentNullException(nameof(options));
                 _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 _dumpService = serviceProvider.GetRequiredService<IDumpService>();
             }
 
-            public async ValueTask DisposeAsync()
+            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
+                TaskCompletionSource<object> startCompletionSource,
+                CancellationToken token)
             {
-                _disposalTokenSource.SafeCancel();
+                DumpType dumpType = Options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
+                string egressProvider = Options.Egress;
 
-                await _completionTask.SafeAwait();
+                string dumpFileName = Utils.GenerateDumpFileName();
 
-                _disposalTokenSource.Dispose();
-            }
+                string dumpFilePath = string.Empty;
 
-            public async Task StartAsync(CancellationToken token)
-            {
-                TaskCompletionSource<object> startCompleteSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, EndpointInfo);
 
-                CancellationToken disposalToken = _disposalTokenSource.Token;
-                _completionTask = Task.Run(() => ExecuteAsync(startCompleteSource, disposalToken), disposalToken);
-
-                await startCompleteSource.WithCancellation(token);
-            }
-
-            public async Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
-            {
-                return await _completionTask.WithCancellation(token);
-            }
-
-            private async Task<CollectionRuleActionResult> ExecuteAsync(TaskCompletionSource<object> startCompletionSource, CancellationToken token)
-            {
                 try
                 {
-                    DumpType dumpType = _options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
-                    string egressProvider = _options.Egress;
+                    EgressOperation egressOperation = new EgressOperation(
+                        token => {
+                            startCompletionSource.TrySetResult(null);
+                            return _dumpService.DumpAsync(EndpointInfo, dumpType, token);
+                        },
+                        egressProvider,
+                        dumpFileName,
+                        EndpointInfo,
+                        ContentTypes.ApplicationOctetStream,
+                        scope);
 
-                    string dumpFileName = Utils.GenerateDumpFileName();
+                    ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
 
-                    string dumpFilePath = string.Empty;
-
-                    KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, _endpointInfo);
-
-                    try
-                    {
-                        EgressOperation egressOperation = new EgressOperation(
-                            token => {
-                                startCompletionSource.TrySetResult(null);
-                                return _dumpService.DumpAsync(_endpointInfo, dumpType, token);
-                            },
-                            egressProvider,
-                            dumpFileName,
-                            _endpointInfo,
-                            ContentTypes.ApplicationOctetStream,
-                            scope);
-
-                        ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-
-                        dumpFilePath = result.Result.Value;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new CollectionRuleActionException(ex);
-                    }
-
-                    return new CollectionRuleActionResult()
-                    {
-                        OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                        {
-                            { CollectionRuleActionConstants.EgressPathOutputValueName, dumpFilePath }
-                        }
-                    };
+                    dumpFilePath = result.Result.Value;
                 }
-                catch (Exception ex) when (TrySetExceptionReturnFalse(startCompletionSource, ex))
+                catch (Exception ex)
                 {
-                    throw;
+                    throw new CollectionRuleActionException(ex);
                 }
-            }
 
-            private static bool TrySetExceptionReturnFalse(TaskCompletionSource<object> source, Exception ex)
-            {
-                source.TrySetException(ex);
-                return false;
+                return new CollectionRuleActionResult()
+                {
+                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
+                    {
+                        { CollectionRuleActionConstants.EgressPathOutputValueName, dumpFilePath }
+                    }
+                };
             }
         }
     }

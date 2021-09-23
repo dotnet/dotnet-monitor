@@ -63,14 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     }
                     finally
                     {
-                        if (action is IAsyncDisposable asyncDisposableAction)
-                        {
-                            await asyncDisposableAction.DisposeAsync();
-                        }
-                        else if (action is IDisposable disposableAction)
-                        {
-                            disposableAction.Dispose();
-                        }
+                        await DisposableHelper.DisposeAsync(action);
                     }
                 }
                 catch (Exception ex) when (ShouldHandleException(ex, context.Name, actionOption.Type))

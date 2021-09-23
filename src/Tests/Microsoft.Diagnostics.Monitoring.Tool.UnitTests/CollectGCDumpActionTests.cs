@@ -80,14 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     }
                     finally
                     {
-                        if (action is IAsyncDisposable asyncDisposableAction)
-                        {
-                            await asyncDisposableAction.DisposeAsync();
-                        }
-                        else if (action is IDisposable disposableAction)
-                        {
-                            disposableAction.Dispose();
-                        }
+                        await DisposableHelper.DisposeAsync(action);
                     }
 
                     Assert.NotNull(result.OutputValues);
