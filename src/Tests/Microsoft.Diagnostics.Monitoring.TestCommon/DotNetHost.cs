@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
@@ -16,6 +17,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public static Version RuntimeVersion =>
             s_runtimeVersionLazy.Value;
+
+        public static string HostExeNameWithoutExtension => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+            Path.GetFileNameWithoutExtension(HostExePath) :
+            Path.GetFileName(HostExePath);
 
         public static string HostExePath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
             @"..\..\..\..\..\.dotnet\dotnet.exe" :

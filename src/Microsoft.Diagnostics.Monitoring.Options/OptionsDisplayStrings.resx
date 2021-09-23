@@ -552,4 +552,12 @@
     <value>The LogFormat used when egressing logs.</value>
     <comment>The description provided for the Format parameter on CollectLogsOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_CollectionRuleActionOptions_Name" xml:space="preserve">
+    <value>The name used to refer to the action.</value>
+    <comment>The description provided for the Name parameter on CollectionRuleActionOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleActionOptions_WaitForCompletion" xml:space="preserve">
+    <value>Wait for the current action to complete before starting the next action.</value>
+    <comment>The description provided for the WaitForCompletion parameter on CollectionRuleActionOptions.</comment>
+  </data>
 </root>
