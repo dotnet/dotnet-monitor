@@ -287,6 +287,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name used to refer to the action..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleActionOptions_Name {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionOptions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The settings to pass to the action when it is executed. Settings may be optional if the action doesn&apos;t require settings or its settings are all optional..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleActionOptions_Settings {
@@ -301,6 +310,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectionRuleActionOptions_Type {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionOptions_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wait for the current action to complete before starting the next action..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleActionOptions_WaitForCompletion {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionOptions_WaitForCompletion", resourceCulture);
             }
         }
         
