@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
-    internal class CollectionRuleActionOptionsDefaults
+    internal static class CollectionRuleActionOptionsDefaults
     {
         public const bool WaitForCompletion = false;
     }
