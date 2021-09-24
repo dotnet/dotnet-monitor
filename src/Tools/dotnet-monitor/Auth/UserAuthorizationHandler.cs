@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
@@ -42,6 +43,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     (context.User.Identity.AuthenticationType == AuthConstants.KerberosSchema) ||
                     (context.User.Identity.AuthenticationType == AuthConstants.NegotiateSchema))
             {
+                // Only supported on Windows
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    return Task.CompletedTask;
+                }
+
                 //Negotiate, Kerberos, or NTLM.
                 //CONSIDER In the future, we may want to have configuration around a dotnet-monitor group sid instead.
                 //We cannot check the user against BUILTIN\Administrators group membership, since the browser user
