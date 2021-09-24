@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly CollectionRulesConfigurationProvider _provider;
         private readonly IServiceProvider _serviceProvider;
 
-        private bool _disposed;
+        private long _disposalState;
 
         public CollectionRuleService(
             IServiceProvider serviceProvider,
@@ -34,23 +34,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public async ValueTask DisposeAsync()
         {
-            _disposed = true;
-
-            foreach (CollectionRuleContainer container in _containers)
+            if (DisposableHelper.CanDispose(ref _disposalState))
             {
-                await container.DisposeAsync();
+                foreach (CollectionRuleContainer container in _containers)
+                {
+                    await container.DisposeAsync();
+                }
+                _containers.Clear();
             }
-            _containers.Clear();
         }
 
         public async Task ApplyRules(
             IEndpointInfo endpointInfo,
             CancellationToken token)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(typeof(CollectionRuleService).FullName);
-            }
+            DisposableHelper.ThrowIfDisposed<CollectionRuleService>(ref _disposalState);
 
             if (null == endpointInfo)
             {

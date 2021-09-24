@@ -41,15 +41,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         /// <inheritdoc/>
-        public bool TryCreateAction(
+        public bool TryCreateFactory(
             string actionName,
-            out ICollectionRuleActionProxy action)
+            out ICollectionRuleActionFactoryProxy action)
         {
             if (_map.TryGetValue(actionName, out ICollectionRuleActionDescriptor descriptor))
             {
-                Type actionWrapperType = typeof(CollectionRuleActionProxy<,>).MakeGenericType(descriptor.ActionType, descriptor.OptionsType);
+                Type actionWrapperType = typeof(CollectionRuleActionFactoryProxy<,>).MakeGenericType(descriptor.FactoryType, descriptor.OptionsType);
 
-                action = (ICollectionRuleActionProxy)_serviceProvider.GetService(actionWrapperType);
+                action = (ICollectionRuleActionFactoryProxy)_serviceProvider.GetService(actionWrapperType);
                 return true;
             }
 

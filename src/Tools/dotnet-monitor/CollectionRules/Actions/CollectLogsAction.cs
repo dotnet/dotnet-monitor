@@ -16,80 +16,94 @@ using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
-    internal sealed class CollectLogsAction :
-        ICollectionRuleAction<CollectLogsOptions>
+    internal sealed class CollectLogsActionFactory :
+        ICollectionRuleActionFactory<CollectLogsOptions>
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public CollectLogsAction(IServiceProvider serviceProvider)
+        public CollectLogsActionFactory(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public async Task<CollectionRuleActionResult> ExecuteAsync(CollectLogsOptions options, IEndpointInfo endpointInfo, CancellationToken token)
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectLogsOptions options)
         {
-            if (options == null)
+            if (null == options)
             {
                 throw new ArgumentNullException(nameof(options));
-            }
-
-            if (endpointInfo == null)
-            {
-                throw new ArgumentNullException(nameof(endpointInfo));
             }
 
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            TimeSpan duration = options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLogsOptionsDefaults.Duration));
-            bool useAppFilters = options.UseAppFilters.GetValueOrDefault(CollectLogsOptionsDefaults.UseAppFilters);
-            LogLevel defaultLevel = options.DefaultLevel.GetValueOrDefault(CollectLogsOptionsDefaults.DefaultLevel);
-            string egressProvider = options.Egress;
-            LogFormat logFormat = options.Format.GetValueOrDefault(CollectLogsOptionsDefaults.Format);
+            return new CollectLogsAction(_serviceProvider, endpointInfo, options);
+        }
 
-            var settings = new EventLogsPipelineSettings()
+        internal sealed class CollectLogsAction :
+            CollectionRuleActionBase<CollectLogsOptions>
+        {
+            private readonly IServiceProvider _serviceProvider;
+
+            public CollectLogsAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectLogsOptions options)
+                : base(endpointInfo, options)
             {
-                Duration = duration,
-                LogLevel = defaultLevel,
-                UseAppFilters = useAppFilters
-            };
+                _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            }
 
-            string logsFilePath = await StartLogs(endpointInfo, settings, egressProvider, logFormat, token);
-
-            return new CollectionRuleActionResult()
+            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
+                TaskCompletionSource<object> startCompletionSource,
+                CancellationToken token)
             {
-                OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
+                TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLogsOptionsDefaults.Duration));
+                bool useAppFilters = Options.UseAppFilters.GetValueOrDefault(CollectLogsOptionsDefaults.UseAppFilters);
+                LogLevel defaultLevel = Options.DefaultLevel.GetValueOrDefault(CollectLogsOptionsDefaults.DefaultLevel);
+                string egressProvider = Options.Egress;
+                LogFormat logFormat = Options.Format.GetValueOrDefault(CollectLogsOptionsDefaults.Format);
+
+                var settings = new EventLogsPipelineSettings()
+                {
+                    Duration = duration,
+                    LogLevel = defaultLevel,
+                    UseAppFilters = useAppFilters
+                };
+
+                string logsFilePath = await StartLogs(EndpointInfo, settings, egressProvider, logFormat, token);
+
+                return new CollectionRuleActionResult()
+                {
+                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     { CollectionRuleActionConstants.EgressPathOutputValueName, logsFilePath }
                 }
-            };
-        }
+                };
+            }
 
-        private async Task<string> StartLogs(
-            IEndpointInfo endpointInfo,
-            EventLogsPipelineSettings settings,
-            string egressProvider,
-            LogFormat format,
-            CancellationToken token)
-        {
-            string fileName = Utils.GenerateLogsFileName(endpointInfo);
-            string contentType = Utils.GetLogsContentType(format);
+            private async Task<string> StartLogs(
+                IEndpointInfo endpointInfo,
+                EventLogsPipelineSettings settings,
+                string egressProvider,
+                LogFormat format,
+                CancellationToken token)
+            {
+                string fileName = Utils.GenerateLogsFileName(endpointInfo);
+                string contentType = Utils.GetLogsContentType(format);
 
-            Func<Stream, CancellationToken, Task> action = Utils.GetLogsAction(format, endpointInfo, settings);
+                Func<Stream, CancellationToken, Task> action = Utils.GetLogsAction(format, endpointInfo, settings);
 
-            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, endpointInfo);
+                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, endpointInfo);
 
-            EgressOperation egressOperation = new EgressOperation(
-                action,
-                egressProvider,
-                fileName,
-                endpointInfo,
-                contentType,
-                scope);
+                EgressOperation egressOperation = new EgressOperation(
+                    action,
+                    egressProvider,
+                    fileName,
+                    endpointInfo,
+                    contentType,
+                    scope);
 
-            ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
 
-            return result.Result.Value;
+                return result.Result.Value;
+            }
         }
     }
 }
