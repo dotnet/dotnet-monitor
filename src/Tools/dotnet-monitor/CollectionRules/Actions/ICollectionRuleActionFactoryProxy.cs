@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
@@ -17,12 +15,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     /// Allows the rest of the collection rule system to not have to understand
     /// the type of the options to pass to the action.
     /// </remarks>
-    internal interface ICollectionRuleActionProxy
+    internal interface ICollectionRuleActionFactoryProxy
     {
         /// <summary>
         /// Executes the underlying action with the specified parameters, verifying
         /// that the passed options are of the correct type.
         /// </summary>
-        Task<CollectionRuleActionResult> ExecuteAsync(object options, IEndpointInfo endpointInfo, CancellationToken token);
+        ICollectionRuleAction Create(IEndpointInfo endpointInfo, object options);
     }
 }

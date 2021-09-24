@@ -107,29 +107,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 bufferSizeInMB: bufferSizeInMB);
         }
 
-        public static Func<Stream, CancellationToken, Task> GetTraceAction(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration)
+        public static async Task GetTraceAction(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, Stream outputStream, CancellationToken token)
         {
-            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
+            Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
             {
-                Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
-                {
-                    //Buffer size matches FileStreamResult
-                    //CONSIDER Should we allow client to change the buffer size?
-                    await eventStream.CopyToAsync(outputStream, 0x10000, token);
-                };
-
-                var client = new DiagnosticsClient(endpointInfo.Endpoint);
-
-                await using EventTracePipeline pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
-                {
-                    Configuration = configuration,
-                    Duration = duration,
-                }, streamAvailable);
-
-                await pipeProcessor.RunAsync(token);
+                //Buffer size matches FileStreamResult
+                //CONSIDER Should we allow client to change the buffer size?
+                await eventStream.CopyToAsync(outputStream, 0x10000, token);
             };
 
-            return action;
+            var client = new DiagnosticsClient(endpointInfo.Endpoint);
+
+            await using EventTracePipeline pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
+            {
+                Configuration = configuration,
+                Duration = duration,
+            }, streamAvailable);
+
+            await pipeProcessor.RunAsync(token);
         }
 
         public static async Task CaptureGCDumpAsync(IEndpointInfo endpointInfo, Stream targetStream, CancellationToken token)

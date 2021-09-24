@@ -66,11 +66,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
         {
-            services.RegisterCollectionRuleAction<CollectDumpAction, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
-            services.RegisterCollectionRuleAction<CollectGCDumpAction, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
-            services.RegisterCollectionRuleAction<CollectLogsAction, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
-            services.RegisterCollectionRuleAction<CollectTraceAction, CollectTraceOptions>(KnownCollectionRuleActions.CollectTrace);
-            services.RegisterCollectionRuleAction<ExecuteAction, ExecuteOptions>(KnownCollectionRuleActions.Execute);
+            services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
+            services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
+            services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
+            services.RegisterCollectionRuleAction<CollectTraceActionFactory, CollectTraceOptions>(KnownCollectionRuleActions.CollectTrace);
+            services.RegisterCollectionRuleAction<ExecuteActionFactory, ExecuteOptions>(KnownCollectionRuleActions.Execute);
 
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestCountTriggerFactory, AspNetRequestCountOptions>(KnownCollectionRuleTriggers.AspNetRequestCount);
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
@@ -99,13 +99,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleAction<TAction, TOptions>(this IServiceCollection services, string actionName)
-            where TAction : class, ICollectionRuleAction<TOptions>
+        public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions>(this IServiceCollection services, string actionName)
+            where TFactory : class, ICollectionRuleActionFactory<TOptions>
             where TOptions : class, new()
         {
-            services.AddSingleton<TAction>();
-            services.AddSingleton<CollectionRuleActionProxy<TAction, TOptions>>();
-            services.AddSingleton<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TAction, TOptions>>(sp => new CollectionRuleActionDescriptor<TAction, TOptions>(actionName));
+            services.AddSingleton<TFactory>();
+            services.AddSingleton<CollectionRuleActionFactoryProxy<TFactory, TOptions>>();
+            services.AddSingleton<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TFactory, TOptions>>(sp => new CollectionRuleActionDescriptor<TFactory, TOptions>(actionName));
             // NOTE: When opening colletion rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();

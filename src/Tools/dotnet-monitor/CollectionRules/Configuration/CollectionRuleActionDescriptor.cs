@@ -7,9 +7,9 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
-    internal sealed class CollectionRuleActionDescriptor<TAction, TOptions> :
+    internal sealed class CollectionRuleActionDescriptor<TFactory, TOptions> :
         ICollectionRuleActionDescriptor
-        where TAction : ICollectionRuleAction<TOptions>
+        where TFactory : ICollectionRuleActionFactory<TOptions>
     {
         public CollectionRuleActionDescriptor(string actionName)
         {
@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public string ActionName { get; }
 
-        public Type ActionType => typeof(TAction);
+        public Type FactoryType => typeof(TFactory);
 
         public Type OptionsType => typeof(TOptions);
     }

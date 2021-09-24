@@ -25,6 +25,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptions.cs" Link="Options\CollectionRules\Actions\ExecuteOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptionsDefaults.cs" Link="Options\CollectionRules\Actions\ExecuteOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptions.cs" Link="Options\CollectionRules\CollectionRuleActionOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptionsDefaults.cs" Link="Options\CollectionRules\CollectionRuleActionOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptions.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptionsDefaults.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleOptions.cs" Link="Options\CollectionRules\CollectionRuleOptions.cs" />

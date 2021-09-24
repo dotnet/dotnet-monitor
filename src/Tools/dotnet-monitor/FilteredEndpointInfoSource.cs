@@ -95,16 +95,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return endpointInfos;
         }
 
-        public async ValueTask DisposeAsync()
+        public ValueTask DisposeAsync()
         {
-            if (_source is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
-            else if (_source is IAsyncDisposable asyncDisposable)
-            {
-                await asyncDisposable.ConfigureAwait(false).DisposeAsync();
-            }
+            return DisposableHelper.DisposeAsync(_source);
         }
 
         public void Start()

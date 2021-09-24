@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using System;
@@ -13,7 +12,22 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions
 {
-    internal sealed class CallbackAction : ICollectionRuleAction<object>
+    internal sealed class CallbackActionFactory : ICollectionRuleActionFactory<object>
+    {
+        private readonly CallbackActionService _service;
+
+        public CallbackActionFactory(CallbackActionService service)
+        {
+            _service = service;
+        }
+
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, object options)
+        {
+            return new CallbackAction(_service);
+        }
+    }
+
+    internal sealed class CallbackAction : ICollectionRuleAction
     {
         public static readonly string ActionName = nameof(CallbackAction);
 
@@ -24,11 +38,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
-        public async Task<CollectionRuleActionResult> ExecuteAsync(object options, IEndpointInfo endpointInfo, CancellationToken token)
+        public Task StartAsync(CancellationToken token)
         {
-            await _service.NotifyListeners(token);
+            return _service.NotifyListeners(token);
+        }
 
-            return new CollectionRuleActionResult();
+        public Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
+        {
+            return Task.FromResult(new CollectionRuleActionResult());
         }
     }
 

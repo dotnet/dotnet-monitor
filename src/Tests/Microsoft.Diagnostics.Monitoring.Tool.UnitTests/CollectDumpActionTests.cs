@@ -24,9 +24,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectDumpActionTests
     {
-        private const string TempEgressDirectory = "/tmp";
         private const string ExpectedEgressProvider = "TmpEgressProvider";
-        private const string DefaultRuleName = "Default";
+        private const string DefaultRuleName = "DumpTestRule";
 
         private ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
@@ -45,65 +44,63 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(null)]
         public async Task CollectDumpAction_Success(DumpType? dumpType)
         {
-            DirectoryInfo uniqueEgressDirectory = null;
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
 
-            try
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                uniqueEgressDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), TempEgressDirectory, Guid.NewGuid().ToString()));
+                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
 
-                await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ExpectedEgressProvider, dumpType)
+                    .SetStartupTrigger();
+            }, async host =>
+            {
+                IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
+                CollectDumpOptions options = (CollectDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+
+                ICollectionRuleActionFactoryProxy factory;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectDump, out factory));
+
+                EndpointInfoSourceCallback callback = new(_outputHelper);
+                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+                source.Start();
+
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
+
+                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
                 {
-                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, uniqueEgressDirectory.FullName);
+                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .AddCollectDumpAction(ExpectedEgressProvider, dumpType)
-                        .SetStartupTrigger();
-                }, async host =>
-                {
-                    IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                    CollectDumpOptions options = (CollectDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
 
-                    ICollectionRuleActionProxy action;
-                    Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectDump, out action));
+                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.DumpTimeout);
 
-                    EndpointInfoSourceCallback callback = new(_outputHelper);
-                    await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-                    source.Start();
-
-                    AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
-
-                    Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-                    await runner.ExecuteAsync(async () =>
+                    CollectionRuleActionResult result;
+                    try
                     {
-                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
+                        await action.StartAsync(cancellationTokenSource.Token);
 
-                        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.DumpTimeout);
-                        CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+                        result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
+                    }
+                    finally
+                    {
+                        await DisposableHelper.DisposeAsync(action);
+                    }
 
-                        Assert.NotNull(result.OutputValues);
-                        Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-                        Assert.True(File.Exists(egressPath));
+                    Assert.NotNull(result.OutputValues);
+                    Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
+                    Assert.True(File.Exists(egressPath));
 
-                        using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
-                        Assert.NotNull(dumpStream);
+                    using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                    Assert.NotNull(dumpStream);
 
-                        await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), dumpStream);
+                    await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), dumpStream);
 
-                        await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-                    });
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
-            }
-            finally
-            {
-                try
-                {
-                    uniqueEgressDirectory?.Delete(recursive: true);
-                }
-                catch
-                {
-                }
-            }
+            });
         }
     }
 }

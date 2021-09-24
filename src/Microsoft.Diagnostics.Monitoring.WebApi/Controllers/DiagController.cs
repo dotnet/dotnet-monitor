@@ -529,12 +529,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             string fileName = Utilities.GenerateTraceFileName(processInfo.EndpointInfo);
 
-            Func<Stream, CancellationToken, Task> action = Utilities.GetTraceAction(processInfo.EndpointInfo, configuration, duration);
-
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,
-                action,
+                (stream, token) => Utilities.GetTraceAction(processInfo.EndpointInfo, configuration, duration, stream, token),
                 fileName,
                 ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);

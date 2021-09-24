@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     public sealed class CollectTraceActionTests
     {
         private const string ExpectedEgressProvider = "TmpEgressProvider";
-        private const string DefaultRuleName = "Default";
+        private const string DefaultRuleName = "TraceTestRule";
 
         private ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
@@ -93,8 +93,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
             CollectTraceOptions options = (CollectTraceOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
 
-            ICollectionRuleActionProxy action;
-            Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectTrace, out action));
+            ICollectionRuleActionFactoryProxy factory;
+            Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectTrace, out factory));
 
             EndpointInfoSourceCallback callback = new(_outputHelper);
             await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
@@ -108,8 +108,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
+                ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.TraceTimeout);
-                CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+
+                CollectionRuleActionResult result;
+                try
+                {
+                    await action.StartAsync(cancellationTokenSource.Token);
+
+                    result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
+                }
+                finally
+                {
+                    await DisposableHelper.DisposeAsync(action);
+                }
 
                 Assert.NotNull(result.OutputValues);
                 Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));

@@ -10,12 +10,26 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
-    internal sealed class CollectLogsAction :
-        ICollectionRuleAction<CollectLogsOptions>
+    internal sealed class CollectLogsActionFactory :
+        ICollectionRuleActionFactory<CollectLogsOptions>
     {
-        public Task<CollectionRuleActionResult> ExecuteAsync(CollectLogsOptions options, IEndpointInfo endpointInfo, CancellationToken token)
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectLogsOptions options)
         {
-            throw new NotImplementedException("TODO: Implement action");
+            return new CollectLogsAction();
+        }
+
+        private sealed class CollectLogsAction :
+            ICollectionRuleAction
+        {
+            public Task StartAsync(CancellationToken token)
+            {
+                throw new NotImplementedException("TODO: Implement");
+            }
+
+            public Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
+            {
+                throw new NotImplementedException("TODO: Implement");
+            }
         }
     }
 }

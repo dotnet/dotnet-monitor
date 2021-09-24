@@ -3,13 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -32,75 +30,83 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ExecuteAction_ZeroExitCode()
         {
-            ExecuteAction action = new();
+            await ValidateAction(
+                options =>
+                {
+                    options.Path = DotNetHost.HostExePath;
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "ZeroExitCode" });
+                },
+                async (action, token) =>
+                {
+                    await action.StartAsync(token);
 
-            ExecuteOptions options = new();
+                    CollectionRuleActionResult result = await action.WaitForCompletionAsync(token);
 
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "ZeroExitCode" });
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
-
-            ValidateActionResult(result, "0");
+                    ValidateActionResult(result, "0");
+                });
         }
 
         [Fact]
         public async Task ExecuteAction_NonzeroExitCode()
         {
-            ExecuteAction action = new();
+            await ValidateAction(
+                options =>
+                {
+                    options.Path = DotNetHost.HostExePath;
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "NonzeroExitCode" });
+                },
+                async (action, token) =>
+                {
+                    await action.StartAsync(token);
 
-            ExecuteOptions options = new();
+                    CollectionRuleActionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionException>(
+                        () => action.WaitForCompletionAsync(token));
 
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "NonzeroExitCode" });
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            CollectionRuleActionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionException>(
-                () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
-
-            Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
+                    Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
+                });
         }
 
         [Fact]
         public async Task ExecuteAction_TokenCancellation()
         {
-            ExecuteAction action = new();
+            await ValidateAction(
+                options =>
+                {
+                    options.Path = DotNetHost.HostExePath;
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "Sleep", (TokenTimeoutMs + DelayMs).ToString() }); ;
+                },
+                async (action, token) =>
+                {
+                    await action.StartAsync(token);
 
-            ExecuteOptions options = new();
-
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "Sleep", (TokenTimeoutMs + DelayMs).ToString() }); ;
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            TaskCanceledException taskCanceledException = await Assert.ThrowsAsync<TaskCanceledException>(
-                () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
+                    await Assert.ThrowsAsync<TaskCanceledException>(
+                        () => action.WaitForCompletionAsync(token));
+                });
         }
 
         [Fact]
         public async Task ExecuteAction_TextFileOutput()
         {
-            ExecuteAction action = new();
-
-            ExecuteOptions options = new();
-
             using TemporaryDirectory outputDirectory = new(_outputHelper);
 
             string textFileOutputPath = Path.Combine(outputDirectory.FullName, "file.txt");
 
             const string testMessage = "TestMessage";
 
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "TextFileOutput", textFileOutputPath, testMessage });
+            await ValidateAction(
+                options =>
+                {
+                    options.Path = DotNetHost.HostExePath;
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "TextFileOutput", textFileOutputPath, testMessage });
+                },
+                async (action, token) =>
+                {
+                    await action.StartAsync(token);
 
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+                    CollectionRuleActionResult result = await action.WaitForCompletionAsync(token);
 
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
-
-            ValidateActionResult(result, "0");
+                    ValidateActionResult(result, "0");
+                });
 
             Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
         }
@@ -108,39 +114,41 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ExecuteAction_InvalidPath()
         {
-            ExecuteAction action = new();
-
-            ExecuteOptions options = new();
-
             string uniquePathName = Guid.NewGuid().ToString();
 
-            options.Path = uniquePathName;
-            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Array.Empty<string>());
+            await ValidateAction(
+                options =>
+                {
+                    options.Path = uniquePathName;
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Array.Empty<string>());
+                },
+                async (action, token) =>
+                {
+                    CollectionRuleActionException fileNotFoundException = await Assert.ThrowsAsync<CollectionRuleActionException>(
+                        () => action.StartAsync(token));
 
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            CollectionRuleActionException fileNotFoundException = await Assert.ThrowsAsync<CollectionRuleActionException>(
-                () => action.ExecuteAsync(options, null, cancellationTokenSource.Token));
-
-            Assert.Equal(string.Format(Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
+                    Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
+                });
         }
 
         [Fact]
         public async Task ExecuteAction_IgnoreExitCode()
         {
-            ExecuteAction action = new();
+            await ValidateAction(
+                options =>
+                {
+                    options.Path = DotNetHost.HostExePath;
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "NonzeroExitCode" });
+                    options.IgnoreExitCode = true;
+                },
+                async (action, token) =>
+                {
+                    await action.StartAsync(token);
 
-            ExecuteOptions options = new();
+                    CollectionRuleActionResult result = await action.WaitForCompletionAsync(token);
 
-            options.Path = DotNetHost.HostExePath;
-            options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "NonzeroExitCode" });
-            options.IgnoreExitCode = true;
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
-
-            CollectionRuleActionResult result = await action.ExecuteAsync(options, null, cancellationTokenSource.Token);
-
-            ValidateActionResult(result, "1");
+                    ValidateActionResult(result, "1");
+                });
         }
 
         private static void ValidateActionResult(CollectionRuleActionResult result, string expectedExitCode)
@@ -150,6 +158,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.NotNull(result.OutputValues);
             Assert.True(result.OutputValues.TryGetValue("ExitCode", out actualExitCode));
             Assert.Equal(expectedExitCode, actualExitCode);
+        }
+
+        private static async Task ValidateAction(Action<ExecuteOptions> optionsCallback, Func<ICollectionRuleAction, CancellationToken, Task> actionCallback)
+        {
+            ExecuteActionFactory factory = new();
+
+            ExecuteOptions options = new();
+
+            optionsCallback(options);
+
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+
+            ICollectionRuleAction action = factory.Create(null, options);
+
+            try
+            {
+                await actionCallback(action, cancellationTokenSource.Token);
+            }
+            finally
+            {
+                await DisposableHelper.DisposeAsync(action);
+            }
         }
     }
 }
