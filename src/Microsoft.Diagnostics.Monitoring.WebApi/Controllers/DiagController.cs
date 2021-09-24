@@ -532,7 +532,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,
-                (stream, token) => Utilities.GetTraceAction(processInfo.EndpointInfo, configuration, duration, stream, token),
+                (outputStream, token) => Utilities.GetTraceAction(processInfo.EndpointInfo, configuration, duration, outputStream, token),
                 fileName,
                 ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);
