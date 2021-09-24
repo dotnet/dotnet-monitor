@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly List<Task> _runTasks = new();
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
-        private bool _disposed;
+        private long _disposalState;
 
         public CollectionRuleContainer(
             IServiceProvider serviceProvider,
@@ -52,20 +52,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public async ValueTask DisposeAsync()
         {
-            lock (_disposalTokenSource)
+            if (DisposableHelper.CanDispose(ref _disposalState))
             {
-                if (_disposed)
-                {
-                    return;
-                }
-                _disposed = true;
+                _disposalTokenSource.SafeCancel();
+
+                await Task.WhenAll(_runTasks.ToArray());
+
+                _disposalTokenSource.Dispose();
             }
-
-            _disposalTokenSource.SafeCancel();
-
-            await Task.WhenAll(_runTasks.ToArray());
-
-            _disposalTokenSource.Dispose();
         }
 
         /// <summary>
@@ -78,6 +72,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             string ruleName,
             CancellationToken token)
         {
+            DisposableHelper.ThrowIfDisposed<CollectionRuleContainer>(ref _disposalState);
+
             // Wrap the passed CancellationToken into a linked CancellationTokenSource so that the
             // RunRuleAsync method is only cancellable for the execution of the ApplyRules method.
             // Don't want the caller to be able to cancel the run of the rules after having finished
