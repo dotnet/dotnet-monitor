@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private readonly CancellationTokenSource _disposalTokenSource = new();
 
         private Task<CollectionRuleActionResult> _completionTask;
-        private bool _isDisposed;
+        private long _disposedState;
 
         protected IEndpointInfo EndpointInfo { get; }
 
@@ -35,20 +35,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         public async ValueTask DisposeAsync()
         {
-            lock (_disposalTokenSource)
+            if (DisposableHelper.CanDispose(ref _disposedState))
             {
-                if (_isDisposed)
-                {
-                    return;
-                }
-                _isDisposed = true;
+                _disposalTokenSource.SafeCancel();
+
+                await _completionTask.SafeAwait();
+
+                _disposalTokenSource.Dispose();
             }
-
-            _disposalTokenSource.SafeCancel();
-
-            await _completionTask.SafeAwait();
-
-            _disposalTokenSource.Dispose();
         }
 
         public async Task StartAsync(CancellationToken token)
@@ -97,12 +91,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             return false;
         }
 
-        private void ThrowIfDisposed()
+        protected void ThrowIfDisposed()
         {
-            if (_isDisposed)
-            {
-                throw new ObjectDisposedException(this.GetType().FullName);
-            }
+            DisposableHelper.ThrowIfDisposed(ref _disposedState, this.GetType());
         }
 
         protected abstract Task<CollectionRuleActionResult> ExecuteCoreAsync(
