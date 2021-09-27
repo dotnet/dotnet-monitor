@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     UseAppFilters = useAppFilters
                 };
 
-                string logsFilePath = await StartLogs(EndpointInfo, settings, egressProvider, logFormat, token);
+                string logsFilePath = await StartLogs(startCompletionSource, EndpointInfo, settings, egressProvider, logFormat, token);
 
                 return new CollectionRuleActionResult()
                 {
@@ -79,6 +79,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             private async Task<string> StartLogs(
+                TaskCompletionSource<object> startCompletionSource,
                 IEndpointInfo endpointInfo,
                 EventLogsPipelineSettings settings,
                 string egressProvider,
@@ -88,12 +89,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 string fileName = Utils.GenerateLogsFileName(endpointInfo);
                 string contentType = Utils.GetLogsContentType(format);
 
-                Func<Stream, CancellationToken, Task> action = Utils.GetLogsAction(format, endpointInfo, settings);
-
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, endpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    action,
+                    (outputStream, token) => {
+                        startCompletionSource.TrySetResult(null);
+                        return Utils.GetLogsAction(format, endpointInfo, settings, outputStream, token);
+                    },
                     egressProvider,
                     fileName,
                     endpointInfo,

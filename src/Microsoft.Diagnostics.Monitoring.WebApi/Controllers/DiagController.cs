@@ -616,12 +616,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string fileName = Utilities.GenerateLogsFileName(processInfo.EndpointInfo);
             string contentType = Utilities.GetLogsContentType(format);
 
-            Func<Stream, CancellationToken, Task> action = Utilities.GetLogsAction(format, processInfo.EndpointInfo, settings);
-
             return Result(
                 Utilities.ArtifactType_Logs,
                 egressProvider,
-                action,
+                (outputStream, token) => Utilities.GetLogsAction(format, processInfo.EndpointInfo, settings, outputStream, token),
                 fileName,
                 contentType,
                 processInfo.EndpointInfo,

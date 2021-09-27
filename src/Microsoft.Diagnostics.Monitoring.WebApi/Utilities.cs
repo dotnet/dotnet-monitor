@@ -72,19 +72,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public static Func<Stream, CancellationToken, Task> GetLogsAction(LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings)
+        public static async Task GetLogsAction(LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, Stream outputStream, CancellationToken token)
         {
-            return async (outputStream, token) =>
-            {
-                using var loggerFactory = new LoggerFactory();
+            using var loggerFactory = new LoggerFactory();
 
-                loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
+            loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
 
-                var client = new DiagnosticsClient(endpointInfo.Endpoint);
+            var client = new DiagnosticsClient(endpointInfo.Endpoint);
 
-                await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
-                await pipeline.RunAsync(token);
-            };
+            await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
+            await pipeline.RunAsync(token);
         }
 
         public static async Task CaptureGCDumpAsync(IEndpointInfo endpointInfo, Stream targetStream, CancellationToken token)
