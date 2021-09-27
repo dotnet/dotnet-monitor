@@ -1,7 +1,3 @@
-parameters:
-- name: release
-  type: boolean
-  default: false
 stages:
 - stage: PrepareReleaseStage
   displayName: Release Preparation
