@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -124,11 +125,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public async Task StartAsync(CancellationToken token)
         {
-            string frameworkVersion;
+            string frameworkVersion = null;
             switch (FrameworkReference)
             {
                 case DotNetFrameworkReference.Microsoft_AspNetCore_App:
-                    frameworkVersion = TargetFramework.GetAspNetCoreFrameworkVersion();
+                    // Starting in .NET 6, the .NET SDK is emitting two framework references
+                    // into the .runtimeconfig.json file. This is preventing the --fx-version
+                    // parameter from having the correct effect of using the exact framework version
+                    // that we want. Disabling this forced version usage for ASP.NET 6+ applications
+                    // until it can be resolved.
+                    if (!TargetFramework.IsEffectively(TargetFrameworkMoniker.Net60))
+                    {
+                        frameworkVersion = TargetFramework.GetAspNetCoreFrameworkVersion();
+                    }
                     break;
                 case DotNetFrameworkReference.Microsoft_NetCore_App:
                     frameworkVersion = TargetFramework.GetNetCoreAppFrameworkVersion();
@@ -137,7 +146,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     throw new InvalidOperationException($"Unsupported framework reference: {FrameworkReference}");
             }
 
-            _process.StartInfo.Arguments = $"--fx-version {frameworkVersion} \"{EntrypointAssemblyPath}\" {Arguments}";
+            StringBuilder argsBuilder = new();
+            if (!string.IsNullOrEmpty(frameworkVersion))
+            {
+                argsBuilder.Append("--fx-version ");
+                argsBuilder.Append(frameworkVersion);
+                argsBuilder.Append(" ");
+            }
+            argsBuilder.Append("\"");
+            argsBuilder.Append(EntrypointAssemblyPath);
+            argsBuilder.Append("\" ");
+            argsBuilder.Append(Arguments);
+
+            _process.StartInfo.Arguments = argsBuilder.ToString();
 
             if (!_process.Start())
             {
