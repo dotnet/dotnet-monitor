@@ -51,7 +51,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     DotnetMonitorInfo info = await client.GetInfoAsync();
 
                     Assert.NotNull(info.Version); // Not sure of how to get Dotnet Monitor version from within tests...
-                    Assert.Equal(Environment.Version.ToString(), info.RuntimeVersion);
+                    Assert.True(Version.TryParse(info.RuntimeVersion, out Version runtimeVersion), "Unable to parse version from RuntimeVersion property.");
+                    Assert.True(runtimeVersion.Major >= 6, "RuntimVersion.Major is not greater than or equal to 6.");
                     Assert.Equal(mode, info.DiagnosticPortMode);
 
                     if (mode == DiagnosticPortConnectionMode.Connect)
