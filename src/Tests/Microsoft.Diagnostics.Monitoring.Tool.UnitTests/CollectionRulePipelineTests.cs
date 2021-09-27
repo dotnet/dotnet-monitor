@@ -389,14 +389,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             logger);
 
                         TaskCompletionSource<object> startedSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                        int startedCount = 0;
 
                         await using CollectionRulePipeline pipeline = new(
                             actionListExecutor,
                             triggerOperations,
                             context,
-                            () => startedSource.TrySetResult(null));
+                            () => { startedSource.TrySetResult(null); startedCount++; });
 
                         await pipelineCallback(runner, pipeline, startedSource.Task);
+
+                        Assert.Equal(1, startedCount);
                     },
                     servicesCallback);
             });
