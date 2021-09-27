@@ -17,6 +17,10 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Actions\ICollectionRuleAction.cs" Link="Options\CollectionRules\Actions\ICollectionRuleAction.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Actions\CollectLogsAction.cs" Link="Options\CollectionRules\Actions\CollectLogsAction.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Actions\CollectionRuleActionConstants.cs" Link="Options\CollectionRules\Actions\CollectionRuleActionConstants.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Actions\CollectionRuleActionBase.cs" Link="Options\CollectionRules\Actions\CollectionRuleActionBase.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Actions\ICollectionRuleActionFactory.cs" Link="Options\CollectionRules\Actions\ICollectionRuleActionFactory.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Actions\ICollectionRuleActionFactoryProxy.cs" Link="Options\CollectionRules\Actions\ICollectionRuleActionFactoryProxy.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Actions\ICollectionRuleActionOperations.cs" Link="Options\CollectionRules\Actions\ICollectionRuleActionOperations.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ActionOptionsConstants.cs" Link="Options\CollectionRules\Actions\ActionOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectDumpOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectDumpOptionsDefaults.cs" />
@@ -49,8 +53,12 @@
     <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="LoggingEventIds.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\OutputFormat.cs" Link="Options\OutputFormat.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\EndpointInfo\IEndpointInfoSourceCallbacks.cs" Link="Options\EndpointInfo\IEndpointInfoSourceCallbacks.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\ExecuteActionTestHelper.cs" Link="ExecuteActionTestHelper.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Options\CollectionRuleOptionsExtensions.cs" Link="Options\CollectionRuleOptionsExtensions.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\EndpointUtilities.cs" Link="EndpointUtilities.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\TestHostHelper.cs" Link="TestHostHelper.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\EndpointInfoSourceCallback.cs" Link="EndpointInfoSourceCallback.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,10 +71,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
-    <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
+      <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj">
+          <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      </ProjectReference>
+      <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>

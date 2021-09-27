@@ -4,11 +4,13 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
@@ -41,6 +43,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private readonly ITestOutputHelper _outputHelper;
 
         const char JsonSequenceRecordSeparator = '\u001E';
+
+        private const string ExpectedEgressProvider = "TmpEgressProvider";
+        private const string DefaultRuleName = "LogsTestRule";
 
         public LogsTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
@@ -451,32 +456,82 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
 
 
-        private Task ValidateLogsAsync2(
+        private async Task ValidateLogsAsync2(
             DiagnosticPortConnectionMode mode,
             LogLevel? logLevel,
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat logFormat)
         {
-            ICollectionRuleActionFactoryProxy factory;
-            Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLogs, out factory));
 
-            IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-            CollectLogsOptions options = (CollectLogsOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+            EndpointUtilities _endpointUtilities = new(_outputHelper);
 
-            ICollectionRuleAction action = factory.Create(endpointInfo, options);
 
-            return ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                mode,
-                TestAppScenarios.Logger.Name,
-                appValidate: async (runner, client) =>
-                    await ValidateResponseStream(
-                        runner,
-                        action,
-                        callback,
-                        logFormat));
+
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
+                    .SetStartupTrigger();
+
+                collectLogsOptions.Duration = TimeSpan.FromSeconds(2);
+            }, async host =>
+            {
+                IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
+                CollectLogsOptions options = (CollectLogsOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+
+                ICollectionRuleActionFactoryProxy factory;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLogs, out factory));
+
+                EndpointInfoSourceCallback callback = new(_outputHelper);
+                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+                source.Start();
+
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
+
+                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
+                {
+                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
+                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
+
+                    CollectionRuleActionResult result;
+                    try
+                    {
+                        await action.StartAsync(cancellationTokenSource.Token);
+
+                        result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
+                    }
+                    finally
+                    {
+                        await DisposableHelper.DisposeAsync(action);
+                    }
+
+
+
+
+                    return ScenarioRunner.SingleTarget(
+                        _outputHelper,
+                        _httpClientFactory,
+                        mode,
+                        TestAppScenarios.Logger.Name,
+                        appValidate: async (runner, client) =>
+                            await ValidateResponseStream2(
+                                runner,
+                                action,
+                                callback,
+                                logFormat));
+                });
+            });
         }
+
 
 
 
@@ -581,7 +636,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
 
 
-        private async Task ValidateResponseStream2(AppRunner runner, ICollectionRuleAction<CollectLogsOptions> action, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
+        private async Task ValidateResponseStream2(AppRunner runner, ICollectionRuleAction action, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
         {
             Assert.NotNull(runner);
             Assert.NotNull(action);
@@ -612,7 +667,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await ValidateLogsEquality(logsStream, callback, logFormat);
 
             /*
-
             // Set up a channel and process the log events here rather than having each test have to deserialize
             // the set of log events. Pass the channel reader to the callback to allow each test to verify the
             // set of deserialized log events.
@@ -622,17 +676,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 SingleWriter = true,
                 AllowSynchronousContinuations = false
             });
-
             Task callbackTask = callback(channel.Reader);
-
             using StreamReader reader = new StreamReader(logsStream);
-
             JsonSerializerOptions options = new();
             options.Converters.Add(new JsonStringEnumConverter());
-
             _outputHelper.WriteLine("Begin reading log entries.");
             string line;
-
             while (null != (line = await reader.ReadLineAsync()))
             {
                 if (logFormat == LogFormat.JsonSequence)
@@ -640,10 +689,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.True(line.Length > 1);
                     Assert.Equal(JsonSequenceRecordSeparator, line[0]);
                     Assert.NotEqual(JsonSequenceRecordSeparator, line[1]);
-
                     line = line.TrimStart(JsonSequenceRecordSeparator);
                 }
-
                 _outputHelper.WriteLine("Log entry: {0}", line);
                 try
                 {
@@ -656,10 +703,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
             _outputHelper.WriteLine("End reading log entries.");
             channel.Writer.Complete();
-
             await callbackTask;
             */
         }
+
 
 
 
