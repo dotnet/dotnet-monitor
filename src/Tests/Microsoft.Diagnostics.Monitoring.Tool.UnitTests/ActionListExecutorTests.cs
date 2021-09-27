@@ -52,12 +52,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
 
-                bool calledStartCallback = false;
-                Action startCallback = () => calledStartCallback = true;
+                int callbackCount = 0;
+                Action startCallback = () => callbackCount++;
 
                 await executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token);
 
-                Assert.True(calledStartCallback, "Expected start callback to have been invoked.");
+                VerifyStartCallbackCount(waitForCompletion: false, callbackCount);
             });
         }
 
@@ -92,8 +92,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
 
-                bool calledStartCallback = false;
-                Action startCallback = () => calledStartCallback = true;
+                int callbackCount = 0;
+                Action startCallback = () => callbackCount++;
 
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
                     () => executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token));
@@ -102,19 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
 
-                if (waitForCompletion)
-                {
-                    // The action failure occurs in completion and the actions were specified to have
-                    // to wait for completion before executing the next action, thus the start callback
-                    // should not have been invoked.
-                    Assert.False(calledStartCallback, "Expected start callback to not have been invoked.");
-                }
-                else
-                {
-                    // The action failure occurs in completion but all actions were started, thus
-                    // the start callback should have been invoked.
-                    Assert.True(calledStartCallback, "Expected start callback to have been invoked.");
-                }
+                VerifyStartCallbackCount(waitForCompletion, callbackCount);
             });
         }
 
@@ -149,8 +137,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
 
-                bool calledStartCallback = false;
-                Action startCallback = () => calledStartCallback = true;
+                int callbackCount = 0;
+                Action startCallback = () => callbackCount++;
 
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
                     () => executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token));
@@ -159,20 +147,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
 
-                if (waitForCompletion)
-                {
-                    // The action failure occurs in completion and the actions were specified to have
-                    // to wait for completion before executing the next action, thus the start callback
-                    // should not have been invoked.
-                    Assert.False(calledStartCallback, "Expected start callback to not have been invoked.");
-                }
-                else
-                {
-                    // The action failure occurs in completion but all actions were started, thus
-                    // the start callback should have been invoked.
-                    Assert.True(calledStartCallback, "Expected start callback to have been invoked.");
-                }
+                VerifyStartCallbackCount(waitForCompletion, callbackCount);
             });
+        }
+
+        private static void VerifyStartCallbackCount(bool waitForCompletion, int callbackCount)
+        {
+            if (waitForCompletion)
+            {
+                // The action failure occurs in completion and the actions were specified to have
+                // to wait for completion before executing the next action, thus the start callback
+                // should not have been invoked.
+                Assert.Equal(0, callbackCount);
+            }
+            else
+            {
+                // The action failure occurs in completion but all actions were started, thus
+                // the start callback should have been invoked once.
+                Assert.Equal(1, callbackCount);
+            }
         }
     }
 }

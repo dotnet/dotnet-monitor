@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             int actionIndex = 0;
-            List<ActionCompletionEntry> deferredCompletions = new(context.Options.Actions.Count);
+            Queue<ActionCompletionEntry> deferredCompletions = new(context.Options.Actions.Count);
 
             try
             {
@@ -65,9 +65,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         {
                             await action.StartAsync(cancellationToken);
 
-                            // Check if the action completion should be awaited synchronously (in respected to
+                            // Check if the action completion should be awaited synchronously (in respect to
                             // starting the next action). If not, add a deferred entry so that it can be completed
-                            // add the end of the execution list.
+                            // after starting each action in the list.
                             if (actionOption.WaitForCompletion.GetValueOrDefault(CollectionRuleActionOptionsDefaults.WaitForCompletion))
                             {
                                 await action.WaitForCompletionAsync(cancellationToken);
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                             }
                             else
                             {
-                                deferredCompletions.Add(new(action, actionOption, actionIndex));
+                                deferredCompletions.Enqueue(new(action, actionOption, actionIndex));
 
                                 // Set action to null to skip disposal
                                 action = null;
@@ -99,9 +99,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 startCallback?.Invoke();
 
                 // Wait for any actions whose completion has been deferred.
-                for (int i = 0; i < deferredCompletions.Count; i++)
+                while (deferredCompletions.Count > 0)
                 {
-                    ActionCompletionEntry deferredCompletion = deferredCompletions[i];
+                    ActionCompletionEntry deferredCompletion = deferredCompletions.Dequeue();
                     try
                     {
                         await deferredCompletion.Action.WaitForCompletionAsync(cancellationToken);
@@ -115,9 +115,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     finally
                     {
                         await DisposableHelper.DisposeAsync(deferredCompletion.Action);
-
-                        deferredCompletions.RemoveAt(i);
-                        i--;
                     }
                 }
             }

@@ -233,7 +233,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Ensures that the start callback is only invoked once.
         private void InvokeStartCallback()
         {
-            if (_invokedStartCallback)
+            if (!_invokedStartCallback)
             {
                 _startCallback?.Invoke();
                 _invokedStartCallback = true;
