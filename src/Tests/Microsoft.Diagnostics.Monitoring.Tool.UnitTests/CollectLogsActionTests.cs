@@ -54,8 +54,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
                 CollectLogsOptions options = (CollectLogsOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
 
-                ICollectionRuleActionProxy action;
-                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateAction(KnownCollectionRuleActions.CollectLogs, out action));
+                ICollectionRuleActionFactoryProxy factory;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLogs, out factory));
 
                 EndpointInfoSourceCallback callback = new(_outputHelper);
                 await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
@@ -69,8 +69,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
+                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
                     using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
-                    CollectionRuleActionResult result = await action.ExecuteAsync(options, endpointInfo, cancellationTokenSource.Token);
+
+                    CollectionRuleActionResult result;
+                    try
+                    {
+                        await action.StartAsync(cancellationTokenSource.Token);
+
+                        result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
+                    }
+                    finally
+                    {
+                        await DisposableHelper.DisposeAsync(action);
+                    }
 
                     // Not currently doing any validation on the Logs itself for validity; just checking that the file was created. Should this use the existing Logs tests?
                     Assert.NotNull(result.OutputValues);

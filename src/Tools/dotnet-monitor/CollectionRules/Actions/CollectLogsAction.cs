@@ -72,9 +72,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 return new CollectionRuleActionResult()
                 {
                     OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    { CollectionRuleActionConstants.EgressPathOutputValueName, logsFilePath }
-                }
+                    {
+                        { CollectionRuleActionConstants.EgressPathOutputValueName, logsFilePath }
+                    }
                 };
             }
 
