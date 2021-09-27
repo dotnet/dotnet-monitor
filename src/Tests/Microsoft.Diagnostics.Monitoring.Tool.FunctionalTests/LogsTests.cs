@@ -486,13 +486,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 ICollectionRuleActionFactoryProxy factory;
                 Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLogs, out factory));
 
-                EndpointInfoSourceCallback callback = new(_outputHelper);
-                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+                EndpointInfoSourceCallback callbackTemp = new(_outputHelper);
+                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callbackTemp);
                 source.Start();
 
                 AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
 
-                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                Task<IEndpointInfo> newEndpointInfoTask = callbackTemp.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                 await runner.ExecuteAsync(async () =>
                 {
@@ -502,12 +502,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
 
-                    CollectionRuleActionResult result;
                     try
                     {
-                        await action.StartAsync(cancellationTokenSource.Token);
-
-                        result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
+                        await ScenarioRunner.SingleTarget(
+                            _outputHelper,
+                            _httpClientFactory,
+                            mode,
+                            TestAppScenarios.Logger.Name,
+                            appValidate: async (runner, client) =>
+                                await ValidateResponseStream2(
+                                    runner,
+                                    action,
+                                    callback,
+                                    logFormat));
                     }
                     finally
                     {
@@ -517,17 +524,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
 
 
-                    return ScenarioRunner.SingleTarget(
-                        _outputHelper,
-                        _httpClientFactory,
-                        mode,
-                        TestAppScenarios.Logger.Name,
-                        appValidate: async (runner, client) =>
-                            await ValidateResponseStream2(
-                                runner,
-                                action,
-                                callback,
-                                logFormat));
+
                 });
             });
         }

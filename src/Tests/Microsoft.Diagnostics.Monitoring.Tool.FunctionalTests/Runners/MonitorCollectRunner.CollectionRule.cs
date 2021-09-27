@@ -4,12 +4,14 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Tools.Monitor;
+//using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+
+using LoggingEventIds = Microsoft.Diagnostics.Tools.Monitor.LoggingEventIds;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 {

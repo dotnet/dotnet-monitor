@@ -14,6 +14,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
+using RootOptions = Microsoft.Diagnostics.Tools.Monitor.RootOptions;
+
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 {
     /// <summary>
@@ -155,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public virtual async Task WaitForExitAsync(CancellationToken token)
         {
-            await RunnerExitedTask.WithCancellation(token).ConfigureAwait(false);
+            await TestCommon.TaskExtensions.WithCancellation(RunnerExitedTask, token).ConfigureAwait(false);
             await _adapter.ReadToEnd(token).ConfigureAwait(false);
         }
 
