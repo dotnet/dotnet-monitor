@@ -28,6 +28,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Operations for getting trigger information.
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
+        // Flag used to guard against multiple invocations of _startCallback.
+        private bool _invokedStartCallback = false;
+
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
             ICollectionRuleTriggerOperations triggerOperations,
@@ -110,7 +113,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         if (trigger is not ICollectionRuleStartupTrigger)
                         {
                             // Signal that the pipeline trigger is initialized.
-                            _startCallback?.Invoke();
+                            InvokeStartCallback();
                         }
 
                         // Wait for the trigger to be satisfied.
@@ -164,7 +167,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         {
                             // Intentionally not using the linkedToken. Allow the action list to execute gracefully
                             // unless forced by a caller to cancel or stop the running of the pipeline.
-                            await _actionListExecutor.ExecuteActions(_context, token);
+                            await _actionListExecutor.ExecuteActions(_context, InvokeStartCallback, token);
 
                             actionsCompleted = true;
                         }
@@ -200,7 +203,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     if (trigger is ICollectionRuleStartupTrigger)
                     {
                         // Signal that the pipeline trigger is initialized.
-                        _startCallback?.Invoke();
+                        InvokeStartCallback();
 
                         // Complete the pipeline since the action list is only executed once
                         // for collection rules with startup triggers.
@@ -225,6 +228,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public new Task StopAsync(CancellationToken token)
         {
             return base.StopAsync(token);
+        }
+
+        // Ensures that the start callback is only invoked once.
+        private void InvokeStartCallback()
+        {
+            if (!_invokedStartCallback)
+            {
+                _startCallback?.Invoke();
+                _invokedStartCallback = true;
+            }
         }
     }
 }
