@@ -100,6 +100,52 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         /// <summary>
+        /// Tests that all log events are collected if log level set to Trace.
+        /// </summary>
+        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+
+#if NET5_0_OR_GREATER
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+#endif
+        public Task LogsAllCategoriesActionTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        {
+            return ValidateLogsActionAsync(
+                mode,
+                LogLevel.Trace,
+                async reader =>
+                {
+                    // Default LogLevel.Trace is converted to EventLevel.LogAlways but
+                    // runtime does not translate that back to LogLevel.Trace however it
+                    // falls back to capturing LogLevel.Debug and above. Thus, no Trace
+                    // events will ever be collected if relying on default log level.
+
+                    //ValidateEntry(Category1TraceEntry, await reader.ReadAsync());
+                    ValidateEntry(Category1DebugEntry, await reader.ReadAsync());
+                    ValidateEntry(Category1InformationEntry, await reader.ReadAsync());
+                    ValidateEntry(Category1WarningEntry, await reader.ReadAsync());
+                    ValidateEntry(Category1ErrorEntry, await reader.ReadAsync());
+                    ValidateEntry(Category1CriticalEntry, await reader.ReadAsync());
+                    //ValidateEntry(Category2TraceEntry, await reader.ReadAsync());
+                    ValidateEntry(Category2DebugEntry, await reader.ReadAsync());
+                    ValidateEntry(Category2InformationEntry, await reader.ReadAsync());
+                    ValidateEntry(Category2WarningEntry, await reader.ReadAsync());
+                    ValidateEntry(Category2ErrorEntry, await reader.ReadAsync());
+                    ValidateEntry(Category2CriticalEntry, await reader.ReadAsync());
+                    //ValidateEntry(Category3TraceEntry, await reader.ReadAsync());
+                    ValidateEntry(Category3DebugEntry, await reader.ReadAsync());
+                    ValidateEntry(Category3InformationEntry, await reader.ReadAsync());
+                    ValidateEntry(Category3WarningEntry, await reader.ReadAsync());
+                    ValidateEntry(Category3ErrorEntry, await reader.ReadAsync());
+                    ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
+                    Assert.False(await reader.WaitToReadAsync());
+                },
+                logFormat);
+        }
+
+        /// <summary>
         /// Tests that log events with level at or above the specified level are collected.
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
@@ -453,10 +499,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         logFormat));
         }
 
-
-
-
-        private async Task ValidateLogsAsync2(
+        private async Task ValidateLogsActionAsync(
             DiagnosticPortConnectionMode mode,
             LogLevel? logLevel,
             Func<ChannelReader<LogEntry>, Task> callback,
@@ -464,8 +507,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
 
             EndpointUtilities _endpointUtilities = new(_outputHelper);
-
-
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -477,7 +518,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
                     .SetStartupTrigger();
 
-                collectLogsOptions.Duration = TimeSpan.FromSeconds(2);
+                collectLogsOptions.Duration = TestTimeouts.LogsDuration;
+                collectLogsOptions.DefaultLevel = logLevel;
             }, async host =>
             {
                 IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
@@ -510,7 +552,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             mode,
                             TestAppScenarios.Logger.Name,
                             appValidate: async (runner, client) =>
-                                await ValidateResponseStream2(
+                                await ValidateResponseActionStream(
                                     runner,
                                     action,
                                     callback,
@@ -520,18 +562,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     {
                         await DisposableHelper.DisposeAsync(action);
                     }
-
-
-
-
-
                 });
             });
         }
-
-
-
-
 
         private Task ValidateLogsAsync2(
             DiagnosticPortConnectionMode mode,
@@ -629,11 +662,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await callbackTask;
         }
 
-
-
-
-
-        private async Task ValidateResponseStream2(AppRunner runner, ICollectionRuleAction action, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
+        private async Task ValidateResponseActionStream(AppRunner runner, ICollectionRuleAction action, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
         {
             Assert.NotNull(runner);
             Assert.NotNull(action);
@@ -662,50 +691,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.NotNull(logsStream);
 
             await ValidateLogsEquality(logsStream, callback, logFormat);
-
-            /*
-            // Set up a channel and process the log events here rather than having each test have to deserialize
-            // the set of log events. Pass the channel reader to the callback to allow each test to verify the
-            // set of deserialized log events.
-            Channel<LogEntry> channel = Channel.CreateUnbounded<LogEntry>(new UnboundedChannelOptions()
-            {
-                SingleReader = true,
-                SingleWriter = true,
-                AllowSynchronousContinuations = false
-            });
-            Task callbackTask = callback(channel.Reader);
-            using StreamReader reader = new StreamReader(logsStream);
-            JsonSerializerOptions options = new();
-            options.Converters.Add(new JsonStringEnumConverter());
-            _outputHelper.WriteLine("Begin reading log entries.");
-            string line;
-            while (null != (line = await reader.ReadLineAsync()))
-            {
-                if (logFormat == LogFormat.JsonSequence)
-                {
-                    Assert.True(line.Length > 1);
-                    Assert.Equal(JsonSequenceRecordSeparator, line[0]);
-                    Assert.NotEqual(JsonSequenceRecordSeparator, line[1]);
-                    line = line.TrimStart(JsonSequenceRecordSeparator);
-                }
-                _outputHelper.WriteLine("Log entry: {0}", line);
-                try
-                {
-                    await channel.Writer.WriteAsync(JsonSerializer.Deserialize<LogEntry>(line, options));
-                }
-                catch (JsonException ex)
-                {
-                    _outputHelper.WriteLine("Exception while deserializing log entry: {0}", ex);
-                }
-            }
-            _outputHelper.WriteLine("End reading log entries.");
-            channel.Writer.Complete();
-            await callbackTask;
-            */
         }
-
-
-
 
         private async Task ValidateLogsEquality(Stream logsStream, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
         {
@@ -755,8 +741,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await callbackTask;
         }
-
-
 
         /// <summary>
         /// Validates each aspect of a <see cref="LogEntry"/> compared to the expected values
