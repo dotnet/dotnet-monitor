@@ -40,8 +40,8 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-    "version": "5.0.0",
-    "runtimeVersion": "3.1.16",
+    "version": "6.0.0",
+    "runtimeVersion": "6.0.0",
     "diagnosticPortMode": "Connect",
     "diagnosticPortName": null
 }
