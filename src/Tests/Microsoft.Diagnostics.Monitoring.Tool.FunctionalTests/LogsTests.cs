@@ -570,7 +570,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat logFormat)
         {
-
             EndpointUtilities _endpointUtilities = new(_outputHelper);
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
@@ -597,11 +596,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 await using var source = _endpointUtilities.CreateServerSource(out string transportName, callbackTemp);
                 source.Start();
 
-                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
+                AppRunner appRunner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
 
-                Task<IEndpointInfo> newEndpointInfoTask = callbackTemp.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                Task<IEndpointInfo> newEndpointInfoTask = callbackTemp.WaitForNewEndpointInfoAsync(appRunner, CommonTestTimeouts.StartProcess);
 
-                await runner.ExecuteAsync(async () =>
+                await appRunner.ExecuteAsync(async () =>
                 {
                     IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
