@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             return new CollectLogsAction(_serviceProvider, endpointInfo, options);
         }
 
-        internal sealed class CollectLogsAction :
+        private sealed class CollectLogsAction :
             CollectionRuleActionBase<CollectLogsOptions>
         {
             private readonly IServiceProvider _serviceProvider;
@@ -92,10 +92,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, endpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => {
-                        startCompletionSource.TrySetResult(null);
-                        return Utils.GetLogsAction(format, endpointInfo, settings, outputStream, token);
-                    },
+                    (outputStream, token) => Utils.GetLogsAction(startCompletionSource, format, endpointInfo, settings, outputStream, token),
                     egressProvider,
                     fileName,
                     endpointInfo,

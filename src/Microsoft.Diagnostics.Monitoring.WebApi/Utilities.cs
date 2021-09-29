@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public static async Task GetLogsAction(LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, Stream outputStream, CancellationToken token)
+        public static async Task GetLogsAction(TaskCompletionSource<object> startCompletionSource, LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, Stream outputStream, CancellationToken token)
         {
             using var loggerFactory = new LoggerFactory();
 
@@ -81,7 +82,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             var client = new DiagnosticsClient(endpointInfo.Endpoint);
 
             await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
+
             await pipeline.RunAsync(token);
+
+            if (null != startCompletionSource)
+            {
+                startCompletionSource.TrySetResult(null); // Not sure if this is where it should go
+            }
         }
 
         public static async Task CaptureGCDumpAsync(IEndpointInfo endpointInfo, Stream targetStream, CancellationToken token)

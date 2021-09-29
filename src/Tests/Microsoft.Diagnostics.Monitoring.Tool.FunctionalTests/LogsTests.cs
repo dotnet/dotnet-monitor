@@ -13,6 +13,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -592,15 +593,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 ICollectionRuleActionFactoryProxy factory;
                 Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLogs, out factory));
 
+                /*
                 EndpointInfoSourceCallback callbackTemp = new(_outputHelper);
                 await using var source = _endpointUtilities.CreateServerSource(out string transportName, callbackTemp);
                 source.Start();
 
-                AppRunner appRunner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
 
-                Task<IEndpointInfo> newEndpointInfoTask = callbackTemp.WaitForNewEndpointInfoAsync(appRunner, CommonTestTimeouts.StartProcess);
+                runner.ScenarioName = TestAppScenarios.Logger.Name;
 
-                await appRunner.ExecuteAsync(async () =>
+                Task<IEndpointInfo> newEndpointInfoTask = callbackTemp.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
                 {
                     IEndpointInfo endpointInfo = await newEndpointInfoTask;
 
@@ -608,25 +612,41 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
 
-                    try
-                    {
-                        await ScenarioRunner.SingleTarget(
-                            _outputHelper,
-                            _httpClientFactory,
-                            mode,
-                            TestAppScenarios.Logger.Name,
-                            appValidate: async (runner, client) =>
-                                await ValidateResponseActionStream(
-                                    runner,
-                                    action,
-                                    callback,
-                                    logFormat));
-                    }
-                    finally
-                    {
-                        await DisposableHelper.DisposeAsync(action);
-                    }
+                    await ValidateResponseActionStream(
+                        runner,
+                        action,
+                        callback,
+                        logFormat);
                 });
+                */
+
+                using CancellationTokenSource cancellationTokenSource2 = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
+
+                try
+                {
+                    await ScenarioRunner.SingleTarget(
+                        _outputHelper,
+                        _httpClientFactory,
+                        mode,
+                        TestAppScenarios.Logger.Name,
+                        appValidate: async (runner, client) =>
+                        {
+                            IEndpointInfo endpointInfo = await EndpointInfo.FromProcessIdAsync(await runner.ProcessIdTask, cancellationTokenSource2.Token);
+                            ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
+                            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
+
+                            await ValidateResponseActionStream(
+                                runner,
+                                action,
+                                callback,
+                                logFormat);
+                        });
+                }
+                finally
+                {
+                    //await DisposableHelper.DisposeAsync(action);
+                }
             });
         }
 

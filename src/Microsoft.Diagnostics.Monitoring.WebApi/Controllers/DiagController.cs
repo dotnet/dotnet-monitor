@@ -619,7 +619,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return Result(
                 Utilities.ArtifactType_Logs,
                 egressProvider,
-                (outputStream, token) => Utilities.GetLogsAction(format, processInfo.EndpointInfo, settings, outputStream, token),
+                (outputStream, token) => Utilities.GetLogsAction(null, format, processInfo.EndpointInfo, settings, outputStream, token),
                 fileName,
                 contentType,
                 processInfo.EndpointInfo,

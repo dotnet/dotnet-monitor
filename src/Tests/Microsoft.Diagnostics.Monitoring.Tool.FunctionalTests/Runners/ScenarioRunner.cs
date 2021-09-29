@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Net.Http;
@@ -63,6 +64,83 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             {
                 await postAppValidate(apiClient, await appRunner.ProcessIdTask);
             }
+        }
+
+        public static async Task SingleTarget(
+            ITestOutputHelper outputHelper,
+            IHttpClientFactory httpClientFactory,
+            DiagnosticPortConnectionMode mode,
+            string scenarioName,
+            Func<AppRunner, ApiClient, IEndpointInfo, Task> appValidate,
+            EndpointInfoSourceCallback callback,
+            Func<ApiClient, int, Task> postAppValidate = null,
+            Action<AppRunner> configureApp = null,
+            Action<MonitorCollectRunner> configureTool = null,
+            bool disableHttpEgress = false)
+        {
+            DiagnosticPortHelper.Generate(
+                mode,
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
+
+            await using MonitorCollectRunner toolRunner = new(outputHelper);
+            toolRunner.ConnectionMode = mode;
+            toolRunner.DiagnosticPortPath = diagnosticPortPath;
+            toolRunner.DisableAuthentication = true;
+            toolRunner.DisableHttpEgress = disableHttpEgress;
+
+            configureTool?.Invoke(toolRunner);
+
+            await toolRunner.StartAsync();
+
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(httpClientFactory);
+            ApiClient apiClient = new(outputHelper, httpClient);
+
+            AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
+            appRunner.ConnectionMode = appConnectionMode;
+            appRunner.DiagnosticPortPath = diagnosticPortPath;
+            appRunner.ScenarioName = scenarioName;
+
+            configureApp?.Invoke(appRunner);
+
+            Task<IEndpointInfo> newEndpointInfoTask = null;
+
+            newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(appRunner, CommonTestTimeouts.StartProcess);
+
+            await appRunner.ExecuteAsync(async () =>
+            {
+                IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                await appValidate(appRunner, apiClient, endpointInfo);
+            });
+            Assert.Equal(0, appRunner.ExitCode);
+
+            if (null != postAppValidate)
+            {
+                await postAppValidate(apiClient, await appRunner.ProcessIdTask);
+            }
+        }
+
+        public static async Task SingleTarget(
+            ITestOutputHelper outputHelper,
+            DiagnosticPortConnectionMode mode,
+            Action<MonitorCollectRunner> configureTool = null,
+            bool disableHttpEgress = false)
+        {
+            DiagnosticPortHelper.Generate(
+                mode,
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
+
+            await using MonitorCollectRunner toolRunner = new(outputHelper);
+            toolRunner.ConnectionMode = mode;
+            toolRunner.DiagnosticPortPath = diagnosticPortPath;
+            toolRunner.DisableAuthentication = true;
+            toolRunner.DisableHttpEgress = disableHttpEgress;
+
+            configureTool?.Invoke(toolRunner);
+
+            await toolRunner.StartAsync();
         }
     }
 }
