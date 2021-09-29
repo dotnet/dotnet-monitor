@@ -187,7 +187,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseCors(builder => builder.WithOrigins(corsConfiguration.GetOrigins()).AllowAnyHeader().AllowAnyMethod());
             }
 
-            app.UseResponseCompression();
+            // Disable response compression due to ASP.NET 6.0 bug:
+            // https://github.com/dotnet/aspnetcore/issues/36960
+            //app.UseResponseCompression();
 
             //Note this must be after UseRouting but before UseEndpoints
             app.UseMiddleware<RequestLimitMiddleware>();
