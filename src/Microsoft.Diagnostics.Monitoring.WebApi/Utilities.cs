@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return scope;
         }
 
-        public static AggregateSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, int metricsIntervalSeconds)
+        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, int metricsIntervalSeconds)
         {
             var configurations = new List<MonitoringSourceConfiguration>();
             if (profile.HasFlag(Models.TraceProfile.Cpu))
@@ -82,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return new AggregateSourceConfiguration(configurations.ToArray());
         }
 
-        public static EventPipeProviderSourceConfiguration GetCustomTraceConfiguration(Models.EventPipeProvider[] configurationProviders, bool requestRundown, int bufferSizeInMB)
+        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.EventPipeProvider[] configurationProviders, bool requestRundown, int bufferSizeInMB)
         {
             var providers = new List<EventPipeProvider>();
 
@@ -107,10 +107,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 bufferSizeInMB: bufferSizeInMB);
         }
 
-        public static async Task GetTraceAction(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, Stream outputStream, CancellationToken token)
+        public static async Task CaptureTraceAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, Stream outputStream, CancellationToken token)
         {
             Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
             {
+                if (null != startCompletionSource)
+                {
+                    startCompletionSource.TrySetResult(null);
+                }
                 //Buffer size matches FileStreamResult
                 //CONSIDER Should we allow client to change the buffer size?
                 await eventStream.CopyToAsync(outputStream, 0x10000, token);

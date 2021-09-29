@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        internal sealed class CollectTraceAction :
+        private sealed class CollectTraceAction :
             CollectionRuleActionBase<CollectTraceOptions>
         {
             private readonly IServiceProvider _serviceProvider;
@@ -56,27 +56,39 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectTraceOptionsDefaults.Duration));
                 string egressProvider = Options.Egress;
 
-                string traceFilePath = string.Empty;
+                MonitoringSourceConfiguration configuration;
 
-                if (null != Options.Profile && null == Options.Providers)
+                if (Options.Profile.HasValue)
                 {
                     TraceProfile profile = Options.Profile.Value;
                     int metricsIntervalSeconds = Options.MetricsIntervalSeconds.GetValueOrDefault(CollectTraceOptionsDefaults.MetricsIntervalSeconds);
 
-                    var aggregateConfiguration = Utils.GetTraceConfiguration(profile, metricsIntervalSeconds);
-
-                    traceFilePath = await StartTrace(startCompletionSource, EndpointInfo, aggregateConfiguration, duration, egressProvider, token);
+                    configuration = Utils.GetTraceConfiguration(profile, metricsIntervalSeconds);
                 }
-                else if (null != Options.Providers && null == Options.Profile)
+                else
                 {
                     EventPipeProvider[] optionsProviders = Options.Providers.ToArray();
                     bool requestRundown = Options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
                     int bufferSizeMegabytes = Options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
 
-                    var traceConfiguration = Utils.GetCustomTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
-
-                    traceFilePath = await StartTrace(startCompletionSource, EndpointInfo, traceConfiguration, duration, egressProvider, token);
+                    configuration = Utils.GetTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
                 }
+
+                string fileName = Utils.GenerateTraceFileName(EndpointInfo);
+
+                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Trace, EndpointInfo);
+
+                EgressOperation egressOperation = new EgressOperation(
+                    (outputStream, token) => Utils.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token),
+                    egressProvider,
+                    fileName,
+                    EndpointInfo,
+                    ContentTypes.ApplicationOctetStream,
+                    scope);
+
+                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+
+                string traceFilePath = result.Result.Value;
 
                 return new CollectionRuleActionResult()
                 {
@@ -85,37 +97,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         { CollectionRuleActionConstants.EgressPathOutputValueName, traceFilePath }
                     }
                 };
-            }
-
-            private async Task<string> StartTrace(
-                TaskCompletionSource<object> startCompletionSource,
-                IEndpointInfo endpointInfo,
-                MonitoringSourceConfiguration configuration,
-                TimeSpan duration,
-                string egressProvider,
-                CancellationToken token)
-            {
-                string fileName = Utils.GenerateTraceFileName(endpointInfo);
-
-                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Trace, endpointInfo);
-
-                EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) =>
-                    {
-                        startCompletionSource.TrySetResult(null);
-                        return Utils.GetTraceAction(EndpointInfo, configuration, duration, outputStream, token);
-                    },
-                    egressProvider,
-                    fileName,
-                    endpointInfo,
-                    ContentTypes.ApplicationOctetStream,
-                    scope);
-
-                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-
-                string traceFilePath = result.Result.Value;
-
-                return traceFilePath;
             }
         }
     }

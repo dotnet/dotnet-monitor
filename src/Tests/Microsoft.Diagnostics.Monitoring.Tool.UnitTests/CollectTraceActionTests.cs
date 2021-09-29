@@ -19,9 +19,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using System.Text;
 using System.Collections.Generic;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Diagnostics.Tracing;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -131,29 +131,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
                 Assert.NotNull(traceStream);
 
-                await ValidateTrace(traceStream);
+                await ValidateTrace(traceStream, cancellationTokenSource.Token); // Do we want to be using a different token here? Does our timeout matter for this?
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
         }
 
-        private static async Task ValidateTrace(Stream traceStream)
+        private static async Task ValidateTrace(Stream traceStream, CancellationToken token)
         {
-            using CancellationTokenSource cancellation = new(CommonTestTimeouts.TraceTimeout);
-            byte[] buffer = await traceStream.ReadBytesAsync(32, cancellation.Token);
+            using var eventSource = new EventPipeEventSource(traceStream);
 
-            const string firstKnownHeaderText = "Nettrace";
-            const string secondKnownHeaderText = "!FastSerialization.1";
+            // Dispose event source when cancelled.
+            using var _ = token.Register(() => eventSource.Dispose());
 
-            Encoding enc8 = Encoding.UTF8;
+            bool foundTraceObject = false;
 
-            byte[] firstSubarray = new byte[firstKnownHeaderText.Length];
-            string firstHeaderText = enc8.GetString(buffer, 0, firstSubarray.Length);
-            Assert.Equal(firstKnownHeaderText, firstHeaderText);
+            eventSource.Dynamic.All += (TraceEvent obj) =>
+            {
+                foundTraceObject = true;
+            };
 
-            byte[] secondSubarray = new byte[secondKnownHeaderText.Length];
-            string secondHeaderText = enc8.GetString(buffer, 12, secondSubarray.Length);
-            Assert.Equal(secondKnownHeaderText, secondHeaderText);
+            await Task.Run(() => Assert.True(eventSource.Process()), token);
+
+            Assert.True(foundTraceObject);
         }
     }
 }

@@ -357,7 +357,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
-                var traceConfiguration = Utilities.GetCustomTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
+                var traceConfiguration = Utilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
 
                 return StartTrace(processInfo, traceConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
@@ -532,7 +532,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,
-                (outputStream, token) => Utilities.GetTraceAction(processInfo.EndpointInfo, configuration, duration, outputStream, token),
+                (outputStream, token) => Utilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token),
                 fileName,
                 ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);
