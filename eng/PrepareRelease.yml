@@ -11,7 +11,8 @@ stages:
     pool: 
       vmImage: windows-latest
     variables:
-    - group: DotNet-Diagnostics-Storage-Test
+    - group: DotNet-Diagnostics-Storage
+    - group: DotNet-DotNetStage-Storage
     - group: Release-Pipeline
     - name: BARBuildId
       value: $[ stageDependencies.publish_using_darc.setupMaestroVars.outputs['setReleaseVars.BARBuildId'] ]
@@ -40,7 +41,7 @@ stages:
       workingDirectory: '$(Build.Repository.LocalPath)\'
       displayName: 'Build Manifest generation and asset publishing tool'
       condition: and(succeeded(), eq(variables.isRelease, 'false'))
-    - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- prepare-release --input-drop-path "$(System.DefaultWorkingDirectory)\ReleaseTarget" --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json" --staging-directory "$(System.DefaultWorkingDirectory)\ReleaseStaging" --release-name "$(Build.BuildNumber)" --account-name "$(dotnet-diagnostics-storage-accountname)" --account-key "$(dotnet-diagnostics-storage-accountkey)" --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)" -v True'
+    - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- prepare-release --input-drop-path "$(System.DefaultWorkingDirectory)\ReleaseTarget" --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json" --staging-directory "$(System.DefaultWorkingDirectory)\ReleaseStaging" --release-name "$(Build.BuildNumber)" --account-name "$(dotnet-diagnostics-storage-accountname)" --account-key "$(dotnetstage-storage-key)" --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)" -v True'
       workingDirectory: '$(Build.Repository.LocalPath)\'
       displayName: 'Manifest generation and asset publishing'
       condition: and(succeeded(), eq(variables.isRelease, 'true'))
