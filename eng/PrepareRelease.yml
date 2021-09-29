@@ -33,11 +33,18 @@ stages:
         filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
         arguments: '-BarBuildId "$(BARBuildId)" -AzdoToken "$(dn-bot-dotnet-all-scopes)" -MaestroToken "$(MaestroAccessToken)" -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)" -DownloadTargetPath "$(System.DefaultWorkingDirectory)\ReleaseTarget" -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)" -ReleaseVersion "$(Build.BuildNumber)"'
         workingDirectory: '$(Build.Repository.LocalPath)'
-    - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- prepare-release --input-drop-path "$(System.DefaultWorkingDirectory)\ReleaseTarget" --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json" --staging-directory "$(System.DefaultWorkingDirectory)\ReleaseStaging" --release-name "$(Build.BuildNumber)" --account-name "$(dotnet-diagnostics-storage-accountname)" --account-key "$(dotnet-diagnostics-storage-accountkey)" --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)" -v Ture'
+      condition: eq(variables['release'], 'true')
+    - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- --version'
+      workingDirectory: '$(Build.Repository.LocalPath)\'
+      displayName: 'Build Manifest generation and asset publishing tool'
+      condition: eq(variables['release'], 'false')
+    - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- prepare-release --input-drop-path "$(System.DefaultWorkingDirectory)\ReleaseTarget" --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json" --staging-directory "$(System.DefaultWorkingDirectory)\ReleaseStaging" --release-name "$(Build.BuildNumber)" --account-name "$(dotnet-diagnostics-storage-accountname)" --account-key "$(dotnet-diagnostics-storage-accountkey)" --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)" -v True'
       workingDirectory: '$(Build.Repository.LocalPath)\'
       displayName: 'Manifest generation and asset publishing'
+      condition: eq(variables['release'], 'true')
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(System.DefaultWorkingDirectory)\ReleaseStaging'
         publishLocation: 'pipeline'
         artifact: 'Release'
+      condition: eq(variables['release'], 'true')
