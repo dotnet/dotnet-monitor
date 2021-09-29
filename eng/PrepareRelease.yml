@@ -37,6 +37,7 @@ stages:
         filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
         arguments: '-BarBuildId "$(BARBuildId)" -AzdoToken "$(dn-bot-dotnet-all-scopes)" -MaestroToken "$(MaestroAccessToken)" -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)" -DownloadTargetPath "$(System.DefaultWorkingDirectory)\ReleaseTarget" -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)" -ReleaseVersion "$(Build.BuildNumber)"'
         workingDirectory: '$(Build.Repository.LocalPath)'
+      condition: eq(variables['release'], 'true')
     - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- --version'
       workingDirectory: '$(Build.Repository.LocalPath)\'
       displayName: 'Build Manifest generation and asset publishing tool'
