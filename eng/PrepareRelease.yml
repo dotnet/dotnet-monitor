@@ -1,8 +1,7 @@
-variables:
-  isRelease: $[in(variables['Build.SourceBranch'], 'refs/heads/release/')]
-
 stages:
 - stage: PrepareReleaseStage
+  variables:
+    isRelease: $[in(variables['Build.SourceBranch'], 'refs/heads/release/')]
   displayName: Release Preparation
   dependsOn:
   - publish_using_darc
