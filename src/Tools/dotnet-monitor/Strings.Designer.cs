@@ -520,15 +520,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Applying collection rules..
-        /// </summary>
-        internal static string LogFormatString_ApplyingCollectionRules {
-            get {
-                return ResourceManager.GetString("LogFormatString_ApplyingCollectionRules", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Bound default address: {address}.
         /// </summary>
         internal static string LogFormatString_BoundDefaultAddress {
@@ -601,6 +592,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection rule configuration changed..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleConfigurationChanged {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleConfigurationChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; failed..
         /// </summary>
         internal static string LogFormatString_CollectionRuleFailed {
@@ -615,6 +615,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_CollectionRulesStarted {
             get {
                 return ResourceManager.GetString("LogFormatString_CollectionRulesStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting collection rules..
+        /// </summary>
+        internal static string LogFormatString_CollectionRulesStarting {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRulesStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All collection rules have stopped..
+        /// </summary>
+        internal static string LogFormatString_CollectionRulesStopped {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRulesStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stopping collection rules..
+        /// </summary>
+        internal static string LogFormatString_CollectionRulesStopping {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRulesStopping", resourceCulture);
             }
         }
         

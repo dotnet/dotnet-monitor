@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Logging;
@@ -14,9 +15,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
     internal class CollectionRuleService : IAsyncDisposable
     {
+        private readonly CancellationTokenSource _disposalSource = new();
         private readonly List<CollectionRuleContainer> _containers = new();
         private readonly ILogger<CollectionRuleService> _logger;
         private readonly CollectionRulesConfigurationProvider _provider;
+        private readonly Task _reapplyRulesTask;
         private readonly IServiceProvider _serviceProvider;
 
         private long _disposalState;
@@ -30,17 +33,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+
+            CancellationToken disposalToken = _disposalSource.Token;
+            _reapplyRulesTask = Task.Run(() => ReapplyRulesAsync(disposalToken), disposalToken).SafeAwait();
         }
 
         public async ValueTask DisposeAsync()
         {
             if (DisposableHelper.CanDispose(ref _disposalState))
             {
-                foreach (CollectionRuleContainer container in _containers)
+                CollectionRuleContainer[] containers;
+                lock (_containers)
+                {
+                    containers = _containers.ToArray();
+                }
+
+                _disposalSource.SafeCancel();
+
+                await _reapplyRulesTask;
+
+                foreach (CollectionRuleContainer container in containers)
                 {
                     await container.DisposeAsync();
                 }
-                _containers.Clear();
+
+                _disposalSource.Dispose();
             }
         }
 
@@ -55,42 +72,109 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 throw new ArgumentNullException(nameof(endpointInfo));
             }
 
+            IProcessInfo processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo);
+
             IReadOnlyCollection<string> ruleNames = _provider.GetCollectionRuleNames();
+
+            CollectionRuleContainer container = new(
+                _serviceProvider,
+                _logger,
+                processInfo);
+
+            lock (_containers)
+            {
+                _containers.Add(container);
+            }
 
             if (ruleNames.Count > 0)
             {
-                KeyValueLogScope logScope = new();
-                logScope.AddCollectionRuleEndpointInfo(endpointInfo);
-                // Constrain the scope of the log scope to just the log call so that the log scope
-                // is not captured by the rule execution method.
-                using (_logger.BeginScope(logScope))
+                await container.StartRulesAsync(ruleNames, token);
+            }
+        }
+
+        private async Task ReapplyRulesAsync(CancellationToken token)
+        {
+            bool rulesChanged = false;
+            while (!token.IsCancellationRequested)
+            {
+                if (!rulesChanged)
                 {
-                    _logger.ApplyingCollectionRules();
+                    using EventTaskSource<EventHandler> rulesChangedTaskSource = new(
+                        callback => (s, e) => callback(),
+                        handler => _provider.RulesChanged += handler,
+                        handler => _provider.RulesChanged -= handler,
+                        token);
+
+                    // Wait for the rules to be changed
+                    await rulesChangedTaskSource.Task;
+
+                    rulesChanged = false;
                 }
 
-                IProcessInfo processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo);
+                _logger.CollectionRuleConfigurationChanged();
 
-                CollectionRuleContainer container = new(
-                    _serviceProvider,
-                    _logger,
-                    processInfo);
-                _containers.Add(container);
-
-                List<Task> startTasks = new List<Task>(ruleNames.Count);
-                foreach (string ruleName in ruleNames)
+                // Get a copy of the container list to avoid having to
+                // lock the entire list during stop and restart of all containers.
+                CollectionRuleContainer[] containers;
+                lock (_containers)
                 {
-                    // Start running the rule and wrap running task
-                    // in a safe awaitable task so that shutdown isn't
-                    // failed due to failing or cancelled pipelines.
-                    startTasks.Add(container.StartRuleAsync(ruleName, token).SafeAwait());
+                    containers = _containers.ToArray();
                 }
 
-                // Wait for all start tasks to complete before finishing rule application
-                await Task.WhenAll(startTasks);
-
-                using (_logger.BeginScope(logScope))
+                // Stop all rules for all processes
+                List<Task> tasks = new(_containers.Count);
+                foreach (CollectionRuleContainer container in containers)
                 {
-                    _logger.CollectionRulesStarted();
+                    tasks.Add(Task.Run(() => container.StopRulesAsync(token), token).SafeAwait());
+                }
+
+                await Task.WhenAll(tasks);
+
+                tasks.Clear();
+
+                using CancellationTokenSource rulesChangedCancellationSource = new();
+                using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(
+                    rulesChangedCancellationSource.Token,
+                    token);
+                CancellationToken linkedToken = linkedSource.Token;
+
+                EventHandler rulesChangedHandler = (s, e) =>
+                {
+                    // Remember that the rules were changed (so that the next iteration doesn't
+                    // have to wait for them to change again) and signal cancellation due to the
+                    // change.
+                    rulesChanged = true;
+                    rulesChangedCancellationSource.SafeCancel();
+                };
+
+                // Apply new rules to existing processes. This can be cancelled if the rules change
+                // again while attempting to apply the old rules; in this case, loop around again to
+                // stop any rules that are in flight and apply the new rules again.
+                try
+                {
+                    _provider.RulesChanged += rulesChangedHandler;
+
+                    IReadOnlyCollection<string> ruleNames = _provider.GetCollectionRuleNames();
+
+                    if (ruleNames.Count > 0)
+                    {
+                        foreach (CollectionRuleContainer container in containers)
+                        {
+                            tasks.Add(Task.Run(() => container.StartRulesAsync(ruleNames, linkedToken), linkedToken).SafeAwait());
+                        }
+
+                        await Task.WhenAll(tasks);
+                    }
+                }
+                catch (OperationCanceledException) when (rulesChangedCancellationSource.IsCancellationRequested)
+                {
+                    // Catch exception if due to rule change.
+                }
+                finally
+                {
+                    _provider.RulesChanged -= rulesChangedHandler;
+
+                    tasks.Clear();
                 }
             }
         }

@@ -205,11 +205,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleActionsCompleted);
 
-        private static readonly Action<ILogger, Exception> _applyingCollectionRules =
+        private static readonly Action<ILogger, Exception> _collectionRulesStarting =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.ApplyingCollectionRules, "ApplyingCollectionRules"),
+                eventId: new EventId(LoggingEventIds.CollectionRulesStarting, "CollectionRulesStarting"),
                 logLevel: LogLevel.Information,
-                formatString: Strings.LogFormatString_ApplyingCollectionRules);
+                formatString: Strings.LogFormatString_CollectionRulesStarting);
 
         private static readonly Action<ILogger, int, Exception> _diagnosticRequestCancelled =
             LoggerMessage.Define<int>(
@@ -222,6 +222,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: new EventId(LoggingEventIds.CollectionRuleUnmatchedFilters, "CollectionRuleUnmatchedFilters"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleUnmatchedFilters);
+
+        private static readonly Action<ILogger, Exception> _collectionRuleConfigurationChanged =
+            LoggerMessage.Define(
+                eventId: new EventId(LoggingEventIds.CollectionRuleConfigurationChanged, "CollectionRuleConfigurationChanged"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleConfigurationChanged);
+
+        private static readonly Action<ILogger, Exception> _collectionRulesStopping =
+            LoggerMessage.Define(
+                eventId: new EventId(LoggingEventIds.CollectionRulesStopping, "CollectionRulesStopping"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRulesStopping);
+
+        private static readonly Action<ILogger, Exception> _collectionRulesStopped =
+            LoggerMessage.Define(
+                eventId: new EventId(LoggingEventIds.CollectionRulesStopping, "CollectionRulesStopped"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRulesStopped);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
@@ -387,9 +405,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _collectionRuleActionsCompleted(logger, ruleName, null);
         }
 
-        public static void ApplyingCollectionRules(this ILogger logger)
+        public static void CollectionRulesStarting(this ILogger logger)
         {
-            _applyingCollectionRules(logger, null);
+            _collectionRulesStarting(logger, null);
         }
 
         public static void DiagnosticRequestCancelled(this ILogger logger, int processId)
@@ -400,6 +418,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void CollectionRuleUnmatchedFilters(this ILogger logger, string ruleName)
         {
             _collectionRuleUnmatchedFilters(logger, ruleName, null);
+        }
+
+        public static void CollectionRuleConfigurationChanged(this ILogger logger)
+        {
+            _collectionRuleConfigurationChanged(logger, null);
+        }
+
+        public static void CollectionRulesStopping(this ILogger logger)
+        {
+            _collectionRulesStopping(logger, null);
+        }
+
+        public static void CollectionRulesStopped(this ILogger logger)
+        {
+            _collectionRulesStopped(logger, null);
         }
     }
 }

@@ -84,13 +84,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<ITraceEventTriggerFactory<AspNetRequestCountTriggerSettings>, Monitoring.EventPipe.Triggers.AspNet.AspNetRequestCountTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<AspNetRequestStatusTriggerSettings>, Monitoring.EventPipe.Triggers.AspNet.AspNetRequestStatusTriggerFactory>();
 
-
             services.AddSingleton<CollectionRulesConfigurationProvider>();
             services.AddSingleton<ICollectionRuleActionOperations, CollectionRuleActionOperations>();
             services.AddSingleton<ICollectionRuleTriggerOperations, CollectionRuleTriggerOperations>();
 
             services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
             services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
+
+            // Register change sources for the options type
+            services.AddSingleton<IOptionsChangeTokenSource<CollectionRuleOptions>, CollectionRulesConfigurationChangeTokenSource>();
+
+            // Add custom options cache to override behavior of default named options
+            services.AddSingleton<IOptionsMonitorCache<CollectionRuleOptions>, DynamicNamedOptionsCache<CollectionRuleOptions>>();
 
             services.AddSingleton<ActionListExecutor>();
             services.AddSingleton<CollectionRuleService>();
@@ -188,7 +193,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
 
             // Add custom options cache to override behavior of default named options
-            services.AddSingleton<IOptionsMonitorCache<TOptions>, EgressOptionsCache<TOptions>>();
+            services.AddSingleton<IOptionsMonitorCache<TOptions>, DynamicNamedOptionsCache<TOptions>>();
 
             // Add egress provider and internal provider wrapper
             services.AddSingleton<IEgressProvider<TOptions>, TProvider>();
