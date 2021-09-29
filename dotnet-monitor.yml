@@ -119,5 +119,5 @@ stages:
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
     - template: /eng/PrepareRelease.yml
       parameters:
-        release: true
+        release: ${{ in(variables['Build.SourceBranch'], 'release/') }}
 
