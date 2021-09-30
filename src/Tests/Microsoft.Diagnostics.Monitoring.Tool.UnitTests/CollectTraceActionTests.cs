@@ -131,18 +131,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
                 Assert.NotNull(traceStream);
 
-                await ValidateTrace(traceStream, cancellationTokenSource.Token); // Do we want to be using a different token here? Does our timeout matter for this?
+                await ValidateTrace(traceStream);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
         }
 
-        private static async Task ValidateTrace(Stream traceStream, CancellationToken token)
+        private static async Task ValidateTrace(Stream traceStream)
         {
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
             using var eventSource = new EventPipeEventSource(traceStream);
 
             // Dispose event source when cancelled.
-            using var _ = token.Register(() => eventSource.Dispose());
+            using var _ = cancellationTokenSource.Token.Register(() => eventSource.Dispose());
 
             bool foundTraceObject = false;
 
@@ -151,7 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 foundTraceObject = true;
             };
 
-            await Task.Run(() => Assert.True(eventSource.Process()), token);
+            await Task.Run(() => Assert.True(eventSource.Process()), cancellationTokenSource.Token);
 
             Assert.True(foundTraceObject);
         }
