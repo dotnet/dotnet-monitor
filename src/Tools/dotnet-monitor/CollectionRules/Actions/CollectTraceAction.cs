@@ -2,33 +2,101 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class CollectTraceActionFactory :
         ICollectionRuleActionFactory<CollectTraceOptions>
     {
+        private readonly IServiceProvider _serviceProvider;
+
         public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectTraceOptions options)
         {
-            return new CollectTraceAction();
+            if (null == options)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            ValidationContext context = new(options, _serviceProvider, items: null);
+            Validator.ValidateObject(options, context, validateAllProperties: true);
+
+            return new CollectTraceAction(_serviceProvider, endpointInfo, options);
+        }
+
+        public CollectTraceActionFactory(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
         private sealed class CollectTraceAction :
-            ICollectionRuleAction
+            CollectionRuleActionBase<CollectTraceOptions>
         {
-            public Task StartAsync(CancellationToken token)
+            private readonly IServiceProvider _serviceProvider;
+
+            public CollectTraceAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectTraceOptions options)
+                : base(endpointInfo, options)
             {
-                throw new NotImplementedException("TODO: Implement");
+                _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             }
 
-            public Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
+            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
+                TaskCompletionSource<object> startCompletionSource,
+                CancellationToken token)
             {
-                throw new NotImplementedException("TODO: Implement");
+                TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectTraceOptionsDefaults.Duration));
+                string egressProvider = Options.Egress;
+
+                MonitoringSourceConfiguration configuration;
+
+                if (Options.Profile.HasValue)
+                {
+                    TraceProfile profile = Options.Profile.Value;
+                    int metricsIntervalSeconds = Options.MetricsIntervalSeconds.GetValueOrDefault(CollectTraceOptionsDefaults.MetricsIntervalSeconds);
+
+                    configuration = Utils.GetTraceConfiguration(profile, metricsIntervalSeconds);
+                }
+                else
+                {
+                    EventPipeProvider[] optionsProviders = Options.Providers.ToArray();
+                    bool requestRundown = Options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
+                    int bufferSizeMegabytes = Options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
+
+                    configuration = Utils.GetTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
+                }
+
+                string fileName = Utils.GenerateTraceFileName(EndpointInfo);
+
+                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Trace, EndpointInfo);
+
+                EgressOperation egressOperation = new EgressOperation(
+                    (outputStream, token) => Utils.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token),
+                    egressProvider,
+                    fileName,
+                    EndpointInfo,
+                    ContentTypes.ApplicationOctetStream,
+                    scope);
+
+                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+
+                string traceFilePath = result.Result.Value;
+
+                return new CollectionRuleActionResult()
+                {
+                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
+                    {
+                        { CollectionRuleActionConstants.EgressPathOutputValueName, traceFilePath }
+                    }
+                };
             }
         }
     }

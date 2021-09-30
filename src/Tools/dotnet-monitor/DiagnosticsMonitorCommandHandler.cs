@@ -164,7 +164,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                     }
 
-                    builder.AddKeyPerFileWithChangeTokenSupport(path, optional: true, reloadOnChange: true);
+                    builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ConfigPrefix);
 
                     if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)

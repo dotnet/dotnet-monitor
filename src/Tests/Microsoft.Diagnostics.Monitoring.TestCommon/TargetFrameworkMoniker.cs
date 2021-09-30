@@ -42,6 +42,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             throw CreateUnsupportedException(moniker);
         }
 
+        // Checks if the specified moniker is the same as the test value or if it is Current
+        // then matches the same TFM for which this assembly was built.
+        public static bool IsEffectively(this TargetFrameworkMoniker moniker, TargetFrameworkMoniker test)
+        {
+            if (TargetFrameworkMoniker.Current == test)
+            {
+                throw new ArgumentException($"Parameter {nameof(test)} cannot be TargetFrameworkMoniker.Current");
+            }
+
+            return moniker == test || (TargetFrameworkMoniker.Current == moniker && CurrentTargetFrameworkMoniker == test);
+        }
+
         public static string ToFolderName(this TargetFrameworkMoniker moniker)
         {
             switch (moniker)
@@ -60,5 +72,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             return new ArgumentException($"Unsupported target framework moniker: {moniker:G}");
         }
+
+        private static readonly TargetFrameworkMoniker CurrentTargetFrameworkMoniker =
+#if NET6_0
+            TargetFrameworkMoniker.Net60;
+#elif NET5_0
+            TargetFrameworkMoniker.Net50;
+#elif NETCOREAPP3_1
+            TargetFrameworkMoniker.NetCoreApp31;
+#endif
     }
 }

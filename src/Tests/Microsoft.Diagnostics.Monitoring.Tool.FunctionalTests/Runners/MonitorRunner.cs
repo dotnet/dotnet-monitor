@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 "dotnet-monitor",
-                TargetFrameworkMoniker.NetCoreApp31);
+                TargetFrameworkMoniker.Net60);
 
         private string SharedConfigDirectoryPath =>
             Path.Combine(_runnerTmpPath, "SharedConfig");
@@ -74,6 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             // the correct ASP.NET Core version (which can be different than the .NET
             // version, especially for prereleases).
             _runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
+            _runner.TargetFramework = TargetFrameworkMoniker.Net60;
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;

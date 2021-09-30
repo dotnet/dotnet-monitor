@@ -55,40 +55,43 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 throw new ArgumentNullException(nameof(endpointInfo));
             }
 
-            KeyValueLogScope logScope = new();
-            logScope.AddCollectionRuleEndpointInfo(endpointInfo);
-            // Constrain the scope of the log scope to just the log call so that the log scope
-            // is not captured by the rule execution method.
-            using (_logger.BeginScope(logScope))
-            {
-                _logger.ApplyingCollectionRules();
-            }
-
             IReadOnlyCollection<string> ruleNames = _provider.GetCollectionRuleNames();
 
-            IProcessInfo processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo);
-
-            CollectionRuleContainer container = new(
-                _serviceProvider,
-                _logger,
-                processInfo);
-            _containers.Add(container);
-
-            List<Task> startTasks = new List<Task>(ruleNames.Count);
-            foreach (string ruleName in ruleNames)
+            if (ruleNames.Count > 0)
             {
-                // Start running the rule and wrap running task
-                // in a safe awaitable task so that shutdown isn't
-                // failed due to failing or cancelled pipelines.
-                startTasks.Add(container.StartRuleAsync(ruleName, token).SafeAwait());
-            }
+                KeyValueLogScope logScope = new();
+                logScope.AddCollectionRuleEndpointInfo(endpointInfo);
+                // Constrain the scope of the log scope to just the log call so that the log scope
+                // is not captured by the rule execution method.
+                using (_logger.BeginScope(logScope))
+                {
+                    _logger.ApplyingCollectionRules();
+                }
 
-            // Wait for all start tasks to complete before finishing rule application
-            await Task.WhenAll(startTasks);
+                IProcessInfo processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo);
 
-            using (_logger.BeginScope(logScope))
-            {
-                _logger.CollectionRulesStarted();
+                CollectionRuleContainer container = new(
+                    _serviceProvider,
+                    _logger,
+                    processInfo);
+                _containers.Add(container);
+
+                List<Task> startTasks = new List<Task>(ruleNames.Count);
+                foreach (string ruleName in ruleNames)
+                {
+                    // Start running the rule and wrap running task
+                    // in a safe awaitable task so that shutdown isn't
+                    // failed due to failing or cancelled pipelines.
+                    startTasks.Add(container.StartRuleAsync(ruleName, token).SafeAwait());
+                }
+
+                // Wait for all start tasks to complete before finishing rule application
+                await Task.WhenAll(startTasks);
+
+                using (_logger.BeginScope(logScope))
+                {
+                    _logger.CollectionRulesStarted();
+                }
             }
         }
     }

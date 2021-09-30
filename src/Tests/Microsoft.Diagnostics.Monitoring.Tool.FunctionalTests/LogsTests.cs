@@ -651,7 +651,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         // NOT BEING USED AND ISN'T UPDATED
-        private Task ValidateLogsAsync2(
+        private Task ValidateLogsActionAsync(
             DiagnosticPortConnectionMode mode,
             LogsConfiguration configuration,
             Func<ChannelReader<LogEntry>, Task> callback,
@@ -697,6 +697,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             using ResponseStreamHolder holder = await holderTask;
             Assert.NotNull(holder);
 
+            await ValidateLogsEquality(holder.Stream, callback, logFormat);
+
+            /*
             // Set up a channel and process the log events here rather than having each test have to deserialize
             // the set of log events. Pass the channel reader to the callback to allow each test to verify the
             // set of deserialized log events.
@@ -742,6 +745,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             channel.Writer.Complete();
 
             await callbackTask;
+            */
         }
 
         private async Task ValidateResponseActionStream(AppRunner runner, ICollectionRuleAction action, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)

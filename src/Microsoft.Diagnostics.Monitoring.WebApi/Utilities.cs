@@ -4,10 +4,13 @@
 
 using FastSerialization;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -43,6 +46,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static string GetFileNameTimeStampUtcNow()
         {
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
+        }
+
+        public static string GenerateTraceFileName(IEndpointInfo endpointInfo)
+        {
+            return FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
         }
 
         public static KeyValueLogScope CreateArtifactScope(string artifactType, IEndpointInfo endpointInfo)
@@ -89,6 +97,82 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 startCompletionSource.TrySetResult(null); // Not sure if this is where it should go
             }
+        }
+
+        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, int metricsIntervalSeconds)
+        {
+            var configurations = new List<MonitoringSourceConfiguration>();
+            if (profile.HasFlag(Models.TraceProfile.Cpu))
+            {
+                configurations.Add(new CpuProfileConfiguration());
+            }
+            if (profile.HasFlag(Models.TraceProfile.Http))
+            {
+                configurations.Add(new HttpRequestSourceConfiguration());
+            }
+            if (profile.HasFlag(Models.TraceProfile.Logs))
+            {
+                configurations.Add(new LoggingSourceConfiguration(
+                    LogLevel.Trace,
+                    LogMessageType.FormattedMessage | LogMessageType.JsonMessage,
+                    filterSpecs: null,
+                    useAppFilters: true));
+            }
+            if (profile.HasFlag(Models.TraceProfile.Metrics))
+            {
+                configurations.Add(new MetricSourceConfiguration(metricsIntervalSeconds, Enumerable.Empty<string>()));
+            }
+
+            return new AggregateSourceConfiguration(configurations.ToArray());
+        }
+
+        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.EventPipeProvider[] configurationProviders, bool requestRundown, int bufferSizeInMB)
+        {
+            var providers = new List<EventPipeProvider>();
+
+            foreach (Models.EventPipeProvider providerModel in configurationProviders)
+            {
+                if (!IntegerOrHexStringAttribute.TryParse(providerModel.Keywords, out long keywords, out string parseError))
+                {
+                    throw new InvalidOperationException(parseError);
+                }
+
+                providers.Add(new EventPipeProvider(
+                    providerModel.Name,
+                    providerModel.EventLevel,
+                    keywords,
+                    providerModel.Arguments
+                    ));
+            }
+
+            return new EventPipeProviderSourceConfiguration(
+                providers: providers.ToArray(),
+                requestRundown: requestRundown,
+                bufferSizeInMB: bufferSizeInMB);
+        }
+
+        public static async Task CaptureTraceAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, Stream outputStream, CancellationToken token)
+        {
+            Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
+            {
+                if (null != startCompletionSource)
+                {
+                    startCompletionSource.TrySetResult(null);
+                }
+                //Buffer size matches FileStreamResult
+                //CONSIDER Should we allow client to change the buffer size?
+                await eventStream.CopyToAsync(outputStream, 0x10000, token);
+            };
+
+            var client = new DiagnosticsClient(endpointInfo.Endpoint);
+
+            await using EventTracePipeline pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
+            {
+                Configuration = configuration,
+                Duration = duration,
+            }, streamAvailable);
+
+            await pipeProcessor.RunAsync(token);
         }
 
         public static async Task CaptureGCDumpAsync(IEndpointInfo endpointInfo, Stream targetStream, CancellationToken token)
