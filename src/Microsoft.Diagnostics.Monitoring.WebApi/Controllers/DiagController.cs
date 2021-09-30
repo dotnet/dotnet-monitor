@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using FastSerialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -315,29 +313,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
-                var configurations = new List<MonitoringSourceConfiguration>();
-                if (profile.HasFlag(Models.TraceProfile.Cpu))
-                {
-                    configurations.Add(new CpuProfileConfiguration());
-                }
-                if (profile.HasFlag(Models.TraceProfile.Http))
-                {
-                    configurations.Add(new HttpRequestSourceConfiguration());
-                }
-                if (profile.HasFlag(Models.TraceProfile.Logs))
-                {
-                    configurations.Add(new LoggingSourceConfiguration(
-                        LogLevel.Trace,
-                        LogMessageType.FormattedMessage | LogMessageType.JsonMessage,
-                        filterSpecs: null,
-                        useAppFilters: true));
-                }
-                if (profile.HasFlag(Models.TraceProfile.Metrics))
-                {
-                    configurations.Add(new MetricSourceConfiguration(metricsIntervalSeconds, Enumerable.Empty<string>()));
-                }
-
-                var aggregateConfiguration = new AggregateSourceConfiguration(configurations.ToArray());
+                var aggregateConfiguration = Utilities.GetTraceConfiguration(profile, metricsIntervalSeconds);
 
                 return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
@@ -381,27 +357,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
 
-                var providers = new List<EventPipeProvider>();
-
-                foreach (Models.EventPipeProvider providerModel in configuration.Providers)
-                {
-                    if (!IntegerOrHexStringAttribute.TryParse(providerModel.Keywords, out long keywords, out string parseError))
-                    {
-                        throw new InvalidOperationException(parseError);
-                    }
-
-                    providers.Add(new EventPipeProvider(
-                        providerModel.Name,
-                        providerModel.EventLevel,
-                        keywords,
-                        providerModel.Arguments
-                        ));
-                }
-
-                var traceConfiguration = new EventPipeProviderSourceConfiguration(
-                    providers: providers.ToArray(),
-                    requestRundown: configuration.RequestRundown,
-                    bufferSizeInMB: configuration.BufferSizeInMB);
+                var traceConfiguration = Utilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
 
                 return StartTrace(processInfo, traceConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
@@ -571,32 +527,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             TimeSpan duration,
             string egressProvider)
         {
-            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.nettrace");
-
-            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-            {
-                Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
-                {
-                    //Buffer size matches FileStreamResult
-                    //CONSIDER Should we allow client to change the buffer size?
-                    await eventStream.CopyToAsync(outputStream, 0x10000, token);
-                };
-
-                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                await using EventTracePipeline pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
-                {
-                    Configuration = configuration,
-                    Duration = duration,
-                }, streamAvailable);
-
-                await pipeProcessor.RunAsync(token);
-            };
+            string fileName = Utilities.GenerateTraceFileName(processInfo.EndpointInfo);
 
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,
-                action,
+                (outputStream, token) => Utilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token),
                 fileName,
                 ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);
