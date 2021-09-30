@@ -311,7 +311,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
+                TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
                 var aggregateConfiguration = Utilities.GetTraceConfiguration(profile, metricsIntervalSeconds);
 
@@ -355,7 +355,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
+                TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
                 var traceConfiguration = Utilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
 
@@ -397,7 +397,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
+                TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
                 var settings = new EventLogsPipelineSettings()
                 {
@@ -453,7 +453,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                TimeSpan duration = ConvertSecondsToTimeSpan(durationSeconds);
+                TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
                 var settings = new EventLogsPipelineSettings()
                 {
@@ -585,13 +585,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 contentType,
                 processInfo.EndpointInfo,
                 format != LogFormat.EventStream);
-        }
-
-        private static TimeSpan ConvertSecondsToTimeSpan(int durationSeconds)
-        {
-            return durationSeconds < 0 ?
-                Timeout.InfiniteTimeSpan :
-                TimeSpan.FromSeconds(durationSeconds);
         }
 
         private static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
