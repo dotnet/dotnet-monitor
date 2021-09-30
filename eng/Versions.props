@@ -11,7 +11,7 @@
       - 'prerelease': allows the blob group release name to use prerelease version information.
       - 'release': sets the blob group release name to 'release'.
     -->
-    <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
+    <BlobGroupBuildQuality>prerelease</BlobGroupBuildQuality>
   </PropertyGroup>
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
