@@ -8,11 +8,13 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -245,6 +247,67 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     filteredTask = runner.WaitForCollectionRuleUnmatchedFiltersAsync(DefaultRuleName);
                 });
+        }
+
+        /// <summary>
+        /// Validates that a change in the collection rule configuration is detected and applied correctly.
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRule_ConfigurationChangeTest(DiagnosticPortConnectionMode mode)
+        {
+            string firstRuleName = "FirstRule";
+            string secondRuleName = "SecondRule";
+
+            DiagnosticPortHelper.Generate(
+                mode,
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
+
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.ConnectionMode = mode;
+            toolRunner.DiagnosticPortPath = diagnosticPortPath;
+            toolRunner.DisableAuthentication = true;
+
+            // Create a rule with some settings
+            RootOptions originalOptions = new();
+            originalOptions.CreateCollectionRule(firstRuleName)
+                .SetStartupTrigger();
+
+            await toolRunner.WriteUserSettingsAsync(originalOptions);
+
+            await toolRunner.StartAsync();
+
+            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            appRunner.ConnectionMode = appConnectionMode;
+            appRunner.DiagnosticPortPath = diagnosticPortPath;
+            appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
+
+            Task originalActionsCompletedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(firstRuleName);
+
+            await appRunner.ExecuteAsync(async () =>
+            {
+                // Validate that the first rule is observed and its actions are run.
+                await originalActionsCompletedTask;
+
+                // Set up new observers for the first and second rule.
+                originalActionsCompletedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(firstRuleName);
+                Task newActionsCompletedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(secondRuleName);
+
+                // Change collection rule configuration to only contain the second rule.
+                RootOptions newOptions = new();
+                newOptions.CreateCollectionRule(secondRuleName)
+                    .SetStartupTrigger();
+
+                await toolRunner.WriteUserSettingsAsync(newOptions);
+
+                // Validate that only the second rule is observed.
+                await newActionsCompletedTask;
+                Assert.False(originalActionsCompletedTask.IsCompleted);
+
+                await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            });
+            Assert.Equal(0, appRunner.ExitCode);
         }
 
         // The GetProcessInfo command is not providing command line arguments (only the process name)
