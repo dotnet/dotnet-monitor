@@ -153,3 +153,13 @@ jobs:
         buildConfiguration: ${{ parameters.name }}
       continueOnError: true
       condition: succeededOrFailed()
+    
+    - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Test Result Files
+        inputs:
+          PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+          PublishLocation: Container
+          ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.configuration }}
+        continueOnError: true
+        condition: succeededOrFailed()
