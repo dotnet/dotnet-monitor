@@ -102,7 +102,6 @@ jobs:
     - script: >-
         $(Build.SourcesDirectory)/build$(scriptExt)
         -ci
-        -test
         -configuration ${{ parameters.configuration }}
         -prepareMachine
         $(_InternalBuildArgs)
