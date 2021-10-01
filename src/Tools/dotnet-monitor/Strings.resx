@@ -373,9 +373,6 @@
 1. apiAuthenticationConfigKey: The string key of ApiAuthentication object in configuration.
 2. validationFailure: The error message of why the provided ApiAuthentication object is invalid.</comment>
   </data>
-  <data name="LogFormatString_ApplyingCollectionRules" xml:space="preserve">
-    <value>Applying collection rules.</value>
-  </data>
   <data name="LogFormatString_BoundDefaultAddress" xml:space="preserve">
     <value>Bound default address: {address}</value>
     <comment>Gets the format string that is printed in the 16:BoundDefaultAddress event.
@@ -403,14 +400,29 @@
   <data name="LogFormatString_CollectionRuleActionsThrottled" xml:space="preserve">
     <value>Collection rule '{ruleName}' actions throttled due to action limits.</value>
   </data>
+  <data name="LogFormatString_CollectionRuleCancelled" xml:space="preserve">
+    <value>Collection rule '{ruleName}' cancelled.</value>
+  </data>
   <data name="LogFormatString_CollectionRuleCompleted" xml:space="preserve">
     <value>Collection rule '{ruleName}' completed.</value>
+  </data>
+  <data name="LogFormatString_CollectionRuleConfigurationChanged" xml:space="preserve">
+    <value>Collection rule configuration changed.</value>
   </data>
   <data name="LogFormatString_CollectionRuleFailed" xml:space="preserve">
     <value>Collection rule '{ruleName}' failed.</value>
   </data>
   <data name="LogFormatString_CollectionRulesStarted" xml:space="preserve">
     <value>All collection rules started.</value>
+  </data>
+  <data name="LogFormatString_CollectionRulesStarting" xml:space="preserve">
+    <value>Starting collection rules.</value>
+  </data>
+  <data name="LogFormatString_CollectionRulesStopped" xml:space="preserve">
+    <value>All collection rules have stopped.</value>
+  </data>
+  <data name="LogFormatString_CollectionRulesStopping" xml:space="preserve">
+    <value>Stopping collection rules.</value>
   </data>
   <data name="LogFormatString_CollectionRuleStarted" xml:space="preserve">
     <value>Collection rule '{ruleName}' started.</value>
