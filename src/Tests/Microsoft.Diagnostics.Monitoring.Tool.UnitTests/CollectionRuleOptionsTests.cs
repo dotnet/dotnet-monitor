@@ -564,11 +564,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(4, failures.Length);
                     VerifyEnumDataTypeMessage<TraceProfile>(failures, 0, nameof(CollectTraceOptions.Profile));
-                    VerifyRangeMessage<int>(failures, 2, nameof(CollectTraceOptions.BufferSizeMegabytes),
+                    VerifyRangeMessage<int>(failures, 1, nameof(CollectTraceOptions.BufferSizeMegabytes),
                         ActionOptionsConstants.BufferSizeMegabytes_MinValue_String, ActionOptionsConstants.BufferSizeMegabytes_MaxValue_String);
-                    VerifyRangeMessage<TimeSpan>(failures, 3, nameof(CollectTraceOptions.Duration),
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(CollectTraceOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
-                    VerifyRequiredMessage(failures, 4, nameof(CollectTraceOptions.Egress));
+                    VerifyRequiredMessage(failures, 3, nameof(CollectTraceOptions.Egress));
                 });
         }
 

@@ -18,15 +18,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
         {
             errorMessage = null;
 
-            if (provider.Arguments.TryGetValue("EventCounterIntervalSec", out string intervalValue))
+            if (provider.Arguments?.TryGetValue("EventCounterIntervalSec", out string intervalValue) == true)
             {
                 if (int.TryParse(intervalValue, out int intervalSeconds) &&
-                    intervalSeconds != counterOptions.IntervalSeconds)
+                    intervalSeconds != counterOptions.GetIntervalSeconds())
                 {
                     errorMessage = string.Format(CultureInfo.CurrentCulture,
                         Strings.ErrorMessage_InvalidMetricInterval,
                         provider.Name,
-                        counterOptions.IntervalSeconds);
+                        counterOptions.GetIntervalSeconds());
                     return false;
                 }
             }

@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             EventCounterTriggerSettings settings = new()
             {
                 ProviderName = options.ProviderName,
-                CounterIntervalSeconds = _counterOptions.CurrentValue.IntervalSeconds,
+                CounterIntervalSeconds = _counterOptions.CurrentValue.GetIntervalSeconds(),
                 CounterName = options.CounterName,
                 GreaterThan = options.GreaterThan,
                 LessThan = options.LessThan,

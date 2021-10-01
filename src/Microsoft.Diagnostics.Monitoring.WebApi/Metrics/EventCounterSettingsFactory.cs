@@ -20,13 +20,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, bool includeDefaults,
             int durationSeconds)
         {
-            return CreateSettings(includeDefaults, durationSeconds, counterOptions.IntervalSeconds, () => new List<EventPipeCounterGroup>(0));
+            return CreateSettings(includeDefaults, durationSeconds, counterOptions.GetIntervalSeconds(), () => new List<EventPipeCounterGroup>(0));
         }
 
         public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, MetricsOptions options)
         {
             return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
-                Timeout.Infinite, counterOptions.IntervalSeconds,
+                Timeout.Infinite, counterOptions.GetIntervalSeconds(),
                 () => ConvertCounterGroups(options.Providers));
         }
 
@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             return CreateSettings(configuration.IncludeDefaultProviders,
                 durationSeconds,
-                counterOptions.IntervalSeconds,
+                counterOptions.GetIntervalSeconds(),
                 () => ConvertCounterGroups(configuration.Providers));
         }
 

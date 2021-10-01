@@ -12,6 +12,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class GlobalCounterOptions
     {
         [Range(1, 3600 * 24)]
-        public int IntervalSeconds { get; set; }
+        public int? IntervalSeconds { get; set; }
+    }
+
+    internal static class GlobalCounterOptionsExtensions
+    {
+        public static int GetIntervalSeconds(this GlobalCounterOptions options) =>
+            options.IntervalSeconds.GetValueOrDefault(GlobalCounterOptionsDefaults.IntervalSeconds);
     }
 }

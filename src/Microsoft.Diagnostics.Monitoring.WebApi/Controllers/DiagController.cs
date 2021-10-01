@@ -313,7 +313,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
-                var aggregateConfiguration = Utilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.IntervalSeconds);
+                var aggregateConfiguration = Utilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.GetIntervalSeconds());
 
                 return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
