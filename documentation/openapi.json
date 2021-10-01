@@ -386,19 +386,6 @@
             }
           },
           {
-            "name": "metricsIntervalSeconds",
-            "in": "query",
-            "description": "The reporting interval (in seconds) for event counters.",
-            "schema": {
-              "maximum": 2147483647,
-              "minimum": 1,
-              "type": "integer",
-              "description": "The reporting interval (in seconds) for event counters.",
-              "format": "int32",
-              "default": 1
-            }
-          },
-          {
             "name": "egressProvider",
             "in": "query",
             "description": "The egress provider to which the trace is saved.",
@@ -853,19 +840,6 @@
             }
           },
           {
-            "name": "metricsIntervalSeconds",
-            "in": "query",
-            "description": "The reporting interval (in seconds) for event counters.",
-            "schema": {
-              "maximum": 2147483647,
-              "minimum": 1,
-              "type": "integer",
-              "description": "The reporting interval (in seconds) for event counters.",
-              "format": "int32",
-              "default": 5
-            }
-          },
-          {
             "name": "egressProvider",
             "in": "query",
             "description": "The egress provider to which the metrics are saved.",
@@ -941,19 +915,6 @@
               "description": "The duration of the metrics session (in seconds).",
               "format": "int32",
               "default": 30
-            }
-          },
-          {
-            "name": "metricsIntervalSeconds",
-            "in": "query",
-            "description": "The reporting interval (in seconds) for event counters.",
-            "schema": {
-              "maximum": 2147483647,
-              "minimum": 1,
-              "type": "integer",
-              "description": "The reporting interval (in seconds) for event counters.",
-              "format": "int32",
-              "default": 5
             }
           },
           {

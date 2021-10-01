@@ -2,7 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -49,6 +53,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                     providerContext.MemberName = nameof(Providers) + "[" + index.ToString(CultureInfo.InvariantCulture) + "]";
 
                     Validator.TryValidateObject(provider, providerContext, results, validateAllProperties: true);
+
+                    IOptionsMonitor<GlobalCounterOptions> counterOptions = validationContext.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
+                    if (!CounterValidator.ValidateProviders(counterOptions.CurrentValue,
+                        provider, out string errorMessage))
+                    {
+                        results.Add(new ValidationResult(errorMessage, new[] { providerContext.MemberName }));
+                    }
 
                     index++;
                 }

@@ -25,5 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string DefaultProcess = nameof(DefaultProcess);
 
         public const string Logging = nameof(Logging);
+
+        public const string GlobalCounter = nameof(RootOptions.GlobalCounter);
     }
 }

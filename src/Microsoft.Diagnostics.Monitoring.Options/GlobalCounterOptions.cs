@@ -2,14 +2,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class MetricsOptionsDefaults
+    public class GlobalCounterOptions
     {
-        public const bool Enabled = true;
-
-        public const int MetricCount = 3;
-
-        public const bool IncludeDefaultProviders = true;
+        [Range(1, 3600 * 24)]
+        public int IntervalSeconds { get; set; }
     }
 }

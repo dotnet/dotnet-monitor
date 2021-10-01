@@ -289,10 +289,6 @@
     <value>The name of the egress provider to which the trace is egressed.</value>
     <comment>The description provided for the Egress parameter on CollectTraceOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectTraceOptions_MetricsIntervalSeconds" xml:space="preserve">
-    <value>The amount of time (in seconds) between the collection of each sample of the counter. Only applicable when Profile contains Metrics.</value>
-    <comment>The description provided for the MetricsIntervalSeconds parameter on CollectTraceOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_CollectTraceOptions_Profile" xml:space="preserve">
     <value>Use a predefined set of event providers and settings to capture in the trace. More than one profile may be specified at the same time. Either Profile or Providers must be specified, but not both.</value>
     <comment>The description provided for the Profile parameter on CollectTraceOptions.</comment>
@@ -385,10 +381,6 @@
     <value>The name of the counter to monitor.</value>
     <comment>The description provided for the CounterName parameter on EventCounterOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_EventCounterOptions_Frequency" xml:space="preserve">
-    <value>The amount of time (in seconds) between the collection of each sample of the counter.</value>
-    <comment>The description provided for the Frequency parameter on EventCounterOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_EventCounterOptions_GreaterThan" xml:space="preserve">
     <value>The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.</value>
     <comment>The description provided for the GreaterThan parameter on EventCounterOptions.</comment>
@@ -480,10 +472,6 @@
   <data name="DisplayAttributeDescription_MetricsOptions_Providers" xml:space="preserve">
     <value>Providers for custom metrics.</value>
     <comment>The description provided for the Providers parameter on MetricsOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds" xml:space="preserve">
-    <value>How often metrics are collected.</value>
-    <comment>The description provided for the UpdateIntervalSeconds parameter on MetricsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_MonitorApiKeyOptions_PublicKey" xml:space="preserve">
     <value>The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information.</value>

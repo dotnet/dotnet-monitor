@@ -477,15 +477,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The amount of time (in seconds) between the collection of each sample of the counter. Only applicable when Profile contains Metrics..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectTraceOptions_MetricsIntervalSeconds {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_MetricsIntervalSeconds", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Use a predefined set of event providers and settings to capture in the trace. More than one profile may be specified at the same time. Either Profile or Providers must be specified, but not both..
         /// </summary>
         public static string DisplayAttributeDescription_CollectTraceOptions_Profile {
@@ -680,15 +671,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_EventCounterOptions_CounterName {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_EventCounterOptions_CounterName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The amount of time (in seconds) between the collection of each sample of the counter..
-        /// </summary>
-        public static string DisplayAttributeDescription_EventCounterOptions_Frequency {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_EventCounterOptions_Frequency", resourceCulture);
             }
         }
         
@@ -897,15 +879,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_MetricsOptions_Providers {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_MetricsOptions_Providers", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to How often metrics are collected..
-        /// </summary>
-        public static string DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds", resourceCulture);
             }
         }
         

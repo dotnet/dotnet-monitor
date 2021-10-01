@@ -42,12 +42,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]
         [DefaultValue(EventCounterOptionsDefaults.SlidingWindowDuration)]
         public TimeSpan? SlidingWindowDuration { get; set; }
-
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_Frequency))]
-        [Range(TriggerOptionsConstants.CounterFrequency_MinValue, TriggerOptionsConstants.CounterFrequency_MaxValue)]
-        [DefaultValue(EventCounterOptionsDefaults.Frequency)]
-        public int? Frequency { get; set; }
     }
 }

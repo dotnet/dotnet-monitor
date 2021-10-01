@@ -26,13 +26,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectTraceOptions_MetricsIntervalSeconds))]
-        [Range(ActionOptionsConstants.MetricsIntervalSeconds_MinValue, ActionOptionsConstants.MetricsIntervalSeconds_MaxValue)]
-        [DefaultValue(CollectTraceOptionsDefaults.MetricsIntervalSeconds)]
-        public int? MetricsIntervalSeconds { get; set; }
-
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectTraceOptions_Providers))]
         public List<EventPipeProvider> Providers { get; set; }
 

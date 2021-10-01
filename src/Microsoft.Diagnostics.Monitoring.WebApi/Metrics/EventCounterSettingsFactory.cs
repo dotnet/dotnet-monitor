@@ -17,26 +17,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// </summary>
     internal static class EventCounterSettingsFactory
     {
-        public static EventPipeCounterPipelineSettings CreateSettings(bool includeDefaults,
-            int durationSeconds,
-            int refreshInterval)
+        public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, bool includeDefaults,
+            int durationSeconds)
         {
-            return CreateSettings(includeDefaults, durationSeconds, refreshInterval, () => new List<EventPipeCounterGroup>(0));
+            return CreateSettings(includeDefaults, durationSeconds, counterOptions.IntervalSeconds, () => new List<EventPipeCounterGroup>(0));
         }
 
-        public static EventPipeCounterPipelineSettings CreateSettings(MetricsOptions options)
+        public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, MetricsOptions options)
         {
             return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
-                Timeout.Infinite, options.UpdateIntervalSeconds.GetValueOrDefault(MetricsOptionsDefaults.UpdateIntervalSeconds),
+                Timeout.Infinite, counterOptions.IntervalSeconds,
                 () => ConvertCounterGroups(options.Providers));
         }
 
-        public static EventPipeCounterPipelineSettings CreateSettings(int durationSeconds, int refreshInterval,
+        public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, int durationSeconds,
             Models.EventMetricsConfiguration configuration)
         {
             return CreateSettings(configuration.IncludeDefaultProviders,
                 durationSeconds,
-                refreshInterval,
+                counterOptions.IntervalSeconds,
                 () => ConvertCounterGroups(configuration.Providers));
         }
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -41,6 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
+        private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
         private readonly EgressOperationStore _operationsStore;
         private readonly IDumpService _dumpService;
 
@@ -52,6 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
             _dumpService = serviceProvider.GetRequiredService<IDumpService>();
+            _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
         }
 
         /// <summary>
@@ -280,7 +283,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="profile">The profiles enabled for the trace session.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
-        /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
         [HttpGet("trace", Name = nameof(CaptureTrace))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
@@ -302,8 +304,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Models.TraceProfile profile = DefaultTraceProfiles,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
-            [FromQuery][Range(1, int.MaxValue)]
-            int metricsIntervalSeconds = 1,
             [FromQuery]
             string egressProvider = null)
         {
@@ -313,7 +313,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
-                var aggregateConfiguration = Utilities.GetTraceConfiguration(profile, metricsIntervalSeconds);
+                var aggregateConfiguration = Utilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.IntervalSeconds);
 
                 return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
@@ -355,6 +355,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
+                foreach(Models.EventPipeProvider provider in configuration.Providers)
+                {
+                    if (!CounterValidator.ValidateProviders(_counterOptions.CurrentValue,
+                        provider, out string errorMessage))
+                    {
+                        throw new InvalidOperationException(errorMessage);
+                    }
+                }
+
                 TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
                 var traceConfiguration = Utilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);

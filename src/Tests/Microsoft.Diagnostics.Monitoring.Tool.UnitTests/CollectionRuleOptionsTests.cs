@@ -146,7 +146,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const double ExpectedGreaterThan = 0.5;
             const double ExpectedLessThan = 0.75;
             TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
-            const int ExpectedFrequency = 5;
 
             return ValidateSuccess(
                 rootOptions =>
@@ -159,7 +158,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     eventCounterOptions.GreaterThan = ExpectedGreaterThan;
                     eventCounterOptions.LessThan = ExpectedLessThan;
                     eventCounterOptions.SlidingWindowDuration = ExpectedDuration;
-                    eventCounterOptions.Frequency = ExpectedFrequency;
                 },
                 ruleOptions =>
                 {
@@ -169,7 +167,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(ExpectedGreaterThan, eventCounterOptions.GreaterThan);
                     Assert.Equal(ExpectedLessThan, eventCounterOptions.LessThan);
                     Assert.Equal(ExpectedDuration, eventCounterOptions.SlidingWindowDuration);
-                    Assert.Equal(ExpectedFrequency, eventCounterOptions.Frequency);
                 });
         }
 
@@ -183,7 +180,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions);
 
                     eventCounterOptions.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
-                    eventCounterOptions.Frequency = -1;
                 },
                 ex =>
                 {
@@ -191,13 +187,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // Property validation failures will short-circuit the remainder of the validation
                     // rules, thus only observe 4 errors when one might expect 5 (the fifth being that
                     // either GreaterThan or LessThan should be specified).
-                    Assert.Equal(4, failures.Length);
+                    Assert.Equal(3, failures.Length);
                     VerifyRequiredMessage(failures, 0, nameof(EventCounterOptions.ProviderName));
                     VerifyRequiredMessage(failures, 1, nameof(EventCounterOptions.CounterName));
                     VerifyRangeMessage<TimeSpan>(failures, 2, nameof(EventCounterOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
-                    VerifyRangeMessage<int>(failures, 3, nameof(EventCounterOptions.Frequency),
-                        TriggerOptionsConstants.Frequency_MinValue_String, TriggerOptionsConstants.Frequency_MaxValue_String);
                 });
         }
 
@@ -488,7 +482,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const TraceProfile ExpectedProfile = TraceProfile.Logs;
             const string ExpectedEgressProvider = "TmpEgressProvider";
             TimeSpan ExpectedDuration = TimeSpan.FromSeconds(45);
-            const int ExpectedMetricsIntervalSeconds = 3;
 
             return ValidateSuccess(
                 rootOptions =>
@@ -498,7 +491,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .AddCollectTraceAction(ExpectedProfile, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions);
 
                     collectTraceOptions.Duration = ExpectedDuration;
-                    collectTraceOptions.MetricsIntervalSeconds = ExpectedMetricsIntervalSeconds;
 
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },
@@ -507,7 +499,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     CollectTraceOptions collectTraceOptions = ruleOptions.VerifyCollectTraceAction(0, ExpectedProfile, ExpectedEgressProvider);
 
                     Assert.Equal(ExpectedDuration, collectTraceOptions.Duration);
-                    Assert.Equal(ExpectedMetricsIntervalSeconds, collectTraceOptions.MetricsIntervalSeconds);
                 });
         }
 
@@ -567,15 +558,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     collectTraceOptions.BufferSizeMegabytes = 2048;
                     collectTraceOptions.Duration = TimeSpan.FromDays(7);
-                    collectTraceOptions.MetricsIntervalSeconds = (int)TimeSpan.FromDays(3).TotalSeconds;
                 },
                 ex =>
                 {
                     string[] failures = ex.Failures.ToArray();
-                    Assert.Equal(5, failures.Length);
+                    Assert.Equal(4, failures.Length);
                     VerifyEnumDataTypeMessage<TraceProfile>(failures, 0, nameof(CollectTraceOptions.Profile));
-                    VerifyRangeMessage<int>(failures, 1, nameof(CollectTraceOptions.MetricsIntervalSeconds),
-                        ActionOptionsConstants.MetricsIntervalSeconds_MinValue_String, ActionOptionsConstants.MetricsIntervalSeconds_MaxValue_String);
                     VerifyRangeMessage<int>(failures, 2, nameof(CollectTraceOptions.BufferSizeMegabytes),
                         ActionOptionsConstants.BufferSizeMegabytes_MinValue_String, ActionOptionsConstants.BufferSizeMegabytes_MaxValue_String);
                     VerifyRangeMessage<TimeSpan>(failures, 3, nameof(CollectTraceOptions.Duration),

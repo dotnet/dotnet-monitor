@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
@@ -18,13 +19,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
     {
         private readonly EventPipeTriggerFactory _eventPipeTriggerFactory;
         private readonly ITraceEventTriggerFactory<EventCounterTriggerSettings> _traceEventTriggerFactory;
+        private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
 
         public EventCounterTriggerFactory(
+            IOptionsMonitor<GlobalCounterOptions> counterOptions,
             EventPipeTriggerFactory eventPipeTriggerFactory,
             ITraceEventTriggerFactory<EventCounterTriggerSettings> traceEventTriggerFactory)
         {
             _eventPipeTriggerFactory = eventPipeTriggerFactory;
             _traceEventTriggerFactory = traceEventTriggerFactory;
+            _counterOptions = counterOptions;
         }
 
         /// <inheritdoc/>
@@ -33,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             EventCounterTriggerSettings settings = new()
             {
                 ProviderName = options.ProviderName,
-                CounterIntervalSeconds = options.Frequency.GetValueOrDefault(EventCounterOptionsDefaults.Frequency),
+                CounterIntervalSeconds = _counterOptions.CurrentValue.IntervalSeconds,
                 CounterName = options.CounterName,
                 GreaterThan = options.GreaterThan,
                 LessThan = options.LessThan,
