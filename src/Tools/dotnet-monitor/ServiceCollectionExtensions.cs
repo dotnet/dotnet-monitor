@@ -22,6 +22,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 
@@ -99,6 +100,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             services.AddSingleton<ActionListExecutor>();
             services.AddSingleton<CollectionRuleService>();
+            services.AddHostedServiceForwarder<CollectionRuleService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 
             return services;
@@ -205,6 +207,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {
             services.AddSingleton<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
+        }
+
+        private static void AddHostedServiceForwarder<THostedService>(this IServiceCollection services) where THostedService : class, IHostedService
+        {
+            services.AddHostedService<THostedService>(sp => sp.GetRequiredService<THostedService>());
         }
     }
 }

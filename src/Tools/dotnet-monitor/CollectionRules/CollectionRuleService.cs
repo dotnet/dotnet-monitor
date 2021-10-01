@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,13 +14,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
-    internal class CollectionRuleService : IAsyncDisposable
+    internal class CollectionRuleService : BackgroundService, IAsyncDisposable
     {
-        private readonly CancellationTokenSource _disposalSource = new();
         private readonly List<CollectionRuleContainer> _containers = new();
         private readonly ILogger<CollectionRuleService> _logger;
         private readonly CollectionRulesConfigurationProvider _provider;
-        private readonly Task _reapplyRulesTask;
         private readonly IServiceProvider _serviceProvider;
 
         private long _disposalState;
@@ -33,9 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-
-            CancellationToken disposalToken = _disposalSource.Token;
-            _reapplyRulesTask = Task.Run(() => ReapplyRulesAsync(disposalToken), disposalToken).SafeAwait();
         }
 
         public async ValueTask DisposeAsync()
@@ -48,16 +44,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     containers = _containers.ToArray();
                 }
 
-                _disposalSource.SafeCancel();
-
-                await _reapplyRulesTask;
+                // This will cancel the background execution if
+                // BackgroundService.StopAsync wasn't called.
+                Dispose();
 
                 foreach (CollectionRuleContainer container in containers)
                 {
                     await container.DisposeAsync();
                 }
-
-                _disposalSource.Dispose();
             }
         }
 
@@ -92,7 +86,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        private async Task ReapplyRulesAsync(CancellationToken token)
+        protected override async Task ExecuteAsync(CancellationToken token)
         {
             // Indicates that rules changed while handling a previous change.
             // Used to indicate that the next iteration should not wait for
