@@ -25,6 +25,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ArtifactType_Trace = "trace";
         public const string ArtifactType_Metrics = "livemetrics";
 
+        public static TimeSpan ConvertSecondsToTimeSpan(int durationSeconds)
+        {
+            return durationSeconds < 0 ?
+                Timeout.InfiniteTimeSpan :
+                TimeSpan.FromSeconds(durationSeconds);
+        }
+
         public static string GenerateDumpFileName()
         {
             return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
