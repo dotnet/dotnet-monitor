@@ -91,12 +91,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
 
-            await pipeline.RunAsync(token);
+            Task t = pipeline.RunAsync(token);
 
             if (null != startCompletionSource)
             {
                 startCompletionSource.TrySetResult(null); // Not sure if this is where it should go
             }
+
+            await t;
         }
 
         public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, int metricsIntervalSeconds)

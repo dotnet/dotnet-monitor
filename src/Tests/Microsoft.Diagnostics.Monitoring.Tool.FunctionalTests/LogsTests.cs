@@ -585,6 +585,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                 collectLogsOptions.Duration = TestTimeouts.LogsDuration;
                 collectLogsOptions.DefaultLevel = logLevel;
+                collectLogsOptions.Format = logFormat;
             }, async host =>
             {
                 IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
@@ -698,54 +699,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.NotNull(holder);
 
             await ValidateLogsEquality(holder.Stream, callback, logFormat);
-
-            /*
-            // Set up a channel and process the log events here rather than having each test have to deserialize
-            // the set of log events. Pass the channel reader to the callback to allow each test to verify the
-            // set of deserialized log events.
-            Channel<LogEntry> channel = Channel.CreateUnbounded<LogEntry>(new UnboundedChannelOptions()
-            {
-                SingleReader = true,
-                SingleWriter = true,
-                AllowSynchronousContinuations = false
-            });
-
-            Task callbackTask = callback(channel.Reader);
-
-            using StreamReader reader = new StreamReader(holder.Stream);
-
-            JsonSerializerOptions options = new();
-            options.Converters.Add(new JsonStringEnumConverter());
-
-            _outputHelper.WriteLine("Begin reading log entries.");
-            string line;
-
-            while (null != (line = await reader.ReadLineAsync()))
-            {
-                if (logFormat == LogFormat.JsonSequence)
-                {
-                    Assert.True(line.Length > 1);
-                    Assert.Equal(JsonSequenceRecordSeparator, line[0]);
-                    Assert.NotEqual(JsonSequenceRecordSeparator, line[1]);
-
-                    line = line.TrimStart(JsonSequenceRecordSeparator);
-                }
-
-                _outputHelper.WriteLine("Log entry: {0}", line);
-                try
-                {
-                    await channel.Writer.WriteAsync(JsonSerializer.Deserialize<LogEntry>(line, options));
-                }
-                catch (JsonException ex)
-                {
-                    _outputHelper.WriteLine("Exception while deserializing log entry: {0}", ex);
-                }
-            }
-            _outputHelper.WriteLine("End reading log entries.");
-            channel.Writer.Complete();
-
-            await callbackTask;
-            */
         }
 
         private async Task ValidateResponseActionStream(AppRunner runner, ICollectionRuleAction action, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
@@ -760,12 +713,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // to know when the pipeline started and is waiting for logging data.
             await Task.Delay(TimeSpan.FromSeconds(3));
 
-            // Start logging in the target application
-            await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
-
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
             await action.StartAsync(cancellationTokenSource.Token);
+
+            await Task.Delay(TimeSpan.FromSeconds(3)); // Just trying a delay
+
+            // Start logging in the target application
+
+            await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
 
             CollectionRuleActionResult result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
 
