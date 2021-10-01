@@ -57,6 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLogsOptionsDefaults.Duration));
                 bool useAppFilters = Options.UseAppFilters.GetValueOrDefault(CollectLogsOptionsDefaults.UseAppFilters);
                 LogLevel defaultLevel = Options.DefaultLevel.GetValueOrDefault(CollectLogsOptionsDefaults.DefaultLevel);
+                Dictionary<string, LogLevel?> filterSpecs = Options.FilterSpecs;
                 string egressProvider = Options.Egress;
                 LogFormat logFormat = Options.Format.GetValueOrDefault(CollectLogsOptionsDefaults.Format);
 
@@ -64,7 +65,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 {
                     Duration = duration,
                     LogLevel = defaultLevel,
-                    UseAppFilters = useAppFilters
+                    UseAppFilters = useAppFilters,
+                    FilterSpecs = filterSpecs
                 };
 
                 string logsFilePath = await StartLogs(startCompletionSource, EndpointInfo, settings, egressProvider, logFormat, token);
