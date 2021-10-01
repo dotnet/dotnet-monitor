@@ -400,6 +400,9 @@
   <data name="LogFormatString_CollectionRuleActionsThrottled" xml:space="preserve">
     <value>Collection rule '{ruleName}' actions throttled due to action limits.</value>
   </data>
+  <data name="LogFormatString_CollectionRuleCancelled" xml:space="preserve">
+    <value>Collection rule '{ruleName}' cancelled.</value>
+  </data>
   <data name="LogFormatString_CollectionRuleCompleted" xml:space="preserve">
     <value>Collection rule '{ruleName}' completed.</value>
   </data>

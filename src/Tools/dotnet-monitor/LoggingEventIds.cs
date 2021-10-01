@@ -53,5 +53,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const int CollectionRuleConfigurationChanged = 43;
         public const int CollectionRulesStopping = 44;
         public const int CollectionRulesStopped = 45;
+        public const int CollectionRuleCancelled = 46;
     }
 }

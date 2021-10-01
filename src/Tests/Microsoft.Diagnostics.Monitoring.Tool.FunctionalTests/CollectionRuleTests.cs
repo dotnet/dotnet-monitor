@@ -256,8 +256,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRule_ConfigurationChangeTest(DiagnosticPortConnectionMode mode)
         {
-            string firstRuleName = "FirstRule";
-            string secondRuleName = "SecondRule";
+            const string firstRuleName = "FirstRule";
+            const string secondRuleName = "SecondRule";
 
             DiagnosticPortHelper.Generate(
                 mode,

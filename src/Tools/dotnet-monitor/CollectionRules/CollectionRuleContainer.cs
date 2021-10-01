@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly List<Task> _runTasks = new();
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
-        private CancellationTokenSource _cancellationTokenSource;
+        private CancellationTokenSource _shutdownTokenSource;
         private long _disposalState;
 
         public CollectionRuleContainer(
@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             DisposableHelper.ThrowIfDisposed<CollectionRuleContainer>(ref _disposalState);
 
-            _cancellationTokenSource = new();
+            _shutdownTokenSource = new();
 
             KeyValueLogScope logScope = new();
             logScope.AddCollectionRuleEndpointInfo(_processInfo.EndpointInfo);
@@ -165,7 +165,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             using IDisposable loggerScope = _logger.BeginScope(scope);
 
             using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(
-                _cancellationTokenSource.Token,
+                _shutdownTokenSource.Token,
                 token);
 
             try
@@ -203,8 +203,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleCompleted(ruleName);
             }
-            catch (OperationCanceledException ex) when (TrySetCanceledAndHandleDisposal(ex, startedSource))
+            catch (OperationCanceledException ex) when (TrySetCanceledAndReturnTrue(ex, startedSource))
             {
+                if (!_shutdownTokenSource.IsCancellationRequested)
+                {
+                    _logger.CollectionRuleCancelled(ruleName);
+                }
             }
             catch (Exception ex) when (LogExceptionAndReturnFalse(ex, startedSource, ruleName))
             {
@@ -214,27 +218,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private async Task StopRulesCore(CancellationToken token)
         {
-            if (null != _cancellationTokenSource)
+            if (null != _shutdownTokenSource)
             {
-                _cancellationTokenSource.SafeCancel();
+                _shutdownTokenSource.SafeCancel();
 
                 await Task.WhenAll(_runTasks.ToArray()).WithCancellation(token);
 
                 _runTasks.Clear();
 
-                _cancellationTokenSource.Dispose();
+                _shutdownTokenSource.Dispose();
 
-                _cancellationTokenSource = null;
+                _shutdownTokenSource = null;
             }
         }
 
-        private bool TrySetCanceledAndHandleDisposal(OperationCanceledException ex, TaskCompletionSource<object> source)
+        private bool TrySetCanceledAndReturnTrue(OperationCanceledException ex, TaskCompletionSource<object> source)
         {
             // Always attempt to cancel the completion source
             source.TrySetCanceled(ex.CancellationToken);
 
-            // Handle cancellation due to disposal
-            return _cancellationTokenSource.IsCancellationRequested;
+            // Always handle the exception
+            return true;
         }
 
         private bool LogExceptionAndReturnFalse(Exception ex, TaskCompletionSource<object> source, string ruleName)

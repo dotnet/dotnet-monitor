@@ -583,6 +583,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; cancelled..
+        /// </summary>
+        internal static string LogFormatString_CollectionRuleCancelled {
+            get {
+                return ResourceManager.GetString("LogFormatString_CollectionRuleCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Collection rule &apos;{ruleName}&apos; completed..
         /// </summary>
         internal static string LogFormatString_CollectionRuleCompleted {

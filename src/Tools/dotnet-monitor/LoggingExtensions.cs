@@ -241,6 +241,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRulesStopped);
 
+        private static readonly Action<ILogger, string, Exception> _collectionRuleCancelled =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(LoggingEventIds.CollectionRuleCancelled, "CollectionRuleCancelled"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_CollectionRuleCancelled);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -433,6 +439,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void CollectionRulesStopped(this ILogger logger)
         {
             _collectionRulesStopped(logger, null);
+        }
+
+        public static void CollectionRuleCancelled(this ILogger logger, string ruleName)
+        {
+            _collectionRuleCancelled(logger, ruleName, null);
         }
     }
 }
