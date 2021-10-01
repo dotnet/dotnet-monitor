@@ -16,6 +16,9 @@
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
     <UsingToolNetFrameworkReferenceAssemblies>false</UsingToolNetFrameworkReferenceAssemblies>
+    <!-- Use `dotnet test` to have the ability to collect dumps on hanging tests.  -->
+    <UseVSTestRunner>true</UseVSTestRunner>
+    <MicrosoftTestPlatformVersion>16.11.0</MicrosoftTestPlatformVersion>
   </PropertyGroup>
   <!--
     These versions should ONLY be updated by automation.
