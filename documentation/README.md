@@ -28,6 +28,7 @@ When running a dotnet application, differences in diverse local and production e
 - [Authentication](./authentication.md)
     - [API Key (Recommended)](./authentication.md#api-key-authentication)
     - [Windows](./authentication.md#windows-authentication)
+- [Collection Rules](./collectionrules.md)
 - [Egress Providers](./egress.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Clone, build, and test the repo](./building.md)

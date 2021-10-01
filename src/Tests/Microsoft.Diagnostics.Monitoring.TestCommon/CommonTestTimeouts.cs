@@ -24,6 +24,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static readonly TimeSpan WaitForExit = TimeSpan.FromSeconds(15);
 
         /// <summary>
+        /// Default timeout for acquiring a trace.
+        /// </summary>
+        public static readonly TimeSpan TraceTimeout = TimeSpan.FromMinutes(2);
+
         /// Default timeout for gcdump collection.
         /// </summary>
         /// <remarks>

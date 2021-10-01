@@ -19,5 +19,9 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
+    <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=3m"</TestRunnerAdditionalArguments>
+  </PropertyGroup>
+
   <Import Project="$(RepositoryEngineeringDir)Analyzers.props" />
 </Project>
