@@ -162,15 +162,11 @@ namespace ReleaseTool.Core
                 {
                     try
                     {
-                        newClient = (await serviceClient.CreateBlobContainerAsync(_containerName, PublicAccessType.None, metadata: null, ct)).Value;
-                        _logger.LogInformation($"Created new contianer: {_containerName}.");
-                    }
-                    // 409 is the error code for an existing blob container already existing
-                    catch (RequestFailedException rfe) when (rfe.Status == 409)
-                    {
-                        _logger.LogInformation($"Found existing contianer: {_containerName}.");
-                        // Got an existing container
                         newClient = serviceClient.GetBlobContainerClient(_containerName);
+                        if (!(await newClient.ExistsAsync(ct)).Value)
+                        {
+                            newClient = (await serviceClient.CreateBlobContainerAsync(_containerName, PublicAccessType.None, metadata: null, ct);
+                        }
                     }
                     catch (Exception ex)
                     {
