@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,8 +30,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly List<Task> _runTasks = new();
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
-        private CancellationTokenSource _shutdownTokenSource;
         private long _disposalState;
+        private CancellationTokenSource _shutdownTokenSource;
 
         public CollectionRuleContainer(
             IServiceProvider serviceProvider,
@@ -63,6 +64,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             CancellationToken token)
         {
             DisposableHelper.ThrowIfDisposed<CollectionRuleContainer>(ref _disposalState);
+
+            Debug.Assert(null == _shutdownTokenSource, "Collection rules were previously started without stopping.");
 
             _shutdownTokenSource = new();
 

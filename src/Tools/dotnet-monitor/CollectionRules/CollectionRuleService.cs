@@ -94,7 +94,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private async Task ReapplyRulesAsync(CancellationToken token)
         {
+            // Indicates that rules changed while handling a previous change.
+            // Used to indicate that the next iteration should not wait for
+            // another configuration change since a change was already detected.
             bool rulesChanged = false;
+
             while (!token.IsCancellationRequested)
             {
                 if (!rulesChanged)
@@ -107,9 +111,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     // Wait for the rules to be changed
                     await rulesChangedTaskSource.Task;
-
-                    rulesChanged = false;
                 }
+
+                rulesChanged = false;
 
                 _logger.CollectionRuleConfigurationChanged();
 
