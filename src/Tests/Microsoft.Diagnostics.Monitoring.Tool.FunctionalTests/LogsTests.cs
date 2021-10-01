@@ -586,6 +586,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 collectLogsOptions.Duration = TestTimeouts.LogsDuration;
                 collectLogsOptions.DefaultLevel = logLevel;
                 collectLogsOptions.Format = logFormat;
+                collectLogsOptions.UseAppFilters = false; // Without this, ignores the DefaultLevel (in favor of the FilterSpec, which is null by default). Is this the behavior we want?
             }, async host =>
             {
                 IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
@@ -594,85 +595,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 ICollectionRuleActionFactoryProxy factory;
                 Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLogs, out factory));
 
-                /*
-                EndpointInfoSourceCallback callbackTemp = new(_outputHelper);
-                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callbackTemp);
-                source.Start();
+                using CancellationTokenSource endpointTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
 
-                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60;
+                await ScenarioRunner.SingleTarget(
+                    _outputHelper,
+                    _httpClientFactory,
+                    mode,
+                    TestAppScenarios.Logger.Name,
+                    appValidate: async (runner, client) =>
+                    {
+                        IEndpointInfo endpointInfo = await EndpointInfo.FromProcessIdAsync(await runner.ProcessIdTask, endpointTokenSource.Token);
+                        ICollectionRuleAction action = factory.Create(endpointInfo, options);
 
-                runner.ScenarioName = TestAppScenarios.Logger.Name;
+                        using CancellationTokenSource validationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
 
-                Task<IEndpointInfo> newEndpointInfoTask = callbackTemp.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-                await runner.ExecuteAsync(async () =>
-                {
-                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
-
-                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
-
-                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
-
-                    await ValidateResponseActionStream(
-                        runner,
-                        action,
-                        callback,
-                        logFormat);
-                });
-                */
-
-                using CancellationTokenSource cancellationTokenSource2 = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
-
-                try
-                {
-                    await ScenarioRunner.SingleTarget(
-                        _outputHelper,
-                        _httpClientFactory,
-                        mode,
-                        TestAppScenarios.Logger.Name,
-                        appValidate: async (runner, client) =>
-                        {
-                            IEndpointInfo endpointInfo = await EndpointInfo.FromProcessIdAsync(await runner.ProcessIdTask, cancellationTokenSource2.Token);
-                            ICollectionRuleAction action = factory.Create(endpointInfo, options);
-
-                            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
-
-                            await ValidateResponseActionStream(
-                                runner,
-                                action,
-                                callback,
-                                logFormat);
-                        });
-                }
-                finally
-                {
-                    //await DisposableHelper.DisposeAsync(action);
-                }
+                        await ValidateResponseStream(
+                            runner,
+                            action,
+                            callback,
+                            logFormat);
+                    });
             });
-        }
-
-        // NOT BEING USED AND ISN'T UPDATED
-        private Task ValidateLogsActionAsync(
-            DiagnosticPortConnectionMode mode,
-            LogsConfiguration configuration,
-            Func<ChannelReader<LogEntry>, Task> callback,
-            LogFormat logFormat)
-        {
-            return ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                mode,
-                TestAppScenarios.Logger.Name,
-                appValidate: async (runner, client) =>
-                    await ValidateResponseStream(
-                        runner,
-                        client.CaptureLogsAsync(
-                            await runner.ProcessIdTask,
-                            TestTimeouts.LogsDuration,
-                            configuration,
-                            logFormat),
-                        callback,
-                        logFormat));
         }
 
         private async Task ValidateResponseStream(AppRunner runner, Task<ResponseStreamHolder> holderTask, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
@@ -701,7 +644,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await ValidateLogsEquality(holder.Stream, callback, logFormat);
         }
 
-        private async Task ValidateResponseActionStream(AppRunner runner, ICollectionRuleAction action, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
+        private async Task ValidateResponseStream(AppRunner runner, ICollectionRuleAction action, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
         {
             Assert.NotNull(runner);
             Assert.NotNull(action);
@@ -711,16 +654,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // application start logging. It would be best if dotnet-monitor could write a console event
             // (at Debug or Trace level) for when the pipeline has started. This would require dotnet-monitor
             // to know when the pipeline started and is waiting for logging data.
-            await Task.Delay(TimeSpan.FromSeconds(3));
+            //await Task.Delay(TimeSpan.FromSeconds(3));
 
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
             await action.StartAsync(cancellationTokenSource.Token);
 
-            await Task.Delay(TimeSpan.FromSeconds(3)); // Just trying a delay
+            await Task.Delay(TimeSpan.FromSeconds(3));
 
             // Start logging in the target application
-
             await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
 
             CollectionRuleActionResult result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
