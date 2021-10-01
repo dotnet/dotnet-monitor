@@ -6,7 +6,6 @@ using Azure.Storage.Sas;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -16,6 +15,7 @@ namespace ReleaseTool.Core
 {
     public class AzureBlobBublisher : IPublisher
     {
+        private const int ClockSkewSec = 15 * 60;
         private const int MaxRetries = 15;
         private const int MaxFullLoopRetries = 5;
         private readonly TimeSpan FullLoopRetryDelay = TimeSpan.FromSeconds(1);
@@ -34,7 +34,7 @@ namespace ReleaseTool.Core
         {
             get
             {
-                return new Uri($"https://{_accountName}.blob.core.windows.net");
+                return new Uri(FormattableString.Invariant($"https://{_accountName}.blob.core.windows.net"));
             }
         }
 
@@ -146,7 +146,7 @@ namespace ReleaseTool.Core
 
         private static string GetBlobName(string releaseName, string relativeFilePath)
         {
-            return $"{releaseName}/{relativeFilePath}";
+            return FormattableString.Invariant($"{releaseName}/{relativeFilePath}");
         }
 
         private async Task<BlobContainerClient> GetClient(CancellationToken ct)
@@ -180,6 +180,7 @@ namespace ReleaseTool.Core
 
                     try
                     {
+                        DateTime baseTime = DateTime.UtcNow;
                         // Add the new (or update existing) "download" policy to the container
                         // This is used to mint the SAS tokens without an expiration policy
                         // Expiration can be added later by modifying this policy
@@ -189,8 +190,8 @@ namespace ReleaseTool.Core
                             AccessPolicy = new BlobAccessPolicy()
                             {
                                 Permissions = "r",
-                                PolicyStartsOn = new DateTimeOffset(DateTime.UtcNow),
-                                PolicyExpiresOn = new DateTimeOffset(DateTime.UtcNow.AddDays(_sasValidDays)),
+                                PolicyStartsOn = new DateTimeOffset(baseTime.AddSeconds(-ClockSkewSec)),
+                                PolicyExpiresOn = new DateTimeOffset(DateTime.UtcNow.AddDays(_sasValidDays).AddSeconds(ClockSkewSec)),
                             }
                         };
                         _logger.LogInformation($"Writing download access policy: {AccessPolicyDownloadId} to {_containerName}.");
@@ -198,7 +199,7 @@ namespace ReleaseTool.Core
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning(ex, $"Failed to write access policy for {_containerName}, retrying with new name.");
+                        _logger.LogWarning(ex, $"Failed to write access policy for {_containerName}, retrying.");
                         continue;
                     }
 
