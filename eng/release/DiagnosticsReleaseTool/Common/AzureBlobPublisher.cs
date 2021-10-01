@@ -165,7 +165,7 @@ namespace ReleaseTool.Core
                         newClient = serviceClient.GetBlobContainerClient(_containerName);
                         if (!(await newClient.ExistsAsync(ct)).Value)
                         {
-                            newClient = (await serviceClient.CreateBlobContainerAsync(_containerName, PublicAccessType.None, metadata: null, ct);
+                            newClient = (await serviceClient.CreateBlobContainerAsync(_containerName, PublicAccessType.None, metadata: null, ct));
                         }
                     }
                     catch (Exception ex)
