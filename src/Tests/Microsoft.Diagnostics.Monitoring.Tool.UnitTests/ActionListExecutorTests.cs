@@ -15,6 +15,7 @@ using Xunit.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -51,18 +52,34 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
 
-                await executor.ExecuteActions(context, cancellationTokenSource.Token);
+                int callbackCount = 0;
+                Action startCallback = () => callbackCount++;
+
+                await executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token);
+
+                VerifyStartCallbackCount(waitForCompletion: false, callbackCount);
             });
         }
 
         [Fact]
-        public async Task ActionListExecutor_SecondActionFail()
+        public Task ActionListExecutor_SecondActionFail_DeferredCompletion()
+        {
+            return ActionListExecutor_SecondActionFail(waitForCompletion: false);
+        }
+
+        [Fact]
+        public Task ActionListExecutor_SecondActionFail_WaitedCompletion()
+        {
+            return ActionListExecutor_SecondActionFail(waitForCompletion: true);
+        }
+
+        private async Task ActionListExecutor_SecondActionFail(bool waitForCompletion)
         {
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
-                    .AddExecuteActionAppAction(new string[] { "NonzeroExitCode" })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { "ZeroExitCode" })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { "NonzeroExitCode" })
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -75,23 +92,39 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
 
+                int callbackCount = 0;
+                Action startCallback = () => callbackCount++;
+
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                    () => executor.ExecuteActions(context, cancellationTokenSource.Token));
+                    () => executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token));
 
                 Assert.Equal(1, actionExecutionException.ActionIndex);
 
                 Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
+
+                VerifyStartCallbackCount(waitForCompletion, callbackCount);
             });
         }
 
         [Fact]
-        public async Task ActionListExecutor_FirstActionFail()
+        public Task ActionListExecutor_FirstActionFail_DeferredCompletion()
+        {
+            return ActionListExecutor_FirstActionFail(waitForCompletion: false);
+        }
+
+        [Fact]
+        public Task ActionListExecutor_FirstActionFail_WaitedCompletion()
+        {
+            return ActionListExecutor_FirstActionFail(waitForCompletion: true);
+        }
+
+        private async Task ActionListExecutor_FirstActionFail(bool waitForCompletion)
         {
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(new string[] { "NonzeroExitCode" })
-                    .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { "NonzeroExitCode" })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { "ZeroExitCode" })
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -104,13 +137,35 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
 
+                int callbackCount = 0;
+                Action startCallback = () => callbackCount++;
+
                 CollectionRuleActionExecutionException actionExecutionException = await Assert.ThrowsAsync<CollectionRuleActionExecutionException>(
-                    () => executor.ExecuteActions(context, cancellationTokenSource.Token));
+                    () => executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token));
 
                 Assert.Equal(0, actionExecutionException.ActionIndex);
 
                 Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
+
+                VerifyStartCallbackCount(waitForCompletion, callbackCount);
             });
+        }
+
+        private static void VerifyStartCallbackCount(bool waitForCompletion, int callbackCount)
+        {
+            if (waitForCompletion)
+            {
+                // The action failure occurs in completion and the actions were specified to have
+                // to wait for completion before executing the next action, thus the start callback
+                // should not have been invoked.
+                Assert.Equal(0, callbackCount);
+            }
+            else
+            {
+                // The action failure occurs in completion but all actions were started, thus
+                // the start callback should have been invoked once.
+                Assert.Equal(1, callbackCount);
+            }
         }
     }
 }

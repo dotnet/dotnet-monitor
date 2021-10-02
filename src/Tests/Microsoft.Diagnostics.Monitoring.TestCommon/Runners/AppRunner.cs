@@ -23,6 +23,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     {
         private readonly LoggingRunnerAdapter _adapter;
 
+        private readonly string _appPath;
+
         private readonly ITestOutputHelper _outputHelper;
 
         private readonly TaskCompletionSource<string> _readySource =
@@ -30,16 +32,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private readonly DotNetRunner _runner = new();
 
-        private readonly Assembly _testAssembly;
-
         private TaskCompletionSource<object> _currentCommandSource;
 
         private bool _isDiposed;
-
-        /// <summary>
-        /// The path to the application.
-        /// </summary>
-        private string AppPath => AssemblyHelper.GetAssemblyArtifactBinPath(_testAssembly, "Microsoft.Diagnostics.Monitoring.UnitTestApp");
 
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Listen"/>
@@ -72,8 +67,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         {
             AppId = appId;
 
-            _testAssembly = testAssembly;
             _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
+
+            _appPath = AssemblyHelper.GetAssemblyArtifactBinPath(
+                testAssembly,
+                "Microsoft.Diagnostics.Monitoring.UnitTestApp",
+                tfm);
 
             _runner.TargetFramework = tfm;
 
@@ -108,12 +107,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 throw new ArgumentNullException(nameof(ScenarioName));
             }
 
-            if (!File.Exists(AppPath))
+            if (!File.Exists(_appPath))
             {
-                throw new FileNotFoundException($"Application path could not be found.", AppPath);
+                throw new FileNotFoundException($"Application path could not be found.", _appPath);
             }
 
-            _runner.EntrypointAssemblyPath = AppPath;
+            _runner.EntrypointAssemblyPath = _appPath;
             _runner.Arguments = ScenarioName;
 
             // Enable diagnostics in case it is disabled via inheriting test environment.

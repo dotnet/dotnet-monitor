@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 "dotnet-monitor",
-                TargetFrameworkMoniker.NetCoreApp31);
+                TargetFrameworkMoniker.Net60);
 
         private string SharedConfigDirectoryPath =>
             Path.Combine(_runnerTmpPath, "SharedConfig");
@@ -72,6 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             // the correct ASP.NET Core version (which can be different than the .NET
             // version, especially for prereleases).
             _runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
+            _runner.TargetFramework = TargetFrameworkMoniker.Net60;
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
@@ -175,7 +176,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
         }
 
-        public async Task WriteUserSettingsAsync(RootOptions options, CancellationToken token)
+        public async Task WriteUserSettingsAsync(RootOptions options)
         {
             using FileStream stream = new(UserSettingsFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
 
@@ -183,12 +184,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
 
             _outputHelper.WriteLine("Wrote user settings.");
-        }
-
-        public async Task WriteUserSettingsAsync(RootOptions options, TimeSpan timeout)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-            await WriteUserSettingsAsync(options, cancellation.Token).ConfigureAwait(false);
         }
     }
 }

@@ -4,13 +4,13 @@
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>166610c56ff732093f0145a2911d4f6c40b786da</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21474.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.21480.4">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>9cad0c66c77fd7070e37d3e6732d0d98229db5f5</Sha>
+      <Sha>01a71a0394c29dd612d11153b365eacb26f574d4</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21474.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.21480.4">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>9cad0c66c77fd7070e37d3e6732d0d98229db5f5</Sha>
+      <Sha>01a71a0394c29dd612d11153b365eacb26f574d4</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -22,17 +22,17 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>3ea0d860c6973f2cbadc9e895c7ec2cbdaec4ad5</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.247001">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.248001">
       <Uri>https://github.com/dotnet/symstore</Uri>
-      <Sha>1e4ec5b84ad3dcda79a2f3b7aa93467317d0381f</Sha>
+      <Sha>c8995339fb55bbc944bffdfe623fb0f6a7963fef</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21475.9">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21480.15">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>e66cee96d2d5cb024f80c8c1a976dc80ba791cf6</Sha>
+      <Sha>dba2b211d4c5f8d8a9590c3921368db59cdbd29f</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21472.13">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21480.10">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>491ed9a112559872c31ae40da8f6d9977ba4ce3a</Sha>
+      <Sha>23a5153fb38c7b74f98d298a2ae6580f0af9b66d</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

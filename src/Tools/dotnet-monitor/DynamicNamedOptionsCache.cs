@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
+namespace Microsoft.Diagnostics.Tools.Monitor
 {
     /// <summary>
     /// Custom <see cref="IOptionsMonitorCache{TOptions}"/> to override behavior
@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     /// on all of the names in the cache (e.g. <see cref="TryRemove(string)"/> on the default name signals
     /// that all of the named options should be cleared.
     /// </remarks>
-    internal sealed class EgressOptionsCache<TOptions> :
+    internal sealed class DynamicNamedOptionsCache<TOptions> :
         OptionsCache<TOptions>
         where TOptions : class
     {

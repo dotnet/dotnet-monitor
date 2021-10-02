@@ -89,6 +89,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             await runner.StartAsync(cancellation.Token);
         }
 
+        public static Task WaitForCollectionRuleActionsCompletedAsync(this MonitorCollectRunner runner, string ruleName)
+        {
+            return runner.WaitForCollectionRuleActionsCompletedAsync(ruleName, TestTimeouts.CollectionRuleActionsCompletedTimeout);
+        }
+
+        public static async Task WaitForCollectionRuleActionsCompletedAsync(this MonitorCollectRunner runner, string ruleName, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+            await runner.WaitForCollectionRuleActionsCompletedAsync(ruleName, cancellation.Token);
+        }
+
         public static Task WaitForCollectionRuleCompleteAsync(this MonitorCollectRunner runner, string ruleName)
         {
             return runner.WaitForCollectionRuleCompleteAsync(ruleName, TestTimeouts.CollectionRuleCompletionTimeout);
