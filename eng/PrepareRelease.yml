@@ -2,7 +2,7 @@ stages:
 - stage: PrepareReleaseStage
   displayName: Release Preparation
   dependsOn:
-  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')) }}:
     - publish_using_darc
   jobs:
   - job: PrepareReleaseJob
@@ -23,7 +23,7 @@ stages:
         packageType: runtime
         version: 3.1.x
         installationPath: '$(Build.Repository.LocalPath)\.dotnet'
-    - ${{ if in(variables['Build.Reason'], 'PullRequest') }}:
+    - ${{ if not(and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))) }}:
       - script: '$(Build.SourcesDirectory)\dotnet.cmd build $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release /bl'
         workingDirectory: '$(System.ArtifactsDirectory)\'
         displayName: 'Build Manifest generation and asset publishing tool'
@@ -38,9 +38,27 @@ stages:
         inputs:
           targetType: filePath
           filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
-          arguments: '-BarBuildId "$(BARBuildId)" -AzdoToken "$(dn-bot-dotnet-all-scopes)" -MaestroToken "$(MaestroAccessToken)" -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)" -DownloadTargetPath "$(System.ArtifactsDirectory)\ReleaseTarget" -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)" -ReleaseVersion "$(Build.BuildNumber)"'
+          arguments: >-
+            -BarBuildId "$(BARBuildId)" 
+            -AzdoToken "$(dn-bot-dotnet-all-scopes)" 
+            -MaestroToken "$(MaestroAccessToken)" 
+            -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)" 
+            -DownloadTargetPath "$(System.ArtifactsDirectory)\ReleaseTarget" 
+            -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)" 
+            -ReleaseVersion "$(Build.BuildNumber)"
           workingDirectory: '$(Build.Repository.LocalPath)'
-      - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- prepare-release --input-drop-path "$(System.ArtifactsDirectory)\ReleaseTarget" --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json" --staging-directory "$(System.ArtifactsDirectory)\ReleaseStaging" --release-name "$(Build.BuildNumber)" --account-name "$(dotnet-diagnostics-storage-accountname)" --account-key "$(dotnetstage-storage-key)" --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)" -v True'
+      - script: >-
+          dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release
+          --
+          prepare-release 
+          --input-drop-path "$(System.ArtifactsDirectory)\ReleaseTarget" 
+          --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json" 
+          --staging-directory "$(System.ArtifactsDirectory)\ReleaseStaging" 
+          --release-name "$(Build.BuildNumber)" 
+          --account-name "$(dotnet-diagnostics-storage-accountname)" 
+          --account-key "$(dotnetstage-storage-key)" 
+          --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)" 
+          -v True
         workingDirectory: '$(Build.Repository.LocalPath)\'
         displayName: 'Manifest generation and asset publishing'
       - task: PublishPipelineArtifact@1
