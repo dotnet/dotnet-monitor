@@ -748,6 +748,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Determines the metrics interval for all dotnet-monitor scenarios. This includes prometheus metrics, live metrics, triggers, and traces..
+        /// </summary>
+        public static string DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets or sets JsonWriterOptions..
         /// </summary>
         public static string DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions {

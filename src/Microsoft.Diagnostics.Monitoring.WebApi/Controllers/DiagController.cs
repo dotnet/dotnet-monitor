@@ -360,7 +360,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     if (!CounterValidator.ValidateProviders(_counterOptions.CurrentValue,
                         provider, out string errorMessage))
                     {
-                        throw new InvalidOperationException(errorMessage);
+                        throw new ValidationException(errorMessage);
                     }
                 }
 

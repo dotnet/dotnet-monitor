@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                     if (!CounterValidator.ValidateProviders(counterOptions.CurrentValue,
                         provider, out string errorMessage))
                     {
-                        results.Add(new ValidationResult(errorMessage, new[] { providerContext.MemberName }));
+                        results.Add(new ValidationResult(errorMessage, new[] { nameof(EventPipeProvider.Arguments) }));
                     }
 
                     index++;

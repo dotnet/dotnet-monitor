@@ -739,8 +739,13 @@
       "additionalProperties": false,
       "properties": {
         "IntervalSeconds": {
-          "type": "integer",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Determines the metrics interval for all dotnet-monitor scenarios. This includes prometheus metrics, live metrics, triggers, and traces.",
           "format": "int32",
+          "default": 5,
           "maximum": 86400.0,
           "minimum": 1.0
         }

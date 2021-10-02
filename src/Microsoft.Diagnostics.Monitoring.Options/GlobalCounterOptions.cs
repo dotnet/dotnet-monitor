@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
@@ -11,7 +12,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     public class GlobalCounterOptions
     {
-        [Range(1, 3600 * 24)]
+        public const int IntervalMinSeconds = 1;
+        public const int IntervalMaxSeconds = 60 * 60 * 24; // One day
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds))]
+        [Range(IntervalMinSeconds, IntervalMaxSeconds)]
+        [DefaultValue(GlobalCounterOptionsDefaults.IntervalSeconds)]
         public int? IntervalSeconds { get; set; }
     }
 

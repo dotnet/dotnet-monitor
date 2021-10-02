@@ -544,4 +544,7 @@
     <value>Wait for the current action to complete before starting the next action.</value>
     <comment>The description provided for the WaitForCompletion parameter on CollectionRuleActionOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds" xml:space="preserve">
+    <value>Determines the metrics interval for all dotnet-monitor scenarios. This includes prometheus metrics, live metrics, triggers, and traces.</value>
+  </data>
 </root>
