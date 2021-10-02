@@ -24,7 +24,7 @@ stages:
         version: 3.1.x
         installationPath: '$(Build.Repository.LocalPath)\.dotnet'
     - ${{ if in(variables['Build.Reason'], 'PullRequest') }}:
-      - script: 'dotnet.cmd build $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release /bl'
+      - script: '$(Build.SourcesDirectory)\dotnet.cmd build $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release /bl'
         workingDirectory: '$(System.ArtifactsDirectory)\'
         displayName: 'Build Manifest generation and asset publishing tool'
       - task: PublishPipelineArtifact@1
