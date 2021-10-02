@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +24,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
     internal class CollectionRuleContainer : IAsyncDisposable
     {
         private readonly ActionListExecutor _actionListExecutor;
-        private readonly CancellationTokenSource _disposalTokenSource = new();
         private readonly ILogger<CollectionRuleService> _logger;
         private readonly IProcessInfo _processInfo;
         private readonly IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
@@ -31,6 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         private long _disposalState;
+        private CancellationTokenSource _shutdownTokenSource;
 
         public CollectionRuleContainer(
             IServiceProvider serviceProvider,
@@ -54,11 +55,66 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             if (DisposableHelper.CanDispose(ref _disposalState))
             {
-                _disposalTokenSource.SafeCancel();
+                await StopRulesCore(CancellationToken.None);
+            }
+        }
 
-                await Task.WhenAll(_runTasks.ToArray());
+        public async Task StartRulesAsync(
+            IReadOnlyCollection<string> ruleNames,
+            CancellationToken token)
+        {
+            DisposableHelper.ThrowIfDisposed<CollectionRuleContainer>(ref _disposalState);
 
-                _disposalTokenSource.Dispose();
+            Debug.Assert(null == _shutdownTokenSource, "Collection rules were previously started without stopping.");
+
+            _shutdownTokenSource = new();
+
+            KeyValueLogScope logScope = new();
+            logScope.AddCollectionRuleEndpointInfo(_processInfo.EndpointInfo);
+            // Constrain the scope of the log scope to just the log call so that the log scope
+            // is not captured by the rule execution method.
+            using (_logger.BeginScope(logScope))
+            {
+                _logger.CollectionRulesStarting();
+            }
+
+            List<Task> startTasks = new List<Task>(ruleNames.Count);
+            foreach (string ruleName in ruleNames)
+            {
+                // Start running the rule and wrap running task
+                // in a safe awaitable task so that shutdown isn't
+                // failed due to failing or cancelled pipelines.
+                startTasks.Add(StartRuleAsync(ruleName, token).SafeAwait());
+            }
+
+            // Wait for all start tasks to complete before finishing rule application
+            await Task.WhenAll(startTasks);
+
+            using (_logger.BeginScope(logScope))
+            {
+                _logger.CollectionRulesStarted();
+            }
+        }
+
+        public async Task StopRulesAsync(
+            CancellationToken token)
+        {
+            DisposableHelper.ThrowIfDisposed<CollectionRuleContainer>(ref _disposalState);
+
+            KeyValueLogScope logScope = new();
+            logScope.AddCollectionRuleEndpointInfo(_processInfo.EndpointInfo);
+            // Constrain the scope of the log scope to just the log call so that the log scope
+            // is not captured by the rule execution method.
+            using (_logger.BeginScope(logScope))
+            {
+                _logger.CollectionRulesStopping();
+            }
+
+            await StopRulesCore(token);
+
+            using (_logger.BeginScope(logScope))
+            {
+                _logger.CollectionRulesStopped();
             }
         }
 
@@ -68,12 +124,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         /// <returns>
         /// A task that is completed when the collection rule has started.
         /// </returns>
-        public async Task StartRuleAsync(
+        private async Task StartRuleAsync(
             string ruleName,
             CancellationToken token)
         {
-            DisposableHelper.ThrowIfDisposed<CollectionRuleContainer>(ref _disposalState);
-
             // Wrap the passed CancellationToken into a linked CancellationTokenSource so that the
             // RunRuleAsync method is only cancellable for the execution of the ApplyRules method.
             // Don't want the caller to be able to cancel the run of the rules after having finished
@@ -114,7 +168,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             using IDisposable loggerScope = _logger.BeginScope(scope);
 
             using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(
-                _disposalTokenSource.Token,
+                _shutdownTokenSource.Token,
                 token);
 
             try
@@ -152,8 +206,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleCompleted(ruleName);
             }
-            catch (OperationCanceledException ex) when (TrySetCanceledAndHandleDisposal(ex, startedSource))
+            catch (OperationCanceledException ex) when (TrySetCanceledAndReturnTrue(ex, startedSource))
             {
+                if (!_shutdownTokenSource.IsCancellationRequested)
+                {
+                    _logger.CollectionRuleCancelled(ruleName);
+                }
             }
             catch (Exception ex) when (LogExceptionAndReturnFalse(ex, startedSource, ruleName))
             {
@@ -161,13 +219,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        private bool TrySetCanceledAndHandleDisposal(OperationCanceledException ex, TaskCompletionSource<object> source)
+        private async Task StopRulesCore(CancellationToken token)
+        {
+            if (null != _shutdownTokenSource)
+            {
+                _shutdownTokenSource.SafeCancel();
+
+                await Task.WhenAll(_runTasks.ToArray()).WithCancellation(token);
+
+                _runTasks.Clear();
+
+                _shutdownTokenSource.Dispose();
+
+                _shutdownTokenSource = null;
+            }
+        }
+
+        private bool TrySetCanceledAndReturnTrue(OperationCanceledException ex, TaskCompletionSource<object> source)
         {
             // Always attempt to cancel the completion source
             source.TrySetCanceled(ex.CancellationToken);
 
-            // Handle cancellation due to disposal
-            return _disposalTokenSource.IsCancellationRequested;
+            // Always handle the exception
+            return true;
         }
 
         private bool LogExceptionAndReturnFalse(Exception ex, TaskCompletionSource<object> source, string ruleName)

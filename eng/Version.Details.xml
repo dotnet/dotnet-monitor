@@ -22,17 +22,17 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>3ea0d860c6973f2cbadc9e895c7ec2cbdaec4ad5</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.247701">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.248001">
       <Uri>https://github.com/dotnet/symstore</Uri>
-      <Sha>b1594bbcab10cc774c12169c694cac11e7e31bbb</Sha>
+      <Sha>c8995339fb55bbc944bffdfe623fb0f6a7963fef</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21479.1">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21480.15">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>892230b69d93d479c50be1cabf7e868ddc905911</Sha>
+      <Sha>dba2b211d4c5f8d8a9590c3921368db59cdbd29f</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21478.11">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21480.10">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>9e0a252fd3c5e928973cd08bc1a94ca8dbe7cb84</Sha>
+      <Sha>23a5153fb38c7b74f98d298a2ae6580f0af9b66d</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

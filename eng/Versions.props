@@ -16,6 +16,9 @@
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
     <UsingToolNetFrameworkReferenceAssemblies>false</UsingToolNetFrameworkReferenceAssemblies>
+    <!-- Use `dotnet test` to have the ability to collect dumps on hanging tests.  -->
+    <UseVSTestRunner>true</UseVSTestRunner>
+    <MicrosoftTestPlatformVersion>16.11.0</MicrosoftTestPlatformVersion>
   </PropertyGroup>
   <!--
     These versions should ONLY be updated by automation.
@@ -29,14 +32,14 @@
     <!-- dotnet/arcade references -->
     <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.21474.2</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21479.1</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21480.15</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.248003</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.248003</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
-    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21478.11</VSRedistCommonNetCoreSharedFrameworkx6460Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21480.10</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.247701</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.248001</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftNETCoreApp31Version>3.1.18</MicrosoftNETCoreApp31Version>

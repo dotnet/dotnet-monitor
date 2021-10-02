@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return new EventPipeCounterPipelineSettings
             {
                 CounterGroups = eventPipeCounterGroups.ToArray(),
-                Duration = TimeSpan.FromSeconds(durationSeconds),
+                Duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds),
                 RefreshInterval = TimeSpan.FromSeconds(refreshInterval)
             };
         }
