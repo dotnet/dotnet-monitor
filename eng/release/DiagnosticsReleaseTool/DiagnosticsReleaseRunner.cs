@@ -26,8 +26,8 @@ namespace DiagnosticsReleaseTool.Impl
             var layoutWorkerList = new List<ILayoutWorker>
             {
                 // TODO: We may want to inject a logger.
-                new NugetLayoutWorker(stagingPath: null),
-                new SymbolPackageLayoutWorker(stagingPath: null),
+                new NugetLayoutWorker(stagingPath: releaseConfig.StagingDirectory.FullName),
+                new SymbolPackageLayoutWorker(stagingPath: releaseConfig.StagingDirectory.FullName),
                 new SkipLayoutWorker(
                     shouldHandleFileFunc: DiagnosticsRepoHelpers.IsDockerUtilityFile
                 )
