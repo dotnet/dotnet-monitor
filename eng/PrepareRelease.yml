@@ -2,14 +2,15 @@ stages:
 - stage: PrepareReleaseStage
   displayName: Release Preparation
   dependsOn:
-  - publish_using_darc
+  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+    - publish_using_darc
   jobs:
   - job: PrepareReleaseJob
     displayName: Prepare release with Darc
     pool: 
       vmImage: windows-latest
     variables:
-    - ${{ if in(variables['Build.Reason'], 'PullRequest') }}:
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')) }}:
       - group: DotNet-Diagnostics-Storage
       - group: DotNet-DotNetStage-Storage
       - group: Release-Pipeline
