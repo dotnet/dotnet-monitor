@@ -22,6 +22,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 
@@ -84,7 +85,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<ITraceEventTriggerFactory<AspNetRequestCountTriggerSettings>, Monitoring.EventPipe.Triggers.AspNet.AspNetRequestCountTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<AspNetRequestStatusTriggerSettings>, Monitoring.EventPipe.Triggers.AspNet.AspNetRequestStatusTriggerFactory>();
 
-
             services.AddSingleton<CollectionRulesConfigurationProvider>();
             services.AddSingleton<ICollectionRuleActionOperations, CollectionRuleActionOperations>();
             services.AddSingleton<ICollectionRuleTriggerOperations, CollectionRuleTriggerOperations>();
@@ -92,8 +92,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
             services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
 
+            // Register change sources for the options type
+            services.AddSingleton<IOptionsChangeTokenSource<CollectionRuleOptions>, CollectionRulesConfigurationChangeTokenSource>();
+
+            // Add custom options cache to override behavior of default named options
+            services.AddSingleton<IOptionsMonitorCache<CollectionRuleOptions>, DynamicNamedOptionsCache<CollectionRuleOptions>>();
+
             services.AddSingleton<ActionListExecutor>();
             services.AddSingleton<CollectionRuleService>();
+            services.AddHostedServiceForwarder<CollectionRuleService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 
             return services;
@@ -188,7 +195,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
 
             // Add custom options cache to override behavior of default named options
-            services.AddSingleton<IOptionsMonitorCache<TOptions>, EgressOptionsCache<TOptions>>();
+            services.AddSingleton<IOptionsMonitorCache<TOptions>, DynamicNamedOptionsCache<TOptions>>();
 
             // Add egress provider and internal provider wrapper
             services.AddSingleton<IEgressProvider<TOptions>, TProvider>();
@@ -200,6 +207,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {
             services.AddSingleton<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
+        }
+
+        private static void AddHostedServiceForwarder<THostedService>(this IServiceCollection services) where THostedService : class, IHostedService
+        {
+            services.AddHostedService<THostedService>(sp => sp.GetRequiredService<THostedService>());
         }
     }
 }
