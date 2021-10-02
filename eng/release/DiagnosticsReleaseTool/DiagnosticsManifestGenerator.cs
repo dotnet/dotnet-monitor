@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using DiagnosticsReleaseTool.Util;
 using Microsoft.Extensions.Logging;
@@ -33,13 +35,22 @@ namespace DiagnosticsReleaseTool.Impl
         {
             var stream = new MemoryStream();
 
-            using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions{ Indented = true }))
+            var jro = new JsonWriterOptions
+            {
+                Indented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            using (var writer = new Utf8JsonWriter(stream, jro))
             {
                 writer.WriteStartObject();
 
                 WriteMetadata(writer);
 
-                WriteNugetShippingPackages(writer, filesProcessed);
+                foreach (FileClass fc in Enum.GetValues<FileClass>())
+                {
+                    WriteFiles(writer, filesProcessed, fc);
+                }
 
                 writer.WriteEndObject();
             }
@@ -47,23 +58,25 @@ namespace DiagnosticsReleaseTool.Impl
             return stream;
         }
 
-        private void WriteNugetShippingPackages(Utf8JsonWriter writer, IEnumerable<FileReleaseData> filesProcessed)
+        private void WriteFiles(Utf8JsonWriter writer, IEnumerable<FileReleaseData> filesProcessed, FileClass fileClass)
         {
-            writer.WritePropertyName(FileMetadata.GetDefaultCatgoryForClass(FileClass.Nuget));
+            writer.WritePropertyName(FileMetadata.GetDefaultCatgoryForClass(fileClass));
             writer.WriteStartArray();
 
-            IEnumerable<FileReleaseData> nugetFiles = filesProcessed.Where(file => file.FileMetadata.Class == FileClass.Nuget);
+            IEnumerable<FileReleaseData> nugetFiles = filesProcessed.Where(file => file.FileMetadata.Class == fileClass);
 
             foreach (FileReleaseData fileToRelease in nugetFiles)
             {
                 writer.WriteStartObject();
                 writer.WriteString("PublishRelativePath", fileToRelease.FileMap.RelativeOutputPath);
                 writer.WriteString("PublishedPath", fileToRelease.PublishUri);
+                writer.WriteString("Sha512", fileToRelease.FileMetadata.Sha512);
                 writer.WriteEndObject();
             }
 
             writer.WriteEndArray();
         }
+
 
         private void WriteMetadata(Utf8JsonWriter writer)
         {
