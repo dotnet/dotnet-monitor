@@ -47,4 +47,4 @@ stages:
         inputs:
           targetPath: '$(System.ArtifactsDirectory)\ReleaseStaging'
           publishLocation: 'pipeline'
-          artifact: 'Release'
+          artifact: 'MonitorRelease'
