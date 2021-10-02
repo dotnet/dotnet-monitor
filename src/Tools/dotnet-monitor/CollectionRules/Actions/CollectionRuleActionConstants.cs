@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
-    internal class CollectionRuleActionConstants
+    internal static class CollectionRuleActionConstants
     {
         public const string EgressPathOutputValueName = "EgressPath";
     }

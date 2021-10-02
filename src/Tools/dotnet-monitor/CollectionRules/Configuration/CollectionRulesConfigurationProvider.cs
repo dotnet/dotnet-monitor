@@ -3,18 +3,30 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
-    internal class CollectionRulesConfigurationProvider
+    internal class CollectionRulesConfigurationProvider : IDisposable
     {
+        private readonly IDisposable _changeRegistration;
         private readonly IConfigurationSection _section;
 
         public CollectionRulesConfigurationProvider(IConfiguration configuration)
         {
             _section = configuration.GetSection(nameof(ConfigurationKeys.CollectionRules));
+
+            _changeRegistration = ChangeToken.OnChange(
+                () => _section.GetReloadToken(),
+                () => RulesChanged?.Invoke(this, EventArgs.Empty));
+        }
+
+        public void Dispose()
+        {
+            _changeRegistration.Dispose();
         }
 
         /// <summary>
@@ -41,5 +53,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             Debug.Assert(ruleSection.Exists());
             return ruleSection;
         }
+
+        public IConfigurationSection Configuration => _section;
+
+        public event EventHandler RulesChanged;
     }
 }
