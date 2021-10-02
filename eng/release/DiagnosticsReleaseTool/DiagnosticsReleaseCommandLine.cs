@@ -1,12 +1,10 @@
-﻿using System;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Storage.Blobs.Models;
 using DiagnosticsReleaseTool.Impl;
 
 namespace DiagnosticsReleaseTool.CommandLine
@@ -108,6 +106,6 @@ namespace DiagnosticsReleaseTool.CommandLine
             new Option<int>(
                 aliases: new[] { "--sas-valid-days" },
                 description: "Number of days to allow access to the blobs via the provided SAS URIs.",
-                getDefaultValue: () => 732); // default to just over 2 years
+                getDefaultValue: () => 14); // default to just over 2 weeks
     }
 }

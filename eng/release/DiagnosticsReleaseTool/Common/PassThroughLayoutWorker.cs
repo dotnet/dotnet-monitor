@@ -19,11 +19,11 @@ namespace ReleaseTool.Core
             string stagingPath)
         {
 
-            _shouldHandleFileFunc = shouldHandleFileFunc ?? (_ => true);
+            _shouldHandleFileFunc = shouldHandleFileFunc ?? (static _ => true);
 
-            _getRelativePublishPathFromFileFunc = getRelativePublishPathFromFileFunc ?? (file => Path.Combine(FileMetadata.GetDefaultCatgoryForClass(FileClass.Unknown), file.Name));
+            _getRelativePublishPathFromFileFunc = getRelativePublishPathFromFileFunc ?? (static file => Helpers.GetDefaultPathForFileCategory(file, FileClass.Unknown));
 
-            _getMetadataForFileFunc = getMetadataForFileFunc ?? ((FileInfo file) => GetDefaultFileMetadata(file, FileClass.Unknown));
+            _getMetadataForFileFunc = getMetadataForFileFunc ?? (static file => Helpers.GetDefaultFileMetadata(file, FileClass.Unknown));
 
             _stagingPath = stagingPath;
         }
@@ -37,7 +37,7 @@ namespace ReleaseTool.Core
                 return new LayoutWorkerResult(LayoutResultStatus.FileNotHandled);
             }
 
-            string publishReleasePath = Path.Combine(_getRelativePublishPathFromFileFunc(file), file.Name);
+            string publishReleasePath = _getRelativePublishPathFromFileFunc(file);
 
             string localPath = file.FullName;
 
@@ -58,29 +58,6 @@ namespace ReleaseTool.Core
             return new LayoutWorkerResult(
                     LayoutResultStatus.FileHandled,
                     new SingleFileResult(fileMap, metadata));
-        }
-
-        protected static FileMetadata GetDefaultFileMetadata(FileInfo fileInfo, FileClass fileClass)
-        {
-            string sha512Hash = GetSha512(fileInfo);
-            FileMetadata result = new FileMetadata(
-                fileClass,
-                FileMetadata.GetDefaultCatgoryForClass(fileClass),
-                sha512: sha512Hash);
-            return result;
-        }
-
-        public static string GetSha512(FileInfo fileInfo)
-        {
-            using (FileStream fileReadStream = fileInfo.OpenRead())
-            {
-                byte[] hashValueBytes;
-                using (System.Security.Cryptography.SHA512Managed sha = new System.Security.Cryptography.SHA512Managed())
-                {
-                    hashValueBytes = sha.ComputeHash(fileReadStream);
-                }
-                return BitConverter.ToString(hashValueBytes).Replace("-", String.Empty);
-            }
         }
     }
 }

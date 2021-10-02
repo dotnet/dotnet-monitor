@@ -24,12 +24,6 @@ namespace ReleaseTool.Core
 
         // TODO: Add a metadata bag for Key,Value pairs.
 
-        public FileMetadata(FileClass fileClass) 
-            : this(fileClass, GetDefaultCatgoryForClass(fileClass)) {}
-
-        public FileMetadata(FileClass fileClass, string assetCategory) 
-            : this(fileClass, assetCategory, shouldPublishToCdn: false, rid: "any", sha512: null) {}
-
         public FileMetadata(FileClass fileClass, string assetCategory, string sha512)
             : this(fileClass, assetCategory, shouldPublishToCdn: false, rid: "any", sha512: sha512) {}
 

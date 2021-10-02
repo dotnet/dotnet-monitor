@@ -116,5 +116,4 @@ stages:
           artifactNames:
           - 'PackageArtifacts'
   # This sets up the bits to do a Release.
-  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-    - template: /eng/PrepareRelease.yml
+  - template: /eng/PrepareRelease.yml

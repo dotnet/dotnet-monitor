@@ -110,7 +110,7 @@ namespace ReleaseTool.Core
                         BlobContainerName = client.Name,
                         BlobName = blobClient.Name,
                         Identifier = AccessPolicyDownloadId,
-                        Protocol = SasProtocol.Https,
+                        Protocol = SasProtocol.Https
                     };
                     Uri accessUri = blobClient.GenerateSasUri(sasBuilder);
 

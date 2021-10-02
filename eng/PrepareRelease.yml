@@ -1,7 +1,5 @@
 stages:
 - stage: PrepareReleaseStage
-  variables:
-    isRelease: $[in(variables['Build.SourceBranch'], 'refs/heads/release/')]
   displayName: Release Preparation
   dependsOn:
   - publish_using_darc
@@ -11,11 +9,12 @@ stages:
     pool: 
       vmImage: windows-latest
     variables:
-    - group: DotNet-Diagnostics-Storage
-    - group: DotNet-DotNetStage-Storage
-    - group: Release-Pipeline
-    - name: BARBuildId
-      value: $[ stageDependencies.publish_using_darc.setupMaestroVars.outputs['setReleaseVars.BARBuildId'] ]
+    - ${{ if in(variables['Build.Reason'], 'PullRequest') }}:
+      - group: DotNet-Diagnostics-Storage
+      - group: DotNet-DotNetStage-Storage
+      - group: Release-Pipeline
+      - name: BARBuildId
+        value: $[ stageDependencies.publish_using_darc.setupMaestroVars.outputs['setReleaseVars.BARBuildId'] ]
     steps:
     - task: UseDotNet@2
       displayName: 'Use .NET Core runtime 3.1.x'
@@ -23,31 +22,28 @@ stages:
         packageType: runtime
         version: 3.1.x
         installationPath: '$(Build.Repository.LocalPath)\.dotnet'
-    - task: UseDotNet@2
-      displayName: 'Use .NET Core runtime 5.0.x'
-      inputs:
-        packageType: runtime
-        version: 5.0.x
-        installationPath: '$(Build.Repository.LocalPath)\.dotnet'
-    - task: PowerShell@2
-      displayName: 'DARC Gather build'
-      inputs:
-        targetType: filePath
-        filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
-        arguments: '-BarBuildId "$(BARBuildId)" -AzdoToken "$(dn-bot-dotnet-all-scopes)" -MaestroToken "$(MaestroAccessToken)" -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)" -DownloadTargetPath "$(System.DefaultWorkingDirectory)\ReleaseTarget" -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)" -ReleaseVersion "$(Build.BuildNumber)"'
-        workingDirectory: '$(Build.Repository.LocalPath)'
-      condition: and(succeeded(), eq(variables.isRelease, 'True'))
-    - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- --version'
-      workingDirectory: '$(Build.Repository.LocalPath)\'
-      displayName: 'Build Manifest generation and asset publishing tool'
-      condition: and(succeeded(), ne(variables.isRelease, 'True'))
-    - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- prepare-release --input-drop-path "$(System.DefaultWorkingDirectory)\ReleaseTarget" --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json" --staging-directory "$(System.DefaultWorkingDirectory)\ReleaseStaging" --release-name "$(Build.BuildNumber)" --account-name "$(dotnet-diagnostics-storage-accountname)" --account-key "$(dotnetstage-storage-key)" --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)" -v True'
-      workingDirectory: '$(Build.Repository.LocalPath)\'
-      displayName: 'Manifest generation and asset publishing'
-      condition: and(succeeded(), eq(variables.isRelease, 'True'))
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(System.DefaultWorkingDirectory)\ReleaseStaging'
-        publishLocation: 'pipeline'
-        artifact: 'Release'
-      condition: and(succeeded(), eq(variables.isRelease, 'True'))
+    - ${{ if in(variables['Build.Reason'], 'PullRequest') }}:
+      - script: 'dotnet.cmd build $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release /bl'
+        workingDirectory: '$(System.DefaultWorkingDirectory)\DiagnosticsReleaseToolBin'
+        displayName: 'Build Manifest generation and asset publishing tool'
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(System.DefaultWorkingDirectory)\DiagnosticsReleaseToolBin'
+          publishLocation: 'pipeline'
+          artifact: 'DiagnosticsReleaseToolBin'
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')) }}:
+      - task: PowerShell@2
+        displayName: 'DARC Gather build'
+        inputs:
+          targetType: filePath
+          filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
+          arguments: '-BarBuildId "$(BARBuildId)" -AzdoToken "$(dn-bot-dotnet-all-scopes)" -MaestroToken "$(MaestroAccessToken)" -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)" -DownloadTargetPath "$(System.ArtifactsDirectory)\ReleaseTarget" -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)" -ReleaseVersion "$(Build.BuildNumber)"'
+          workingDirectory: '$(Build.Repository.LocalPath)'
+      - script: 'dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release -- prepare-release --input-drop-path "$(System.ArtifactsDirectory)\ReleaseTarget" --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json" --staging-directory "$(System.ArtifactsDirectory)\ReleaseStaging" --release-name "$(Build.BuildNumber)" --account-name "$(dotnet-diagnostics-storage-accountname)" --account-key "$(dotnetstage-storage-key)" --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)" -v True'
+        workingDirectory: '$(Build.Repository.LocalPath)\'
+        displayName: 'Manifest generation and asset publishing'
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(System.ArtifactsDirectory)\ReleaseStaging'
+          publishLocation: 'pipeline'
+          artifact: 'Release'
