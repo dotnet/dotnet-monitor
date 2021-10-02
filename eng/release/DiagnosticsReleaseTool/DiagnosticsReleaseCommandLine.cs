@@ -106,6 +106,6 @@ namespace DiagnosticsReleaseTool.CommandLine
             new Option<int>(
                 aliases: new[] { "--sas-valid-days" },
                 description: "Number of days to allow access to the blobs via the provided SAS URIs.",
-                getDefaultValue: () => 14); // default to just over 2 weeks
+                getDefaultValue: () => 1);
     }
 }
