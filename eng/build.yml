@@ -102,6 +102,7 @@ jobs:
     - script: >-
         $(Build.SourcesDirectory)/build$(scriptExt)
         -ci
+        -test
         -configuration ${{ parameters.configuration }}
         -prepareMachine
         $(_InternalBuildArgs)
@@ -114,8 +115,8 @@ jobs:
     - task: PublishTestResults@2
       displayName: Publish Test Results (Core 3.1)
       inputs:
-        testResultsFormat: VSTest
-        testResultsFiles: '**/*Tests*netcoreapp3.1*.trx' 
+        testResultsFormat: xUnit
+        testResultsFiles: '**/*Tests*netcoreapp3.1*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} Core 3.1'
@@ -128,8 +129,8 @@ jobs:
     - task: PublishTestResults@2
       displayName: Publish Test Results (NET 5.0)
       inputs:
-        testResultsFormat: VSTest
-        testResultsFiles: '**/*Tests*net5.0*.trx' 
+        testResultsFormat: xUnit
+        testResultsFiles: '**/*Tests*net5.0*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} NET 5.0'
@@ -142,8 +143,8 @@ jobs:
     - task: PublishTestResults@2
       displayName: Publish Test Results (NET 6.0)
       inputs:
-        testResultsFormat: VSTest
-        testResultsFiles: '**/*Tests*net6.0*.trx' 
+        testResultsFormat: xUnit
+        testResultsFiles: '**/*Tests*net6.0*.xml' 
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
         failTaskOnFailedTests: true
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} NET 6.0'
@@ -152,13 +153,3 @@ jobs:
         buildConfiguration: ${{ parameters.name }}
       continueOnError: true
       condition: succeededOrFailed()
-    
-    - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Test Result Files
-        inputs:
-          PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
-          PublishLocation: Container
-          ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.configuration }}
-        continueOnError: true
-        condition: succeededOrFailed()
