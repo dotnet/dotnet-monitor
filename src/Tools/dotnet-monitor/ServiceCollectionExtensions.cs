@@ -30,6 +30,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ServiceCollectionExtensions
     {
+        public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter);
+        }
+
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics);

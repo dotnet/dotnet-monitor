@@ -15,6 +15,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public IDictionary<string, CollectionRuleOptions> CollectionRules { get; }
             = new Dictionary<string, CollectionRuleOptions>(0);
 
+        public GlobalCounterOptions GlobalCounter { get; set; }
+
         public CorsConfigurationOptions CorsConfiguration { get; set; }
 
         public DiagnosticPortOptions DiagnosticPort { get; set; }

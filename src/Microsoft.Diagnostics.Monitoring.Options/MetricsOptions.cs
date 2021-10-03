@@ -29,12 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_UpdateIntervalSeconds))]
-        [DefaultValue(MetricsOptionsDefaults.UpdateIntervalSeconds)]
-        public int? UpdateIntervalSeconds { get; set; }
-
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_MetricCount))]
         [DefaultValue(MetricsOptionsDefaults.MetricCount)]
         public int? MetricCount { get; set; }
