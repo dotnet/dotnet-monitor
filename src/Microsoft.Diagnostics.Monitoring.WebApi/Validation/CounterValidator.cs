@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
 
             if (provider.Arguments?.TryGetValue("EventCounterIntervalSec", out string intervalValue) == true)
             {
-                if (int.TryParse(intervalValue, out int intervalSeconds) &&
+                if (float.TryParse(intervalValue, out float intervalSeconds) &&
                     intervalSeconds != counterOptions.GetIntervalSeconds())
                 {
                     errorMessage = string.Format(CultureInfo.CurrentCulture,
