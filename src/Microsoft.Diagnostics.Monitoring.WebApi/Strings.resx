@@ -129,6 +129,9 @@
     <value>Invalid metric count.</value>
     <comment>Gets a string similar to "Invalid metric count.".</comment>
   </data>
+  <data name="ErrorMessage_InvalidMetricInterval" xml:space="preserve">
+    <value>Custom trace metric provider '{0}' must use the global counter interval '{1}'</value>
+  </data>
   <data name="ErrorMessage_MetricsDisabled" xml:space="preserve">
     <value>Metrics was not enabled.</value>
     <comment>Gets a string similar to "Metrics was not enabled.".</comment>

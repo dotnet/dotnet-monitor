@@ -28,7 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
-        /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
         [HttpGet("livemetrics", Name = nameof(CaptureMetrics))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
@@ -45,8 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
-            [FromQuery][Range(1, int.MaxValue)]
-            int metricsIntervalSeconds = 5,
             [FromQuery]
             string egressProvider = null)
         {
@@ -60,9 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
                     EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                        _counterOptions.CurrentValue,
                         includeDefaults: true,
-                        durationSeconds: durationSeconds,
-                        refreshInterval: metricsIntervalSeconds);
+                        durationSeconds: durationSeconds);
 
                     await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
                         settings,
@@ -89,7 +86,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
-        /// <param name="metricsIntervalSeconds">The reporting interval (in seconds) for event counters.</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
         [HttpPost("livemetrics", Name = nameof(CaptureMetricsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
@@ -108,8 +104,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
-            [FromQuery][Range(1, int.MaxValue)]
-            int metricsIntervalSeconds = 5,
             [FromQuery]
             string egressProvider = null)
         {
@@ -123,8 +117,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
                     EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                        _counterOptions.CurrentValue,
                         durationSeconds,
-                        metricsIntervalSeconds,
                         configuration);
 
                     await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,

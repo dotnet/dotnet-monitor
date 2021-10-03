@@ -141,6 +141,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
+                    ConfigureGlobalMetrics(builder);
                     builder.ConfigureStorageDefaults();
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
@@ -236,6 +237,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
                     services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
 
+                    services.ConfigureGlobalCounter(context.Configuration);
+
                     services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                     services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
@@ -313,9 +316,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Endpoints)), string.Join(';', metricEndpoints)},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)), enableMetrics.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.UpdateIntervalSeconds)), MetricsOptionsDefaults.UpdateIntervalSeconds.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.MetricCount)), MetricsOptionsDefaults.MetricCount.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()}
+            });
+        }
+
+        private static void ConfigureGlobalMetrics(IConfigurationBuilder builder)
+        {
+            builder.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                {ConfigurationPath.Combine(ConfigurationKeys.GlobalCounter, nameof(GlobalCounterOptions.IntervalSeconds)), GlobalCounterOptionsDefaults.IntervalSeconds.ToString() }
             });
         }
 

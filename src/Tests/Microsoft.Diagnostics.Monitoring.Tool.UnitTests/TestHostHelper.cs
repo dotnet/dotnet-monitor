@@ -77,6 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 })
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
+                    services.ConfigureGlobalCounter(context.Configuration);
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();
 
