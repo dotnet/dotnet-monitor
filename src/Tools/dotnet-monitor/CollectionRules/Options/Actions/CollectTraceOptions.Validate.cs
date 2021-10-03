@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                     Validator.TryValidateObject(provider, providerContext, results, validateAllProperties: true);
 
                     IOptionsMonitor<GlobalCounterOptions> counterOptions = validationContext.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
-                    if (!CounterValidator.ValidateProviders(counterOptions.CurrentValue,
+                    if (!CounterValidator.ValidateProvider(counterOptions.CurrentValue,
                         provider, out string errorMessage))
                     {
                         results.Add(new ValidationResult(errorMessage, new[] { nameof(EventPipeProvider.Arguments) }));

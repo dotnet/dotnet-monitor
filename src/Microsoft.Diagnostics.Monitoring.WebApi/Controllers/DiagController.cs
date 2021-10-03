@@ -357,7 +357,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 foreach(Models.EventPipeProvider provider in configuration.Providers)
                 {
-                    if (!CounterValidator.ValidateProviders(_counterOptions.CurrentValue,
+                    if (!CounterValidator.ValidateProvider(_counterOptions.CurrentValue,
                         provider, out string errorMessage))
                     {
                         throw new ValidationException(errorMessage);
