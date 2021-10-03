@@ -37,6 +37,17 @@
         "$ref": "#/definitions/CollectionRuleOptions"
       }
     },
+    "GlobalCounter": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/GlobalCounterOptions"
+        }
+      ]
+    },
     "CorsConfiguration": {
       "default": {},
       "oneOf": [
@@ -723,6 +734,23 @@
         }
       }
     },
+    "GlobalCounterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "IntervalSeconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Determines the metrics interval for all dotnet-monitor scenarios. This includes prometheus metrics, live metrics, triggers, and traces.",
+          "format": "int32",
+          "default": 5,
+          "maximum": 86400.0,
+          "minimum": 1.0
+        }
+      }
+    },
     "CorsConfigurationOptions": {
       "type": "object",
       "additionalProperties": false,
@@ -932,15 +960,6 @@
             "string"
           ],
           "description": "Endpoints that expose prometheus metrics. Defaults to http://localhost:52325."
-        },
-        "UpdateIntervalSeconds": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "How often metrics are collected.",
-          "format": "int32",
-          "default": 10
         },
         "MetricCount": {
           "type": [
@@ -1167,17 +1186,6 @@
               "$ref": "#/definitions/TraceProfile"
             }
           ]
-        },
-        "MetricsIntervalSeconds": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "The amount of time (in seconds) between the collection of each sample of the counter. Only applicable when Profile contains Metrics.",
-          "format": "int32",
-          "default": 1,
-          "maximum": 86400.0,
-          "minimum": 1.0
         },
         "Providers": {
           "type": [
@@ -1520,17 +1528,6 @@
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
           "format": "time-span",
           "default": "00:01:00"
-        },
-        "Frequency": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "The amount of time (in seconds) between the collection of each sample of the counter.",
-          "format": "int32",
-          "default": 5,
-          "maximum": 86400.0,
-          "minimum": 1.0
         }
       }
     },

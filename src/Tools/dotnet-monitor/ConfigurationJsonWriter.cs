@@ -59,6 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             //No sensitive information
+            ProcessChildSection(configuration, ConfigurationKeys.GlobalCounter, includeChildSections: true);
             ProcessChildSection(configuration, ConfigurationKeys.CollectionRules, includeChildSections: true);
             ProcessChildSection(configuration, ConfigurationKeys.CorsConfiguration, includeChildSections: true);
             ProcessChildSection(configuration, ConfigurationKeys.DiagnosticPort, includeChildSections: true);

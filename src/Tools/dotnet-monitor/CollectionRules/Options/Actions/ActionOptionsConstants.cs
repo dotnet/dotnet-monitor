@@ -16,10 +16,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
         public const string Duration_MaxValue = "1.00:00:00"; // 1 day
         public const string Duration_MinValue = "00:00:01"; // 1 second
-
-        public const int MetricsIntervalSeconds_MaxValue = 24 * 60 * 60; // 1 day
-        public static readonly string MetricsIntervalSeconds_MaxValue_String = MetricsIntervalSeconds_MaxValue.ToString(CultureInfo.InvariantCulture);
-        public const int MetricsIntervalSeconds_MinValue = 1; // 1 second
-        public static readonly string MetricsIntervalSeconds_MinValue_String = MetricsIntervalSeconds_MinValue.ToString(CultureInfo.InvariantCulture);
     }
 }

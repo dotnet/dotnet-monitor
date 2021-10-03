@@ -258,7 +258,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task CollectionRulePipeline_ActionCountLimitSlidingDurationTest(TargetFrameworkMoniker appTfm)
         {
             const int ExpectedActionExecutionCount = 3;
-            TimeSpan SlidingWindowDuration = TimeSpan.FromSeconds(3);
+            TimeSpan SlidingWindowDuration = TimeSpan.FromSeconds(5);
 
             ManualTriggerService triggerService = new();
             CallbackActionService callbackService = new(_outputHelper);
@@ -284,7 +284,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     await startedTask.WithCancellation(cancellationSource.Token);
 
-                    await ManualTriggerBurstAsync(triggerService);
+                    await ManualTriggerBurstAsync(triggerService, count: 5);
 
                     // Action list should have been executed the expected number of times
                     VerifyExecutionCount(callbackService, ExpectedActionExecutionCount);
@@ -292,7 +292,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // Wait for existing execution times to fall out of sliding window.
                     await Task.Delay(SlidingWindowDuration * 1.2);
 
-                    await ManualTriggerBurstAsync(triggerService);
+                    await ManualTriggerBurstAsync(triggerService, count: 5);
 
                     // Expect total action invocation count to be twice the limit
                     VerifyExecutionCount(callbackService, 2 * ExpectedActionExecutionCount);
@@ -325,9 +325,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(expectedCount, service.ExecutionTimestamps.Count);
         }
 
-        private async Task ManualTriggerBurstAsync(ManualTriggerService service)
+        private async Task ManualTriggerBurstAsync(ManualTriggerService service, int count = 10)
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < count; i++)
             {
                 service.NotifySubscribers();
                 await Task.Delay(TimeSpan.FromMilliseconds(100));

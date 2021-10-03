@@ -6,6 +6,8 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -42,11 +44,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             CollectionRuleActionBase<CollectTraceOptions>
         {
             private readonly IServiceProvider _serviceProvider;
+            private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
 
             public CollectTraceAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectTraceOptions options)
                 : base(endpointInfo, options)
             {
                 _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+                _counterOptions = _serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
@@ -61,7 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 if (Options.Profile.HasValue)
                 {
                     TraceProfile profile = Options.Profile.Value;
-                    int metricsIntervalSeconds = Options.MetricsIntervalSeconds.GetValueOrDefault(CollectTraceOptionsDefaults.MetricsIntervalSeconds);
+                    int metricsIntervalSeconds = _counterOptions.CurrentValue.GetIntervalSeconds();
 
                     configuration = Utils.GetTraceConfiguration(profile, metricsIntervalSeconds);
                 }
