@@ -100,53 +100,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 logFormat);
         }
 
-        /* This test is for 'normal' logs -> that don't have a configuration. Not applicable for Actions.
-        /// <summary>
-        /// Tests that all log events are collected if log level set to Trace.
-        /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
-#endif
-        public Task LogsAllCategoriesActionTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
-        {
-            return ValidateLogsActionAsync(
-                mode,
-                LogLevel.Trace,
-                async reader =>
-                {
-                    // Default LogLevel.Trace is converted to EventLevel.LogAlways but
-                    // runtime does not translate that back to LogLevel.Trace however it
-                    // falls back to capturing LogLevel.Debug and above. Thus, no Trace
-                    // events will ever be collected if relying on default log level.
-
-                    //ValidateEntry(Category1TraceEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1DebugEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1InformationEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1WarningEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1ErrorEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1CriticalEntry, await reader.ReadAsync());
-                    //ValidateEntry(Category2TraceEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2DebugEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2InformationEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2WarningEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2ErrorEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2CriticalEntry, await reader.ReadAsync());
-                    //ValidateEntry(Category3TraceEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3DebugEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3InformationEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3WarningEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3ErrorEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
-                    Assert.False(await reader.WaitToReadAsync());
-                },
-                logFormat);
-        }
-        */
-
         /// <summary>
         /// Tests that log events with level at or above the specified level are collected.
         /// </summary>
@@ -177,39 +130,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 logFormat);
         }
-
-        /* This test is for 'normal' logs -> that don't have a configuration. Not applicable for Actions.
-        /// <summary>
-        /// Tests that log events with level at or above the specified level are collected.
-        /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
-#endif
-        public Task LogsDefaultLevelActionTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
-        {
-            return ValidateLogsActionAsync(
-                mode,
-                LogLevel.Warning,
-                async reader =>
-                {
-                    ValidateEntry(Category1WarningEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1ErrorEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1CriticalEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2WarningEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2ErrorEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2CriticalEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3WarningEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3ErrorEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
-                    Assert.False(await reader.WaitToReadAsync());
-                },
-                logFormat);
-        }
-        */
 
         /// <summary>
         /// Test that log events with a category that doesn't have a specified level are collected
@@ -436,42 +356,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 logFormat);
         }
-
-        /* This test is for 'normal' logs -> that don't have a configuration. Not applicable for Actions.
-        /// <summary>
-        /// Test that log events are collected for the categories and levels specified by the application.
-        /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
-#endif
-        public Task LogsUseAppFiltersViaQueryActionTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
-        {
-            return ValidateLogsActionAsync(
-                mode,
-                logLevel: null,
-                async reader =>
-                {
-                    ValidateEntry(Category1DebugEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1InformationEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1WarningEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1ErrorEntry, await reader.ReadAsync());
-                    ValidateEntry(Category1CriticalEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2InformationEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2WarningEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2ErrorEntry, await reader.ReadAsync());
-                    ValidateEntry(Category2CriticalEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3WarningEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3ErrorEntry, await reader.ReadAsync());
-                    ValidateEntry(Category3CriticalEntry, await reader.ReadAsync());
-                    Assert.False(await reader.WaitToReadAsync());
-                },
-                logFormat);
-        }
-        */
 
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
@@ -776,60 +660,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         callback,
                         logFormat));
         }
-
-        /* This test is for 'normal' logs -> that don't have a configuration. Not applicable for Actions.
-        private async Task ValidateLogsActionAsync(
-            DiagnosticPortConnectionMode mode,
-            LogLevel? logLevel,
-            Func<ChannelReader<LogEntry>, Task> callback,
-            LogFormat logFormat)
-        {
-            EndpointUtilities _endpointUtilities = new(_outputHelper);
-
-            using TemporaryDirectory tempDirectory = new(_outputHelper);
-
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
-            {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
-
-                rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
-                    .SetStartupTrigger();
-
-                collectLogsOptions.Duration = TestTimeouts.LogsDuration;
-                collectLogsOptions.DefaultLevel = logLevel;
-                collectLogsOptions.Format = logFormat;
-            }, async host =>
-            {
-                IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                CollectLogsOptions options = (CollectLogsOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
-
-                ICollectionRuleActionFactoryProxy factory;
-                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLogs, out factory));
-
-                using CancellationTokenSource endpointTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
-
-                await ScenarioRunner.SingleTarget(
-                    _outputHelper,
-                    _httpClientFactory,
-                    mode,
-                    TestAppScenarios.Logger.Name,
-                    appValidate: async (runner, client) =>
-                    {
-                        IEndpointInfo endpointInfo = await EndpointInfo.FromProcessIdAsync(await runner.ProcessIdTask, endpointTokenSource.Token);
-                        ICollectionRuleAction action = factory.Create(endpointInfo, options);
-
-                        using CancellationTokenSource validationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
-
-                        await ValidateResponseStream(
-                            runner,
-                            action,
-                            callback,
-                            logFormat);
-                    });
-            });
-        }
-        */
 
         private async Task ValidateLogsActionAsync(
             DiagnosticPortConnectionMode mode,
