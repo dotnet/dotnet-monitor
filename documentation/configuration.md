@@ -493,6 +493,8 @@ Usage that is satisfied when 10 requests respond with a 5XX status code during a
 
 A trigger that has its condition satisfied when the value of a counter falls above, below, or between the described threshold values for a duration of time.
 
+See [Well-known Counters in .NET](https://docs.microsoft.com/en-us/dotnet/core/diagnostics/available-counters) for a list of known available counters. Custom counters from custom event sources are supported as well.
+
 ##### Properties
 
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
@@ -518,7 +520,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
 
 #### ASP.NET Request Path Wildcards and Globbing
 
-The `IncludePaths` and `ExcludePaths` properties of the ASP.NET triggers allow for wildcards and globbing so that every included or excluded path does not necessarily need to be explicitly specified.
+The `IncludePaths` and `ExcludePaths` properties of the ASP.NET triggers allow for wildcards and globbing so that every included or excluded path does not necessarily need to be explicitly specified. For these triggers, a match with an `ExcludePaths` pattern will supercede a match with an `IncludePaths` pattern.
 
 The globstar `**/` will match zero or more path segments including the forward slash `/` character at the end of the segment.
 
