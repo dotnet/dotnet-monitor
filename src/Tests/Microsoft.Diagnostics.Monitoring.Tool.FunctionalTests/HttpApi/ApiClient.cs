@@ -336,7 +336,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         public Task<ResponseStreamHolder> CaptureMetricsAsync(int processId, int durationSeconds, CancellationToken token)
         {
-            return CaptureMetricsAsync(processId, durationSeconds, token: token);
+            return CaptureMetricsAsync(processId, durationSeconds, HttpMethod.Get, content: null, token: token);
         }
 
         public Task<ResponseStreamHolder> CaptureMetricsAsync(int processId, int durationSeconds, EventMetricsConfiguration metricsConfiguration, CancellationToken token)

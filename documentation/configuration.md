@@ -267,7 +267,7 @@ Match pid 1
 
 ### Global Counter Interval
 
-Due to limitations in event counters, dotnet-monitor supports only **one** refresh interval when collecting metrics. This interval is used for
+Due to limitations in event counters, `dotnet-monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
 Prometheus metrics, livemetrics, triggers, traces, and trigger actions that collect traces. The default interval is 5 seconds, but can be changed in configuration.
 
 ```json
@@ -302,9 +302,9 @@ Or configured via a configuration file:
 
 ### Customize collection interval and counts
 
-In the default configuration, `dotnet monitor` requests that the connected runtime provides updated counter values every 5 seconds and will retain 3 data points for every collected metric. When using a collection tool like Prometheus, it is recommended that you set your scrape interval to `MetricCount` * `IntervalSeconds`. In the default configuration, we recommend you scrape `dotnet monitor` for metrics every 15 seconds.
+In the default configuration, `dotnet monitor` requests that the connected runtime provides updated counter values every 5 seconds and will retain 3 data points for every collected metric. When using a collection tool like Prometheus, it is recommended that you set your scrape interval to `MetricCount` * `GlobalCounter:IntervalSeconds`. In the default configuration, we recommend you scrape `dotnet monitor` for metrics every 15 seconds.
 
-You can customize the number of data points stored per metric  via the following configuration:
+You can customize the number of data points stored per metric via the following configuration:
 
 ```json
 {
