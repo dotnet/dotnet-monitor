@@ -73,7 +73,7 @@ kind: ConfigMap
 metadata:
   name: my-configmap
 data:
-  Metrics__UpdateIntervalSeconds: "10"
+  Metrics__MetricCount: "6"
 ```
 
 You can then use a Kubernetes volume mount to supply the configuration map to the container at runtime
@@ -163,7 +163,6 @@ The output of the command should resemble the following JSON object:
         "ProviderName": "Microsoft-AspNetCore-Server-Kestrel"
       }
     },
-    "UpdateIntervalSeconds": "10"
   },
   "Storage": {
     "DumpTempFolder": "C:\\Users\\shirh\\AppData\\Local\\Temp\\"
@@ -266,6 +265,21 @@ Match pid 1
 
 ## Metrics Configuration
 
+### Global Counter Interval
+
+Due to limitations in event counters, dotnet-monitor supports only **one** refresh interval when collecting metrics. This interval is used for
+Prometheus metrics, livemetrics, triggers, traces, and trigger actions that collect traces. The default interval is 5 seconds, but can be changed in configuration.
+
+```json
+{
+    "GlobalCounter": {
+      "IntervalSeconds": 10
+    }
+}
+```
+
+**Note:** As of Preview 8, Request Duration triggers do not match the default `Global Counter Interval`. Set the `Interval` to 10 seconds to enable this trigger.
+
 ### Metrics Urls
 
 In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it also binds to metric urls that only expose the `/metrics` endpoint. Unlike the other endpoints, the metrics urls do not require authentication. Unless you enable collection of custom providers that may contain sensitive business logic, it is generally considered safe to expose metrics endpoints. 
@@ -288,18 +302,19 @@ Or configured via a configuration file:
 
 ### Customize collection interval and counts
 
-In the default configuration, `dotnet monitor` requests that the connected runtime provides updated counter values every 10 seconds and will retain 3 data points for every collected metric. When using a collection tool like Prometheus, it is recommended that you set your scrape interval to `MetricCount` * `UpdateIntervalSeconds`. In the default configuration, we recommend you scrape `dotnet monitor` for metrics every 30 seconds.
+In the default configuration, `dotnet monitor` requests that the connected runtime provides updated counter values every 5 seconds and will retain 3 data points for every collected metric. When using a collection tool like Prometheus, it is recommended that you set your scrape interval to `MetricCount` * `IntervalSeconds`. In the default configuration, we recommend you scrape `dotnet monitor` for metrics every 15 seconds.
 
-You can customize the number of data points stored per metric and the frequency at which the runtime updates each metric via the following configuration:
+You can customize the number of data points stored per metric  via the following configuration:
 
 ```json
 {
   "Metrics": {
     "MetricCount": 3,
-    "UpdateIntervalSeconds": 10,
   }
 }
 ```
+
+See [Global Counter Interval](#Global-Counter-Interval) to change the metrics frequency.
 
 ### Custom Metrics
 
