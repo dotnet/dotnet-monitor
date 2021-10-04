@@ -5,7 +5,6 @@ using System.CommandLine.Parsing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
 using DiagnosticsReleaseTool.Impl;
 
 namespace DiagnosticsReleaseTool.CommandLine
@@ -30,11 +29,11 @@ namespace DiagnosticsReleaseTool.CommandLine
             {
                 CommandHandler.Create<Config, bool, CancellationToken>(DiagnosticsReleaseRunner.PrepareRelease),
                 // Inputs
-                InputDropPathOption(), ToolManifestPathOption(), 
+                InputDropPathOption(), ToolManifestPathOption(), ReleaseNameOption(),
                 // Toggles
                 ToolManifestVerificationOption(), DiagnosticLoggingOption(),
                 // Outputs
-                StagingPathOption(), PublishPathOption()
+                StagingPathOption(), AzureStorageAccountNameOption(), AzureStorageAccountKeyOption(), AzureStorageContainerNameOption(), AzureStorageSasExpirationOption()
             };
 
         private static Option<bool> DiagnosticLoggingOption() =>
@@ -50,6 +49,14 @@ namespace DiagnosticsReleaseTool.CommandLine
             {
                 IsRequired = true
             }.ExistingOnly();
+
+        private static Option<string> ReleaseNameOption() =>
+            new Option<string>(
+                aliases: new[] { "-r", "--release-name" },
+                description: "Name of this release.")
+            {
+                IsRequired = true,
+            };
 
         private static Option<bool> ToolManifestVerificationOption() =>
             new Option<bool>(
@@ -73,12 +80,32 @@ namespace DiagnosticsReleaseTool.CommandLine
                     Path.Join(Path.GetTempPath(), Path.GetRandomFileName())))
             .LegalFilePathsOnly();
 
-        private static Option<string> PublishPathOption() =>
+        private static Option<string> AzureStorageAccountNameOption() =>
             new Option<string>(
-                aliases: new[] { "-o", "--publish-path" },
-                description: "Path to publish the generated layout and publishing manifest to.")
+                aliases: new[] { "-n", "--account-name" },
+                description: "Storage account name, must be in public azure cloud.")
             {
-                IsRequired = true
+                IsRequired = true, 
             };
+
+        private static Option<string> AzureStorageAccountKeyOption() =>
+            new Option<string>(
+                aliases: new[] { "-k", "--account-key" },
+                description: "Storage account key, in base 64 format.")
+            {
+                IsRequired = true,
+            };
+
+        private static Option<string> AzureStorageContainerNameOption() =>
+            new Option<string>(
+                aliases: new[] { "-c", "--container-name" },
+                description: "Storage account container name where the files will be uploaded.",
+                getDefaultValue: () => "dotnet-monitor");
+
+        private static Option<int> AzureStorageSasExpirationOption() =>
+            new Option<int>(
+                aliases: new[] { "--sas-valid-days" },
+                description: "Number of days to allow access to the blobs via the provided SAS URIs.",
+                getDefaultValue: () => 1);
     }
 }

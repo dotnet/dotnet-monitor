@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,6 +28,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static string GenerateLogsFileName(IEndpointInfo endpointInfo)
         {
             return FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.txt");
+        }
+
+        public static TimeSpan ConvertSecondsToTimeSpan(int durationSeconds)
+        {
+            return durationSeconds < 0 ?
+                Timeout.InfiniteTimeSpan :
+                TimeSpan.FromSeconds(durationSeconds);
         }
 
         public static string GenerateDumpFileName()
@@ -81,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public static async Task GetLogsAction(TaskCompletionSource<object> startCompletionSource, LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, Stream outputStream, CancellationToken token)
+        public static async Task StartLogsPipeline(TaskCompletionSource<object> startCompletionSource, LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, Stream outputStream, CancellationToken token)
         {
             using var loggerFactory = new LoggerFactory();
 

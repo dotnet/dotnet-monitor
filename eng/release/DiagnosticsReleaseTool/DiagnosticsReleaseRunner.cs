@@ -8,6 +8,7 @@ using ReleaseTool.Core;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace DiagnosticsReleaseTool.Impl
 {
@@ -25,8 +26,8 @@ namespace DiagnosticsReleaseTool.Impl
             var layoutWorkerList = new List<ILayoutWorker>
             {
                 // TODO: We may want to inject a logger.
-                new NugetLayoutWorker(stagingPath: null),
-                new SymbolPackageLayoutWorker(stagingPath: null),
+                new NugetLayoutWorker(stagingPath: releaseConfig.StagingDirectory.FullName),
+                new SymbolPackageLayoutWorker(stagingPath: releaseConfig.StagingDirectory.FullName),
                 new SkipLayoutWorker(
                     shouldHandleFileFunc: DiagnosticsRepoHelpers.IsDockerUtilityFile
                 )
@@ -45,7 +46,7 @@ namespace DiagnosticsReleaseTool.Impl
             DirectoryInfo basePublishDirectory = darcLayoutHelper.GetShippingDirectoryForProject(DiagnosticsRepoHelpers.ProductName);
             string publishManifestPath = Path.Combine(releaseConfig.StagingDirectory.FullName, ManifestName);
 
-            IPublisher releasePublisher = new FileSharePublisher(releaseConfig.PublishPath);
+            IPublisher releasePublisher = new AzureBlobBublisher(releaseConfig.AccountName, releaseConfig.AccountKey, releaseConfig.ContainerName, releaseConfig.ReleaseName, releaseConfig.SasValidDays, logger);
             IManifestGenerator manifestGenerator = new DiagnosticsManifestGenerator(releaseMetadata, releaseConfig.ToolManifest, logger);
 
             using var diagnosticsRelease = new Release(

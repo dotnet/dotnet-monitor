@@ -4,7 +4,6 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-//using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,6 +17,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     partial class MonitorCollectRunner
     {
         private readonly ConcurrentDictionary<CollectionRuleKey, List<TaskCompletionSource<object>>> _collectionRuleCallbacks = new();
+
+        public Task WaitForCollectionRuleActionsCompletedAsync(string ruleName, CancellationToken token)
+        {
+            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleActionsCompleted, ruleName, token);
+        }
 
         public Task WaitForCollectionRuleCompleteAsync(string ruleName, CancellationToken token)
         {
@@ -62,6 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 CollectionRuleKey key = new(logEvent.EventId, ruleName);
                 switch (logEvent.EventId)
                 {
+                    case LoggingEventIds.CollectionRuleActionsCompleted:
                     case LoggingEventIds.CollectionRuleCompleted:
                     case LoggingEventIds.CollectionRuleUnmatchedFilters:
                     case LoggingEventIds.CollectionRuleStarted:

@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     Enabled = false
                 }
-            }, Timeout.InfiniteTimeSpan);
+            });
 
             await toolRunner.StartAsync();
 

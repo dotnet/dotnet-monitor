@@ -178,7 +178,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
         }
 
-        public async Task WriteUserSettingsAsync(RootOptions options, CancellationToken token)
+        public async Task WriteUserSettingsAsync(RootOptions options)
         {
             using FileStream stream = new(UserSettingsFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
 
@@ -186,12 +186,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
 
             _outputHelper.WriteLine("Wrote user settings.");
-        }
-
-        public async Task WriteUserSettingsAsync(RootOptions options, TimeSpan timeout)
-        {
-            using CancellationTokenSource cancellation = new(timeout);
-            await WriteUserSettingsAsync(options, cancellation.Token).ConfigureAwait(false);
         }
     }
 }

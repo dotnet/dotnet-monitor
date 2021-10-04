@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace Microsoft.Diagnostics.Monitoring.TestCommon
+namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models
 {
     internal sealed class LogEntry
     {

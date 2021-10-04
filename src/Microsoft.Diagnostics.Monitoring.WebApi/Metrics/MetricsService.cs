@@ -23,14 +23,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly IDiagnosticServices _services;
         private readonly MetricsStoreService _store;
         private IOptionsMonitor<MetricsOptions> _optionsMonitor;
+        private IOptionsMonitor<GlobalCounterOptions> _counterOptions;
 
         public MetricsService(IDiagnosticServices services,
             IOptionsMonitor<MetricsOptions> optionsMonitor,
+            IOptionsMonitor<GlobalCounterOptions> counterOptions,
             MetricsStoreService metricsStore)
         {
             _store = metricsStore;
             _services = services;
             _optionsMonitor = optionsMonitor;
+            _counterOptions = counterOptions;
         }
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -45,12 +48,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     var client = new DiagnosticsClient(pi.EndpointInfo.Endpoint);
 
                     MetricsOptions options = _optionsMonitor.CurrentValue;
+                    GlobalCounterOptions counterOptions = _counterOptions.CurrentValue;
                     using var optionsTokenSource = new CancellationTokenSource();
 
                     //If metric options change, we need to cancel the existing metrics pipeline and restart with the new settings.
                     using IDisposable monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.SafeCancel());
 
-                    EventPipeCounterPipelineSettings counterSettings = EventCounterSettingsFactory.CreateSettings(options);
+                    EventPipeCounterPipelineSettings counterSettings = EventCounterSettingsFactory.CreateSettings(counterOptions, options);
 
                     _counterPipeline = new EventCounterPipeline(client, counterSettings, loggers: new[] { new MetricsLogger(_store.MetricsStore) });
 

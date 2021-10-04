@@ -47,6 +47,5 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Default timeout for logs collection.
         /// </summary>
         public static readonly TimeSpan LogsTimeout = TimeSpan.FromMinutes(3);
-
     }
 }

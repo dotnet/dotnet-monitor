@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -94,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, endpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => Utils.GetLogsAction(startCompletionSource, format, endpointInfo, settings, outputStream, token),
+                    (outputStream, token) => Utils.StartLogsPipeline(startCompletionSource, format, endpointInfo, settings, outputStream, token),
                     egressProvider,
                     fileName,
                     endpointInfo,
