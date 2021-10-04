@@ -413,7 +413,7 @@ A trigger that has its condition satisfied when the number of HTTP requests is a
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
 | `RequestCount` | int | true | The threshold of the number of requests that start within the sliding window of time. | | | |
-| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the number of requests are counted. | `"00:01:00"` (one minute) | `"1.00:00:00"` (1 day) | `"00:00:01"` (one second) |
+| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the number of requests are counted. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
 | `IncludePaths` | string[] | false | The list of request path patterns to monitor. If not specified, all request paths are considered. If specified, only request paths matching one of the patterns in this list will be considered. Request paths matching a pattern in the `ExcludePaths` list will be ignored. | `null` | | |
 | `ExcludePaths` | string[] | false | The list of request path patterns to ignore. Request paths matching a pattern in this list will be ignored. | `null` | | |
 
@@ -441,7 +441,7 @@ A trigger that has its condition satisfied when the number of HTTP requests have
 |---|---|---|---|---|---|---|
 | `RequestCount` | int | true | The threshold of the number of slow requests that start within the sliding window of time. | | | |
 | `RequestDuration` | Timespan? | false | The threshold of the amount of time in which a request is considered to be slow. | `"00:00:05"` (5 seconds) | | |
-| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the the number of slow requests are counted. | `"00:01:00"` (one minute) | `"1.00:00:00"` (1 day) | `"00:00:01"` (one second) |
+| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the the number of slow requests are counted. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
 | `IncludePaths` | string[] | false | The list of request path patterns to monitor. If not specified, all request paths are considered. If specified, only request paths matching one of the patterns in this list will be considered. Request paths matching a pattern in the `ExcludePaths` list will be ignored. | `null` | | |
 | `ExcludePaths` | string[] | false | The list of request path patterns to ignore. Request paths matching a pattern in this list will be ignored. | `null` | | |
 
@@ -470,7 +470,7 @@ A trigger that has its condition satisfied when the number of HTTP responses tha
 |---|---|---|---|---|---|---|
 | `StatusCodes` | string[] | true | The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. `"400-499"`). | | | |
 | `RequestCount` | int | true | The threshold number of responses with matching status codes. | | | |
-| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the number of responses with matching status codes must occur. | `"00:01:00"` (one minute) | `"1.00:00:00"` (1 day) | `"00:00:01"` (one second) |
+| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the number of responses with matching status codes must occur. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
 | `IncludePaths` | string[] | false | The list of request path patterns to monitor. If not specified, all request paths are considered. If specified, only request paths matching one of the patterns in this list will be considered. Request paths matching a pattern in the `ExcludePaths` list will be ignored. | `null` | | |
 | `ExcludePaths` | string[] | false | The list of request path patterns to ignore. Request paths matching a pattern in this list will be ignored. | `null` | | |
 
@@ -503,7 +503,7 @@ See [Well-known Counters in .NET](https://docs.microsoft.com/en-us/dotnet/core/d
 | `CounterName` | string | true | The name of the counter to monitor. | | | |
 | `GreaterThan` | double? | false | The threshold level the counter must maintain (or higher) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified. | `null` | | |
 | `LessThan` | double? | false | The threshold level the counter must maintain (or lower) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified. | `null` | | |
-| `SlidingWindowDuration` | false | TimeSpan? | The sliding time window in which the counter must maintain its value as specified by the threshold levels in `GreaterThan` and/or `LessThan`. | `"00:01:00"` (one minute) | `"1.00:00:00"` (1 day) | `"00:00:01"` (one second) |
+| `SlidingWindowDuration` | false | TimeSpan? | The sliding time window in which the counter must maintain its value as specified by the threshold levels in `GreaterThan` and/or `LessThan`. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
 
 ##### Example
 
@@ -591,7 +591,7 @@ An action that collects a trace of the process that the collection rule is targe
 | `Providers` | [EventProvider](api/definitions.md#EventProvider)[] | false | List of event providers from which to capture events. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
 | `RequestRundown` | bool | false | The runtime may provide additional type information for certain types of events after the trace session is ended. This additional information is known as rundown events. Without this information, some events may not be parsable into useful information. Only applies when `Providers` is specified. | `true` | | |
 | `BufferSizeMegabytes` | int | false | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Only applies when `Providers` is specified. | `256` | `1` | `1024` |
-| `Duration` | TimeSpan? | false | The duration of the trace operation. | `"00:00:30"` (30 seconds) | `"1.00:00:00"` (1 day) | `"00:00:01"` (1 second) |
+| `Duration` | TimeSpan? | false | The duration of the trace operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected trace. | | | |
 
 ##### Example
