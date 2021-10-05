@@ -10,6 +10,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class GlobalCounterOptionsDefaults
     {
-        public const int IntervalSeconds = 5;
+        public const float IntervalSeconds = 5;
     }
 }

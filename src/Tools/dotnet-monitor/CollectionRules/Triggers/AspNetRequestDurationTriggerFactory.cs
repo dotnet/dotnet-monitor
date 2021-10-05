@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
 
@@ -20,13 +21,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
     {
         private readonly EventPipeTriggerFactory _eventPipeTriggerFactory;
         private readonly ITraceEventTriggerFactory<AspNetRequestDurationTriggerSettings> _traceEventTriggerFactory;
+        private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
 
         public AspNetRequestDurationTriggerFactory(
             EventPipeTriggerFactory eventPipeTriggerFactory,
-            ITraceEventTriggerFactory<AspNetRequestDurationTriggerSettings> traceEventTriggerFactory)
+            ITraceEventTriggerFactory<AspNetRequestDurationTriggerSettings> traceEventTriggerFactory,
+            IOptionsMonitor<GlobalCounterOptions> counterOptions)
         {
             _eventPipeTriggerFactory = eventPipeTriggerFactory;
             _traceEventTriggerFactory = traceEventTriggerFactory;
+            _counterOptions = counterOptions;
         }
 
         /// <inheritdoc/>
@@ -41,7 +45,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 SlidingWindowDuration = options.SlidingWindowDuration ?? TimeSpan.Parse(AspNetRequestDurationOptionsDefaults.SlidingWindowDuration, CultureInfo.InvariantCulture),
             };
 
-            var aspnetTriggerSourceConfiguration = new AspNetTriggerSourceConfiguration(supportHeartbeat: true);
+            var aspnetTriggerSourceConfiguration = new AspNetTriggerSourceConfiguration(_counterOptions.CurrentValue.GetIntervalSeconds());
 
             return _eventPipeTriggerFactory.Create(endpointInfo, aspnetTriggerSourceConfiguration, _traceEventTriggerFactory, settings, callback);
         }

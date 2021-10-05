@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static EventPipeCounterPipelineSettings CreateSettings(bool includeDefaults,
             int durationSeconds,
-            int refreshInterval,
+            float refreshInterval,
             Func<List<EventPipeCounterGroup>> createCounterGroups)
         {
             List<EventPipeCounterGroup> eventPipeCounterGroups = createCounterGroups();
@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 CounterGroups = eventPipeCounterGroups.ToArray(),
                 Duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds),
-                RefreshInterval = TimeSpan.FromSeconds(refreshInterval)
+                RefreshIntervalSeconds = refreshInterval
             };
         }
 
