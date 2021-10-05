@@ -411,11 +411,67 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 ## Collection Rule Configuration
 
-TODO
+Collection rules are specified in configuration as a named item under the `CollectionRules` property at the root of the configuration. Each collection rule has four properties for describing the behavior of the rule: `Filters`, `Trigger`, `Actions`, and `Limits`.
+
+### Example
+
+The following is a collection rule that collects a 1 minute CPU trace after it has detected high CPU usage for 10 seconds. The rule only applies to processes named "dotnet" and only collects at most 2 traces per 1 hour sliding time window.
+
+```json
+{
+    "CollectionRules": {
+        "HighCpuRule": {
+            "Filters": [{
+                "Key": "ProcessName",
+                "Value": "dotnet",
+                "MatchType": "Exact"
+            }],
+            "Trigger": {
+                "Type": "EventCounter",
+                "Settings": {
+                    "ProviderName": "System.Runtime",
+                    "CounterName": "cpu-usage",
+                    "GreaterThan": 70,
+                    "SlidingWindowDuration": "00:00:10"
+                }
+            },
+            "Actions": [{
+                "Type": "CollectTrace",
+                "Settings": {
+                    "Profile": "Cpu",
+                    "Duration": "00:01:00"
+                }
+            }],
+            "Limits": {
+                "ActionCount": 2,
+                "ActionCountSlidingWindowDuration": "1:00:00"
+            }
+        }
+    }
+}
+```
 
 ### Filters
 
-TODO
+Each collection rule can specify a set of process filters to select which processes the rule should be applied. The filter criteria are the same as those used for the [default process](#Default-Process-Configuration) configuration.
+
+#### Example
+
+The following example shows the `Filters` portion of a collection rule that has the rule only apply to processes named "dotnet" and whose command line contains "myapp.dll".
+
+```json
+{
+    "Filters": [{
+        "Key": "ProcessName",
+        "Value": "dotnet",
+        "MatchType": "Exact"
+    },{
+        "Key": "CommandLine",
+        "Value": "myapp.dll",
+        "MatchType": "Contains"
+    }]
+}
+```
 
 ### Triggers
 
@@ -645,4 +701,23 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
 
 ### Limits
 
-TODO
+Collection rules have limits that constrain the lifetime of the rule and how often its actions can be run before being throttled.
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `ActionCount` | int | false | The number of times the action list may be executed before being throttled. | 5 | | |
+| `ActionCountSlidingWindowDuration` | TimeSpan? | false | The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting. If not specified, all action list executions will be counted for the entire duration of the rule. | `null` | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
+| `RuleDuration` | TimeSpan? | false | The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. | `null` | `"00:00:01"` (1 second) | `"365.00:00:00"` (1 year) |
+
+#### Example
+
+The following example shows the `Limits` portion of a collection rule that has the rule only allow its actions to run 3 times within a 1 hour sliding time window.
+
+```json
+{
+    "Limits": {
+        "ActionCount": 3,
+        "ActionCountSlidingWindowDuration": "01:00:00",
+    }
+}
+```
