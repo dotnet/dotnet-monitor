@@ -6,5 +6,6 @@ Today we are releasing the next official preview of the `dotnet-monitor` tool. T
 - Documented recommended container limits. See [Running in Kubernetes](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/kubernetes.md) for more details.
 - ⚠️ Upgraded runtime framework dependency from .NET Core 3.1 to .NET 6
 - ⚠️ Reversioned from 5.0.0 to 6.0.0
+- ⚠️ Fix all counter intervals to single global option (#923)
 
 \*⚠️ **_indicates a breaking change_**
