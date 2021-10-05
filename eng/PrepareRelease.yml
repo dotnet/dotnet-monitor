@@ -66,3 +66,7 @@ stages:
           targetPath: '$(System.ArtifactsDirectory)\ReleaseStaging'
           publishLocation: 'pipeline'
           artifact: 'MonitorRelease'
+      - task: tagBuildOrRelease@0
+        inputs:
+          type: 'Build'
+          tags: 'MonitorRelease'
