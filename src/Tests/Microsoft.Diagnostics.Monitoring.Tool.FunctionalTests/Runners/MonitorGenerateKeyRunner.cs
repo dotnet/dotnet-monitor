@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-using OutputFormat = Microsoft.Diagnostics.Tools.Monitor.OutputFormat;
+//using OutputFormat = Microsoft.Diagnostics.Tools.Monitor.OutputFormat;
 using RootOptions = Microsoft.Diagnostics.Tools.Monitor.RootOptions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners

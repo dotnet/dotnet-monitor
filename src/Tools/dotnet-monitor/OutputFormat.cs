@@ -2,9 +2,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if UNITTEST
+    namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
+#else
 namespace Microsoft.Diagnostics.Tools.Monitor
-{
-    public enum OutputFormat
+#endif
+    {
+#if UNITTEST
+        public
+#else
+    internal
+#endif
+        enum OutputFormat
     {
         Json,
         Text,

@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// </summary>
         public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory)
         {
-            return runner.CreateHttpClientDefaultAddressAsync(factory, Extensions.Options.Options.DefaultName, TestTimeouts.HttpApi);
+            return runner.CreateHttpClientDefaultAddressAsync(factory, Extensions.Options.Options.DefaultName, CommonTestTimeouts.HttpApi);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// </summary>
         public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string name)
         {
-            return runner.CreateHttpClientDefaultAddressAsync(factory, name, TestTimeouts.HttpApi);
+            return runner.CreateHttpClientDefaultAddressAsync(factory, name, CommonTestTimeouts.HttpApi);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// </summary>
         public static Task<HttpClient> CreateHttpClientMetricsAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory)
         {
-            return runner.CreateHttpClientMetricsAddressAsync(factory, TestTimeouts.HttpApi);
+            return runner.CreateHttpClientMetricsAddressAsync(factory, CommonTestTimeouts.HttpApi);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public static Task WaitForCollectionRuleActionsCompletedAsync(this MonitorCollectRunner runner, string ruleName)
         {
-            return runner.WaitForCollectionRuleActionsCompletedAsync(ruleName, TestTimeouts.CollectionRuleActionsCompletedTimeout);
+            return runner.WaitForCollectionRuleActionsCompletedAsync(ruleName, CommonTestTimeouts.CollectionRuleActionsCompletedTimeout);
         }
 
         public static async Task WaitForCollectionRuleActionsCompletedAsync(this MonitorCollectRunner runner, string ruleName, TimeSpan timeout)
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public static Task WaitForCollectionRuleCompleteAsync(this MonitorCollectRunner runner, string ruleName)
         {
-            return runner.WaitForCollectionRuleCompleteAsync(ruleName, TestTimeouts.CollectionRuleCompletionTimeout);
+            return runner.WaitForCollectionRuleCompleteAsync(ruleName, CommonTestTimeouts.CollectionRuleCompletionTimeout);
         }
 
         public static async Task WaitForCollectionRuleCompleteAsync(this MonitorCollectRunner runner, string ruleName, TimeSpan timeout)
@@ -113,7 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public static Task WaitForCollectionRuleUnmatchedFiltersAsync(this MonitorCollectRunner runner, string ruleName)
         {
-            return runner.WaitForCollectionRuleUnmatchedFiltersAsync(ruleName, TestTimeouts.CollectionRuleFilteredTimeout);
+            return runner.WaitForCollectionRuleUnmatchedFiltersAsync(ruleName, CommonTestTimeouts.CollectionRuleFilteredTimeout);
         }
 
         public static async Task WaitForCollectionRuleUnmatchedFiltersAsync(this MonitorCollectRunner runner, string ruleName, TimeSpan timeout)
@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public static Task WaitForCollectionRuleStartedAsync(this MonitorCollectRunner runner, string ruleName)
         {
-            return runner.WaitForCollectionRuleStartedAsync(ruleName, TestTimeouts.CollectionRuleCompletionTimeout);
+            return runner.WaitForCollectionRuleStartedAsync(ruleName, CommonTestTimeouts.CollectionRuleCompletionTimeout);
         }
 
         public static async Task WaitForCollectionRuleStartedAsync(this MonitorCollectRunner runner, string ruleName, TimeSpan timeout)

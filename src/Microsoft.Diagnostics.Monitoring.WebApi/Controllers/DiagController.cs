@@ -552,19 +552,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             EventLogsPipelineSettings settings,
             string egressProvider)
         {
-            LogFormat format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
-            if (format == LogFormat.None)
+            LogFormat? format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
+            if (format == null)
             {
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
             string fileName = Utilities.GenerateLogsFileName(processInfo.EndpointInfo);
-            string contentType = Utilities.GetLogsContentType(format);
+            string contentType = Utilities.GetLogsContentType(format.Value);
 
             return Result(
                 Utilities.ArtifactType_Logs,
                 egressProvider,
-                (outputStream, token) => Utilities.StartLogsPipeline(null, format, processInfo.EndpointInfo, settings, outputStream, token),
+                (outputStream, token) => Utilities.StartLogsPipeline(null, format.Value, processInfo.EndpointInfo, settings, outputStream, token),
                 fileName,
                 contentType,
                 processInfo.EndpointInfo,
@@ -576,11 +576,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
         }
 
-        private static LogFormat ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
+        private static LogFormat? ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
             if (acceptedHeaders == null)
             {
-                return LogFormat.None;
+                return null;
             }
 
             if (acceptedHeaders.Contains(EventStreamHeader))
@@ -607,7 +607,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return LogFormat.JsonSequence;
             }
-            return LogFormat.None;
+            return null;
         }
 
         private Task<ActionResult> Result(

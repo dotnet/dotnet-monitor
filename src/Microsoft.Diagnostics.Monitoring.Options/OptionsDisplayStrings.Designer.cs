@@ -441,7 +441,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The LogFormat used when egressing logs..
+        ///   Looks up a localized string similar to The format of the logs artifact..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLogsOptions_Format {
             get {

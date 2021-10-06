@@ -24,6 +24,8 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
+using RootOptions = Microsoft.Diagnostics.Tools.Monitor.RootOptions;
+
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [Collection(DefaultCollectionFixture.Name)]
@@ -249,7 +251,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     // Logs Error Check
                     ValidationProblemDetailsException validationProblemDetailsExceptionLogs = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                            () => appClient.CaptureLogsAsync(processId, TestTimeouts.LogsDuration, LogLevel.None, LogFormat.NDJson));
+                            () => appClient.CaptureLogsAsync(processId, CommonTestTimeouts.LogsDuration, LogLevel.None, LogFormat.NDJson));
                     Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsExceptionLogs.StatusCode);
                     Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsExceptionLogs.Details.Status);
                     Assert.Equal(DisabledHTTPEgressErrorMessage, validationProblemDetailsExceptionLogs.Message);
