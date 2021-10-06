@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 string egress = Options.Egress;
 
-                string gcdumpFileName = Utils.GenerateGCDumpFileName(EndpointInfo);
+                string gcdumpFileName = GCDumpUtilities.GenerateGCDumpFileName(EndpointInfo);
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_GCDump, EndpointInfo);
 
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     (stream, token) =>
                     {
                         startCompleteSource.TrySetResult(null);
-                        return Utils.CaptureGCDumpAsync(EndpointInfo, stream, token);
+                        return GCDumpUtilities.CaptureGCDumpAsync(EndpointInfo, stream, token);
                     },
                     egress,
                     gcdumpFileName,

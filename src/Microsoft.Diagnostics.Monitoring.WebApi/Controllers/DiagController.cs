@@ -206,7 +206,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async processInfo =>
             {
-                string dumpFileName = Utilities.GenerateDumpFileName();
+                string dumpFileName = DumpUtilities.GenerateDumpFileName();
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
@@ -268,7 +268,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Result(
                     Utilities.ArtifactType_GCDump,
                     egressProvider,
-                    (stream, token) => Utilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token),
+                    (stream, token) => GCDumpUtilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token),
                     fileName,
                     ContentTypes.ApplicationOctetStream,
                     processInfo.EndpointInfo);
@@ -313,7 +313,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
-                var aggregateConfiguration = Utilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.GetIntervalSeconds());
+                var aggregateConfiguration = TraceUtilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.GetIntervalSeconds());
 
                 return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
@@ -366,7 +366,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
-                var traceConfiguration = Utilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
+                var traceConfiguration = TraceUtilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
 
                 return StartTrace(processInfo, traceConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
@@ -536,12 +536,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             TimeSpan duration,
             string egressProvider)
         {
-            string fileName = Utilities.GenerateTraceFileName(processInfo.EndpointInfo);
+            string fileName = TraceUtilities.GenerateTraceFileName(processInfo.EndpointInfo);
 
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,
-                (outputStream, token) => Utilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token),
+                (outputStream, token) => TraceUtilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token),
                 fileName,
                 ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);

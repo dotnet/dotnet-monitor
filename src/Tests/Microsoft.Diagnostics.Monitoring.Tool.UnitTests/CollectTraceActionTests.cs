@@ -124,9 +124,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     await DisposableHelper.DisposeAsync(action);
                 }
 
-                Assert.NotNull(result.OutputValues);
-                Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-                Assert.True(File.Exists(egressPath));
+                //string egressPath = ActionTestHelper.ValidateEgressPath(result);
+                string egressPath = "";
 
                 using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
                 Assert.NotNull(traceStream);

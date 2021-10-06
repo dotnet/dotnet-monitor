@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     TraceProfile profile = Options.Profile.Value;
                     int metricsIntervalSeconds = _counterOptions.CurrentValue.GetIntervalSeconds();
 
-                    configuration = Utils.GetTraceConfiguration(profile, metricsIntervalSeconds);
+                    configuration = TraceUtilities.GetTraceConfiguration(profile, metricsIntervalSeconds);
                 }
                 else
                 {
@@ -75,15 +75,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     bool requestRundown = Options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
                     int bufferSizeMegabytes = Options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
 
-                    configuration = Utils.GetTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
+                    configuration = TraceUtilities.GetTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
                 }
 
-                string fileName = Utils.GenerateTraceFileName(EndpointInfo);
+                string fileName = TraceUtilities.GenerateTraceFileName(EndpointInfo);
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Trace, EndpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => Utils.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token),
+                    (outputStream, token) => TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token),
                     egressProvider,
                     fileName,
                     EndpointInfo,
