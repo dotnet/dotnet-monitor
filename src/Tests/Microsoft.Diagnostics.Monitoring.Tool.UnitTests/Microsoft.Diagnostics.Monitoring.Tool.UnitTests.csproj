@@ -6,10 +6,6 @@
 
   <ItemGroup>
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Options\OptionsExtensions.cs" Link="Options\OptionsExtensions.cs" />
-    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Runners\MonitorCollectRunner.cs" Link="Runners\MonitorCollectRunner.cs" />
-    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Runners\MonitorRunnerExtensions.cs" Link="Runners\MonitorRunnerExtensions.cs" />
-    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Runners\MonitorRunner.cs" Link="Runners\MonitorRunner.cs" />
-    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\Runners\MonitorCollectRunner.CollectionRule.cs" Link="Runners\MonitorCollectRunner.CollectionRule.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,10 +5,8 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -19,7 +17,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -34,6 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     public class CollectLogsActionTests
     {
         private readonly ITestOutputHelper _outputHelper;
+        private readonly EndpointUtilities _endpointUtilities;
 
         const char JsonSequenceRecordSeparator = '\u001E';
 
@@ -43,6 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public CollectLogsActionTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
+            _endpointUtilities = new(_outputHelper);
         }
 
         /// <summary>
@@ -50,16 +49,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// at the log level specified in the request body.
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(LogFormat.JsonSequence)]
+        [InlineData(LogFormat.NDJson)]
 #endif
-        public Task LogsDefaultLevelFallbackActionTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsDefaultLevelFallbackActionTest(LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
-                mode,
                 new LogsConfiguration()
                 {
                     FilterSpecs = new Dictionary<string, LogLevel?>()
@@ -91,16 +87,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(LogFormat.JsonSequence)]
+        [InlineData(LogFormat.NDJson)]
 #endif
-        public Task LogsUseAppFiltersViaBodyActionTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsUseAppFiltersViaBodyActionTest(LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
-                mode,
                 new LogsConfiguration()
                 {
                     LogLevel = LogLevel.Trace,
@@ -130,16 +123,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(LogFormat.JsonSequence)]
+        [InlineData(LogFormat.NDJson)]
 #endif
-        public Task LogsUseAppFiltersAndFilterSpecsActionTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsUseAppFiltersAndFilterSpecsActionTest(LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
-                mode,
                 new LogsConfiguration()
                 {
                     FilterSpecs = new Dictionary<string, LogLevel?>()
@@ -174,16 +164,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that log events are collected for wildcard categories.
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
 #if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(LogFormat.JsonSequence)]
+        [InlineData(LogFormat.NDJson)]
 #endif
-        public Task LogsWildcardActionTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        public Task LogsWildcardActionTest(LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
-                mode,
                 new LogsConfiguration()
                 {
                     FilterSpecs = new Dictionary<string, LogLevel?>()
@@ -217,13 +204,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         private async Task ValidateLogsActionAsync(
-            DiagnosticPortConnectionMode mode,
             LogsConfiguration configuration,
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat logFormat)
         {
-            EndpointUtilities _endpointUtilities = new(_outputHelper);
-
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
@@ -252,55 +236,50 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 using CancellationTokenSource endpointTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
 
-                await SingleTarget(
-                    _outputHelper,
-                    mode,
-                    TestAppScenarios.Logger.Name,
-                    appValidate: async (runner) =>
+                EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
+                await using var source = _endpointUtilities.CreateServerSource(out string transportName, endpointInfoCallback);
+                source.Start();
+
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
+                runner.ScenarioName = TestAppScenarios.Logger.Name;
+
+                Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
+                {
+                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
+                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
+
+                    CollectionRuleActionResult result;
+                    try
                     {
-                        IEndpointInfo endpointInfo = await EndpointInfo.FromProcessIdAsync(await runner.ProcessIdTask, endpointTokenSource.Token);
-                        ICollectionRuleAction action = factory.Create(endpointInfo, options);
+                        await action.StartAsync(cancellationTokenSource.Token);
 
-                        using CancellationTokenSource validationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
+                        // Add a delay before the start of logging (this approach was first used in LogsTests.cs)
+                        await Task.Delay(TimeSpan.FromSeconds(3));
 
-                        await ValidateResponseStream(
-                            runner,
-                            action,
-                            callback,
-                            logFormat);
-                    });
+                        await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
+
+                        result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
+                    }
+                    finally
+                    {
+                        await Tools.Monitor.DisposableHelper.DisposeAsync(action);
+                    }
+
+                    Assert.NotNull(result.OutputValues);
+                    Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
+                    Assert.True(File.Exists(egressPath));
+
+                    using FileStream logsStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                    Assert.NotNull(logsStream);
+
+                    await ValidateLogsEquality(logsStream, callback, logFormat);
+                });
             });
-        }
-
-        private async Task ValidateResponseStream(AppRunner runner, ICollectionRuleAction action, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
-        {
-            Assert.NotNull(runner);
-            Assert.NotNull(action);
-            Assert.NotNull(callback);
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
-            await action.StartAsync(cancellationTokenSource.Token);
-
-            // CONSIDER: Give dotnet-monitor some time to start the logs pipeline before having the target
-            // application start logging. It would be best if dotnet-monitor could write a console event
-            // (at Debug or Trace level) for when the pipeline has started. This would require dotnet-monitor
-            // to know when the pipeline started and is waiting for logging data.
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            // Start logging in the target application
-            await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
-
-            CollectionRuleActionResult result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
-
-            Assert.NotNull(result.OutputValues);
-            Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-            Assert.True(File.Exists(egressPath));
-
-            using FileStream logsStream = new(egressPath, FileMode.Open, FileAccess.Read);
-            Assert.NotNull(logsStream);
-
-            await ValidateLogsEquality(logsStream, callback, logFormat);
         }
 
         private async Task ValidateLogsEquality(Stream logsStream, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
@@ -350,41 +329,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             channel.Writer.Complete();
 
             await callbackTask;
-        }
-
-        private static async Task SingleTarget(
-            ITestOutputHelper outputHelper,
-            DiagnosticPortConnectionMode mode,
-            string scenarioName,
-            Func<AppRunner, Task> appValidate,
-            Action<AppRunner> configureApp = null)
-        {
-            DiagnosticPortHelper.Generate(
-                mode,
-                out DiagnosticPortConnectionMode appConnectionMode,
-                out string diagnosticPortPath);
-
-
-            await using MonitorCollectRunner toolRunner = new(outputHelper);
-            toolRunner.ConnectionMode = mode;
-            toolRunner.DiagnosticPortPath = diagnosticPortPath;
-            toolRunner.DisableAuthentication = true;
-            toolRunner.DisableHttpEgress = false;
-
-            await toolRunner.StartAsync();
-
-            AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
-            appRunner.ConnectionMode = appConnectionMode;
-            appRunner.DiagnosticPortPath = diagnosticPortPath;
-            appRunner.ScenarioName = scenarioName;
-
-            configureApp?.Invoke(appRunner);
-
-            await appRunner.ExecuteAsync(async () =>
-            {
-                await appValidate(appRunner);
-            });
-            Assert.Equal(0, appRunner.ExitCode);
         }
 
         public static bool SkipOnWindowsNetCore31
