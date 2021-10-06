@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 //using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Monitoring.WebApi;
@@ -403,7 +404,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 out DiagnosticPortConnectionMode appConnectionMode,
                 out string diagnosticPortPath);
 
-            /*
+
             await using MonitorCollectRunner toolRunner = new(outputHelper);
             toolRunner.ConnectionMode = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
@@ -413,7 +414,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             //configureTool?.Invoke(toolRunner);
 
             await toolRunner.StartAsync();
-            */
+
             AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
