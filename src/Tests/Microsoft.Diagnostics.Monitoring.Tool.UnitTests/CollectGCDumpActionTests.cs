@@ -50,54 +50,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     .SetStartupTrigger();
             }, async host =>
             {
-                IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                CollectGCDumpOptions options = (CollectGCDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+                ActionTestHelper<CollectGCDumpOptions> helper = new(host, _endpointUtilities, _outputHelper);
 
-                ICollectionRuleActionFactoryProxy factory;
-                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectGCDump, out factory));
-
-                EndpointInfoSourceCallback callback = new(_outputHelper);
-                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-                source.Start();
-
-                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
-
-                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-                await runner.ExecuteAsync(async () =>
-                {
-                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
-
-                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
-
-                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.GCDumpTimeout);
-                    CollectionRuleActionResult result;
-                    try
-                    {
-                        await action.StartAsync(cancellationTokenSource.Token);
-
-                        result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
-                    }
-                    finally
-                    {
-                        await DisposableHelper.DisposeAsync(action);
-                    }
-
-                    //string egressPath = ActionTestHelper.ValidateEgressPath(result);
-                    string egressPath = "";
-
-                    using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
-                    Assert.NotNull(gcdumpStream);
-
-                    await ValidateGCDump(gcdumpStream);
-
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-                });
+                await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectGCDump, CommonTestTimeouts.GCDumpTimeout, (egressPath, runner) => ValidateGCDump(runner, egressPath));
             });
         }
 
-        private static async Task ValidateGCDump(Stream gcdumpStream)
+        private static async Task ValidateGCDump(AppRunner runner, string egressPath)
         {
+            using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
+            Assert.NotNull(gcdumpStream);
+
             using CancellationTokenSource cancellation = new(CommonTestTimeouts.GCDumpTimeout);
             byte[] buffer = await gcdumpStream.ReadBytesAsync(24, cancellation.Token);
 

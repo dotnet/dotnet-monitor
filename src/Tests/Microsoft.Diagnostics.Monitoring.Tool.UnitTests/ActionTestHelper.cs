@@ -76,7 +76,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 await actionValidation(egressPath, runner);
 
-                //await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                // Need to ask Justin why this is the case...just a workaround right now, but don't understand what this does and why it has different behavior by Action
+                if (!actionName.Equals(KnownCollectionRuleActions.CollectDump))
+                {
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                }
             });
         }
 

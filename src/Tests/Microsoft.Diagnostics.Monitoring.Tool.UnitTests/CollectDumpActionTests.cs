@@ -70,6 +70,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
         }
-
     }
 }
