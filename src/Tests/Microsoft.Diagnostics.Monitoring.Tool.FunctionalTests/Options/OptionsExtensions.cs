@@ -14,8 +14,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
 
-using RootOptions = Microsoft.Diagnostics.Tools.Monitor.RootOptions;
-
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
     internal static class OptionsExtensions

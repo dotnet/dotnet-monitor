@@ -24,8 +24,6 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-using RootOptions = Microsoft.Diagnostics.Tools.Monitor.RootOptions;
-
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [Collection(DefaultCollectionFixture.Name)]

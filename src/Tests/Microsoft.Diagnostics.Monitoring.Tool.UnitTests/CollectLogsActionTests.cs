@@ -6,8 +6,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
-//using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
@@ -88,44 +86,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 logFormat);
         }
-
-/*
-        /// <summary>
-        /// Test that LogLevel.None is not supported as the default log level in the request body.
-        /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
-#endif
-        public Task LogsDefaultLevelNoneNotSupportedViaBodyActionTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
-        {
-            return ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                mode,
-                TestAppScenarios.Logger.Name,
-                appValidate: async (runner, client) =>
-                {
-                    ValidationProblemDetailsException exception = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                        async () =>
-                        {
-                            using ResponseStreamHolder _ = await client.CaptureLogsAsync(
-                                await runner.ProcessIdTask,
-                                TestTimeouts.LogsDuration,
-                                new LogsConfiguration() { LogLevel = LogLevel.None },
-                                logFormat);
-                        });
-                    Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
-                    Assert.Equal(StatusCodes.Status400BadRequest, exception.Details.Status);
-
-                    // Allow test app to gracefully exit by continuing the scenario.
-                    await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
-                });
-        }
-*/
 
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
@@ -410,8 +370,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
             toolRunner.DisableHttpEgress = false;
-
-            //configureTool?.Invoke(toolRunner);
 
             await toolRunner.StartAsync();
 

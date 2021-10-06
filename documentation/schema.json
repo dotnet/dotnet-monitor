@@ -1168,7 +1168,7 @@
           "minLength": 1
         },
         "Format": {
-          "description": "The LogFormat used when egressing logs.",
+          "description": "The format of the logs artifact.",
           "default": "EventStream",
           "oneOf": [
             {
@@ -1185,13 +1185,11 @@
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "None",
         "NDJson",
         "EventStream",
         "JsonSequence"
       ],
       "enum": [
-        "None",
         "NDJson",
         "EventStream",
         "JsonSequence"

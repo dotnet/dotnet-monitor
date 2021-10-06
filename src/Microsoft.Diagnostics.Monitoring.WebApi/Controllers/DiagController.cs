@@ -553,7 +553,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string egressProvider)
         {
             LogFormat? format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
-            if (format == null)
+            if (null == format)
             {
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }

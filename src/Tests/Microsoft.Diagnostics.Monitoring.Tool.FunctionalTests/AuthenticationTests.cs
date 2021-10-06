@@ -22,8 +22,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using System.Threading;
 using Microsoft.Diagnostics.Tools.Monitor;
+using System.Threading;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests

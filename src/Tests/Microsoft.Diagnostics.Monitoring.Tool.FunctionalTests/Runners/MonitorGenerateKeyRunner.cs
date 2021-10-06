@@ -15,9 +15,6 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-//using OutputFormat = Microsoft.Diagnostics.Tools.Monitor.OutputFormat;
-using RootOptions = Microsoft.Diagnostics.Tools.Monitor.RootOptions;
-
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 {
     /// <summary>
