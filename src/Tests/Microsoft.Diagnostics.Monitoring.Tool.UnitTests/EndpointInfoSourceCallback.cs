@@ -115,12 +115,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static async Task NotifyCompletionAsync(string operation, SemaphoreSlim semaphore, List<CompletionEntry> entries, ITestOutputHelper outputHelper, IEndpointInfo info, CancellationToken token)
         {
-            outputHelper.WriteLine($"[Source:{operation}] {ToOutputString(info)}");
+            string endpointOutputString = ToOutputString(info);
 
             await semaphore.WaitAsync(token);
             try
             {
-                outputHelper.WriteLine($"[Source:{operation}] Start notifications for process {info.ProcessId}");
+                outputHelper.WriteLine($"[Source:{operation}] Start notifications for {endpointOutputString}");
 
                 // Create a mapping of the process ID tasks to the completion entries
                 IDictionary<Task<int>, CompletionEntry> map = new Dictionary<Task<int>, CompletionEntry>(entries.Count);
@@ -154,7 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     }
                 }
 
-                outputHelper.WriteLine($"[Source:{operation}] Finished notifications for process {info.ProcessId}");
+                outputHelper.WriteLine($"[Source:{operation}] Finished notifications for {endpointOutputString}");
             }
             finally
             {
