@@ -5,17 +5,10 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -24,7 +17,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectDumpActionTests
     {
-        private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "DumpTestRule";
 
         private ITestOutputHelper _outputHelper;
@@ -48,14 +40,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectDumpAction(ExpectedEgressProvider, dumpType)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider, dumpType)
                     .SetStartupTrigger();
             }, async host =>
             {
-                ActionTestHelper<CollectDumpOptions> helper = new(host, _endpointUtilities, _outputHelper);
+                ActionTester<CollectDumpOptions> helper = new(host, _endpointUtilities, _outputHelper);
 
                 await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectDump, CommonTestTimeouts.DumpTimeout, (egressPath, runner) => DumpValidation(runner, egressPath));
             });

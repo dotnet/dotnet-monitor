@@ -5,14 +5,9 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 using System.Threading;
@@ -20,14 +15,12 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using System.Collections.Generic;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Diagnostics.Tracing;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectTraceActionTests
     {
-        private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "TraceTestRule";
 
         private ITestOutputHelper _outputHelper;
@@ -50,16 +43,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectTraceAction(traceProfile, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .AddCollectTraceAction(traceProfile, ActionTestsConstants.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
                     .SetStartupTrigger();
 
                 collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
             }, async host =>
             {
-                ActionTestHelper<CollectTraceOptions> helper = new(host, _endpointUtilities, _outputHelper);
+                ActionTester<CollectTraceOptions> helper = new(host, _endpointUtilities, _outputHelper);
 
                 await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectTrace, CommonTestTimeouts.TraceTimeout, (egressPath, runner) => ValidateTrace(runner, egressPath));
             });
@@ -77,16 +70,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .AddCollectTraceAction(ExpectedProviders, ActionTestsConstants.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
                     .SetStartupTrigger();
 
                 collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
             }, async host =>
             {
-                ActionTestHelper<CollectTraceOptions> helper = new(host, _endpointUtilities, _outputHelper);
+                ActionTester<CollectTraceOptions> helper = new(host, _endpointUtilities, _outputHelper);
 
                 await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectTrace, CommonTestTimeouts.TraceTimeout, (egressPath, runner) => ValidateTrace(runner, egressPath));
             });

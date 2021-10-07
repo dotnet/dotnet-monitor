@@ -125,9 +125,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
 
                 var endpointInfo = Assert.Single(endpointInfos);
-                Assert.NotNull(endpointInfo.CommandLine);
-                Assert.NotNull(endpointInfo.OperatingSystem);
-                Assert.NotNull(endpointInfo.ProcessArchitecture);
+
+                ValidateEndpointInfo(endpointInfo);
+
                 await EndpointUtilities.VerifyConnectionAsync(runner, endpointInfo);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
@@ -181,10 +181,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     int processId = await runners[i].ProcessIdTask;
 
                     IEndpointInfo endpointInfo = endpointInfos.FirstOrDefault(info => info.ProcessId == processId);
-                    Assert.NotNull(endpointInfo);
-                    Assert.NotNull(endpointInfo.CommandLine);
-                    Assert.NotNull(endpointInfo.OperatingSystem);
-                    Assert.NotNull(endpointInfo.ProcessArchitecture);
+
+                    ValidateEndpointInfo(endpointInfo);
 
                     await EndpointUtilities.VerifyConnectionAsync(runners[i], endpointInfo);
 
@@ -208,6 +206,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             yield return new object[] { TargetFrameworkMoniker.Net50 };
             yield return new object[] { TargetFrameworkMoniker.Net60 };
+        }
+
+        private static void ValidateEndpointInfo(IEndpointInfo endpointInfo)
+        {
+            Assert.NotNull(endpointInfo);
+            Assert.NotNull(endpointInfo.CommandLine);
+            Assert.NotNull(endpointInfo.OperatingSystem);
+            Assert.NotNull(endpointInfo.ProcessArchitecture);
         }
     }
 }

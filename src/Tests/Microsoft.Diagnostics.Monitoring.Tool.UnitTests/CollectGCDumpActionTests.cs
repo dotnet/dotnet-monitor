@@ -5,14 +5,8 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +18,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectGCDumpActionTests
     {
-        private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "GCDumpTestRule";
 
         readonly private ITestOutputHelper _outputHelper;
@@ -43,14 +36,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectGCDumpAction(ExpectedEgressProvider)
+                    .AddCollectGCDumpAction(ActionTestsConstants.ExpectedEgressProvider)
                     .SetStartupTrigger();
             }, async host =>
             {
-                ActionTestHelper<CollectGCDumpOptions> helper = new(host, _endpointUtilities, _outputHelper);
+                ActionTester<CollectGCDumpOptions> helper = new(host, _endpointUtilities, _outputHelper);
 
                 await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectGCDump, CommonTestTimeouts.GCDumpTimeout, (egressPath, runner) => ValidateGCDump(runner, egressPath));
             });

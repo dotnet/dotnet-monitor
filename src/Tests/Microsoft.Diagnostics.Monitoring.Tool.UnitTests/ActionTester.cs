@@ -4,13 +4,10 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
@@ -23,13 +20,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    public sealed class ActionTestHelper<T>
+    public sealed class ActionTester<T>
     {
         private IHost _host;
         private EndpointUtilities _endpointUtilities;
         private ITestOutputHelper _outputHelper;
 
-        internal ActionTestHelper(IHost host, EndpointUtilities endpointUtilities, ITestOutputHelper outputHelper)
+        internal ActionTester(IHost host, EndpointUtilities endpointUtilities, ITestOutputHelper outputHelper)
         {
             _endpointUtilities = endpointUtilities;
             _host = host;
@@ -84,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        internal static string ValidateEgressPath(CollectionRuleActionResult result)
+        private static string ValidateEgressPath(CollectionRuleActionResult result)
         {
             Assert.NotNull(result.OutputValues);
             Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));

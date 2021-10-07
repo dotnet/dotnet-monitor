@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private readonly ITestOutputHelper _outputHelper;
 
-        private const string DefaultRuleName = "Default";
+        private const string DefaultRuleName = "ActionListTestRule";
 
         public ActionListExecutorTests(ITestOutputHelper outputHelper)
         {
@@ -38,8 +38,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
-                    .AddExecuteActionAppAction(new string[] { "ZeroExitCode" })
+                    .AddExecuteActionAppAction(new string[] { ActionTestsConstants.ZeroExitCode })
+                    .AddExecuteActionAppAction(new string[] { ActionTestsConstants.ZeroExitCode })
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -78,8 +78,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { "ZeroExitCode" })
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { "NonzeroExitCode" })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonzeroExitCode })
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -123,8 +123,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { "NonzeroExitCode" })
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { "ZeroExitCode" })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonzeroExitCode })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
                     .SetStartupTrigger();
             }, async host =>
             {
