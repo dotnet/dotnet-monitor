@@ -29,27 +29,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Theory]
-        [InlineData(DumpType.Full)]
-        [InlineData(DumpType.Mini)]
-        [InlineData(DumpType.Triage)]
-        [InlineData(DumpType.WithHeap)]
-        [InlineData(null)]
-        public async Task CollectDumpAction_Success(DumpType? dumpType)
+        [MemberData(nameof(ActionTestsHelper.GetTfmsAndDumpTypes), MemberType = typeof(ActionTestsHelper))]
+        public async Task CollectDumpAction_Success(TargetFrameworkMoniker tfm, DumpType? dumpType)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsHelper.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider, dumpType)
+                    .AddCollectDumpAction(ActionTestsHelper.ExpectedEgressProvider, dumpType)
                     .SetStartupTrigger();
             }, async host =>
             {
                 ActionTester<CollectDumpOptions> helper = new(host, _endpointUtilities, _outputHelper);
 
-                await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectDump, CommonTestTimeouts.DumpTimeout, (egressPath, runner) => DumpValidation(runner, egressPath));
+                await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectDump, CommonTestTimeouts.DumpTimeout, (egressPath, runner) => DumpValidation(runner, egressPath), tfm);
             });
         }
 

@@ -21,22 +21,22 @@ namespace Microsoft.Diagnostics.Monitoring.ExecuteActionApp
 
             switch (testType)
             {
-                case ActionTestsConstants.ZeroExitCode:
+                case ActionTestsHelper.ZeroExitCode:
                     Assert.Equal(0, testArgs.Length);
                     return 0;
 
-                case ActionTestsConstants.NonzeroExitCode:
+                case ActionTestsHelper.NonzeroExitCode:
                     Assert.Equal(0, testArgs.Length);
                     return 1;
 
-                case ActionTestsConstants.Sleep:
+                case ActionTestsHelper.Sleep:
                     Assert.Equal(1, testArgs.Length);
                     string delayArg = testArgs[0];
                     int delay = int.Parse(delayArg);
                     Thread.Sleep(delay);
                     return 0;
 
-                case ActionTestsConstants.TextFileOutput:
+                case ActionTestsHelper.TextFileOutput:
                     Assert.Equal(2, testArgs.Length);
                     string pathArg = testArgs[0];
                     string contentsArg = testArgs[1];

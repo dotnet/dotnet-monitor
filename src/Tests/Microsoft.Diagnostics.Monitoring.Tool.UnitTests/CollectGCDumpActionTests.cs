@@ -29,23 +29,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _endpointUtilities = new(_outputHelper);
         }
 
-        [Fact]
-        public async Task CollectGCDumpAction_Success()
+        [Theory]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
+        public async Task CollectGCDumpAction_Success(TargetFrameworkMoniker tfm)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsHelper.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectGCDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .AddCollectGCDumpAction(ActionTestsHelper.ExpectedEgressProvider)
                     .SetStartupTrigger();
             }, async host =>
             {
                 ActionTester<CollectGCDumpOptions> helper = new(host, _endpointUtilities, _outputHelper);
 
-                await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectGCDump, CommonTestTimeouts.GCDumpTimeout, (egressPath, runner) => ValidateGCDump(runner, egressPath));
+                await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectGCDump, CommonTestTimeouts.GCDumpTimeout, (egressPath, runner) => ValidateGCDump(runner, egressPath), tfm);
             });
         }
 

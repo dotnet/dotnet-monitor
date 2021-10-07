@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -33,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _outputHelper = outputHelper;
         }
 
-        internal async Task TestAction(string ruleName, string actionName, TimeSpan actionTimeout, Func<string, AppRunner, Task> actionValidation)
+        internal async Task TestAction(string ruleName, string actionName, TimeSpan actionTimeout, Func<string, AppRunner, Task> actionValidation, TargetFrameworkMoniker tfm)
         {
             IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = _host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
             T options = (T)ruleOptionsMonitor.Get(ruleName).Actions[0].Settings;
@@ -45,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
             source.Start();
 
-            AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
+            AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, tfm);
 
             Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
