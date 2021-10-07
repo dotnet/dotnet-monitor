@@ -564,7 +564,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return Result(
                 Utilities.ArtifactType_Logs,
                 egressProvider,
-                (outputStream, token) => Utilities.StartLogsPipeline(null, format.Value, processInfo.EndpointInfo, settings, outputStream, token),
+                (outputStream, token) => Utilities.CaptureLogsAsync(null, format.Value, processInfo.EndpointInfo, settings, outputStream, token),
                 fileName,
                 contentType,
                 processInfo.EndpointInfo,
@@ -589,7 +589,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
             if (acceptedHeaders.Contains(NdJsonHeader))
             {
-                return LogFormat.NDJson;
+                return LogFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Contains(JsonSequenceHeader))
             {
@@ -601,7 +601,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
             if (acceptedHeaders.Any(h => NdJsonHeader.IsSubsetOf(h)))
             {
-                return LogFormat.NDJson;
+                return LogFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Any(h => JsonSequenceHeader.IsSubsetOf(h)))
             {

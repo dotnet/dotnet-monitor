@@ -52,25 +52,5 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Default logs collection duration.
         /// </summary>
         public static readonly TimeSpan LogsDuration = TimeSpan.FromSeconds(10);
-
-        /// <summary>
-        /// Default timeout for HTTP API calls
-        /// </summary>
-        public static readonly TimeSpan HttpApi = TimeSpan.FromSeconds(15);
-
-        /// <summary>
-        /// Timeout for waiting for a collection rule to complete.
-        /// </summary>
-        public static readonly TimeSpan CollectionRuleCompletionTimeout = TimeSpan.FromSeconds(30);
-
-        /// <summary>
-        /// Timeout for waiting for a collection rule to be filtered.
-        /// </summary>
-        public static readonly TimeSpan CollectionRuleFilteredTimeout = TimeSpan.FromSeconds(10);
-
-        /// <summary>
-        /// Timeout for waiting for a collection rule to run its action list to completion.
-        /// </summary>
-        public static readonly TimeSpan CollectionRuleActionsCompletedTimeout = TimeSpan.FromSeconds(30);
     }
 }

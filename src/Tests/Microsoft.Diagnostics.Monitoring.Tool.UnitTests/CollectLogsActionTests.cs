@@ -33,8 +33,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private readonly ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
-        const char JsonSequenceRecordSeparator = '\u001E';
-
         private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "LogsTestRule";
 
@@ -48,12 +46,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that log events with a LogsTestUtilities.Category that doesn't have a specified level are collected
         /// at the log level specified in the request body.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-#if NET5_0_OR_GREATER
-        [InlineData(LogFormat.JsonSequence)]
-        [InlineData(LogFormat.NDJson)]
-#endif
-        public Task LogsDefaultLevelFallbackActionTest(LogFormat logFormat)
+        /// 
+
+        [Theory]
+        [MemberData(nameof(GetTfmsAndLogFormat))]
+        public Task LogsDefaultLevelFallbackActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
                 new LogsConfiguration()
@@ -80,18 +77,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     LogsTestUtilities.ValidateEntry(LogsTestUtilities.Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                logFormat);
+                logFormat,
+                tfm);
         }
 
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-#if NET5_0_OR_GREATER
-        [InlineData(LogFormat.JsonSequence)]
-        [InlineData(LogFormat.NDJson)]
-#endif
-        public Task LogsUseAppFiltersViaBodyActionTest(LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTfmsAndLogFormat))]
+        public Task LogsUseAppFiltersViaBodyActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
                 new LogsConfiguration()
@@ -115,19 +110,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     LogsTestUtilities.ValidateEntry(LogsTestUtilities.Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                logFormat);
+                logFormat,
+                tfm);
         }
 
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-#if NET5_0_OR_GREATER
-        [InlineData(LogFormat.JsonSequence)]
-        [InlineData(LogFormat.NDJson)]
-#endif
-        public Task LogsUseAppFiltersAndFilterSpecsActionTest(LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTfmsAndLogFormat))]
+        public Task LogsUseAppFiltersAndFilterSpecsActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
                 new LogsConfiguration()
@@ -157,18 +150,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     LogsTestUtilities.ValidateEntry(LogsTestUtilities.Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                logFormat);
+                logFormat,
+                tfm);
         }
 
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-#if NET5_0_OR_GREATER
-        [InlineData(LogFormat.JsonSequence)]
-        [InlineData(LogFormat.NDJson)]
-#endif
-        public Task LogsWildcardActionTest(LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTfmsAndLogFormat))]
+        public Task LogsWildcardActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
                 new LogsConfiguration()
@@ -200,13 +191,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     LogsTestUtilities.ValidateEntry(LogsTestUtilities.Category3CriticalEntry, await reader.ReadAsync());
                     Assert.False(await reader.WaitToReadAsync());
                 },
-                logFormat);
+                logFormat,
+                tfm);
         }
 
         private async Task ValidateLogsActionAsync(
             LogsConfiguration configuration,
             Func<ChannelReader<LogEntry>, Task> callback,
-            LogFormat logFormat)
+            LogFormat logFormat,
+            TargetFrameworkMoniker tfm)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -240,7 +233,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await using var source = _endpointUtilities.CreateServerSource(out string transportName, endpointInfoCallback);
                 source.Start();
 
-                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60; should we test against other frameworks?
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, tfm);
                 runner.ScenarioName = TestAppScenarios.Logger.Name;
 
                 Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
@@ -277,58 +270,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     using FileStream logsStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(logsStream);
 
-                    await ValidateLogsEquality(logsStream, callback, logFormat);
+                    await LogsTestUtilities.ValidateLogsEquality(logsStream, callback, logFormat, _outputHelper);
                 });
             });
-        }
-
-        private async Task ValidateLogsEquality(Stream logsStream, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
-        {
-            // Set up a channel and process the log events here rather than having each test have to deserialize
-            // the set of log events. Pass the channel reader to the callback to allow each test to verify the
-            // set of deserialized log events.
-            Channel<LogEntry> channel = Channel.CreateUnbounded<LogEntry>(new UnboundedChannelOptions()
-            {
-                SingleReader = true,
-                SingleWriter = true,
-                AllowSynchronousContinuations = false
-            });
-
-            Task callbackTask = callback(channel.Reader);
-
-            using StreamReader reader = new StreamReader(logsStream);
-
-            JsonSerializerOptions options = new();
-            options.Converters.Add(new JsonStringEnumConverter());
-
-            _outputHelper.WriteLine("Begin reading log entries.");
-            string line;
-
-            while (null != (line = await reader.ReadLineAsync()))
-            {
-                if (logFormat == LogFormat.JsonSequence)
-                {
-                    Assert.True(line.Length > 1);
-                    Assert.Equal(JsonSequenceRecordSeparator, line[0]);
-                    Assert.NotEqual(JsonSequenceRecordSeparator, line[1]);
-
-                    line = line.TrimStart(JsonSequenceRecordSeparator);
-                }
-
-                _outputHelper.WriteLine("Log entry: {0}", line);
-                try
-                {
-                    await channel.Writer.WriteAsync(JsonSerializer.Deserialize<LogEntry>(line, options));
-                }
-                catch (JsonException ex)
-                {
-                    _outputHelper.WriteLine("Exception while deserializing log entry: {0}", ex);
-                }
-            }
-            _outputHelper.WriteLine("End reading log entries.");
-            channel.Writer.Complete();
-
-            await callbackTask;
         }
 
         public static bool SkipOnWindowsNetCore31
@@ -342,6 +286,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     DotNetHost.RuntimeVersion.Major != 3 ||
                     DotNetHost.RuntimeVersion.Minor != 1;
             }
+        }
+
+        public static IEnumerable<object[]> GetTfmsAndLogFormat()
+        {
+            yield return new object[] { TargetFrameworkMoniker.Net50, LogFormat.NewlineDelimitedJson };
+            yield return new object[] { TargetFrameworkMoniker.Net60, LogFormat.NewlineDelimitedJson };
+            yield return new object[] { TargetFrameworkMoniker.Net50, LogFormat.JsonSequence };
+            yield return new object[] { TargetFrameworkMoniker.Net60, LogFormat.JsonSequence };
         }
     }
 }

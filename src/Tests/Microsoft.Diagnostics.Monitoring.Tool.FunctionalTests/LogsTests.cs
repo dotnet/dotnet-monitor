@@ -14,12 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
@@ -33,8 +30,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
-        const char JsonSequenceRecordSeparator = '\u001E';
-
         public LogsTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
@@ -46,11 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
 #endif
         public Task LogsAllCategoriesTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
@@ -92,10 +87,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
 #endif
         public Task LogsDefaultLevelTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
@@ -124,10 +119,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
 #endif
         public Task LogsDefaultLevelFallbackTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
@@ -165,10 +160,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
 #endif
         public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
@@ -201,10 +196,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
 #endif
         public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
@@ -237,10 +232,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
 #endif
         public Task LogsUseAppFiltersViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
@@ -271,10 +266,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
 #endif
         public Task LogsUseAppFiltersViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
@@ -310,10 +305,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
 #endif
         public Task LogsUseAppFiltersAndFilterSpecsTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
@@ -354,10 +349,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NDJson)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
 #endif
         public Task LogsWildcardTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
@@ -464,56 +459,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             using ResponseStreamHolder holder = await holderTask;
             Assert.NotNull(holder);
 
-            await ValidateLogsEquality(holder.Stream, callback, logFormat);
-        }
-
-        private async Task ValidateLogsEquality(Stream logsStream, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
-        {
-            // Set up a channel and process the log events here rather than having each test have to deserialize
-            // the set of log events. Pass the channel reader to the callback to allow each test to verify the
-            // set of deserialized log events.
-            Channel<LogEntry> channel = Channel.CreateUnbounded<LogEntry>(new UnboundedChannelOptions()
-            {
-                SingleReader = true,
-                SingleWriter = true,
-                AllowSynchronousContinuations = false
-            });
-
-            Task callbackTask = callback(channel.Reader);
-
-            using StreamReader reader = new StreamReader(logsStream);
-
-            JsonSerializerOptions options = new();
-            options.Converters.Add(new JsonStringEnumConverter());
-
-            _outputHelper.WriteLine("Begin reading log entries.");
-            string line;
-
-            while (null != (line = await reader.ReadLineAsync()))
-            {
-                if (logFormat == LogFormat.JsonSequence)
-                {
-                    Assert.True(line.Length > 1);
-                    Assert.Equal(JsonSequenceRecordSeparator, line[0]);
-                    Assert.NotEqual(JsonSequenceRecordSeparator, line[1]);
-
-                    line = line.TrimStart(JsonSequenceRecordSeparator);
-                }
-
-                _outputHelper.WriteLine("Log entry: {0}", line);
-                try
-                {
-                    await channel.Writer.WriteAsync(JsonSerializer.Deserialize<LogEntry>(line, options));
-                }
-                catch (JsonException ex)
-                {
-                    _outputHelper.WriteLine("Exception while deserializing log entry: {0}", ex);
-                }
-            }
-            _outputHelper.WriteLine("End reading log entries.");
-            channel.Writer.Complete();
-
-            await callbackTask;
+            await LogsTestUtilities.ValidateLogsEquality(holder.Stream, callback, logFormat, _outputHelper);
         }
 
         public static bool SkipOnWindowsNetCore31

@@ -2,18 +2,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal class LogsTestUtilities
     {
+        const char JsonSequenceRecordSeparator = '\u001E';
+
         /// <summary>
         /// Validates each aspect of a <see cref="LogEntry"/> compared to the expected values
         /// on a reference <see cref="LogEntry"/> instance.
@@ -71,6 +79,55 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 Assert.True(actual.State.TryGetValue(expectedKey, out string actualValue), $"Expected State to contain '{expectedKey}' key.");
                 Assert.Equal(expected.State[expectedKey], actualValue);
             }
+        }
+
+        internal static async Task ValidateLogsEquality(Stream logsStream, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat, ITestOutputHelper outputHelper)
+        {
+            // Set up a channel and process the log events here rather than having each test have to deserialize
+            // the set of log events. Pass the channel reader to the callback to allow each test to verify the
+            // set of deserialized log events.
+            Channel<LogEntry> channel = Channel.CreateUnbounded<LogEntry>(new UnboundedChannelOptions()
+            {
+                SingleReader = true,
+                SingleWriter = true,
+                AllowSynchronousContinuations = false
+            });
+
+            Task callbackTask = callback(channel.Reader);
+
+            using StreamReader reader = new StreamReader(logsStream);
+
+            JsonSerializerOptions options = new();
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            outputHelper.WriteLine("Begin reading log entries.");
+            string line;
+
+            while (null != (line = await reader.ReadLineAsync()))
+            {
+                if (logFormat == LogFormat.JsonSequence)
+                {
+                    Assert.True(line.Length > 1);
+                    Assert.Equal(JsonSequenceRecordSeparator, line[0]);
+                    Assert.NotEqual(JsonSequenceRecordSeparator, line[1]);
+
+                    line = line.TrimStart(JsonSequenceRecordSeparator);
+                }
+
+                outputHelper.WriteLine("Log entry: {0}", line);
+                try
+                {
+                    await channel.Writer.WriteAsync(JsonSerializer.Deserialize<LogEntry>(line, options));
+                }
+                catch (JsonException ex)
+                {
+                    outputHelper.WriteLine("Exception while deserializing log entry: {0}", ex);
+                }
+            }
+            outputHelper.WriteLine("End reading log entries.");
+            channel.Writer.Complete();
+
+            await callbackTask;
         }
 
         private static LogEntry CreateTraceEntry(string category)

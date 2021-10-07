@@ -275,7 +275,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             {
                 contentType = ContentTypes.ApplicationJsonSequence;
             }
-            else if (logFormat == LogFormat.NDJson)
+            else if (logFormat == LogFormat.NewlineDelimitedJson)
             {
                 contentType = ContentTypes.ApplicationNDJson;
             }

@@ -68,7 +68,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     FilterSpecs = filterSpecs
                 };
 
-                string logsFilePath = await StartLogs(startCompletionSource, EndpointInfo, settings, egressProvider, logFormat, token);
+                string fileName = Utils.GenerateLogsFileName(EndpointInfo);
+                string contentType = Utils.GetLogsContentType(logFormat);
+
+                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, EndpointInfo);
+
+                EgressOperation egressOperation = new EgressOperation(
+                    (outputStream, token) => Utils.CaptureLogsAsync(startCompletionSource, logFormat, EndpointInfo, settings, outputStream, token),
+                    egressProvider,
+                    fileName,
+                    EndpointInfo,
+                    contentType,
+                    scope);
+
+                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+
+                string logsFilePath = result.Result.Value;
 
                 return new CollectionRuleActionResult()
                 {
@@ -77,32 +92,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         { CollectionRuleActionConstants.EgressPathOutputValueName, logsFilePath }
                     }
                 };
-            }
-
-            private async Task<string> StartLogs(
-                TaskCompletionSource<object> startCompletionSource,
-                IEndpointInfo endpointInfo,
-                EventLogsPipelineSettings settings,
-                string egressProvider,
-                LogFormat format,
-                CancellationToken token)
-            {
-                string fileName = Utils.GenerateLogsFileName(endpointInfo);
-                string contentType = Utils.GetLogsContentType(format);
-
-                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, endpointInfo);
-
-                EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => Utils.StartLogsPipeline(startCompletionSource, format, endpointInfo, settings, outputStream, token),
-                    egressProvider,
-                    fileName,
-                    endpointInfo,
-                    contentType,
-                    scope);
-
-                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-
-                return result.Result.Value;
             }
         }
     }

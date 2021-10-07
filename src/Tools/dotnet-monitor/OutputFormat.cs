@@ -3,16 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 #if UNITTEST
-    namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 #else
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
-    {
+{
 #if UNITTEST
-        public
+    public
 #else
     internal
-#endif
+#endif 
         enum OutputFormat
     {
         Json,

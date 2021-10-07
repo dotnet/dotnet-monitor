@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 return ContentTypes.TextEventStream;
             }
-            else if (format == LogFormat.NDJson)
+            else if (format == LogFormat.NewlineDelimitedJson)
             {
                 return ContentTypes.ApplicationNdJson;
             }
@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public static async Task StartLogsPipeline(TaskCompletionSource<object> startCompletionSource, LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, Stream outputStream, CancellationToken token)
+        public static async Task CaptureLogsAsync(TaskCompletionSource<object> startCompletionSource, LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, Stream outputStream, CancellationToken token)
         {
             using var loggerFactory = new LoggerFactory();
 
@@ -97,14 +97,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
 
-            Task pipelineTask = pipeline.RunAsync(token);
+            Task runTask = pipeline.RunAsync(token);
+
+            IEventSourcePipelineInternal pipelineInternal = pipeline;
+
+            await pipelineInternal.SessionStarted;
 
             if (null != startCompletionSource)
             {
                 startCompletionSource.TrySetResult(null);
             }
 
-            await pipelineTask;
+            await runTask;
         }
 
         public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, int metricsIntervalSeconds)
