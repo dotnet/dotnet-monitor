@@ -278,8 +278,6 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
 }
 ```
 
-**Note:** As of Preview 8, Request Duration triggers do not match the default `Global Counter Interval`. Set the `Interval` to 10 seconds to enable this trigger.
-
 ### Metrics Urls
 
 In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it also binds to metric urls that only expose the `/metrics` endpoint. Unlike the other endpoints, the metrics urls do not require authentication. Unless you enable collection of custom providers that may contain sensitive business logic, it is generally considered safe to expose metrics endpoints. 
