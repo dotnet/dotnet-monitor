@@ -4,9 +4,10 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,93 +17,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// <summary>
     /// Aggregates diagnostic endpoints that are established at a transport path via a reversed server.
     /// </summary>
-    internal sealed class ServerEndpointInfoSource : IEndpointInfoSourceInternal, IAsyncDisposable
+    internal sealed class ServerEndpointInfoSource : BackgroundService, IEndpointInfoSourceInternal
     {
         // The amount of time to wait when checking if the a endpoint info should be
         // pruned from the list of endpoint infos. If the runtime doesn't have a viable connection within
         // this time, it will be pruned from the list.
         private static readonly TimeSpan PruneWaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
 
-        private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
-        private readonly IEnumerable<IEndpointInfoSourceCallbacks> _callbacks;
-        private readonly IList<EndpointInfo> _endpointInfos = new List<EndpointInfo>();
-        private readonly SemaphoreSlim _endpointInfosSemaphore = new SemaphoreSlim(1);
-        private readonly string _transportPath;
+        private readonly List<EndpointInfo> _activeEndpoints = new();
+        private readonly SemaphoreSlim _activeEndpointsSemaphore = new(1);
 
-        private Task _listenTask;
-        private bool _disposed = false;
-        private ReversedDiagnosticsServer _server;
+        private readonly Queue<IEndpointInfo> _pendingRemovalEndpoints = new();
+        private readonly SemaphoreSlim _pendingRemovalEndpointsSemaphore = new(0);
+
+        private readonly CancellationTokenSource _cancellation = new();
+        private readonly IEnumerable<IEndpointInfoSourceCallbacks> _callbacks;
+        private readonly DiagnosticPortOptions _portOptions;
 
         /// <summary>
-        /// Constructs a <see cref="ServerEndpointInfoSource"/> that aggreates diagnostic endpoints
-        /// from a reversed diagnostics server at path specified by <paramref name="transportPath"/>.
+        /// Constructs a <see cref="ServerEndpointInfoSource"/> that aggregates diagnostic endpoints
+        /// from a reversed diagnostics server at path specified by <paramref name="portOptions"/>.
         /// </summary>
-        /// <param name="transportPath">
-        /// The path of the server endpoint.
-        /// On Windows, this can be a full pipe path or the name without the "\\.\pipe\" prefix.
-        /// On all other systems, this must be the full file path of the socket.
-        /// </param>
-        public ServerEndpointInfoSource(string transportPath, IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null)
+        public ServerEndpointInfoSource(
+            IOptions<DiagnosticPortOptions> portOptions,
+            IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null)
         {
             _callbacks = callbacks ?? Enumerable.Empty<IEndpointInfoSourceCallbacks>();
-            _transportPath = transportPath;
+            _portOptions = portOptions.Value;
         }
 
-        public async ValueTask DisposeAsync()
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!_disposed)
+            if (_portOptions.ConnectionMode == DiagnosticPortConnectionMode.Listen)
             {
-                _cancellation.SafeCancel();
+                await using ReversedDiagnosticsServer server = new(_portOptions.EndpointName);
 
-                if (null != _listenTask)
-                {
-                    try
-                    {
-                        await _listenTask.ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.Fail(ex.Message);
-                    }
-                }
+                server.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));
 
-                if (null != _server)
-                {
-                    await _server.DisposeAsync().ConfigureAwait(false);
-                }
-
-                _endpointInfosSemaphore.Dispose();
-
-                _cancellation.Dispose();
-
-                _disposed = true;
+                await Task.WhenAll(
+                    ListenAsync(server, stoppingToken),
+                    MonitorEndpointsAsync(stoppingToken),
+                    NotifyAndRemoveAsync(server, stoppingToken)
+                    );
             }
-        }
-
-        /// <summary>
-        /// Starts listening to the reversed diagnostics server for new connections.
-        /// </summary>
-        public void Start()
-        {
-            Start(ReversedDiagnosticsServer.MaxAllowedConnections);
-        }
-
-        /// <summary>
-        /// Starts listening to the reversed diagnostics server for new connections.
-        /// </summary>
-        /// <param name="maxConnections">The maximum number of connections the server will support.</param>
-        public void Start(int maxConnections)
-        {
-            VerifyNotDisposed();
-
-            if (IsListening)
-            {
-                throw new InvalidOperationException(nameof(ServerEndpointInfoSource.Start) + " method can only be called once.");
-            }
-
-            _server = new ReversedDiagnosticsServer(_transportPath);
-
-            _listenTask = ListenAsync(maxConnections, _cancellation.Token);
         }
 
         /// <summary>
@@ -112,77 +69,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// <returns>A list of active <see cref="IEndpointInfo"/> instances.</returns>
         public async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(CancellationToken token)
         {
-            VerifyNotDisposed();
-
-            VerifyIsListening();
-
             using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, _cancellation.Token);
-            CancellationToken linkedToken = linkedSource.Token;
 
-            // Prune connections that no longer have an active runtime instance before
-            // returning the list of connections.
-            await _endpointInfosSemaphore.WaitAsync(linkedToken).ConfigureAwait(false);
-
-            try
-            {
-                // Check the transport for each endpoint info and remove it if the check fails.
-                IDictionary<EndpointInfo, Task<bool>> checkMap = new Dictionary<EndpointInfo, Task<bool>>();
-                foreach (EndpointInfo info in _endpointInfos)
-                {
-                    checkMap.Add(info, Task.Run(() => CheckNotViable(info, linkedToken), linkedToken));
-                }
-
-                // Wait for all checks to complete
-                await Task.WhenAll(checkMap.Values).ConfigureAwait(false);
-
-                // Remove connections for failed checks
-                foreach ((EndpointInfo endpointInfo, Task<bool> checkTask) in checkMap)
-                {
-                    if (checkTask.Result)
-                    {
-                        _endpointInfos.Remove(endpointInfo);
-
-                        foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
-                        {
-                            callback.OnRemovedEndpointInfo(endpointInfo);
-                        }
-
-                        _server?.RemoveConnection(endpointInfo.RuntimeInstanceCookie);
-                    }
-                }
-
-                return _endpointInfos.ToList();
-            }
-            finally
-            {
-                _endpointInfosSemaphore.Release();
-            }
-        }
-
-        /// <summary>
-        /// Returns true if the connection is not longer viable.
-        /// </summary>
-        private static async Task<bool> CheckNotViable(EndpointInfo info, CancellationToken token)
-        {
-            using var timeoutSource = new CancellationTokenSource();
-            using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutSource.Token);
-
-            try
-            {
-                timeoutSource.CancelAfter(PruneWaitForConnectionTimeout);
-
-                await info.Endpoint.WaitForConnectionAsync(linkedSource.Token).ConfigureAwait(false);
-            }
-            catch
-            {
-                // Only report not viable if check was not cancelled.
-                if (!token.IsCancellationRequested)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            List<IEndpointInfo> validEndpoints = new();
+            await PruneEndpointsAsync(validEndpoints, linkedSource.Token);
+            return validEndpoints;
         }
 
         /// <summary>
@@ -190,9 +81,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// </summary>
         /// <param name="maxConnections">The maximum number of connections the server will support.</param>
         /// <param name="token">The token to monitor for cancellation requests.</param>
-        private async Task ListenAsync(int maxConnections, CancellationToken token)
+        private async Task ListenAsync(ReversedDiagnosticsServer server, CancellationToken token)
         {
-            _server.Start(maxConnections);
             // Continuously accept endpoint infos from the reversed diagnostics server so
             // that <see cref="ReversedDiagnosticsServer.AcceptAsync(CancellationToken)"/>
             // is always awaited in order to to handle new runtime instance connections
@@ -201,9 +91,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 try
                 {
-                    IpcEndpointInfo info = await _server.AcceptAsync(token).ConfigureAwait(false);
+                    IpcEndpointInfo info = await server.AcceptAsync(token).ConfigureAwait(false);
 
-                    _ = Task.Run(() => ResumeAndQueueEndpointInfo(info, token), token);
+                    _ = Task.Run(() => ResumeAndQueueEndpointInfo(server, info, token), token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -211,7 +101,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private async Task ResumeAndQueueEndpointInfo(IpcEndpointInfo info, CancellationToken token)
+        private async Task ResumeAndQueueEndpointInfo(ReversedDiagnosticsServer server, IpcEndpointInfo info, CancellationToken token)
         {
             try
             {
@@ -236,10 +126,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // The runtime likely doesn't understand the ResumeRuntime command.
                 }
 
-                await _endpointInfosSemaphore.WaitAsync(token).ConfigureAwait(false);
+                await _activeEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
                 try
                 {
-                    _endpointInfos.Add(endpointInfo);
+                    _activeEndpoints.Add(endpointInfo);
 
                     foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                     {
@@ -248,33 +138,130 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 finally
                 {
-                    _endpointInfosSemaphore.Release();
+                    _activeEndpointsSemaphore.Release();
                 }
             }
             catch (Exception)
             {
-                _server?.RemoveConnection(info.RuntimeInstanceCookie);
+                server?.RemoveConnection(info.RuntimeInstanceCookie);
 
                 throw;
             }
         }
 
-        private void VerifyNotDisposed()
+        private async Task MonitorEndpointsAsync(CancellationToken token)
         {
-            if (_disposed)
+            while (!token.IsCancellationRequested)
             {
-                throw new ObjectDisposedException(nameof(ServerEndpointInfoSource));
+                await Task.Delay(TimeSpan.FromSeconds(3));
+
+                await PruneEndpointsAsync(validEndpoints: null, token);
             }
         }
 
-        private void VerifyIsListening()
+        private async Task NotifyAndRemoveAsync(ReversedDiagnosticsServer server, CancellationToken token)
         {
-            if (!IsListening)
+            while (!token.IsCancellationRequested)
             {
-                throw new InvalidOperationException(nameof(ServerEndpointInfoSource.Start) + " method must be called before invoking this operation.");
+                await _pendingRemovalEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
+
+                IEndpointInfo endpoint;
+                lock (_pendingRemovalEndpoints)
+                {
+                   endpoint = _pendingRemovalEndpoints.Dequeue();
+                }
+
+                foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
+                {
+                    await callback.OnRemovedEndpointInfoAsync(endpoint, token).ConfigureAwait(false);
+                }
+
+                server.RemoveConnection(endpoint.RuntimeInstanceCookie);
             }
         }
 
-        private bool IsListening => null != _server && null != _listenTask;
+        private async Task PruneEndpointsAsync(List<IEndpointInfo> validEndpoints, CancellationToken token)
+        {
+            List<IEndpointInfo> endpointsToRemove = new();
+
+            // Prune connections that no longer have an active runtime instance before
+            // returning the list of connections.
+            await _activeEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
+
+            try
+            {
+                // Check the transport for each endpoint info and remove it if the check fails.
+                List<Task<bool>> checkTasks = new();
+                foreach (EndpointInfo info in _activeEndpoints)
+                {
+                    checkTasks.Add(Task.Run(() => CheckEndpointAsync(info, token), token));
+                }
+
+                // Wait for all checks to complete
+                bool[] results = await Task.WhenAll(checkTasks).ConfigureAwait(false);
+
+                // Remove failed endpoints from active list; record the failed endpoints
+                // for removal after releasing the active endpoints semaphore.
+                int endpointIndex = 0;
+                for (int resultIndex = 0; resultIndex < results.Length; resultIndex++)
+                {
+                    IEndpointInfo endpoint = _activeEndpoints[endpointIndex];
+                    if (results[resultIndex])
+                    {
+                        validEndpoints?.Add(endpoint);
+                        endpointIndex++;
+                    }
+                    else
+                    {
+                        _activeEndpoints.RemoveAt(endpointIndex);
+
+                        endpointsToRemove.Add(endpoint);
+                    }
+                }
+            }
+            finally
+            {
+                _activeEndpointsSemaphore.Release();
+            }
+
+            if (endpointsToRemove.Count > 0)
+            {
+                lock (_pendingRemovalEndpoints)
+                {
+                    foreach (IEndpointInfo endpoint in endpointsToRemove)
+                    {
+                        _pendingRemovalEndpoints.Enqueue(endpoint);
+                    }
+                }
+
+                _pendingRemovalEndpointsSemaphore.Release(endpointsToRemove.Count);
+            }
+        }
+
+        /// <summary>
+        /// Tests the endpoint to see if its connection is viable.
+        /// </summary>
+        private static async Task<bool> CheckEndpointAsync(EndpointInfo info, CancellationToken token)
+        {
+            using var timeoutSource = new CancellationTokenSource();
+            using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutSource.Token);
+
+            try
+            {
+                timeoutSource.CancelAfter(PruneWaitForConnectionTimeout);
+
+                await info.Endpoint.WaitForConnectionAsync(linkedSource.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested)
+            {
+                return false;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

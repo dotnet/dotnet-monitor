@@ -16,41 +16,51 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     internal sealed class EndpointInfoSourceCallback : IEndpointInfoSourceCallbacks
     {
+        private const string AddOperationName = "Add";
+        private const string RemoveOperationName = "Remove";
+
         private readonly ITestOutputHelper _outputHelper;
         /// <summary>
         /// Used to protect the completion list from mutation while processing
         /// callbacks from it. The processing is done in an async method with async
         /// calls, which are not allowed in a lock, thus use SemaphoreSlim.
         /// </summary>
-        private readonly SemaphoreSlim _completionEntriesSemaphore = new(1);
-        private readonly List<CompletionEntry> _completionEntries = new();
+        private readonly SemaphoreSlim _addedEndpointEntriesSemaphore = new(1);
+        private readonly List<CompletionEntry> _addedEndpointEntries = new();
+
+        /// <summary>
+        /// Used to protect the completion list from mutation while processing
+        /// callbacks from it. The processing is done in an async method with async
+        /// calls, which are not allowed in a lock, thus use SemaphoreSlim.
+        /// </summary>
+        private readonly SemaphoreSlim _removedEndpointEntriesSemaphore = new(1);
+        private readonly List<CompletionEntry> _removedEndpointEntries = new();
 
         public EndpointInfoSourceCallback(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
 
-        public async Task<IEndpointInfo> WaitForNewEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
+        public Task<IEndpointInfo> WaitAddedEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
         {
-            CompletionEntry entry = new(runner);
-            using CancellationTokenSource timeoutCancellation = new(timeout);
+            return WaitForCompletionAsync(
+                AddOperationName,
+                _addedEndpointEntriesSemaphore,
+                _addedEndpointEntries,
+                _outputHelper,
+                runner,
+                timeout);
+        }
 
-            await _completionEntriesSemaphore.WaitAsync(timeoutCancellation.Token);
-            try
-            {
-                _completionEntries.Add(entry);
-                _outputHelper.WriteLine($"[Wait] Register App{runner.AppId}");
-            }
-            finally
-            {
-                _completionEntriesSemaphore.Release();
-            }
-
-            _outputHelper.WriteLine($"[Wait] Wait for App{runner.AppId} notification");
-            IEndpointInfo endpointInfo = await entry.WithCancellation(timeoutCancellation.Token);
-            _outputHelper.WriteLine($"[Wait] Received App{runner.AppId} notification");
-
-            return endpointInfo;
+        public Task<IEndpointInfo> WaitRemovedEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
+        {
+            return WaitForCompletionAsync(
+                RemoveOperationName,
+                _removedEndpointEntriesSemaphore,
+                _removedEndpointEntries,
+                _outputHelper,
+                runner,
+                timeout);
         }
 
         public Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken token)
@@ -58,18 +68,63 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return Task.CompletedTask;
         }
 
-        public async Task OnAddedEndpointInfoAsync(IEndpointInfo info, CancellationToken token)
+        public Task OnAddedEndpointInfoAsync(IEndpointInfo info, CancellationToken token)
         {
-            _outputHelper.WriteLine($"[Source] Added: {ToOutputString(info)}");
+            return NotifyCompletionAsync(
+                AddOperationName,
+                _addedEndpointEntriesSemaphore,
+                _addedEndpointEntries,
+                _outputHelper,
+                info,
+                token);
+        }
 
-            await _completionEntriesSemaphore.WaitAsync(token);
+        public Task OnRemovedEndpointInfoAsync(IEndpointInfo info, CancellationToken token)
+        {
+            return NotifyCompletionAsync(
+                RemoveOperationName,
+                _removedEndpointEntriesSemaphore,
+                _removedEndpointEntries,
+                _outputHelper,
+                info,
+                token);
+        }
+
+        private static async Task<IEndpointInfo> WaitForCompletionAsync(string operation, SemaphoreSlim semaphore, List<CompletionEntry> entries, ITestOutputHelper outputHelper, AppRunner runner, TimeSpan timeout)
+        {
+            CompletionEntry entry = new(runner);
+            using CancellationTokenSource timeoutCancellation = new(timeout);
+
+            await semaphore.WaitAsync(timeoutCancellation.Token);
             try
             {
-                _outputHelper.WriteLine($"[Source] Start notifications for process {info.ProcessId}");
+                entries.Add(entry);
+                outputHelper.WriteLine($"[Wait:{operation}] Register App{runner.AppId}");
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+
+            outputHelper.WriteLine($"[Wait:{operation}] Wait for App{runner.AppId} notification");
+            IEndpointInfo endpointInfo = await entry.WithCancellation(timeoutCancellation.Token);
+            outputHelper.WriteLine($"[Wait:{operation}] Received App{runner.AppId} notification");
+
+            return endpointInfo;
+        }
+
+        private static async Task NotifyCompletionAsync(string operation, SemaphoreSlim semaphore, List<CompletionEntry> entries, ITestOutputHelper outputHelper, IEndpointInfo info, CancellationToken token)
+        {
+            outputHelper.WriteLine($"[Source:{operation}] {ToOutputString(info)}");
+
+            await semaphore.WaitAsync(token);
+            try
+            {
+                outputHelper.WriteLine($"[Source:{operation}] Start notifications for process {info.ProcessId}");
 
                 // Create a mapping of the process ID tasks to the completion entries
-                IDictionary<Task<int>, CompletionEntry> map = new Dictionary<Task<int>, CompletionEntry>(_completionEntries.Count);
-                foreach (CompletionEntry entry in _completionEntries)
+                IDictionary<Task<int>, CompletionEntry> map = new Dictionary<Task<int>, CompletionEntry>(entries.Count);
+                foreach (CompletionEntry entry in entries)
                 {
                     map.Add(entry.Runner.ProcessIdTask.WithCancellation(token), entry);
                 }
@@ -81,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     map.Remove(completedTask, out CompletionEntry entry);
 
-                    _outputHelper.WriteLine($"[Source] Checking App{entry.Runner.AppId}");
+                    outputHelper.WriteLine($"[Source:{operation}] Checking App{entry.Runner.AppId}");
 
                     if (completedTask.IsCompletedSuccessfully)
                     {
@@ -89,27 +144,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         // then signal its completion source.
                         if (info.ProcessId == completedTask.Result)
                         {
-                            _outputHelper.WriteLine($"[Source] Notifying App{entry.Runner.AppId}");
+                            outputHelper.WriteLine($"[Source:{operation}] Notifying App{entry.Runner.AppId}");
                             entry.Complete(info);
 
-                            _completionEntries.Remove(entry);
+                            entries.Remove(entry);
 
                             break;
                         }
                     }
                 }
 
-                _outputHelper.WriteLine($"[Source] Finished notifications for process {info.ProcessId}");
+                outputHelper.WriteLine($"[Source:{operation}] Finished notifications for process {info.ProcessId}");
             }
             finally
             {
-                _completionEntriesSemaphore.Release();
+                semaphore.Release();
             }
-        }
-
-        public void OnRemovedEndpointInfo(IEndpointInfo info)
-        {
-            _outputHelper.WriteLine($"[Source] Removed: {ToOutputString(info)}");
         }
 
         private static string ToOutputString(IEndpointInfo info)
