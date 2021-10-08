@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            if (_logFormat == LogFormat.NDJson)
+            if (_logFormat == LogFormat.NewlineDelimitedJson)
             {
                 LogJson(logLevel, eventId, state, exception, formatter);
             }
@@ -83,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        private void LogJson<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter, LogFormat jsonFormat = LogFormat.NDJson)
+        private void LogJson<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter, LogFormat jsonFormat = LogFormat.NewlineDelimitedJson)
         {
             Stream outputStream = _outputStream;
 

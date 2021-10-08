@@ -38,8 +38,8 @@ jobs:
 
         # Official Build Linux Pool
         ${{ if ne(variables['System.TeamProject'], 'public') }}:
-          name: NetCoreInternal-Pool
-          queue: BuildPool.Ubuntu.1604.Amd64
+          name: NetCore1ESPool-Internal
+          demands: ImageOverride -equals Build.Ubuntu.1604.Amd64
 
       # Build OSX Pool
       ${{ if in(parameters.osGroup, 'MacOS') }}:
@@ -51,8 +51,8 @@ jobs:
           vmImage: windows-2019
 
         ${{ if ne(variables['System.TeamProject'], 'public') }}:
-          name: NetCoreInternal-Pool
-          queue: BuildPool.Windows.10.Amd64.VS2019
+          name: NetCore1ESPool-Internal
+          demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
       container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-359e48e-20200313130914

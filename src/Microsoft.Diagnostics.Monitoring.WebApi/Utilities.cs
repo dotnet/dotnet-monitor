@@ -4,6 +4,7 @@
 
 using FastSerialization;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ArtifactType_Logs = "logs";
         public const string ArtifactType_Trace = "trace";
         public const string ArtifactType_Metrics = "livemetrics";
+
+        public static string GenerateLogsFileName(IEndpointInfo endpointInfo)
+        {
+            return FormattableString.Invariant($"{GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.txt");
+        }
 
         public static TimeSpan ConvertSecondsToTimeSpan(int durationSeconds)
         {
@@ -62,7 +68,51 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return scope;
         }
 
-        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, int metricsIntervalSeconds)
+        public static string GetLogsContentType(LogFormat format)
+        {
+            if (format == LogFormat.EventStream)
+            {
+                return ContentTypes.TextEventStream;
+            }
+            else if (format == LogFormat.NewlineDelimitedJson)
+            {
+                return ContentTypes.ApplicationNdJson;
+            }
+            else if (format == LogFormat.JsonSequence)
+            {
+                return ContentTypes.ApplicationJsonSequence;
+            }
+            else
+            {
+                return ContentTypes.TextEventStream;
+            }
+        }
+
+        public static async Task CaptureLogsAsync(TaskCompletionSource<object> startCompletionSource, LogFormat format, IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, Stream outputStream, CancellationToken token)
+        {
+            using var loggerFactory = new LoggerFactory();
+
+            loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
+
+            var client = new DiagnosticsClient(endpointInfo.Endpoint);
+
+            await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
+
+            Task runTask = pipeline.RunAsync(token);
+
+            IEventSourcePipelineInternal pipelineInternal = pipeline;
+
+            await pipelineInternal.SessionStarted;
+
+            if (null != startCompletionSource)
+            {
+                startCompletionSource.TrySetResult(null);
+            }
+
+            await runTask;
+        }
+
+        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, float metricsIntervalSeconds)
         {
             var configurations = new List<MonitoringSourceConfiguration>();
             if (profile.HasFlag(Models.TraceProfile.Cpu))

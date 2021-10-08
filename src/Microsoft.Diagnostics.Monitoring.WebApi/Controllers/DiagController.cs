@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -552,44 +553,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             EventLogsPipelineSettings settings,
             string egressProvider)
         {
-            LogFormat format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
-            if (format == LogFormat.None)
+            LogFormat? format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
+            if (null == format)
             {
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
-            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
-            string contentType = ContentTypes.TextEventStream;
-
-            if (format == LogFormat.EventStream)
-            {
-                contentType = ContentTypes.TextEventStream;
-            }
-            else if (format == LogFormat.NDJson)
-            {
-                contentType = ContentTypes.ApplicationNdJson;
-            }
-            else if (format == LogFormat.JsonSequence)
-            {
-                contentType = ContentTypes.ApplicationJsonSequence;
-            }
-
-            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-            {
-                using var loggerFactory = new LoggerFactory();
-
-                loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
-
-                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
-                await pipeline.RunAsync(token);
-            };
+            string fileName = Utilities.GenerateLogsFileName(processInfo.EndpointInfo);
+            string contentType = Utilities.GetLogsContentType(format.Value);
 
             return Result(
                 Utilities.ArtifactType_Logs,
                 egressProvider,
-                action,
+                (outputStream, token) => Utilities.CaptureLogsAsync(null, format.Value, processInfo.EndpointInfo, settings, outputStream, token),
                 fileName,
                 contentType,
                 processInfo.EndpointInfo,
@@ -601,11 +577,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
         }
 
-        private static LogFormat ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
+        private static LogFormat? ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
             if (acceptedHeaders == null)
             {
-                return LogFormat.None;
+                return null;
             }
 
             if (acceptedHeaders.Contains(EventStreamHeader))
@@ -614,7 +590,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
             if (acceptedHeaders.Contains(NdJsonHeader))
             {
-                return LogFormat.NDJson;
+                return LogFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Contains(JsonSequenceHeader))
             {
@@ -626,13 +602,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
             if (acceptedHeaders.Any(h => NdJsonHeader.IsSubsetOf(h)))
             {
-                return LogFormat.NDJson;
+                return LogFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Any(h => JsonSequenceHeader.IsSubsetOf(h)))
             {
                 return LogFormat.JsonSequence;
             }
-            return LogFormat.None;
+            return null;
         }
 
         private Task<ActionResult> Result(

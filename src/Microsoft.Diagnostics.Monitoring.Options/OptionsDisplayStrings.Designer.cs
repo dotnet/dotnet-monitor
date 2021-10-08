@@ -441,6 +441,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The format of the logs artifact..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLogsOptions_Format {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Specifies whether to capture log statements at the levels as specified in the application-defined filters..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLogsOptions_UseAppFilters {

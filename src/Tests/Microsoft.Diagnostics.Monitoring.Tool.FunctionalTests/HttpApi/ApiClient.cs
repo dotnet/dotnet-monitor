@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
@@ -275,7 +276,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             {
                 contentType = ContentTypes.ApplicationJsonSequence;
             }
-            else if (logFormat == LogFormat.NDJson)
+            else if (logFormat == LogFormat.NewlineDelimitedJson)
             {
                 contentType = ContentTypes.ApplicationNDJson;
             }

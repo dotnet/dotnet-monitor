@@ -7,12 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Monitoring.WebApi
+namespace Microsoft.Diagnostics.Monitoring.Options
 {
     public enum LogFormat
     {
-        None = 0,
-        NDJson = 1,
+        NewlineDelimitedJson = 1,
         EventStream = 2,
         JsonSequence = 3
     }
