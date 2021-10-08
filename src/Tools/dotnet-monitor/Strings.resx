@@ -439,6 +439,9 @@
   <data name="LogFormatString_DiagnosticRequestCancelled" xml:space="preserve">
     <value>Cancelled waiting for diagnostic response from runtime in process {processId}.</value>
   </data>
+  <data name="LogFormatString_DiagnosticRequestFailed" xml:space="preserve">
+    <value>Failed to get diagnostic response from runtime in process {processId}.</value>
+  </data>
   <data name="LogFormatString_DisabledNegotiateWhileElevated" xml:space="preserve">
     <value>Negotiate, Kerberos, and NTLM authentication are not enabled when running with elevated permissions.</value>
     <comment>Gets the format string that is printed in the 20:DisabledNegotiateWhileElevated event.

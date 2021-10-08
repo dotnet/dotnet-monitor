@@ -130,8 +130,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _adapter.Environment.Add("Logging__Console__FormatterName", "json");
             // Enable Information on ASP.NET Core logs for better ability to diagnose issues.
             _adapter.Environment.Add("Logging__LogLevel__Microsoft.AspNetCore", "Information");
-            // Enable Debug on Startup class to get lifetime and address events
-            _adapter.Environment.Add("Logging__LogLevel__Microsoft.Diagnostics.Tools.Monitor.Startup", "Debug");
+            // Enable Debug on Microsoft.Diagnostics to get lifetime and address events as well as for diagnosing issues.
+            _adapter.Environment.Add("Logging__LogLevel__Microsoft.Diagnostics", "Debug");
 
             // Override the shared config directory
             _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
