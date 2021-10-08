@@ -62,6 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             foreach (var key in dictionary.Keys)
             {
                 object value = dictionary[key];
+
                 if (null != value)
                 {
                     string keyString = Convert.ToString(key, CultureInfo.InvariantCulture);

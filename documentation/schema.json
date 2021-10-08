@@ -1166,8 +1166,34 @@
           "type": "string",
           "description": "The name of the egress provider to which the logs are egressed.",
           "minLength": 1
+        },
+        "Format": {
+          "description": "The format of the logs artifact.",
+          "default": "EventStream",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogFormat"
+            }
+          ]
         }
       }
+    },
+    "LogFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NewlineDelimitedJson",
+        "EventStream",
+        "JsonSequence"
+      ],
+      "enum": [
+        "NewlineDelimitedJson",
+        "EventStream",
+        "JsonSequence"
+      ]
     },
     "CollectTraceOptions": {
       "type": "object",
