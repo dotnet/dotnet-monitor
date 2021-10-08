@@ -3,19 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tracing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using System.Collections.Generic;
-using Microsoft.Diagnostics.Tracing;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -49,9 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
             }, async host =>
             {
-                ActionTester<CollectTraceOptions> helper = new(host, _endpointUtilities, _outputHelper);
-
-                await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectTrace, CommonTestTimeouts.TraceTimeout, (egressPath, runner) => ValidateTrace(runner, egressPath), tfm);
+                await PerformTrace(host, tfm);
             });
         }
 
@@ -77,17 +79,46 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
             }, async host =>
             {
-                ActionTester<CollectTraceOptions> helper = new(host, _endpointUtilities, _outputHelper);
-
-                await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectTrace, CommonTestTimeouts.TraceTimeout, (egressPath, runner) => ValidateTrace(runner, egressPath), tfm);
+                await PerformTrace(host, tfm);
             });
         }
 
-        private static async Task ValidateTrace(AppRunner runner, string egressPath)
+        private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm)
         {
-            using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
-            Assert.NotNull(traceStream);
+            CollectTraceOptions options = ActionTestsHelper.GetOptions<CollectTraceOptions>(DefaultRuleName, host);
 
+            ICollectionRuleActionFactoryProxy factory;
+            Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectTrace, out factory));
+
+            EndpointInfoSourceCallback callback = new(_outputHelper);
+            await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+            source.Start();
+
+            AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, tfm);
+
+            Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+            await runner.ExecuteAsync(async () =>
+            {
+                IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
+                CollectionRuleActionResult result = await ActionTestsHelper.PerformAction(action, CommonTestTimeouts.TraceTimeout);
+
+                string egressPath = ActionTestsHelper.ValidateEgressPath(result);
+
+                using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                Assert.NotNull(traceStream);
+
+                await ValidateTrace(traceStream);
+
+                await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            });
+        }
+
+        private static async Task ValidateTrace(FileStream traceStream)
+        {
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
             using var eventSource = new EventPipeEventSource(traceStream);

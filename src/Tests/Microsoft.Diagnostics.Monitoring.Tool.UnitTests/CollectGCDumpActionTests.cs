@@ -3,16 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -44,17 +47,41 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     .SetStartupTrigger();
             }, async host =>
             {
-                ActionTester<CollectGCDumpOptions> helper = new(host, _endpointUtilities, _outputHelper);
+                CollectGCDumpOptions options = ActionTestsHelper.GetOptions<CollectGCDumpOptions>(DefaultRuleName, host);
 
-                await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectGCDump, CommonTestTimeouts.GCDumpTimeout, (egressPath, runner) => ValidateGCDump(runner, egressPath), tfm);
+                ICollectionRuleActionFactoryProxy factory;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectGCDump, out factory));
+
+                EndpointInfoSourceCallback callback = new(_outputHelper);
+                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+                source.Start();
+
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, tfm);
+
+                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
+                {
+                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
+                    CollectionRuleActionResult result = await ActionTestsHelper.PerformAction(action, CommonTestTimeouts.GCDumpTimeout);
+
+                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
+
+                    using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                    Assert.NotNull(gcdumpStream);
+
+                    await ValidateGCDump(gcdumpStream);
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                });
             });
         }
 
-        private static async Task ValidateGCDump(AppRunner runner, string egressPath)
+        private static async Task ValidateGCDump(FileStream gcdumpStream)
         {
-            using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
-            Assert.NotNull(gcdumpStream);
-
             using CancellationTokenSource cancellation = new(CommonTestTimeouts.GCDumpTimeout);
             byte[] buffer = await gcdumpStream.ReadBytesAsync(24, cancellation.Token);
 

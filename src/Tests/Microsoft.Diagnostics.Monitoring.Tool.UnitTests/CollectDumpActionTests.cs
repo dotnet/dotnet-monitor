@@ -3,11 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -43,20 +46,37 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     .SetStartupTrigger();
             }, async host =>
             {
-                ActionTester<CollectDumpOptions> helper = new(host, _endpointUtilities, _outputHelper);
+                CollectDumpOptions options = ActionTestsHelper.GetOptions<CollectDumpOptions>(DefaultRuleName, host);
 
-                await helper.TestAction(DefaultRuleName, KnownCollectionRuleActions.CollectDump, CommonTestTimeouts.DumpTimeout, (egressPath, runner) => DumpValidation(runner, egressPath), tfm);
+                ICollectionRuleActionFactoryProxy factory;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectDump, out factory));
+
+                EndpointInfoSourceCallback callback = new(_outputHelper);
+                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
+                source.Start();
+
+                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, tfm);
+
+                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
+                {
+                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
+                    CollectionRuleActionResult result = await ActionTestsHelper.PerformAction(action, CommonTestTimeouts.DumpTimeout);
+
+                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
+
+                    using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                    Assert.NotNull(dumpStream);
+
+                    await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), dumpStream);
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                });
             });
-        }
-
-        internal static async Task DumpValidation(AppRunner runner, string egressPath)
-        {
-            using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
-            Assert.NotNull(dumpStream);
-
-            await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), dumpStream);
-
-            await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
         }
     }
 }
