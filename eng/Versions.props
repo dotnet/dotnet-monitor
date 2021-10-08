@@ -34,8 +34,8 @@
     <!-- dotnet/aspnetcore references -->
     <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21508.2</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21507.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21507.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21507.2</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21507.2</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
     <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21507.16</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
