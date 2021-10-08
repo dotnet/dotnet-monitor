@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 callbacks.Add(sourceCallback);
             }
 
-            IOptions<DiagnosticPortOptions> portOptions = Options.Create(
+            IOptions<DiagnosticPortOptions> portOptions = Extensions.Options.Options.Create(
                 new DiagnosticPortOptions()
                 {
                     ConnectionMode = DiagnosticPortConnectionMode.Listen,
