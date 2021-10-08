@@ -58,25 +58,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         _logger.DiagnosticRequestCancelled(pid);
                         return null;
                     }
-                    // Catch when runtime instance shuts down while attepting to use the established diagnostic port connection.
-                    catch (EndOfStreamException)
+                    // Catch all other exceptions and log them.
+                    catch (Exception ex)
                     {
-                        return null;
-                    }
-                    //Catch when the application is running a more privilaged socket than dotnet-monitor. For example, running a web app as administrator
-                    //while running dotnet-monitor without elevation.
-                    catch (UnauthorizedAccessException)
-                    {
-                        return null;
-                    }
-                    //Most errors from IpcTransport, such as a stale socket.
-                    catch (ServerNotAvailableException)
-                    {
-                        return null;
-                    }
-                    // Other socket errors e.g. 49, 99, 111
-                    catch (SocketException)
-                    {
+                        _logger.DiagnosticRequestFailed(pid, ex);
                         return null;
                     }
                 }, linkedToken));
