@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
         }
 
-        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, int metricsIntervalSeconds)
+        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, float metricsIntervalSeconds)
         {
             var configurations = new List<MonitoringSourceConfiguration>();
             if (profile.HasFlag(Models.TraceProfile.Cpu))
