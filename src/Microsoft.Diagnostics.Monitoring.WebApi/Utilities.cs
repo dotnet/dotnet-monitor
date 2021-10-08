@@ -4,6 +4,7 @@
 
 using FastSerialization;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;

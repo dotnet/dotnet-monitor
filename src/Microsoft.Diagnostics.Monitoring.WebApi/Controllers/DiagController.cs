@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;

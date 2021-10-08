@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
