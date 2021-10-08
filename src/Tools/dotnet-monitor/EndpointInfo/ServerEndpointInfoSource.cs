@@ -200,8 +200,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private async Task PruneEndpointsAsync(List<IEndpointInfo> validEndpoints, CancellationToken token)
         {
-            List<IEndpointInfo> endpointsToRemove = new();
-
             // Prune connections that no longer have an active runtime instance before
             // returning the list of connections.
             await _activeEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
@@ -233,21 +231,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         _activeEndpoints.RemoveAt(endpointIndex);
 
-                        endpointsToRemove.Add(endpoint);
+                        await _pendingRemovalWriter.WriteAsync(endpoint, token);
                     }
                 }
             }
             finally
             {
                 _activeEndpointsSemaphore.Release();
-            }
-
-            if (endpointsToRemove.Count > 0)
-            {
-                foreach (IEndpointInfo endpoint in endpointsToRemove)
-                {
-                    await _pendingRemovalWriter.WriteAsync(endpoint, token);
-                }
             }
         }
 
