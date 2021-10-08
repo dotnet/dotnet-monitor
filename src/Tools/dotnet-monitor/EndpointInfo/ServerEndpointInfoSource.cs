@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -19,16 +20,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// </summary>
     internal sealed class ServerEndpointInfoSource : BackgroundService, IEndpointInfoSourceInternal
     {
+        // The number of items that the pending removal channel will hold before forcing
+        // the writer to wait for capacity to be available.
+        private const int PendingRemovalChannelCapacity = 1000;
+
         // The amount of time to wait when checking if the a endpoint info should be
         // pruned from the list of endpoint infos. If the runtime doesn't have a viable connection within
         // this time, it will be pruned from the list.
         private static readonly TimeSpan PruneWaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
 
+        // The amount of time to wait between pruning operations.
+        private static readonly TimeSpan PruningInterval = TimeSpan.FromSeconds(3);
+
         private readonly List<EndpointInfo> _activeEndpoints = new();
         private readonly SemaphoreSlim _activeEndpointsSemaphore = new(1);
 
-        private readonly Queue<IEndpointInfo> _pendingRemovalEndpoints = new();
-        private readonly SemaphoreSlim _pendingRemovalEndpointsSemaphore = new(0);
+        private readonly ChannelReader<IEndpointInfo> _pendingRemovalReader;
+        private readonly ChannelWriter<IEndpointInfo> _pendingRemovalWriter;
 
         private readonly CancellationTokenSource _cancellation = new();
         private readonly IEnumerable<IEndpointInfoSourceCallbacks> _callbacks;
@@ -44,6 +52,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             _callbacks = callbacks ?? Enumerable.Empty<IEndpointInfoSourceCallbacks>();
             _portOptions = portOptions.Value;
+
+            BoundedChannelOptions channelOptions = new(PendingRemovalChannelCapacity)
+            {
+                SingleReader = true,
+                SingleWriter = true
+            };
+            Channel<IEndpointInfo> pendingRemovalChannel = Channel.CreateBounded<IEndpointInfo>(channelOptions);
+            _pendingRemovalReader = pendingRemovalChannel.Reader;
+            _pendingRemovalWriter = pendingRemovalChannel.Writer;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            _pendingRemovalWriter.TryComplete();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -153,7 +177,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             while (!token.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(3));
+                await Task.Delay(PruningInterval);
 
                 await PruneEndpointsAsync(validEndpoints: null, token);
             }
@@ -163,13 +187,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             while (!token.IsCancellationRequested)
             {
-                await _pendingRemovalEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
-
-                IEndpointInfo endpoint;
-                lock (_pendingRemovalEndpoints)
-                {
-                   endpoint = _pendingRemovalEndpoints.Dequeue();
-                }
+                IEndpointInfo endpoint = await _pendingRemovalReader.ReadAsync(token);
 
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {
@@ -226,15 +244,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (endpointsToRemove.Count > 0)
             {
-                lock (_pendingRemovalEndpoints)
+                foreach (IEndpointInfo endpoint in endpointsToRemove)
                 {
-                    foreach (IEndpointInfo endpoint in endpointsToRemove)
-                    {
-                        _pendingRemovalEndpoints.Enqueue(endpoint);
-                    }
+                    await _pendingRemovalWriter.WriteAsync(endpoint, token);
                 }
-
-                _pendingRemovalEndpointsSemaphore.Release(endpointsToRemove.Count);
             }
         }
 
