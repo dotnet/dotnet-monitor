@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -70,6 +71,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     }
                     //Most errors from IpcTransport, such as a stale socket.
                     catch (ServerNotAvailableException)
+                    {
+                        return null;
+                    }
+                    // Other socket errors e.g. 49, 99, 111
+                    catch (SocketException)
                     {
                         return null;
                     }
