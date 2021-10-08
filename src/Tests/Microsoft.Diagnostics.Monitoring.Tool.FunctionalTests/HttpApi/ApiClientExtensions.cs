@@ -288,16 +288,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.GetMetricsAsync(timeoutSource.Token).ConfigureAwait(false);
         }
 
-        public static async Task<ResponseStreamHolder> CaptureMetricsAsync(this ApiClient client, int processId, int durationSeconds, int refreshInterval)
+        public static async Task<ResponseStreamHolder> CaptureMetricsAsync(this ApiClient client, int processId, int durationSeconds)
         {
             using CancellationTokenSource timeoutSource = new CancellationTokenSource(TestTimeouts.CaptureMetricsTimeout);
-            return await client.CaptureMetricsAsync(processId, durationSeconds, refreshInterval, token: timeoutSource.Token).ConfigureAwait(false);
+            return await client.CaptureMetricsAsync(processId, durationSeconds, token: timeoutSource.Token).ConfigureAwait(false);
         }
 
-        public static async Task<ResponseStreamHolder> CaptureMetricsAsync(this ApiClient client, int processId, int durationSeconds, int refreshInterval, EventMetricsConfiguration metricsConfiguration)
+        public static async Task<ResponseStreamHolder> CaptureMetricsAsync(this ApiClient client, int processId, int durationSeconds, EventMetricsConfiguration metricsConfiguration)
         {
             using CancellationTokenSource timeoutSource = new CancellationTokenSource(TestTimeouts.CaptureMetricsTimeout);
-            return await client.CaptureMetricsAsync(processId, durationSeconds, refreshInterval, metricsConfiguration, token: timeoutSource.Token).ConfigureAwait(false);
+            return await client.CaptureMetricsAsync(processId, durationSeconds, metricsConfiguration, token: timeoutSource.Token).ConfigureAwait(false);
         }
 
         /// <summary>

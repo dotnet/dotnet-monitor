@@ -5,7 +5,7 @@ Captures metrics for a process, with the ability to specify custom metrics.
 ## HTTP Route
 
 ```http
-POST /livemetrics?pid={pid}&uid={uid}&name={name}&metricsIntervalSeconds={metricsIntervalSeconds}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /livemetrics?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -21,7 +21,6 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `pid` | query | false | int | The ID of the process. |
 | `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `name` | query | false | string | The name of the process. |
-| `metricsIntervalSeconds` | query | false | int | The time interval used to collect metrics. Default is 5. |
 | `durationSeconds` | query | false | int | The duration of the metrics operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected metrics. When not specified, the metrics are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
@@ -58,7 +57,7 @@ The expected content type is `application/json`.
 ### Sample Request
 
 ```http
-GET /livemetrics?pid=21632&metricsIntervalSeconds=10&durationSeconds=60 HTTP/1.1
+GET /livemetrics?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 

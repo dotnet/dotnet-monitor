@@ -73,7 +73,7 @@ kind: ConfigMap
 metadata:
   name: my-configmap
 data:
-  Metrics__UpdateIntervalSeconds: "10"
+  Metrics__MetricCount: "6"
 ```
 
 You can then use a Kubernetes volume mount to supply the configuration map to the container at runtime
@@ -129,7 +129,7 @@ Once you've added the `$schema` property, you should have support for completion
 
 ![completions](https://user-images.githubusercontent.com/4734691/115377729-bf2bb600-a184-11eb-9b8e-50f361c112f0.gif)
 
-## View  merged configuration
+## View Merged Configuration
 
 `dotnet monitor` includes a diagnostic command that allows you to output the resulting configuration after merging the configuration from all the various sources.
 
@@ -163,7 +163,6 @@ The output of the command should resemble the following JSON object:
         "ProviderName": "Microsoft-AspNetCore-Server-Kestrel"
       }
     },
-    "UpdateIntervalSeconds": "10"
   },
   "Storage": {
     "DumpTempFolder": "C:\\Users\\shirh\\AppData\\Local\\Temp\\"
@@ -266,6 +265,19 @@ Match pid 1
 
 ## Metrics Configuration
 
+### Global Counter Interval
+
+Due to limitations in event counters, `dotnet-monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
+Prometheus metrics, livemetrics, triggers, traces, and trigger actions that collect traces. The default interval is 5 seconds, but can be changed in configuration.
+
+```json
+{
+    "GlobalCounter": {
+      "IntervalSeconds": 10
+    }
+}
+```
+
 ### Metrics Urls
 
 In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it also binds to metric urls that only expose the `/metrics` endpoint. Unlike the other endpoints, the metrics urls do not require authentication. Unless you enable collection of custom providers that may contain sensitive business logic, it is generally considered safe to expose metrics endpoints. 
@@ -288,18 +300,19 @@ Or configured via a configuration file:
 
 ### Customize collection interval and counts
 
-In the default configuration, `dotnet monitor` requests that the connected runtime provides updated counter values every 10 seconds and will retain 3 data points for every collected metric. When using a collection tool like Prometheus, it is recommended that you set your scrape interval to `MetricCount` * `UpdateIntervalSeconds`. In the default configuration, we recommend you scrape `dotnet monitor` for metrics every 30 seconds.
+In the default configuration, `dotnet monitor` requests that the connected runtime provides updated counter values every 5 seconds and will retain 3 data points for every collected metric. When using a collection tool like Prometheus, it is recommended that you set your scrape interval to `MetricCount` * `GlobalCounter:IntervalSeconds`. In the default configuration, we recommend you scrape `dotnet monitor` for metrics every 15 seconds.
 
-You can customize the number of data points stored per metric and the frequency at which the runtime updates each metric via the following configuration:
+You can customize the number of data points stored per metric via the following configuration:
 
 ```json
 {
   "Metrics": {
     "MetricCount": 3,
-    "UpdateIntervalSeconds": 10,
   }
 }
 ```
+
+See [Global Counter Interval](#Global-Counter-Interval) to change the metrics frequency.
 
 ### Custom Metrics
 
@@ -390,6 +403,319 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
                 "intermediateDirectoryPath": "/intermediateArtifacts"
             }
         }
+    }
+}
+```
+
+## Collection Rule Configuration
+
+Collection rules are specified in configuration as a named item under the `CollectionRules` property at the root of the configuration. Each collection rule has four properties for describing the behavior of the rule: `Filters`, `Trigger`, `Actions`, and `Limits`.
+
+### Example
+
+The following is a collection rule that collects a 1 minute CPU trace after it has detected high CPU usage for 10 seconds. The rule only applies to processes named "dotnet" and only collects at most 2 traces per 1 hour sliding time window.
+
+```json
+{
+    "CollectionRules": {
+        "HighCpuRule": {
+            "Filters": [{
+                "Key": "ProcessName",
+                "Value": "dotnet",
+                "MatchType": "Exact"
+            }],
+            "Trigger": {
+                "Type": "EventCounter",
+                "Settings": {
+                    "ProviderName": "System.Runtime",
+                    "CounterName": "cpu-usage",
+                    "GreaterThan": 70,
+                    "SlidingWindowDuration": "00:00:10"
+                }
+            },
+            "Actions": [{
+                "Type": "CollectTrace",
+                "Settings": {
+                    "Profile": "Cpu",
+                    "Duration": "00:01:00"
+                }
+            }],
+            "Limits": {
+                "ActionCount": 2,
+                "ActionCountSlidingWindowDuration": "1:00:00"
+            }
+        }
+    }
+}
+```
+
+### Filters
+
+Each collection rule can specify a set of process filters to select which processes the rule should be applied. The filter criteria are the same as those used for the [default process](#Default-Process-Configuration) configuration.
+
+#### Example
+
+The following example shows the `Filters` portion of a collection rule that has the rule only apply to processes named "dotnet" and whose command line contains "myapp.dll".
+
+```json
+{
+    "Filters": [{
+        "Key": "ProcessName",
+        "Value": "dotnet",
+        "MatchType": "Exact"
+    },{
+        "Key": "CommandLine",
+        "Value": "myapp.dll",
+        "MatchType": "Contains"
+    }]
+}
+```
+
+### Triggers
+
+#### `AspNetRequestCount` Trigger
+
+A trigger that has its condition satisfied when the number of HTTP requests is above the described threshold level for a sliding window of time. The request paths can be filtered according to the described patterns.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `RequestCount` | int | true | The threshold of the number of requests that start within the sliding window of time. | | | |
+| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the number of requests are counted. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
+| `IncludePaths` | string[] | false | The list of request path patterns to monitor. If not specified, all request paths are considered. If specified, only request paths matching one of the patterns in this list will be considered. Request paths matching a pattern in the `ExcludePaths` list will be ignored. | `null` | | |
+| `ExcludePaths` | string[] | false | The list of request path patterns to ignore. Request paths matching a pattern in this list will be ignored. | `null` | | |
+
+The `IncludePaths` and `ExcludePaths` support [wildcards and globbing](#aspnet-request-path-wildcards-and-globbing).
+
+##### Example
+
+Usage that is satisfied when request count is higher than 500 requests during a 1 minute period for all paths under the `/api` route:
+
+```json
+{
+  "RequestCount": 500,
+  "SlidingWindowDuration": "00:01:00",
+  "IncludePaths": [ "/api/**/*" ]
+}
+```
+
+#### `AspNetRequestDuration` Trigger
+
+A trigger that has its condition satisfied when the number of HTTP requests have response times longer than the threshold duration for a sliding window of time. Long running requests (ones that do not send a complete response within the threshold duration) are included in the count. The request paths can be filtered according to the described patterns.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `RequestCount` | int | true | The threshold of the number of slow requests that start within the sliding window of time. | | | |
+| `RequestDuration` | Timespan? | false | The threshold of the amount of time in which a request is considered to be slow. | `"00:00:05"` (5 seconds) | | |
+| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the the number of slow requests are counted. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
+| `IncludePaths` | string[] | false | The list of request path patterns to monitor. If not specified, all request paths are considered. If specified, only request paths matching one of the patterns in this list will be considered. Request paths matching a pattern in the `ExcludePaths` list will be ignored. | `null` | | |
+| `ExcludePaths` | string[] | false | The list of request path patterns to ignore. Request paths matching a pattern in this list will be ignored. | `null` | | |
+
+The `IncludePaths` and `ExcludePaths` support [wildcards and globbing](#aspnet-request-path-wildcards-and-globbing).
+
+##### Example
+
+Usage that is satisfied when 10 requests take longer than 3 seconds during a 1 minute period for all paths under the `/api` route:
+
+```json
+{
+  "RequestCount": 10,
+  "RequestDuration": "00:00:03",
+  "SlidingWindowDuration": "00:01:00",
+  "IncludePaths": [ "/api/**/*" ]
+}
+```
+
+#### `AspNetResponseStatus` Trigger
+
+A trigger that has its condition satisfied when the number of HTTP responses that have status codes matching the pattern list is above the specified threshold for a sliding window of time. The request paths can be filtered according to the described patterns.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `StatusCodes` | string[] | true | The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. `"400-499"`). | | | |
+| `RequestCount` | int | true | The threshold number of responses with matching status codes. | | | |
+| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the number of responses with matching status codes must occur. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
+| `IncludePaths` | string[] | false | The list of request path patterns to monitor. If not specified, all request paths are considered. If specified, only request paths matching one of the patterns in this list will be considered. Request paths matching a pattern in the `ExcludePaths` list will be ignored. | `null` | | |
+| `ExcludePaths` | string[] | false | The list of request path patterns to ignore. Request paths matching a pattern in this list will be ignored. | `null` | | |
+
+The `IncludePaths` and `ExcludePaths` support [wildcards and globbing](#aspnet-request-path-wildcards-and-globbing).
+
+##### Example
+
+Usage that is satisfied when 10 requests respond with a 5XX status code during a 1 minute period for all paths under the `/api` route:
+
+```json
+{
+  "StatusCodes": [ "500-599" ],
+  "RequestCount": 10,
+  "SlidingWindowDuration": "00:01:00",
+  "IncludePaths": [ "/api/**/*" ]
+}
+```
+
+#### `EventCounter` Trigger
+
+A trigger that has its condition satisfied when the value of a counter falls above, below, or between the described threshold values for a duration of time.
+
+See [Well-known Counters in .NET](https://docs.microsoft.com/en-us/dotnet/core/diagnostics/available-counters) for a list of known available counters. Custom counters from custom event sources are supported as well.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `ProviderName` | string | true | The name of the event source that provides the counter information. | | | |
+| `CounterName` | string | true | The name of the counter to monitor. | | | |
+| `GreaterThan` | double? | false | The threshold level the counter must maintain (or higher) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified. | `null` | | |
+| `LessThan` | double? | false | The threshold level the counter must maintain (or lower) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified. | `null` | | |
+| `SlidingWindowDuration` | false | TimeSpan? | The sliding time window in which the counter must maintain its value as specified by the threshold levels in `GreaterThan` and/or `LessThan`. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
+
+##### Example
+
+Usage that is satisfied when the CPU usage of the application is higher than 70% for a 10 second window.
+
+```json
+{
+  "ProviderName": "System.Runtime",
+  "CounterName": "cpu-usage",
+  "GreaterThan": 70,
+  "SlidingWindowDuration": "00:00:10"
+}
+```
+
+#### ASP.NET Request Path Wildcards and Globbing
+
+The `IncludePaths` and `ExcludePaths` properties of the ASP.NET triggers allow for wildcards and globbing so that every included or excluded path does not necessarily need to be explicitly specified. For these triggers, a match with an `ExcludePaths` pattern will supercede a match with an `IncludePaths` pattern.
+
+The globstar `**/` will match zero or more path segments including the forward slash `/` character at the end of the segment.
+
+The wildcard `*` will match zero or more non-forward-slash `/` characters.
+
+##### Examples
+
+| Pattern | Matches | Non-Matches |
+|---|---|---|
+| `**/*` | All paths | No exclusions |
+| `/images/**/*` | `/images/logo.png`, `/images/products/1.png` | `/index/header.png` |
+| `**/*.js` | `/script.js`, `/path/script.js`, `/path/sub/script.js` | `/script.js/page.html` |
+| `**/sub/*.html` | `/path/sub/page.html`, `/sub/page.html` | `/sub/script.js`, `/path/doc.txt` |
+
+### Actions
+
+#### `CollectDump` Action
+
+An action that collects a dump of the process that the collection rule is targeting.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Type` | [DumpType](api/definitions.md#DumpType) | false | The type of dump to collect | `WithHeap` |
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected dump. | |
+
+##### Example
+
+Usage that collects a full dump and egresses it to a provider named "AzureBlobDumps".
+
+```json
+{
+  "Type": "Full",
+  "Egress": "AzureBlobDumps"
+}
+```
+
+#### `CollectGCDump` Action
+
+An action that collects a gcdump of the process that the collection rule is targeting.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected gcdump. | |
+
+##### Example
+
+Usage that collects a gcdump and egresses it to a provider named "AzureBlobGCDumps".
+
+```json
+{
+  "Egress": "AzureBlobGCDumps"
+}
+```
+
+#### `CollectTrace` Action
+
+An action that collects a trace of the process that the collection rule is targeting.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `Profile` | [TraceProfile](api/definitions.md#TraceProfile)? | false | The name of the profile(s) used to collect events. See [TraceProfile](api/definitions.md#TraceProfile) for details on the list of event providers, levels, and keywords each profile represents. Multiple profiles may be specified by separating them with commas. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
+| `Providers` | [EventProvider](api/definitions.md#EventProvider)[] | false | List of event providers from which to capture events. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
+| `RequestRundown` | bool | false | The runtime may provide additional type information for certain types of events after the trace session is ended. This additional information is known as rundown events. Without this information, some events may not be parsable into useful information. Only applies when `Providers` is specified. | `true` | | |
+| `BufferSizeMegabytes` | int | false | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Only applies when `Providers` is specified. | `256` | `1` | `1024` |
+| `Duration` | TimeSpan? | false | The duration of the trace operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected trace. | | | |
+
+##### Example
+
+Usage that collects a CPU trace for 1 minute and egresses it to a provider named "TmpDir".
+
+```json
+{
+  "Profile": "Cpu",
+  "Egress": "TmpDir"
+}
+```
+
+#### `Execute` Action
+
+An action that executes an executable found in the file system. Non-zero exit code will fail the action.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Path` | string | true | The path to the executable. | |
+| `Arguments` | string | false | The arguments to pass to the executable. | `null` |
+| `IgnoreExitCode` | bool? | false | Ignores checking that the exit code is zero. | `false` |
+
+##### Example
+
+Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
+
+```json
+{
+  "Path": "C:\\Program Files\\dotnet\\dotnet.exe",
+  "Arguments": "C:\\Program Files\\MyApp\\myapp.dll"
+}
+```
+
+### Limits
+
+Collection rules have limits that constrain the lifetime of the rule and how often its actions can be run before being throttled.
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `ActionCount` | int | false | The number of times the action list may be executed before being throttled. | 5 | | |
+| `ActionCountSlidingWindowDuration` | TimeSpan? | false | The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting. If not specified, all action list executions will be counted for the entire duration of the rule. | `null` | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
+| `RuleDuration` | TimeSpan? | false | The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. | `null` | `"00:00:01"` (1 second) | `"365.00:00:00"` (1 year) |
+
+#### Example
+
+The following example shows the `Limits` portion of a collection rule that has the rule only allow its actions to run 3 times within a 1 hour sliding time window.
+
+```json
+{
+    "Limits": {
+        "ActionCount": 3,
+        "ActionCountSlidingWindowDuration": "01:00:00",
     }
 }
 ```

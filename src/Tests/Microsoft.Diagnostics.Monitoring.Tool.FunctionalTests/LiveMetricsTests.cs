@@ -51,8 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 async (appRunner, apiClient) =>
                 {
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
-                        durationSeconds: 10,
-                        refreshInterval: 2);
+                        durationSeconds: 10);
                     
                     var metrics = GetAllMetrics(holder);
                     await ValidateMetrics(new []{ EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
@@ -83,8 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
                         durationSeconds: 10,
-                        refreshInterval: 2,
-                        new EventMetricsConfiguration
+                        metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
                             Providers = new[]

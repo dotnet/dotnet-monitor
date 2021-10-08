@@ -29,11 +29,11 @@ The `channel` value is used by the `dotnet-docker` repository to consume the cor
 
 The `dotnet-docker` repository runs an update process each day that detects the latest version of a given `dotnet-monitor` channel. During the stabilization/testing/release period for a release of `dotnet-monitor`, the update process should be changed to pick up builds for the release branch.
 
-The `monitorChannel` pipeline variable of the [dotnet-docker-update-dependencies](https://dev.azure.com/dnceng/internal/_build?definitionId=470) pipeline instructs the update process of which channel to use in order to update the `nightly` branch. Normally, its value is `5.0/daily` to pull the latest daily build. However, during the stabilization and release of dotnet-monitor, it should be set to the prerelease channel (e.g. `5.0/preview.5`) or release channel (e.g. `5.0/release`) value.
+The `monitorChannel` pipeline variable of the [dotnet-docker-update-dependencies](https://dev.azure.com/dnceng/internal/_build?definitionId=470) pipeline instructs the update process of which channel to use in order to update the `nightly` branch. Normally, its value is `6.0/daily` to pull the latest daily build. However, during the stabilization and release of dotnet-monitor, it should be set to the prerelease channel (e.g. `6.0/preview.8`, `6.0/rc.1`) or release channel (e.g. `6.0/release`) value.
 
 ### Revert Pipeline Variable After Release
 
-After the release has been completed, this pipeline variable should be changed to the appropriate daily channel (e.g. `5.0/daily`).
+After the release has been completed, this pipeline variable should be changed to the appropriate daily channel (e.g. `6.0/daily`).
 
 ### Image Update Process
 
@@ -49,10 +49,12 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 
 ## Release to nuget.org and Add GitHub Release
 
-1. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105).
-   1. Set BAR_ID from value of the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954).
-   1. Set release notes path to a file share path that contains the release notes for this release.
-1. Approve the sign off step when ready to publish.
+1. Grab the file [/documentation/releaseNotes/releaseNotes.md](https://github.com/dotnet/dotnet-monitor/blob/release/6.0/documentation/releaseNotes/releaseNotes.md) from the release branch and check this file into [main](https://github.com/dotnet/dotnet-monitor/tree/main) as [/documentation/releaseNotes/releaseNotes.v{NugetVersionNumber}.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releaseNotes/releaseNotes.v6.0.0-preview.8.21503.3.md).
+>**Note:** this file comes from the **release** branch and is checked into the **main** branch.
+2. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105). During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact.
+3. The release will start the stage "Pre-Release Verification" this will check that the above steps were done as expected.
+4. Approve the sign-off step the day before the release after 8:45 AM PDT, when ready to publish.
+>**Note:** After sign-off of the "Pre-Release Verification" environment the NuGet and GitHub release steps will automatically wait 8:45 AM PDT the next day to correspond with the typical docker release time of 9:00 AM PDT.
 
 The remainder of the release will automatically push NuGet packages to nuget.org, [tag](https://github.com/dotnet/dotnet-monitor/tags) the commit from the build with the release version, and add a new [GitHub release](https://github.com/dotnet/dotnet-monitor/releases).
 
