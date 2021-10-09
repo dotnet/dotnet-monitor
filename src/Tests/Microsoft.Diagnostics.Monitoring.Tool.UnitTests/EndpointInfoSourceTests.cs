@@ -8,7 +8,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,8 +16,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public class EndpointInfoSourceTests
     {
-        private static readonly TimeSpan DefaultNegativeVerificationTimeout = TimeSpan.FromSeconds(2);
-
         private readonly ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
@@ -29,74 +26,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Tests that other <see cref="ServerEndpointInfoSource"> methods throw if
-        /// <see cref="ServerEndpointInfoSource.Start"/> is not called.
-        /// </summary>
-        [Fact]
-        public async Task ServerSourceNoStartTest()
-        {
-            await using var source = _endpointUtilities.CreateServerSource(out string transportName);
-            // Intentionally do not call Start
-
-            using CancellationTokenSource cancellation = new(DefaultNegativeVerificationTimeout);
-
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                () => source.GetEndpointInfoAsync(cancellation.Token));
-        }
-
-        /// <summary>
         /// Tests that the server endpoint info source has not connections if no processes connect to it.
         /// </summary>
         [Fact]
         public async Task ServerSourceNoConnectionsTest()
         {
-            await using var source = _endpointUtilities.CreateServerSource(out _);
-            source.Start();
+            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync();
 
-            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
             Assert.Empty(endpointInfos);
-        }
-
-        /// <summary>
-        /// Tests that server endpoint info source should throw ObjectDisposedException
-        /// from API surface after being disposed.
-        /// </summary>
-        [Fact]
-        public async Task ServerSourceThrowsWhenDisposedTest()
-        {
-            var source = _endpointUtilities.CreateServerSource(out _);
-            source.Start();
-
-            await source.DisposeAsync();
-
-            // Validate source surface throws after disposal
-            Assert.Throws<ObjectDisposedException>(
-                () => source.Start());
-
-            Assert.Throws<ObjectDisposedException>(
-                () => source.Start(1));
-
-            using CancellationTokenSource cancellation = new(DefaultNegativeVerificationTimeout);
-            await Assert.ThrowsAsync<ObjectDisposedException>(
-                () => source.GetEndpointInfoAsync(cancellation.Token));
-        }
-
-        /// <summary>
-        /// Tests that server endpoint info source should throw an exception from
-        /// <see cref="ServerEndpointInfoSource.Start"/> and
-        /// <see cref="ServerEndpointInfoSource.Start(int)"/> after listening was already started.
-        /// </summary>
-        [Fact]
-        public async Task ServerSourceThrowsWhenMultipleStartTest()
-        {
-            await using var source = _endpointUtilities.CreateServerSource(out _);
-            source.Start();
-
-            Assert.Throws<InvalidOperationException>(
-                () => source.Start());
-
-            Assert.Throws<InvalidOperationException>(
-                () => source.Start(1));
         }
 
         /// <summary>
@@ -108,21 +46,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async Task ServerSourceAddRemoveSingleConnectionTest(TargetFrameworkMoniker appTfm)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
-            await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-            source.Start();
+            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
-            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
             Assert.Empty(endpointInfos);
 
-            AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, appTfm);
+            AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
 
-            Task newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task addedEndpointTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task removedEndpointTask = callback.WaitRemovedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {
-                await newEndpointInfoTask;
+                _outputHelper.WriteLine("Waiting for added endpoint notification.");
+                await addedEndpointTask;
+                _outputHelper.WriteLine("Received added endpoint notifications.");
 
-                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
 
                 var endpointInfo = Assert.Single(endpointInfos);
                 Assert.NotNull(endpointInfo.CommandLine);
@@ -133,9 +73,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
 
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            _outputHelper.WriteLine("Waiting for removed endpoint notification.");
+            await removedEndpointTask;
+            _outputHelper.WriteLine("Received removed endpoint notifications.");
 
-            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
 
             Assert.Empty(endpointInfos);
         }
@@ -149,30 +91,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async Task ServerSourceAddRemoveMultipleConnectionTest(TargetFrameworkMoniker appTfm)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
-            await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-            source.Start();
+            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
-            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+            var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
             Assert.Empty(endpointInfos);
 
             const int appCount = 5;
             AppRunner[] runners = new AppRunner[appCount];
-            Task[] newEndpointInfoTasks = new Task[appCount];
+            Task[] addedEndpointTasks = new Task[appCount];
+            Task[] removedEndpointTasks = new Task[appCount];
 
             // Start all app instances
             for (int i = 0; i < appCount; i++)
             {
-                runners[i] = _endpointUtilities.CreateAppRunner(transportName, appTfm, appId: i + 1);
-                newEndpointInfoTasks[i] = callback.WaitForNewEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
+                runners[i] = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm, appId: i + 1);
+                addedEndpointTasks[i] = callback.WaitAddedEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
+                removedEndpointTasks[i] = callback.WaitRemovedEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
             }
 
             await runners.ExecuteAsync(async () =>
             {
-                _outputHelper.WriteLine("Waiting for all new endpoint info notifications.");
-                await Task.WhenAll(newEndpointInfoTasks);
-                _outputHelper.WriteLine("Received all new endpoint info notifications.");
+                _outputHelper.WriteLine("Waiting for all added endpoint notifications.");
+                await Task.WhenAll(addedEndpointTasks);
+                _outputHelper.WriteLine("Received all added endpoint notifications.");
 
-                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+                endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
 
                 Assert.Equal(appCount, endpointInfos.Count());
 
@@ -192,6 +135,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
             });
 
+            _outputHelper.WriteLine("Waiting for all removed endpoint notifications.");
+            await Task.WhenAll(removedEndpointTasks);
+            _outputHelper.WriteLine("Received all removed endpoint notifications.");
+
             for (int i = 0; i < appCount; i++)
             {
                 Assert.True(0 == runners[i].ExitCode, $"App {i} exit code is non-zero.");
@@ -199,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(source);
+            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
 
             Assert.Empty(endpointInfos);
         }
