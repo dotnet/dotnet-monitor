@@ -9,8 +9,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class DumpUtilities
     {
-        public const string ArtifactType_Dump = "dump";
-
         public static string GenerateDumpFileName()
         {
             return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?

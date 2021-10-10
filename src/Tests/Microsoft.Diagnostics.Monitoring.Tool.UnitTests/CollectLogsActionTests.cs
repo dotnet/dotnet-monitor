@@ -30,7 +30,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private readonly ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
-        private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "LogsTestRule";
 
         public CollectLogsActionTests(ITestOutputHelper outputHelper)
@@ -201,10 +200,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsHelper.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
+                    .AddCollectLogsAction(ActionTestsHelper.ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
                     .SetStartupTrigger();
 
                 collectLogsOptions.Duration = CommonTestTimeouts.LogsDuration;
