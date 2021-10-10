@@ -214,7 +214,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
         }
 
-        private static void AddHostedServiceForwarder<THostedService>(this IServiceCollection services) where THostedService : class, IHostedService
+        public static void AddHostedServiceForwarder<THostedService>(this IServiceCollection services) where THostedService : class, IHostedService
         {
             services.AddHostedService<THostedService>(sp => sp.GetRequiredService<THostedService>());
         }

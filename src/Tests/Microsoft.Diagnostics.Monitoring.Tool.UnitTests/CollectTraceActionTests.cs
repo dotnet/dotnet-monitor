@@ -91,12 +91,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectTrace, out factory));
 
             EndpointInfoSourceCallback callback = new(_outputHelper);
-            await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-            source.Start();
+            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
-            AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, tfm);
+            AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
 
-            Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {

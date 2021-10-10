@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// Wraps an <see cref="IEndpointInfoSource"/> based on the provided configuration
     /// and filters the current process from consideration.
     /// </summary>
-    internal class FilteredEndpointInfoSource : IEndpointInfoSourceInternal, IAsyncDisposable
+    internal class FilteredEndpointInfoSource : IEndpointInfoSourceInternal
     {
         private readonly DiagnosticPortOptions _portOptions;
         private readonly int? _processIdToFilterOut;
@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly IEndpointInfoSourceInternal _source;
 
         public FilteredEndpointInfoSource(
-            IEnumerable<IEndpointInfoSourceCallbacks> callbacks,
+            ServerEndpointInfoSource serverEndpointInfoSource,
             IOptions<DiagnosticPortOptions> portOptions,
             ILogger<ClientEndpointInfoSource> clientSourceLogger)
         {
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     _source = new ClientEndpointInfoSource(clientSourceLogger);
                     break;
                 case DiagnosticPortConnectionMode.Listen:
-                    _source = new ServerEndpointInfoSource(_portOptions.EndpointName, callbacks);
+                    _source = serverEndpointInfoSource;
                     break;
                 default:
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_UnhandledConnectionMode, connectionMode));
@@ -93,19 +93,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             return endpointInfos;
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return DisposableHelper.DisposeAsync(_source);
-        }
-
-        public void Start()
-        {
-            if (_source is ServerEndpointInfoSource source)
-            {
-                source.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));
-            }
         }
     }
 }

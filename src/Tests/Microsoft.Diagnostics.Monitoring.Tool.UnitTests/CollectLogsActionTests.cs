@@ -224,13 +224,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using CancellationTokenSource endpointTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
 
                 EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
-                await using var source = _endpointUtilities.CreateServerSource(out string transportName, endpointInfoCallback);
-                source.Start();
+                await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(endpointInfoCallback);
 
-                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, tfm);
+                AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
                 runner.ScenarioName = TestAppScenarios.Logger.Name;
 
-                Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                 await runner.ExecuteAsync(async () =>
                 {
