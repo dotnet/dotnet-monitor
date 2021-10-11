@@ -18,6 +18,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
     internal class CollectionRuleService : BackgroundService, IAsyncDisposable
     {
+        // The number of items that the pending removal channel will hold before forcing
+        // the writer to wait for capacity to be available.
+        private const int PendingRemovalChannelCapacity = 1000;
+
         private readonly Dictionary<IEndpointInfo, CollectionRuleContainer> _containersMap = new();
         private readonly ChannelReader<CollectionRuleContainer> _containersToRemoveReader;
         private readonly ChannelWriter<CollectionRuleContainer> _containersToRemoveWriter;
@@ -37,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
-            BoundedChannelOptions containersToRemoveChannelOptions = new(1000)
+            BoundedChannelOptions containersToRemoveChannelOptions = new(PendingRemovalChannelCapacity)
             {
                 SingleReader = true,
                 SingleWriter = true
@@ -53,6 +57,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             if (DisposableHelper.CanDispose(ref _disposalState))
             {
+                _containersToRemoveWriter.TryComplete();
+
                 CollectionRuleContainer[] containers;
                 lock (_containersMap)
                 {
