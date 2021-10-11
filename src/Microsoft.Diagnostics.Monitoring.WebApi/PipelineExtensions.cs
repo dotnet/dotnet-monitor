@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             // started task. Logically, the run task will not successfully complete before the session
             // started task. Thus, the combined task completes either when the session started task is
             // completed OR the run task has failed.
-            await Task.WhenAny(pipelineInternal.SessionStarted, runTask);
+            await Task.WhenAny(pipelineInternal.SessionStarted, runTask).Unwrap();
 
             return runTask;
         }
