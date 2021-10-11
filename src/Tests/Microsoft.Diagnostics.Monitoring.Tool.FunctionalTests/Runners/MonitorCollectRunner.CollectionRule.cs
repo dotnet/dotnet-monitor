@@ -16,6 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     partial class MonitorCollectRunner
     {
         private readonly ConcurrentDictionary<CollectionRuleKey, List<TaskCompletionSource<object>>> _collectionRuleCallbacks = new();
+        private readonly ConcurrentDictionary<int, List<TaskCompletionSource<object>>> _eventCallbacks = new();
 
         public Task WaitForCollectionRuleActionsCompletedAsync(string ruleName, CancellationToken token)
         {
@@ -35,6 +36,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public Task WaitForCollectionRuleStartedAsync(string ruleName, CancellationToken token)
         {
             return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleStarted, ruleName, token);
+        }
+
+        public Task WaitForCollectionRulesStoppedAsync(CancellationToken token)
+        {
+            return WaitForEventAsync(LoggingEventIds.CollectionRulesStopped, token);
         }
 
         private async Task WaitForCollectionRuleEventAsync(int eventId, string ruleName, CancellationToken token)
@@ -58,6 +64,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
         }
 
+        private async Task WaitForEventAsync(int eventId, CancellationToken token)
+        {
+            TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            AddEventCallback(eventId, tcs);
+
+            try
+            {
+                await tcs.WithCancellation(token);
+            }
+            finally
+            {
+                RemoveEventCallback(eventId, tcs);
+            }
+        }
+
         private void HandleCollectionRuleEvent(ConsoleLogEvent logEvent)
         {
             if (logEvent.State.TryGetValue("ruleName", out string ruleName))
@@ -76,6 +98,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                         break;
                 }
             }
+            else
+            {
+                switch (logEvent.EventId)
+                {
+                    case LoggingEventIds.CollectionRulesStopped:
+                        CompleteEventCallbacks(logEvent.EventId);
+                        break;
+                }
+            }
         }
 
         private List<TaskCompletionSource<object>> GetCollectionRuleCompletionSources(CollectionRuleKey key)
@@ -83,9 +114,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             return _collectionRuleCallbacks.GetOrAdd(key, _ => new List<TaskCompletionSource<object>>());
         }
 
+        private List<TaskCompletionSource<object>> GetEventCompletionSources(int eventId)
+        {
+            return _eventCallbacks.GetOrAdd(eventId, _ => new List<TaskCompletionSource<object>>());
+        }
+
         private void AddCollectionRuleCallback(CollectionRuleKey key, TaskCompletionSource<object> completionSource)
         {
             List<TaskCompletionSource<object>> completionSources = GetCollectionRuleCompletionSources(key);
+            lock (completionSources)
+            {
+                completionSources.Add(completionSource);
+            }
+        }
+
+        private void AddEventCallback(int eventId, TaskCompletionSource<object> completionSource)
+        {
+            List<TaskCompletionSource<object>> completionSources = GetEventCompletionSources(eventId);
             lock (completionSources)
             {
                 completionSources.Add(completionSource);
@@ -101,9 +146,30 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
         }
 
+        private void RemoveEventCallback(int eventId, TaskCompletionSource<object> completionSource)
+        {
+            List<TaskCompletionSource<object>> completionSources = GetEventCompletionSources(eventId);
+            lock (completionSources)
+            {
+                completionSources.Remove(completionSource);
+            }
+        }
+
         private void CompleteCollectionRuleCallbacks(CollectionRuleKey key)
         {
             List<TaskCompletionSource<object>> completionSources = GetCollectionRuleCompletionSources(key);
+            lock (completionSources)
+            {
+                foreach (TaskCompletionSource<object> completionSource in completionSources)
+                {
+                    completionSource.TrySetResult(null);
+                }
+            }
+        }
+
+        private void CompleteEventCallbacks(int eventId)
+        {
+            List<TaskCompletionSource<object>> completionSources = GetEventCompletionSources(eventId);
             lock (completionSources)
             {
                 foreach (TaskCompletionSource<object> completionSource in completionSources)

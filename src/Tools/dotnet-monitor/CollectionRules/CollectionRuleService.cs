@@ -9,14 +9,18 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
     internal class CollectionRuleService : BackgroundService, IAsyncDisposable
     {
-        private readonly List<CollectionRuleContainer> _containers = new();
+        private readonly Dictionary<IEndpointInfo, CollectionRuleContainer> _containersMap = new();
+        private readonly ChannelReader<CollectionRuleContainer> _containersToRemoveReader;
+        private readonly ChannelWriter<CollectionRuleContainer> _containersToRemoveWriter;
         private readonly ILogger<CollectionRuleService> _logger;
         private readonly CollectionRulesConfigurationProvider _provider;
         private readonly IServiceProvider _serviceProvider;
@@ -32,6 +36,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+
+            BoundedChannelOptions containersToRemoveChannelOptions = new(1000)
+            {
+                SingleReader = true,
+                SingleWriter = true
+            };
+
+            Channel<CollectionRuleContainer> containersToRemoveChannel =
+                Channel.CreateBounded<CollectionRuleContainer>(containersToRemoveChannelOptions);
+            _containersToRemoveReader = containersToRemoveChannel.Reader;
+            _containersToRemoveWriter = containersToRemoveChannel.Writer;
         }
 
         public async ValueTask DisposeAsync()
@@ -39,9 +54,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             if (DisposableHelper.CanDispose(ref _disposalState))
             {
                 CollectionRuleContainer[] containers;
-                lock (_containers)
+                lock (_containersMap)
                 {
-                    containers = _containers.ToArray();
+                    containers = _containersMap.Values.ToArray();
                 }
 
                 // This will cancel the background execution if
@@ -75,9 +90,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 _logger,
                 processInfo);
 
-            lock (_containers)
+            lock (_containersMap)
             {
-                _containers.Add(container);
+                _containersMap.Add(endpointInfo, container);
             }
 
             if (ruleNames.Count > 0)
@@ -86,7 +101,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        protected override async Task ExecuteAsync(CancellationToken token)
+        public async Task RemoveRules(
+            IEndpointInfo endpointInfo,
+            CancellationToken token)
+        {
+            CollectionRuleContainer container;
+            lock (_containersMap)
+            {
+                if (!_containersMap.Remove(endpointInfo, out container))
+                {
+                    return;
+                }
+            }
+
+            await _containersToRemoveWriter.WriteAsync(container, token);
+        }
+
+        protected override Task ExecuteAsync(CancellationToken token)
+        {
+            return Task.WhenAll(
+                MonitorRuleChangesAsync(token),
+                StopAndDisposeContainerAsync(token));
+        }
+
+        private async Task MonitorRuleChangesAsync(CancellationToken token)
         {
             // Indicates that rules changed while handling a previous change.
             // Used to indicate that the next iteration should not wait for
@@ -114,13 +152,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 // Get a copy of the container list to avoid having to
                 // lock the entire list during stop and restart of all containers.
                 CollectionRuleContainer[] containers;
-                lock (_containers)
+                lock (_containersMap)
                 {
-                    containers = _containers.ToArray();
+                    containers = _containersMap.Values.ToArray();
                 }
 
                 // Stop all rules for all processes
-                List<Task> tasks = new(_containers.Count);
+                List<Task> tasks = new(_containersMap.Count);
                 foreach (CollectionRuleContainer container in containers)
                 {
                     tasks.Add(Task.Run(() => container.StopRulesAsync(token), token).SafeAwait());
@@ -174,6 +212,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     tasks.Clear();
                 }
+            }
+        }
+
+        private async Task StopAndDisposeContainerAsync(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                CollectionRuleContainer container = await _containersToRemoveReader.ReadAsync(token);
+
+                await container.StopRulesAsync(token).SafeAwait();
+
+                await container.DisposeAsync();
             }
         }
     }
