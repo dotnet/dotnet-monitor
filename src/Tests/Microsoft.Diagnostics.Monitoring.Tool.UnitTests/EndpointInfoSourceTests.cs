@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -42,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// target connects to it and "disconnects" from it.
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task ServerSourceAddRemoveSingleConnectionTest(TargetFrameworkMoniker appTfm)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
@@ -87,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// targets connect to it and "disconnect" from it.
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task ServerSourceAddRemoveMultipleConnectionTest(TargetFrameworkMoniker appTfm)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
@@ -147,12 +146,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
 
             Assert.Empty(endpointInfos);
-        }
-
-        public static IEnumerable<object[]> GetTfmsSupportingPortListener()
-        {
-            yield return new object[] { TargetFrameworkMoniker.Net50 };
-            yield return new object[] { TargetFrameworkMoniker.Net60 };
         }
 
         private static void ValidateEndpointInfo(IEndpointInfo endpointInfo)

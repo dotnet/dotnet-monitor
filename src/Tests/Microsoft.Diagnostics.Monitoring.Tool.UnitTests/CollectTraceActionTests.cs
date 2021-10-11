@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private static async Task ValidateTrace(FileStream traceStream)
+        private static async Task ValidateTrace(Stream traceStream)
         {
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 

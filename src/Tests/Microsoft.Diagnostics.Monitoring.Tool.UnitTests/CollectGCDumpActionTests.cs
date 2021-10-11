@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private static async Task ValidateGCDump(FileStream gcdumpStream)
+        private static async Task ValidateGCDump(Stream gcdumpStream)
         {
             using CancellationTokenSource cancellation = new(CommonTestTimeouts.GCDumpTimeout);
             byte[] buffer = await gcdumpStream.ReadBytesAsync(24, cancellation.Token);

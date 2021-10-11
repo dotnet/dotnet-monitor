@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         internal async static Task<CollectionRuleActionResult> PerformAction(ICollectionRuleAction action, TimeSpan timeout)
         {
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.DumpTimeout);
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(timeout);
 
             CollectionRuleActionResult result;
             try
