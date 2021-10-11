@@ -17,7 +17,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class TraceUtilities
     {
-
         public static string GenerateTraceFileName(IEndpointInfo endpointInfo)
         {
             return FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
