@@ -32,7 +32,7 @@ jobs:
 
     pool:
       # Public Linux Build Pool
-      ${{ if in(parameters.osGroup, 'Linux', 'Linux-musl') }}:
+      ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
         ${{ if eq(variables['System.TeamProject'], 'public') }}:
           vmImage: ubuntu-20.04
 
