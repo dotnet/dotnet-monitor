@@ -665,11 +665,38 @@ An action that collects a trace of the process that the collection rule is targe
 
 ##### Example
 
-Usage that collects a CPU trace for 1 minute and egresses it to a provider named "TmpDir".
+Usage that collects a CPU trace for 30 seconds and egresses it to a provider named "TmpDir".
 
 ```json
 {
   "Profile": "Cpu",
+  "Egress": "TmpDir"
+}
+```
+
+#### `CollectLogs` Action
+
+An action that collects logs for the process that the collection rule is targeting.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `DefaultLevel` | [LogLevel](api/definitions.md#LogLevel)? | false | The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value. | `LogLevel.Warning` | | |
+| `FilterSpecs` | Dictionary<string, [LogLevel](api/definitions.md#LogLevel)?> | false | A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured. | `null` | | |
+| `UseAppFilters` | bool | false | Specifies whether to capture log statements at the levels as specified in the application-defined filters. | `true` | | |
+| `Format` | [LogFormat](api/definitions.md#LogFormat)? | false | The format of the logs artifact. | `EventStream` | | |
+| `Duration` | TimeSpan? | false | The duration of the logs operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected logs. | | | |
+
+##### Example
+
+Usage that collects logs at the Information level for 30 seconds and egresses it to a provider named "TmpDir".
+
+```json
+{
+  "DefaultLevel": "Information",
+  "UseAppFilters": false,
   "Egress": "TmpDir"
 }
 ```
