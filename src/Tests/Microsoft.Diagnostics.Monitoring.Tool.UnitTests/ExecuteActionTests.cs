@@ -85,15 +85,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     await action.StartAsync(token);
 
                     // Start a separate cancellation source for the completion timeout since it needs
-                    // to be much shorter than the default test timeout. Link with the test timeout token
-                    // so that the execution should be cancelled regardless of which is signaled first.
+                    // to be much shorter than the default test timeout.
                     using CancellationTokenSource completionCancellation = new(CompletionTimeout);
-                    using CancellationTokenSource linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                        completionCancellation.Token,
-                        token);
 
                     await Assert.ThrowsAsync<TaskCanceledException>(
-                        () => action.WaitForCompletionAsync(linkedCancellation.Token));
+                        () => action.WaitForCompletionAsync(completionCancellation.Token));
                 });
         }
 
