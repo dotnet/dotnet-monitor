@@ -98,11 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
 
-            Task runTask = pipeline.RunAsync(token);
-
-            IEventSourcePipelineInternal pipelineInternal = pipeline;
-
-            await pipelineInternal.SessionStarted;
+            Task runTask = await pipeline.StartAsync(token);
 
             if (null != startCompletionSource)
             {

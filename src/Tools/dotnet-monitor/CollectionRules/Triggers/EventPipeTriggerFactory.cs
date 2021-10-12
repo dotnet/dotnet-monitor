@@ -69,12 +69,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 // executing the StartAsync method.
                 using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                Task runTask = _pipeline.RunAsync(cts.Token);
-
-                IEventSourcePipelineInternal pipelineInternal = _pipeline;
-
-                // Wait for the event pipe session to have started before returning.
-                await pipelineInternal.SessionStarted;
+                await _pipeline.StartAsync(cts.Token);
             }
 
             public Task StopAsync(CancellationToken cancellationToken)
