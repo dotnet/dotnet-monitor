@@ -2,26 +2,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using System.Threading;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
-using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Xunit.Abstractions;
-using Microsoft.Extensions.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Extensions.Logging;
-using System;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ActionListExecutorTests
     {
-        private const int TokenTimeoutMs = 10000;
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 ActionListExecutor executor = host.Services.GetService<ActionListExecutor>();
 
-                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(DefaultTimeout);
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 ActionListExecutor executor = host.Services.GetService<ActionListExecutor>();
 
-                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(DefaultTimeout);
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 ActionListExecutor executor = host.Services.GetService<ActionListExecutor>();
 
-                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(DefaultTimeout);
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();

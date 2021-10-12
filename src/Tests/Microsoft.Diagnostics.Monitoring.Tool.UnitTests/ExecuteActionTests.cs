@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,8 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ExecuteActionTests
     {
-        private const int TokenTimeoutMs = 10000;
-        private const int DelayMs = 1000;
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -69,18 +69,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ExecuteAction_TokenCancellation()
         {
+            // This timeout is much shorter than the default test timeout.
+            TimeSpan CompletionTimeout = TimeSpan.FromSeconds(3);
+            // Have app sleep longer than the timeout period so that cancellation can be effective.
+            string sleepMsArg = (2 * CompletionTimeout).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+
             await ValidateAction(
                 options =>
                 {
                     options.Path = DotNetHost.HostExePath;
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "Sleep", (TokenTimeoutMs + DelayMs).ToString() }); ;
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { "Sleep", sleepMsArg }); ;
                 },
                 async (action, token) =>
                 {
                     await action.StartAsync(token);
 
+                    // Start a separate cancellation source for the completion timeout since it needs
+                    // to be much shorter than the default test timeout. Link with the test timeout token
+                    // so that the execution should be cancelled regardless of which is signaled first.
+                    using CancellationTokenSource completionCancellation = new(CompletionTimeout);
+                    using CancellationTokenSource linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                        completionCancellation.Token,
+                        token);
+
                     await Assert.ThrowsAsync<TaskCanceledException>(
-                        () => action.WaitForCompletionAsync(token));
+                        () => action.WaitForCompletionAsync(linkedCancellation.Token));
                 });
         }
 
@@ -168,7 +181,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             optionsCallback(options);
 
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TokenTimeoutMs);
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(DefaultTimeout);
 
             ICollectionRuleAction action = factory.Create(null, options);
 
