@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.HostExePath;
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsHelper.ZeroExitCode });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.ZeroExitCode });
                 },
                 async (action, token) =>
                 {
@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.HostExePath;
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsHelper.NonzeroExitCode });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonzeroExitCode });
                 },
                 async (action, token) =>
                 {
@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.HostExePath;
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsHelper.Sleep, (TokenTimeoutMs + DelayMs).ToString() }); ;
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.Sleep, (TokenTimeoutMs + DelayMs).ToString() }); ;
                 },
                 async (action, token) =>
                 {
@@ -97,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.HostExePath;
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsHelper.TextFileOutput, textFileOutputPath, testMessage });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.TextFileOutput, textFileOutputPath, testMessage });
                 },
                 async (action, token) =>
                 {
@@ -138,7 +138,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.HostExePath;
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsHelper.NonzeroExitCode });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonzeroExitCode });
                     options.IgnoreExitCode = true;
                 },
                 async (action, token) =>

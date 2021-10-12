@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using System;
 using System.IO;
 using System.Linq;
@@ -21,22 +20,22 @@ namespace Microsoft.Diagnostics.Monitoring.ExecuteActionApp
 
             switch (testType)
             {
-                case ActionTestsHelper.ZeroExitCode:
+                case Tool.UnitTests.ActionTestsConstants.ZeroExitCode:
                     Assert.Equal(0, testArgs.Length);
                     return 0;
 
-                case ActionTestsHelper.NonzeroExitCode:
+                case Tool.UnitTests.ActionTestsConstants.NonzeroExitCode:
                     Assert.Equal(0, testArgs.Length);
                     return 1;
 
-                case ActionTestsHelper.Sleep:
+                case Tool.UnitTests.ActionTestsConstants.Sleep:
                     Assert.Equal(1, testArgs.Length);
                     string delayArg = testArgs[0];
                     int delay = int.Parse(delayArg);
                     Thread.Sleep(delay);
                     return 0;
 
-                case ActionTestsHelper.TextFileOutput:
+                case Tool.UnitTests.ActionTestsConstants.TextFileOutput:
                     Assert.Equal(2, testArgs.Length);
                     string pathArg = testArgs[0];
                     string contentsArg = testArgs[1];

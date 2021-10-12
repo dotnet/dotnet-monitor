@@ -38,8 +38,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(new string[] { ActionTestsHelper.ZeroExitCode })
-                    .AddExecuteActionAppAction(new string[] { ActionTestsHelper.ZeroExitCode })
+                    .AddExecuteActionAppAction(new string[] { ActionTestsConstants.ZeroExitCode })
+                    .AddExecuteActionAppAction(new string[] { ActionTestsConstants.ZeroExitCode })
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -78,8 +78,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsHelper.ZeroExitCode })
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsHelper.NonzeroExitCode })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonzeroExitCode })
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -123,8 +123,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsHelper.NonzeroExitCode })
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsHelper.ZeroExitCode })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonzeroExitCode })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
                     .SetStartupTrigger();
             }, async host =>
             {

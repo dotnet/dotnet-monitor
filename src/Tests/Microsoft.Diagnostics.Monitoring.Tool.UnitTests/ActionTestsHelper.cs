@@ -21,12 +21,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     internal static class ActionTestsHelper
     {
-        public const string ExpectedEgressProvider = "TmpEgressProvider";
-        public const string ZeroExitCode = "ZeroExitCode";
-        public const string NonzeroExitCode = "NonzeroExitCode";
-        public const string Sleep = "Sleep";
-        public const string TextFileOutput = "TextFileOutput";
-
         public static TargetFrameworkMoniker[] tfmsToTest = new TargetFrameworkMoniker[] { TargetFrameworkMoniker.Net50, TargetFrameworkMoniker.Net60 };
 
         public static IEnumerable<object[]> GetTfms()

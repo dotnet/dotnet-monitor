@@ -200,10 +200,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ActionTestsHelper.ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectLogsAction(ActionTestsHelper.ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
+                    .AddCollectLogsAction(ActionTestsConstants.ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
                     .SetStartupTrigger();
 
                 collectLogsOptions.Duration = CommonTestTimeouts.LogsDuration;

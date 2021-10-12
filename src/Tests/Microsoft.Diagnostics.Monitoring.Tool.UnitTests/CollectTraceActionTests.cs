@@ -44,10 +44,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ActionTestsHelper.ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectTraceAction(traceProfile, ActionTestsHelper.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .AddCollectTraceAction(traceProfile, ActionTestsConstants.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
                     .SetStartupTrigger();
 
                 collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
@@ -70,10 +70,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ActionTestsHelper.ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectTraceAction(ExpectedProviders, ActionTestsHelper.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .AddCollectTraceAction(ExpectedProviders, ActionTestsConstants.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
                     .SetStartupTrigger();
 
                 collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
