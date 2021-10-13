@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     .SetStartupTrigger();
             }, async host =>
             {
-                CollectGCDumpOptions options = ActionTestsHelper.GetOptions<CollectGCDumpOptions>(DefaultRuleName, host);
+                CollectGCDumpOptions options = ActionTestsHelper.GetActionOptions<CollectGCDumpOptions>(host, DefaultRuleName);
 
                 ICollectionRuleActionFactoryProxy factory;
                 Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectGCDump, out factory));

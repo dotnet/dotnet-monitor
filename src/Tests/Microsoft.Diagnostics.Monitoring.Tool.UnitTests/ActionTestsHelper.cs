@@ -71,10 +71,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return egressPath;
         }
 
-        internal static T GetOptions<T>(string ruleName, IHost host)
+        internal static T GetActionOptions<T>(IHost host, string ruleName, int actionIndex = 0)
         {
             IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-            T options = (T)ruleOptionsMonitor.Get(ruleName).Actions[0].Settings;
+            T options = (T)ruleOptionsMonitor.Get(ruleName).Actions[actionIndex].Settings;
 
             return options;
         }

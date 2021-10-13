@@ -213,7 +213,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 collectLogsOptions.UseAppFilters = configuration.UseAppFilters;
             }, async host =>
             {
-                CollectLogsOptions options = ActionTestsHelper.GetOptions<CollectLogsOptions>(DefaultRuleName, host);
+                CollectLogsOptions options = ActionTestsHelper.GetActionOptions<CollectLogsOptions>(host, DefaultRuleName);
 
                 // This is reassigned here due to a quirk in which a null value in the dictionary has its key removed, thus causing LogsDefaultLevelFallbackActionTest to fail. By reassigning here, any keys with null values are maintained.
                 options.FilterSpecs = configuration.FilterSpecs;

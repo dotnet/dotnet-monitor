@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm)
         {
-            CollectTraceOptions options = ActionTestsHelper.GetOptions<CollectTraceOptions>(DefaultRuleName, host);
+            CollectTraceOptions options = ActionTestsHelper.GetActionOptions<CollectTraceOptions>(host, DefaultRuleName);
 
             ICollectionRuleActionFactoryProxy factory;
             Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectTrace, out factory));

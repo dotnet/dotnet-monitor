@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ExecuteActionApp" />
-  </ItemGroup>
-
 </Project>
