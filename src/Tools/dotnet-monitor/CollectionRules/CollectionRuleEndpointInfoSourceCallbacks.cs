@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public Task OnRemovedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            return _service.RemoveRules(endpointInfo, cancellationToken);
         }
     }
 }
