@@ -253,9 +253,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_DiagnosticRequestFailed);
 
-        private static readonly Action<ILogger, string, string, Exception> _invalidToken =
+        private static readonly Action<ILogger, string, string, Exception> _invalidActionReferenceToken =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.InvalidTokenReference, "InvalidToken"),
+                eventId: new EventId(LoggingEventIds.InvalidActionReferenceToken, "InvalidActionReferenceToken"),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_InvalidToken);
 
@@ -481,9 +481,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _diagnosticRequestFailed(logger, processId, ex);
         }
 
-        public static void InvalidTokenReference(this ILogger logger, string actionName, string setting)
+        public static void InvalidActionReferenceToken(this ILogger logger, string actionName, string setting)
         {
-            _invalidToken(logger, actionName, setting, null);
+            _invalidActionReferenceToken(logger, actionName, setting, null);
         }
 
         public static void InvalidActionReference(this ILogger logger, string actionReference)

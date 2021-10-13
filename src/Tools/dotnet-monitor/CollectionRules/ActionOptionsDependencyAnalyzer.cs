@@ -167,7 +167,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     int suffixIndex = newValue.IndexOf(SubstitutionSuffix, foundIndex, StringComparison.OrdinalIgnoreCase);
                     if (suffixIndex == -1)
                     {
-                        _ruleContext.Logger.InvalidTokenReference(options.Name, property.Name);
+                        _ruleContext.Logger.InvalidActionReferenceToken(options?.Name ?? actionIndex.ToString(), property.Name);
                         break;
                     }
                     startIndex = suffixIndex;
