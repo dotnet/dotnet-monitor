@@ -56,31 +56,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             public List<ActionDependency> ActionDependencies = new();
         }
 
-        /// <summary>
-        /// Action list configuration can be reused on multiple executions. When constructing actual
-        /// options we replace the tokens with real values, and then revert them back after execution is finished.
-        /// </summary>
-        private sealed class PropertiesRevert : IDisposable
-        {
-            private readonly object _settings;
-
-            public PropertiesRevert(object settings)
-            {
-                _settings = settings;
-            }
-
-            public List<PropertyDependency> Properties = new();
-
-            public void Dispose()
-            {
-                foreach (PropertyDependency dependency in Properties)
-                {
-                    dependency.Property.SetValue(_settings, dependency.OriginalValue);
-                }
-                Properties.Clear();
-            }
-        }
-
         private sealed class ActionDependency
         {
             public ActionDependency(CollectionRuleActionOptions action, string resultName)
@@ -116,15 +91,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return Array.Empty<CollectionRuleActionOptions>();
         }
 
-        public IDisposable SubstituteOptionValues(int actionIndex, object settings)
+        public object SubstituteOptionValues(int actionIndex, object settings)
         {
             EnsureDependencies();
-
-            var revert = new PropertiesRevert(settings);
-
             if (!_dependencies.TryGetValue(actionIndex, out Dictionary<string, PropertyDependency> properties))
             {
-                return revert;
+                return settings;
+            }
+
+            if (settings is ICloneable cloneable)
+            {
+                settings = cloneable.Clone();
+            }
+            else
+            {
+                _ruleContext.Logger.InvalidSettings(settings.GetType().FullName);
+                return settings;
             }
 
             foreach (KeyValuePair<string, PropertyDependency> property in properties)
@@ -146,10 +128,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     newValue = newValue.Replace(actionToken, result, StringComparison.OrdinalIgnoreCase);
                 }
                 property.Value.Property.SetValue(settings, newValue);
-                revert.Properties.Add(property.Value);
             }
 
-            return revert;
+            return settings;
         }
 
         private void EnsureDependencies()
@@ -186,7 +167,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     int suffixIndex = newValue.IndexOf(SubstitutionSuffix, foundIndex, StringComparison.OrdinalIgnoreCase);
                     if (suffixIndex == -1)
                     {
-                        _ruleContext.Logger.InvalidToken(options.Name, property.Name);
+                        _ruleContext.Logger.InvalidTokenReference(options.Name, property.Name);
                         break;
                     }
                     startIndex = suffixIndex;
@@ -261,9 +242,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         }
 
         private IEnumerable<PropertyInfo> GetPropertiesFromSettings(CollectionRuleActionOptions options) =>
-            options.Settings.GetType()
+            //CONSIDER
+            //In the future we may want to do additional substitutions, such as $(Environment.Value)
+            //or $(Process.Id). We would likely remove the attribute in this case.
+            //Note settings could be null, although we do not have any options like this currently.
+            options.Settings?.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.PropertyType == typeof(string) &&
-                            p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
+                            p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any()) ??
+            Enumerable.Empty<PropertyInfo>();
     }
 }

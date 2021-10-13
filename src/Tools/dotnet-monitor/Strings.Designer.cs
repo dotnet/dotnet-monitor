@@ -826,6 +826,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings &apos;{settingsType}&apos; must implement ICloneable..
+        /// </summary>
+        internal static string LogFormatString_InvalidSettings {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Action &apos;{actionName}&apos; with setting &apos;{setting}&apos; has invalid tokens..
         /// </summary>
         internal static string LogFormatString_InvalidToken {

@@ -517,6 +517,9 @@
   <data name="LogFormatString_InvalidResultReference" xml:space="preserve">
     <value>Invalid result refrence '{actionToken}'.</value>
   </data>
+  <data name="LogFormatString_InvalidSettings" xml:space="preserve">
+    <value>Settings '{settingsType}' must implement ICloneable.</value>
+  </data>
   <data name="LogFormatString_InvalidToken" xml:space="preserve">
     <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>
   </data>

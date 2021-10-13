@@ -84,8 +84,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                             throw new InvalidOperationException(Strings.ErrorMessage_CouldNotMapToAction);
                         }
 
-                        IDisposable revertOptions = dependencyAnalyzer.SubstituteOptionValues(actionIndex, actionOption.Settings);
-                        ICollectionRuleAction action = factory.Create(context.EndpointInfo, actionOption.Settings);
+                        object newSettings = dependencyAnalyzer.SubstituteOptionValues(actionIndex, actionOption.Settings);
+                        ICollectionRuleAction action = factory.Create(context.EndpointInfo, newSettings);
 
                         try
                         {
@@ -100,17 +100,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                             }
                             else
                             {
-                                deferredCompletions.Add(new(action, actionOption, actionIndex, revertOptions));
+                                deferredCompletions.Add(new(action, actionOption, actionIndex));
 
                                 // Set to null to skip disposal
                                 action = null;
-                                revertOptions = null;
                             }
                         }
                         finally
                         {
                             await DisposableHelper.DisposeAsync(action);
-                            revertOptions?.Dispose();
                         }
                     }
                     catch (Exception ex) when (ShouldHandleException(ex, context.Name, actionOption.Type))
@@ -176,7 +174,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             finally
             {
                 await DisposableHelper.DisposeAsync(entry.Action);
-                entry.RevertSettings.Dispose();
             }
         }
 
@@ -189,13 +186,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         private sealed class ActionCompletionEntry
         {
-            public ActionCompletionEntry(ICollectionRuleAction action, CollectionRuleActionOptions options, int index,
-                IDisposable revertOptions)
+            public ActionCompletionEntry(ICollectionRuleAction action, CollectionRuleActionOptions options, int index)
             {
                 Action = action ?? throw new ArgumentNullException(nameof(action));
                 Options = options ?? throw new ArgumentNullException(nameof(options));
                 Index = index;
-                RevertSettings = revertOptions ?? throw new ArgumentNullException(nameof(revertOptions));
             }
 
             public ICollectionRuleAction Action { get; }
@@ -203,8 +198,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             public int Index { get; }
 
             public CollectionRuleActionOptions Options { get; }
-
-            public IDisposable RevertSettings { get;}
         }
     }
 }

@@ -255,7 +255,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly Action<ILogger, string, string, Exception> _invalidToken =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.InvalidToken, "InvalidToken"),
+                eventId: new EventId(LoggingEventIds.InvalidTokenReference, "InvalidToken"),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_InvalidToken);
 
@@ -270,6 +270,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             eventId: new EventId(LoggingEventIds.InvalidResultReference, "InvalidResultReference"),
             logLevel: LogLevel.Error,
             formatString: Strings.LogFormatString_InvalidResultReference);
+
+        private static readonly Action<ILogger, string, Exception> _invalidSettings =
+            LoggerMessage.Define<string>(
+            eventId: new EventId(LoggingEventIds.InvalidSettings, "InvalidSettings"),
+            logLevel: LogLevel.Error,
+            formatString: Strings.LogFormatString_InvalidSettings);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
@@ -475,7 +481,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _diagnosticRequestFailed(logger, processId, ex);
         }
 
-        public static void InvalidToken(this ILogger logger, string actionName, string setting)
+        public static void InvalidTokenReference(this ILogger logger, string actionName, string setting)
         {
             _invalidToken(logger, actionName, setting, null);
         }
@@ -488,6 +494,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void InvalidResultReference(this ILogger logger, string actionResultToken)
         {
             _invalidResultReference(logger, actionResultToken, null);
+        }
+
+        public static void InvalidSettings(this ILogger logger, string settingsType)
+        {
+            _invalidSettings(logger, settingsType, null);
         }
     }
 }

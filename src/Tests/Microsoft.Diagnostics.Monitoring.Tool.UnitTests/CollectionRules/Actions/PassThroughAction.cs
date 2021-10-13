@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         }
     }
 
-    internal sealed class PassThroughOptions
+    internal sealed class PassThroughOptions : ICloneable
     {
         [ActionOptionsDependencyProperty]
         public string Input1 { get; set; }
@@ -53,5 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
 
         [ActionOptionsDependencyProperty]
         public string Input3 { get; set; }
+
+        public object Clone() => MemberwiseClone();
     }
 }
