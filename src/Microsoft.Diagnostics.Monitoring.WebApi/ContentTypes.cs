@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ApplicationNdJson = "application/x-ndjson";
         public const string ApplicationOctetStream = "application/octet-stream";
         public const string ApplicationProblemJson = "application/problem+json";
-        public const string TextEventStream = "text/event-stream";
-        public const string TextPlain_v0_0_4 = "text/plain; version=0.0.4";
+        public const string TextPlain = "text/plain";
+        public const string TextPlain_v0_0_4 = TextPlain + "; version=0.0.4";
     }
 }

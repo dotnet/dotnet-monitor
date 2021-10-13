@@ -49,7 +49,7 @@ The expected content type is `application/json`.
 | Name | Type | Description | Content Type |
 |---|---|---|---|
 | 200 OK | | The logs from the process formatted as [newline delimited JSON](https://github.com/ndjson/ndjson-spec). Each JSON object is a [LogEntry](definitions.md#LogEntry) | `application/x-ndjson` |
-| 200 OK | | The logs from the process formatted as [server-sent events](https://www.w3.org/TR/eventsource). | `text/event-stream` |
+| 200 OK | | The logs from the process formatted as plain text, similar to the output of the JSON console formatter. | `text/plain` |
 | 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
@@ -94,17 +94,15 @@ The log statements logged at the Information level or higher for 1 minute is ret
 
 ```http
 HTTP/1.1 200 OK
-Content-Type: text/event-stream
+Content-Type: text/plain
 
-data: Information Microsoft.AspNetCore.Hosting.Diagnostics[1]
-data: 2021-05-13 18:06:41Z
-data: Request starting HTTP/1.1 GET http://localhost:5000/  
-data: => RequestId:0HM8M726ENU3K:0000002B, RequestPath:/, SpanId:|4791a4a7-433aa59a9e362743., TraceId:4791a4a7-433aa59a9e362743, ParentId:
+2021-05-13 18:06:41Z info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      => RequestId:0HM8M726ENU3K:0000002B, RequestPath:/, SpanId:|4791a4a7-433aa59a9e362743., TraceId:4791a4a7-433aa59a9e362743, ParentId:
+      Request starting HTTP/1.1 GET http://localhost:5000/  
 
-data: Information Microsoft.AspNetCore.Hosting.Diagnostics[2]
-data: 2021-05-13 18:06:41Z
-data: Request finished in 6.8026ms 200 text/html; charset=utf-8
-data: => RequestId:0HM8M726ENU3K:0000002B, RequestPath:/, SpanId:|4791a4a7-433aa59a9e362743., TraceId:4791a4a7-433aa59a9e362743, ParentId:
+2021-05-13 18:06:41Z info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      => RequestId:0HM8M726ENU3K:0000002B, RequestPath:/, SpanId:|4791a4a7-433aa59a9e362743., TraceId:4791a4a7-433aa59a9e362743, ParentId:
+      Request finished in 6.8026ms 200 text/html; charset=utf-8
 ```
 
 ## Supported Runtimes

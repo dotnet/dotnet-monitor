@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     public enum LogFormat
     {
         NewlineDelimitedJson = 1,
-        EventStream = 2,
+        PlainText = 2,
         JsonSequence = 3
     }
 }

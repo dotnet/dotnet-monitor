@@ -47,6 +47,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly LogFormat _logFormat;
         private readonly LogLevel? _logLevel;
 
+        private static readonly int LogTextPaddingLength = GetLogLevelString(LogLevel.Information).Length + ": ".Length;
+        private static readonly string LogTextPadding = new string(' ', LogTextPaddingLength);
+
         public const byte JsonSequenceRecordSeparator = 0x1E;
 
         public StreamingLogger(string category, Stream outputStream, LogFormat format, LogLevel? logLevel)
@@ -80,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else
             {
-                LogEventStream(logLevel, eventId, state, exception, formatter);
+                LogText(logLevel, eventId, state, exception, formatter);
             }
         }
 
@@ -150,7 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             outputStream.Flush();
         }
 
-        private void LogEventStream<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        private void LogText<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             Stream outputStream = _outputStream;
 
@@ -158,76 +161,84 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             using var writer = new StreamWriter(outputStream, Encoding.UTF8, 1024, leaveOpen: true) { NewLine = "\n" };
 
-            //event: eventName (if exists)
-            //data: level category[eventId]
-            //data: timestamp
-            //data: message
-            //data: => scope1, scope2 => scope3, scope4
-            //data: exception (if exists)
-            //\n
+            // Format (based on simple console format):
+            // Note: This deviates slightly from the simple console format in that the event name
+            // is also logged as a suffix on the first line whereas the simple console format does
+            // not log the event name at all.
+            
+            // Timestamp Level: Category[EventId][EventName]
+            //       => Scope1Name1:Scope1Value1, Scope1Name2:Scope1Value2 => Scope2Name1:Scope2Value2
+            //       Message
+            //       Exception
 
-            if (!string.IsNullOrEmpty(eventId.Name))
+            // Timestamp
+            if (state is IStateWithTimestamp stateWithTimestamp)
             {
-                writer.Write("event: ");
-                writer.WriteLine(eventId.Name);
+                writer.Write(FormatTimestamp(stateWithTimestamp));
+                writer.Write(" ");
             }
-            writer.Write("data: ");
-            writer.Write(logLevel);
-            writer.Write(" ");
+            writer.Write(GetLogLevelString(logLevel));
+            writer.Write(": ");
             writer.Write(_categoryName);
             writer.Write('[');
             writer.Write(eventId.Id);
-            writer.WriteLine(']');
-            if (state is IStateWithTimestamp stateWithTimestamp)
+            writer.Write(']');
+            if (!string.IsNullOrEmpty(eventId.Name))
             {
-                writer.Write("data: ");
-                writer.Write(FormatTimestamp(stateWithTimestamp));
-                writer.WriteLine();
+                writer.Write('[');
+                writer.Write(eventId.Name);
+                writer.Write(']');
             }
-
-            writer.Write("data: ");
-            writer.WriteLine(formatter(state, exception));
+            writer.WriteLine();
 
             // Scopes
-            bool firstScope = true;
-            foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
+            if (_scopes.HasScopes)
             {
-                bool firstScopeEntry = true;
-                foreach (KeyValuePair<string, object> scopeValue in scope)
+                writer.Write(LogTextPadding);
+                bool firstScope = true;
+                foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
                 {
+                    // The first scope should not have extra padding before the delimiter since
+                    // it was aleady padded by the padding added for every line.
                     if (firstScope)
                     {
-                        writer.Write("data:");
                         firstScope = false;
-                    }
-
-                    if (firstScopeEntry)
-                    {
-                        writer.Write(" => ");
-                        firstScopeEntry = false;
                     }
                     else
                     {
-                        writer.Write(", ");
+                        writer.Write(" ");
                     }
-                    writer.Write(scopeValue.Key);
-                    writer.Write(':');
-                    writer.Write(scopeValue.Value);
+                    writer.Write("=> ");
+
+                    bool firstScopeEntry = true;
+                    foreach (KeyValuePair<string, object> scopeValue in scope)
+                    {
+                        if (firstScopeEntry)
+                        {
+                            firstScopeEntry = false;
+                        }
+                        else
+                        {
+                            writer.Write(", ");
+                        }
+                        writer.Write(scopeValue.Key);
+                        writer.Write(':');
+                        writer.Write(scopeValue.Value);
+                    }
                 }
-            }
-            if (!firstScope)
-            {
                 writer.WriteLine();
             }
+
+            // Message
+            writer.Write(LogTextPadding);
+            writer.WriteLine(formatter(state, exception));
 
             // Exception
             if (null != exception)
             {
-                writer.Write("data: ");
-                writer.WriteLine(exception.ToString().Replace(Environment.NewLine, $"{writer.NewLine}data: "));
+                writer.Write(LogTextPadding);
+                writer.WriteLine(exception.ToString().Replace(Environment.NewLine, writer.NewLine + LogTextPadding));
             }
-
-            writer.WriteLine();
         }
 
         private static string FormatTimestamp(IStateWithTimestamp stateWithTimestamp)
@@ -258,6 +269,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     jsonWriter.WriteStringValue(kvp.Value.ToString());
                     break;
             }
+        }
+
+        private static string GetLogLevelString(LogLevel logLevel)
+        {
+            return logLevel switch
+            {
+                LogLevel.Trace => "trce",
+                LogLevel.Debug => "dbug",
+                LogLevel.Information => "info",
+                LogLevel.Warning => "warn",
+                LogLevel.Error => "fail",
+                LogLevel.Critical => "crit",
+                _ => throw new ArgumentOutOfRangeException(nameof(logLevel))
+            };
         }
     }
 }

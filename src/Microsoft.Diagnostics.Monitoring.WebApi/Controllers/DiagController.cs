@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
         private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);
         private static readonly MediaTypeHeaderValue JsonSequenceHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationJsonSequence);
-        private static readonly MediaTypeHeaderValue EventStreamHeader = new MediaTypeHeaderValue(ContentTypes.TextEventStream);
+        private static readonly MediaTypeHeaderValue TextPlainHeader = new MediaTypeHeaderValue(ContentTypes.TextPlain);
 
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
@@ -383,7 +383,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="level">The level of the logs to capture.</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpGet("logs", Name = nameof(CaptureLogs))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
@@ -439,7 +439,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpPost("logs", Name = nameof(CaptureLogsCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
@@ -569,7 +569,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 fileName,
                 contentType,
                 processInfo.EndpointInfo,
-                format != LogFormat.EventStream);
+                format != LogFormat.PlainText);
         }
 
         private static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
@@ -584,9 +584,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return null;
             }
 
-            if (acceptedHeaders.Contains(EventStreamHeader))
+            if (acceptedHeaders.Contains(TextPlainHeader))
             {
-                return LogFormat.EventStream;
+                return LogFormat.PlainText;
             }
             if (acceptedHeaders.Contains(NdJsonHeader))
             {
@@ -596,9 +596,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return LogFormat.JsonSequence;
             }
-            if (acceptedHeaders.Any(h => EventStreamHeader.IsSubsetOf(h)))
+            if (acceptedHeaders.Any(h => TextPlainHeader.IsSubsetOf(h)))
             {
-                return LogFormat.EventStream;
+                return LogFormat.PlainText;
             }
             if (acceptedHeaders.Any(h => NdJsonHeader.IsSubsetOf(h)))
             {

@@ -1169,7 +1169,7 @@
         },
         "Format": {
           "description": "The format of the logs artifact.",
-          "default": "EventStream",
+          "default": "PlainText",
           "oneOf": [
             {
               "type": "null"
@@ -1186,12 +1186,12 @@
       "description": "",
       "x-enumNames": [
         "NewlineDelimitedJson",
-        "EventStream",
+        "PlainText",
         "JsonSequence"
       ],
       "enum": [
         "NewlineDelimitedJson",
-        "EventStream",
+        "PlainText",
         "JsonSequence"
       ]
     },

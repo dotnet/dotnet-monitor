@@ -70,9 +70,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static string GetLogsContentType(LogFormat format)
         {
-            if (format == LogFormat.EventStream)
+            if (format == LogFormat.PlainText)
             {
-                return ContentTypes.TextEventStream;
+                return ContentTypes.TextPlain;
             }
             else if (format == LogFormat.NewlineDelimitedJson)
             {
@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else
             {
-                return ContentTypes.TextEventStream;
+                return ContentTypes.TextPlain;
             }
         }
 
