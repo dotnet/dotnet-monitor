@@ -24,6 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExecuteOptions_Arguments))]
+        [ActionOptionsDependencyProperty]
         public string Arguments { get; set; }
 
         [DefaultValue(ExecuteOptionsDefaults.IgnoreExitCode)]

@@ -511,6 +511,15 @@
     <comment>Gets the format string that is printed in the 14:InsecureAutheticationConfiguration event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_InvalidActionReference" xml:space="preserve">
+    <value>Invalid action reference '{actionReference}'.</value>
+  </data>
+  <data name="LogFormatString_InvalidResultReference" xml:space="preserve">
+    <value>Invalid result refrence '{actionToken}'.</value>
+  </data>
+  <data name="LogFormatString_InvalidToken" xml:space="preserve">
+    <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>
+  </data>
   <data name="LogFormatString_LogTempApiKey" xml:space="preserve">
     <value>Generated one-time-use ApiKey for dotnet-monitor; use the following header for authorization:{NewLine}{AuthHeaderName}: {AuthScheme} {MonitorApiKey}</value>
     <comment>Gets the format string that is printed in the 23:LogTempApiKey event.

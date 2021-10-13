@@ -808,6 +808,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid action reference &apos;{actionReference}&apos;..
+        /// </summary>
+        internal static string LogFormatString_InvalidActionReference {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidActionReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid result refrence &apos;{actionToken}&apos;..
+        /// </summary>
+        internal static string LogFormatString_InvalidResultReference {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidResultReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Action &apos;{actionName}&apos; with setting &apos;{setting}&apos; has invalid tokens..
+        /// </summary>
+        internal static string LogFormatString_InvalidToken {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generated one-time-use ApiKey for dotnet-monitor; use the following header for authorization:{NewLine}{AuthHeaderName}: {AuthScheme} {MonitorApiKey}.
         /// </summary>
         internal static string LogFormatString_LogTempApiKey {
