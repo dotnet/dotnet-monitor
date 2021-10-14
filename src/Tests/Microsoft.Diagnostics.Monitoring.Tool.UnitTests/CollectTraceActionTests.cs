@@ -3,31 +3,28 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tracing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using System.Collections.Generic;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Diagnostics.Tracing;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectTraceActionTests
     {
-        private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "TraceTestRule";
 
         private ITestOutputHelper _outputHelper;
@@ -40,31 +37,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Theory]
-        [InlineData(TraceProfile.Cpu)]
-        [InlineData(TraceProfile.Http)]
-        [InlineData(TraceProfile.Logs)]
-        [InlineData(TraceProfile.Metrics)]
-        public async Task CollectTraceAction_ProfileSuccess(TraceProfile traceProfile)
+        [MemberData(nameof(ActionTestsHelper.GetTfmsAndTraceProfiles), MemberType = typeof(ActionTestsHelper))]
+        public async Task CollectTraceAction_ProfileSuccess(TargetFrameworkMoniker tfm, TraceProfile traceProfile)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectTraceAction(traceProfile, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .AddCollectTraceAction(traceProfile, ActionTestsConstants.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
                     .SetStartupTrigger();
 
                 collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
             }, async host =>
             {
-                await PerformTrace(host);
+                await PerformTrace(host, tfm);
             });
         }
 
-        [Fact]
-        public async Task CollectTraceAction_ProvidersSuccess()
+        [Theory]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
+        public async Task CollectTraceAction_ProvidersSuccess(TargetFrameworkMoniker tfm)
         {
             List<EventPipeProvider> ExpectedProviders = new()
             {
@@ -75,23 +70,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .AddCollectTraceAction(ExpectedProviders, ActionTestsConstants.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
                     .SetStartupTrigger();
 
                 collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
             }, async host =>
             {
-                await PerformTrace(host);
+                await PerformTrace(host, tfm);
             });
         }
 
-        private async Task PerformTrace(IHost host)
+        private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm)
         {
-            IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-            CollectTraceOptions options = (CollectTraceOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+            CollectTraceOptions options = ActionTestsHelper.GetActionOptions<CollectTraceOptions>(host, DefaultRuleName);
 
             ICollectionRuleActionFactoryProxy factory;
             Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectTrace, out factory));
@@ -99,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             EndpointInfoSourceCallback callback = new(_outputHelper);
             await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
-            AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
+            AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
 
             Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
@@ -109,23 +103,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 ICollectionRuleAction action = factory.Create(endpointInfo, options);
 
-                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.TraceTimeout);
+                CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.TraceTimeout);
 
-                CollectionRuleActionResult result;
-                try
-                {
-                    await action.StartAsync(cancellationTokenSource.Token);
-
-                    result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
-                }
-                finally
-                {
-                    await DisposableHelper.DisposeAsync(action);
-                }
-
-                Assert.NotNull(result.OutputValues);
-                Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-                Assert.True(File.Exists(egressPath));
+                string egressPath = ActionTestsHelper.ValidateEgressPath(result);
 
                 using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
                 Assert.NotNull(traceStream);

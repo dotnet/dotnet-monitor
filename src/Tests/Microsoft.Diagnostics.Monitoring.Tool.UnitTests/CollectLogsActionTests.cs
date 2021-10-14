@@ -10,17 +10,13 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -34,7 +30,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private readonly ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
-        private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "LogsTestRule";
 
         public CollectLogsActionTests(ITestOutputHelper outputHelper)
@@ -48,9 +43,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// at the log level specified in the request body.
         /// </summary>
         /// 
-
         [Theory]
-        [MemberData(nameof(GetTfmsAndLogFormat))]
+        [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsDefaultLevelFallbackActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
@@ -86,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsAndLogFormat))]
+        [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsUseAppFiltersViaBodyActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
@@ -120,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsAndLogFormat))]
+        [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsUseAppFiltersAndFilterSpecsActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
@@ -159,7 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that log events are collected for wildcard categories.
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsAndLogFormat))]
+        [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsWildcardActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
             return ValidateLogsActionAsync(
@@ -206,10 +200,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
+                    .AddCollectLogsAction(ActionTestsConstants.ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
                     .SetStartupTrigger();
 
                 collectLogsOptions.Duration = CommonTestTimeouts.LogsDuration;
@@ -219,8 +213,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 collectLogsOptions.UseAppFilters = configuration.UseAppFilters;
             }, async host =>
             {
-                IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                CollectLogsOptions options = (CollectLogsOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+                CollectLogsOptions options = ActionTestsHelper.GetActionOptions<CollectLogsOptions>(host, DefaultRuleName);
 
                 // This is reassigned here due to a quirk in which a null value in the dictionary has its key removed, thus causing LogsDefaultLevelFallbackActionTest to fail. By reassigning here, any keys with null values are maintained.
                 options.FilterSpecs = configuration.FilterSpecs;
@@ -251,9 +244,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     {
                         await action.StartAsync(cancellationTokenSource.Token);
 
-                        // Add a delay before the start of logging (this approach was first used in LogsTests.cs)
-                        await Task.Delay(TimeSpan.FromSeconds(3));
-
                         await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
 
                         result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
@@ -263,9 +253,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         await Tools.Monitor.DisposableHelper.DisposeAsync(action);
                     }
 
-                    Assert.NotNull(result.OutputValues);
-                    Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-                    Assert.True(File.Exists(egressPath));
+                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
 
                     using FileStream logsStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(logsStream);
@@ -286,14 +274,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     DotNetHost.RuntimeVersion.Major != 3 ||
                     DotNetHost.RuntimeVersion.Minor != 1;
             }
-        }
-
-        public static IEnumerable<object[]> GetTfmsAndLogFormat()
-        {
-            yield return new object[] { TargetFrameworkMoniker.Net50, LogFormat.NewlineDelimitedJson };
-            yield return new object[] { TargetFrameworkMoniker.Net60, LogFormat.NewlineDelimitedJson };
-            yield return new object[] { TargetFrameworkMoniker.Net50, LogFormat.JsonSequence };
-            yield return new object[] { TargetFrameworkMoniker.Net60, LogFormat.JsonSequence };
         }
     }
 }

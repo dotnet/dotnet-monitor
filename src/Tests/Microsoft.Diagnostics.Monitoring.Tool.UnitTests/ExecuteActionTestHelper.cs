@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             List<string> args = new();
 
             // Entrypoint assembly
-            args.Add(AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", TargetFrameworkMoniker.NetCoreApp31));
+            args.Add(AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", TargetFrameworkMoniker.Net60));
 
             // Entrypoint arguments
             args.AddRange(additionalArgs);

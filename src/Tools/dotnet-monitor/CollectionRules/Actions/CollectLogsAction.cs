@@ -69,13 +69,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     FilterSpecs = filterSpecs
                 };
 
-                string fileName = Utils.GenerateLogsFileName(EndpointInfo);
-                string contentType = Utils.GetLogsContentType(logFormat);
+                string fileName = LogsUtilities.GenerateLogsFileName(EndpointInfo);
+                string contentType = LogsUtilities.GetLogsContentType(logFormat);
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, EndpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => Utils.CaptureLogsAsync(startCompletionSource, logFormat, EndpointInfo, settings, outputStream, token),
+                    (outputStream, token) => LogsUtilities.CaptureLogsAsync(startCompletionSource, logFormat, EndpointInfo, settings, outputStream, token),
                     egressProvider,
                     fileName,
                     EndpointInfo,
