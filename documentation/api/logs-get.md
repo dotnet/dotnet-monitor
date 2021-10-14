@@ -44,7 +44,7 @@ Allowed schemes:
 | Name | Type | Description | Content Type |
 |---|---|---|---|
 | 200 OK | | The logs from the process formatted as [newline delimited JSON](https://github.com/ndjson/ndjson-spec). Each JSON object is a [LogEntry](definitions.md#LogEntry) | `application/x-ndjson` |
-| 200 OK | | The logs from the process formatted as [server-sent events](https://www.w3.org/TR/eventsource). | `text/event-stream` |
+| 200 OK | | The logs from the process formatted as plain text, similar to the output of the JSON console formatter. | `text/plain` |
 | 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
@@ -74,19 +74,16 @@ The log statements logged at the Information level or higher for 1 minute is ret
 
 ```http
 HTTP/1.1 200 OK
-Content-Type: text/event-stream
+Content-Type: text/plain
 
-event: ProcessRequest
-data: Information Agent.RequestProcessor[3]
-data: Processing request 353f398a-dc74-4adc-b107-ec35edd09968.
+info: Agent.RequestProcessor[3][ProcessRequest]
+      Processing request 353f398a-dc74-4adc-b107-ec35edd09968.
 
-event: ProcessRequest
-data: Information Agent.RequestProcessor[3]
-data: Processing request eeb18b82-5dfd-49e7-88a3-d0b7cbf2f4bc.
+info: Agent.RequestProcessor[3][ProcessRequest]
+      Processing request eeb18b82-5dfd-49e7-88a3-d0b7cbf2f4bc.
 
-event: ProcessRequest
-data: Information Agent.RequestProcessor[3]
-data: Processing request 0b7ba879-fa80-4eb8-a87d-408f539952ca.
+info: Agent.RequestProcessor[3][ProcessRequest]
+      Processing request 0b7ba879-fa80-4eb8-a87d-408f539952ca.
 ```
 
 ## Supported Runtimes

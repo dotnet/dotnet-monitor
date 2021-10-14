@@ -125,9 +125,9 @@ Enumeration that describes the format to use when outputting logs.
 
 | Name |
 |---|
-| `NewlineDelimitedJson` |
-| `EventStream` |
 | `JsonSequence` |
+| `NewlineDelimitedJson` |
+| `PlainText` |
 
 ## LogLevel
 
