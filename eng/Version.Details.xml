@@ -26,9 +26,9 @@
       <Uri>https://github.com/dotnet/symstore</Uri>
       <Sha>cb24099215a83975c360792edf35102ff0d10702</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21512.5">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21514.4">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>35c305b6a6d3738475771dc8a6321e26be4b8935</Sha>
+      <Sha>44922136fac15f137cda7741199f710a0090ce31</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21513.26">
       <Uri>https://github.com/dotnet/runtime</Uri>
