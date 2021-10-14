@@ -12,6 +12,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public const Extensions.Logging.LogLevel DefaultLevel = Extensions.Logging.LogLevel.Warning;
         public const bool UseAppFilters = true;
         public const string Duration = "00:00:30";
-        public const LogFormat Format = LogFormat.EventStream;
+        public const LogFormat Format = LogFormat.PlainText;
     }
 }
