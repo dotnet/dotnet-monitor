@@ -97,7 +97,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return Array.Empty<CollectionRuleActionOptions>();
         }
 
-        public object SubstituteOptionValues(int actionIndex, object settings)
+        public object SubstituteOptionValues(IDictionary<string, CollectionRuleActionResult> actionResults, int actionIndex, object settings)
         {
             EnsureDependencies();
             if (!_dependencies.TryGetValue(actionIndex, out Dictionary<string, PropertyDependency> properties))
@@ -121,7 +121,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 int offset = 0;
                 foreach(ActionDependency actionDependency in property.ActionDependencies)
                 {
-                    if (!_ruleContext.ActionResults.TryGetValue(actionDependency.Action.Name, out CollectionRuleActionResult results))
+                    if (!actionResults.TryGetValue(actionDependency.Action.Name, out CollectionRuleActionResult results))
                     {
                         _ruleContext.Logger.InvalidActionResultReference(actionDependency.GetActionResultToken());
                         continue;

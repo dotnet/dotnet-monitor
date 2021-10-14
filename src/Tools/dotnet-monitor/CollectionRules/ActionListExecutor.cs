@@ -24,7 +24,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _actionOperations = actionOperations ?? throw new ArgumentNullException(nameof(actionOperations));
         }
 
-        public async Task ExecuteActions(
+        //CONSIDER Only named rules currently return results since only named results can be referenced
+        public async Task<IDictionary<string, CollectionRuleActionResult>> ExecuteActions(
             CollectionRuleContext context,
             Action startCallback,
             CancellationToken cancellationToken)
@@ -46,6 +47,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             int actionIndex = 0;
             List<ActionCompletionEntry> deferredCompletions = new(context.Options.Actions.Count);
+
+            var actionResults = new Dictionary<string, CollectionRuleActionResult>(StringComparer.Ordinal);
             var dependencyAnalyzer = new ActionOptionsDependencyAnalyzer(context);
 
             try
@@ -71,7 +74,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                                 {
                                     deferredCompletions.RemoveAt(i);
                                     i--;
-                                    await WaitForCompletion(context, wrappedStartCallback, deferredCompletion, cancellationToken);
+                                    await WaitForCompletion(context, wrappedStartCallback, actionResults, deferredCompletion, cancellationToken);
                                     break;
                                 }
                             }
@@ -84,7 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                             throw new InvalidOperationException(Strings.ErrorMessage_CouldNotMapToAction);
                         }
 
-                        object newSettings = dependencyAnalyzer.SubstituteOptionValues(actionIndex, actionOption.Settings);
+                        object newSettings = dependencyAnalyzer.SubstituteOptionValues(actionResults, actionIndex, actionOption.Settings);
                         ICollectionRuleAction action = factory.Create(context.EndpointInfo, newSettings);
 
                         try
@@ -96,7 +99,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                             // after starting each action in the list.
                             if (actionOption.WaitForCompletion.GetValueOrDefault(CollectionRuleActionOptionsDefaults.WaitForCompletion))
                             {
-                                await WaitForCompletion(context, wrappedStartCallback, action, actionOption, cancellationToken);
+                                await WaitForCompletion(context, wrappedStartCallback, actionResults, action, actionOption, cancellationToken);
                             }
                             else
                             {
@@ -127,8 +130,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 {
                     ActionCompletionEntry deferredCompletion = deferredCompletions[0];
                     deferredCompletions.RemoveAt(0);
-                    await WaitForCompletion(context, wrappedStartCallback, deferredCompletion, cancellationToken);
+                    await WaitForCompletion(context, wrappedStartCallback, actionResults, deferredCompletion, cancellationToken);
                 }
+
+                return actionResults;
             }
             finally
             {
@@ -143,6 +148,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         private async Task WaitForCompletion(CollectionRuleContext context,
             Action startCallback,
+            IDictionary<string, CollectionRuleActionResult> allResults,
             ICollectionRuleAction action,
             CollectionRuleActionOptions actionOption,
             CancellationToken cancellationToken)
@@ -154,18 +160,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             CollectionRuleActionResult results = await action.WaitForCompletionAsync(cancellationToken);
             if (!string.IsNullOrEmpty(actionOption.Name))
             {
-                context.ActionResults.Add(actionOption.Name, results);
+                allResults.Add(actionOption.Name, results);
             }
 
             _logger.CollectionRuleActionCompleted(context.Name, actionOption.Type);
         }
 
         private async Task WaitForCompletion(CollectionRuleContext context,
-            Action startCallback, ActionCompletionEntry entry, CancellationToken cancellationToken)
+            Action startCallback,
+            IDictionary<string, CollectionRuleActionResult> allResults,
+            ActionCompletionEntry entry,
+            CancellationToken cancellationToken)
         {
             try
             {
-                await WaitForCompletion(context, startCallback, entry.Action, entry.Options, cancellationToken);
+                await WaitForCompletion(context, startCallback, allResults, entry.Action, entry.Options, cancellationToken);
             }
             catch (Exception ex) when (ShouldHandleException(ex, context.Name, entry.Options.Type))
             {

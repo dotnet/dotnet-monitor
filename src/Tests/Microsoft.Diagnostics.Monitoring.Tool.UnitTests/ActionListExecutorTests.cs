@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -186,7 +187,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
 
-                await executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token);
+                IDictionary<string, CollectionRuleActionResult> results = await executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token);
 
                 //Verify that the original settings were not altered during execution.
                 Assert.Equal(a2input1, a2Settings.Input1);
@@ -194,8 +195,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(a2input3, a2Settings.Input3);
 
                 Assert.Equal(1, callbackCount);
-                Assert.Equal(2, context.ActionResults.Count);
-                Assert.True(context.ActionResults.TryGetValue("a2", out CollectionRuleActionResult a2result));
+                Assert.Equal(2, results.Count);
+                Assert.True(results.TryGetValue("a2", out CollectionRuleActionResult a2result));
                 Assert.Equal(3, a2result.OutputValues.Count);
 
                 Assert.True(a2result.OutputValues.TryGetValue(Output1, out string a2output1));
@@ -212,19 +213,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static void VerifyStartCallbackCount(bool waitForCompletion, int callbackCount)
         {
-            if (waitForCompletion)
-            {
-                // The action failure occurs in completion and the actions were specified to have
-                // to wait for completion before executing the next action, thus the start callback
-                // should not have been invoked.
-                Assert.Equal(0, callbackCount);
-            }
-            else
-            {
-                // The action failure occurs in completion but all actions were started, thus
-                // the start callback should have been invoked once.
-                Assert.Equal(1, callbackCount);
-            }
+
+            //Currently, any attempt to wait on completion will automatically trigger the start callback.
+            //This is necessary to ensure that the process is resumed prior to completing artifact collection.
+            Assert.Equal(1, callbackCount);
         }
     }
 }

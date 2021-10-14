@@ -33,12 +33,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public CollectionRuleOptions Options { get; }
 
         public string Name { get; }
-
-        /// <summary>
-        /// Note that we only reference named actions. As such, unnamed actions will not save their results for other actions
-        /// to consume.
-        /// </summary>
-        public IDictionary<string, CollectionRuleActionResult> ActionResults { get; } =
-            new Dictionary<string, CollectionRuleActionResult>(StringComparer.Ordinal);
     }
 }

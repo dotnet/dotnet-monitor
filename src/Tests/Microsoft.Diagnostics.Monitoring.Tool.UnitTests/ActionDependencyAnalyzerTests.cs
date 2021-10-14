@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using System.Linq;
-
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 ActionOptionsDependencyAnalyzer analyzer = new ActionOptionsDependencyAnalyzer(context);
                 analyzer.GetActionDependencies(1);
-                analyzer.SubstituteOptionValues(1, settings);
+                analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
 
                 Assert.Equal(3, record.Events.Count);
                 Assert.Equal(LoggingEventIds.InvalidActionReferenceToken, record.Events[0].EventId.Id);
