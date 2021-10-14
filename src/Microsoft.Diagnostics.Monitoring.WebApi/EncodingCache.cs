@@ -8,7 +8,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class EncodingCache
     {
-        public static readonly Encoding UTF8NoBOM =
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+        // Encode UTF8 without BOM and write "?" as fallback replacement.
+        public static readonly Encoding UTF8NoBOMNoThrow =
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
     }
 }

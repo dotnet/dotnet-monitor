@@ -169,7 +169,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             // Matches the format of SimpleConsoleFormatter as much as possible
 
-            using var writer = new StreamWriter(outputStream, EncodingCache.UTF8NoBOM, 1024, leaveOpen: true) { NewLine = "\n" };
+            using var writer = new StreamWriter(outputStream, EncodingCache.UTF8NoBOMNoThrow, 1024, leaveOpen: true) { NewLine = "\n" };
 
             // Format (based on simple console format):
             // Note: This deviates slightly from the simple console format in that the event name
