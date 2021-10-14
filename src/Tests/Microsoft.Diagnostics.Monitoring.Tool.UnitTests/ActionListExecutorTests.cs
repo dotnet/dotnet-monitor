@@ -211,6 +211,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
+        [Fact]
+        public async Task DuplicateActionNamesTest()
+        {
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddPassThroughAction("a1", "a1input1", "a1input2", "a1input3")
+                    .AddPassThroughAction("a2", "a1input1", "a1input2", "a1input3")
+                    .AddPassThroughAction("a1", "a1input1", "a1input2", "a1input3")
+                    .SetStartupTrigger();
+            }, host =>
+            {
+                //Expecting duplicate action name
+                Assert.Throws<OptionsValidationException>(() => host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName));
+            }, serviceCollection =>
+            {
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+            });
+        }
+
         private static void VerifyStartCallbackCount(bool waitForCompletion, int callbackCount)
         {
 

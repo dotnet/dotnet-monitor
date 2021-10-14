@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
 
-                ActionOptionsDependencyAnalyzer analyzer = new ActionOptionsDependencyAnalyzer(context);
+                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 analyzer.GetActionDependencies(1);
                 analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
 

@@ -78,15 +78,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 Action.Name, Separator, ResultName, SubstitutionSuffix);
         }
 
-        public ActionOptionsDependencyAnalyzer(CollectionRuleContext context)
+        public static ActionOptionsDependencyAnalyzer Create(CollectionRuleContext context)
+        {
+            var analyzer = new ActionOptionsDependencyAnalyzer(context);
+            analyzer.EnsureDependencies();
+            return analyzer;
+        }
+
+        private ActionOptionsDependencyAnalyzer(CollectionRuleContext context)
         {
             _ruleContext = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public IList<CollectionRuleActionOptions> GetActionDependencies(int actionIndex)
         {
-            EnsureDependencies();
-
             if (_dependencies.TryGetValue(actionIndex, out Dictionary<string, PropertyDependency> properties))
             {
                 return properties
@@ -99,7 +104,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public object SubstituteOptionValues(IDictionary<string, CollectionRuleActionResult> actionResults, int actionIndex, object settings)
         {
-            EnsureDependencies();
             if (!_dependencies.TryGetValue(actionIndex, out Dictionary<string, PropertyDependency> properties))
             {
                 return settings;
