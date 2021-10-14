@@ -32,10 +32,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _endpointUtilities = new(_outputHelper);
         }
 
-        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsDumpSupported))]
+        [Theory]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndDumpTypes), MemberType = typeof(ActionTestsHelper))]
         public async Task CollectDumpAction_Success(TargetFrameworkMoniker tfm, DumpType? dumpType)
         {
+            // MacOS dumps inconsistently segfault the runtime on .NET 5: https://github.com/dotnet/dotnet-monitor/issues/174
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && tfm == TargetFrameworkMoniker.Net50)
+            {
+                return;
+            }
+
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
@@ -56,12 +62,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
                 AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
-
-                // MachO not supported on .NET 5, only ELF: https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && tfm == TargetFrameworkMoniker.Net50)
-                {
-                    runner.Environment.Add(DumpTestUtilities.EnableElfDumpOnMacOS, "1");
-                }
 
                 Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
