@@ -2,23 +2,22 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using System.Threading;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
-using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Xunit.Abstractions;
-using Microsoft.Extensions.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Extensions.Logging;
-using System;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {

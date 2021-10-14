@@ -169,10 +169,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName);
-                options.AddPassThroughAction("a1", "a1input1", "a1input2", "a1input3");
-                a2Settings = (PassThroughOptions)options.AddPassThroughAction("a2", a2input1, a2input2, a2input3).Actions.Last().Settings;
-                options.SetStartupTrigger();
+                CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddPassThroughAction("a1", "a1input1", "a1input2", "a1input3")
+                    .AddPassThroughAction("a2", a2input1, a2input2, a2input3)
+                    .SetStartupTrigger();
+
+                a2Settings = (PassThroughOptions)options.Actions.Last().Settings;
             }, async host =>
             {
                 ActionListExecutor executor = host.Services.GetService<ActionListExecutor>();
@@ -233,7 +235,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static void VerifyStartCallbackCount(bool waitForCompletion, int callbackCount)
         {
-
             //Currently, any attempt to wait on completion will automatically trigger the start callback.
             //This is necessary to ensure that the process is resumed prior to completing artifact collection.
             Assert.Equal(1, callbackCount);
