@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private readonly ITestOutputHelper _outputHelper;
 
-        private const string DefaultRuleName = "Default";
+        private const string DefaultRuleName = nameof(ActionListExecutorTests);
 
         public ActionListExecutorTests(ITestOutputHelper outputHelper)
         {
@@ -160,9 +160,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const string Output2 = nameof(Output2);
             const string Output3 = nameof(Output3);
 
-            string a2input1 = FormattableString.Invariant($"$(Actions.a1.{Output1}) with $(Actions.a1.{Output2})");
+            string a2input1 = FormattableString.Invariant($"$(Actions.a1.{Output1}) with $(Actions.a1.{Output2})T");
             string a2input2 = FormattableString.Invariant($"$(Actions.a1.{Output2})");
-            string a2input3 = FormattableString.Invariant($"Output $(Actions.a1.{Output3})");
+            string a2input3 = FormattableString.Invariant($"Output $(Actions.a1.{Output3}) trail");
 
             PassThroughOptions a2Settings = null;
 
@@ -199,11 +199,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(3, a2result.OutputValues.Count);
 
                 Assert.True(a2result.OutputValues.TryGetValue(Output1, out string a2output1));
-                Assert.Equal("a1input1 with a1input2", a2output1);
+                Assert.Equal("a1input1 with a1input2T", a2output1);
                 Assert.True(a2result.OutputValues.TryGetValue(Output2, out string a2output2));
                 Assert.Equal("a1input2", a2output2);
                 Assert.True(a2result.OutputValues.TryGetValue(Output3, out string a2output3));
-                Assert.Equal("Output a1input3", a2output3);
+                Assert.Equal("Output a1input3 trail", a2output3);
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));

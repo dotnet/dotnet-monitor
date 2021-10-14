@@ -58,15 +58,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private sealed class ActionDependency
         {
-            public ActionDependency(CollectionRuleActionOptions action, string resultName)
+            public ActionDependency(CollectionRuleActionOptions action, string resultName, int startIndex, int endIndex)
             {
                 Action = action;
                 ResultName = resultName;
+                StartIndex = startIndex;
+                EndIndex = endIndex;
             }
 
             public CollectionRuleActionOptions Action { get; }
 
             public string ResultName { get; }
+
+            public int StartIndex { get; }
+
+            public int EndIndex { get; }
 
             public string GetActionResultToken() => string.Concat(ActionReferencePrefix,
                 Action.Name, Separator, ResultName, SubstitutionSuffix);
@@ -111,23 +117,34 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             foreach ((_, PropertyDependency property) in properties)
             {
-                string newValue = property.OriginalValue;
+                StringBuilder builder = property.ActionDependencies.Any() ? new() : null;
+                int offset = 0;
                 foreach(ActionDependency actionDependency in property.ActionDependencies)
                 {
-                    string actionToken = actionDependency.GetActionResultToken();
                     if (!_ruleContext.ActionResults.TryGetValue(actionDependency.Action.Name, out CollectionRuleActionResult results))
                     {
-                        _ruleContext.Logger.InvalidActionResultReference(actionToken);
+                        _ruleContext.Logger.InvalidActionResultReference(actionDependency.GetActionResultToken());
                         continue;
                     }
                     if (!results.OutputValues.TryGetValue(actionDependency.ResultName, out string result))
                     {
-                        _ruleContext.Logger.InvalidActionResultReference(actionToken);
+                        _ruleContext.Logger.InvalidActionResultReference(actionDependency.GetActionResultToken());
                         continue;
                     }
-                    newValue = newValue.Replace(actionToken, result, StringComparison.OrdinalIgnoreCase);
+                    builder.Append(property.OriginalValue, offset, actionDependency.StartIndex - offset);
+                    builder.Append(result);
+                    offset = actionDependency.EndIndex + 1;
                 }
-                property.Property.SetValue(settings, newValue);
+                if (builder != null)
+                {
+                    //It's possible there are trailing values after the last dependency or we simply couldn't process any tokens.
+                    if (offset < property.OriginalValue.Length)
+                    {
+                        builder.Append(property.OriginalValue, offset, property.OriginalValue.Length - offset);
+                    }
+
+                    property.Property.SetValue(settings, builder.ToString());
+                }
             }
 
             return settings;
@@ -167,7 +184,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     int suffixIndex = newValue.IndexOf(SubstitutionSuffix, foundIndex, StringComparison.OrdinalIgnoreCase);
                     if (suffixIndex == -1)
                     {
-                        _ruleContext.Logger.InvalidActionReferenceToken(options?.Name ?? actionIndex.ToString(), property.Name);
+                        _ruleContext.Logger.InvalidActionReferenceToken(options.Name ?? actionIndex.ToString(), property.Name);
                         break;
                     }
                     startIndex = suffixIndex;
@@ -184,7 +201,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         propertyDependency = GetOrCreateDependency(actionIndex, property, originalValue);
                     }
 
-                    var dependency = new ActionDependency(dependencyOptions, actionResultName);
+                    var dependency = new ActionDependency(dependencyOptions, actionResultName, foundIndex, suffixIndex);
                     propertyDependency.ActionDependencies.Add(dependency);
                 }
             }

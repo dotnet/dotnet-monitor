@@ -133,6 +133,9 @@
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
   </data>
+  <data name="ErrorMessage_DuplicateActionName" xml:space="preserve">
+    <value>Duplicate action name '{0}'.</value>
+  </data>
   <data name="ErrorMessage_EgressAzureFailedDetailed" xml:space="preserve">
     <value>Azure blob egress failed: {0}</value>
     <comment>Gets the format string for egress failure to Azure blob (with an inner message).

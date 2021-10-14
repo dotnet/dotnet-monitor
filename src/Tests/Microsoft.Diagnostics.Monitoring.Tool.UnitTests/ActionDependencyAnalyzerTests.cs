@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private readonly ITestOutputHelper _outputHelper;
         private static readonly TimeSpan TimeoutMs = TimeSpan.FromMilliseconds(500);
-        private const string DefaultRuleName = "Default";
+        private const string DefaultRuleName = nameof(ActionDependencyAnalyzerTests);
 
         public ActionDependencyAnalyzerTests(ITestOutputHelper outputHelper)
         {

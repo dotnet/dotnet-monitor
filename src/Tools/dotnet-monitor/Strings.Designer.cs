@@ -97,6 +97,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate action name &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_DuplicateActionName {
+            get {
+                return ResourceManager.GetString("ErrorMessage_DuplicateActionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Azure blob egress failed: {0}.
         /// </summary>
         internal static string ErrorMessage_EgressAzureFailedDetailed {
