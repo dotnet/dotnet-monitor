@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const int DiagnosticRequestFailed = 47;
         public const int InvalidActionReferenceToken = 48;
         public const int InvalidActionReference = 49;
-        public const int InvalidResultReference = 50;
-        public const int InvalidSettings = 51;
+        public const int InvalidActionResultReference = 50;
+        public const int ActionSettingsTokenizationNotSupported = 51;
     }
 }

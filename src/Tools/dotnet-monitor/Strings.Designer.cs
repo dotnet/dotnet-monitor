@@ -493,6 +493,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection rule action options &apos;{settingsType}&apos; must implement ICloneable to support property tokenization..
+        /// </summary>
+        internal static string LogFormatString_ActionSettingsTokenizationNotSupported {
+            get {
+                return ResourceManager.GetString("LogFormatString_ActionSettingsTokenizationNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {apiAuthenticationConfigKey} settings have changed. The new settings have passed validation..
         /// </summary>
         internal static string LogFormatString_ApiKeyAuthenticationOptionsValidated {
@@ -819,18 +828,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         /// <summary>
         ///   Looks up a localized string similar to Invalid result refrence &apos;{actionToken}&apos;..
         /// </summary>
-        internal static string LogFormatString_InvalidResultReference {
+        internal static string LogFormatString_InvalidActionResultReference {
             get {
-                return ResourceManager.GetString("LogFormatString_InvalidResultReference", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Settings &apos;{settingsType}&apos; must implement ICloneable..
-        /// </summary>
-        internal static string LogFormatString_InvalidSettings {
-            get {
-                return ResourceManager.GetString("LogFormatString_InvalidSettings", resourceCulture);
+                return ResourceManager.GetString("LogFormatString_InvalidActionResultReference", resourceCulture);
             }
         }
         

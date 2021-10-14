@@ -265,17 +265,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_InvalidActionReference);
 
-        private static readonly Action<ILogger, string, Exception> _invalidResultReference =
+        private static readonly Action<ILogger, string, Exception> _invalidActionResultReference =
             LoggerMessage.Define<string>(
-            eventId: new EventId(LoggingEventIds.InvalidResultReference, "InvalidResultReference"),
+            eventId: new EventId(LoggingEventIds.InvalidActionResultReference, "InvalidActionResultReference"),
             logLevel: LogLevel.Error,
-            formatString: Strings.LogFormatString_InvalidResultReference);
+            formatString: Strings.LogFormatString_InvalidActionResultReference);
 
-        private static readonly Action<ILogger, string, Exception> _invalidSettings =
+        private static readonly Action<ILogger, string, Exception> _actionSettingsTokenizationNotSupported =
             LoggerMessage.Define<string>(
-            eventId: new EventId(LoggingEventIds.InvalidSettings, "InvalidSettings"),
+            eventId: new EventId(LoggingEventIds.ActionSettingsTokenizationNotSupported, "ActionSettingsTokenizationNotSupported"),
             logLevel: LogLevel.Error,
-            formatString: Strings.LogFormatString_InvalidSettings);
+            formatString: Strings.LogFormatString_ActionSettingsTokenizationNotSupported);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
@@ -491,14 +491,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _invalidActionReference(logger, actionReference, null);
         }
 
-        public static void InvalidResultReference(this ILogger logger, string actionResultToken)
+        public static void InvalidActionResultReference(this ILogger logger, string actionResultToken)
         {
-            _invalidResultReference(logger, actionResultToken, null);
+            _invalidActionResultReference(logger, actionResultToken, null);
         }
 
-        public static void InvalidSettings(this ILogger logger, string settingsType)
+        public static void ActionSettingsTokenizationNotSupported(this ILogger logger, string settingsType)
         {
-            _invalidSettings(logger, settingsType, null);
+            _actionSettingsTokenizationNotSupported(logger, settingsType, null);
         }
     }
 }

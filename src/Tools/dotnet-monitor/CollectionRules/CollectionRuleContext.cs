@@ -39,6 +39,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         /// to consume.
         /// </summary>
         public IDictionary<string, CollectionRuleActionResult> ActionResults { get; } =
-            new Dictionary<string, CollectionRuleActionResult>();
+            new Dictionary<string, CollectionRuleActionResult>(StringComparer.Ordinal);
     }
 }

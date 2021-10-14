@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                             for (int i = 0; i < deferredCompletions.Count; i++)
                             {
                                 ActionCompletionEntry deferredCompletion = deferredCompletions[i];
-                                if (deferredCompletion.Options.Name?.Equals(actionDependency.Name, StringComparison.OrdinalIgnoreCase) == true)
+                                if (string.Equals(deferredCompletion.Options.Name, actionDependency.Name, StringComparison.Ordinal))
                                 {
                                     deferredCompletions.RemoveAt(i);
                                     i--;

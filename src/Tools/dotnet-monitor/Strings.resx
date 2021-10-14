@@ -352,6 +352,9 @@
     <value>The format to display the output in. Valid values are Json, Text, and EnvVar.</value>
     <comment>Gets the string to display in help that explains what the '--output' option does.</comment>
   </data>
+  <data name="LogFormatString_ActionSettingsTokenizationNotSupported" xml:space="preserve">
+    <value>Collection rule action options '{settingsType}' must implement ICloneable to support property tokenization.</value>
+  </data>
   <data name="LogFormatString_ApiKeyAuthenticationOptionsValidated" xml:space="preserve">
     <value>{apiAuthenticationConfigKey} settings have changed. The new settings have passed validation.</value>
     <comment>Gets the format string that is printed in the 22:ApiKeyAuthenticationOptionsChanged event.
@@ -514,11 +517,8 @@
   <data name="LogFormatString_InvalidActionReference" xml:space="preserve">
     <value>Invalid action reference '{actionReference}'.</value>
   </data>
-  <data name="LogFormatString_InvalidResultReference" xml:space="preserve">
+  <data name="LogFormatString_InvalidActionResultReference" xml:space="preserve">
     <value>Invalid result refrence '{actionToken}'.</value>
-  </data>
-  <data name="LogFormatString_InvalidSettings" xml:space="preserve">
-    <value>Settings '{settingsType}' must implement ICloneable.</value>
   </data>
   <data name="LogFormatString_InvalidToken" xml:space="preserve">
     <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>

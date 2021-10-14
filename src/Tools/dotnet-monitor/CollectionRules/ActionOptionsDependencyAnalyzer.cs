@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private const string SubstitutionPrefix = "$(";
         private const string SubstitutionSuffix = ")";
         private const string Separator = ".";
-        private const string ActionReferencePrefix = SubstitutionPrefix + "Actions.";
+        private const string ActionReferencePrefix = SubstitutionPrefix + "Actions" + Separator;
 
         private readonly CollectionRuleContext _ruleContext;
 
@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 return properties
                     .SelectMany(p => p.Value.ActionDependencies)
-                    .DistinctBy(a => a.Action.Name, StringComparer.OrdinalIgnoreCase)
+                    .DistinctBy(a => a.Action.Name, StringComparer.Ordinal)
                     .Select(a => a.Action).ToArray();
             }
             return Array.Empty<CollectionRuleActionOptions>();
@@ -105,29 +105,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
             else
             {
-                _ruleContext.Logger.InvalidSettings(settings.GetType().FullName);
+                _ruleContext.Logger.ActionSettingsTokenizationNotSupported(settings.GetType().FullName);
                 return settings;
             }
 
-            foreach (KeyValuePair<string, PropertyDependency> property in properties)
+            foreach ((_, PropertyDependency property) in properties)
             {
-                string newValue = property.Value.OriginalValue;
-                foreach(ActionDependency actionDependency in property.Value.ActionDependencies)
+                string newValue = property.OriginalValue;
+                foreach(ActionDependency actionDependency in property.ActionDependencies)
                 {
                     string actionToken = actionDependency.GetActionResultToken();
                     if (!_ruleContext.ActionResults.TryGetValue(actionDependency.Action.Name, out CollectionRuleActionResult results))
                     {
-                        _ruleContext.Logger.InvalidResultReference(actionToken);
+                        _ruleContext.Logger.InvalidActionResultReference(actionToken);
                         continue;
                     }
                     if (!results.OutputValues.TryGetValue(actionDependency.ResultName, out string result))
                     {
-                        _ruleContext.Logger.InvalidResultReference(actionToken);
+                        _ruleContext.Logger.InvalidActionResultReference(actionToken);
                         continue;
                     }
                     newValue = newValue.Replace(actionToken, result, StringComparison.OrdinalIgnoreCase);
                 }
-                property.Value.Property.SetValue(settings, newValue);
+                property.Property.SetValue(settings, newValue);
             }
 
             return settings;
@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             if (_dependencies == null)
             {
-                _dependencies = new Dictionary<int, Dictionary<string, PropertyDependency>>();
+                _dependencies = new Dictionary<int, Dictionary<string, PropertyDependency>>(_ruleContext.Options.Actions.Count);
                 for (int i = 0; i < _ruleContext.Options.Actions.Count; i++)
                 {
                     CollectionRuleActionOptions options = _ruleContext.Options.Actions[i];
@@ -194,7 +194,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             if (!_dependencies.TryGetValue(actionIndex, out Dictionary<string, PropertyDependency> properties))
             {
-                properties = new Dictionary<string, PropertyDependency>();
+                properties = new Dictionary<string, PropertyDependency>(StringComparer.Ordinal);
                 _dependencies.Add(actionIndex, properties);
             }
             if (!properties.TryGetValue(propertyInfo.Name, out PropertyDependency dependency))
@@ -219,9 +219,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
 
             string name = parts[0];
+            if (string.IsNullOrEmpty(name))
+            {
+                _ruleContext.Logger.InvalidActionReference(actionReference);
+                return false;
+            }
+
             //We only check previous actions for our dependencies.
             CollectionRuleActionOptions dependencyOptions = _ruleContext.Options.Actions.Take(actionIndex)
-                .FirstOrDefault(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(a => string.Equals(a.Name, name, StringComparison.Ordinal));
 
             if (dependencyOptions == null)
             {

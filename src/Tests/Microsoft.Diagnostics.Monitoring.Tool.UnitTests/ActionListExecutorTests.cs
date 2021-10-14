@@ -156,17 +156,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ActionListExecutor_Dependencies()
         {
-            string a2input1 = "$(Actions.a1.Output1) with $(Actions.a1.Output2)";
-            string a2input2 = "$(Actions.a1.Output2)";
-            string a2input3 = "Output $(Actions.a1.Output3)";
+            const string Output1 = nameof(Output1);
+            const string Output2 = nameof(Output2);
+            const string Output3 = nameof(Output3);
+
+            string a2input1 = FormattableString.Invariant($"$(Actions.a1.{Output1}) with $(Actions.a1.{Output2})");
+            string a2input2 = FormattableString.Invariant($"$(Actions.a1.{Output2})");
+            string a2input3 = FormattableString.Invariant($"Output $(Actions.a1.{Output3})");
 
             PassThroughOptions a2Settings = null;
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName);
-                AddPassThroughAction(options, "a1", "a1input1", "a1input2", "a1input3");
-                a2Settings = (PassThroughOptions)AddPassThroughAction(options, "a2", a2input1, a2input2, a2input3).Actions.Last().Settings;
+                options.AddPassThroughAction("a1", "a1input1", "a1input2", "a1input3");
+                a2Settings = (PassThroughOptions)options.AddPassThroughAction("a2", a2input1, a2input2, a2input3).Actions.Last().Settings;
                 options.SetStartupTrigger();
             }, async host =>
             {
@@ -184,20 +188,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 await executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token);
 
-                Assert.Equal(1, callbackCount);
-                Assert.Equal(2, context.ActionResults.Count);
-                Assert.Equal(3, context.ActionResults["a2"].OutputValues.Count);
-
-                //Verify that all options were reverted after execution
+                //Verify that the original settings were not altered during execution.
                 Assert.Equal(a2input1, a2Settings.Input1);
                 Assert.Equal(a2input2, a2Settings.Input2);
                 Assert.Equal(a2input3, a2Settings.Input3);
 
-                Assert.Equal("a1input1 with a1input2", context.ActionResults["a2"].OutputValues["Output1"]);
-                Assert.Equal("a1input2", context.ActionResults["a2"].OutputValues["Output2"]);
-                Assert.Equal("Output a1input3", context.ActionResults["a2"].OutputValues["Output3"]);
+                Assert.Equal(1, callbackCount);
+                Assert.Equal(2, context.ActionResults.Count);
+                Assert.True(context.ActionResults.TryGetValue("a2", out CollectionRuleActionResult a2result));
+                Assert.Equal(3, a2result.OutputValues.Count);
 
-                return;
+                Assert.True(a2result.OutputValues.TryGetValue(Output1, out string a2output1));
+                Assert.Equal("a1input1 with a1input2", a2output1);
+                Assert.True(a2result.OutputValues.TryGetValue(Output2, out string a2output2));
+                Assert.Equal("a1input2", a2output2);
+                Assert.True(a2result.OutputValues.TryGetValue(Output3, out string a2output3));
+                Assert.Equal("Output a1input3", a2output3);
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
@@ -219,24 +225,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 // the start callback should have been invoked once.
                 Assert.Equal(1, callbackCount);
             }
-        }
-
-        //We don't add this as an extension at the moment since we don't cross compile the action into
-        //functional testing
-        private static CollectionRuleOptions AddPassThroughAction(CollectionRuleOptions options, string name,
-            string input1, string input2, string input3)
-        {
-            options.AddAction(nameof(PassThroughAction), out CollectionRuleActionOptions actionOptions);
-
-            PassThroughOptions settings = new PassThroughOptions()
-            {
-                Input1 = input1,
-                Input2 = input2,
-                Input3 = input3
-            };
-            actionOptions.Name = name;
-            actionOptions.Settings = settings;
-            return options;
         }
     }
 }

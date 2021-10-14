@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,9 +21,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ITestOutputHelper outputHelper,
             Action<RootOptions> setup,
             Func<IHost, Task> hostCallback,
-            Action<IServiceCollection> servicesCallback = null)
+            Action<IServiceCollection> servicesCallback = null,
+            Action<ILoggingBuilder> loggingCallback = null)
         {
-            IHost host = CreateHost(outputHelper, setup, servicesCallback);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback);
 
             try
             {
@@ -38,9 +40,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ITestOutputHelper outputHelper,
             Action<RootOptions> setup,
             Action<IHost> hostCallback,
-            Action<IServiceCollection> servicesCallback = null)
+            Action<IServiceCollection> servicesCallback = null,
+            Action<ILoggingBuilder> loggingCallback = null)
         {
-            IHost host = CreateHost(outputHelper, setup, servicesCallback);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback);
 
             try
             {
@@ -55,7 +58,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public static IHost CreateHost(
             ITestOutputHelper outputHelper,
             Action<RootOptions> setup,
-            Action<IServiceCollection> servicesCallback)
+            Action<IServiceCollection> servicesCallback,
+            Action<ILoggingBuilder> loggingCallback = null)
         {
             return new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
@@ -74,6 +78,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     builder.AddInMemoryCollection(configurationValues);
 
                     builder.ConfigureStorageDefaults();
+                })
+                .ConfigureLogging( loggingBuilder =>
+                {
+                    loggingCallback?.Invoke(loggingBuilder);
                 })
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
