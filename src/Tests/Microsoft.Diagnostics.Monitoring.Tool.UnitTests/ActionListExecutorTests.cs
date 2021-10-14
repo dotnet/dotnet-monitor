@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -12,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private readonly ITestOutputHelper _outputHelper;
 
-        private const string DefaultRuleName = "Default";
+        private const string DefaultRuleName = nameof(ActionListExecutorTests);
 
         public ActionListExecutorTests(ITestOutputHelper outputHelper)
         {
@@ -151,21 +154,90 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
+        [Fact]
+        public async Task ActionListExecutor_Dependencies()
+        {
+            const string Output1 = nameof(Output1);
+            const string Output2 = nameof(Output2);
+            const string Output3 = nameof(Output3);
+
+            string a2input1 = FormattableString.Invariant($"$(Actions.a1.{Output1}) with $(Actions.a1.{Output2})T");
+            string a2input2 = FormattableString.Invariant($"$(Actions.a1.{Output2})");
+            string a2input3 = FormattableString.Invariant($"Output $(Actions.a1.{Output3}) trail");
+
+            PassThroughOptions a2Settings = null;
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddPassThroughAction("a1", "a1input1", "a1input2", "a1input3")
+                    .AddPassThroughAction("a2", a2input1, a2input2, a2input3)
+                    .SetStartupTrigger();
+
+                a2Settings = (PassThroughOptions)options.Actions.Last().Settings;
+            }, async host =>
+            {
+                ActionListExecutor executor = host.Services.GetService<ActionListExecutor>();
+
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(DefaultTimeout);
+
+                CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+                ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
+
+                int callbackCount = 0;
+                Action startCallback = () => callbackCount++;
+
+                IDictionary<string, CollectionRuleActionResult> results = await executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token);
+
+                //Verify that the original settings were not altered during execution.
+                Assert.Equal(a2input1, a2Settings.Input1);
+                Assert.Equal(a2input2, a2Settings.Input2);
+                Assert.Equal(a2input3, a2Settings.Input3);
+
+                Assert.Equal(1, callbackCount);
+                Assert.Equal(2, results.Count);
+                Assert.True(results.TryGetValue("a2", out CollectionRuleActionResult a2result));
+                Assert.Equal(3, a2result.OutputValues.Count);
+
+                Assert.True(a2result.OutputValues.TryGetValue(Output1, out string a2output1));
+                Assert.Equal("a1input1 with a1input2T", a2output1);
+                Assert.True(a2result.OutputValues.TryGetValue(Output2, out string a2output2));
+                Assert.Equal("a1input2", a2output2);
+                Assert.True(a2result.OutputValues.TryGetValue(Output3, out string a2output3));
+                Assert.Equal("Output a1input3 trail", a2output3);
+            }, serviceCollection =>
+            {
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+            });
+        }
+
+        [Fact]
+        public async Task DuplicateActionNamesTest()
+        {
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddPassThroughAction("a1", "a1input1", "a1input2", "a1input3")
+                    .AddPassThroughAction("a2", "a1input1", "a1input2", "a1input3")
+                    .AddPassThroughAction("a1", "a1input1", "a1input2", "a1input3")
+                    .SetStartupTrigger();
+            }, host =>
+            {
+                //Expecting duplicate action name
+                Assert.Throws<OptionsValidationException>(() => host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName));
+            }, serviceCollection =>
+            {
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+            });
+        }
+
         private static void VerifyStartCallbackCount(bool waitForCompletion, int callbackCount)
         {
-            if (waitForCompletion)
-            {
-                // The action failure occurs in completion and the actions were specified to have
-                // to wait for completion before executing the next action, thus the start callback
-                // should not have been invoked.
-                Assert.Equal(0, callbackCount);
-            }
-            else
-            {
-                // The action failure occurs in completion but all actions were started, thus
-                // the start callback should have been invoked once.
-                Assert.Equal(1, callbackCount);
-            }
+            //Currently, any attempt to wait on completion will automatically trigger the start callback.
+            //This is necessary to ensure that the process is resumed prior to completing artifact collection.
+            Assert.Equal(1, callbackCount);
         }
     }
 }
