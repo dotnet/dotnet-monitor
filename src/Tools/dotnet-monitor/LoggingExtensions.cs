@@ -237,7 +237,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly Action<ILogger, Exception> _collectionRulesStopped =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.CollectionRulesStopping, "CollectionRulesStopped"),
+                eventId: new EventId(LoggingEventIds.CollectionRulesStopped, "CollectionRulesStopped"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRulesStopped);
 

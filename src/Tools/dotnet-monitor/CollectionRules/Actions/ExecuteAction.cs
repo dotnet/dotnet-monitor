@@ -63,7 +63,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 using EventTaskSource<EventHandler> exitedSource = new(
                     complete => (s, e) => complete(),
                     handler => process.Exited += handler,
-                    handler => process.Exited -= handler);
+                    handler => process.Exited -= handler,
+                    token);
 
                 if (!process.Start())
                 {
@@ -72,7 +73,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 startCompleteSource.TrySetResult(null);
 
-                await WaitForExitAsync(process, exitedSource.Task, token).ConfigureAwait(false);
+                // Wait for process to exit; cancellation is handled by the exitedSource
+                await exitedSource.Task.ConfigureAwait(false);
 
                 ValidateExitCode(IgnoreExitCode, process.ExitCode);
 
@@ -83,14 +85,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         { "ExitCode", process.ExitCode.ToString(CultureInfo.InvariantCulture) }
                     }
                 };
-            }
-
-            public async Task WaitForExitAsync(Process process, Task exitedTask, CancellationToken token)
-            {
-                if (!process.HasExited)
-                {
-                    await exitedTask.WithCancellation(token).ConfigureAwait(false);
-                }
             }
 
             internal static void ValidateFilePath(string path)

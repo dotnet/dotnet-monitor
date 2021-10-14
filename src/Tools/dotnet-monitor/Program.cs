@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 aliases: new[] { "--metricUrls" },
                 description: Strings.HelpDescription_OptionMetricsUrls)
             {
-                Argument = new Argument<string[]>(name: "metricUrls", getDefaultValue: () => new[] { GetDefaultMetricsEndpoint() })
+                Argument = new Argument<string[]>(name: "metricUrls", getDefaultValue: () => new[] { "http://localhost:52325" })
             };
 
         private static Option ProvideMetrics() =>
@@ -139,17 +139,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 Argument = new Argument<ConfigDisplayLevel>(name: "level", getDefaultValue: () => ConfigDisplayLevel.Redacted)
             };
-
-        private static string GetDefaultMetricsEndpoint()
-        {
-            string endpoint = "http://localhost:52325";
-            if (RuntimeInfo.IsInDockerContainer)
-            {
-                //Necessary for prometheus scraping
-                endpoint = "http://*:52325";
-            }
-            return endpoint;
-        }
 
         public static Task<int> Main(string[] args)
         {

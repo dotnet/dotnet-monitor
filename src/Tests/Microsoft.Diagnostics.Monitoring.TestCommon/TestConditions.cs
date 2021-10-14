@@ -5,7 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal static class TestConditions
     {

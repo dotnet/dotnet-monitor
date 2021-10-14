@@ -14,13 +14,13 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.21511.1">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.21512.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>57ac10418e39271319394a230f7e3a8f4ef9f15b</Sha>
+      <Sha>dfb902f38e7c68d8cd83d53f32ea174e8f3a310a</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.21511.1">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.21512.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>57ac10418e39271319394a230f7e3a8f4ef9f15b</Sha>
+      <Sha>dfb902f38e7c68d8cd83d53f32ea174e8f3a310a</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.250401">
       <Uri>https://github.com/dotnet/symstore</Uri>
@@ -30,9 +30,9 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>9cb4a3fbfef02615b0cd5ecb24674dc96f45c25a</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21511.12">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.0-rtm.21512.8">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>d262c21063bbb5b385a776e4ce24f7132eb918dc</Sha>
+      <Sha>12fb2c3a2e11596268e58f087728eed53acfced3</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

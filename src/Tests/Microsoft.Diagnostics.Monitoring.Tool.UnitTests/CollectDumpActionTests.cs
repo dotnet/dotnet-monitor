@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _endpointUtilities = new(_outputHelper);
         }
 
-        [Theory]
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsDumpSupported))]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndDumpTypes), MemberType = typeof(ActionTestsHelper))]
         public async Task CollectDumpAction_Success(TargetFrameworkMoniker tfm, DumpType? dumpType)
         {
