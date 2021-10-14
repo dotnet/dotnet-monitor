@@ -47,8 +47,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly LogFormat _logFormat;
         private readonly LogLevel? _logLevel;
 
-        private static readonly int LogTextPaddingLength = GetLogLevelString(LogLevel.Information).Length + ": ".Length;
-        private static readonly string LogTextPadding = new string(' ', LogTextPaddingLength);
+        // This is the padding used for each non-header line of the logs output when formatted as plain text.
+        // Since the plain text output adheres to the same format as simple console formatter, the same
+        // padding algorithm is used here. This padding specifically allows all of the text (including the
+        // header without the level information and without using timestamps) to be vertically aligned.
+        //
+        // For example:
+        //       | All non-level information aligned here when not using timestamps.
+        //       v
+        // info: LoggerCategory[0]
+        //       LoggerMessage
+        private static readonly int PlainTextPaddingLength = GetLogLevelString(LogLevel.Information).Length + ": ".Length;
+        private static readonly string PlainTextPadding = new string(' ', PlainTextPaddingLength);
 
         public const byte JsonSequenceRecordSeparator = 0x1E;
 
@@ -194,7 +204,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             // Scopes
             if (_scopes.HasScopes)
             {
-                writer.Write(LogTextPadding);
+                writer.Write(PlainTextPadding);
                 bool firstScope = true;
                 foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
                 {
@@ -230,14 +240,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             // Message
-            writer.Write(LogTextPadding);
+            writer.Write(PlainTextPadding);
             writer.WriteLine(formatter(state, exception));
 
             // Exception
             if (null != exception)
             {
-                writer.Write(LogTextPadding);
-                writer.WriteLine(exception.ToString().Replace(Environment.NewLine, writer.NewLine + LogTextPadding));
+                writer.Write(PlainTextPadding);
+                writer.WriteLine(exception.ToString().Replace(Environment.NewLine, writer.NewLine + PlainTextPadding));
             }
         }
 
