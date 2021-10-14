@@ -12,6 +12,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -55,6 +56,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
                 AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+
+                // MachO not supported on .NET 5, only ELF: https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major == 5)
+                {
+                    runner.Environment.Add(DumpTestUtilities.EnableElfDumpOnMacOS, "1");
+                }
 
                 Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
