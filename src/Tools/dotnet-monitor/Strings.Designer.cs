@@ -97,6 +97,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate action name &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_DuplicateActionName {
+            get {
+                return ResourceManager.GetString("ErrorMessage_DuplicateActionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Azure blob egress failed: {0}.
         /// </summary>
         internal static string ErrorMessage_EgressAzureFailedDetailed {
@@ -493,6 +502,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection rule action options &apos;{settingsType}&apos; must implement ICloneable to support property tokenization..
+        /// </summary>
+        internal static string LogFormatString_ActionSettingsTokenizationNotSupported {
+            get {
+                return ResourceManager.GetString("LogFormatString_ActionSettingsTokenizationNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {apiAuthenticationConfigKey} settings have changed. The new settings have passed validation..
         /// </summary>
         internal static string LogFormatString_ApiKeyAuthenticationOptionsValidated {
@@ -804,6 +822,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_InsecureAutheticationConfiguration {
             get {
                 return ResourceManager.GetString("LogFormatString_InsecureAutheticationConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid action reference &apos;{actionReference}&apos;..
+        /// </summary>
+        internal static string LogFormatString_InvalidActionReference {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidActionReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid result refrence &apos;{actionToken}&apos;..
+        /// </summary>
+        internal static string LogFormatString_InvalidActionResultReference {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidActionResultReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Action &apos;{actionName}&apos; with setting &apos;{setting}&apos; has invalid tokens..
+        /// </summary>
+        internal static string LogFormatString_InvalidToken {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidToken", resourceCulture);
             }
         }
         

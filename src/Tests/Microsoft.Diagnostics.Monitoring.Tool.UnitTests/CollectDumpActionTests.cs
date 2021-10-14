@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectDumpActionTests
     {
-        private const string DefaultRuleName = "DumpTestRule";
+        private const string DefaultRuleName = nameof(CollectDumpActionTests);
 
         private ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;

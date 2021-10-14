@@ -253,6 +253,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_DiagnosticRequestFailed);
 
+        private static readonly Action<ILogger, string, string, Exception> _invalidActionReferenceToken =
+            LoggerMessage.Define<string, string>(
+                eventId: new EventId(LoggingEventIds.InvalidActionReferenceToken, "InvalidActionReferenceToken"),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_InvalidToken);
+
+        private static readonly Action<ILogger, string, Exception> _invalidActionReference =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(LoggingEventIds.InvalidActionReference, "InvalidActionReference"),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_InvalidActionReference);
+
+        private static readonly Action<ILogger, string, Exception> _invalidActionResultReference =
+            LoggerMessage.Define<string>(
+            eventId: new EventId(LoggingEventIds.InvalidActionResultReference, "InvalidActionResultReference"),
+            logLevel: LogLevel.Error,
+            formatString: Strings.LogFormatString_InvalidActionResultReference);
+
+        private static readonly Action<ILogger, string, Exception> _actionSettingsTokenizationNotSupported =
+            LoggerMessage.Define<string>(
+            eventId: new EventId(LoggingEventIds.ActionSettingsTokenizationNotSupported, "ActionSettingsTokenizationNotSupported"),
+            logLevel: LogLevel.Error,
+            formatString: Strings.LogFormatString_ActionSettingsTokenizationNotSupported);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -455,6 +479,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticRequestFailed(this ILogger logger, int processId, Exception ex)
         {
             _diagnosticRequestFailed(logger, processId, ex);
+        }
+
+        public static void InvalidActionReferenceToken(this ILogger logger, string actionName, string setting)
+        {
+            _invalidActionReferenceToken(logger, actionName, setting, null);
+        }
+
+        public static void InvalidActionReference(this ILogger logger, string actionReference)
+        {
+            _invalidActionReference(logger, actionReference, null);
+        }
+
+        public static void InvalidActionResultReference(this ILogger logger, string actionResultToken)
+        {
+            _invalidActionResultReference(logger, actionResultToken, null);
+        }
+
+        public static void ActionSettingsTokenizationNotSupported(this ILogger logger, string settingsType)
+        {
+            _actionSettingsTokenizationNotSupported(logger, settingsType, null);
         }
     }
 }
