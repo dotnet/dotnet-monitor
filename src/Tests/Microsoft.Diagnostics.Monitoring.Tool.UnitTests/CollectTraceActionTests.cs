@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 ICollectionRuleAction action = factory.Create(endpointInfo, options);
 
-                CollectionRuleActionResult result = await ActionTestsHelper.PerformAction(action, CommonTestTimeouts.TraceTimeout);
+                CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.TraceTimeout);
 
                 string egressPath = ActionTestsHelper.ValidateEgressPath(result);
 

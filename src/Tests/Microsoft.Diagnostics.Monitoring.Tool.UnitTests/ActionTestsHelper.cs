@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return options;
         }
 
-        internal async static Task<CollectionRuleActionResult> PerformAction(ICollectionRuleAction action, TimeSpan timeout)
+        internal async static Task<CollectionRuleActionResult> ExecuteAndDisposeAsync(ICollectionRuleAction action, TimeSpan timeout)
         {
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(timeout);
 

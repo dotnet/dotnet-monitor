@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     ICollectionRuleAction action = factory.Create(endpointInfo, options);
 
-                    CollectionRuleActionResult result = await ActionTestsHelper.PerformAction(action, CommonTestTimeouts.DumpTimeout);
+                    CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.DumpTimeout);
 
                     string egressPath = ActionTestsHelper.ValidateEgressPath(result);
 
