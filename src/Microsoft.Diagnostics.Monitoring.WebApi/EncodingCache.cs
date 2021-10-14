@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class EncodingCache
+    internal static class EncodingCache
     {
         public static readonly Encoding UTF8NoBOM =
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
