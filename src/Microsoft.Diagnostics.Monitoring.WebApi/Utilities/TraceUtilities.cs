@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             if (profile.HasFlag(Models.TraceProfile.Metrics))
             {
-                configurations.Add(new MetricSourceConfiguration(metricsIntervalSeconds, Enumerable.Empty<string>()));
+                configurations.Add(new MetricSourceConfiguration((int)metricsIntervalSeconds, Enumerable.Empty<string>()));
             }
 
             return new AggregateSourceConfiguration(configurations.ToArray());

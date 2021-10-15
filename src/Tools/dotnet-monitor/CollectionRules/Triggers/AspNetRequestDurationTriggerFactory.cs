@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 SlidingWindowDuration = options.SlidingWindowDuration ?? TimeSpan.Parse(AspNetRequestDurationOptionsDefaults.SlidingWindowDuration, CultureInfo.InvariantCulture),
             };
 
-            var aspnetTriggerSourceConfiguration = new AspNetTriggerSourceConfiguration(_counterOptions.CurrentValue.GetIntervalSeconds());
+            var aspnetTriggerSourceConfiguration = new AspNetTriggerSourceConfiguration(supportHeartbeat: true);
 
             return _eventPipeTriggerFactory.Create(endpointInfo, aspnetTriggerSourceConfiguration, _traceEventTriggerFactory, settings, callback);
         }
