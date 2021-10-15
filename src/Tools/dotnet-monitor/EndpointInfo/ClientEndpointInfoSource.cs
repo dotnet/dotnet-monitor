@@ -51,8 +51,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         return await EndpointInfo.FromProcessIdAsync(pid, linkedToken);
                     }
                     // Catch when timeout on waiting for EndpointInfo creation. Some runtime instances may be
-                    // in a bad state and hang all requests to their diagnostic pipe; gracefully abandon waiting
-                    // for these processes.
+                    // in a bad state and not respond to any requests on their diagnostic pipe; gracefully abandon
+                    // waiting for these processes.
                     catch (OperationCanceledException) when (timeoutToken.IsCancellationRequested)
                     {
                         _logger.DiagnosticRequestCancelled(pid);
