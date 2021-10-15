@@ -119,6 +119,16 @@ The above message would be reported as:
 }
 ```
 
+## LogFormat
+
+Enumeration that describes the format to use when outputting logs.
+
+| Name |
+|---|
+| `JsonSequence` |
+| `NewlineDelimitedJson` |
+| `PlainText` |
+
 ## LogLevel
 
 Enumeration that defines logging severity levels.

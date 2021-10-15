@@ -310,6 +310,59 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.Equal(0, appRunner.ExitCode);
         }
 
+        /// <summary>
+        /// Validates that when a process exits, the collection rules for the process are stopped.
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRule_StoppedOnExitTest(DiagnosticPortConnectionMode mode)
+        {
+            DiagnosticPortHelper.Generate(
+                mode,
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
+
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.ConnectionMode = mode;
+            toolRunner.DiagnosticPortPath = diagnosticPortPath;
+            toolRunner.DisableAuthentication = true;
+
+            // Create a rule with some settings
+            RootOptions originalOptions = new();
+            originalOptions.CreateCollectionRule(DefaultRuleName)
+                .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions);
+
+            eventCounterOptions.ProviderName = "System.Runtime";
+            eventCounterOptions.CounterName = "cpu-usage";
+            eventCounterOptions.GreaterThan = 1000; // Intentionally unobtainable
+            eventCounterOptions.SlidingWindowDuration = TimeSpan.FromSeconds(1);
+
+            await toolRunner.WriteUserSettingsAsync(originalOptions);
+
+            await toolRunner.StartAsync();
+
+            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            appRunner.ConnectionMode = appConnectionMode;
+            appRunner.DiagnosticPortPath = diagnosticPortPath;
+            appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
+
+            Task ruleStartedTask = toolRunner.WaitForCollectionRuleStartedAsync(DefaultRuleName);
+            Task rulesStoppedTask = toolRunner.WaitForCollectionRulesStoppedAsync();
+
+            await appRunner.ExecuteAsync(async () =>
+            {
+                await ruleStartedTask;
+
+                await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            });
+            Assert.Equal(0, appRunner.ExitCode);
+
+            // All of the rules for the process should have stopped. Note that dotnet-monitor has
+            // not yet exited at this point in time; this is verification that the rules have stopped
+            // for the target process before dotnet-monitor shuts down.
+            await rulesStoppedTask;
+        }
+
         // The GetProcessInfo command is not providing command line arguments (only the process name)
         // for .NET 5+ process on non-Windows when suspended. See https://github.com/dotnet/dotnet-monitor/issues/885
         private static bool IsNotNet5OrGreaterOnUnix =>

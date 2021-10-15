@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
@@ -27,6 +29,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             ValidationContext actionsContext = new(Actions, validationContext, validationContext.Items);
             actionsContext.MemberName = nameof(Actions);
             ValidationHelper.TryValidateItems(Actions, actionsContext, results);
+
+            var actionNames = new HashSet<string>(StringComparer.Ordinal);
+            foreach(CollectionRuleActionOptions option in Actions)
+            {
+                if (!string.IsNullOrEmpty(option.Name) && !actionNames.Add(option.Name))
+                {
+                    results.Add(new ValidationResult(
+                        string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_DuplicateActionName, option.Name),
+                        new[] { nameof(option.Name) }));
+                }
+            }
 
             return results;
         }

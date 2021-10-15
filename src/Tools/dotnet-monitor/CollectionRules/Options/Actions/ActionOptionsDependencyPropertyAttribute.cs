@@ -5,15 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Monitoring.WebApi
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 {
-    public enum LogFormat
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    internal sealed class ActionOptionsDependencyPropertyAttribute : Attribute
     {
-        None = 0,
-        NDJson = 1,
-        EventStream = 2,
-        JsonSequence = 3
     }
 }

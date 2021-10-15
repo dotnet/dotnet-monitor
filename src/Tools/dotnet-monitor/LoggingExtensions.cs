@@ -237,7 +237,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly Action<ILogger, Exception> _collectionRulesStopped =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.CollectionRulesStopping, "CollectionRulesStopped"),
+                eventId: new EventId(LoggingEventIds.CollectionRulesStopped, "CollectionRulesStopped"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRulesStopped);
 
@@ -246,6 +246,36 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: new EventId(LoggingEventIds.CollectionRuleCancelled, "CollectionRuleCancelled"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleCancelled);
+
+        private static readonly Action<ILogger, int, Exception> _diagnosticRequestFailed =
+            LoggerMessage.Define<int>(
+                eventId: new EventId(LoggingEventIds.DiagnosticRequestFailed, "DiagnosticRequestFailed"),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_DiagnosticRequestFailed);
+
+        private static readonly Action<ILogger, string, string, Exception> _invalidActionReferenceToken =
+            LoggerMessage.Define<string, string>(
+                eventId: new EventId(LoggingEventIds.InvalidActionReferenceToken, "InvalidActionReferenceToken"),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_InvalidToken);
+
+        private static readonly Action<ILogger, string, Exception> _invalidActionReference =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(LoggingEventIds.InvalidActionReference, "InvalidActionReference"),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_InvalidActionReference);
+
+        private static readonly Action<ILogger, string, Exception> _invalidActionResultReference =
+            LoggerMessage.Define<string>(
+            eventId: new EventId(LoggingEventIds.InvalidActionResultReference, "InvalidActionResultReference"),
+            logLevel: LogLevel.Error,
+            formatString: Strings.LogFormatString_InvalidActionResultReference);
+
+        private static readonly Action<ILogger, string, Exception> _actionSettingsTokenizationNotSupported =
+            LoggerMessage.Define<string>(
+            eventId: new EventId(LoggingEventIds.ActionSettingsTokenizationNotSupported, "ActionSettingsTokenizationNotSupported"),
+            logLevel: LogLevel.Error,
+            formatString: Strings.LogFormatString_ActionSettingsTokenizationNotSupported);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
@@ -444,6 +474,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void CollectionRuleCancelled(this ILogger logger, string ruleName)
         {
             _collectionRuleCancelled(logger, ruleName, null);
+        }
+
+        public static void DiagnosticRequestFailed(this ILogger logger, int processId, Exception ex)
+        {
+            _diagnosticRequestFailed(logger, processId, ex);
+        }
+
+        public static void InvalidActionReferenceToken(this ILogger logger, string actionName, string setting)
+        {
+            _invalidActionReferenceToken(logger, actionName, setting, null);
+        }
+
+        public static void InvalidActionReference(this ILogger logger, string actionReference)
+        {
+            _invalidActionReference(logger, actionReference, null);
+        }
+
+        public static void InvalidActionResultReference(this ILogger logger, string actionResultToken)
+        {
+            _invalidActionResultReference(logger, actionResultToken, null);
+        }
+
+        public static void ActionSettingsTokenizationNotSupported(this ILogger logger, string settingsType)
+        {
+            _actionSettingsTokenizationNotSupported(logger, settingsType, null);
         }
     }
 }

@@ -3,28 +3,24 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class CollectGCDumpActionTests
     {
-        private const string ExpectedEgressProvider = "TmpEgressProvider";
         private const string DefaultRuleName = "GCDumpTestRule";
 
         readonly private ITestOutputHelper _outputHelper;
@@ -36,33 +32,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _endpointUtilities = new(_outputHelper);
         }
 
-        [Fact]
-        public async Task CollectGCDumpAction_Success()
+        [Theory]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
+        public async Task CollectGCDumpAction_Success(TargetFrameworkMoniker tfm)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ExpectedEgressProvider, tempDirectory.FullName);
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectGCDumpAction(ExpectedEgressProvider)
+                    .AddCollectGCDumpAction(ActionTestsConstants.ExpectedEgressProvider)
                     .SetStartupTrigger();
             }, async host =>
             {
-                IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-                CollectGCDumpOptions options = (CollectGCDumpOptions)ruleOptionsMonitor.Get(DefaultRuleName).Actions[0].Settings;
+                CollectGCDumpOptions options = ActionTestsHelper.GetActionOptions<CollectGCDumpOptions>(host, DefaultRuleName);
 
                 ICollectionRuleActionFactoryProxy factory;
                 Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectGCDump, out factory));
 
                 EndpointInfoSourceCallback callback = new(_outputHelper);
-                await using var source = _endpointUtilities.CreateServerSource(out string transportName, callback);
-                source.Start();
+                await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
-                AppRunner runner = _endpointUtilities.CreateAppRunner(transportName, TargetFrameworkMoniker.Net60); // Arbitrarily chose Net60
+                AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
 
-                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                 await runner.ExecuteAsync(async () =>
                 {
@@ -70,22 +65,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     ICollectionRuleAction action = factory.Create(endpointInfo, options);
 
-                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.GCDumpTimeout);
-                    CollectionRuleActionResult result;
-                    try
-                    {
-                        await action.StartAsync(cancellationTokenSource.Token);
+                    CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.GCDumpTimeout);
 
-                        result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
-                    }
-                    finally
-                    {
-                        await DisposableHelper.DisposeAsync(action);
-                    }
-
-                    Assert.NotNull(result.OutputValues);
-                    Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
-                    Assert.True(File.Exists(egressPath));
+                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
 
                     using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(gcdumpStream);

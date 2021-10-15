@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -27,17 +28,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _outputHelper = outputHelper;
         }
 
-        public ServerEndpointInfoSource CreateServerSource(out string transportName, EndpointInfoSourceCallback callback = null)
+        public async Task<ServerSourceHolder> StartServerAsync(EndpointInfoSourceCallback sourceCallback = null)
         {
-            DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out transportName);
+            DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out string transportName);
             _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
 
             List<IEndpointInfoSourceCallbacks> callbacks = new();
-            if (null != callback)
+            if (null != sourceCallback)
             {
-                callbacks.Add(callback);
+                callbacks.Add(sourceCallback);
             }
-            return new ServerEndpointInfoSource(transportName, callbacks);
+
+            IOptions<DiagnosticPortOptions> portOptions = Extensions.Options.Options.Create(
+                new DiagnosticPortOptions()
+                {
+                    ConnectionMode = DiagnosticPortConnectionMode.Listen,
+                    EndpointName = transportName
+                });
+
+            ServerEndpointInfoSource source = new(portOptions, callbacks);
+
+            await source.StartAsync(CancellationToken.None);
+
+            return new ServerSourceHolder(source, transportName);
         }
 
         public AppRunner CreateAppRunner(string transportName, TargetFrameworkMoniker tfm, int appId = 1)
@@ -66,6 +79,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(await runner.ProcessIdTask, endpointInfo.ProcessId);
             Assert.NotEqual(Guid.Empty, endpointInfo.RuntimeInstanceCookie);
             Assert.NotNull(endpointInfo.Endpoint);
+        }
+    }
+
+    internal sealed class ServerSourceHolder : IAsyncDisposable
+    {
+        public ServerSourceHolder(ServerEndpointInfoSource source, string transportName)
+        {
+            Source = source;
+            TransportName = transportName;
+        }
+
+        public ServerEndpointInfoSource Source { get; }
+
+        public string TransportName { get; }
+
+        public async ValueTask DisposeAsync()
+        {
+            await Source.StopAsync(CancellationToken.None);
+
+            Source.Dispose();
         }
     }
 }

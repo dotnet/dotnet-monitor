@@ -12,20 +12,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     public class GlobalCounterOptions
     {
-        public const int IntervalMinSeconds = 1;
-        public const int IntervalMaxSeconds = 60 * 60 * 24; // One day
+        public const float IntervalMinSeconds = 1;
+        public const float IntervalMaxSeconds = 60 * 60 * 24; // One day
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds))]
         [Range(IntervalMinSeconds, IntervalMaxSeconds)]
         [DefaultValue(GlobalCounterOptionsDefaults.IntervalSeconds)]
-        public int? IntervalSeconds { get; set; }
+        public float? IntervalSeconds { get; set; }
     }
 
     internal static class GlobalCounterOptionsExtensions
     {
-        public static int GetIntervalSeconds(this GlobalCounterOptions options) =>
+        public static float GetIntervalSeconds(this GlobalCounterOptions options) =>
             options.IntervalSeconds.GetValueOrDefault(GlobalCounterOptionsDefaults.IntervalSeconds);
     }
 }

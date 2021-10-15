@@ -132,5 +132,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             using CancellationTokenSource cancellation = new(timeout);
             await runner.WaitForCollectionRuleStartedAsync(ruleName, cancellation.Token);
         }
+
+        public static Task WaitForCollectionRulesStoppedAsync(this MonitorCollectRunner runner)
+        {
+            return runner.WaitForCollectionRulesStoppedAsync(TestTimeouts.CollectionRuleCompletionTimeout);
+        }
+
+        public static async Task WaitForCollectionRulesStoppedAsync(this MonitorCollectRunner runner, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+            await runner.WaitForCollectionRulesStoppedAsync(cancellation.Token);
+        }
     }
 }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
@@ -249,7 +250,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     // Logs Error Check
                     ValidationProblemDetailsException validationProblemDetailsExceptionLogs = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                            () => appClient.CaptureLogsAsync(processId, TestTimeouts.LogsDuration, LogLevel.None, LogFormat.NDJson));
+                            () => appClient.CaptureLogsAsync(processId, CommonTestTimeouts.LogsDuration, LogLevel.None, LogFormat.NewlineDelimitedJson));
                     Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsExceptionLogs.StatusCode);
                     Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsExceptionLogs.Details.Status);
                     Assert.Equal(DisabledHTTPEgressErrorMessage, validationProblemDetailsExceptionLogs.Message);
