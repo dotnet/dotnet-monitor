@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 DumpType dumpType = Options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
                 string egressProvider = Options.Egress;
 
-                string dumpFileName = Utils.GenerateDumpFileName();
+                string dumpFileName = DumpUtilities.GenerateDumpFileName();
 
                 string dumpFilePath = string.Empty;
 

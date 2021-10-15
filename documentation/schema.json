@@ -740,12 +740,12 @@
       "properties": {
         "IntervalSeconds": {
           "type": [
-            "integer",
-            "null"
+            "null",
+            "number"
           ],
           "description": "Determines the metrics interval for all dotnet-monitor scenarios. This includes prometheus metrics, live metrics, triggers, and traces.",
-          "format": "int32",
-          "default": 5,
+          "format": "float",
+          "default": 5.0,
           "maximum": 86400.0,
           "minimum": 1.0
         }
@@ -1166,8 +1166,34 @@
           "type": "string",
           "description": "The name of the egress provider to which the logs are egressed.",
           "minLength": 1
+        },
+        "Format": {
+          "description": "The format of the logs artifact.",
+          "default": "PlainText",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/LogFormat"
+            }
+          ]
         }
       }
+    },
+    "LogFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NewlineDelimitedJson",
+        "PlainText",
+        "JsonSequence"
+      ],
+      "enum": [
+        "NewlineDelimitedJson",
+        "PlainText",
+        "JsonSequence"
+      ]
     },
     "CollectTraceOptions": {
       "type": "object",

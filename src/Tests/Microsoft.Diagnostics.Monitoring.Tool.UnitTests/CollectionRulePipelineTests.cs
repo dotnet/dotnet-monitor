@@ -348,21 +348,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Func<AppRunner, CollectionRulePipeline, Task, Task> pipelineCallback,
             Action<IServiceCollection> servicesCallback = null)
         {
-            DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out string transportName);
-            _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
+            EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
+            EndpointUtilities endpointUtilities = new(_outputHelper);
+            await using ServerSourceHolder sourceHolder = await endpointUtilities.StartServerAsync(endpointInfoCallback);
 
             AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly(), tfm: tfm);
             runner.ConnectionMode = DiagnosticPortConnectionMode.Connect;
-            runner.DiagnosticPortPath = transportName;
-            runner.ScenarioName = scenarioName;
+            runner.DiagnosticPortPath = sourceHolder.TransportName;
+            runner.ScenarioName = scenarioName;            
 
-            EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
-            List<Tools.Monitor.IEndpointInfoSourceCallbacks> callbacks = new();
-            callbacks.Add(endpointInfoCallback);
-            Tools.Monitor.ServerEndpointInfoSource source = new(transportName, callbacks);
-            source.Start();
-
-            Task<IEndpointInfo> endpointInfoTask = endpointInfoCallback.WaitForNewEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task<IEndpointInfo> endpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {

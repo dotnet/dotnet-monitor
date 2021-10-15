@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System;
@@ -51,5 +52,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [ValidateEgressProvider]
 #endif
         public string Egress { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLogsOptions_Format))]
+        [DefaultValue(CollectLogsOptionsDefaults.Format)]
+        [EnumDataType(typeof(LogFormat))]
+        public LogFormat? Format { get; set; }
     }
 }

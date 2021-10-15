@@ -240,7 +240,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.ConfigureGlobalCounter(context.Configuration);
 
                     services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
-                    services.AddHostedService<FilteredEndpointInfoSourceHostedService>();
+                    services.AddSingleton<ServerEndpointInfoSource>();
+                    services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                     services.AddSingleton<IDumpService, DumpService>();
                     services.AddSingleton<RequestLimitTracker>();

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
         private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);
         private static readonly MediaTypeHeaderValue JsonSequenceHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationJsonSequence);
-        private static readonly MediaTypeHeaderValue EventStreamHeader = new MediaTypeHeaderValue(ContentTypes.TextEventStream);
+        private static readonly MediaTypeHeaderValue TextPlainHeader = new MediaTypeHeaderValue(ContentTypes.TextPlain);
 
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
@@ -206,7 +207,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async processInfo =>
             {
-                string dumpFileName = Utilities.GenerateDumpFileName();
+                string dumpFileName = DumpUtilities.GenerateDumpFileName();
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
@@ -268,7 +269,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Result(
                     Utilities.ArtifactType_GCDump,
                     egressProvider,
-                    (stream, token) => Utilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token),
+                    (stream, token) => GCDumpUtilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token),
                     fileName,
                     ContentTypes.ApplicationOctetStream,
                     processInfo.EndpointInfo);
@@ -313,7 +314,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
-                var aggregateConfiguration = Utilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.GetIntervalSeconds());
+                var aggregateConfiguration = TraceUtilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.GetIntervalSeconds());
 
                 return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
@@ -366,7 +367,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
-                var traceConfiguration = Utilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
+                var traceConfiguration = TraceUtilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
 
                 return StartTrace(processInfo, traceConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
@@ -382,7 +383,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="level">The level of the logs to capture.</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpGet("logs", Name = nameof(CaptureLogs))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
@@ -438,7 +439,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         [HttpPost("logs", Name = nameof(CaptureLogsCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextEventStream)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
@@ -536,12 +537,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             TimeSpan duration,
             string egressProvider)
         {
-            string fileName = Utilities.GenerateTraceFileName(processInfo.EndpointInfo);
+            string fileName = TraceUtilities.GenerateTraceFileName(processInfo.EndpointInfo);
 
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,
-                (outputStream, token) => Utilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token),
+                (outputStream, token) => TraceUtilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token),
                 fileName,
                 ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);
@@ -552,48 +553,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             EventLogsPipelineSettings settings,
             string egressProvider)
         {
-            LogFormat format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
-            if (format == LogFormat.None)
+            LogFormat? format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
+            if (null == format)
             {
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
-            string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.txt");
-            string contentType = ContentTypes.TextEventStream;
-
-            if (format == LogFormat.EventStream)
-            {
-                contentType = ContentTypes.TextEventStream;
-            }
-            else if (format == LogFormat.NDJson)
-            {
-                contentType = ContentTypes.ApplicationNdJson;
-            }
-            else if (format == LogFormat.JsonSequence)
-            {
-                contentType = ContentTypes.ApplicationJsonSequence;
-            }
-
-            Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-            {
-                using var loggerFactory = new LoggerFactory();
-
-                loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
-
-                var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-
-                await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
-                await pipeline.RunAsync(token);
-            };
+            string fileName = LogsUtilities.GenerateLogsFileName(processInfo.EndpointInfo);
+            string contentType = LogsUtilities.GetLogsContentType(format.Value);
 
             return Result(
                 Utilities.ArtifactType_Logs,
                 egressProvider,
-                action,
+                (outputStream, token) => LogsUtilities.CaptureLogsAsync(null, format.Value, processInfo.EndpointInfo, settings, outputStream, token),
                 fileName,
                 contentType,
                 processInfo.EndpointInfo,
-                format != LogFormat.EventStream);
+                format != LogFormat.PlainText);
         }
 
         private static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
@@ -601,38 +577,38 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
         }
 
-        private static LogFormat ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
+        private static LogFormat? ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
             if (acceptedHeaders == null)
             {
-                return LogFormat.None;
+                return null;
             }
 
-            if (acceptedHeaders.Contains(EventStreamHeader))
+            if (acceptedHeaders.Contains(TextPlainHeader))
             {
-                return LogFormat.EventStream;
+                return LogFormat.PlainText;
             }
             if (acceptedHeaders.Contains(NdJsonHeader))
             {
-                return LogFormat.NDJson;
+                return LogFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Contains(JsonSequenceHeader))
             {
                 return LogFormat.JsonSequence;
             }
-            if (acceptedHeaders.Any(h => EventStreamHeader.IsSubsetOf(h)))
+            if (acceptedHeaders.Any(h => TextPlainHeader.IsSubsetOf(h)))
             {
-                return LogFormat.EventStream;
+                return LogFormat.PlainText;
             }
             if (acceptedHeaders.Any(h => NdJsonHeader.IsSubsetOf(h)))
             {
-                return LogFormat.NDJson;
+                return LogFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Any(h => JsonSequenceHeader.IsSubsetOf(h)))
             {
                 return LogFormat.JsonSequence;
             }
-            return LogFormat.None;
+            return null;
         }
 
         private Task<ActionResult> Result(

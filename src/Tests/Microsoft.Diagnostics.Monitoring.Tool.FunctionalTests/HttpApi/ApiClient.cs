@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
@@ -275,7 +276,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             {
                 contentType = ContentTypes.ApplicationJsonSequence;
             }
-            else if (logFormat == LogFormat.NDJson)
+            else if (logFormat == LogFormat.NewlineDelimitedJson)
             {
                 contentType = ContentTypes.ApplicationNDJson;
             }
@@ -334,26 +335,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
-        public Task<ResponseStreamHolder> CaptureMetricsAsync(int processId, int durationSeconds, int refreshInterval, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureMetricsAsync(int processId, int durationSeconds, CancellationToken token)
         {
-            return CaptureMetricsAsync(processId, durationSeconds, refreshInterval, HttpMethod.Get, content: null, token: token);
+            return CaptureMetricsAsync(processId, durationSeconds, HttpMethod.Get, content: null, token: token);
         }
 
-        public Task<ResponseStreamHolder> CaptureMetricsAsync(int processId, int durationSeconds, int refreshInterval, EventMetricsConfiguration metricsConfiguration, CancellationToken token)
+        public Task<ResponseStreamHolder> CaptureMetricsAsync(int processId, int durationSeconds, EventMetricsConfiguration metricsConfiguration, CancellationToken token)
         {
             string content = JsonSerializer.Serialize(metricsConfiguration, DefaultJsonSerializeOptions);
 
             return CaptureMetricsAsync(processId,
                 durationSeconds,
-                refreshInterval,
                 HttpMethod.Post,
                 new StringContent(content, Encoding.UTF8, ContentTypes.ApplicationJson),
                 token);
         }
 
-        private async Task<ResponseStreamHolder> CaptureMetricsAsync(int processId, int durationSeconds, int refreshInterval, HttpMethod method, HttpContent content, CancellationToken token)
+        private async Task<ResponseStreamHolder> CaptureMetricsAsync(int processId, int durationSeconds, HttpMethod method, HttpContent content, CancellationToken token)
         {
-            string uri = FormattableString.Invariant($"/livemetrics?pid={processId}&durationSeconds={durationSeconds}&metricsIntervalSeconds={refreshInterval}");
+            string uri = FormattableString.Invariant($"/livemetrics?pid={processId}&durationSeconds={durationSeconds}");
 
             using HttpRequestMessage request = new(method, uri);
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJsonSequence);
