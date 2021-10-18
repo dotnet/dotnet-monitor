@@ -67,6 +67,7 @@
     <SystemComponentModelAnnotationsVersion>5.0.0</SystemComponentModelAnnotationsVersion>
     <SystemIdentityModelTokensJwtVersion>6.11.1</SystemIdentityModelTokensJwtVersion>
     <SystemIOPipelinesVersion>4.5.1</SystemIOPipelinesVersion>
+    <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
     <SystemTextEncodingsWebVersion>4.7.2</SystemTextEncodingsWebVersion>
     <SystemThreadingChannelsVersion>5.0.0</SystemThreadingChannelsVersion>
