@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Default timeout for HTTP API calls
         /// </summary>
-        public static readonly TimeSpan HttpApi = TimeSpan.FromSeconds(15);
+        public static readonly TimeSpan HttpApi = TimeSpan.FromSeconds(30);
 
         /// <summary>
         /// Timeout for waiting for a collection rule to complete.
