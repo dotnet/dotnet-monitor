@@ -23,7 +23,7 @@
          work around this problem by telling the compiler to not warn about the issue. A file lock that
          actually prevents the build from completing correctly should still fail the compilation with
          an MSB3027 error. -->
-    <NoWarn>MSB3026</NoWarn>
+    <NoWarn>$(NoWarn);MSB3026</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
