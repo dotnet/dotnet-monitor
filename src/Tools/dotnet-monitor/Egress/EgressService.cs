@@ -55,18 +55,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             _changeRegistration.Dispose();
         }
 
-        public bool CheckProvider(string providerName)
-        {
-            try
-            {
-                return null != GetProvider(providerName);
-            }
-            catch (EgressException)
-            {
-                return false;
-            }
-        }
-
         public void ValidateProvider(string providerName)
         {
             // GetProvider should never return null so no need to check; it will throw
