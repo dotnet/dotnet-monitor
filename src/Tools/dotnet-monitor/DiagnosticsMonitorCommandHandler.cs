@@ -282,6 +282,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     var metricsOptions = new MetricsOptions();
                     context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
 
+                    string metricHostingUrls = metricsOptions.Endpoints;
+                    metricUrls = ConfigurationHelper.SplitValue(metricHostingUrls);
+
                     //Workaround for lack of default certificate. See https://github.com/dotnet/aspnetcore/issues/28120
                     options.Configure(context.Configuration.GetSection("Kestrel")).Load();
 
