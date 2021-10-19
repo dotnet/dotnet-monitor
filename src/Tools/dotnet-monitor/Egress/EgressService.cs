@@ -67,6 +67,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             }
         }
 
+        public void ValidateProvider(string providerName)
+        {
+            // GetProvider should never return null so no need to check; it will throw
+            // if the egress provider could not be located or instantiated.
+            GetProvider(providerName);
+        }
+
         public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
         {
             string value = await GetProvider(providerName).EgressAsync(

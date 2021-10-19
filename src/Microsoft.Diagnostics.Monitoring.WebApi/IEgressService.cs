@@ -13,6 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         bool CheckProvider(string providerName);
 
+        void ValidateProvider(string providerName);
+
         Task<EgressResult> EgressAsync(
             string providerName,
             Func<CancellationToken, Task<Stream>> action,
