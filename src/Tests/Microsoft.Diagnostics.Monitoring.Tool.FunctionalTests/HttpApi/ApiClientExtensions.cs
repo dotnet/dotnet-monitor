@@ -22,6 +22,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
     internal static class ApiClientExtensions
     {
         /// <summary>
+        /// GET /
+        /// </summary>
+        public static Task GetRootAsync(this ApiClient client)
+        {
+            return client.GetRootAsync(TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// GET /
+        /// </summary>
+        public static async Task GetRootAsync(this ApiClient client, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            await client.GetRootAsync(timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// GET /processes
         /// </summary>
         public static Task<IEnumerable<ProcessIdentifier>> GetProcessesAsync(this ApiClient client)

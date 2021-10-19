@@ -521,7 +521,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        public string GetDiagnosticPortName()
+        private string GetDiagnosticPortName()
         {
             return _diagnosticPortOptions.Value.EndpointName;
         }
