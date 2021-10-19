@@ -521,12 +521,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        public DiagnosticPortConnectionMode GetDiagnosticPortMode()
+        private DiagnosticPortConnectionMode GetDiagnosticPortMode()
         {
             return _diagnosticPortOptions.Value.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode);
         }
 
-        public string GetDiagnosticPortName()
+        private string GetDiagnosticPortName()
         {
             return _diagnosticPortOptions.Value.EndpointName;
         }

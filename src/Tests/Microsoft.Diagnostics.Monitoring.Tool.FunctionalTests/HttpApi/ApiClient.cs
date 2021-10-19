@@ -42,6 +42,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
+        /// GET /
+        /// </summary>
+        public async Task GetRootAsync(CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, "/");
+
+            using HttpResponseMessage response = await SendAndLogAsync(
+                request,
+                HttpCompletionOption.ResponseContentRead,
+                token).ConfigureAwait(false);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.NotFound:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// GET /processes
         /// </summary>
         public async Task<IEnumerable<ProcessIdentifier>> GetProcessesAsync(CancellationToken token)
