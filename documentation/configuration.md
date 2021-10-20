@@ -413,7 +413,7 @@ Collection rules are specified in configuration as a named item under the `Colle
 
 ### Example
 
-The following is a collection rule that collects a 1 minute CPU trace after it has detected high CPU usage for 10 seconds. The rule only applies to processes named "dotnet" and only collects at most 2 traces per 1 hour sliding time window.
+The following is a collection rule that collects a 1 minute CPU trace and egresses it to a provider named "TmpDir" after it has detected high CPU usage for 10 seconds. The rule only applies to processes named "dotnet" and only collects at most 2 traces per 1 hour sliding time window.
 
 ```json
 {
@@ -437,7 +437,8 @@ The following is a collection rule that collects a 1 minute CPU trace after it h
                 "Type": "CollectTrace",
                 "Settings": {
                     "Profile": "Cpu",
-                    "Duration": "00:01:00"
+                    "Duration": "00:01:00",
+                    "Egress": "TmpDir"
                 }
             }],
             "Limits": {
