@@ -1,6 +1,6 @@
 # API Key Format
 API Keys or MonitorApiKeys used in `dotnet monitor` are JSON Web Tokens or JWTs as defined by [RFC 7519: JSON Web Token (JWT)](https://datatracker.ietf.org/doc/html/rfc7519).
-> **Note:** Because the API Key is a `Bearer` token, it should be treated as a secret and always transmitted over `TLS` or anther protected protocol.
+> **Note:** Because the API Key is a `Bearer` token, it should be treated as a secret and always transmitted over `TLS` or another protected protocol.
 
 It is possible to make your own API Keys for `dotnet monitor` by following the format as defined below. Although, it is recommended to use the `generatekey` command unless you have a specific reason to make your own key.
 
