@@ -37,7 +37,7 @@ Settings in Text format:
 Subject: ae5473b6-8dad-498d-b915-ffffffffffff
 Public Key: eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19
 ```
->**Note:** While all values provided in this document are the correct length and format, the raw values have been edited to provent this public example being used as a dotnet-monitor configuration.
+>**Note:** While all values provided in this document are the correct length and format, the raw values have been edited to prevent this public example being used as a dotnet-monitor configuration.
 
 The `generatekey` command supports 1 parameter `--output`/`-o` to specify the configuration format. By default, `dotnet monitor generatekey` will use the `--output json` format. Currently, the values in the list below are supported values for `--output`.
 
