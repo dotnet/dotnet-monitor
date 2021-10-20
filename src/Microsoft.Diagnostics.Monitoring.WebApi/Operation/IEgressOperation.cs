@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,5 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal interface IEgressOperation
     {
         Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token);
+
+        void Validate(IServiceProvider serviceProvider);
     }
 }

@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,17 +14,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal class EgressOperation : IEgressOperation
     {
         private readonly Func<IEgressService, CancellationToken, Task<EgressResult>> _egress;
+        private readonly string _egressProvider;
         private readonly KeyValueLogScope _scope;
 
         public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, token);
+            _egressProvider = endpointName;
             _scope = scope;
         }
 
         public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, token);
+            _egressProvider = endpointName;
             _scope = scope;
         }
 
@@ -54,6 +55,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 // caller to more easily find the artifact after egress has completed.
                 return ExecutionResult<EgressResult>.Succeeded(egressResult);
             }, logger, token);
+        }
+
+        public void Validate(IServiceProvider serviceProvider)
+        {
+            serviceProvider
+                .GetRequiredService<IEgressService>()
+                .ValidateProvider(_egressProvider);
         }
     }
 }

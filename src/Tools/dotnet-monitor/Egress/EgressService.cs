@@ -55,16 +55,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             _changeRegistration.Dispose();
         }
 
-        public bool CheckProvider(string providerName)
+        public void ValidateProvider(string providerName)
         {
-            try
-            {
-                return null != GetProvider(providerName);
-            }
-            catch (EgressException)
-            {
-                return false;
-            }
+            // GetProvider should never return null so no need to check; it will throw
+            // if the egress provider could not be located or instantiated.
+            GetProvider(providerName);
         }
 
         public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)

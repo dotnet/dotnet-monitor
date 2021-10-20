@@ -260,6 +260,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 disableHttpEgress: true);
         }
 
+        /// <summary>
+        /// Test that when requesting non-existant egress it immediately returns HTTP 400
+        /// rather than queueing the request and having the operation report that it failed.
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task EgressNotExistTest()
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+
+                    ValidationProblemDetailsException validationException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
+                        () => apiClient.EgressTraceAsync(processId, durationSeconds: 5, FileProviderName));
+                    Assert.Equal(HttpStatusCode.BadRequest, validationException.StatusCode);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                });
+        }
+
         private async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
         {
             HttpResponseMessage message = await client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&durationSeconds=-1"));
