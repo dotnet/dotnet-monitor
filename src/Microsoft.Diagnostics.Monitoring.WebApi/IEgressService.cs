@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal interface IEgressService
     {
-        bool CheckProvider(string providerName);
+        void ValidateProvider(string providerName);
 
         Task<EgressResult> EgressAsync(
             string providerName,
