@@ -7,7 +7,7 @@
 
 ### .NET Core global tool
 
-The `dotnet monitor` global tool requires a .NET 3.1 or newer SDK installed as a pre-requisite. If you do not have a new enough SDK, you can install a new one from the [Download .NET webpage](https://dotnet.microsoft.com/download).
+The `dotnet monitor` global tool requires a .NET 6 or newer SDK installed as a pre-requisite. If you do not have a new enough SDK, you can install a new one from the [Download .NET webpage](https://dotnet.microsoft.com/download).
 
 The latest public preview of `dotnet monitor` is available on Nuget. You can download the latest version using the following command:
 
