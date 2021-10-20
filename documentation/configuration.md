@@ -267,7 +267,7 @@ Match pid 1
 
 ### Global Counter Interval
 
-Due to limitations in event counters, `dotnet-monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
+Due to limitations in event counters, `dotnet monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
 Prometheus metrics, livemetrics, triggers, traces, and trigger actions that collect traces. The default interval is 5 seconds, but can be changed in configuration.
 
 ```json
