@@ -267,7 +267,7 @@ Match pid 1
 
 ### Global Counter Interval
 
-Due to limitations in event counters, `dotnet-monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
+Due to limitations in event counters, `dotnet monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
 Prometheus metrics, livemetrics, triggers, traces, and trigger actions that collect traces. The default interval is 5 seconds, but can be changed in configuration.
 
 ```json
@@ -413,7 +413,7 @@ Collection rules are specified in configuration as a named item under the `Colle
 
 ### Example
 
-The following is a collection rule that collects a 1 minute CPU trace after it has detected high CPU usage for 10 seconds. The rule only applies to processes named "dotnet" and only collects at most 2 traces per 1 hour sliding time window.
+The following is a collection rule that collects a 1 minute CPU trace and egresses it to a provider named "TmpDir" after it has detected high CPU usage for 10 seconds. The rule only applies to processes named "dotnet" and only collects at most 2 traces per 1 hour sliding time window.
 
 ```json
 {
@@ -437,7 +437,8 @@ The following is a collection rule that collects a 1 minute CPU trace after it h
                 "Type": "CollectTrace",
                 "Settings": {
                     "Profile": "Cpu",
-                    "Duration": "00:01:00"
+                    "Duration": "00:01:00",
+                    "Egress": "TmpDir"
                 }
             }],
             "Limits": {
