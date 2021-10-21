@@ -3,11 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -51,12 +54,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             switch (output)
             {
                 case OutputFormat.Json:
-                    string optsJson = JsonSerializer.Serialize(opts, new JsonSerializerOptions() 
-                    { 
-                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                        WriteIndented = true 
-                    });
-                    outputBldr.AppendLine(optsJson);
+                    {
+                        // Create configuration from object model.
+                        MemoryConfigurationSource source = new();
+                        source.InitialData = opts.ToConfigurationValues();
+                        ConfigurationBuilder builder = new();
+                        builder.Add(source);
+                        IConfigurationRoot configuration = builder.Build();
+
+                        try
+                        {
+                            // Write configuration into stream
+                            using MemoryStream stream = new();
+                            using (ConfigurationJsonWriter writer = new(stream))
+                            {
+                                writer.Write(configuration, full: true, skipNotPresent: true);
+                            }
+
+                            // Write stream content as test into builder.
+                            stream.Position = 0;
+                            using StreamReader reader = new(stream);
+                            outputBldr.AppendLine(reader.ReadToEnd());
+                        }
+                        finally
+                        {
+                            DisposableHelper.Dispose(configuration);
+                        }
+                    }
                     break;
                 case OutputFormat.Text:
                     outputBldr.AppendLine(string.Format(Strings.Message_GeneratekeySubject, newJwt.Subject));

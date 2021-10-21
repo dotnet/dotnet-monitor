@@ -128,7 +128,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IHost host = CreateHostBuilder(console, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress, configOnly: true).Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter writer = new ConfigurationJsonWriter(Console.OpenStandardOutput());
-            writer.Write(configuration, full: level == ConfigDisplayLevel.Full);
+            writer.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false);
             
             return Task.FromResult(0);
         }
