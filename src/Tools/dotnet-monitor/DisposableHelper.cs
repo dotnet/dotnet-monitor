@@ -51,18 +51,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         /// <summary>
+        /// Calls <see cref="IDisposable.Dispose"/> on object if object
+        /// implements <see cref="IDisposable"/> interface.
+        /// </summary>
+        public static void Dispose(object obj)
+        {
+            if (obj is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Checks if the object implements <see cref="IAsyncDisposable"/>
         /// or <see cref="IDisposable"/> and calls the corresponding dispose method.
         /// </summary>
         public static async ValueTask DisposeAsync(object obj)
         {
-            if (obj is IAsyncDisposable asyncDisposableAction)
+            if (obj is IAsyncDisposable asyncDisposable)
             {
-                await asyncDisposableAction.DisposeAsync();
+                await asyncDisposable.DisposeAsync();
             }
-            else if (obj is IDisposable disposableAction)
+            else
             {
-                disposableAction.Dispose();
+                Dispose(obj);
             }
         }
     }
