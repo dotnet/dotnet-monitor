@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             _portOptions = portOptions.Value;
 
-            DiagnosticPortConnectionMode connectionMode = _portOptions.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode);
+            DiagnosticPortConnectionMode connectionMode = _portOptions.GetConnectionMode();
 
             switch (connectionMode)
             {

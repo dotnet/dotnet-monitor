@@ -52,11 +52,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    ProcessInfo processInfo = await client.GetProcessAsync(processId);
-                    Assert.NotNull(processInfo);
-
                     using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type);
                     Assert.NotNull(holder);
+
+                    // Verify that the process information can be queried while the dump
+                    // operation is in progress.
+                    ProcessInfo processInfo = await client.GetProcessAsync(processId);
+                    Assert.NotNull(processInfo);
 
                     await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), holder.Stream);
 

@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     EndpointName = transportName
                 });
 
-            ServerEndpointInfoSource source = new(portOptions, callbacks);
+            ServerEndpointInfoSource source = new(portOptions, callbacks, dumpService: null);
 
             await source.StartAsync(CancellationToken.None);
 
