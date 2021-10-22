@@ -144,15 +144,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return this;
             }
 
-            public bool IsExecutingOperation
-            {
-                get
-                {
-                    long count = Interlocked.Read(ref _count);
-                    Debug.WriteLine($"Dump Operations: {count}");
-                    return 0 == count;
-                }
-            }
+            public bool IsExecutingOperation => 0 != Interlocked.Read(ref _count);
 
             public void Dispose() => Interlocked.Decrement(ref _count);
         }
