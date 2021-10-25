@@ -55,8 +55,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type);
                     Assert.NotNull(holder);
 
-                    // Verify that the process information can be queried while the dump
-                    // operation is in progress.
+                    // The dump operation may still be in progress but the process should still be discoverable.
+                    // If this check fails, then the dump operation is causing dotnet-monitor to not be able
+                    // to observe the process any more.
                     ProcessInfo processInfo = await client.GetProcessAsync(processId);
                     Assert.NotNull(processInfo);
 

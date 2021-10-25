@@ -5,8 +5,12 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -148,12 +152,108 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Empty(endpointInfos);
         }
 
+        /// <summary>
+        /// Tests that the server endpoint info source will not prune a process while a simulated
+        /// dump operation is in progress.
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
+        public async Task ServerSourceNoPruneDuringDumpTest(TargetFrameworkMoniker appTfm)
+        {
+            EndpointInfoSourceCallback callback = new(_outputHelper);
+            MockDumpService dumpService = new();
+            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback, dumpService);
+
+            AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
+
+            Task<IEndpointInfo> addedEndpointTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task<IEndpointInfo> removedEndpointTask = callback.WaitRemovedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+            Task<Stream> dumpTask = null;
+            IEndpointInfo endpointInfo = null;
+
+            await runner.ExecuteAsync(async () =>
+            {
+                _outputHelper.WriteLine("Waiting for added endpoint notification.");
+                endpointInfo = await addedEndpointTask;
+                _outputHelper.WriteLine("Received added endpoint notifications.");
+
+                // Start a dump operation; the process should not be pruned until the operation is completed.
+                dumpTask = dumpService.DumpAsync(endpointInfo, DumpType.Triage, CancellationToken.None);
+
+                await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            });
+
+            // At this point, the process should no longer exist; but since the mock dump operation is
+            // in progress, the ServiceEndpointInfoSource should not prune the process until the operation
+            // is complete.
+
+            int processId = await runner.ProcessIdTask;
+
+            // Test that the process still exists.
+            Assert.False(removedEndpointTask.IsCompleted);
+            IEnumerable<IEndpointInfo> endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
+            endpointInfo = Assert.Single(endpointInfos);
+            Assert.Equal(processId, endpointInfo.ProcessId);
+
+            // Signal and wait for mock dump operation to complete.
+            dumpService.CompleteOperation();
+            await dumpTask;
+
+            // Process should no longer exist
+            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
+            Assert.Empty(endpointInfos);
+
+            // Test that process removal sent notification
+            endpointInfo = await removedEndpointTask;
+            Assert.Equal(processId, endpointInfo.ProcessId);
+        }
+
         private static void ValidateEndpointInfo(IEndpointInfo endpointInfo)
         {
             Assert.NotNull(endpointInfo);
             Assert.NotNull(endpointInfo.CommandLine);
             Assert.NotNull(endpointInfo.OperatingSystem);
             Assert.NotNull(endpointInfo.ProcessArchitecture);
+        }
+
+        /// <summary>
+        /// <see cref="IDumpService"/> implementation that simulates a dump operation. Allows for controlled
+        /// start and completion of a dump operation on a single process.
+        /// </summary>
+        private sealed class MockDumpService : IDumpService
+        {
+            private readonly TaskCompletionSource<Stream> _dumpCompletionSource =
+                new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            private int _operationCount = 0;
+
+            public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, DumpType mode, CancellationToken token)
+            {
+                Interlocked.Increment(ref _operationCount);
+                try
+                {
+                    return await _dumpCompletionSource.Task;
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref _operationCount);
+                }
+            }
+
+            public void EndpointRemoved(IEndpointInfo endpointInfo)
+            {
+            }
+
+            public bool IsExecutingOperation(IEndpointInfo endpointInfo)
+            {
+                return 0 != Interlocked.CompareExchange(ref _operationCount, 0, 0);
+            }
+
+            public void CompleteOperation()
+            {
+                _dumpCompletionSource.SetResult(new MemoryStream());
+            }
         }
     }
 }

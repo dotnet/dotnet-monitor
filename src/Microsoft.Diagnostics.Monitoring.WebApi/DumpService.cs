@@ -136,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private sealed class OperationsTracker : IDisposable
         {
-            private long _count = 0;
+            private int _count = 0;
 
             public IDisposable Register()
             {
@@ -144,7 +144,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return this;
             }
 
-            public bool IsExecutingOperation => 0 != Interlocked.Read(ref _count);
+            public bool IsExecutingOperation => 0 != Interlocked.CompareExchange(ref _count, 0, 0);
 
             public void Dispose() => Interlocked.Decrement(ref _count);
         }
