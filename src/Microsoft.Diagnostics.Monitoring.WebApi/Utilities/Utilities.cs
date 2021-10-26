@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static string GetFileNameTimeStampUtcNow()
         {
-            return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
+            return DateTime.UtcNow.ToString("yyyyMMdd_HHmmssfff");
         }
 
         public static KeyValueLogScope CreateArtifactScope(string artifactType, IEndpointInfo endpointInfo)
