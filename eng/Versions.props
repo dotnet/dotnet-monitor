@@ -33,12 +33,14 @@
     <!-- dotnet/arcade references -->
     <MicrosoftDotNetXUnitExtensionsVersion>6.0.0-beta.21515.3</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21514.23</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>6.0.0-rtm.21523.4</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21523.4</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.251802</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.251802</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
-    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21514.7</VSRedistCommonNetCoreSharedFrameworkx6460Version>
+    <MicrosoftNETCoreAppRuntimewinx64Version>6.0.0-rtm.21518.12</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21518.12</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.250401</MicrosoftFileFormatsVersion>
   </PropertyGroup>
@@ -47,8 +49,8 @@
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
     <MicrosoftNETCoreApp50Version>5.0.11</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
-    <MicrosoftNETCoreApp60Version>$(VSRedistCommonNetCoreSharedFrameworkx6460Version)</MicrosoftNETCoreApp60Version>
-    <MicrosoftAspNetCoreApp60Version>$(VSRedistCommonAspNetCoreSharedFrameworkx6460Version)</MicrosoftAspNetCoreApp60Version>
+    <MicrosoftNETCoreApp60Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp60Version>
+    <MicrosoftAspNetCoreApp60Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp60Version>
   </PropertyGroup>
   <PropertyGroup Label="Manual">
     <AzureStorageBlobsVersion>12.6.0</AzureStorageBlobsVersion>
