@@ -14,7 +14,7 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="6.0.0-rtm.21523.4">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="6.0.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>7c57ecbdfee67ad544bd655a757e03145f6122a2</Sha>
     </Dependency>
