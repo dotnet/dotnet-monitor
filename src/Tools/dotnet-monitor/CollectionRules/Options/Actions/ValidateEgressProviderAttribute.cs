@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
@@ -17,7 +18,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             string egressProvider = (string)value;
 
             IEgressService egressService = validationContext.GetRequiredService<IEgressService>();
-            if (!egressService.CheckProvider(egressProvider))
+            try
+            {
+                egressService.ValidateProvider(egressProvider);
+            }
+            catch (Exception)
             {
                 return new ValidationResult(
                     string.Format(

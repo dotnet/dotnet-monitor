@@ -30,15 +30,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
         private readonly EgressOperationQueue _taskQueue;
         private readonly RequestLimitTracker _requestLimits;
+        private readonly IServiceProvider _serviceProvider;
 
-        public EgressOperationStore(EgressOperationQueue queue, RequestLimitTracker requestLimits)
+        public EgressOperationStore(
+            EgressOperationQueue queue,
+            RequestLimitTracker requestLimits,
+            IServiceProvider serviceProvider)
         {
             _taskQueue = queue;
             _requestLimits = requestLimits;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
         {
+            egressOperation.Validate(_serviceProvider);
+
             Guid operationId = Guid.NewGuid();
 
             IDisposable limitTracker = _requestLimits.Increment(limitKey, out bool allowOperation);
