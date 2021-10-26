@@ -42,15 +42,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly IEnumerable<IEndpointInfoSourceCallbacks> _callbacks;
         private readonly DiagnosticPortOptions _portOptions;
 
+        private readonly IDumpService _dumpService;
+
         /// <summary>
         /// Constructs a <see cref="ServerEndpointInfoSource"/> that aggregates diagnostic endpoints
         /// from a reversed diagnostics server at path specified by <paramref name="portOptions"/>.
         /// </summary>
         public ServerEndpointInfoSource(
             IOptions<DiagnosticPortOptions> portOptions,
-            IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null)
+            IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null,
+            IDumpService dumpService = null)
         {
             _callbacks = callbacks ?? Enumerable.Empty<IEndpointInfoSourceCallbacks>();
+            _dumpService = dumpService;
             _portOptions = portOptions.Value;
 
             BoundedChannelOptions channelOptions = new(PendingRemovalChannelCapacity)
@@ -244,8 +248,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// <summary>
         /// Tests the endpoint to see if its connection is viable.
         /// </summary>
-        private static async Task<bool> CheckEndpointAsync(EndpointInfo info, CancellationToken token)
+        private async Task<bool> CheckEndpointAsync(EndpointInfo info, CancellationToken token)
         {
+            // If a dump operation is in progress, the runtime is likely to not respond to
+            // diagnostic requests. Do not check for responsiveness while the dump operation
+            // is in progress.
+            if (_dumpService?.IsExecutingOperation(info) == true)
+            {
+                return true;
+            }
+
             using var timeoutSource = new CancellationTokenSource();
             using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutSource.Token);
 
