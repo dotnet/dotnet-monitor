@@ -489,7 +489,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string version = GetDotnetMonitorVersion();
                 string runtimeVersion = Environment.Version.ToString();
-                DiagnosticPortConnectionMode diagnosticPortMode = GetDiagnosticPortMode();
+                DiagnosticPortConnectionMode diagnosticPortMode = _diagnosticPortOptions.Value.GetConnectionMode();
                 string diagnosticPortName = GetDiagnosticPortName();
 
                 Models.DotnetMonitorInfo dotnetMonitorInfo = new Models.DotnetMonitorInfo()
@@ -519,11 +519,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return assemblyVersionAttribute.InformationalVersion;
             }
-        }
-
-        private DiagnosticPortConnectionMode GetDiagnosticPortMode()
-        {
-            return _diagnosticPortOptions.Value.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode);
         }
 
         private string GetDiagnosticPortName()
