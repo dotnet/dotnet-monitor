@@ -32,11 +32,13 @@
     <!-- dotnet/arcade references -->
     <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.21526.1</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>6.0.0-rtm.21523.4</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21523.4</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21525.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21525.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
+    <MicrosoftNETCoreAppRuntimewinx64Version>6.0.0-rtm.21518.12</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21518.12</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.251801</MicrosoftFileFormatsVersion>
@@ -46,8 +48,8 @@
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
     <MicrosoftNETCoreApp50Version>5.0.11</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
-    <MicrosoftNETCoreApp60Version>$(VSRedistCommonNetCoreSharedFrameworkx6460Version)</MicrosoftNETCoreApp60Version>
-    <MicrosoftAspNetCoreApp60Version>$(VSRedistCommonAspNetCoreSharedFrameworkx6460Version)</MicrosoftAspNetCoreApp60Version>
+    <MicrosoftNETCoreApp60Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp60Version>
+    <MicrosoftAspNetCoreApp60Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp60Version>
   </PropertyGroup>
   <PropertyGroup Label="Manual">
     <AzureStorageBlobsVersion>12.6.0</AzureStorageBlobsVersion>
