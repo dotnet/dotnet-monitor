@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
@@ -16,17 +17,28 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
     public static class TargetFrameworkMonikerExtensions
     {
-        public static string GetAspNetCoreFrameworkVersion(this TargetFrameworkMoniker moniker)
+        public static Version GetAspNetCoreFrameworkVersion(this TargetFrameworkMoniker moniker)
+        {
+            return ParseVersionRemoveLabel(moniker.GetAspNetCoreFrameworkVersionString());
+        }
+
+        public static string GetAspNetCoreFrameworkVersionString(this TargetFrameworkMoniker moniker)
         {
             switch (moniker)
             {
                 case TargetFrameworkMoniker.Current:
                     return DotNetHost.CurrentAspNetCoreVersionString;
+                case TargetFrameworkMoniker.NetCoreApp31:
+                    return DotNetHost.AspNetCore31VersionString;
+                case TargetFrameworkMoniker.Net50:
+                    return DotNetHost.AspNetCore50VersionString;
+                case TargetFrameworkMoniker.Net60:
+                    return DotNetHost.AspNetCore60VersionString;
             }
             throw CreateUnsupportedException(moniker);
         }
 
-        public static string GetNetCoreAppFrameworkVersion(this TargetFrameworkMoniker moniker)
+        public static string GetNetCoreAppFrameworkVersionString(this TargetFrameworkMoniker moniker)
         {
             switch (moniker)
             {
@@ -71,6 +83,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         private static ArgumentException CreateUnsupportedException(TargetFrameworkMoniker moniker)
         {
             return new ArgumentException($"Unsupported target framework moniker: {moniker:G}");
+        }
+
+        private static Version ParseVersionRemoveLabel(string versionString)
+        {
+            Assert.NotNull(versionString);
+            int prereleaseLabelIndex = versionString.IndexOf('-');
+            if (prereleaseLabelIndex >= 0)
+            {
+                versionString = versionString.Substring(0, prereleaseLabelIndex);
+            }
+            return Version.Parse(versionString);
         }
 
         private static readonly TargetFrameworkMoniker CurrentTargetFrameworkMoniker =
