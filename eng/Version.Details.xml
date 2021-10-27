@@ -42,6 +42,14 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>f389f732d8cdca8ee1e38a534cf10c8c3182ba39</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0">
+      <Uri>https://github.com/dotnet/runtime</Uri>
+      <Sha>4822e3c3aa77eb82b2fb33c9321f923cf11ddde6</Sha>
+    </Dependency>
+    <Dependency Name="Microsoft.Extensions.Logging.EventSource" Version="6.0.0">
+      <Uri>https://github.com/dotnet/runtime</Uri>
+      <Sha>4822e3c3aa77eb82b2fb33c9321f923cf11ddde6</Sha>
+    </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.250401">
       <Uri>https://github.com/dotnet/symstore</Uri>
       <Sha>cb24099215a83975c360792edf35102ff0d10702</Sha>

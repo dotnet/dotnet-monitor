@@ -39,9 +39,11 @@
     <MicrosoftDiagnosticsMonitoringVersion>5.0.251802</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.251802</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.0</MicrosoftExtensionsConfigurationKeyPerFileVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.0</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
+    <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
     <MicrosoftNETCoreAppRuntimewinx64Version>6.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>
     <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21522.10</VSRedistCommonNetCoreSharedFrameworkx6460Version>
@@ -64,8 +66,6 @@
     <MicrosoftAspNetCoreMvcVersion>2.1.3</MicrosoftAspNetCoreMvcVersion>
     <MicrosoftAspNetCoreServerKestrelCoreVersion>2.1.7</MicrosoftAspNetCoreServerKestrelCoreVersion>
     <MicrosoftBclHashCodeVersion>1.1.0</MicrosoftBclHashCodeVersion>
-    <MicrosoftExtensionsConfigurationAbstractionsVersion>5.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
-    <MicrosoftExtensionsLoggingEventSourceVersion>5.0.1</MicrosoftExtensionsLoggingEventSourceVersion>
     <MicrosoftIdentityModelTokensVersion>6.11.1</MicrosoftIdentityModelTokensVersion>
     <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
     <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
