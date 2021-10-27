@@ -90,6 +90,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         .OptionsValidationFailure(ex);
                     return -1;
                 }
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
+                {
+                    // The host will throw a OperationCanceledException if it cannot shut down the
+                    // hosted services gracefully within the shut down timeout period. Handle the
+                    // exception and let the tool exit gracefully.
+                    return 0;
+                }
                 finally
                 {
                     if (host is IAsyncDisposable asyncDisposable)
