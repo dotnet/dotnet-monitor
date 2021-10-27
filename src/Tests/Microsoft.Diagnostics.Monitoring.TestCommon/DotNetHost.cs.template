@@ -14,5 +14,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static readonly string NetCore31VersionString = "$MicrosoftNetCoreApp31Version$";
         public static readonly string NetCore50VersionString = "$MicrosoftNetCoreApp50Version$";
         public static readonly string NetCore60VersionString = "$MicrosoftNetCoreApp60Version$";
+
+        public static readonly string AspNetCore31VersionString = "$MicrosoftAspNetCoreApp31Version$";
+        public static readonly string AspNetCore50VersionString = "$MicrosoftAspNetCoreApp50Version$";
+        public static readonly string AspNetCore60VersionString = "$MicrosoftAspNetCoreApp60Version$";
     }
 }

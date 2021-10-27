@@ -24,6 +24,9 @@
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp31Version$', '$(MicrosoftNETCoreApp31Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp50Version$', '$(MicrosoftNETCoreApp50Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp60Version$', '$(MicrosoftNETCoreApp60Version)'))</TransformedContent>
+      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp31Version$', '$(MicrosoftAspNetCoreApp31Version)'))</TransformedContent>
+      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp50Version$', '$(MicrosoftAspNetCoreApp50Version)'))</TransformedContent>
+      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp60Version$', '$(MicrosoftAspNetCoreApp60Version)'))</TransformedContent>
     </PropertyGroup>
     <WriteLinesToFile File="$(DotNetHostGeneratedFileName)" Overwrite="true" Lines="$(TransformedContent)" WriteOnlyWhenDifferent="true" />
   </Target>

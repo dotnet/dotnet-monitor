@@ -39,7 +39,11 @@
     <MicrosoftDiagnosticsMonitoringVersion>5.0.251802</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.251802</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
+    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.0</MicrosoftExtensionsConfigurationKeyPerFileVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.0</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftNETCoreAppRuntimewinx64Version>6.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
+    <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>
     <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21522.10</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.250401</MicrosoftFileFormatsVersion>
@@ -61,8 +65,6 @@
     <MicrosoftAspNetCoreServerKestrelCoreVersion>2.1.7</MicrosoftAspNetCoreServerKestrelCoreVersion>
     <MicrosoftBclHashCodeVersion>1.1.0</MicrosoftBclHashCodeVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>5.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>5.0.0</MicrosoftExtensionsLoggingAbstractionsVersion>
-    <MicrosoftExtensionsLoggingConsoleVersion>5.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftExtensionsLoggingEventSourceVersion>5.0.1</MicrosoftExtensionsLoggingEventSourceVersion>
     <MicrosoftIdentityModelTokensVersion>6.11.1</MicrosoftIdentityModelTokensVersion>
     <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
@@ -85,6 +87,5 @@
     <MicrosoftBclAsyncInterfacesVersion>1.1.0</MicrosoftBclAsyncInterfacesVersion>
     <MicrosoftDiagnosticsTracingTraceEventVersion>2.0.64</MicrosoftDiagnosticsTracingTraceEventVersion>
     <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
-    <SystemTextJsonVersion>4.7.1</SystemTextJsonVersion>
   </PropertyGroup>
 </Project>
