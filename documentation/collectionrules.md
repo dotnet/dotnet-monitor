@@ -1,24 +1,24 @@
 # Collection Rules
 
-`dotnet monitor` can be [configured](./configuration.md#Collection-Rule-Configuration) to automatically collect diagnostic artifacts based on conditions within the discovered processes.
+`dotnet monitor` can be [configured](./configuration.md#collection-rule-configuration) to automatically collect diagnostic artifacts based on conditions within the discovered processes.
 
->**NOTE:** Collection rules are only enabled when running dotnet-monitor in `Listen` mode. See [Connection Mode](configuration.md#Connection-Mode) configuration for details.
+>**NOTE:** Collection rules are only enabled when running dotnet-monitor in `Listen` mode. See [Connection Mode](configuration.md#connection-mode) configuration for details.
 
 A collection rule is composed of four key aspects:
-- [Filters](#Filters): Describes for which processes the rule is applied. Can filter on aspects such as process name, ID, and command line.
-- [Trigger](#Triggers): A condition to monitor in the target process.
-- [Actions](#Actions): A list of actions to execute when the trigger condition is satisfied.
-- [Limits](#Limits): Limits applied to the rule or action execution.
+- [Filters](#filters): Describes for which processes the rule is applied. Can filter on aspects such as process name, ID, and command line.
+- [Trigger](#triggers): A condition to monitor in the target process.
+- [Actions](#actions): A list of actions to execute when the trigger condition is satisfied.
+- [Limits](#limits): Limits applied to the rule or action execution.
 
 ## Behavior
 
-When a process is newly discovered by `dotnet monitor`, the tool will attempt to apply all of the configured collection rules. If a process matches the [filters](#Filters) on a rule or the rule does not have any filters, then the rule is applied to the process.
+When a process is newly discovered by `dotnet monitor`, the tool will attempt to apply all of the configured collection rules. If a process matches the [filters](#filters) on a rule or the rule does not have any filters, then the rule is applied to the process.
 
-An applied rule will start its [trigger](#Triggers) on the process, monitoring for the condition that the trigger describes. If the trigger is the `Startup` trigger, the trigger is immediately satisfied.
+An applied rule will start its [trigger](#triggers) on the process, monitoring for the condition that the trigger describes. If the trigger is the `Startup` trigger, the trigger is immediately satisfied.
 
-Once a trigger is satisfied, the [action](#Actions) list executed. Each action is started (see [Action List Execution](#Action-List-Execution) for more details) in the order as specified by the list of actions. When the execution of the action list is completed, the rule will restart the [trigger](#Triggers) to begin monitoring for the condition that the trigger describes.
+Once a trigger is satisfied, the [action](#actions) list executed. Each action is started (see [Action List Execution](#action-list-execution) for more details) in the order as specified by the list of actions. When the execution of the action list is completed, the rule will restart the [trigger](#triggers) to begin monitoring for the condition that the trigger describes.
 
-[Limits](#Limits) can be applied to inform the rule of how long the rule may run, how many times the action list may be executed, etc.
+[Limits](#limits) can be applied to inform the rule of how long the rule may run, how many times the action list may be executed, etc.
 
 ## Filters
 
@@ -26,9 +26,9 @@ A rule can describe for which processes that the rule is applied. If a discovere
 
 >**NOTE:** `dotnet monitor` is capable of observing multiple processes simulatenously. The filter mechanism for collection rules allows the user to specify which subset of the observed processes that each individual rule should be applied.
 
-The filter criteria are the same as those used for the [default process](./configuration.md#Default-Process-Configuration) configuration.
+The filter criteria are the same as those used for the [default process](./configuration.md#default-process-configuration) configuration.
 
-See [Filters](/configuration.md#Filters) configuration for details and an example of how to specify the filters.
+See [Filters](/configuration.md#filters) configuration for details and an example of how to specify the filters.
 
 ## Triggers
 
@@ -39,27 +39,27 @@ The following are the currently available triggers:
 | Name | Type | Description |
 |---|---|---|
 | Startup | Startup | Satisfied immediately when the rule is applied to a process. |
-| [AspNetRequestCount](./configuration.md#AspNetRequestCount-Trigger) | Event Pipe | Satisfied when the number of HTTP requests is above the threshold count. |
-| [AspNetRequestDuration](./coniguration.md#AspNetRequestDuration-Trigger) | Event Pipe | Satisfied when the number of HTTP requests have response times longer than the threshold duration. |
-| [AspNetResponseStatus](./configuration.md#AspNetResponseStatus-Trigger) | Event Pipe | Satisfied when the number of HTTP responses that have status codes matching the pattern list is above the specified threshold. |
-| [EventCounter](./configuration.md#EventCounter-Trigger) | Event Pipe | Satisfied when the value of a counter falls above, below, or between the described threshold. |
+| [AspNetRequestCount](./configuration.md#aspnetrequestcount-trigger) | Event Pipe | Satisfied when the number of HTTP requests is above the threshold count. |
+| [AspNetRequestDuration](./coniguration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests have response times longer than the threshold duration. |
+| [AspNetResponseStatus](./configuration.md#aspnetresponsestatus-trigger) | Event Pipe | Satisfied when the number of HTTP responses that have status codes matching the pattern list is above the specified threshold. |
+| [EventCounter](./configuration.md#eventcounter-trigger) | Event Pipe | Satisfied when the value of a counter falls above, below, or between the described threshold. |
 
 ## Actions
 
-Actions allow executing an operation or an external executable in response to a trigger condition being satisfied. Each type of action may have outputs that are consumable by other action settings using an action output dependency (see [Action Output Dependencies](#Action-Output-Dependencies) below).
+Actions allow executing an operation or an external executable in response to a trigger condition being satisfied. Each type of action may have outputs that are consumable by other action settings using an action output dependency (see [Action Output Dependencies](#action-output-dependencies) below).
 
 The following are the currently available actions:
 
 | Name | Description |
-| [CollectDump](./configuration.md#CollectDump-Action) | Collects a memory dump of the target process. |
-| [CollectGCDump](./configuration.md#CollectGCDump-Action) | Collects a gcdump of the target process. |
-| [CollectLogs](./configuration.md#CollectLogs-Action) | Collects logs from the target process. |
-| [CollectTrace](./configuration.md#CollectTrace-Action) | Collects an event trace of the target process. |
-| [Execute](./configuration.md#Execute-Action) | Executes an external executable with command line parameters. |
+| [CollectDump](./configuration.md#collectdump-action) | Collects a memory dump of the target process. |
+| [CollectGCDump](./configuration.md#collectgcdump-action) | Collects a gcdump of the target process. |
+| [CollectLogs](./configuration.md#collectlogs-action) | Collects logs from the target process. |
+| [CollectTrace](./configuration.md#collecttrace-action) | Collects an event trace of the target process. |
+| [Execute](./configuration.md#execute-action) | Executes an external executable with command line parameters. |
 
 ## Limits
 
-See [Limits](./configuration.md#Limits) for details on the configurable limits.
+See [Limits](./configuration.md#limits) for details on the configurable limits.
 
 ## Advanced Behavior
 
