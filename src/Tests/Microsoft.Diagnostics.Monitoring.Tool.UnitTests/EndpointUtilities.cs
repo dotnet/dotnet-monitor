@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _outputHelper = outputHelper;
         }
 
-        public async Task<ServerSourceHolder> StartServerAsync(EndpointInfoSourceCallback sourceCallback = null)
+        public async Task<ServerSourceHolder> StartServerAsync(EndpointInfoSourceCallback sourceCallback = null, IDumpService dumpService = null)
         {
             DiagnosticPortHelper.Generate(DiagnosticPortConnectionMode.Listen, out _, out string transportName);
             _outputHelper.WriteLine("Starting server endpoint info source at '" + transportName + "'.");
@@ -37,6 +37,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             if (null != sourceCallback)
             {
                 callbacks.Add(sourceCallback);
+                if (null != dumpService)
+                {
+                    callbacks.Add(new DumpServiceEndpointInfoSourceCallback(dumpService));
+                }
             }
 
             IOptions<DiagnosticPortOptions> portOptions = Extensions.Options.Options.Create(
@@ -46,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     EndpointName = transportName
                 });
 
-            ServerEndpointInfoSource source = new(portOptions, callbacks);
+            ServerEndpointInfoSource source = new(portOptions, callbacks, dumpService);
 
             await source.StartAsync(CancellationToken.None);
 

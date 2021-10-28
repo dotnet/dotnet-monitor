@@ -52,11 +52,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    ProcessInfo processInfo = await client.GetProcessAsync(processId);
-                    Assert.NotNull(processInfo);
-
                     using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type);
                     Assert.NotNull(holder);
+
+                    // The dump operation may still be in progress but the process should still be discoverable.
+                    // If this check fails, then the dump operation is causing dotnet-monitor to not be able
+                    // to observe the process any more.
+                    ProcessInfo processInfo = await client.GetProcessAsync(processId);
+                    Assert.NotNull(processInfo);
 
                     await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), holder.Stream);
 
