@@ -28,7 +28,7 @@ A rule can describe for which processes that the rule is applied. If a discovere
 
 The filter criteria are the same as those used for the [default process](./configuration.md#default-process-configuration) configuration.
 
-See [Filters](/configuration.md#filters) configuration for details and an example of how to specify the filters.
+See [Filters](./configuration.md#filters) configuration for details and an example of how to specify the filters.
 
 ## Triggers
 
@@ -40,7 +40,7 @@ The following are the currently available triggers:
 |---|---|---|
 | Startup | Startup | Satisfied immediately when the rule is applied to a process. |
 | [AspNetRequestCount](./configuration.md#aspnetrequestcount-trigger) | Event Pipe | Satisfied when the number of HTTP requests is above the threshold count. |
-| [AspNetRequestDuration](./coniguration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests have response times longer than the threshold duration. |
+| [AspNetRequestDuration](./configuration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests have response times longer than the threshold duration. |
 | [AspNetResponseStatus](./configuration.md#aspnetresponsestatus-trigger) | Event Pipe | Satisfied when the number of HTTP responses that have status codes matching the pattern list is above the specified threshold. |
 | [EventCounter](./configuration.md#eventcounter-trigger) | Event Pipe | Satisfied when the value of a counter falls above, below, or between the described threshold. |
 
@@ -51,6 +51,7 @@ Actions allow executing an operation or an external executable in response to a 
 The following are the currently available actions:
 
 | Name | Description |
+|---|---|
 | [CollectDump](./configuration.md#collectdump-action) | Collects a memory dump of the target process. |
 | [CollectGCDump](./configuration.md#collectgcdump-action) | Collects a gcdump of the target process. |
 | [CollectLogs](./configuration.md#collectlogs-action) | Collects logs from the target process. |
