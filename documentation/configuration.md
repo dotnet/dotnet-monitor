@@ -618,6 +618,12 @@ An action that collects a dump of the process that the collection rule is target
 | `Type` | [DumpType](api/definitions.md#DumpType) | false | The type of dump to collect | `WithHeap` |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected dump. | |
 
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
+
 ##### Example
 
 Usage that collects a full dump and egresses it to a provider named "AzureBlobDumps".
@@ -638,6 +644,12 @@ An action that collects a gcdump of the process that the collection rule is targ
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected gcdump. | |
+
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
 
 ##### Example
 
@@ -664,6 +676,12 @@ An action that collects a trace of the process that the collection rule is targe
 | `Duration` | TimeSpan? | false | The duration of the trace operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected trace. | | | |
 
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
+
 ##### Example
 
 Usage that collects a CPU trace for 30 seconds and egresses it to a provider named "TmpDir".
@@ -689,6 +707,12 @@ An action that collects logs for the process that the collection rule is targeti
 | `Format` | [LogFormat](api/definitions.md#LogFormat)? | false | The format of the logs artifact. | `PlainText` | | |
 | `Duration` | TimeSpan? | false | The duration of the logs operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected logs. | | | |
+
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
 
 ##### Example
 
