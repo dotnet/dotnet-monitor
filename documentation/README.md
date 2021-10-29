@@ -6,6 +6,7 @@ When running a dotnet application, differences in diverse local and production e
 
 ## Table of contents
 
+- [Releases](./releases.md)
 - [Setup](./setup.md)
 - [Getting Started](#)
     - [Running on a local machine](#)

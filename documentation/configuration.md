@@ -618,6 +618,12 @@ An action that collects a dump of the process that the collection rule is target
 | `Type` | [DumpType](api/definitions.md#DumpType) | false | The type of dump to collect | `WithHeap` |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected dump. | |
 
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
+
 ##### Example
 
 Usage that collects a full dump and egresses it to a provider named "AzureBlobDumps".
@@ -638,6 +644,12 @@ An action that collects a gcdump of the process that the collection rule is targ
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected gcdump. | |
+
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
 
 ##### Example
 
@@ -663,6 +675,12 @@ An action that collects a trace of the process that the collection rule is targe
 | `BufferSizeMegabytes` | int | false | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Only applies when `Providers` is specified. | `256` | `1` | `1024` |
 | `Duration` | TimeSpan? | false | The duration of the trace operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected trace. | | | |
+
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
 
 ##### Example
 
@@ -690,6 +708,12 @@ An action that collects logs for the process that the collection rule is targeti
 | `Duration` | TimeSpan? | false | The duration of the logs operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected logs. | | | |
 
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
+
 ##### Example
 
 Usage that collects logs at the Information level for 30 seconds and egresses it to a provider named "TmpDir".
@@ -713,6 +737,12 @@ An action that executes an executable found in the file system. Non-zero exit co
 | `Path` | string | true | The path to the executable. | |
 | `Arguments` | string | false | The arguments to pass to the executable. | `null` |
 | `IgnoreExitCode` | bool? | false | Ignores checking that the exit code is zero. | `false` |
+
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `ExitCode` | The exit code of the process. |
 
 ##### Example
 

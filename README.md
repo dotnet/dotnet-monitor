@@ -1,6 +1,10 @@
-# .NET Core Diagnostics Repo
+# .NET Monitor Repo
 
-This repository contains the source code for dotnet-monitor, a diagnostic tool 
+This repository contains the source code for dotnet-monitor, a diagnostic tool for capturing diagnostic artifacts in an operator-driven or automated manner.
+
+## Releases
+
+See [Releases](documentation/releases.md) for the release history.
 
 ## Building the Repository
 
