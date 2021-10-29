@@ -16,7 +16,7 @@ When a process is newly discovered by `dotnet monitor`, the tool will attempt to
 
 An applied rule will start its [trigger](#triggers) on the process, monitoring for the condition that the trigger describes. If the trigger is the `Startup` trigger, the trigger is immediately satisfied.
 
-Once a trigger is satisfied, the [action](#actions) list executed. Each action is started (see [Action List Execution](#action-list-execution) for more details) in the order as specified by the list of actions. When the execution of the action list is completed, the rule will restart the [trigger](#triggers) to begin monitoring for the condition that the trigger describes.
+Once a trigger is satisfied, the [action](#actions) list is executed. Each action is started (see [Action List Execution](#action-list-execution) for more details) in the order as specified by the list of actions. When the execution of the action list is completed, the rule will restart the [trigger](#triggers) to begin monitoring for the condition that the trigger describes.
 
 [Limits](#limits) can be applied to inform the rule of how long the rule may run, how many times the action list may be executed, etc.
 
@@ -24,7 +24,7 @@ Once a trigger is satisfied, the [action](#actions) list executed. Each action i
 
 A rule can describe for which processes that the rule is applied. If a discovered process does not match the filters, then the rule is not applied to the process. If filters are not configured, the rule is applied to the process.
 
->**NOTE:** `dotnet monitor` is capable of observing multiple processes simulatenously. The filter mechanism for collection rules allows the user to specify which subset of the observed processes that each individual rule should be applied.
+>**NOTE:** `dotnet monitor` is capable of observing multiple processes simultaneously. The filter mechanism for collection rules allows the user to specify which subset of the observed processes that each individual rule should be applied.
 
 The filter criteria are the same as those used for the [default process](./configuration.md#default-process-configuration) configuration.
 
@@ -105,7 +105,7 @@ When the action list of a rule is executed, the actions are started in the order
 1. Start `C`
 1. Wait for all actions to complete.
 
-The execution of this list **does not** wait for action `A` to complete before starting action `B`; similarly, action `B` completion is not waited before starting action `C`. The execution of the list will wait for all actions to complete before the execution of the list is considered completed.
+The execution of this list **does not** wait for action `A` to complete before starting action `B`; similarly, action `B` completion is not awaited before starting action `C`. The execution of the list will wait for all actions to complete before the execution of the list is considered completed.
 
 The above behavior can be changed with the `WaitForCompletion` property on individual actions or using action output dependencies.
 
@@ -117,7 +117,7 @@ If `WaitForCompletion` is set to `true` on an action, the execution of the list 
 1. Start `C`
 1. Wait for all remaining actions (namely, `A` and `C`) to complete.
 
-If an action has an output dependency on another action, the execution of the list will wait for the dependency to complete before starting the depedent action. Using the same `A`, `B`, `C` example, if action `C` has has an output dependency on action `A`, then the execution of the list is:
+If an action has an output dependency on another action, the execution of the list will wait for the dependency to complete before starting the dependent action. Using the same `A`, `B`, `C` example, if action `C` has has an output dependency on action `A`, then the execution of the list is:
 
 1. Start `A`
 1. Start `B`

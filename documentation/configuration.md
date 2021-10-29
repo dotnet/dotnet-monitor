@@ -738,6 +738,12 @@ An action that executes an executable found in the file system. Non-zero exit co
 | `Arguments` | string | false | The arguments to pass to the executable. | `null` |
 | `IgnoreExitCode` | bool? | false | Ignores checking that the exit code is zero. | `false` |
 
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `ExitCode` | The exit code of the process. |
+
 ##### Example
 
 Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
