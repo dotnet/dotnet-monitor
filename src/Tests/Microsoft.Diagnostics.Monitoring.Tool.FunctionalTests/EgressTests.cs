@@ -46,12 +46,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _tempDirectory = new(outputHelper);
         }
 
-        [Fact]
-        public async Task EgressTraceTest()
+        [Theory]
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public async Task EgressTraceTest(TargetFrameworkMoniker appTfm)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 DiagnosticPortConnectionMode.Connect,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
@@ -74,12 +76,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Fact]
-        public async Task EgressCancelTest()
+        [Theory]
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public async Task EgressCancelTest(TargetFrameworkMoniker appTfm)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 DiagnosticPortConnectionMode.Connect,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
@@ -108,12 +112,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Fact]
-        public async Task EgressListTest()
+        [Theory]
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public async Task EgressListTest(TargetFrameworkMoniker appTfm)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 DiagnosticPortConnectionMode.Connect,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
@@ -143,12 +149,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Fact(Skip = "https://github.com/dotnet/dotnet-monitor/issues/586")]
-        public async Task ConcurrencyLimitTest()
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/586")]
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public async Task ConcurrencyLimitTest(TargetFrameworkMoniker appTfm)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 DiagnosticPortConnectionMode.Connect,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
@@ -179,12 +187,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Fact]
-        public async Task SharedConcurrencyLimitTest()
+        [Theory]
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public async Task SharedConcurrencyLimitTest(TargetFrameworkMoniker appTfm)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 DiagnosticPortConnectionMode.Connect,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>
@@ -226,12 +236,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that turning off HTTP egress results in an error for dumps and logs (gcdumps and traces are currently not tested)
         /// </summary>
-        [Fact]
-        public async Task DisableHttpEgressTest()
+        [Theory]
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public async Task DisableHttpEgressTest(TargetFrameworkMoniker appTfm)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 DiagnosticPortConnectionMode.Connect,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, appClient) =>
@@ -265,12 +277,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// rather than queueing the request and having the operation report that it failed.
         /// </summary>
         /// <returns></returns>
-        [Fact]
-        public async Task EgressNotExistTest()
+        [Theory]
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public async Task EgressNotExistTest(TargetFrameworkMoniker appTfm)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 DiagnosticPortConnectionMode.Connect,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (appRunner, apiClient) =>

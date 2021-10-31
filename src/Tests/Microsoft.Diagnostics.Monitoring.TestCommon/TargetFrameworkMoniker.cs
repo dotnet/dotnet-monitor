@@ -38,6 +38,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             throw CreateUnsupportedException(moniker);
         }
 
+        public static Version GetNetCoreAppFrameworkVersion(this TargetFrameworkMoniker moniker)
+        {
+            return ParseVersionRemoveLabel(moniker.GetNetCoreAppFrameworkVersionString());
+        }
+
         public static string GetNetCoreAppFrameworkVersionString(this TargetFrameworkMoniker moniker)
         {
             switch (moniker)
@@ -78,6 +83,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     return "net6.0";
             }
             throw CreateUnsupportedException(moniker);
+        }
+
+        public static bool IsLowerThan(this TargetFrameworkMoniker moniker, TargetFrameworkMoniker thresholdMoniker)
+        {
+            return TargetFrameworkMonikerComparer.Default.Compare(moniker, thresholdMoniker) < 0;
+        }
+
+        public static bool IsSameOrHigherThan(this TargetFrameworkMoniker moniker, TargetFrameworkMoniker thresholdMoniker)
+        {
+            return TargetFrameworkMonikerComparer.Default.Compare(moniker, thresholdMoniker) >= 0;
         }
 
         private static ArgumentException CreateUnsupportedException(TargetFrameworkMoniker moniker)

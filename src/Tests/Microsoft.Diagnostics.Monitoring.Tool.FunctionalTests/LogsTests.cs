@@ -40,17 +40,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that all log events are collected if log level set to Trace.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
-        public Task LogsAllCategoriesTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(LogsTests))]
+        public Task LogsAllCategoriesTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
+                appTfm,
                 mode,
                 LogLevel.Trace,
                 async reader =>
@@ -86,16 +81,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that log events with level at or above the specified level are collected.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
-        public Task LogsDefaultLevelTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(LogsTests))]
+        public Task LogsDefaultLevelTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
+                appTfm,
                 mode,
                 LogLevel.Warning,
                 async reader =>
@@ -118,16 +109,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events with a category that doesn't have a specified level are collected
         /// at the log level specified in the request body.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
-        public Task LogsDefaultLevelFallbackTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(LogsTests))]
+        public Task LogsDefaultLevelFallbackTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
+                appTfm,
                 mode,
                 new LogsConfiguration()
                 {
@@ -159,18 +146,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the level query parameter.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
-        public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(LogsTests))]
+        public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 mode,
                 TestAppScenarios.Logger.Name,
                 appValidate: async (runner, client) =>
@@ -195,18 +178,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the default log level in the request body.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
-        public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(LogsTests))]
+        public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 mode,
                 TestAppScenarios.Logger.Name,
                 appValidate: async (runner, client) =>
@@ -231,16 +210,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
-        public Task LogsUseAppFiltersViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(LogsTests))]
+        public Task LogsUseAppFiltersViaQueryTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
+                appTfm,
                 mode,
                 logLevel: null,
                 async reader =>
@@ -265,16 +240,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
-        public Task LogsUseAppFiltersViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(LogsTests))]
+        public Task LogsUseAppFiltersViaBodyTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
+                appTfm,
                 mode,
                 new LogsConfiguration()
                 {
@@ -304,16 +275,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events are collected for the categories and levels specified by the application
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
-        public Task LogsUseAppFiltersAndFilterSpecsTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(LogsTests))]
+        public Task LogsUseAppFiltersAndFilterSpecsTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
+                appTfm,
                 mode,
                 new LogsConfiguration()
                 {
@@ -348,16 +315,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [ConditionalTheory(nameof(SkipOnWindowsNetCore31))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
-        public Task LogsWildcardTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(LogsTests))]
+        public Task LogsWildcardTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
+                appTfm,
                 mode,
                 new LogsConfiguration()
                 {
@@ -392,6 +355,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         private Task ValidateLogsAsync(
+            TargetFrameworkMoniker appTfm,
             DiagnosticPortConnectionMode mode,
             LogLevel? logLevel,
             Func<ChannelReader<LogEntry>, Task> callback,
@@ -400,6 +364,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 mode,
                 TestAppScenarios.Logger.Name,
                 appValidate: async (runner, client) =>
@@ -415,6 +380,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         private Task ValidateLogsAsync(
+            TargetFrameworkMoniker appTfm,
             DiagnosticPortConnectionMode mode,
             LogsConfiguration configuration,
             Func<ChannelReader<LogEntry>, Task> callback,
@@ -423,6 +389,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 mode,
                 TestAppScenarios.Logger.Name,
                 appValidate: async (runner, client) =>
@@ -463,16 +430,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await LogsTestUtilities.ValidateLogsEquality(holder.Stream, callback, logFormat, _outputHelper);
         }
 
-        public static bool SkipOnWindowsNetCore31
+        public static IEnumerable<object[]> GetTestParameters()
         {
-            get
+            foreach (Tuple<TargetFrameworkMoniker, DiagnosticPortConnectionMode> tuple in CommonMemberDataParameters.AllTfmsAndConnectionModes)
             {
+                TargetFrameworkMoniker appTfm = tuple.Item1;
+                DiagnosticPortConnectionMode connectionMode = tuple.Item2;
+
                 // Skip logs tests for .NET Core 3.1 on Windows; these tests sporadically
                 // fail frequently causing insertions and builds with unrelated changes to
                 // fail. See https://github.com/dotnet/dotnet-monitor/issues/807 for details.
-                return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
-                    DotNetHost.RuntimeVersion.Major != 3 ||
-                    DotNetHost.RuntimeVersion.Minor != 1;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+                    TargetFrameworkMoniker.NetCoreApp31 == appTfm)
+                    continue;
+
+                // There is no technical reason for this split. It's more practical so that there
+                // is good coverage of the different TFM x ConnectionMode x LogFormat combinations
+                // without having to test every single combination.
+                if (DiagnosticPortConnectionMode.Connect == connectionMode)
+                {
+                    yield return new object[] { appTfm, connectionMode, LogFormat.JsonSequence };
+                }
+                else
+                {
+                    yield return new object[] { appTfm, connectionMode, LogFormat.NewlineDelimitedJson };
+                }
             }
         }
     }

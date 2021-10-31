@@ -41,11 +41,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-        [Fact]
-        public Task TestDefaultMetrics()
+        [Theory]
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public Task TestDefaultMetrics(TargetFrameworkMoniker appTfm)
         {
-            return ScenarioRunner.SingleTarget(_outputHelper,
+            return ScenarioRunner.SingleTarget(
+                _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 DiagnosticPortConnectionMode.Connect,
                 TestAppScenarios.AsyncWait.Name,
                 async (appRunner, apiClient) =>
@@ -69,11 +72,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Fact]
-        public Task TestCustomMetrics()
+        [Theory]
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public Task TestCustomMetrics(TargetFrameworkMoniker appTfm)
         {
-            return ScenarioRunner.SingleTarget(_outputHelper,
+            return ScenarioRunner.SingleTarget(
+                _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 DiagnosticPortConnectionMode.Connect,
                 TestAppScenarios.AsyncWait.Name,
                 async (appRunner, apiClient) =>

@@ -10,6 +10,8 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -30,22 +32,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsDumpSupported))]
-        [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Full)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Mini)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Triage)]
-        [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.WithHeap)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.Full)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.Mini)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.Triage)]
-        [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.WithHeap)]
-#endif
-        public Task DumpTest(DiagnosticPortConnectionMode mode, DumpType type)
+        [Theory]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(DumpTests))]
+        public Task DumpTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode, DumpType type)
         {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 mode,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
@@ -68,11 +62,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureApp: runner =>
                 {
                     // MachO not supported on .NET 5, only ELF: https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major == 5)
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && appTfm == TargetFrameworkMoniker.Net50)
                     {
                         runner.Environment.Add(DumpTestUtilities.EnableElfDumpOnMacOS, "1");
                     }
                 });
+        }
+
+        public static IEnumerable<object[]> GetTestParameters()
+        {
+            foreach (Tuple<TargetFrameworkMoniker, DiagnosticPortConnectionMode> tuple in CommonMemberDataParameters.AllTfmsAndConnectionModes)
+            {
+                TargetFrameworkMoniker appTfm = tuple.Item1;
+                DiagnosticPortConnectionMode connectionMode = tuple.Item2;
+
+                // MacOS supported dumps starting in .NET 5
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && appTfm.IsLowerThan(TargetFrameworkMoniker.Net50))
+                    continue;
+
+                // MacOS dumps inconsistently segfault the runtime on .NET 5: https://github.com/dotnet/dotnet-monitor/issues/174
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && appTfm == TargetFrameworkMoniker.Net50)
+                    continue;
+
+                // There is no technical reason for this split. It's more practical so that there
+                // is good coverage of the different TFM x ConnectionMode x DumpType combinations
+                // without having to test every single combination.
+                if (DiagnosticPortConnectionMode.Connect == connectionMode)
+                {
+                    yield return new object[] { appTfm, connectionMode, DumpType.Full };
+                    yield return new object[] { appTfm, connectionMode, DumpType.Mini };
+                }
+                else
+                {
+                    yield return new object[] { appTfm, connectionMode, DumpType.Triage };
+                    yield return new object[] { appTfm, connectionMode, DumpType.WithHeap };
+                }
+            }
         }
     }
 }

@@ -12,11 +12,12 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,7 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-#if NET5_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// discovering the target process.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_StartupTriggerTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(CollectionRuleTests))]
+        public async Task CollectionRule_StartupTriggerTest(TargetFrameworkMoniker appTfm)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
@@ -55,7 +55,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
-                mode,
+                appTfm,
+                DiagnosticPortConnectionMode.Listen,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
                 {
@@ -81,8 +82,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// without a sliding window duration.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_ActionLimitTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(CollectionRuleTests))]
+        public async Task CollectionRule_ActionLimitTest(TargetFrameworkMoniker appTfm)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
@@ -93,7 +94,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
-                mode,
+                appTfm,
+                DiagnosticPortConnectionMode.Listen,
                 TestAppScenarios.SpinWait.Name,
                 appValidate: async (runner, client) =>
                 {
@@ -127,16 +129,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Validates that a collection rule with a command line filter can be matched to the
         /// target process.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotNet5OrGreaterOnUnix))]
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_CommandLineFilterMatchTest(DiagnosticPortConnectionMode mode)
+        /// <remarks>
+        /// The GetProcessInfo command is not providing command line arguments (only the process name)
+        /// for .NET 5+ process on non-Windows when suspended. See https://github.com/dotnet/dotnet-monitor/issues/885
+        /// Since collection rules only work on processes that connect to a listening server, all valid
+        /// test cases are .NET5+; thus, disable this test on non-Windows platforms.
+        /// </remarks>
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsWindows))]
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(CollectionRuleTests))]
+        public async Task CollectionRule_CommandLineFilterMatchTest(TargetFrameworkMoniker appTfm)
         {
             Task startedTask = null;
 
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
-                mode,
+                appTfm,
+                DiagnosticPortConnectionMode.Listen,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
                 {
@@ -159,15 +168,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// target process.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_CommandLineFilterNoMatchTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(CollectionRuleTests))]
+        public async Task CollectionRule_CommandLineFilterNoMatchTest(TargetFrameworkMoniker appTfm)
         {
             Task filteredTask = null;
 
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
-                mode,
+                appTfm,
+                DiagnosticPortConnectionMode.Listen,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
                 {
@@ -192,15 +202,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// target process.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_ProcessNameFilterMatchTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(CollectionRuleTests))]
+        public async Task CollectionRule_ProcessNameFilterMatchTest(TargetFrameworkMoniker appTfm)
         {
             Task startedTask = null;
 
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
-                mode,
+                appTfm,
+                DiagnosticPortConnectionMode.Listen,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
                 {
@@ -223,15 +234,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// target process.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_ProcessNameFilterNoMatchTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(CollectionRuleTests))]
+        public async Task CollectionRule_ProcessNameFilterNoMatchTest(TargetFrameworkMoniker appTfm)
         {
             Task filteredTask = null;
 
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
-                mode,
+                appTfm,
+                DiagnosticPortConnectionMode.Listen,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
                 {
@@ -253,19 +265,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Validates that a change in the collection rule configuration is detected and applied correctly.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_ConfigurationChangeTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(CollectionRuleTests))]
+        public async Task CollectionRule_ConfigurationChangeTest(TargetFrameworkMoniker appTfm)
         {
             const string firstRuleName = "FirstRule";
             const string secondRuleName = "SecondRule";
 
             DiagnosticPortHelper.Generate(
-                mode,
+                DiagnosticPortConnectionMode.Listen,
                 out DiagnosticPortConnectionMode appConnectionMode,
                 out string diagnosticPortPath);
 
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
-            toolRunner.ConnectionMode = mode;
+            toolRunner.ConnectionMode = DiagnosticPortConnectionMode.Listen;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
 
@@ -278,7 +290,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await toolRunner.StartAsync();
 
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), tfm: appTfm);
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
@@ -314,16 +326,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Validates that when a process exits, the collection rules for the process are stopped.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_StoppedOnExitTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(GetTestParameters), MemberType = typeof(CollectionRuleTests))]
+        public async Task CollectionRule_StoppedOnExitTest(TargetFrameworkMoniker appTfm)
         {
             DiagnosticPortHelper.Generate(
-                mode,
+                DiagnosticPortConnectionMode.Listen,
                 out DiagnosticPortConnectionMode appConnectionMode,
                 out string diagnosticPortPath);
 
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
-            toolRunner.ConnectionMode = mode;
+            toolRunner.ConnectionMode = DiagnosticPortConnectionMode.Listen;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
 
@@ -341,7 +353,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await toolRunner.StartAsync();
 
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), tfm: appTfm);
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
@@ -363,12 +375,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await rulesStoppedTask;
         }
 
-        // The GetProcessInfo command is not providing command line arguments (only the process name)
-        // for .NET 5+ process on non-Windows when suspended. See https://github.com/dotnet/dotnet-monitor/issues/885
-        private static bool IsNotNet5OrGreaterOnUnix =>
-            DotNetHost.RuntimeVersion.Major < 5 ||
-            RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-
-#endif
+        public static IEnumerable<object[]> GetTestParameters()
+        {
+            foreach (TargetFrameworkMoniker tfm in CommonMemberDataParameters.AllTfms)
+            {
+                if (tfm.IsSameOrHigherThan(TargetFrameworkMoniker.Net50))
+                {
+                    yield return new object[] { tfm };
+                }
+            }
+        }
     }
 }

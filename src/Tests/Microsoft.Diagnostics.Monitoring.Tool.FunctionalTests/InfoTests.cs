@@ -34,15 +34,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Tests that the info endpoint provides the expected output.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-#endif
-        public Task InfoEndpointValidationTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmAndConnectionModeParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public Task InfoEndpointValidationTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode)
         {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 mode,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>

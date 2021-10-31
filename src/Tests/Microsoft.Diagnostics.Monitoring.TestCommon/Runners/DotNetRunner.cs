@@ -68,6 +68,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public bool HasExited => HasStarted && _process.HasExited;
 
         /// <summary>
+        /// Gets the arguments as specified when starting the process.
+        /// </summary>
+        public string ProcessArguments => _process.StartInfo.Arguments;
+
+        /// <summary>
         /// Gets the process ID of the running process.
         /// </summary>
         public int ProcessId => _process.Id;

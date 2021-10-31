@@ -41,17 +41,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Tests that a single process is discoverable by dotnet-monitor.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-#endif
-        public Task SingleProcessIdentificationTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmAndConnectionModeParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public Task SingleProcessIdentificationTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode)
         {
             string expectedEnvVarValue = Guid.NewGuid().ToString("D");
 
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
+                appTfm,
                 mode,
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
@@ -65,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.NotNull(identifiers);
                     Assert.Single(identifiers);
 
-                    await VerifyProcessAsync(client, identifiers, processId, expectedEnvVarValue);
+                    await VerifyProcessAsync(client, identifiers, processId, expectedEnvVarValue, appTfm);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -91,11 +89,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Also tests for correct behavior in response to queries with different/multiple process identifiers.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect)]
-#if NET5_0_OR_GREATER
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-#endif
-        public async Task MultiProcessIdentificationTest(DiagnosticPortConnectionMode mode)
+        [MemberData(nameof(CommonMemberDataParameters.GetTfmAndConnectionModeParameters), MemberType = typeof(CommonMemberDataParameters))]
+        public async Task MultiProcessIdentificationTest(TargetFrameworkMoniker appTfm, DiagnosticPortConnectionMode mode)
         {
             DiagnosticPortHelper.Generate(
                 mode,
@@ -116,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             for (int i = 0; i < appCount; i++)
             {
-                AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId: i + 1);
+                AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId: i + 1, tfm: appTfm);
                 runner.ConnectionMode = appConnectionMode;
                 runner.DiagnosticPortPath = diagnosticPortPath;
                 runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
@@ -159,25 +154,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     int pid = processIdentifier.Pid;
                     Guid uid = processIdentifier.Uid;
                     string name = processIdentifier.Name;
-#if NET5_0_OR_GREATER
-                    // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
 
-                    List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
-
-                    processInfoQueriesCheck1.Add(await apiClient.GetProcessWithRetryAsync(_outputHelper, pid: pid));
-                    // Only check with uid if it is non-empty; this can happen in connect mode if the ProcessInfo command fails
-                    // to respond within the short period of time that is used to get the additional process information.
-                    if (uid == Guid.Empty)
+                    if (appTfm.IsSameOrHigherThan(TargetFrameworkMoniker.Net50))
                     {
-                        _outputHelper.WriteLine("Skipped uid-only check because it is empty GUID.");
-                    }
-                    else
-                    {
-                        processInfoQueriesCheck1.Add(await apiClient.GetProcessWithRetryAsync(_outputHelper, uid: uid));
+                        // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
+
+                        List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
+
+                        processInfoQueriesCheck1.Add(await apiClient.GetProcessWithRetryAsync(_outputHelper, pid: pid));
+                        // Only check with uid if it is non-empty; this can happen in connect mode if the ProcessInfo command fails
+                        // to respond within the short period of time that is used to get the additional process information.
+                        if (uid == Guid.Empty)
+                        {
+                            _outputHelper.WriteLine("Skipped uid-only check because it is empty GUID.");
+                        }
+                        else
+                        {
+                            processInfoQueriesCheck1.Add(await apiClient.GetProcessWithRetryAsync(_outputHelper, uid: uid));
+                        }
+
+                        VerifyProcessInfoEquality(processInfoQueriesCheck1);
                     }
 
-                    VerifyProcessInfoEquality(processInfoQueriesCheck1);
-#endif
                     // CHECK 2: Get response for requests using PID | PID and UID | PID, UID, and Name and check for consistency
 
                     List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
@@ -204,7 +202,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     Assert.True(runner.Environment.TryGetValue(ExpectedEnvVarName, out string expectedEnvVarValue));
 
-                    await VerifyProcessAsync(apiClient, identifiers, await runner.ProcessIdTask, expectedEnvVarValue);
+                    await VerifyProcessAsync(apiClient, identifiers, await runner.ProcessIdTask, expectedEnvVarValue, appTfm);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 }
@@ -275,7 +273,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Verifies that a process was found in the identifiers list and checks the /process?pid={processKey} route for the same process.
         /// </summary>
-        private async Task VerifyProcessAsync(ApiClient client, IEnumerable<ProcessIdentifier> identifiers, int processId, string expectedEnvVarValue)
+        private async Task VerifyProcessAsync(ApiClient client, IEnumerable<ProcessIdentifier> identifiers, int processId, string expectedEnvVarValue, TargetFrameworkMoniker appTfm)
         {
             Assert.NotNull(identifiers);
             ProcessIdentifier identifier = identifiers.FirstOrDefault(p => p.Pid == processId);
@@ -285,25 +283,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.NotNull(info);
             Assert.Equal(identifier.Pid, info.Pid);
 
-#if NET5_0_OR_GREATER
-            // Currently, the runtime instance identifier is only provided for .NET 5 and higher
-            info = await client.GetProcessWithRetryAsync(_outputHelper, uid: identifier.Uid);
-            Assert.NotNull(info);
-            Assert.Equal(identifier.Pid, info.Pid);
-            Assert.Equal(identifier.Uid, info.Uid);
+            if (appTfm.IsSameOrHigherThan(TargetFrameworkMoniker.Net50))
+            {
+                // Currently, the runtime instance identifier is only provided for .NET 5 and higher
+                info = await client.GetProcessWithRetryAsync(_outputHelper, uid: identifier.Uid);
+                Assert.NotNull(info);
+                Assert.Equal(identifier.Pid, info.Pid);
+                Assert.Equal(identifier.Uid, info.Uid);
 
-            Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(processId);
-            Assert.NotNull(env);
-            Assert.NotEmpty(env);
-            Assert.True(env.TryGetValue(ExpectedEnvVarName, out string actualEnvVarValue));
-            Assert.Equal(expectedEnvVarValue, actualEnvVarValue);
-#else
-            // .NET Core 3.1 and earlier do not support getting the environment block
-            ValidationProblemDetailsException validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => client.GetProcessEnvironmentAsync(processId));
-            Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
-            Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
-#endif
+                Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(processId);
+                Assert.NotNull(env);
+                Assert.NotEmpty(env);
+                Assert.True(env.TryGetValue(ExpectedEnvVarName, out string actualEnvVarValue));
+                Assert.Equal(expectedEnvVarValue, actualEnvVarValue);
+            }
+            else
+            {
+                // .NET Core 3.1 and earlier do not support getting the environment block
+                ValidationProblemDetailsException validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
+                    () => client.GetProcessEnvironmentAsync(processId));
+                Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
+                Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
+            }
         }
     }
 }
