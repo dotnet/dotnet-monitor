@@ -107,6 +107,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
 
             _outputHelper.WriteLine("Process ID: {0}", _runner.ProcessId);
+            _outputHelper.WriteLine("Running Args: {0}", _runner.ProcessArguments);
+
             _processId = _runner.ProcessId;
             _processIdSource.TrySetResult(_runner.ProcessId);
 

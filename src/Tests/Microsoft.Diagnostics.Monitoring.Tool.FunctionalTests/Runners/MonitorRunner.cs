@@ -77,6 +77,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             // the correct ASP.NET Core version (which can be different than the .NET
             // version, especially for prereleases).
             _runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
+#if NET6_0_OR_GREATER
+            _runner.TargetFramework = TargetFrameworkMoniker.Net60;
+#else
+            _runner.TargetFramework = TargetFrameworkMoniker.Net50;
+#endif
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
