@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -15,12 +16,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private readonly IEndpointInfoSourceInternal _endpointInfoSource;
         private readonly IOptionsMonitor<ProcessFilterOptions> _defaultProcessOptions;
+        private readonly ILogger<DiagnosticServices> _logger;
 
         public DiagnosticServices(IEndpointInfoSource endpointInfoSource,
-            IOptionsMonitor<ProcessFilterOptions> defaultProcessMonitor)
+            IOptionsMonitor<ProcessFilterOptions> defaultProcessMonitor,
+            ILogger<DiagnosticServices> logger)
         {
             _endpointInfoSource = (IEndpointInfoSourceInternal)endpointInfoSource;
             _defaultProcessOptions = defaultProcessMonitor;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilterConfig, CancellationToken token)
@@ -31,6 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 using CancellationTokenSource extendedInfoCancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
                 IList<Task<IProcessInfo>> processInfoTasks = new List<Task<IProcessInfo>>();
+                _logger.LogDebug("Start enumerating for process information.");
                 foreach (IEndpointInfo endpointInfo in await _endpointInfoSource.GetEndpointInfoAsync(token))
                 {
                     // CONSIDER: Can this processing be pushed into the IEndpointInfoSource implementation and cached
@@ -39,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     // - .NET Core 3.1 processes, which require issuing a brief event pipe session to get the process commmand
                     //   line information and parse out the process name
                     // - Caching entrypoint information (when that becomes available).
-                    processInfoTasks.Add(ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token));
+                    processInfoTasks.Add(ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token, _logger));
                 }
 
                 // FromEndpointInfoAsync can fill in the command line for .NET Core 3.1 processes by invoking the
@@ -49,6 +54,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 await Task.WhenAll(processInfoTasks);
 
+                _logger.LogDebug("Finish enumerating for process information.");
+
                 processes = processInfoTasks.Select(t => t.Result);
             }
             catch (UnauthorizedAccessException)
@@ -56,12 +63,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new InvalidOperationException(Strings.ErrorMessage_ProcessEnumeratuinFailed);
             }
 
+            _logger.LogDebug("Start filtering processes.");
+
             if (processFilterConfig != null)
             {
                 processes = processes.Where(p => processFilterConfig.Filters.All(c => c.MatchFilter(p)));
             }
 
-            return processes.ToArray();
+            try
+            {
+                return processes.ToArray();
+            }
+            finally
+            {
+                _logger.LogDebug("Finish filtering processes.");
+            }
         }
 
         public Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token)
