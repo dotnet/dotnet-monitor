@@ -39,6 +39,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             CancellationToken timeoutToken = timeoutTokenSource.Token;
             CancellationToken linkedToken = linkedTokenSource.Token;
 
+            using IDisposable _ = timeoutToken.Register(() => _logger.LogDebug("Abandoning processes..."));
+
+            _logger.LogDebug("Start enumerating processes.");
             var endpointInfoTasks = new List<Task<EndpointInfo>>();
             // Run the EndpointInfo creation parallel. The call to FromProcessId sends
             // a GetProcessInfo command to the runtime instance to get additional information.
@@ -48,6 +51,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     try
                     {
+                        _logger.LogDebug($"Start getting endpoint info for pid {pid}", pid);
+
                         return await EndpointInfo.FromProcessIdAsync(pid, linkedToken);
                     }
                     // Catch when timeout on waiting for EndpointInfo creation. Some runtime instances may be
@@ -64,12 +69,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         _logger.DiagnosticRequestFailed(pid, ex);
                         return null;
                     }
+                    finally
+                    {
+                        _logger.LogDebug($"Finish getting endpoint info for pid {pid}", pid);
+                    }
                 }, linkedToken));
             }
 
             timeoutTokenSource.CancelAfter(AbandonProcessTimeout);
 
             await Task.WhenAll(endpointInfoTasks);
+
+            _logger.LogDebug("Finish enumerating processes.");
 
             return endpointInfoTasks.Where(t => t.Result != null).Select(t => t.Result);
         }

@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -52,12 +53,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         // Creates an IProcessInfo object from the IEndpointInfo. Attempts to get the command line using event pipe
         // if the endpoint information doesn't provide it. The cancelation token can be used to timebox this fallback
         // mechanism.
-        public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken extendedInfoCancellationToken)
+        public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken extendedInfoCancellationToken, ILogger logger = null)
         {
             if (null == endpointInfo)
             {
                 throw new ArgumentNullException(nameof(endpointInfo));
             }
+
+            logger?.LogDebug("Start getting process information for pid {pid}", endpointInfo.ProcessId);
 
             DiagnosticsClient client = new(endpointInfo.Endpoint);
 
@@ -134,6 +137,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     }
                 }
             }
+
+            logger?.LogDebug("Finish getting process information for pid {pid}", endpointInfo.ProcessId);
 
             return new ProcessInfoImpl(
                 endpointInfo,
