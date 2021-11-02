@@ -47,7 +47,7 @@
     <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>
     <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.1-servicing.1.21554.7</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.252801</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.255101</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftNETCoreApp31Version>3.1.20</MicrosoftNETCoreApp31Version>
