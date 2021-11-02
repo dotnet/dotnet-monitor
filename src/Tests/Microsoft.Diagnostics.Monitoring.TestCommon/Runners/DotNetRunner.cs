@@ -136,11 +136,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     // until it can be resolved.
                     if (!TargetFramework.IsEffectively(TargetFrameworkMoniker.Net60))
                     {
-                        frameworkVersion = TargetFramework.GetAspNetCoreFrameworkVersion();
+                        frameworkVersion = TargetFramework.GetAspNetCoreFrameworkVersionString();
                     }
                     break;
                 case DotNetFrameworkReference.Microsoft_NetCore_App:
-                    frameworkVersion = TargetFramework.GetNetCoreAppFrameworkVersion();
+                    frameworkVersion = TargetFramework.GetNetCoreAppFrameworkVersionString();
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported framework reference: {FrameworkReference}");
