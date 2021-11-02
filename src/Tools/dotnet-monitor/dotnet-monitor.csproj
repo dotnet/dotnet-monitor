@@ -24,6 +24,7 @@
          actually prevents the build from completing correctly should still fail the compilation with
          an MSB3027 error. -->
     <NoWarn>$(NoWarn);MSB3026</NoWarn>
+    
   </PropertyGroup>
 
   <ItemGroup>
