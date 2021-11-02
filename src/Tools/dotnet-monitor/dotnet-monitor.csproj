@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
     <RuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</RuntimeIdentifiers>
     <PackAsToolShimRuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</PackAsToolShimRuntimeIdentifiers>
     <RootNamespace>Microsoft.Diagnostics.Tools.Monitor</RootNamespace>
@@ -13,17 +13,6 @@
     <!-- This forces the creation of a checksum file and uploads it to blob storage
          using this name as part of the blob relative path. -->
     <BlobGroupPrefix>monitor</BlobGroupPrefix>
-    <!-- File locking warnings (that are typically resolved with automatic retries) are failing builds
-         quite frequently with messages such as:
-         
-         error MSB3026: (NETCORE_ENGINEERING_TELEMETRY=Build) Could not copy "...\dotnet-monitor.dll" to
-         "...\dotnet-monitor.dll". Beginning retry 1 in 1000ms. The process cannot access the file
-         '...\dotnet-monitor.dll' because it is being used by another process.
-         
-         work around this problem by telling the compiler to not warn about the issue. A file lock that
-         actually prevents the build from completing correctly should still fail the compilation with
-         an MSB3027 error. -->
-    <NoWarn>$(NoWarn);MSB3026</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,8 +24,11 @@
     <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.KeyPerFile" Version="$(MicrosoftExtensionsConfigurationKeyPerFileVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsoleVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelTokensJwtVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">

@@ -64,20 +64,43 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string commandLine = endpointInfo.CommandLine;
             if (string.IsNullOrEmpty(commandLine))
             {
+                // The EventProcessInfoPipeline will frequently hang during disposal of its
+                // EventPipeStreamProvider, which is trying to send a SessionStop command to
+                // stop the event pipe session. When this happens, it waits for the 30 timeout
+                // before giving up. Because this is happening during a disposal call, it is
+                // not cancellable and hangs the entire operation for at least 30 seconds. To
+                // mitigate, start the pipeline, get the command line, and they start the disposal
+                // on a separate Task that is not awaited.
+                EventProcessInfoPipeline pipeline = null;
                 try
                 {
-                    EventProcessInfoPipelineSettings infoSettings = new()
+                    TaskCompletionSource<string> commandLineSource =
+                        new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+                    using IDisposable registration = extendedInfoCancellationToken.Register(
+                        () => commandLineSource.TrySetResult(null));
+
+                    EventProcessInfoPipelineSettings settings = new()
                     {
-                        Duration = Timeout.InfiniteTimeSpan,
+                        Duration = Timeout.InfiniteTimeSpan
                     };
 
-                    await using EventProcessInfoPipeline pipeline = new(client, infoSettings,
-                        (cmdLine, token) => { commandLine = cmdLine; return Task.CompletedTask; });
+                    pipeline = new EventProcessInfoPipeline(client, settings,
+                        (cmdLine, token) => { commandLineSource.TrySetResult(cmdLine); return Task.CompletedTask; });
 
-                    await pipeline.RunAsync(extendedInfoCancellationToken);
+                    await pipeline.StartAsync(extendedInfoCancellationToken);
+
+                    commandLine = await commandLineSource.Task;
                 }
                 catch
                 {
+                }
+                finally
+                {
+                    if (null != pipeline)
+                    {
+                        _ = Task.Run(() => pipeline.DisposeAsync());
+                    }
                 }
             }
 

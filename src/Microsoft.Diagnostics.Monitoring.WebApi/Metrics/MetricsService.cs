@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     {
                         await _counterPipeline.DisposeAsync();
                     }
-                    await Task.Delay(5000);
+                    await Task.Delay(5000, stoppingToken);
                 }
             }
         }

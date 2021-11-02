@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Tests that multiple processes are discoverable by dotnet-monitor.
         /// Also tests for correct behavior in response to queries with different/multiple process identifiers.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect)]
 #if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen)]
@@ -304,6 +304,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
 #endif
+        }
+
+        public static bool IsNotWindowsNetCore31
+        {
+            get
+            {
+                /// Disabled on Windows .NET Core 3.1; process enumeration frequent hangs when running in connect mode.
+                /// Additional logging shows that some discovered processes on the test machines are not responding on their
+                /// diagnostic pipe and the named pipe implementation is not responding to cancellation.
+                /// See https://github.com/dotnet/diagnostics/issues/2711
+                return !TestConditions.IsWindows || !TestConditions.IsNetCore31;
+            }
         }
     }
 }

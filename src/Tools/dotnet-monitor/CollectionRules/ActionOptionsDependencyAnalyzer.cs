@@ -94,10 +94,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             if (_dependencies.TryGetValue(actionIndex, out Dictionary<string, PropertyDependency> properties))
             {
-                return properties
-                    .SelectMany(p => p.Value.ActionDependencies)
-                    .DistinctBy(a => a.Action.Name, StringComparer.Ordinal)
-                    .Select(a => a.Action).ToArray();
+                HashSet<string> actionNames = new(StringComparer.Ordinal);
+                List<CollectionRuleActionOptions> actionOptions = new();
+
+                foreach (ActionDependency dependency in properties.SelectMany(p => p.Value.ActionDependencies))
+                {
+                    if (actionNames.Add(dependency.Action.Name))
+                    {
+                        actionOptions.Add(dependency.Action);
+                    }
+                }
+
+                return actionOptions;
             }
             return Array.Empty<CollectionRuleActionOptions>();
         }
