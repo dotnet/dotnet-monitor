@@ -1,6 +1,6 @@
 # Collection Rule Examples
 
-The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file and do not require any other set-up (with the exception of updating the `path` for the `Execute` action); however, they may also be used as a starting point upon which adjustments can be made for specific use-cases. Learn more about configuring [collection rules](collectionrules.md).
+The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your specific application; however, they may also be used as a starting point upon which adjustments can be made. Learn more about configuring [collection rules](collectionrules.md).
 
 ## Collect Trace - High CPU Usage (`EventCounter` Trigger)
 
