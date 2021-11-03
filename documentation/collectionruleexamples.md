@@ -125,4 +125,74 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
     
 ## Collect Trace - Too Many Long Requests (`AspNetRequestDuration` Trigger)
 
-## Execute - Collect Dump and Open In Visual Studio
+### JSON
+
+```json
+{
+  "LongRequestDuration": {
+    "Trigger": {
+      "Type": "AspNetRequestDuration",
+      "Settings": {
+        "RequestCount": 5,
+        "RequestDuration": "00:00:08",
+        "SlidingWindowDuration": "00:02:00"
+    },
+    "Actions": [
+      {
+        "Type": "CollectTrace",
+        "Settings": {
+          "Profile": "Http",
+          "Egress": "artifacts",
+          "Duration": "00:01:00"
+        }
+      }
+    ]
+  }
+}
+```
+
+### Explanation
+
+This rule, named "LongRequestDuration", will trigger when a process has 5 requests that take greater than 8 seconds within a 2 minute sliding window. If the rule is triggered, an Http trace will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem).
+
+## Collect Dump And Execute - Collect Dump and Open In Visual Studio
+
+### JSON
+
+```json
+{
+  "CollectDumpAndExecute": {
+    "Trigger": {
+      "Type": "AspNetResponseStatus",
+      "Settings": {
+        "ResponseCount": 3,
+        "StatusCodes": [
+          "400"
+        ]
+      }
+    },
+    "Actions": [
+      {
+        "Name": "MyDump",
+        "Type": "CollectDump",
+        "Settings": {
+          "Egress": "artifacts",
+          "Type": "Triage"
+        },
+        "WaitForCompletion": true
+      },
+      {
+        "Type": "Execute",
+        "Settings": {
+          "Path": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe",
+          "Arguments": "\"$(Actions.MyDump.EgressPath)\""
+        }
+      }
+    ]
+  }
+}
+```
+
+### Explanation
+
+This rule, named "CollectDumpAndExecute", will trigger when a process has 3 requests with a 400 response within the default sliding window duration (1 minute). If the rule is triggered, a Triage dump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). Upon the dump's completion, Visual Studio will open the egressed dump artifact.
