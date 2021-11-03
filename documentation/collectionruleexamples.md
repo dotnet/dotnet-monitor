@@ -1,7 +1,5 @@
 # Collection Rule Examples
 
-## Overview
-
 The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file and do not require any other set-up (with the exception of updating the `path` for the `Execute` action); however, they may also be used as a starting point upon which adjustments can be made for specific use-cases. Learn more about configuring [collection rules](collectionrules.md).
 
 ## Collect Trace - High CPU Usage (`EventCounter` Trigger)
@@ -84,6 +82,47 @@ This rule, named "BadResponseStatus", will trigger when a 4xx status code is rec
 
 ## Collect Logs - High Number of Requests (`AspNetRequestCount` Trigger)
 
+### JSON
+
+```json
+{
+  "HighRequestCount": {
+    "Filters": [
+      {
+        "Key": "ProcessId",
+        "Value": "12345",
+        "MatchType": "Exact"
+      }
+    ],
+    "Trigger": {
+      "Type": "AspNetRequestCount",
+      "Settings": {
+        "RequestCount": 10,
+        "SlidingWindowDuration": "00:01:00"
+      }
+    },
+    "Actions": [
+      {
+        "Type": "CollectLogs",
+        "Settings": {
+          "Egress": "artifacts",
+          "DefaultLevel": "Information",
+          "UseAppFilters": false,
+          "Duration": "00:01:00"
+        }
+      }
+    ],
+    "Limits": {
+      "RuleDuration": "00:01:00"
+    }
+  }
+}
+```
+
+### Explanation
+
+This rule, named "HighRequestCount", will trigger when a process with a `ProcessId` 12345 has 10 requests within a 1 minute sliding window. If the rule is triggered, information level logs will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). There is a limit that states that this may only be triggered for one hour (to prevent an excessive number of logs from being collected).
+    
 ## Collect Trace - Too Many Long Requests (`AspNetRequestDuration` Trigger)
 
 ## Execute - Collect Dump and Open In Visual Studio
