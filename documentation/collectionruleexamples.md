@@ -66,11 +66,9 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
         }
       }
     ],
-    {
-      "Limits": {
-        "ActionCount": 10,
-        "ActionCountSlidingWindowDuration": "00:30:00"
-      }
+    "Limits": {
+      "ActionCount": 10,
+      "ActionCountSlidingWindowDuration": "00:30:00"
     }
   }
 }
