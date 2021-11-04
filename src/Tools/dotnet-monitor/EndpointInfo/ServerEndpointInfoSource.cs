@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly DiagnosticPortOptions _portOptions;
 
         private readonly OperationTrackerService _operationTrackerService;
+        private readonly ILogger<ServerEndpointInfoSource> _logger;
 
         /// <summary>
         /// Constructs a <see cref="ServerEndpointInfoSource"/> that aggregates diagnostic endpoints
@@ -51,11 +53,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public ServerEndpointInfoSource(
             IOptions<DiagnosticPortOptions> portOptions,
             IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null,
-            OperationTrackerService operationTrackerService = null)
+            OperationTrackerService operationTrackerService = null,
+            ILogger<ServerEndpointInfoSource> logger = null)
         {
             _callbacks = callbacks ?? Enumerable.Empty<IEndpointInfoSourceCallbacks>();
             _operationTrackerService = operationTrackerService;
             _portOptions = portOptions.Value;
+            _logger = logger;
 
             BoundedChannelOptions channelOptions = new(PendingRemovalChannelCapacity)
             {
@@ -269,6 +273,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
             catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested)
             {
+                _logger?.EndpointTimeout(info.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 return false;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)

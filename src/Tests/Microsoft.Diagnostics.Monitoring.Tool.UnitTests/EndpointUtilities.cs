@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 callbacks.Add(sourceCallback);
                 if (null != dumpService)
                 {
-                    callbacks.Add(new DumpServiceEndpointInfoSourceCallback(operationTrackerService));
+                    callbacks.Add(new OperationTrackerServiceEndpointInfoSourceCallback(operationTrackerService));
                 }
             }
 

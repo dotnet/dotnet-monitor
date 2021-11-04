@@ -9,12 +9,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    //TODO Rename this
-    internal sealed class DumpServiceEndpointInfoSourceCallback : IEndpointInfoSourceCallbacks
+    internal sealed class OperationTrackerServiceEndpointInfoSourceCallback : IEndpointInfoSourceCallbacks
     {
         private readonly OperationTrackerService _operationTrackerService;
 
-        public DumpServiceEndpointInfoSourceCallback(OperationTrackerService operationTrackerService)
+        public OperationTrackerServiceEndpointInfoSourceCallback(OperationTrackerService operationTrackerService)
         {
             _operationTrackerService = operationTrackerService ?? throw new ArgumentNullException(nameof(operationTrackerService));
         }

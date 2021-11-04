@@ -252,7 +252,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
                     services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                     services.AddSingleton<IDumpService, DumpService>();
-                    services.AddSingleton<IEndpointInfoSourceCallbacks, DumpServiceEndpointInfoSourceCallback>();
+                    services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();
                     services.AddSingleton<RequestLimitTracker>();
                     services.ConfigureOperationStore();
                     services.ConfigureEgress();

@@ -161,9 +161,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async Task ServerSourceNoPruneDuringDumpTest(TargetFrameworkMoniker appTfm)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
-            var operatonTrackerService = new OperationTrackerService();
-            MockDumpService dumpService = new(operatonTrackerService);
-            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback, dumpService, operatonTrackerService);
+            var operationTrackerService = new OperationTrackerService();
+            MockDumpService dumpService = new(operationTrackerService);
+            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback, dumpService, operationTrackerService);
 
             AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
 
@@ -244,7 +244,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
                 finally
                 {
-                    operationRegistration.Dispose();
+                    operationRegistration?.Dispose();
                 }
             }
 

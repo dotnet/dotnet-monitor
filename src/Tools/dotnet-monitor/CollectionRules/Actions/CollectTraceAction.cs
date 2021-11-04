@@ -87,15 +87,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 EgressOperation egressOperation = new EgressOperation(
                     async (outputStream, token) =>
                     {
-                        IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
-                        try
-                        {
-                            await TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token);
-                        }
-                        finally
-                        {
-                            operationRegistration.Dispose();
-                        }
+                        using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
+                        await TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token);
                     },
                     egressProvider,
                     fileName,
