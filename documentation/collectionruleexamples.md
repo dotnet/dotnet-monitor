@@ -134,6 +134,7 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
         "RequestCount": 5,
         "RequestDuration": "00:00:08",
         "SlidingWindowDuration": "00:02:00"
+      }
     },
     "Actions": [
       {
