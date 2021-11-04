@@ -111,7 +111,7 @@ This rule, named "BadResponseStatus", will trigger when a 4xx status code is rec
       }
     ],
     "Limits": {
-      "RuleDuration": "00:01:00"
+      "RuleDuration": "01:00:00"
     }
   }
 }
