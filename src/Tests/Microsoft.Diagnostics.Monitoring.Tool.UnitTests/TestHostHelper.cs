@@ -86,9 +86,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
                     services.ConfigureGlobalCounter(context.Configuration);
+                    services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();
-
+;
                     services.AddSingleton<IDumpService, DumpService>();
                     services.ConfigureStorage(context.Configuration);
                     servicesCallback?.Invoke(services);

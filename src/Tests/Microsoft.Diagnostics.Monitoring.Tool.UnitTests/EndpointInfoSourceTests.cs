@@ -161,8 +161,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async Task ServerSourceNoPruneDuringDumpTest(TargetFrameworkMoniker appTfm)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
-            MockDumpService dumpService = new();
-            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback, dumpService);
+            var operatonTrackerService = new OperationTrackerService();
+            MockDumpService dumpService = new(operatonTrackerService);
+            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback, dumpService, operatonTrackerService);
 
             AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
 
@@ -226,28 +227,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             private readonly TaskCompletionSource<Stream> _dumpCompletionSource =
                 new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            private int _operationCount = 0;
+            private readonly OperationTrackerService _operationTrackerService;
+
+            public MockDumpService(OperationTrackerService operationTrackerService)
+            {
+                _operationTrackerService = operationTrackerService;
+            }
 
             public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, DumpType mode, CancellationToken token)
             {
-                Interlocked.Increment(ref _operationCount);
+                IDisposable operationRegistration = null;
                 try
                 {
+                    operationRegistration = _operationTrackerService.Register(endpointInfo);
                     return await _dumpCompletionSource.Task;
                 }
                 finally
                 {
-                    Interlocked.Decrement(ref _operationCount);
+                    operationRegistration.Dispose();
                 }
-            }
-
-            public void EndpointRemoved(IEndpointInfo endpointInfo)
-            {
-            }
-
-            public bool IsExecutingOperation(IEndpointInfo endpointInfo)
-            {
-                return 0 != Interlocked.CompareExchange(ref _operationCount, 0, 0);
             }
 
             public void CompleteOperation()

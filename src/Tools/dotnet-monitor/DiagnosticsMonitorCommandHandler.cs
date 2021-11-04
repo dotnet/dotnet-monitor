@@ -243,6 +243,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
                     services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
+                    services.AddSingleton<OperationTrackerService>();
 
                     services.ConfigureGlobalCounter(context.Configuration);
 
