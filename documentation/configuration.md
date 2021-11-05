@@ -23,9 +23,11 @@ While the rest of this document will showcase configuration examples in a json f
 
 ```json
 {
-  "ApiAuthentication": {
-    "ApiKeyHash": "CB233C3BE9F650146CFCA81D7AA608E3A3865D7313016DFA02DAF82A2505C683",
-    "ApiKeyHashType": "SHA256"
+  "Authentication": {
+    "MonitorApiKey": {
+      "Subject": "ae5473b6-8dad-498d-b915-ffffffffffff",
+      "PublicKey": "eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"
+    }
   }
 }
 ```
@@ -33,8 +35,8 @@ While the rest of this document will showcase configuration examples in a json f
 The same configuration can be expressed via environment variables using the `DotnetMonitor_` prefix and using `__`(double underscore) as the hierarchical separator
 
 ```bash
-export DotnetMonitor_ApiAuthentication__ApiKeyHash="CB233C3BE9F650146CFCA81D7AA608E3A3865D7313016DFA02DAF82A2505C683"
-export DotnetMonitor_ApiAuthentication__ApiKeyHashType="SHA256"
+export Authentication__MonitorApiKey__Subject="ae5473b6-8dad-498d-b915-ffffffffffff"
+export Authentication__MonitorApiKey__PublicKey="eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"
 ```
 
 #### Kubernetes
@@ -43,8 +45,8 @@ When running in Kubernetes, you are able to specify the same configuration via K
 
 ```bash
 kubectl create secret generic apikey \
-  --from-literal=ApiAuthentication__ApiKeyHash=$hash \
-  --from-literal=ApiAuthentication__ApiKeyHashType=SHA256 \
+  --from-literal=Authentication__MonitorApiKey__Subject=ae5473b6-8dad-498d-b915-ffffffffffff \
+  --from-literal=Authentication__MonitorApiKey__PublicKey=eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19 \
   --dry-run=client -o yaml \
   | kubectl apply -f -
 ```
@@ -167,9 +169,11 @@ The output of the command should resemble the following JSON object:
   "Storage": {
     "DumpTempFolder": "C:\\Users\\shirh\\AppData\\Local\\Temp\\"
   },
-  "ApiAuthentication": {
-    "ApiKeyHash": ":REDACTED:",
-    "ApiKeyHashType": "SHA256"
+  "Authentication": {
+    "MonitorApiKey": {
+      "Subject": "2c866b1a-38c5-4454-a686-1e022e38a7f6",
+      "PublicKey": ":REDACTED:"
+    }
   },
   "Egress": ":NOT PRESENT:"
 }
