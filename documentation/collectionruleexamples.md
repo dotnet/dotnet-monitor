@@ -1,6 +1,6 @@
 # Collection Rule Examples
 
-The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your specific application; however, they may also be used as a starting point upon which adjustments can be made. Learn more about configuring [collection rules](collectionrules.md).
+The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your specific application, or they can be adjusted for your specific use-case. Learn more about configuring [collection rules](collectionrules.md).
 
 ## Collect Trace - High CPU Usage (`EventCounter` Trigger)
 
@@ -51,7 +51,7 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
     "Trigger": {
       "Type": "AspNetResponseStatus",
       "Settings": {
-        "ResponseCount": 1,
+        "ResponseCount": 5,
         "StatusCodes": [
           "400-499"
         ]
@@ -76,7 +76,7 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
 
 ### Explanation
 
-This rule, named "BadResponseStatus", will trigger when a 4xx status code is received. If the rule is triggered, a Full dump will be collected for the default duration (30 seconds), and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). There is a limit that states that this may only be triggered at most 10 times within a 30 minute sliding window (to prevent an excessive number of dumps from being collected).
+This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are encountered. If the rule is triggered, a Full dump will be collected for the default duration (30 seconds), and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the dump to the local filesystem). There is a limit that states that this may only be triggered at most 10 times within a 30 minute sliding window (to prevent an excessive number of dumps from being collected).
 
 ## Collect Logs - High Number of Requests (`AspNetRequestCount` Trigger)
 
@@ -119,7 +119,7 @@ This rule, named "BadResponseStatus", will trigger when a 4xx status code is rec
 
 ### Explanation
 
-This rule, named "HighRequestCount", will trigger when a process with a `ProcessId` 12345 has 10 requests within a 1 minute sliding window. If the rule is triggered, information level logs will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). There is a limit that states that this may only be triggered for one hour (to prevent an excessive number of logs from being collected).
+This rule, named "HighRequestCount", will trigger when a process with a `ProcessId` of 12345 has 10 requests within a 1 minute sliding window. If the rule is triggered, information level logs will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the logs to the local filesystem). There is a limit that states that this may only be triggered for one hour (to prevent an excessive number of logs from being collected).
     
 ## Collect Trace - Too Many Long Requests (`AspNetRequestDuration` Trigger)
 
@@ -152,7 +152,7 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
 
 ### Explanation
 
-This rule, named "LongRequestDuration", will trigger when a process has 5 requests that take greater than 8 seconds within a 2 minute sliding window. If the rule is triggered, an Http trace will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem).
+This rule, named "LongRequestDuration", will trigger when 5 requests take greater than 8 seconds within a 2 minute sliding window. If the rule is triggered, an Http trace will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem).
 
 ## Collect Dump And Execute - Collect Dump and Open In Visual Studio
 
@@ -176,7 +176,7 @@ This rule, named "LongRequestDuration", will trigger when a process has 5 reques
         "Type": "CollectDump",
         "Settings": {
           "Egress": "artifacts",
-          "Type": "Triage"
+          "Type": "Mini"
         },
         "WaitForCompletion": true
       },
@@ -194,4 +194,4 @@ This rule, named "LongRequestDuration", will trigger when a process has 5 reques
 
 ### Explanation
 
-This rule, named "CollectDumpAndExecute", will trigger when a process has 3 requests with a 400 response within the default sliding window duration (1 minute). If the rule is triggered, a Triage dump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). Upon the dump's completion, Visual Studio will open the egressed dump artifact.
+This rule, named "CollectDumpAndExecute", will trigger when 3 400 status codes are encountered within the default sliding window duration (1 minute). If the rule is triggered, a Mini dump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the dump to the local filesystem). Upon the dump's completion, Visual Studio will open the egressed dump artifact.
