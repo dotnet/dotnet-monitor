@@ -8,6 +8,32 @@ The following examples provide sample scenarios for using a collection rule. The
 
 ```json
 {
+  "GCDumpOnStartup": {
+    "Trigger": {
+      "Type": "Startup"
+    },
+    "Actions": [
+      {
+        "Type": "CollectGCDump",
+        "Settings": {
+          "Egress": "artifacts"
+        }
+      }
+    ]
+  }
+}
+```
+
+### Explanation
+
+This rule, named "GCDumpOnStartup", will trigger on a process's startup. When the rule is triggered, a GCDump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the GCDump to the local filesystem).
+
+## Collect Trace - High CPU Usage (`EventCounter` Trigger)
+
+### JSON
+
+```json
+{
   "HighCpuUsage": {
     "Trigger": {
       "Type": "EventCounter",
