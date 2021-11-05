@@ -2,7 +2,7 @@
 
 The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your specific application, or they can be adjusted for your specific use-case. Learn more about configuring [collection rules](collectionrules.md).
 
-## Collect Trace - High CPU Usage (`EventCounter` Trigger)
+## Collect GCDump - Startup (`Startup` Trigger)
 
 ### JSON
 
