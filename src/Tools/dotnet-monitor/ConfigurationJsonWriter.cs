@@ -50,10 +50,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                                 IConfigurationSection defaultCert = ProcessChildSection(certificates, "Default", skipNotPresent, includeChildSections: false);
                                 if (defaultCert != null)
                                 {
-                                    _writer.WriteStartObject();
-                                    ProcessChildSection(defaultCert, "Path", skipNotPresent, includeChildSections: false);
-                                    ProcessChildSection(defaultCert, "Password", skipNotPresent, includeChildSections: false, redact: !full);
-                                    _writer.WriteEndObject();
+                                    using (new JsonSectionHolder(_writer))
+                                    {
+                                        ProcessChildSection(defaultCert, "Path", skipNotPresent, includeChildSections: false);
+                                        ProcessChildSection(defaultCert, "Password", skipNotPresent, includeChildSections: false, redact: !full);
+                                    }
                                 }
                             }
                         }
