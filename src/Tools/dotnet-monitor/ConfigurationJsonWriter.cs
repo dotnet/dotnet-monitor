@@ -34,71 +34,78 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             //CONSIDER There's probably room for making this code more generalized, to separate the output from the traversal
             //but it seemed like over-engineering.
 
-            _writer.WriteStartObject();
-
-            ProcessChildSection(configuration, WebHostDefaults.ServerUrlsKey, skipNotPresent);
-            IConfigurationSection kestrel = ProcessChildSection(configuration, "Kestrel", skipNotPresent, includeChildSections: false);
-            if (kestrel != null)
+            using (new JsonSectionHolder(_writer))
             {
-                _writer.WriteStartObject();
-                IConfigurationSection certificates = ProcessChildSection(kestrel, "Certificates", skipNotPresent, includeChildSections: false);
-                if (certificates != null)
+                ProcessChildSection(configuration, WebHostDefaults.ServerUrlsKey, skipNotPresent);
+                IConfigurationSection kestrel = ProcessChildSection(configuration, "Kestrel", skipNotPresent, includeChildSections: false);
+                if (kestrel != null)
                 {
-                    _writer.WriteStartObject();
-                    IConfigurationSection defaultCert = ProcessChildSection(certificates, "Default", skipNotPresent, includeChildSections: false);
-                    if (defaultCert != null)
+                    using (new JsonSectionHolder(_writer))
                     {
-                        _writer.WriteStartObject();
-                        ProcessChildSection(defaultCert, "Path", skipNotPresent, includeChildSections: false);
-                        ProcessChildSection(defaultCert, "Password", skipNotPresent, includeChildSections: false, redact: !full);
-                        _writer.WriteEndObject();
-                    }
-                    _writer.WriteEndObject();
-                }
-                _writer.WriteEndObject();
-            }
-
-            //No sensitive information
-            ProcessChildSection(configuration, ConfigurationKeys.GlobalCounter, skipNotPresent, includeChildSections: true);
-            ProcessChildSection(configuration, ConfigurationKeys.CollectionRules, skipNotPresent, includeChildSections: true);
-            ProcessChildSection(configuration, ConfigurationKeys.CorsConfiguration, skipNotPresent, includeChildSections: true);
-            ProcessChildSection(configuration, ConfigurationKeys.DiagnosticPort, skipNotPresent, includeChildSections: true);
-            ProcessChildSection(configuration, ConfigurationKeys.Metrics, skipNotPresent, includeChildSections: true);
-            ProcessChildSection(configuration, ConfigurationKeys.Storage, skipNotPresent, includeChildSections: true);
-            ProcessChildSection(configuration, ConfigurationKeys.DefaultProcess, skipNotPresent, includeChildSections: true);
-            ProcessChildSection(configuration, ConfigurationKeys.Logging, skipNotPresent, includeChildSections: true);
-
-            if (full)
-            {
-                ProcessChildSection(configuration, ConfigurationKeys.Authentication, skipNotPresent, includeChildSections: true);
-                ProcessChildSection(configuration, ConfigurationKeys.Egress, skipNotPresent, includeChildSections: true);
-            }
-            else
-            {
-                IConfigurationSection auth = ProcessChildSection(configuration, ConfigurationKeys.Authentication, skipNotPresent, includeChildSections: false);
-                if (null != auth)
-                {
-                    _writer.WriteStartObject();
-                    IConfigurationSection monitorApiKey = ProcessChildSection(auth, ConfigurationKeys.MonitorApiKey, skipNotPresent, includeChildSections: false);
-                    if (null != monitorApiKey)
-                    {
-                        _writer.WriteStartObject();
-                        ProcessChildSection(monitorApiKey, nameof(MonitorApiKeyOptions.Subject), skipNotPresent, includeChildSections: false, redact: false);
-                        // The PublicKey should only ever contain the public key, however we expect that accidents may occur and we should
-                        // redact this field in the event the JWK contains the private key information.
-                        ProcessChildSection(monitorApiKey, nameof(MonitorApiKeyOptions.PublicKey), skipNotPresent, includeChildSections: false, redact: true);
+                        IConfigurationSection certificates = ProcessChildSection(kestrel, "Certificates", skipNotPresent, includeChildSections: false);
+                        if (certificates != null)
+                        {
+                            using (new JsonSectionHolder(_writer))
+                            {
+                                IConfigurationSection defaultCert = ProcessChildSection(certificates, "Default", skipNotPresent, includeChildSections: false);
+                                if (defaultCert != null)
+                                {
+                                    _writer.WriteStartObject();
+                                    ProcessChildSection(defaultCert, "Path", skipNotPresent, includeChildSections: false);
+                                    ProcessChildSection(defaultCert, "Password", skipNotPresent, includeChildSections: false, redact: !full);
+                                    _writer.WriteEndObject();
+                                }
+                            }
+                        }
                     }
                 }
-                
-                IConfigurationSection egress = ProcessChildSection(configuration, ConfigurationKeys.Egress, skipNotPresent, includeChildSections: false);
-                if (egress != null)
+
+                //No sensitive information
+                ProcessChildSection(configuration, ConfigurationKeys.GlobalCounter, skipNotPresent, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.CollectionRules, skipNotPresent, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.CorsConfiguration, skipNotPresent, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.DiagnosticPort, skipNotPresent, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.Metrics, skipNotPresent, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.Storage, skipNotPresent, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.DefaultProcess, skipNotPresent, includeChildSections: true);
+                ProcessChildSection(configuration, ConfigurationKeys.Logging, skipNotPresent, includeChildSections: true);
+
+                if (full)
                 {
-                    _writer.WriteStartObject();
-                    ProcessEgressSection(egress, skipNotPresent);
-                    _writer.WriteEndObject();
+                    ProcessChildSection(configuration, ConfigurationKeys.Authentication, skipNotPresent, includeChildSections: true);
+                    ProcessChildSection(configuration, ConfigurationKeys.Egress, skipNotPresent, includeChildSections: true);
+                }
+                else
+                {
+                    IConfigurationSection auth = ProcessChildSection(configuration, ConfigurationKeys.Authentication, skipNotPresent, includeChildSections: false);
+                    if (null != auth)
+                    {
+                        using (new JsonSectionHolder(_writer))
+                        {
+                            IConfigurationSection monitorApiKey = ProcessChildSection(auth, ConfigurationKeys.MonitorApiKey, skipNotPresent, includeChildSections: false);
+                            if (null != monitorApiKey)
+                            {
+                                using (new JsonSectionHolder(_writer))
+                                {
+                                    ProcessChildSection(monitorApiKey, nameof(MonitorApiKeyOptions.Subject), skipNotPresent, includeChildSections: false, redact: false);
+                                    // The PublicKey should only ever contain the public key, however we expect that accidents may occur and we should
+                                    // redact this field in the event the JWK contains the private key information.
+                                    ProcessChildSection(monitorApiKey, nameof(MonitorApiKeyOptions.PublicKey), skipNotPresent, includeChildSections: false, redact: true);
+                                }
+                            }
+                        }
+                    }
+
+                    IConfigurationSection egress = ProcessChildSection(configuration, ConfigurationKeys.Egress, skipNotPresent, includeChildSections: false);
+                    if (egress != null)
+                    {
+                        using (new JsonSectionHolder(_writer))
+                        {
+                            ProcessEgressSection(egress, skipNotPresent);
+                        }
+                    }
                 }
             }
-            _writer.WriteEndObject();
         }
 
         private void ProcessEgressSection(IConfiguration egress, bool skipNotPresent)
@@ -117,22 +124,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 processedSectionPaths.Add(azureBlobProviderSection.Path);
 
-                _writer.WriteStartObject();
-                foreach (IConfigurationSection optionsSection in azureBlobProviderSection.GetChildren())
+                using (new JsonSectionHolder(_writer))
                 {
-                    _writer.WritePropertyName(optionsSection.Key);
-                    _writer.WriteStartObject();
-                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountUri), skipNotPresent, includeChildSections: false);
-                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.BlobPrefix), skipNotPresent, includeChildSections: false);
-                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.ContainerName), skipNotPresent, includeChildSections: false);
-                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.CopyBufferSize), skipNotPresent, includeChildSections: false);
-                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignature), skipNotPresent, includeChildSections: false, redact: true);
-                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKey), skipNotPresent, includeChildSections: false, redact: true);
-                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignatureName), skipNotPresent, includeChildSections: false, redact: false);
-                    ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKeyName), skipNotPresent, includeChildSections: false, redact: false);
-                    _writer.WriteEndObject();
+                    foreach (IConfigurationSection optionsSection in azureBlobProviderSection.GetChildren())
+                    {
+                        _writer.WritePropertyName(optionsSection.Key);
+                        using (new JsonSectionHolder(_writer))
+                        {
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountUri), skipNotPresent, includeChildSections: false);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.BlobPrefix), skipNotPresent, includeChildSections: false);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.ContainerName), skipNotPresent, includeChildSections: false);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.CopyBufferSize), skipNotPresent, includeChildSections: false);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignature), skipNotPresent, includeChildSections: false, redact: true);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKey), skipNotPresent, includeChildSections: false, redact: true);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignatureName), skipNotPresent, includeChildSections: false, redact: false);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKeyName), skipNotPresent, includeChildSections: false, redact: false);
+                        }
+                    }
                 }
-                _writer.WriteEndObject();
             }
 
             IConfigurationSection fileSystemProviderSection = ProcessChildSection(egress, nameof(EgressOptions.FileSystem), skipNotPresent, includeChildSections: false);
@@ -140,17 +149,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 processedSectionPaths.Add(fileSystemProviderSection.Path);
 
-                _writer.WriteStartObject();
-                foreach (IConfigurationSection optionsSection in fileSystemProviderSection.GetChildren())
+                using (new JsonSectionHolder(_writer))
                 {
-                    _writer.WritePropertyName(optionsSection.Key);
-                    _writer.WriteStartObject();
-                    ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.DirectoryPath), skipNotPresent, includeChildSections: false);
-                    ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.IntermediateDirectoryPath), skipNotPresent, includeChildSections: false);
-                    ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.CopyBufferSize), skipNotPresent, includeChildSections: false);
-                    _writer.WriteEndObject();
+                    foreach (IConfigurationSection optionsSection in fileSystemProviderSection.GetChildren())
+                    {
+                        _writer.WritePropertyName(optionsSection.Key);
+                        using (new JsonSectionHolder(_writer))
+                        {
+                            ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.DirectoryPath), skipNotPresent, includeChildSections: false);
+                            ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.IntermediateDirectoryPath), skipNotPresent, includeChildSections: false);
+                            ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.CopyBufferSize), skipNotPresent, includeChildSections: false);
+                        }
+                    }
                 }
-                _writer.WriteEndObject();
             }
 
             //Emit other egress entries, with redaction
@@ -190,12 +201,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             //If we do not traverse the child sections, the caller is responsible for creating the value
             if (includeChildSections && children.Any())
             {
-                _writer.WriteStartObject();
-                foreach (IConfigurationSection child in children)
+                using (new JsonSectionHolder(_writer))
                 {
-                    ProcessSection(child, includeChildSections, redact);
+                    foreach (IConfigurationSection child in children)
+                    {
+                        ProcessSection(child, includeChildSections, redact);
+                    }
                 }
-                _writer.WriteEndObject();
             }
             else
             {
@@ -217,5 +229,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             _writer.Dispose();
         }
+
+        private class JsonSectionHolder : IDisposable
+        {
+            private readonly Utf8JsonWriter Writer;
+
+            public JsonSectionHolder(Utf8JsonWriter writer)
+            {
+                Writer = writer;
+                Writer.WriteStartObject();
+            }
+
+            public void Dispose()
+            {
+                Writer.WriteEndObject();
+            }
+        }
     }
+
 }
