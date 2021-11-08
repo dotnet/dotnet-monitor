@@ -2,15 +2,51 @@
 
 The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your application, or they can be adjusted for your specific use-case. [Learn more about configuring collection rules](collectionrules.md).
 
-## Collect GCDump - Startup (`Startup` Trigger)
+## Collect Trace - Startup (`Startup` Trigger)
 
 ### JSON
 
 ```json
 {
-  "GCDumpOnStartup": {
+  "AssemblyLoadTraceOnStartup": {
     "Trigger": {
       "Type": "Startup"
+    },
+    "Actions": [
+      {
+        "Type": "CollectTrace",
+        "Settings": {
+          "Providers": [{
+              "Name": "AssemblyLoadStart",
+              "EventLevel": "Informational"
+          }],
+          "BufferSizeInMB": 1024,
+          "Egress": "artifacts"
+        }
+      }
+    ]
+  }
+}
+```
+
+### Explanation
+
+This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's startup. When the rule is triggered, a trace will be collected for the default duration (30 seconds) and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). The trace will capture events from an event provider named `AssemblyLoadStart`, and will collect events at or above the `Informational` level. The trace will request rundown by default, and the `BufferSizeInMB` is set to the maximum size of 1024 MB.
+
+## Collect GCDump - Heap Size (`EventCounter` Trigger)
+
+### JSON
+
+```json
+{
+  "LargeGCHeapSize": {
+    "Trigger": {
+      "Type": "EventCounter",
+      "Settings": {
+        "ProviderName": "System.Runtime",
+        "CounterName": "gc-heap-size",
+        "GreaterThan": 1000000
+      }
     },
     "Actions": [
       {
@@ -26,7 +62,7 @@ The following examples provide sample scenarios for using a collection rule. The
 
 ### Explanation
 
-This rule, named "GCDumpOnStartup", will trigger on a process's startup. When the rule is triggered, a GCDump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the GCDump to the local filesystem).
+This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1000000 bytes within the default sliding window duration (1 minute). If the rule is triggered, a GCDump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the GCDump to the local filesystem). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
 
 ## Collect Trace - High CPU Usage (`EventCounter` Trigger)
 
