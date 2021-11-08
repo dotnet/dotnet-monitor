@@ -511,7 +511,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format to display the output in. This option is useful for printing the information in a format to be copy/pasted into the system of your choice..
+        ///   Looks up a localized string similar to The output format of the API Key configuration..
         /// </summary>
         internal static string HelpDescription_OutputFormat {
             get {
