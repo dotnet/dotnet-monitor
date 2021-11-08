@@ -364,7 +364,7 @@
     <comment>Gets the string to display in help that explains what the '--urls' option does.</comment>
   </data>
   <data name="HelpDescription_OutputFormat" xml:space="preserve">
-    <value>The format to display the output in. Valid values are Json, Text, and EnvVar.</value>
+    <value>The format to display the output in. This option is useful for printing the information in a format to be copy/pasted into the system of your choice.</value>
     <comment>Gets the string to display in help that explains what the '--output' option does.</comment>
   </data>
   <data name="LogFormatString_ActionSettingsTokenizationNotSupported" xml:space="preserve">
