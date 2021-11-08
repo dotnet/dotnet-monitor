@@ -34,23 +34,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             //CONSIDER There's probably room for making this code more generalized, to separate the output from the traversal
             //but it seemed like over-engineering.
 
-            using (new JsonSectionHolder(_writer))
+            using (new JsonObjectContext(_writer))
             {
                 ProcessChildSection(configuration, WebHostDefaults.ServerUrlsKey, skipNotPresent);
                 IConfigurationSection kestrel = ProcessChildSection(configuration, "Kestrel", skipNotPresent, includeChildSections: false);
                 if (kestrel != null)
                 {
-                    using (new JsonSectionHolder(_writer))
+                    using (new JsonObjectContext(_writer))
                     {
                         IConfigurationSection certificates = ProcessChildSection(kestrel, "Certificates", skipNotPresent, includeChildSections: false);
                         if (certificates != null)
                         {
-                            using (new JsonSectionHolder(_writer))
+                            using (new JsonObjectContext(_writer))
                             {
                                 IConfigurationSection defaultCert = ProcessChildSection(certificates, "Default", skipNotPresent, includeChildSections: false);
                                 if (defaultCert != null)
                                 {
-                                    using (new JsonSectionHolder(_writer))
+                                    using (new JsonObjectContext(_writer))
                                     {
                                         ProcessChildSection(defaultCert, "Path", skipNotPresent, includeChildSections: false);
                                         ProcessChildSection(defaultCert, "Password", skipNotPresent, includeChildSections: false, redact: !full);
@@ -81,12 +81,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     IConfigurationSection auth = ProcessChildSection(configuration, ConfigurationKeys.Authentication, skipNotPresent, includeChildSections: false);
                     if (null != auth)
                     {
-                        using (new JsonSectionHolder(_writer))
+                        using (new JsonObjectContext(_writer))
                         {
                             IConfigurationSection monitorApiKey = ProcessChildSection(auth, ConfigurationKeys.MonitorApiKey, skipNotPresent, includeChildSections: false);
                             if (null != monitorApiKey)
                             {
-                                using (new JsonSectionHolder(_writer))
+                                using (new JsonObjectContext(_writer))
                                 {
                                     ProcessChildSection(monitorApiKey, nameof(MonitorApiKeyOptions.Subject), skipNotPresent, includeChildSections: false, redact: false);
                                     // The PublicKey should only ever contain the public key, however we expect that accidents may occur and we should
@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     IConfigurationSection egress = ProcessChildSection(configuration, ConfigurationKeys.Egress, skipNotPresent, includeChildSections: false);
                     if (egress != null)
                     {
-                        using (new JsonSectionHolder(_writer))
+                        using (new JsonObjectContext(_writer))
                         {
                             ProcessEgressSection(egress, skipNotPresent);
                         }
@@ -125,12 +125,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 processedSectionPaths.Add(azureBlobProviderSection.Path);
 
-                using (new JsonSectionHolder(_writer))
+                using (new JsonObjectContext(_writer))
                 {
                     foreach (IConfigurationSection optionsSection in azureBlobProviderSection.GetChildren())
                     {
                         _writer.WritePropertyName(optionsSection.Key);
-                        using (new JsonSectionHolder(_writer))
+                        using (new JsonObjectContext(_writer))
                         {
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountUri), skipNotPresent, includeChildSections: false);
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.BlobPrefix), skipNotPresent, includeChildSections: false);
@@ -150,12 +150,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 processedSectionPaths.Add(fileSystemProviderSection.Path);
 
-                using (new JsonSectionHolder(_writer))
+                using (new JsonObjectContext(_writer))
                 {
                     foreach (IConfigurationSection optionsSection in fileSystemProviderSection.GetChildren())
                     {
                         _writer.WritePropertyName(optionsSection.Key);
-                        using (new JsonSectionHolder(_writer))
+                        using (new JsonObjectContext(_writer))
                         {
                             ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.DirectoryPath), skipNotPresent, includeChildSections: false);
                             ProcessChildSection(optionsSection, nameof(FileSystemEgressProviderOptions.IntermediateDirectoryPath), skipNotPresent, includeChildSections: false);
@@ -202,7 +202,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             //If we do not traverse the child sections, the caller is responsible for creating the value
             if (includeChildSections && children.Any())
             {
-                using (new JsonSectionHolder(_writer))
+                using (new JsonObjectContext(_writer))
                 {
                     foreach (IConfigurationSection child in children)
                     {
@@ -231,11 +231,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _writer.Dispose();
         }
 
-        private class JsonSectionHolder : IDisposable
+        private class JsonObjectContext : IDisposable
         {
             private readonly Utf8JsonWriter Writer;
 
-            public JsonSectionHolder(Utf8JsonWriter writer)
+            public JsonObjectContext(Utf8JsonWriter writer)
             {
                 Writer = writer;
                 Writer.WriteStartObject();
