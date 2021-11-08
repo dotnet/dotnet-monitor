@@ -493,7 +493,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format to display the output in. Valid values are Json, Text, and EnvVar..
+        ///   Looks up a localized string similar to The format to display the output in. This option is useful for printing the information in a format to be copy/pasted into the system of your choice..
         /// </summary>
         internal static string HelpDescription_OutputFormat {
             get {
