@@ -77,10 +77,9 @@
         stable package versions.
         -->
       <_BuildVersion>$(_OriginalVersionPrefix)-$(_PreReleaseLabel)$(_BuildNumberLabels)</_BuildVersion>
-      <!-- Name of the build version file. -->
-      <_BuildVersionFileName>$(PackageId).$(_BuildVersion).nupkg.buildversion</_BuildVersionFileName>
       <!-- Name of the package file. Used as a prefix for the following files. -->
       <_PackageFileName>$(PackageId).$(PackageVersion).nupkg</_PackageFileName>
+      <_PackageWithBuildVersionFileName>$(PackageId).$(_BuildVersion).nupkg</_PackageWithBuildVersionFileName>
     </PropertyGroup>
     <!-- A file that contains the blob group so that publishing can use it in the blob path calculation. -->
     <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageFileName).blobgroup"
@@ -88,10 +87,21 @@
                       Overwrite="true" />
 
     <!--
-      A file that contains the version of the nuget package.
-      Example name: dotnet-monitor.7.0.0.nupkg.version
+      A file that contains the name of another file that contains the package version. It effectively
+      states that "for a given package and version, the named file contains the package version". This
+      file is used by publishing to determine which package version file to upload to blob storage. The
+      file itself is not uploaded to blob storage.
+      Example name: dotnet-monitor.7.0.0.nupkg.versionfile
       -->
-    <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageFileName).version"
+    <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageFileName).versionfile"
+                      Lines="$(_PackageWithBuildVersionFileName).version"
+                      Overwrite="true" />
+
+    <!--
+      A file that contains the version of the nuget package.
+      Example name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.version
+      -->
+    <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageWithBuildVersionFileName).version"
                       Lines="$(PackageVersion)"
                       Overwrite="true" />
 
@@ -103,7 +113,7 @@
       Example name: dotnet-monitor.7.0.0.nupkg.buildversionfile
       -->
     <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageFileName).buildversionfile"
-                      Lines="$(_BuildVersionFileName)"
+                      Lines="$(_PackageWithBuildVersionFileName).buildversion"
                       Overwrite="true" />
 
     <!--
@@ -111,7 +121,7 @@
       version in order to avoid collisions when uploaded to blob storage.
       Example name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.buildversion
       -->
-    <WriteLinesToFile File="$(PackageOutputPath)\$(_BuildVersionFileName)"
+    <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageWithBuildVersionFileName).buildversion"
                       Lines="$(_BuildVersion)"
                       Overwrite="true" />
   </Target>

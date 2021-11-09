@@ -39,8 +39,8 @@
     <PropertyGroup>
       <_BlobGroupFilePath>%(PackageFile.FullPath).blobgroup</_BlobGroupFilePath>
       <_ChecksumFilePath>%(PackageFile.FullPath).sha512</_ChecksumFilePath>
-      <_VersionFilePath>%(PackageFile.FullPath).version</_VersionFilePath>
       <_BuildVersionFileFilePath>%(PackageFile.FullPath).buildversionfile</_BuildVersionFileFilePath>
+      <_PackageVersionFileFilePath>%(PackageFile.FullPath).versionfile</_PackageVersionFileFilePath>
     </PropertyGroup>
 
     <Error Condition="Exists('$(_BlobGroupFilePath)') and !Exists('$(_ChecksumFilePath)')"
@@ -54,9 +54,14 @@
     <ReadLinesFromFile File="$(_BuildVersionFileFilePath)" Condition="Exists('$(_BuildVersionFileFilePath)')">
       <Output TaskParameter="Lines" PropertyName="_BuildVersionFileName"/>
     </ReadLinesFromFile>
+    <!-- Read in package version file name, if it exists -->
+    <ReadLinesFromFile File="$(_PackageVersionFileFilePath)" Condition="Exists('$(_PackageVersionFileFilePath)')">
+      <Output TaskParameter="Lines" PropertyName="_PackageVersionFileName"/>
+    </ReadLinesFromFile>
 
     <PropertyGroup>
       <_BuildVersionFilePath>%(PackageFile.RootDir)%(PackageFile.Directory)$(_BuildVersionFileName)</_BuildVersionFilePath>
+      <_PackageVersionFilePath>%(PackageFile.RootDir)%(PackageFile.Directory)$(_PackageVersionFileName)</_PackageVersionFilePath>
     </PropertyGroup>
 
     <!-- Read in build version, if it exists -->
@@ -79,14 +84,14 @@
       <_BlobGroupBlobItem Include="$(_BuildVersionFilePath)" Condition="Exists('$(_BuildVersionFilePath)')" >
         <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
       </_BlobGroupBlobItem>
+      <_BlobGroupBlobItem Include="$(_PackageVersionFilePath)" Condition="Exists('$(_PackageVersionFilePath)')">
+        <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
+      </_BlobGroupBlobItem>
     </ItemGroup>
 
     <!-- Capture items that need to be published under the build version container. -->
     <ItemGroup>
       <_VersionContainerBlobItem Include="$(_ChecksumFilePath)" Condition="Exists('$(_ChecksumFilePath)')">
-        <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
-      </_VersionContainerBlobItem>
-      <_VersionContainerBlobItem Include="$(_VersionFilePath)" Condition="Exists('$(_VersionFilePath)')">
         <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
       </_VersionContainerBlobItem>
       <!-- Publish the nupkg as a blob in addition to their normal publishing mechanism
