@@ -95,7 +95,7 @@ See [Process ID `pid` vs Unique ID `uid`](pidvsuid.md) for clarification on when
 
 ### View the collected `.gcdump` file
 
-On Windows, `.gcdump` files can be viewed in [PerfView](https://github.com/microsoft/perfview) for analysis or in Visual Studio. Currently, There is no way of opening a .gcdump on non-Windows platforms.
+On Windows, `.gcdump` files can be viewed in [PerfView](https://github.com/microsoft/perfview) for analysis or in Visual Studio. Currently, there is no way of opening a `.gcdump` on non-Windows platforms.
 
 You can collect multiple `.gcdump`s and open them simultaneously in Visual Studio to get a comparison experience.
 
