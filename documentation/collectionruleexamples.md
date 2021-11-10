@@ -1,6 +1,6 @@
 # Collection Rule Examples
 
-The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your application, or they can be adjusted for your specific use-case. [Learn more about configuring collection rules](collectionrules.md).
+The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your application (for more information on configuring an egress provider, see [egress providers](./configuration.md#egress-configuration)), or they can be adjusted for your specific use-case. [Learn more about configuring collection rules](collectionrules.md).
 
 ## Collect Trace - Startup (`Startup` Trigger)
 
@@ -166,7 +166,7 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
         "Type": "CollectLogs",
         "Settings": {
           "Egress": "artifacts",
-          "DefaultLevel": "Information",
+          "DefaultLevel": "Error",
           "UseAppFilters": false,
           "Duration": "00:01:00"
         }
@@ -195,7 +195,8 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
       "Settings": {
         "RequestCount": 5,
         "RequestDuration": "00:00:08",
-        "SlidingWindowDuration": "00:02:00"
+        "SlidingWindowDuration": "00:02:00",
+        "IncludePaths": [ "/api/**/*" ]
       }
     },
     "Actions": [
@@ -214,7 +215,7 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
 
 ### Explanation
 
-This rule, named "LongRequestDuration", will trigger when 5 requests each take greater than 8 seconds to complete within a 2 minute sliding window. If the rule is triggered, an Http trace will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
+This rule, named "LongRequestDuration", will trigger when 5 requests each take greater than 8 seconds to complete within a 2 minute sliding window for all paths under the `/api` route. If the rule is triggered, an Http trace will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
 
 ## Collect Dump And Execute - Collect Dump and Open In Visual Studio
 
@@ -256,4 +257,4 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 
 ### Explanation
 
-This rule, named "CollectDumpAndExecute", will trigger when 3 400 status codes are encountered within the default sliding window duration (1 minute). If the rule is triggered, a Mini dump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the dump to the local filesystem). Upon the dump's completion, Visual Studio will open the egressed dump artifact. There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
+This rule, named "CollectDumpAndExecute", will trigger when 3 400 status codes are encountered within the default sliding window duration (1 minute). If the rule is triggered, a Mini dump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the dump to the local filesystem). Upon the dump's completion, Visual Studio will open the egressed dump artifact. To reference a prior result, the general syntax to use is `"$(Actions.ActionName.OutputVariable)"`, where `ActionName` is the name of the previous action whose result is being referenced (in this case, `MyDump`), and `OutputVariable` is the name of the output being referenced from that action (in this case, `EgressPath`). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
