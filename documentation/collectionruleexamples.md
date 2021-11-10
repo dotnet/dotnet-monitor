@@ -17,10 +17,11 @@ The following examples provide sample scenarios for using a collection rule. The
         "Type": "CollectTrace",
         "Settings": {
           "Providers": [{
-              "Name": "AssemblyLoadStart",
-              "EventLevel": "Informational"
+              "Name": "Microsoft-Windows-DotNETRuntime",
+              "EventLevel": "Informational",
+              "Keywords": "0x8"
           }],
-          "BufferSizeInMB": 1024,
+          "Duration": "00:00:15",
           "Egress": "artifacts"
         }
       }
@@ -31,7 +32,7 @@ The following examples provide sample scenarios for using a collection rule. The
 
 ### Explanation
 
-This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's startup. When the rule is triggered, a trace will be collected for the default duration (30 seconds) and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). The trace will capture events from an event provider named `AssemblyLoadStart`, and will collect events at or above the `Informational` level. The trace will request rundown by default, and the `BufferSizeInMB` is set to the maximum size of 1024 MB.
+This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's startup. When the rule is triggered, a trace will be collected for 15 seconds and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). The trace will capture events from an event provider named `Microsoft-Windows-DotNETRuntime`, and will collect events at or above the `Informational` level using the keyword `0x8` (`LoaderKeyword`). The trace will request rundown by default, and the `BufferSizeInMB` has the default value of 256 MB.
 
 ## Collect GCDump - Heap Size (`EventCounter` Trigger)
 
