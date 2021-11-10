@@ -61,7 +61,7 @@ spec:
       secretName: apikey
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0-preview.8
+    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -88,7 +88,7 @@ spec:
       name: my-configmap
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0-preview.8
+    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -108,7 +108,7 @@ spec:
             name: my-configmap
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0-preview.8
+    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -257,7 +257,7 @@ Match pid 1
   "DefaultProcess": {
     "Filters": [{
       "Key": "ProcessId",
-      "Value": "1",
+      "Value": "1"
     }]
   },
 }
@@ -311,7 +311,7 @@ You can customize the number of data points stored per metric via the following 
 ```json
 {
   "Metrics": {
-    "MetricCount": 3,
+    "MetricCount": 3
   }
 }
 ```
@@ -777,7 +777,7 @@ The following example shows the `Limits` portion of a collection rule that has t
 {
     "Limits": {
         "ActionCount": 3,
-        "ActionCountSlidingWindowDuration": "01:00:00",
+        "ActionCountSlidingWindowDuration": "01:00:00"
     }
 }
 ```
