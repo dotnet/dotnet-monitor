@@ -96,9 +96,10 @@
       </_VersionContainerBlobItem>
       <!-- Publish the nupkg as a blob in addition to their normal publishing mechanism
            so that they can be retrieved from a stable location. -->
-      <_VersionContainerBlobItem Include="%(PackageFile.FullPath)" Condition="Exists('%(PackageFile.FullPath)')" >
+      <!-- Enable once https://github.com/dotnet/arcade/issues/6517 is fixed. -->
+      <!-- <_VersionContainerBlobItem Include="%(PackageFile.FullPath)" Condition="Exists('%(PackageFile.FullPath)')" >
         <ManifestArtifactData Condition="'@(_PackageArtifactData)' != ''">@(_PackageArtifactData)</ManifestArtifactData>
-      </_VersionContainerBlobItem>
+      </_VersionContainerBlobItem> -->
     </ItemGroup>
 
     <!-- Add artifact items to be pushed to blob feed -->
