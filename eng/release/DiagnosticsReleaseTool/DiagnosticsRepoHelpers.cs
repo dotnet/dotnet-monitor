@@ -6,6 +6,9 @@ namespace DiagnosticsReleaseTool.Util
     {
         public const string ProductName = "dotnet-monitor";
         public const string RepositoryName = "https://github.com/dotnet/dotnet-monitor";
-        internal static bool IsDockerUtilityFile(FileInfo arg) => arg.FullName.EndsWith(".nupkg.sha512") || arg.FullName.EndsWith(".nupkg.version");
+        internal static bool IsDockerUtilityFile(FileInfo arg) =>
+            arg.FullName.EndsWith(".nupkg.sha512")
+            || arg.FullName.EndsWith(".nupkg.version")
+            || arg.FullName.EndsWith(".nupkg.buildversion");
     }
 }

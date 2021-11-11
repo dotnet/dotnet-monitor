@@ -39,7 +39,8 @@
     <PropertyGroup>
       <_BlobGroupFilePath>%(PackageFile.FullPath).blobgroup</_BlobGroupFilePath>
       <_ChecksumFilePath>%(PackageFile.FullPath).sha512</_ChecksumFilePath>
-      <_VersionFilePath>%(PackageFile.FullPath).version</_VersionFilePath>
+      <_BuildVersionFileFilePath>%(PackageFile.FullPath).buildversionfile</_BuildVersionFileFilePath>
+      <_PackageVersionFileFilePath>%(PackageFile.FullPath).versionfile</_PackageVersionFileFilePath>
     </PropertyGroup>
 
     <Error Condition="Exists('$(_BlobGroupFilePath)') and !Exists('$(_ChecksumFilePath)')"
@@ -49,26 +50,68 @@
     <ReadLinesFromFile File="$(_BlobGroupFilePath)" Condition="Exists('$(_BlobGroupFilePath)')">
       <Output TaskParameter="Lines" PropertyName="_BlobGroupName"/>
     </ReadLinesFromFile>
+    <!-- Read in build version file name, if it exists -->
+    <ReadLinesFromFile File="$(_BuildVersionFileFilePath)" Condition="Exists('$(_BuildVersionFileFilePath)')">
+      <Output TaskParameter="Lines" PropertyName="_BuildVersionFileName"/>
+    </ReadLinesFromFile>
+    <!-- Read in package version file name, if it exists -->
+    <ReadLinesFromFile File="$(_PackageVersionFileFilePath)" Condition="Exists('$(_PackageVersionFileFilePath)')">
+      <Output TaskParameter="Lines" PropertyName="_PackageVersionFileName"/>
+    </ReadLinesFromFile>
+
+    <PropertyGroup>
+      <_BuildVersionFilePath>%(PackageFile.RootDir)%(PackageFile.Directory)$(_BuildVersionFileName)</_BuildVersionFilePath>
+      <_PackageVersionFilePath>%(PackageFile.RootDir)%(PackageFile.Directory)$(_PackageVersionFileName)</_PackageVersionFilePath>
+    </PropertyGroup>
+
+    <!-- Read in build version, if it exists -->
+    <ReadLinesFromFile File="$(_BuildVersionFilePath)" Condition="Exists('$(_BuildVersionFilePath)')">
+      <Output TaskParameter="Lines" PropertyName="_BuildVersion"/>
+    </ReadLinesFromFile>
 
     <!-- Calculate manifest artifact data for each file type. -->
     <ItemGroup>
       <_CommonArtifactData Include="NonShipping=true" Condition="'%(PackageFile.IsShipping)' != 'true'" />
     </ItemGroup>
-
-    <!-- Capture each blob item to upload to blob feed -->
     <ItemGroup>
-      <_BlobItem Include="$(_ChecksumFilePath)" Condition="Exists('$(_ChecksumFilePath)')">
+      <_PackageArtifactData Include="@(_CommonArtifactData)" />
+      <!-- Set Category to OTHER so that packages are also published to blob storage. -->
+      <_PackageArtifactData Include="Category=OTHER" />
+    </ItemGroup>
+
+    <!-- Capture items that need to be published under the blob group. -->
+    <ItemGroup>
+      <_BlobGroupBlobItem Include="$(_BuildVersionFilePath)" Condition="Exists('$(_BuildVersionFilePath)')" >
         <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
-      </_BlobItem>
-      <_BlobItem Include="$(_VersionFilePath)" Condition="Exists('$(_VersionFilePath)')">
+      </_BlobGroupBlobItem>
+      <_BlobGroupBlobItem Include="$(_PackageVersionFilePath)" Condition="Exists('$(_PackageVersionFilePath)')">
         <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
-      </_BlobItem>
+      </_BlobGroupBlobItem>
+    </ItemGroup>
+
+    <!-- Capture items that need to be published under the build version container. -->
+    <ItemGroup>
+      <_VersionContainerBlobItem Include="$(_ChecksumFilePath)" Condition="Exists('$(_ChecksumFilePath)')">
+        <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
+      </_VersionContainerBlobItem>
+      <!-- Publish the nupkg as a blob in addition to their normal publishing mechanism
+           so that they can be retrieved from a stable location. -->
+      <!-- Enable once https://github.com/dotnet/arcade/issues/6517 is fixed. -->
+      <!-- <_VersionContainerBlobItem Include="%(PackageFile.FullPath)" Condition="Exists('%(PackageFile.FullPath)')" >
+        <ManifestArtifactData Condition="'@(_PackageArtifactData)' != ''">@(_PackageArtifactData)</ManifestArtifactData>
+      </_VersionContainerBlobItem> -->
     </ItemGroup>
 
     <!-- Add artifact items to be pushed to blob feed -->
     <ItemGroup>
-      <ItemsToPushToBlobFeed Include="@(_BlobItem)" Condition="'$(_BlobGroupName)' != ''">
-        <RelativeBlobPath>diagnostics/$(_BlobGroupName)/%(_BlobItem.Filename)%(_BlobItem.Extension)</RelativeBlobPath>
+      <ItemsToPushToBlobFeed Include="@(_BlobGroupBlobItem)" Condition="'$(_BlobGroupName)' != ''">
+        <!-- Place blobs into versioned container so that stable package versions do not collide. -->
+        <RelativeBlobPath>diagnostics/monitor$(_BlobGroupName)/%(_BlobGroupBlobItem.Filename)%(_BlobGroupBlobItem.Extension)</RelativeBlobPath>
+        <PublishFlatContainer>true</PublishFlatContainer>
+      </ItemsToPushToBlobFeed>
+      <ItemsToPushToBlobFeed Include="@(_VersionContainerBlobItem)" Condition="'$(_BuildVersion)' != ''">
+        <!-- Place blobs into versioned container so that stable package versions do not collide. -->
+        <RelativeBlobPath>diagnostics/monitor/$(_BuildVersion)/%(_VersionContainerBlobItem.Filename)%(_VersionContainerBlobItem.Extension)</RelativeBlobPath>
         <PublishFlatContainer>true</PublishFlatContainer>
       </ItemsToPushToBlobFeed>
     </ItemGroup>
