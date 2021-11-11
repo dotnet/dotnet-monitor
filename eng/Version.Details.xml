@@ -14,7 +14,7 @@
     </Dependency>
     <Dependency Name="Microsoft.Extensions.Configuration.KeyPerFile" Version="6.0.1">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>f8b9e541ee4e6139992eebee3bf3fa730d2ff24f</Sha>
+      <Sha>2b60776fee1231c7d024336f20a373e58988cb5c</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
@@ -32,7 +32,7 @@
   <ToolsetDependencies>
     <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="6.0.1">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>f8b9e541ee4e6139992eebee3bf3fa730d2ff24f</Sha>
+      <Sha>2b60776fee1231c7d024336f20a373e58988cb5c</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.21559.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
@@ -58,9 +58,9 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>c5a20f916b465707919aa5b6a78f7c4c7675c423</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.1-servicing.21554.17">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.1-servicing.21560.23">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>f8b9e541ee4e6139992eebee3bf3fa730d2ff24f</Sha>
+      <Sha>2b60776fee1231c7d024336f20a373e58988cb5c</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.1-servicing.1.21554.7">
       <Uri>https://github.com/dotnet/runtime</Uri>

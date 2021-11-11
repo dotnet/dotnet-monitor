@@ -33,7 +33,7 @@
     <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.21559.3</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>6.0.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.1-servicing.21554.17</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.1-servicing.21560.23</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.21559.2</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.21559.2</MicrosoftDiagnosticsMonitoringEventPipeVersion>
