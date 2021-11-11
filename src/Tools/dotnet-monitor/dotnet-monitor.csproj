@@ -10,9 +10,7 @@
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <RollForward>Major</RollForward>
-    <!-- This forces the creation of a checksum file and uploads it to blob storage
-         using this name as part of the blob relative path. -->
-    <BlobGroupPrefix>monitor</BlobGroupPrefix>
+    <PublishToBlob>true</PublishToBlob>
     <!-- File locking warnings (that are typically resolved with automatic retries) are failing builds
          quite frequently with messages such as:
          
