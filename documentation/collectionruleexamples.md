@@ -46,7 +46,7 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
       "Settings": {
         "ProviderName": "System.Runtime",
         "CounterName": "gc-heap-size",
-        "GreaterThan": 1000000
+        "GreaterThan": 1
       }
     },
     "Actions": [
@@ -63,7 +63,7 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 
 ### Explanation
 
-This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1000000 bytes within the default sliding window duration (1 minute). If the rule is triggered, a GCDump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the GCDump to the local filesystem). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
+This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1 MB within the default sliding window duration (1 minute). If the rule is triggered, a GCDump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the GCDump to the local filesystem). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
 
 ## Collect Trace - High CPU Usage (`EventCounter` Trigger)
 
