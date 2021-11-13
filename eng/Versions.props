@@ -45,7 +45,7 @@
     <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
     <MicrosoftNETCoreAppRuntimewinx64Version>6.0.1</MicrosoftNETCoreAppRuntimewinx64Version>
     <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>
-    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.1-servicing.1.21559.9</VSRedistCommonNetCoreSharedFrameworkx6460Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.1-servicing.21562.11</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.255801</MicrosoftFileFormatsVersion>
   </PropertyGroup>
