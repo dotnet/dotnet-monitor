@@ -277,6 +277,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             logLevel: LogLevel.Error,
             formatString: Strings.LogFormatString_ActionSettingsTokenizationNotSupported);
 
+        private static readonly Action<ILogger, string, Exception> _endpointTimeout =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(LoggingEventIds.EndpointTimeout, "EndpointTimeout"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EndpointTimeout);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -499,6 +505,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ActionSettingsTokenizationNotSupported(this ILogger logger, string settingsType)
         {
             _actionSettingsTokenizationNotSupported(logger, settingsType, null);
+        }
+
+        public static void EndpointTimeout(this ILogger logger, string processId)
+        {
+            _endpointTimeout(logger, processId, null);
         }
     }
 }

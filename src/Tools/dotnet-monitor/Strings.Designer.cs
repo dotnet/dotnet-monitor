@@ -817,6 +817,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unexpected timeout from process {processId}. Process will no longer be monitored..
+        /// </summary>
+        internal static string LogFormatString_EndpointTimeout {
+            get {
+                return ResourceManager.GetString("LogFormatString_EndpointTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments..
         /// </summary>
         internal static string LogFormatString_InsecureAutheticationConfiguration {

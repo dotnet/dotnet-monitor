@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class DumpServiceEndpointInfoSourceCallback : IEndpointInfoSourceCallbacks
+    internal sealed class OperationTrackerServiceEndpointInfoSourceCallback : IEndpointInfoSourceCallbacks
     {
-        private readonly IDumpService _dumpService;
+        private readonly OperationTrackerService _operationTrackerService;
 
-        public DumpServiceEndpointInfoSourceCallback(IDumpService dumpService)
+        public OperationTrackerServiceEndpointInfoSourceCallback(OperationTrackerService operationTrackerService)
         {
-            _dumpService = dumpService ?? throw new ArgumentNullException(nameof(dumpService));
+            _operationTrackerService = operationTrackerService ?? throw new ArgumentNullException(nameof(operationTrackerService));
         }
 
         public Task OnAddedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public Task OnRemovedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            _dumpService.EndpointRemoved(endpointInfo);
+            _operationTrackerService.EndpointRemoved(endpointInfo);
 
             return Task.CompletedTask;
         }
