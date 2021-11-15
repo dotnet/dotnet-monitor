@@ -59,5 +59,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const int InvalidActionReference = 49;
         public const int InvalidActionResultReference = 50;
         public const int ActionSettingsTokenizationNotSupported = 51;
+        public const int EndpointTimeout = 52;
     }
 }

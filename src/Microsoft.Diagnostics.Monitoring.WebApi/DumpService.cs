@@ -17,16 +17,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal class DumpService : IDumpService
     {
-        private readonly ConcurrentDictionary<IEndpointInfo, OperationsTracker> _operations = new();
+        private readonly OperationTrackerService _operationTrackerService;
         private readonly IOptionsMonitor<DiagnosticPortOptions> _portOptions;
         private readonly IOptionsMonitor<StorageOptions> _storageOptions;
 
         public DumpService(
             IOptionsMonitor<StorageOptions> storageOptions,
-            IOptionsMonitor<DiagnosticPortOptions> portOptions)
+            IOptionsMonitor<DiagnosticPortOptions> portOptions,
+            OperationTrackerService operationTrackerService)
         {
             _portOptions = portOptions ?? throw new ArgumentNullException(nameof(portOptions));
             _storageOptions = storageOptions ?? throw new ArgumentNullException(nameof(StorageOptions));
+            _operationTrackerService = operationTrackerService ?? throw new ArgumentNullException(nameof(operationTrackerService));
         }
 
         public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType mode, CancellationToken token)
@@ -50,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 // a dump operation causing the runtime to temporarily be unresponsive. Long term, this
                 // concept should be folded into RequestLimitTracker with registered endpoint information
                 // and allowing to query the status of an endpoint for a given artifact.
-                operationRegistration = GetOperationsTracker(endpointInfo).Register();
+                operationRegistration = _operationTrackerService.Register(endpointInfo);
             }
 
             try
@@ -73,25 +75,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return new AutoDeleteFileStream(dumpFilePath);
-        }
-
-        public bool IsExecutingOperation(IEndpointInfo endpointInfo)
-        {
-            if (IsListenMode)
-            {
-                return GetOperationsTracker(endpointInfo).IsExecutingOperation;
-            }
-            return false;
-        }
-
-        public void EndpointRemoved(IEndpointInfo endpointInfo)
-        {
-            _operations.TryRemove(endpointInfo, out _);
-        }
-
-        private OperationsTracker GetOperationsTracker(IEndpointInfo endpointInfo)
-        {
-            return _operations.GetOrAdd(endpointInfo, _ => new OperationsTracker());
         }
 
         private bool IsListenMode => _portOptions.CurrentValue.GetConnectionMode() == DiagnosticPortConnectionMode.Listen;
@@ -134,19 +117,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        private sealed class OperationsTracker : IDisposable
-        {
-            private int _count = 0;
 
-            public IDisposable Register()
-            {
-                Interlocked.Increment(ref _count);
-                return this;
-            }
-
-            public bool IsExecutingOperation => 0 != Interlocked.CompareExchange(ref _count, 0, 0);
-
-            public void Dispose() => Interlocked.Decrement(ref _count);
-        }
     }
 }
