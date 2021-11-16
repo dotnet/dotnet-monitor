@@ -512,6 +512,9 @@
 1. providerType: Type of the provider
 2. keyName: Name of the property that could not be found</comment>
   </data>
+  <data name="LogFormatString_EndpointTimeout" xml:space="preserve">
+    <value>Unexpected timeout from process {processId}. Process will no longer be monitored.</value>
+  </data>
   <data name="LogFormatString_InsecureAutheticationConfiguration" xml:space="preserve">
     <value>WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.</value>
     <comment>Gets the format string that is printed in the 14:InsecureAutheticationConfiguration event.

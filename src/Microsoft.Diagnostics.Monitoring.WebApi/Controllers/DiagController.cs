@@ -46,6 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
         private readonly EgressOperationStore _operationsStore;
         private readonly IDumpService _dumpService;
+        private readonly OperationTrackerService _operationTrackerService;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -56,6 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
             _dumpService = serviceProvider.GetRequiredService<IDumpService>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
+            _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
         }
 
         /// <summary>
@@ -537,7 +539,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,
-                (outputStream, token) => TraceUtilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token),
+                async (outputStream, token) =>
+                {
+                    IDisposable operationRegistration = null;
+                    try
+                    {
+                        if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
+                        {
+                            operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
+                        }
+                        await TraceUtilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token);
+                    }
+                    finally
+                    {
+                        operationRegistration?.Dispose();
+                    }
+                },
                 fileName,
                 ContentTypes.ApplicationOctetStream,
                 processInfo.EndpointInfo);
