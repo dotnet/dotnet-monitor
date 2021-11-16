@@ -66,6 +66,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             Assert.NotNull(result.OutputValues);
             Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
+
+            if (!File.Exists(egressPath))
+            {
+                Console.Error.WriteLine("Egress Path: ", egressPath); // TESTING ONLY
+            }
+
             Assert.True(File.Exists(egressPath));
 
             return egressPath;
