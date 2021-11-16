@@ -50,9 +50,9 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>4822e3c3aa77eb82b2fb33c9321f923cf11ddde6</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.255801">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.256501">
       <Uri>https://github.com/dotnet/symstore</Uri>
-      <Sha>c6753ea1a284e9c6a995587b068087bb60916960</Sha>
+      <Sha>28f890492dbe55374670e0b5b4606873eb6f0a1d</Sha>
     </Dependency>
     <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="6.0.1">
       <Uri>https://github.com/dotnet/runtime</Uri>
