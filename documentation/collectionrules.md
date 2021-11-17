@@ -130,3 +130,7 @@ If an action has an output dependency on another action, the execution of the li
 Typically, when a target process is connecting to a `dotnet monitor` instance running in `Listen` mode, the target process runtime is suspended until `dotnet monitor` instructs it to resume. This allows starting diagnostic operations before the runtime starts, so that events that occur early in the runtime execution may be captured.
 
 The rule system plays a part in this process by starting the triggers of all of the applicable rules on a process **before** its runtime is resumed. For the `Startup` trigger, the rule will not yield back to the runtime for resumption until all actions are started; the caveat is that when starting the actions, if either an explicit wait is specified via the `WaitForCompletion` setting or an action dependency forces an implicit wait, then the runtime is resumed at that point. For non-`Startup` trigger rules, the rule will yield back to the runtime for resumption as soon as the trigger has started.
+
+## Examples
+
+For examples of how to configure collection rules, see [Collection Rule Examples](collectionruleexamples.md).
