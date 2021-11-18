@@ -197,16 +197,67 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             _writer.WritePropertyName(section.Key);
 
+            bool parentIsCR = section.Key.Equals(ConfigurationKeys.CollectionRules);
+
             IEnumerable<IConfigurationSection> children = section.GetChildren();
 
             //If we do not traverse the child sections, the caller is responsible for creating the value
             if (includeChildSections && children.Any())
             {
-                using (new JsonObjectContext(_writer))
+                bool isSequentialIndices = true;
+
+                int indexValue = 0;
+
+                foreach (IConfigurationSection child in children)
                 {
-                    foreach (IConfigurationSection child in children)
+                    if (!child.Key.Equals(indexValue.ToString()))
                     {
-                        ProcessSection(child, includeChildSections, redact);
+                        isSequentialIndices = false;
+                        break;
+                    }
+
+                    indexValue++;
+                }
+
+                if (isSequentialIndices && !parentIsCR)
+                {
+                    if (children.First().GetChildren().Any())
+                    {
+                        _writer.WriteStartArray();
+
+                        foreach (IConfigurationSection child in children)
+                        {
+                            using (new JsonObjectContext(_writer))
+                            {
+                                foreach (IConfigurationSection grandChild in child.GetChildren())
+                                {
+                                    ProcessSection(grandChild, includeChildSections, redact);
+                                }
+                            }
+                        }
+
+                        _writer.WriteEndArray();
+                    }
+                    else
+                    {
+                        if (redact)
+                        {
+                            _writer.WriteStringValue(Strings.Placeholder_Redacted);
+                        }
+                        else
+                        {
+                            _writer.WriteStringValue(section.Value);
+                        }
+                    }
+                }
+                else
+                {
+                    using (new JsonObjectContext(_writer))
+                    {
+                        foreach (IConfigurationSection child in children)
+                        {
+                            ProcessSection(child, includeChildSections, redact);
+                        }
                     }
                 }
             }
