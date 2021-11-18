@@ -204,20 +204,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             //If we do not traverse the child sections, the caller is responsible for creating the value
             if (includeChildSections && children.Any())
             {
-                bool isSequentialIndices = true;
-
-                int indexValue = 0;
-
-                foreach (IConfigurationSection child in children)
-                {
-                    if (!child.Key.Equals(indexValue.ToString()))
-                    {
-                        isSequentialIndices = false;
-                        break;
-                    }
-
-                    indexValue++;
-                }
+                bool isSequentialIndices = CheckForSequentialIndices(children);
 
                 if (isSequentialIndices && !parentIsCR)
                 {
@@ -227,54 +214,60 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                         foreach (IConfigurationSection child in children)
                         {
-                            using (new JsonObjectContext(_writer))
-                            {
-                                foreach (IConfigurationSection grandChild in child.GetChildren())
-                                {
-                                    ProcessSection(grandChild, includeChildSections, redact);
-                                }
-                            }
+                            ProcessChildren(child, includeChildSections, redact);
                         }
 
                         _writer.WriteEndArray();
                     }
                     else
                     {
-                        if (redact)
-                        {
-                            _writer.WriteStringValue(Strings.Placeholder_Redacted);
-                        }
-                        else
-                        {
-                            _writer.WriteStringValue(section.Value);
-                        }
+                        WriteValue(section.Value, redact);
                     }
                 }
                 else
                 {
-                    using (new JsonObjectContext(_writer))
-                    {
-                        foreach (IConfigurationSection child in children)
-                        {
-                            ProcessSection(child, includeChildSections, redact);
-                        }
-                    }
+                    ProcessChildren(section, includeChildSections, redact);
                 }
             }
-            else
+            else if (!children.Any())
             {
-                if (!children.Any())
+                WriteValue(section.Value, redact);
+            }
+        }
+
+        private void WriteValue(string value, bool redact)
+        {
+            string valueToWrite = redact ? Strings.Placeholder_Redacted : value;
+
+            _writer.WriteStringValue(valueToWrite);
+        }
+
+        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact)
+        {
+            using (new JsonObjectContext(_writer))
+            {
+                foreach (IConfigurationSection child in section.GetChildren())
                 {
-                    if (redact)
-                    {
-                        _writer.WriteStringValue(Strings.Placeholder_Redacted);
-                    }
-                    else
-                    {
-                        _writer.WriteStringValue(section.Value);
-                    }
+                    ProcessSection(child, includeChildSections, redact);
                 }
             }
+        }
+
+        private bool CheckForSequentialIndices(IEnumerable<IConfigurationSection> children)
+        {
+            int indexValue = 0;
+
+            foreach (IConfigurationSection child in children)
+            {
+                if (!child.Key.Equals(indexValue.ToString()))
+                {
+                    return false;
+                }
+
+                indexValue++;
+            }
+
+            return true;
         }
 
         public void Dispose()
