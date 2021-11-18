@@ -30,7 +30,7 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.21559.3</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.21566.10</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>6.0.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.1-servicing.21560.23</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
@@ -47,7 +47,7 @@
     <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>
     <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.1-servicing.21565.6</VSRedistCommonNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.255801</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.256501</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftNETCoreApp31Version>3.1.20</MicrosoftNETCoreApp31Version>
