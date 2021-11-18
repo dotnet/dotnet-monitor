@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         private readonly TaskCompletionSource<string> _readySource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        private bool _isDiposed;
+        private bool _isDisposed;
 
         /// <summary>
         /// Event callback for when a Private Key warning message is seen.
@@ -88,11 +88,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             lock (_lock)
             {
-                if (_isDiposed)
+                if (_isDisposed)
                 {
                     return;
                 }
-                _isDiposed = true;
+                _isDisposed = true;
             }
 
             CancelCompletionSources(CancellationToken.None);
