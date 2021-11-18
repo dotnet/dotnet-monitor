@@ -197,14 +197,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             _writer.WritePropertyName(section.Key);
 
-            bool parentIsCR = section.Key.Equals(ConfigurationKeys.CollectionRules);
-
             IEnumerable<IConfigurationSection> children = section.GetChildren();
 
             //If we do not traverse the child sections, the caller is responsible for creating the value
             if (includeChildSections && children.Any())
             {
                 bool isSequentialIndices = CheckForSequentialIndices(children);
+
+                bool parentIsCR = section.Key.Equals(ConfigurationKeys.CollectionRules);
 
                 if (isSequentialIndices && !parentIsCR)
                 {
