@@ -21,12 +21,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     [Collection(DefaultCollectionFixture.Name)]
     public class ConfigurationTests
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
-
-        public ConfigurationTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        public ConfigurationTests(ITestOutputHelper outputHelper)
         {
-            _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
         }
 
@@ -39,6 +36,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             toolRunner.Redact = redact;
             await toolRunner.StartAsync();
 
+            Assert.Equal(settings1.Replace(" ","").Replace("\n",""), toolRunner._configurationString.Replace(" ","").Replace("\n",""));
+
         }
+
+        // Need to actually put real values here.
+        string settings1 = "{\"Metrics\": {\"Enabled\": \"True\",\"Endpoints\": \"http://localhost:52325\",\"IncludeDefaultProviders\": \"True\",\"MetricCount\": \"10\",\"Providers\": [{\"ProviderName\": \"Microsoft-AspNetCore-Server-Kestrel\",\"CounterNames\": [\"connections-per-second\",\"total-connections\"]}]},\"ApiAuthentication\": {\"ApiKeyHash\": \"5BEB39D01D65BA138493A0E95E1EFCF6DCE55B24CDDF5F10255796FD74455CF6\",\"ApiKeyHashType\": \"SHA256\"},\"DefaultProcess\": {\"Filters\": [{\"Key\": \"ProcessID\",\"Value\": \"12345\"}]},\"Egress\": {\"FileSystem\": {\"artifacts\": {\"directoryPath\": \"artifacts\"}}},\"Logging\": {\"CaptureScopes\": true,\"Console\": {\"FormatterOptions\": {\"ColorBehavior\": \"Default\"},\"LogToStandardErrorThreshold\": \"Error\"}},\"CollectionRules\": {\"LargeGCHeap\": {\"Trigger\": {\"Type\": \"EventCounter\",\"Settings\": {\"ProviderName\": \"System.Runtime\",\"CounterName\": \"gc-heap-size\",\"GreaterThan\": 10}},\"Actions\": [{\"Type\": \"CollectGCDump\",\"Settings\": {\"Egress\": \"artifacts\"}}]}},\"DiagnosticPort\": {\"ConnectionMode\": \"Listen\",\"EndpointName\": \"\\\\.\\pipe\\dotnet-monitor-pipe\"}}";
     }
 }

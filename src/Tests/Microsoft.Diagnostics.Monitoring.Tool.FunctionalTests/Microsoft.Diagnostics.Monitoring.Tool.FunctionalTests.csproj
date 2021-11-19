@@ -76,4 +76,10 @@
     <Folder Include="Options\CollectionRules\Triggers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="SampleConfigurations\Settings1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

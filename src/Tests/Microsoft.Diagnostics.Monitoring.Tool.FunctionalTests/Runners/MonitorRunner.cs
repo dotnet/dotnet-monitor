@@ -25,6 +25,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         protected readonly ITestOutputHelper _outputHelper;
 
+        protected bool _useSettingsConfig = false;
+
         private readonly DotNetRunner _runner = new();
 
         private readonly LoggingRunnerAdapter _adapter;
@@ -66,8 +68,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         private string UserConfigDirectoryPath =>
             Path.Combine(_runnerTmpPath, "UserConfig");
 
-        private string UserSettingsFilePath =>
-            Path.Combine(UserConfigDirectoryPath, "settings.json");
+        protected string UserSettingsFilePath
+        {
+            get
+            {
+                // Change this before PR
+                return _userConfigDirectoryPath ?? Path.Combine(UserConfigDirectoryPath, "settings.json");
+            }
+
+            set
+            {
+                _userConfigDirectoryPath = value;
+            }
+        }
+
+        private string _userConfigDirectoryPath;
 
         public MonitorRunner(ITestOutputHelper outputHelper)
         {
@@ -128,28 +143,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _runner.EntrypointAssemblyPath = DotNetMonitorPath;
             _runner.Arguments = string.Join(" ", argsList);
 
-            // Disable diagnostics on tool
-            _adapter.Environment.Add("COMPlus_EnableDiagnostics", "0");
-            // Console output in JSON for easy parsing
-            _adapter.Environment.Add("Logging__Console__FormatterName", "json");
-            // Enable Information on ASP.NET Core logs for better ability to diagnose issues.
-            _adapter.Environment.Add("Logging__LogLevel__Microsoft.AspNetCore", "Information");
-            // Enable Debug on Microsoft.Diagnostics to get lifetime and address events as well as for diagnosing issues.
-            _adapter.Environment.Add("Logging__LogLevel__Microsoft.Diagnostics", "Debug");
-
-            // Override the shared config directory
-            _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
-            // Override the user config directory
-            _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
-
-            // Set configuration via environment variables
-            var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration(useDotnetMonitorPrefix: true);
-            if (configurationViaEnvironment.Count > 0)
+            if (!_useSettingsConfig)
             {
-                // Set additional environment variables from configuration
-                foreach (var variable in configurationViaEnvironment)
+                // Disable diagnostics on tool
+                _adapter.Environment.Add("COMPlus_EnableDiagnostics", "0");
+                // Console output in JSON for easy parsing
+                _adapter.Environment.Add("Logging__Console__FormatterName", "json");
+                // Enable Information on ASP.NET Core logs for better ability to diagnose issues.
+                _adapter.Environment.Add("Logging__LogLevel__Microsoft.AspNetCore", "Information");
+                // Enable Debug on Microsoft.Diagnostics to get lifetime and address events as well as for diagnosing issues.
+                _adapter.Environment.Add("Logging__LogLevel__Microsoft.Diagnostics", "Debug");
+
+                // Override the shared config directory
+                _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
+                // Override the user config directory
+                _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
+
+                // Set configuration via environment variables
+                var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration(useDotnetMonitorPrefix: true);
+                if (configurationViaEnvironment.Count > 0)
                 {
-                    _adapter.Environment.Add(variable.Key, variable.Value);
+                    // Set additional environment variables from configuration
+                    foreach (var variable in configurationViaEnvironment)
+                    {
+                        _adapter.Environment.Add(variable.Key, variable.Value);
+                    }
                 }
             }
 

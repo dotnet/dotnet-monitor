@@ -2,8 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
@@ -20,6 +24,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private bool _isDisposed;
+
+        public string _configurationString = "";
 
         /// <summary>
         /// Determines whether or not certain information is redacted from the displayed configuration.
@@ -62,6 +68,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 argsList.Add("--level full");
             }
 
+            UserSettingsFilePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).FullName, "SampleConfigurations" , "Settings1.json");
+            _useSettingsConfig = true;
+
             using IDisposable _ = token.Register(() => CancelCompletionSources(token));
 
             await base.StartAsync(command, argsList.ToArray(), token);
@@ -71,10 +80,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             // Await ready and exited tasks in case process exits before it is ready.
             if (runnerExitTask == endingTask)
             {
-                throw new InvalidOperationException("Process exited before it was ready.");
+                //throw new InvalidOperationException("Process exited before it was ready.");
             }
 
-            await _readySource.Task;
+            //await _readySource.Task;
+        }
+
+        protected override void StandardOutputCallback(string line)
+        {
+            _configurationString += line;
         }
 
         private void CancelCompletionSources(CancellationToken token)
