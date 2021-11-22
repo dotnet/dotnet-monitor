@@ -33,13 +33,198 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             string settingsBaselineOutput = redact ? settings1Redact : settings1Full;
 
             Assert.Equal(settingsBaselineOutput.Replace(" ","").Replace("\n",""), toolRunner._configurationString.Replace(" ","").Replace("\n",""));
-
         }
 
-        // Need to actually put real values here.
-        string settings1Full = "{\"Metrics\": {\"Enabled\": \"True\",\"Endpoints\": \"http://localhost:52325\",\"IncludeDefaultProviders\": \"True\",\"MetricCount\": \"10\",\"Providers\": [{\"ProviderName\": \"Microsoft-AspNetCore-Server-Kestrel\",\"CounterNames\": [\"connections-per-second\",\"total-connections\"]}]},\"ApiAuthentication\": {\"ApiKeyHash\": \"5BEB39D01D65BA138493A0E95E1EFCF6DCE55B24CDDF5F10255796FD74455CF6\",\"ApiKeyHashType\": \"SHA256\"},\"DefaultProcess\": {\"Filters\": [{\"Key\": \"ProcessID\",\"Value\": \"12345\"}]},\"Egress\": {\"FileSystem\": {\"artifacts\": {\"directoryPath\": \"artifacts\"}}},\"Logging\": {\"CaptureScopes\": true,\"Console\": {\"FormatterOptions\": {\"ColorBehavior\": \"Default\"},\"LogToStandardErrorThreshold\": \"Error\"}},\"CollectionRules\": {\"LargeGCHeap\": {\"Trigger\": {\"Type\": \"EventCounter\",\"Settings\": {\"ProviderName\": \"System.Runtime\",\"CounterName\": \"gc-heap-size\",\"GreaterThan\": 10}},\"Actions\": [{\"Type\": \"CollectGCDump\",\"Settings\": {\"Egress\": \"artifacts\"}}]}},\"DiagnosticPort\": {\"ConnectionMode\": \"Listen\",\"EndpointName\": \"\\\\.\\pipe\\dotnet-monitor-pipe\"}}";
+        string settings1Full = @"
+        {
+          ""urls"": ""https://localhost:52323"",
+          ""Kestrel"": "":NOT PRESENT:"",
+          ""GlobalCounter"": {
+            ""IntervalSeconds"": ""5""
+          },
+          ""CollectionRules"": {
+            ""LargeGCHeap"": {
+              ""Actions"": [
+                {
+                  ""Settings"": {
+                    ""Egress"": ""artifacts""
+                  },
+                  ""Type"": ""CollectGCDump""
+                }
+              ],
+              ""Trigger"": {
+                ""Settings"": {
+                  ""CounterName"": ""gc-heap-size"",
+                  ""GreaterThan"": ""10"",
+                  ""ProviderName"": ""System.Runtime""
+                },
+                ""Type"": ""EventCounter""
+              }
+            }
+          },
+          ""CorsConfiguration"": "":NOT PRESENT:"",
+          ""DiagnosticPort"": {
+            ""ConnectionMode"": ""Listen"",
+            ""EndpointName"": ""\\\\.\\pipe\\dotnet-monitor-pipe""
+          },
+          ""Metrics"": {
+            ""Enabled"": ""True"",
+            ""Endpoints"": ""http://localhost:52325"",
+            ""IncludeDefaultProviders"": ""True"",
+            ""MetricCount"": ""10"",
+            ""Providers"": [
+              {
+                ""CounterNames"": null,
+                ""ProviderName"": ""Microsoft-AspNetCore-Server-Kestrel""
+              }
+            ]
+          },
+          ""Storage"": {
+            ""DumpTempFolder"": ""C:\\Users\\kkeirstead\\AppData\\Local\\Temp\\""
+          },
+          ""DefaultProcess"": {
+            ""Filters"": [
+              {
+                ""Key"": ""ProcessID"",
+                ""Value"": ""12345""
+              }
+            ]
+          },
+          ""Logging"": {
+            ""CaptureScopes"": ""True"",
+            ""Console"": {
+              ""FormatterName"": ""simple"",
+              ""FormatterOptions"": {
+                ""ColorBehavior"": ""Default"",
+                ""IncludeScopes"": ""True"",
+                ""TimestampFormat"": ""HH:mm:ss ""
+              },
+              ""LogToStandardErrorThreshold"": ""Error""
+            },
+            ""EventLog"": {
+              ""LogLevel"": {
+                ""Default"": ""Information"",
+                ""Microsoft"": ""Warning"",
+                ""Microsoft.Diagnostics"": ""Information"",
+                ""Microsoft.Hosting.Lifetime"": ""Information""
+              }
+            },
+            ""LogLevel"": {
+              ""Default"": ""Information"",
+              ""Microsoft"": ""Warning"",
+              ""Microsoft.Diagnostics"": ""Information"",
+              ""Microsoft.Hosting.Lifetime"": ""Information""
+            }
+          },
+          ""Authentication"": {
+            ""MonitorApiKey"": {
+              ""PublicKey"": ""eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"",
+              ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff""
+            }
+          },
+          ""Egress"": {
+            ""FileSystem"": {
+              ""artifacts"": {
+                ""directoryPath"": ""/artifacts""
+              }
+            }
+          }
+        }";
 
-        // Need to actually put real values here.
-        string settings1Redact = "{\"Metrics\": {\"Enabled\": \"True\",\"Endpoints\": \"http://localhost:52325\",\"IncludeDefaultProviders\": \"True\",\"MetricCount\": \"10\",\"Providers\": [{\"ProviderName\": \"Microsoft-AspNetCore-Server-Kestrel\",\"CounterNames\": [\"connections-per-second\",\"total-connections\"]}]},\"ApiAuthentication\": {\"ApiKeyHash\": \"5BEB39D01D65BA138493A0E95E1EFCF6DCE55B24CDDF5F10255796FD74455CF6\",\"ApiKeyHashType\": \"SHA256\"},\"DefaultProcess\": {\"Filters\": [{\"Key\": \"ProcessID\",\"Value\": \"12345\"}]},\"Egress\": {\"FileSystem\": {\"artifacts\": {\"directoryPath\": \"artifacts\"}}},\"Logging\": {\"CaptureScopes\": true,\"Console\": {\"FormatterOptions\": {\"ColorBehavior\": \"Default\"},\"LogToStandardErrorThreshold\": \"Error\"}},\"CollectionRules\": {\"LargeGCHeap\": {\"Trigger\": {\"Type\": \"EventCounter\",\"Settings\": {\"ProviderName\": \"System.Runtime\",\"CounterName\": \"gc-heap-size\",\"GreaterThan\": 10}},\"Actions\": [{\"Type\": \"CollectGCDump\",\"Settings\": {\"Egress\": \"artifacts\"}}]}},\"DiagnosticPort\": {\"ConnectionMode\": \"Listen\",\"EndpointName\": \"\\\\.\\pipe\\dotnet-monitor-pipe\"}}";
+        string settings1Redact = @"
+        {
+          ""urls"": ""https://localhost:52323"",
+          ""Kestrel"": "":NOT PRESENT:"",
+          ""GlobalCounter"": {
+            ""IntervalSeconds"": ""5""
+          },
+          ""CollectionRules"": {
+            ""LargeGCHeap"": {
+              ""Actions"": [
+                {
+                  ""Settings"": {
+                    ""Egress"": ""artifacts""
+                  },
+                  ""Type"": ""CollectGCDump""
+                }
+              ],
+              ""Trigger"": {
+                ""Settings"": {
+                  ""CounterName"": ""gc-heap-size"",
+                  ""GreaterThan"": ""10"",
+                  ""ProviderName"": ""System.Runtime""
+                },
+                ""Type"": ""EventCounter""
+              }
+            }
+          },
+          ""CorsConfiguration"": "":NOT PRESENT:"",
+          ""DiagnosticPort"": {
+            ""ConnectionMode"": ""Listen"",
+            ""EndpointName"": ""\\\\.\\pipe\\dotnet-monitor-pipe""
+          },
+          ""Metrics"": {
+            ""Enabled"": ""True"",
+            ""Endpoints"": ""http://localhost:52325"",
+            ""IncludeDefaultProviders"": ""True"",
+            ""MetricCount"": ""10"",
+            ""Providers"": [
+              {
+                ""CounterNames"": null,
+                ""ProviderName"": ""Microsoft-AspNetCore-Server-Kestrel""
+              }
+            ]
+          },
+          ""Storage"": {
+            ""DumpTempFolder"": ""C:\\Users\\kkeirstead\\AppData\\Local\\Temp\\""
+          },
+          ""DefaultProcess"": {
+            ""Filters"": [
+              {
+                ""Key"": ""ProcessID"",
+                ""Value"": ""12345""
+              }
+            ]
+          },
+          ""Logging"": {
+            ""CaptureScopes"": ""True"",
+            ""Console"": {
+              ""FormatterName"": ""simple"",
+              ""FormatterOptions"": {
+                ""ColorBehavior"": ""Default"",
+                ""IncludeScopes"": ""True"",
+                ""TimestampFormat"": ""HH:mm:ss ""
+              },
+              ""LogToStandardErrorThreshold"": ""Error""
+            },
+            ""EventLog"": {
+              ""LogLevel"": {
+                ""Default"": ""Information"",
+                ""Microsoft"": ""Warning"",
+                ""Microsoft.Diagnostics"": ""Information"",
+                ""Microsoft.Hosting.Lifetime"": ""Information""
+              }
+            },
+            ""LogLevel"": {
+              ""Default"": ""Information"",
+              ""Microsoft"": ""Warning"",
+              ""Microsoft.Diagnostics"": ""Information"",
+              ""Microsoft.Hosting.Lifetime"": ""Information""
+            }
+          },
+          ""Authentication"": {
+            ""MonitorApiKey"": {
+              ""PublicKey"": "":REDACTED:"",
+              ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff""
+            }
+          },
+          ""Egress"": {
+            ""FileSystem"": {
+              ""artifacts"": {
+                ""directoryPath"": ""/artifacts""
+              }
+            }
+          }
+        }";
     }
 }
