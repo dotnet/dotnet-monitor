@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -259,7 +260,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             foreach (IConfigurationSection child in children)
             {
-                if (!child.Key.Equals(indexValue.ToString()))
+                if (!child.Key.Equals(indexValue.ToString(CultureInfo.InvariantCulture)))
                 {
                     return false;
                 }
@@ -291,5 +292,4 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
     }
-
 }
