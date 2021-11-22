@@ -27,6 +27,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public string _configurationString = "";
 
+        public string FileName { get; set; }
+
         /// <summary>
         /// Determines whether or not certain information is redacted from the displayed configuration.
         /// </summary>
@@ -68,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 argsList.Add("--level full");
             }
 
-            UserSettingsFilePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).FullName, "SampleConfigurations" , "Settings1.json");
+            UserSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations" , FileName);
             _useSettingsConfig = true;
 
             using IDisposable _ = token.Register(() => CancelCompletionSources(token));

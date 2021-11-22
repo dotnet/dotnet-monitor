@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private bool _finishReads;
         private int? _exitCode;
-        private bool _isDiposed;
+        private bool _isDisposed;
         private int? _processId;
         private Task _standardErrorTask;
         private Task _standardOutputTask;
@@ -49,11 +49,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         {
             lock (_cancellation)
             {
-                if (_isDiposed)
+                if (_isDisposed)
                 {
                     return;
                 }
-                _isDiposed = true;
+                _isDisposed = true;
             }
 
             _cancellation.SafeCancel();

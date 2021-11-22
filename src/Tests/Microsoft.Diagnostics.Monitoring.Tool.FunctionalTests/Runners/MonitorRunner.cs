@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             get
             {
-                // Change this before PR
+                // Change this before PR -> doesn't do what I thought it was going to do
                 return _userConfigDirectoryPath ?? Path.Combine(UserConfigDirectoryPath, "settings.json");
             }
 
@@ -169,6 +169,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                         _adapter.Environment.Add(variable.Key, variable.Value);
                     }
                 }
+            }
+            else
+            {
+                _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride", UserSettingsFilePath);
             }
 
             _outputHelper.WriteLine("User Settings Path: {0}", UserSettingsFilePath);

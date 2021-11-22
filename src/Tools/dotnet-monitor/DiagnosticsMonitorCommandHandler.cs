@@ -42,6 +42,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string UserConfigDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
 
+        // Allows tests to override the user configuration directory so there
+        // is better control and access of what is visible during test.
+        private const string UserConfigSettingsDirectoryOverrideEnvironmentVariable
+            = "DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride";
+
         // Location where shared dotnet-monitor configuration is stored.
         // Windows: "%ProgramData%\dotnet-monitor
         // Other: /etc/dotnet-monitor
@@ -64,7 +69,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + ProductFolderName) :
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName));
 
-        private static readonly string UserSettingsPath = Path.Combine(UserConfigDirectoryPath, SettingsFileName);
+        private static readonly string UserSettingsPath =
+            GetEnvironmentOverrideOrValue(
+                UserConfigSettingsDirectoryOverrideEnvironmentVariable,
+                "" == "?" ? Path.Combine(UserConfigDirectoryPath, SettingsFileName) : "C:\\Users\\kkeirstead\\dotnet-monitor\\artifacts\\bin\\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\\Debug\\SampleConfigurations\\Settings1.json");
 
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress)
         {
