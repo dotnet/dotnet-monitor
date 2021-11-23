@@ -222,7 +222,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     }
                     else
                     {
-                        WriteValue(section.Value, redact);
+                        _writer.WriteStartArray();
+
+                        foreach (IConfigurationSection child in children)
+                        {
+                            WriteValue(child.Value, redact);
+                        }
+
+                        _writer.WriteEndArray();
                     }
                 }
                 else
