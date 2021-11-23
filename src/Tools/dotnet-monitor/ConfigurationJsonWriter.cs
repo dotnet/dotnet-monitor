@@ -209,28 +209,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 if (isSequentialIndices && !parentIsCR)
                 {
-                    if (children.First().GetChildren().Any())
-                    {
-                        _writer.WriteStartArray();
+                    _writer.WriteStartArray();
 
-                        foreach (IConfigurationSection child in children)
+                    foreach (IConfigurationSection child in children)
+                    {
+                        if (child.GetChildren().Any())
                         {
                             ProcessChildren(child, includeChildSections, redact);
                         }
-
-                        _writer.WriteEndArray();
-                    }
-                    else
-                    {
-                        _writer.WriteStartArray();
-
-                        foreach (IConfigurationSection child in children)
+                        else
                         {
                             WriteValue(child.Value, redact);
                         }
-
-                        _writer.WriteEndArray();
                     }
+
+                    _writer.WriteEndArray();
                 }
                 else
                 {
