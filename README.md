@@ -18,7 +18,7 @@ Also see info about related [Microsoft .NET Core and ASP.NET Core Bug Bounty Pro
 
 ## Useful Links
 
-See [Introducing dotnet-monitor](https://devblogs.microsoft.com/dotnet/introducing-dotnet-monitor/)
+See [Announcing dotnet-monitor](https://devblogs.microsoft.com/dotnet/announcing-dotnet-monitor-in-net-6/)
 
 ## .NET Foundation
 
