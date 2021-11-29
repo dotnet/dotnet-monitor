@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             string settingsBaselineOutput = redact ? settings1Redact : settings1Full;
 
-            Assert.Equal(settingsBaselineOutput.Replace(" ","").Replace("\n",""), toolRunner._configurationString.Replace(" ","").Replace("\n",""));
+            Assert.Equal(settingsBaselineOutput.Replace(" ","").Replace("\n","").Replace("\r",""), toolRunner._configurationString.Replace(" ","").Replace("\n","").Replace("\r", ""));
         }
 
         string settings1Full = @"
@@ -74,7 +74,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ""MetricCount"": ""10"",
             ""Providers"": [
               {
-                ""CounterNames"": null,
+                ""CounterNames"": [
+                  ""connections-per-second"",
+                  ""total-connections""
+                ],
                 ""ProviderName"": ""Microsoft-AspNetCore-Server-Kestrel""
               }
             ]
@@ -170,7 +173,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ""MetricCount"": ""10"",
             ""Providers"": [
               {
-                ""CounterNames"": null,
+                ""CounterNames"": [
+                  ""connections-per-second"",
+                  ""total-connections""
+                ],
                 ""ProviderName"": ""Microsoft-AspNetCore-Server-Kestrel""
               }
             ]
@@ -214,14 +220,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
           },
           ""Authentication"": {
             ""MonitorApiKey"": {
-              ""PublicKey"": "":REDACTED:"",
-              ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff""
+              ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff"",
+              ""PublicKey"": "":REDACTED:""
             }
           },
           ""Egress"": {
+            ""Properties"": "":NOT PRESENT:"",
+            ""AzureBlobStorage"": "":NOT PRESENT:"",
             ""FileSystem"": {
               ""artifacts"": {
-                ""directoryPath"": ""/artifacts""
+                ""DirectoryPath"": ""/artifacts"",
+                ""IntermediateDirectoryPath"": "":NOT PRESENT:"",
+                ""CopyBufferSize"": "":NOT PRESENT:""
               }
             }
           }

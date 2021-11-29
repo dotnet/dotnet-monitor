@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly string UserSettingsPath =
             GetEnvironmentOverrideOrValue(
                 UserConfigSettingsDirectoryOverrideEnvironmentVariable,
-                "" == "?" ? Path.Combine(UserConfigDirectoryPath, SettingsFileName) : "C:\\Users\\kkeirstead\\dotnet-monitor\\artifacts\\bin\\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests\\Debug\\SampleConfigurations\\Settings1.json");
+                Path.Combine(UserConfigDirectoryPath, SettingsFileName));
 
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress)
         {
@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter writer = new ConfigurationJsonWriter(Console.OpenStandardOutput());
             writer.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false);
-            
+
             return Task.FromResult(0);
         }
 
@@ -210,7 +210,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     if (authenticationOptions.EnableKeyAuth)
                     {
                         AuthenticationBuilder authBuilder = services.ConfigureMonitorApiKeyAuthentication(context.Configuration);
-                                                
+
                         authSchemas = new List<string> { AuthConstants.ApiKeySchema };
 
                         if (authenticationOptions.EnableNegotiate)
