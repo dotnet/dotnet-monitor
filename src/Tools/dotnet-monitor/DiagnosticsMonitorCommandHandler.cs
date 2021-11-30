@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -33,6 +34,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string SettingsFileName = "settings.json";
         private const string InternalSettingsFileName = "internal_settings.json";
         private const string ProductFolderName = "dotnet-monitor";
+        private const int FileIOTimeoutMs = 1000;
+        private const int FileIOIntervalMs = 10;
 
         // Allows tests to override the shared configuration directory so there
         // is better control and access of what is visible during test.
@@ -157,7 +160,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
 
-                    RemoveColonsFromCollectionRuleKeys();
+                    RemoveRestrictedCharsFromCRKeys();
                     CreateFileWatcher(UserConfigDirectoryPath);
 
                     builder.AddJsonFile(InternalUserSettingsPath, optional: true, reloadOnChange: true);
@@ -320,81 +323,81 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return hostBuilder;
         }
 
-        internal static void RemoveColonsFromCollectionRuleKeys()
+        internal static void RemoveRestrictedCharsFromCRKeys()
         {
-            int msCounter = 0;
-            int msInterval = 10;
-
-            string json = "";
-
-            // This resolves issues that stem from the settings.json file being renamed while attempting to parse it.
-            while (msCounter < 1000)
-            {
-                try
-                {
-                    json = File.ReadAllText(UserSettingsPath);
-                    break;
-                }
-                catch
-                {
-                    msCounter += msInterval;
-                    Thread.Sleep(msInterval);
-                }
-            }
-
-            if (string.IsNullOrEmpty(json))
-            {
-                return; // Probably need to actually handle this scenario...
-            }
-
-            RootOptions rootOptions = Newtonsoft.Json.JsonConvert.DeserializeObject<RootOptions>(json);
-
-            Dictionary<string, string> oldToNewKeyMappings = new();
-
-            foreach (var collectionRuleKey in rootOptions.CollectionRules.Keys)
-            {
-                if (collectionRuleKey.Contains(":"))
-                {
-                    var newKey = collectionRuleKey.Replace(":", "_");
-                    oldToNewKeyMappings[collectionRuleKey] = newKey;
-                }
-            }
-
             try
             {
+                string json = ReadSettings();
+
+                if (string.IsNullOrEmpty(json))
+                {
+                    return;
+                }
+
+                RootOptions rootOptions = Newtonsoft.Json.JsonConvert.DeserializeObject<RootOptions>(json);
+
+                Dictionary<string, string> oldToNewKeyMappings = new();
+
+                foreach (var collectionRuleKey in rootOptions.CollectionRules.Keys)
+                {
+                    var newKey = Regex.Replace(collectionRuleKey, @"[#:]", "_");
+
+                    // Designed to ensure no naming collision results from this change -> if so, don't change anything (backwards compatibility)
+                    if (!rootOptions.CollectionRules.Keys.Contains(newKey))
+                    {
+                        oldToNewKeyMappings[collectionRuleKey] = newKey;
+                    }
+                }
+
                 string updatedJson = json;
                 foreach (var mapping in oldToNewKeyMappings)
                 {
-                    int matches = Regex.Matches(json, mapping.Key).Count;
-
                     // Edge Case: To prevent unexpected substitution, we only do the replacement when there is a single instance of the key.
-                    // This means rare failures are still technically possible if a collection rule containing a colon matches a value in the configuration.
-                    if (matches == 1)
+                    // This means rare failures are still technically possible if a collection rule containing a colon matches other text in the configuration.
+                    if (Regex.Matches(json, mapping.Key).Count == 1)
                     {
                         updatedJson = updatedJson.Replace(mapping.Key, mapping.Value);
                     }
                 }
 
-                msCounter = 0;
-
-                // This resolves issues that stem from the settings.json file being renamed while attempting to parse it.
-                while (msCounter < 1000)
-                {
-                    try
-                    {
-                        File.WriteAllText(InternalUserSettingsPath, updatedJson);
-                        break;
-                    }
-                    catch
-                    {
-                        msCounter += msInterval;
-                        Thread.Sleep(msInterval);
-                    }
-                }
+                WriteInternalSettings(updatedJson);
             }
             catch (Exception)
             {
             }
+        }
+
+        private static void WriteInternalSettings(string json)
+        {
+            for (int millis = 0; millis < FileIOTimeoutMs; millis += FileIOIntervalMs)
+            {
+                try
+                {
+                    File.WriteAllText(InternalUserSettingsPath, json);
+                    break;
+                }
+                catch
+                {
+                    Thread.Sleep(FileIOIntervalMs);
+                }
+            }
+        }
+
+        private static string ReadSettings()
+        {
+            for (int millis = 0; millis < FileIOTimeoutMs; millis += FileIOIntervalMs)
+            {
+                try
+                {
+                    return File.ReadAllText(UserSettingsPath);
+                }
+                catch
+                {
+                    Thread.Sleep(FileIOIntervalMs);
+                }
+            }
+
+            return "";
         }
 
         private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, AuthConfiguration authenticationOptions)
@@ -452,11 +455,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             FileSystemWatcher watcher = new FileSystemWatcher();
             watcher.Path = path;
-            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-               | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             watcher.Filter = SettingsFileName;
             watcher.Renamed += new RenamedEventHandler(OnRenamed);
-
             watcher.EnableRaisingEvents = true;
         }
 
@@ -464,7 +464,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             if (e.FullPath.Equals(UserSettingsPath))
             {
-                RemoveColonsFromCollectionRuleKeys();
+                RemoveRestrictedCharsFromCRKeys();
             }
         }
     }
