@@ -31,6 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
+        private const string InternalSettingsFileName = "internal_settings.json";
         private const string ProductFolderName = "dotnet-monitor";
 
         // Allows tests to override the shared configuration directory so there
@@ -42,11 +43,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // is better control and access of what is visible during test.
         private const string UserConfigDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
-
-        // Allows tests to override the user configuration directory so there
-        // is better control and access of what is visible during test.
-        private const string UserConfigSettingsDirectoryOverrideEnvironmentVariable
-            = "DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride";
 
         // Location where shared dotnet-monitor configuration is stored.
         // Windows: "%ProgramData%\dotnet-monitor
@@ -70,15 +66,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + ProductFolderName) :
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName));
 
-        internal static readonly string UserSettingsPath =
-            GetEnvironmentOverrideOrValue(
-                UserConfigSettingsDirectoryOverrideEnvironmentVariable,
-                Path.Combine(UserConfigDirectoryPath, SettingsFileName));
+        private static readonly string UserSettingsPath = Path.Combine(UserConfigDirectoryPath, SettingsFileName);
 
-        internal static readonly string InternalUserSettingsPath =
-            GetEnvironmentOverrideOrValue(
-                UserConfigSettingsDirectoryOverrideEnvironmentVariable,
-                Path.Combine(UserConfigDirectoryPath, Guid.NewGuid().ToString()));
+        internal static readonly string InternalUserSettingsPath = Path.Combine(UserConfigDirectoryPath, InternalSettingsFileName);
 
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress)
         {

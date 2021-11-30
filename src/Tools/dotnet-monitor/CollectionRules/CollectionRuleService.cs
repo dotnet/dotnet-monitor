@@ -39,7 +39,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
             BoundedChannelOptions containersToRemoveChannelOptions = new(PendingRemovalChannelCapacity)
@@ -142,7 +141,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 if (!rulesChanged)
                 {
-                    using EventTaskSource<EventHandler> rulesChangedTaskSource = CreateRulesChangedETS(token);
+                    using EventTaskSource<EventHandler> rulesChangedTaskSource = new(
+                        callback => (s, e) => callback(),
+                        handler => _provider.RulesChanged += handler,
+                        handler => _provider.RulesChanged -= handler,
+                        token);
 
                     // Wait for the rules to be changed
                     await rulesChangedTaskSource.Task;
@@ -216,14 +219,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     tasks.Clear();
                 }
             }
-        }
-
-        private EventTaskSource<EventHandler> CreateRulesChangedETS(CancellationToken token)
-        {
-            return new(callback => (s, e) => callback(),
-                handler => _provider.RulesChanged += handler,
-                handler => _provider.RulesChanged -= handler,
-                token);
         }
 
         private async Task StopAndDisposeContainerAsync(CancellationToken token)
