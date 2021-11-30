@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using IEndpointInfoSource = Microsoft.Diagnostics.Monitoring.WebApi.IEndpointInfoSource;
@@ -41,6 +42,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // is better control and access of what is visible during test.
         private const string UserConfigDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
+
+        // Allows tests to override the user configuration directory so there
+        // is better control and access of what is visible during test.
+        private const string UserConfigSettingsDirectoryOverrideEnvironmentVariable
+            = "DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride";
 
         // Location where shared dotnet-monitor configuration is stored.
         // Windows: "%ProgramData%\dotnet-monitor
@@ -64,7 +70,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + ProductFolderName) :
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName));
 
-        private static readonly string UserSettingsPath = Path.Combine(UserConfigDirectoryPath, SettingsFileName);
+        internal static readonly string UserSettingsPath =
+            GetEnvironmentOverrideOrValue(
+                UserConfigSettingsDirectoryOverrideEnvironmentVariable,
+                Path.Combine(UserConfigDirectoryPath, SettingsFileName));
+
+        internal static readonly string InternalUserSettingsPath =
+            GetEnvironmentOverrideOrValue(
+                UserConfigSettingsDirectoryOverrideEnvironmentVariable,
+                Path.Combine(UserConfigDirectoryPath, Guid.NewGuid().ToString()));
 
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress)
         {
@@ -129,7 +143,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter writer = new ConfigurationJsonWriter(Console.OpenStandardOutput());
             writer.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false);
-            
+
             return Task.FromResult(0);
         }
 
@@ -153,8 +167,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
 
-                    builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
+                    RemoveColonsFromCollectionRuleKeys();
+                    CreateFileWatcher(UserConfigDirectoryPath);
+
+                    builder.AddJsonFile(InternalUserSettingsPath, optional: true, reloadOnChange: true);
                     builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
+
+                    var config = builder.Build();
 
                     //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
                     //KeyPerFile provider uses a file system watcher to trigger changes.
@@ -202,7 +221,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     if (authenticationOptions.EnableKeyAuth)
                     {
                         AuthenticationBuilder authBuilder = services.ConfigureMonitorApiKeyAuthentication(context.Configuration);
-                                                
+
                         authSchemas = new List<string> { AuthConstants.ApiKeySchema };
 
                         if (authenticationOptions.EnableNegotiate)
@@ -311,6 +330,83 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return hostBuilder;
         }
 
+        internal static void RemoveColonsFromCollectionRuleKeys()
+        {
+            int msCounter = 0;
+            int msInterval = 10;
+
+            string json = "";
+
+            // This resolves issues that stem from the settings.json file being renamed while attempting to parse it.
+            while (msCounter < 1000)
+            {
+                try
+                {
+                    json = File.ReadAllText(UserSettingsPath);
+                    break;
+                }
+                catch
+                {
+                    msCounter += msInterval;
+                    Thread.Sleep(msInterval);
+                }
+            }
+
+            if (string.IsNullOrEmpty(json))
+            {
+                return; // Probably need to actually handle this scenario...
+            }
+
+            RootOptions rootOptions = Newtonsoft.Json.JsonConvert.DeserializeObject<RootOptions>(json);
+
+            Dictionary<string, string> oldToNewKeyMappings = new();
+
+            foreach (var collectionRuleKey in rootOptions.CollectionRules.Keys)
+            {
+                if (collectionRuleKey.Contains(":"))
+                {
+                    var newKey = collectionRuleKey.Replace(":", "_");
+                    oldToNewKeyMappings[collectionRuleKey] = newKey;
+                }
+            }
+
+            try
+            {
+                string updatedJson = json;
+                foreach (var mapping in oldToNewKeyMappings)
+                {
+                    int matches = Regex.Matches(json, mapping.Key).Count;
+
+                    // Edge Case: To prevent unexpected substitution, we only do the replacement when there is a single instance of the key.
+                    // This means rare failures are still technically possible if a collection rule containing a colon matches a value in the configuration.
+                    if (matches == 1)
+                    {
+                        updatedJson = updatedJson.Replace(mapping.Key, mapping.Value);
+                    }
+                }
+
+                msCounter = 0;
+
+                // This resolves issues that stem from the settings.json file being renamed while attempting to parse it.
+                while (msCounter < 1000)
+                {
+                    try
+                    {
+                        File.WriteAllText(InternalUserSettingsPath, updatedJson);
+                        break;
+                    }
+                    catch
+                    {
+                        msCounter += msInterval;
+                        Thread.Sleep(msInterval);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, AuthConfiguration authenticationOptions)
         {
             if (authenticationOptions.TemporaryJwtKey != null)
@@ -360,6 +456,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static string GetEnvironmentOverrideOrValue(string overrideEnvironmentVariable, string value)
         {
             return Environment.GetEnvironmentVariable(overrideEnvironmentVariable) ?? value;
+        }
+
+        public static void CreateFileWatcher(string path)
+        {
+            FileSystemWatcher watcher = new FileSystemWatcher();
+            watcher.Path = path;
+            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+               | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+            watcher.Filter = SettingsFileName;
+            watcher.Renamed += new RenamedEventHandler(OnRenamed);
+
+            watcher.EnableRaisingEvents = true;
+        }
+
+        private static void OnRenamed(object source, RenamedEventArgs e)
+        {
+            if (e.FullPath.Equals(UserSettingsPath))
+            {
+                RemoveColonsFromCollectionRuleKeys();
+            }
         }
     }
 }
