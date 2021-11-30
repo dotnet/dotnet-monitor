@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly string UserSettingsPath = Path.Combine(UserConfigDirectoryPath, SettingsFileName);
 
-        internal static readonly string InternalUserSettingsPath = Path.Combine(UserConfigDirectoryPath, InternalSettingsFileName);
+        private static readonly string InternalUserSettingsPath = Path.Combine(UserConfigDirectoryPath, InternalSettingsFileName);
 
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress)
         {
@@ -161,12 +161,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
 
                     RemoveRestrictedCharsFromCRKeys();
-                    CreateFileWatcher(UserConfigDirectoryPath);
+                    WatchSettingsFile(UserConfigDirectoryPath);
 
                     builder.AddJsonFile(InternalUserSettingsPath, optional: true, reloadOnChange: true);
                     builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
-
-                    var config = builder.Build();
 
                     //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
                     //KeyPerFile provider uses a file system watcher to trigger changes.
@@ -323,7 +321,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return hostBuilder;
         }
 
-        internal static void RemoveRestrictedCharsFromCRKeys()
+        private static void RemoveRestrictedCharsFromCRKeys()
         {
             try
             {
@@ -334,23 +332,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     return;
                 }
 
-                RootOptions rootOptions = Newtonsoft.Json.JsonConvert.DeserializeObject<RootOptions>(json);
+                var collectionRules = Newtonsoft.Json.JsonConvert.DeserializeObject<RootOptions>(json).CollectionRules;
 
-                Dictionary<string, string> oldToNewKeyMappings = new();
+                Dictionary<string, string> existingToNewKeyMappings = new();
 
-                foreach (var collectionRuleKey in rootOptions.CollectionRules.Keys)
+                foreach (var existingKey in collectionRules.Keys)
                 {
-                    var newKey = Regex.Replace(collectionRuleKey, @"[#:]", "_");
+                    var newKey = Regex.Replace(existingKey, @"[#:]", "_");
 
                     // Designed to ensure no naming collision results from this change -> if so, don't change anything (backwards compatibility)
-                    if (!rootOptions.CollectionRules.Keys.Contains(newKey))
+                    if (!collectionRules.Keys.Contains(newKey))
                     {
-                        oldToNewKeyMappings[collectionRuleKey] = newKey;
+                        existingToNewKeyMappings[existingKey] = newKey;
                     }
                 }
 
                 string updatedJson = json;
-                foreach (var mapping in oldToNewKeyMappings)
+                foreach (var mapping in existingToNewKeyMappings)
                 {
                     // Edge Case: To prevent unexpected substitution, we only do the replacement when there is a single instance of the key.
                     // This means rare failures are still technically possible if a collection rule containing a colon matches other text in the configuration.
@@ -451,7 +449,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return Environment.GetEnvironmentVariable(overrideEnvironmentVariable) ?? value;
         }
 
-        public static void CreateFileWatcher(string path)
+        private static void WatchSettingsFile(string path)
         {
             FileSystemWatcher watcher = new FileSystemWatcher();
             watcher.Path = path;
