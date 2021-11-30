@@ -102,7 +102,7 @@ jobs:
 
     steps:
     - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-      - ${{ if eq(parameters.agentOs, 'Windows') }}:
+      - ${{ if eq(parameters.osGroup, 'Windows') }}:
         - task: PowerShell@2
           displayName: Setup Private Feeds Credentials
           inputs:
@@ -110,7 +110,7 @@ jobs:
             arguments: -ConfigFile $(Build.SourcesDirectory)/NuGet.config -Password $Env:Token
           env:
             Token: $(dn-bot-dnceng-artifact-feeds-rw)
-      - ${{ if ne(parameters.agentOs, 'Windows') }}:
+      - ${{ if ne(parameters.osGroup, 'Windows') }}:
         - task: Bash@3
           displayName: Setup Private Feeds Credentials
           inputs:
