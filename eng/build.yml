@@ -57,10 +57,10 @@ jobs:
           demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-359e48e-20200313130914
+      container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-20210714125435-9b5bbc2
 
     ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.9-WithNode-20200602002639-0fc54a3
+      container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.9-WithNode-20210714125437-9b5bbc2
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
