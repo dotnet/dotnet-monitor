@@ -74,9 +74,17 @@ jobs:
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
     - _SignType: test
+    - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
     - _InternalSignArgs: ''
     - _InternalPublishArgs: ''
+
+    - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
+      - group: DotNet-MSRC-Storage
+      - _InternalInstallArgs: >-
+          /p:DotNetRuntimeSourceFeed=https://dotnetclimsrc.blob.core.windows.net/dotnet
+          /p:DotNetRuntimeSourceFeedKey=$(dotnetclimsrc-read-sas-token-base64)
+
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - _InternalBuildArgs: >-
           -pack
@@ -125,6 +133,7 @@ jobs:
         -test
         -configuration ${{ parameters.configuration }}
         -prepareMachine
+        $(_InternalInstallArgs)
         $(_InternalBuildArgs)
         $(_InternalSignArgs)
         $(_InternalPublishArgs)
