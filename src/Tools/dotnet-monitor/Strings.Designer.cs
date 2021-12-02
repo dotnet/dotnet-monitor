@@ -862,6 +862,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading the startup profiler with id {profilerGuid} from {path} into process with id {processId}..
+        /// </summary>
+        internal static string LogFormatString_LoadingProfiler {
+            get {
+                return ResourceManager.GetString("LogFormatString_LoadingProfiler", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generated one-time-use ApiKey for dotnet-monitor; use the following header for authorization:{NewLine}{AuthHeaderName}: {AuthScheme} {MonitorApiKey}.
         /// </summary>
         internal static string LogFormatString_LogTempApiKey {

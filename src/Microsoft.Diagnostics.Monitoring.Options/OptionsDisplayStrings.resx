@@ -551,4 +551,12 @@
   <data name="DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds" xml:space="preserve">
     <value>Determines the metrics interval for all dotnet-monitor scenarios. This includes prometheus metrics, live metrics, triggers, and traces.</value>
   </data>
+  <data name="DisplayAttributeDescription_LoadProfilerOptions_Path" xml:space="preserve">
+    <value>Defines the path to the dll for the profiler to be loaded. This is typically the same value that would be passed in the environment variable CORECLR_PROFILER_PATH.</value>
+    <comment>The description provided for the Path parameter on LoadProfilerOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_LoadProfilerOptions_ProfilerGuid" xml:space="preserve">
+    <value>The Guid of the cor profiler, this is typically the same value that would be passed in the environment variable CORECLR_PROFILER.</value>
+    <comment>The description provided for the ProfilerGuid parameter on LoadProfilerOptions.</comment>
+  </data>
 </root>

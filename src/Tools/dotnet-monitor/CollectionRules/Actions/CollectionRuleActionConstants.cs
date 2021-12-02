@@ -7,5 +7,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     internal static class CollectionRuleActionConstants
     {
         public const string EgressPathOutputValueName = "EgressPath";
+        public const string ProfilerLoadTypeValueName = "ProfilerLoadType";
     }
 }

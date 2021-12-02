@@ -529,6 +529,14 @@
   <data name="LogFormatString_InvalidToken" xml:space="preserve">
     <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>
   </data>
+  <data name="LogFormatString_LoadingProfiler" xml:space="preserve">
+    <value>Loading the startup profiler with id {profilerGuid} from {path} into process with id {processId}.</value>
+    <comment>Gets the format string that is printed in the 53:LoadingProfiler event.
+3 Format parameterts:
+1. profilerGuid: The id in guid form of the cor profiler in question
+2. path: The file path to the profiler being loaded relative to target process
+3. processId: The id of the process to which the profiler is being loaded</comment>
+  </data>
   <data name="LogFormatString_LogTempApiKey" xml:space="preserve">
     <value>Generated one-time-use ApiKey for dotnet-monitor; use the following header for authorization:{NewLine}{AuthHeaderName}: {AuthScheme} {MonitorApiKey}</value>
     <comment>Gets the format string that is printed in the 23:LogTempApiKey event.

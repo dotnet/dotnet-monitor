@@ -775,6 +775,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Defines the path to the dll for the profiler to be loaded. This is typically the same value that would be passed in the environment variable CORECLR_PROFILER_PATH..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoadProfilerOptions_Path {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoadProfilerOptions_Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Guid of the cor profiler, this is typically the same value that would be passed in the environment variable CORECLR_PROFILER..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoadProfilerOptions_ProfilerGuid {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoadProfilerOptions_ProfilerGuid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets or sets whether logging scopes are being captured. Defaults to true..
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_CaptureScopes {

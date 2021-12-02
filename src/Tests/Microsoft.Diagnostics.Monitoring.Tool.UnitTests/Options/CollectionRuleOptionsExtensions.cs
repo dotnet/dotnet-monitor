@@ -156,6 +156,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleOptions AddLoadProfilerAction(this CollectionRuleOptions options, Action<LoadProfilerOptions> configureOptions)
+        {
+           return options.AddAction(
+                KnownCollectionRuleActions.LoadProfiler,
+                callback: actionOptions =>
+                {
+                    LoadProfilerOptions loadProfilerOptions = new();
+                    configureOptions(loadProfilerOptions);
+                    actionOptions.Settings = loadProfilerOptions;
+                });
+        }
+
         public static CollectionRuleOptions SetActionLimits(this CollectionRuleOptions options, int? count = null, TimeSpan? slidingWindowDuration = null)
         {
             if (null == options.Limits)
