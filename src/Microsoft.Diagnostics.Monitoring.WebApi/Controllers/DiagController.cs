@@ -183,6 +183,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="type">The type of dump to capture.</param>
         /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
+        /// <param name="mode">Optional packaging for the dump.</param>
         /// <returns></returns>
         [HttpGet("dump", Name = nameof(CaptureDump))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
@@ -203,17 +204,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Models.DumpType type = Models.DumpType.WithHeap,
             [FromQuery]
-            string egressProvider = null)
+            string egressProvider = null,
+            [FromQuery]
+            Models.PackageMode mode = Models.PackageMode.None)
         {
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async processInfo =>
             {
-                string dumpFileName = DumpUtilities.GenerateDumpFileName();
+                string dumpFileName = DumpUtilities.GenerateDumpFileName(mode);
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
-                    Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, HttpContext.RequestAborted);
+                    Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, mode, HttpContext.RequestAborted);
 
                     _logger.WrittenToHttpStream();
                     //Compression is done automatically by the response
@@ -225,7 +228,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
 
                     return await SendToEgress(new EgressOperation(
-                        token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
+                        token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, mode, token),
                         egressProvider,
                         dumpFileName,
                         processInfo.EndpointInfo,

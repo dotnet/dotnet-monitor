@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     EgressOperation egressOperation = new EgressOperation(
                         token => {
                             startCompletionSource.TrySetResult(null);
-                            return _dumpService.DumpAsync(EndpointInfo, dumpType, token);
+                            return _dumpService.DumpAsync(EndpointInfo, dumpType, PackageMode.None, token);
                         },
                         egressProvider,
                         dumpFileName,

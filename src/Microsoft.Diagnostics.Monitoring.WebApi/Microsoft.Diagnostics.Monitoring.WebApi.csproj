@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.IO.Packaging" Version="$(SystemIOPackagingVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="dotnet-monitor" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />

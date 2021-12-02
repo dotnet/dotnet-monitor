@@ -66,6 +66,7 @@
     <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
     <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
     <SystemIdentityModelTokensJwtVersion>6.11.1</SystemIdentityModelTokensJwtVersion>
+    <SystemIOPackagingVersion>6.0.0</SystemIOPackagingVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
     <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>

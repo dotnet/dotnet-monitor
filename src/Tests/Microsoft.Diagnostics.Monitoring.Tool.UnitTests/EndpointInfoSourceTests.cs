@@ -180,7 +180,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _outputHelper.WriteLine("Received added endpoint notifications.");
 
                 // Start a dump operation; the process should not be pruned until the operation is completed.
-                dumpTask = dumpService.DumpAsync(endpointInfo, DumpType.Triage, CancellationToken.None);
+                dumpTask = dumpService.DumpAsync(endpointInfo, DumpType.Triage, PackageMode.None, CancellationToken.None);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
@@ -234,7 +234,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _operationTrackerService = operationTrackerService;
             }
 
-            public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, DumpType mode, CancellationToken token)
+            public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, DumpType mode, PackageMode packageMode, CancellationToken token)
             {
                 IDisposable operationRegistration = null;
                 try

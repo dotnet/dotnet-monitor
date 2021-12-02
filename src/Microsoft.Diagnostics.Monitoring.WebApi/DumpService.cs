@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _operationTrackerService = operationTrackerService ?? throw new ArgumentNullException(nameof(operationTrackerService));
         }
 
-        public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType mode, CancellationToken token)
+        public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType mode, Models.PackageMode packageMode, CancellationToken token)
         {
             if (endpointInfo == null)
             {
@@ -46,7 +46,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 Directory.CreateDirectory(dumpTempFolder);
             }
 
-            string dumpFilePath = Path.Combine(dumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{endpointInfo.ProcessId}"));
+            //Always assign a .dmp extension for the temp file, even on Linux.
+            string dumpFilePath = Path.Combine(dumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{endpointInfo.ProcessId}.dmp"));
             DumpType dumpType = MapDumpType(mode);
 
             IDisposable operationRegistration = null;
@@ -82,7 +83,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 operationRegistration?.Dispose();
             }
 
-            return new AutoDeleteFileStream(dumpFilePath);
+            string resultPath = dumpFilePath;
+            string dac = null;
+            string dbi = null;
+            if (packageMode.HasFlag(Models.PackageMode.IncludeDacDbi))
+            {
+                //TODO Consider throwing NotSupportedException for Windows.
+
+                string runtimeDir = await DacLocator.LocateRuntime(token);
+                dac = Path.Combine(runtimeDir, RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "mscordaccore.dll" : "libmscordaccore.so");
+                dbi = Path.Combine(runtimeDir, RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "mscordbi.dll" : "libmscordbi.so");
+            }
+            if (packageMode.HasFlag(Models.PackageMode.DiagSession))
+            {
+                resultPath = await Packaging.CreateDiagSession(dumpFilePath, dac, dbi, token);
+            }
+
+            return new AutoDeleteFileStream(resultPath);
         }
 
         private bool IsListenMode => _portOptions.CurrentValue.GetConnectionMode() == DiagnosticPortConnectionMode.Listen;

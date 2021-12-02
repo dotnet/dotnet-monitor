@@ -9,11 +9,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class DumpUtilities
     {
-        public static string GenerateDumpFileName()
+        public static string GenerateDumpFileName(Models.PackageMode mode = Models.PackageMode.None)
         {
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                FormattableString.Invariant($"dump_{Utilities.GetFileNameTimeStampUtcNow()}.dmp") :
-                FormattableString.Invariant($"core_{Utilities.GetFileNameTimeStampUtcNow()}");
+            string file = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "dump" : "core";
+            string extension = mode.HasFlag(Models.PackageMode.DiagSession) ? ".diagsession" : RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".dmp" : string.Empty;
+            return FormattableString.Invariant($"{file}_{Utilities.GetFileNameTimeStampUtcNow()}{extension}");
         }
     }
 }
