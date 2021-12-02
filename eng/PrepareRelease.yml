@@ -2,7 +2,21 @@ stages:
 - stage: PrepareReleaseStage
   displayName: Release Preparation
   dependsOn:
-  - ${{ if or(and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'))), and(ne(variables['System.TeamProject'], 'public'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
+  - ${{ if 
+      or(
+        and(
+          ne(variables['System.TeamProject'], 'public'), 
+          notin(variables['Build.Reason'], 'PullRequest'), 
+          or(
+            startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), 
+            startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')
+          )
+        ),
+        and(
+          ne(variables['System.TeamProject'], 'public'), 
+          startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')
+        )
+      ) }}:
     - publish_using_darc
   jobs:
   - job: PrepareReleaseJob
@@ -10,7 +24,21 @@ stages:
     pool: 
       vmImage: windows-latest
     variables:
-    - ${{ if or(and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'))), and(ne(variables['System.TeamProject'], 'public'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
+    - ${{ if 
+        or(
+          and(
+            ne(variables['System.TeamProject'], 'public'), 
+            notin(variables['Build.Reason'], 'PullRequest'), 
+            or(
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), 
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')
+            )
+          ),
+          and(
+            ne(variables['System.TeamProject'], 'public'), 
+            startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')
+          )
+        ) }}:
       - group: DotNet-Diagnostics-Storage
       - group: DotNet-DotNetStage-Storage
       - group: Release-Pipeline
@@ -23,7 +51,23 @@ stages:
         packageType: runtime
         version: 3.1.x
         installationPath: '$(Build.Repository.LocalPath)\.dotnet'
-    - ${{ if not(or(and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'))), and(ne(variables['System.TeamProject'], 'public'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')))) }}:
+    - ${{ if 
+        not(
+          or(
+            and(
+              ne(variables['System.TeamProject'], 'public'), 
+              notin(variables['Build.Reason'], 'PullRequest'), 
+              or(
+                startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), 
+                startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')
+              )
+            ),
+            and(
+              ne(variables['System.TeamProject'], 'public'), 
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')
+            )
+          )
+        ) }}:
       - script: '$(Build.SourcesDirectory)\dotnet.cmd build $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release /bl'
         workingDirectory: '$(System.ArtifactsDirectory)\'
         displayName: 'Build Manifest generation and asset publishing tool'
@@ -32,7 +76,21 @@ stages:
           targetPath: '$(System.ArtifactsDirectory)\'
           publishLocation: 'pipeline'
           artifact: 'DiagnosticsReleaseToolBin'
-    - ${{ if or(and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'))), and(ne(variables['System.TeamProject'], 'public'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
+    - ${{ if 
+        or(
+          and(
+            ne(variables['System.TeamProject'], 'public'), 
+            notin(variables['Build.Reason'], 'PullRequest'), 
+            or(
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), 
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')
+            )
+          ),
+          and(
+            ne(variables['System.TeamProject'], 'public'), 
+            startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')
+          )
+        ) }}:
       - task: PowerShell@2
         displayName: 'DARC Gather build'
         inputs:
@@ -66,7 +124,15 @@ stages:
           targetPath: '$(System.ArtifactsDirectory)\ReleaseStaging'
           publishLocation: 'pipeline'
           artifact: 'MonitorRelease'
-      - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'))) }}:
+      - ${{ if 
+          and(
+            ne(variables['System.TeamProject'], 'public'), 
+            notin(variables['Build.Reason'], 'PullRequest'), 
+            or(
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), 
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')
+            )
+          ) }}:
         - task: tagBuildOrRelease@0
           displayName: 'Tag Build with Monitor Release'
           inputs:
