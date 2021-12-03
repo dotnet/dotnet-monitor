@@ -4,8 +4,8 @@ namespace DiagnosticsReleaseTool.Util
 {
     public static class DiagnosticsRepoHelpers
     {
-        public const string ProductName = "dotnet-monitor";
-        public const string RepositoryName = "https://github.com/dotnet/dotnet-monitor";
+        public static readonly string[] ProductNames = new []{ "dotnet-monitor", "dotnet-dotnet-monitor" };
+        public static readonly string[] RepositoryUrls = new [] { "https://github.com/dotnet/dotnet-monitor", "https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor" };
         internal static bool IsDockerUtilityFile(FileInfo arg) =>
             arg.FullName.EndsWith(".nupkg.sha512")
             || arg.FullName.EndsWith(".nupkg.version")
