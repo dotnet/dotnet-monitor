@@ -204,7 +204,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(int pid, DumpType dumpType, CancellationToken token)
         {
-            return CaptureDumpAsync(GetProcessQuery(pid:pid), dumpType, token);
+            return CaptureDumpAsync(GetProcessQuery(pid:pid), dumpType, PackageMode.None, token);
         }
 
         /// <summary>
@@ -212,12 +212,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(Guid uid, DumpType dumpType, CancellationToken token)
         {
-            return CaptureDumpAsync(GetProcessQuery(uid:uid), dumpType, token);
+            return CaptureDumpAsync(GetProcessQuery(uid:uid), dumpType, PackageMode.None, token);
         }
 
-        private async Task<ResponseStreamHolder> CaptureDumpAsync(string processQuery, DumpType dumpType, CancellationToken token)
+        /// <summary>
+        /// Get /dump?pid={pid}&type={dumpType}&mode={mode}
+        /// </summary>
+        public Task<ResponseStreamHolder> CaptureDumpAsync(int pid, DumpType dumpType, PackageMode mode, CancellationToken token)
         {
-            using HttpRequestMessage request = new(HttpMethod.Get, $"/dump?{processQuery}&type={dumpType.ToString("G")}");
+            return CaptureDumpAsync(GetProcessQuery(pid: pid), dumpType, mode, token);
+        }
+
+
+        private async Task<ResponseStreamHolder> CaptureDumpAsync(string processQuery, DumpType dumpType, PackageMode mode, CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/dump?{processQuery}&type={dumpType.ToString("G")}&mode={mode}");
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationOctetStream);
 
             using DisposableBox<HttpResponseMessage> responseBox = new(

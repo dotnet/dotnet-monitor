@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     {
         None = 0x0,
         DiagSession =   0x00000001, //Packages the dump into a diagsession file with no compression
-        IncludeDacDbi = 0x00010000, //Packages
+        IncludeDacDbi = DiagSession | 0x00010000, //Packages libmscordaccore.so and libmscordbi.so along with the dump.
 
         //CONSIDER Other future possibilities:
         //Include application pdb file

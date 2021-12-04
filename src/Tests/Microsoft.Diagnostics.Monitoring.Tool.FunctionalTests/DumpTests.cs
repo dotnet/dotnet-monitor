@@ -12,9 +12,11 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using System.IO.Packaging;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -95,6 +97,76 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.False(Directory.Exists(dumpTempFolder), "The dump temp folder should not exist.");
 
                     runner.ConfigurationFromEnvironment.SetDumpTempFolder(dumpTempFolder);
+                });
+        }
+
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsDumpSupported))]
+        [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Mini)]
+        public Task DiagSessionTest(DiagnosticPortConnectionMode mode, DumpType type)
+        {
+            return ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    int processId = await runner.ProcessIdTask;
+
+                    PackageMode mode = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? PackageMode.DiagSession : PackageMode.IncludeDacDbi;
+
+                    using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type, mode);
+                    Assert.NotNull(holder);
+
+                    // The dump operation may still be in progress but the process should still be discoverable.
+                    // If this check fails, then the dump operation is causing dotnet-monitor to not be able
+                    // to observe the process any more.
+                    ProcessInfo processInfo = await client.GetProcessAsync(processId);
+                    Assert.NotNull(processInfo);
+
+                    using var fileStream = new FileStream(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()), FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
+                    await holder.Stream.CopyToAsync(fileStream);
+                    fileStream.Position = 0L;
+
+                    //Validate here
+                    using Package package = Package.Open(fileStream, FileMode.Open, FileAccess.Read);
+
+                    //2-4 parts:
+                    //Metadatata
+                    //dmp
+                    //[Linux only]
+                    //dac
+                    //dbi
+
+                    int expectedParts = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 2 : 4;
+
+                    PackagePartCollection parts = package.GetParts();
+                    Assert.Equal(expectedParts, parts.Count());
+
+                    PackagePart metadata = parts.FirstOrDefault(p => p.Uri.ToString().Contains("metadata.xml"));
+                    Assert.NotNull(metadata);
+                    PackagePart dump = parts.FirstOrDefault(p => p.Uri.ToString().EndsWith(".dmp"));
+                    Assert.NotNull(dump);
+
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        PackagePart dac = parts.FirstOrDefault(p => p.Uri.ToString().Contains("mscordaccore"));
+                        Assert.NotNull(dump);
+                        PackagePart dbi = parts.FirstOrDefault(p => p.Uri.ToString().Contains("mscordbi"));
+                        Assert.NotNull(dump);
+                    }
+
+                    //TODO Also do verification on metadata file here
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureApp: runner =>
+                {
+                    // MachO not supported on .NET 5, only ELF: https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major == 5)
+                    {
+                        runner.Environment.Add(DumpTestUtilities.EnableElfDumpOnMacOS, "1");
+                    }
                 });
         }
     }

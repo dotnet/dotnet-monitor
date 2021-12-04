@@ -237,6 +237,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.CaptureDumpAsync(pid, dumpType, timeoutSource.Token);
         }
 
+        public static Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType, PackageMode mode)
+        {
+            return client.CaptureDumpAsync(pid, dumpType, mode, CommonTestTimeouts.DumpTimeout);
+        }
+
+        public static async Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType, PackageMode mode, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.CaptureDumpAsync(pid, dumpType, mode, timeoutSource.Token);
+        }
+
         /// <summary>
         /// Get /dump?uid={uid}&type={dumpType}
         /// </summary>

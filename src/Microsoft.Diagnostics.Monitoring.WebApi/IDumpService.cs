@@ -10,6 +10,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal interface IDumpService
     {
-        Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType mode, Models.PackageMode packageMode, CancellationToken token);
+        Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType type, Models.PackageMode mode, CancellationToken token);
     }
 }

@@ -217,6 +217,14 @@
               "description": "The egress provider to which the dump is saved.",
               "nullable": true
             }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "description": "Optional packaging for the dump.",
+            "schema": {
+              "$ref": "#/components/schemas/PackageMode"
+            }
           }
         ],
         "responses": {
@@ -1179,6 +1187,14 @@
           "Mini",
           "WithHeap",
           "Triage"
+        ],
+        "type": "string"
+      },
+      "PackageMode": {
+        "enum": [
+          "None",
+          "DiagSession",
+          "IncludeDacDbi"
         ],
         "type": "string"
       },

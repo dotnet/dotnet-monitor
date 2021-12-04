@@ -234,7 +234,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _operationTrackerService = operationTrackerService;
             }
 
-            public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, DumpType mode, PackageMode packageMode, CancellationToken token)
+            public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, DumpType type, PackageMode mode, CancellationToken token)
             {
                 IDisposable operationRegistration = null;
                 try

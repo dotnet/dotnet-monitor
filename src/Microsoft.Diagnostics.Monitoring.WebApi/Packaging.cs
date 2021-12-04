@@ -41,12 +41,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             XElement dumpResource = await CreateResource(package, dumpFilePath, token);
             content.Add(dumpResource);
-            if (dac != null)
+            if (!string.IsNullOrEmpty(dac))
             {
                 XElement dacResource = await CreateResource(package, dac, token);
                 content.Add(dacResource);
             }
-            if (dbi != null)
+            if (!string.IsNullOrEmpty(dbi))
             {
                 XElement dbiResource = await CreateResource(package, dbi, token);
                 content.Add(dbiResource);
@@ -65,12 +65,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static async Task<XElement> CreateResource(Package package, string path, CancellationToken token)
         {
+            const string FileType = @"DiagnosticsHub.Resource.File";
+
             Guid id = Guid.NewGuid();
             string name = Path.GetFileName(path);
 
             string prefix = FormattableString.Invariant($"{id:d}");
             long timeAdded = DateTime.UtcNow.ToFileTimeUtc();
-            string type = @"DiagnosticsHub.Resource.File";
+            
 
             var resource = new XElement(Ns + "Resource",
                 new XAttribute("CompressionOption", "none"),
@@ -79,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 new XAttribute("Name", name),
                 new XAttribute("ResourcePackageUriPrefix", prefix),
                 new XAttribute("TimeAddedUTC", timeAdded),
-                new XAttribute("Type", type));
+                new XAttribute("Type", FileType));
 
             Uri uri = PackUriHelper.CreatePartUri(new Uri($"/{id:d}/{name}", UriKind.Relative));
             PackagePart part = package.CreatePart(uri, ContentTypes.ApplicationOctetStream, CompressionOption.NotCompressed);

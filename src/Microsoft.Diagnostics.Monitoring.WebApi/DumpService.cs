@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -31,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _operationTrackerService = operationTrackerService ?? throw new ArgumentNullException(nameof(operationTrackerService));
         }
 
-        public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType mode, Models.PackageMode packageMode, CancellationToken token)
+        public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType type, Models.PackageMode mode, CancellationToken token)
         {
             if (endpointInfo == null)
             {
@@ -48,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             //Always assign a .dmp extension for the temp file, even on Linux.
             string dumpFilePath = Path.Combine(dumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{endpointInfo.ProcessId}.dmp"));
-            DumpType dumpType = MapDumpType(mode);
+            DumpType dumpType = MapDumpType(type);
 
             IDisposable operationRegistration = null;
             // Only track operation status for endpoints from a listening server because:
@@ -86,15 +87,26 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string resultPath = dumpFilePath;
             string dac = null;
             string dbi = null;
-            if (packageMode.HasFlag(Models.PackageMode.IncludeDacDbi))
+            if (mode.HasFlag(Models.PackageMode.IncludeDacDbi))
             {
                 //TODO Consider throwing NotSupportedException for Windows.
 
                 string runtimeDir = await DacLocator.LocateRuntime(token);
-                dac = Path.Combine(runtimeDir, RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "mscordaccore.dll" : "libmscordaccore.so");
-                dbi = Path.Combine(runtimeDir, RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "mscordbi.dll" : "libmscordbi.so");
+                if (!string.IsNullOrEmpty(runtimeDir))
+                {
+                    dac = Path.Combine(runtimeDir, "libmscordaccore.so");
+                    if (!File.Exists(dac)) 
+                    {
+                        dac = null;
+                    }
+                    dbi = Path.Combine(runtimeDir, "libmscordbi.so");
+                    if (!File.Exists(dbi))
+                    {
+                        dbi = null; ;
+                    }
+                }
             }
-            if (packageMode.HasFlag(Models.PackageMode.DiagSession))
+            if (mode.HasFlag(Models.PackageMode.DiagSession))
             {
                 resultPath = await Packaging.CreateDiagSession(dumpFilePath, dac, dbi, token);
             }
