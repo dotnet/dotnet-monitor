@@ -13,8 +13,8 @@
       <Sha>27172ce4d05e8a3b0ffdefd65f073d40a1b1fe54</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Extensions.Configuration.KeyPerFile" Version="6.0.0">
-      <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>4822e3c3aa77eb82b2fb33c9321f923cf11ddde6</Sha>
+      <Uri>https://github.com/dotnet/aspnetcore</Uri>
+      <Sha>ae1a6cbe225b99c0bf38b7e31bf60cb653b73a52</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
