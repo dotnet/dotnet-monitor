@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal static class DacLocator
     {
         private const string NetCoreApp = "Microsoft.NETCore.App";
-        private const char VersionSeperator = '-';
+        private const char VersionSeparator = '-';
 
         private sealed class Runtime
         {
@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 string versionFolder = Version.ToString();
                 if (!string.IsNullOrEmpty(VersionSuffix))
                 {
-                    versionFolder = string.Concat(versionFolder, VersionSeperator, VersionSuffix);
+                    versionFolder = string.Concat(versionFolder, VersionSeparator, VersionSuffix);
                 }
                 return System.IO.Path.Combine(Path, versionFolder);
             }
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string line = null;
             while ( (line = process.StandardOutput.ReadLine()) != null)
             {
-                if (ParseRuntime(line, out Runtime runtime))
+                if (TryParseRuntime(line, out Runtime runtime))
                 {
                     runtimes.Add(runtime);
                 }
@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return Comparer<string>.Default.Compare(left, right);
         }
 
-        private static bool ParseRuntime(string line, out Runtime runtime)
+        private static bool TryParseRuntime(string line, out Runtime runtime)
         {
             //Microsoft.NETCore.App 6.0.0 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
             //Microsoft.NETCore.App 7.0.0-preview.7.2 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
@@ -138,9 +138,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string path = line.Substring(pathStart, line.Length - pathStart - 1);
             string suffix = string.Empty;
 
-            if (version.Contains(VersionSeperator))
+            if (version.Contains(VersionSeparator))
             {
-                string[] versionParts = version.Split(VersionSeperator);
+                string[] versionParts = version.Split(VersionSeparator);
                 version = versionParts[0];
                 suffix = versionParts[1];
             }

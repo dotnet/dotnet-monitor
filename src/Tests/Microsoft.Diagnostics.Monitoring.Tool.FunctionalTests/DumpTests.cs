@@ -113,9 +113,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    PackageMode mode = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? PackageMode.DiagSession : PackageMode.IncludeDacDbi;
+                    PackageMode packageMode = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? PackageMode.DiagSession : PackageMode.IncludeDacDbi;
 
-                    using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type, mode);
+                    using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type, packageMode);
                     Assert.NotNull(holder);
 
                     // The dump operation may still be in progress but the process should still be discoverable.
@@ -124,7 +124,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ProcessInfo processInfo = await client.GetProcessAsync(processId);
                     Assert.NotNull(processInfo);
 
-                    using var fileStream = new FileStream(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()), FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
+                    string tempDiagSessionPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+                    using var fileStream = new FileStream(tempDiagSessionPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
                     await holder.Stream.CopyToAsync(fileStream);
                     fileStream.Position = 0L;
 
@@ -151,9 +153,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
                         PackagePart dac = parts.FirstOrDefault(p => p.Uri.ToString().Contains("mscordaccore"));
-                        Assert.NotNull(dump);
+                        Assert.NotNull(dac);
                         PackagePart dbi = parts.FirstOrDefault(p => p.Uri.ToString().Contains("mscordbi"));
-                        Assert.NotNull(dump);
+                        Assert.NotNull(dbi);
                     }
 
                     //TODO Also do verification on metadata file here

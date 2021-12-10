@@ -223,7 +223,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return CaptureDumpAsync(GetProcessQuery(pid: pid), dumpType, mode, token);
         }
 
-
         private async Task<ResponseStreamHolder> CaptureDumpAsync(string processQuery, DumpType dumpType, PackageMode mode, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, $"/dump?{processQuery}&type={dumpType.ToString("G")}&mode={mode}");

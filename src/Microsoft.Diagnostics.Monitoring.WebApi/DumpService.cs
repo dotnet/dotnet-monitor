@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     dbi = Path.Combine(runtimeDir, "libmscordbi.so");
                     if (!File.Exists(dbi))
                     {
-                        dbi = null; ;
+                        dbi = null;
                     }
                 }
             }

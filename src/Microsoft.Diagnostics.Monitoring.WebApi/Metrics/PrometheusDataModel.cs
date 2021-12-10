@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class PrometheusDataModel
     {
-        private const char SeperatorChar = '_';
+        private const char SeparatorChar = '_';
 
         private static readonly Dictionary<string, string> KnownUnits = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -46,11 +46,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             StringBuilder builder = new StringBuilder(metricProvider.Length + metric.Length + (hasUnit ? baseUnit.Length + 1 : 0) + 1);
 
             NormalizeString(builder, metricProvider, isProvider: true);
-            builder.Append(SeperatorChar);
+            builder.Append(SeparatorChar);
             NormalizeString(builder, metric, isProvider: false);
             if (hasUnit)
             {
-                builder.Append(SeperatorChar);
+                builder.Append(SeparatorChar);
                 NormalizeString(builder, baseUnit, isProvider: false);
             }
 
@@ -72,14 +72,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
                 else if (!isProvider)
                 {
-                    builder.Append(SeperatorChar);
+                    builder.Append(SeparatorChar);
                 }
             }
 
             //CONSIDER Completely invalid providers such as '!@#$' will become '_'. Should we have a more obvious value for this?
             if (allInvalid && isProvider)
             {
-                builder.Append(SeperatorChar);
+                builder.Append(SeparatorChar);
             }
         }
         private static bool IsValidChar(char c, bool isFirst)
@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return false;
             }
 
-            if (c == SeperatorChar)
+            if (c == SeparatorChar)
             {
                 return true;
             }
