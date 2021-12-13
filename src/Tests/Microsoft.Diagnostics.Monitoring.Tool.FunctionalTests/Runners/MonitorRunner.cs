@@ -72,7 +72,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             get
             {
-                // Change this before PR -> doesn't do what I thought it was going to do
                 return _userConfigDirectoryPath ?? Path.Combine(UserConfigDirectoryPath, "settings.json");
             }
 
@@ -82,7 +81,37 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
         }
 
+        protected string SharedSettingsFilePath
+        {
+            get
+            {
+                return _sharedConfigDirectoryPath ?? Path.Combine(SharedConfigDirectoryPath, "settings.json");
+            }
+
+            set
+            {
+                _sharedConfigDirectoryPath = value;
+            }
+        }
+
+        public ConfigurationTestingMode TestingMode
+        {
+            get
+            {
+                return _testingMode;
+            }
+
+            set
+            {
+                _testingMode = value;
+            }
+        }
+
+        private ConfigurationTestingMode _testingMode = ConfigurationTestingMode.None;
+
         private string _userConfigDirectoryPath;
+
+        private string _sharedConfigDirectoryPath;
 
         public MonitorRunner(ITestOutputHelper outputHelper)
         {
@@ -173,9 +202,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             else
             {
                 _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride", UserSettingsFilePath);
+                _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigSettingsDirectoryOverride", SharedSettingsFilePath);
+                _adapter.Environment.Add("DotnetMonitorTestSettings__TestingMode", TestingMode.ToString());
             }
 
             _outputHelper.WriteLine("User Settings Path: {0}", UserSettingsFilePath);
+            _outputHelper.WriteLine("Shared Directory: " + SharedConfigDirectoryPath);
+
 
             await _adapter.StartAsync(token);
         }

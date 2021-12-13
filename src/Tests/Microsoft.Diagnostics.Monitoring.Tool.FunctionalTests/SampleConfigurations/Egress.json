@@ -1,0 +1,9 @@
+{
+  "Egress": {
+    "FileSystem": {
+      "artifacts": {
+        "directoryPath": "/artifacts"
+      }
+    }
+  }
+}

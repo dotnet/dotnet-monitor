@@ -27,7 +27,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public string _configurationString = "";
 
-        public string FileName { get; set; }
+        public string UserFileName { get; set; }
+
+        public string SharedFileName { get; set; }
 
         /// <summary>
         /// Determines whether or not certain information is redacted from the displayed configuration.
@@ -70,7 +72,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 argsList.Add("--level full");
             }
 
-            UserSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations" , FileName);
+            UserSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations" , UserFileName);
+
+            SharedSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations", SharedFileName);
+
             _useSettingsConfig = true;
 
             using IDisposable _ = token.Register(() => CancelCompletionSources(token));

@@ -42,10 +42,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string UserConfigDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
 
-        // Allows tests to override the user configuration directory so there
+        // Allows tests to override the user configuration settings directory so there
         // is better control and access of what is visible during test.
         private const string UserConfigSettingsDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride";
+
+        // Allows tests to override the user configuration settings directory so there
+        // is better control and access of what is visible during test.
+        private const string SharedConfigSettingsDirectoryOverrideEnvironmentVariable
+            = "DotnetMonitorTestSettings__SharedConfigSettingsDirectoryOverride";
+
+        private const string TestingModeEnvironmentVariable = "DotnetMonitorTestSettings__TestingMode";
 
         // Location where shared dotnet-monitor configuration is stored.
         // Windows: "%ProgramData%\dotnet-monitor
@@ -57,7 +64,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), ProductFolderName) :
                     Path.Combine("/etc", ProductFolderName));
 
-        private static readonly string SharedSettingsPath = Path.Combine(SharedConfigDirectoryPath, SettingsFileName);
+        private static readonly string SharedSettingsPath =
+            GetEnvironmentOverrideOrValue(
+                SharedConfigSettingsDirectoryOverrideEnvironmentVariable,
+                Path.Combine(SharedConfigDirectoryPath, SettingsFileName));
 
         // Location where user's dotnet-monitor configuration is stored.
         // Windows: "%USERPROFILE%\.dotnet-monitor"
@@ -73,6 +83,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             GetEnvironmentOverrideOrValue(
                 UserConfigSettingsDirectoryOverrideEnvironmentVariable,
                 Path.Combine(UserConfigDirectoryPath, SettingsFileName));
+
+        private static ConfigurationTestingMode testingMode = (ConfigurationTestingMode)Enum.Parse(typeof(ConfigurationTestingMode), GetEnvironmentOverrideOrValue(
+                TestingModeEnvironmentVariable,
+                ConfigurationTestingMode.None.ToString()));
 
         public async Task<int> Start(CancellationToken token, IConsole console, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress)
         {
@@ -154,38 +168,105 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
-                    ConfigureEndpointInfoSource(builder, diagnosticPort);
-                    ConfigureMetricsEndpoint(builder, metrics, metricUrls);
-                    ConfigureGlobalMetrics(builder);
-                    builder.ConfigureStorageDefaults();
 
-                    builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
-
-                    builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
-                    builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
-
-                    //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
-                    //KeyPerFile provider uses a file system watcher to trigger changes.
-                    //The watcher does not follow symlinks inside the watched directory, such as mounted files
-                    //in Kubernetes.
-                    //We get around this by watching the target folder of the symlink instead.
-                    //See https://github.com/kubernetes/kubernetes/master/pkg/volume/util/atomic_writer.go
-                    string path = SharedConfigDirectoryPath;
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RuntimeInfo.IsInKubernetes)
+                    if (testingMode != ConfigurationTestingMode.None)
                     {
-                        string symlinkTarget = Path.Combine(SharedConfigDirectoryPath, "..data");
-                        if (Directory.Exists(symlinkTarget))
-                        {
-                            path = symlinkTarget;
-                        }
+                        builder.Sources.RemoveAt(0);
+                        builder.Sources.RemoveAt(0);
+                        builder.Sources.RemoveAt(0);
+                        builder.Sources.RemoveAt(0);
                     }
 
-                    builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
-                    builder.AddEnvironmentVariables(ConfigPrefix);
-
-                    if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
+                    if (testingMode == ConfigurationTestingMode.None || testingMode == ConfigurationTestingMode.All)
                     {
-                        ConfigureTempApiHashKey(builder, authenticationOptions);
+                        ConfigureEndpointInfoSource(builder, diagnosticPort);
+                        ConfigureMetricsEndpoint(builder, metrics, metricUrls);
+                        ConfigureGlobalMetrics(builder);
+                        builder.ConfigureStorageDefaults();
+
+                        builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
+
+                        builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
+                        builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
+
+                        //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
+                        //KeyPerFile provider uses a file system watcher to trigger changes.
+                        //The watcher does not follow symlinks inside the watched directory, such as mounted files
+                        //in Kubernetes.
+                        //We get around this by watching the target folder of the symlink instead.
+                        //See https://github.com/kubernetes/kubernetes/master/pkg/volume/util/atomic_writer.go
+                        string path = SharedConfigDirectoryPath;
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RuntimeInfo.IsInKubernetes)
+                        {
+                            string symlinkTarget = Path.Combine(SharedConfigDirectoryPath, "..data");
+                            if (Directory.Exists(symlinkTarget))
+                            {
+                                path = symlinkTarget;
+                            }
+                        }
+
+                        builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
+                        builder.AddEnvironmentVariables(ConfigPrefix);
+
+                        if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
+                        {
+                            ConfigureTempApiHashKey(builder, authenticationOptions);
+                        }
+                    }
+                    else
+                    {
+                        // Specifically testing different types of configuration
+
+                        if (testingMode == ConfigurationTestingMode.EndpointInfo)
+                        {
+                            ConfigureEndpointInfoSource(builder, diagnosticPort);
+                        }
+
+                        if (testingMode == ConfigurationTestingMode.Metrics)
+                        {
+                            ConfigureMetricsEndpoint(builder, metrics, metricUrls);
+                            ConfigureGlobalMetrics(builder);
+                        }
+
+                        if (testingMode == ConfigurationTestingMode.Storage)
+                        {
+                            builder.ConfigureStorageDefaults();
+                        }
+
+                        if (testingMode == ConfigurationTestingMode.URLs)
+                        {
+                            builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
+                        }
+
+                        builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
+
+                        // FIX
+                        if (testingMode == ConfigurationTestingMode.Environment)
+                        {
+                            //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
+                            //KeyPerFile provider uses a file system watcher to trigger changes.
+                            //The watcher does not follow symlinks inside the watched directory, such as mounted files
+                            //in Kubernetes.
+                            //We get around this by watching the target folder of the symlink instead.
+                            //See https://github.com/kubernetes/kubernetes/master/pkg/volume/util/atomic_writer.go
+                            string path = SharedConfigDirectoryPath;
+                            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RuntimeInfo.IsInKubernetes)
+                            {
+                                string symlinkTarget = Path.Combine(SharedConfigDirectoryPath, "..data");
+                                if (Directory.Exists(symlinkTarget))
+                                {
+                                    path = symlinkTarget;
+                                }
+                            }
+
+                            builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
+                            builder.AddEnvironmentVariables(ConfigPrefix);
+                        }
+
+                        if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
+                        {
+                            ConfigureTempApiHashKey(builder, authenticationOptions);
+                        }
                     }
                 });
 

@@ -47,6 +47,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="LoggingEventIds.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\OutputFormat.cs" Link="Options\OutputFormat.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\ConfigurationTestingMode.cs" Link="Options\ConfigurationTestingMode.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\ExecuteActionTestHelper.cs" Link="ExecuteActionTestHelper.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Options\CollectionRuleOptionsExtensions.cs" Link="Options\CollectionRuleOptionsExtensions.cs" />
   </ItemGroup>
@@ -77,7 +78,37 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="SampleConfigurations\Settings1.json">
+    <None Update="SampleConfigurations\URLs.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\Storage.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\Logging.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\Metrics.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\DiagnosticPort.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\DefaultProcess.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\UserSettings1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\Egress.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\Authentication.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\SharedSettings1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\CollectionRules.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

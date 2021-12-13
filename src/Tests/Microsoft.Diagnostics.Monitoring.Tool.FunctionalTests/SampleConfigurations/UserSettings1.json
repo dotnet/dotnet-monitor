@@ -1,0 +1,104 @@
+{
+  "urls": "https://localhost:33333",
+  "GlobalCounter": {
+    "IntervalSeconds": 1
+  },
+  "Metrics": {
+    "Endpoints": "http://localhost:55555",
+    "IncludeDefaultProviders": "False",
+    "MetricCount": "2",
+    "Providers": [
+      {
+        "ProviderName": "Microsoft-AspNetCore-Server-Kestrel",
+        "CounterNames": [
+          "connections-per-second"
+        ]
+      }
+    ]
+  },
+  "Authentication": {
+    "MonitorApiKey": {
+      "Subject": "ae5473b6-8dad-498d-b915-ffffffffffff",
+      "PublicKey": "eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"
+    }
+  },
+  "DefaultProcess": {
+    "Filters": [
+      {
+        "Key": "ProcessName",
+        "Value": "MyProcess"
+      }
+    ]
+  },
+  "Egress": {
+    "AzureBlobStorage": {
+      "monitorBlob": {
+        "accountUri": "https://exampleaccount.blob.core.windows.net",
+        "containerName": "dotnet-monitor",
+        "blobPrefix": "artifacts",
+        "accountKeyName": "MonitorBlobAccountKey"
+      }
+    },
+    "Properties": {
+      "MonitorBlobAccountKey": "accountKey"
+    }
+  },
+  "Logging": {
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information"
+      }
+    }
+  },
+  "CollectionRules": {
+    "AspnetStatus": {
+      "Filters": [
+        {
+          "Key": "ProcessName",
+          "Value": "dotnet",
+          "MatchType": "Exact"
+        }
+      ],
+      "Trigger": {
+        "Type": "AspNetResponseStatus",
+        "Settings": {
+          "ResponseCount": 1,
+          "StatusCodes": [
+            "200-202"
+          ]
+        }
+      },
+      "Actions": [
+        {
+          "Name": "MyDump",
+          "Type": "CollectDump",
+          "Settings": {
+            "Egress": "artifacts",
+            "Type": "Triage"
+          },
+          "WaitForCompletion": true
+        },
+        {
+          "Type": "Execute",
+          "Settings": {
+            "Path": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe",
+            "Arguments": "\"$(Actions.MyDump.EgressPath)\""
+          }
+        }
+      ],
+      "Limits": {
+        "ActionCount": 2,
+        "ActionCountSlidingWindowDuration": "1:00:00"
+      }
+    }
+  },
+  "DiagnosticPort": {
+    "ConnectionMode": "Listen",
+    "EndpointName": "\\\\.\\pipe\\dotnet-monitor-pipe"
+  },
+  "Storage": {
+    "DumpTempFolder": "/ephemeral-directory/"
+  }
+}
