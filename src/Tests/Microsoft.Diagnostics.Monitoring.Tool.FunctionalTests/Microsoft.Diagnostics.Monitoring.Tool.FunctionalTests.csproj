@@ -96,7 +96,7 @@
     <None Update="SampleConfigurations\DefaultProcess.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleConfigurations\UserSettings1.json">
+    <None Update="SampleConfigurations\UserSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SampleConfigurations\Egress.json">
@@ -105,7 +105,7 @@
     <None Update="SampleConfigurations\Authentication.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleConfigurations\SharedSettings1.json">
+    <None Update="SampleConfigurations\SharedSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SampleConfigurations\CollectionRules.json">

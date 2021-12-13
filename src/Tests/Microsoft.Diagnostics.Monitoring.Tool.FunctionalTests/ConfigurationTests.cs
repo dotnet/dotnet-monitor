@@ -28,9 +28,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
-            toolRunner.UserFileName = "UserSettings1.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
+            toolRunner.UserFileName = "UserSettings.json";
             toolRunner.TestingMode = ConfigurationTestingMode.All;
+            toolRunner.SharedFileName = "SharedSettings.json";
 
             await toolRunner.StartAsync();
 
@@ -52,8 +52,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = "CollectionRules.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
             toolRunner.TestingMode = ConfigurationTestingMode.CollectionRules;
+            toolRunner.SharedFileName = "SharedSettings.json";
 
             await toolRunner.StartAsync();
 
@@ -68,8 +68,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = "Metrics.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
             toolRunner.TestingMode = ConfigurationTestingMode.Metrics;
+            toolRunner.SharedFileName = "SharedSettings.json";
 
             await toolRunner.StartAsync();
 
@@ -84,8 +84,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = "Authentication.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
             toolRunner.TestingMode = ConfigurationTestingMode.Authentication;
+            toolRunner.SharedFileName = "SharedSettings.json";
 
             await toolRunner.StartAsync();
 
@@ -107,8 +107,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = "DefaultProcess.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
             toolRunner.TestingMode = ConfigurationTestingMode.DefaultProcess;
+            toolRunner.SharedFileName = "SharedSettings.json";
 
             await toolRunner.StartAsync();
 
@@ -123,8 +123,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = "Storage.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
             toolRunner.TestingMode = ConfigurationTestingMode.Storage;
+            toolRunner.SharedFileName = "SharedSettings.json";
 
             await toolRunner.StartAsync();
 
@@ -139,8 +139,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = "URLs.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
             toolRunner.TestingMode = ConfigurationTestingMode.URLs;
+            toolRunner.SharedFileName = "SharedSettings.json";
 
             await toolRunner.StartAsync();
 
@@ -155,8 +155,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = "Egress.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
             toolRunner.TestingMode = ConfigurationTestingMode.Egress;
+            toolRunner.SharedFileName = "SharedSettings.json";
 
             await toolRunner.StartAsync();
             
@@ -178,8 +178,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = "Logging.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
             toolRunner.TestingMode = ConfigurationTestingMode.Logging;
+            toolRunner.SharedFileName = "SharedSettings.json";
 
             await toolRunner.StartAsync();
 
@@ -194,8 +194,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = "DiagnosticPort.json";
-            toolRunner.SharedFileName = "SharedSettings1.json";
             toolRunner.TestingMode = ConfigurationTestingMode.DiagnosticPort;
+            toolRunner.SharedFileName = "SharedSettings.json";
+
             await toolRunner.StartAsync();
 
             CompareOutput(toolRunner._configurationString, diagnosticPortExpected);
@@ -219,103 +220,107 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ""urls"": ""https://localhost:33333"",
             ""Kestrel"": "":NOT PRESENT:"",
             ""GlobalCounter"": {
-                ""IntervalSeconds"": ""1""
+              ""IntervalSeconds"": ""1""
             },
             ""CollectionRules"": {
-                ""AspnetStatus"": {
-                    ""Actions"": [
-                        {
-                        ""Name"": ""MyDump"",
-                        ""Settings"": {
-                            ""Egress"": ""artifacts"",
-                            ""Type"": ""Triage""
-                        },
-                        ""Type"": ""CollectDump"",
-                        ""WaitForCompletion"": ""True""
+              ""AspnetStatus"": {
+                ""Actions"": [
+                  {
+                    ""Name"": ""MyDump"",
+                    ""Settings"": {
+                      ""Egress"": ""artifacts"",
+                      ""Type"": ""Triage""
                     },
-                    {
-                        ""Settings"": {
-                            ""Arguments"": ""\u0022$(Actions.MyDump.EgressPath)\u0022"",
-                            ""Path"": ""C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe""
-                        },
-                        ""Type"": ""Execute""
-                    }],
-                    ""Filters"": [
-                        {
-                        ""Key"": ""ProcessName"",
-                        ""MatchType"": ""Exact"",
-                        ""Value"": ""dotnet""
-                        }],
-                    ""Limits"": {
-                        ""ActionCount"": ""2"",
-                        ""ActionCountSlidingWindowDuration"": ""1:00:00""
+                    ""Type"": ""CollectDump"",
+                    ""WaitForCompletion"": ""True""
+                  },
+                  {
+                    ""Settings"": {
+                      ""Arguments"": ""\u0022$(Actions.MyDump.EgressPath)\u0022"",
+                      ""Path"": ""C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe""
                     },
-                    ""Trigger"": {
-                        ""Settings"": {
-                            ""ResponseCount"": ""1"",
-                            ""StatusCodes"": [
-                                ""200-202""
-                            ]
-                        },
-                        ""Type"": ""AspNetResponseStatus""
-                    }
+                    ""Type"": ""Execute""
+                  }
+                ],
+                ""Filters"": [
+                  {
+                    ""Key"": ""ProcessName"",
+                    ""MatchType"": ""Exact"",
+                    ""Value"": ""dotnet""
+                  }
+                ],
+                ""Limits"": {
+                  ""ActionCount"": ""2"",
+                  ""ActionCountSlidingWindowDuration"": ""1:00:00""
+                },
+                ""Trigger"": {
+                  ""Settings"": {
+                    ""ResponseCount"": ""1"",
+                    ""StatusCodes"": [
+                      ""200-202""
+                    ]
+                  },
+                  ""Type"": ""AspNetResponseStatus""
                 }
+              }
             },
             ""CorsConfiguration"": "":NOT PRESENT:"",
             ""DiagnosticPort"": {
-                ""ConnectionMode"": ""Listen"",
-                ""EndpointName"": ""\\\\.\\pipe\\dotnet-monitor-pipe""
+              ""ConnectionMode"": ""Listen"",
+              ""EndpointName"": ""\\\\.\\pipe\\dotnet-monitor-pipe""
             },
             ""Metrics"": {
-                ""Enabled"": ""True"",
-                ""Endpoints"": ""http://localhost:55555"",
-                ""IncludeDefaultProviders"": ""False"",
-                ""MetricCount"": ""2"",
-                ""Providers"": [
-                    {
-                    ""CounterNames"": [
-                        ""connections-per-second""
-                    ],
-                    ""ProviderName"": ""Microsoft-AspNetCore-Server-Kestrel""
-                }]
+              ""Enabled"": ""True"",
+              ""Endpoints"": ""http://localhost:55555"",
+              ""IncludeDefaultProviders"": ""False"",
+              ""MetricCount"": ""2"",
+              ""Providers"": [
+                {
+                  ""CounterNames"": [
+                    ""connections-per-second""
+                  ],
+                  ""ProviderName"": ""Microsoft-AspNetCore-Server-Kestrel""
+                }
+              ]
             },
             ""Storage"": {
-                ""DumpTempFolder"": ""/ephemeral-directory/""
+              ""DumpTempFolder"": ""/ephemeral-directory/""
             },
             ""DefaultProcess"": {
-                ""Filters"": [
-                    {
-                        ""Key"": ""ProcessName"",
-                        ""Value"": ""MyProcess""
-                }]
+              ""Filters"": [
+                {
+                  ""Key"": ""ProcessName"",
+                  ""Value"": ""MyProcess""
+                }
+              ]
             },
             ""Logging"": {
-                ""Logging"": {
-                    ""LogLevel"": {
-                        ""Default"": ""Information"",
-                        ""Microsoft"": ""Warning"",
-                        ""Microsoft.Hosting.Lifetime"": ""Information""
-                    }
+              ""Logging"": {
+                ""LogLevel"": {
+                  ""Default"": ""Information"",
+                  ""Microsoft"": ""Warning"",
+                  ""Microsoft.Hosting.Lifetime"": ""Information""
                 }
+              }
             },
             ""Authentication"": {
-                ""MonitorApiKey"": {
-                    ""PublicKey"": ""eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"",
-                    ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff""
-                }
+              ""MonitorApiKey"": {
+                ""PublicKey"": ""eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"",
+                ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff""
+              }
             },
             ""Egress"": {
-                ""AzureBlobStorage"": {
-                    ""monitorBlob"": {
-                        ""accountKeyName"": ""MonitorBlobAccountKey"",
-                        ""accountUri"": ""https://exampleaccount.blob.core.windows.net"",
-                        ""blobPrefix"": ""artifacts"",
-                        ""containerName"": ""dotnet-monitor""
-                    }
-                },
-                ""Properties"": {
-                    ""MonitorBlobAccountKey"": ""accountKey""
+              ""AzureBlobStorage"": {
+                ""monitorBlob"": {
+                  ""accountKeyName"": ""MonitorBlobAccountKey"",
+                  ""accountUri"": ""https://exampleaccount.blob.core.windows.net"",
+                  ""blobPrefix"": ""artifacts"",
+                  ""containerName"": ""dotnet-monitor""
                 }
+              },
+              ""Properties"": {
+                ""MonitorBlobAccountKey"": ""accountKey""
+              }
             }
         }";
 
@@ -324,108 +329,112 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ""urls"": ""https://localhost:33333"",
             ""Kestrel"": "":NOT PRESENT:"",
             ""GlobalCounter"": {
-                ""IntervalSeconds"": ""1""
+              ""IntervalSeconds"": ""1""
             },
             ""CollectionRules"": {
-                ""AspnetStatus"": {
-                    ""Actions"": [
-                        {
-                        ""Name"": ""MyDump"",
-                        ""Settings"": {
-                            ""Egress"": ""artifacts"",
-                            ""Type"": ""Triage""
-                        },
-                        ""Type"": ""CollectDump"",
-                        ""WaitForCompletion"": ""True""
+              ""AspnetStatus"": {
+                ""Actions"": [
+                  {
+                    ""Name"": ""MyDump"",
+                    ""Settings"": {
+                      ""Egress"": ""artifacts"",
+                      ""Type"": ""Triage""
                     },
-                    {
-                        ""Settings"": {
-                            ""Arguments"": ""\u0022$(Actions.MyDump.EgressPath)\u0022"",
-                            ""Path"": ""C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe""
-                        },
-                        ""Type"": ""Execute""
-                    }],
-                    ""Filters"": [
-                        {
-                        ""Key"": ""ProcessName"",
-                        ""MatchType"": ""Exact"",
-                        ""Value"": ""dotnet""
-                        }],
-                    ""Limits"": {
-                        ""ActionCount"": ""2"",
-                        ""ActionCountSlidingWindowDuration"": ""1:00:00""
+                    ""Type"": ""CollectDump"",
+                    ""WaitForCompletion"": ""True""
+                  },
+                  {
+                    ""Settings"": {
+                      ""Arguments"": ""\u0022$(Actions.MyDump.EgressPath)\u0022"",
+                      ""Path"": ""C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe""
                     },
-                    ""Trigger"": {
-                        ""Settings"": {
-                            ""ResponseCount"": ""1"",
-                            ""StatusCodes"": [
-                                ""200-202""
-                            ]
-                        },
-                        ""Type"": ""AspNetResponseStatus""
-                    }
+                    ""Type"": ""Execute""
+                  }
+                ],
+                ""Filters"": [
+                  {
+                    ""Key"": ""ProcessName"",
+                    ""MatchType"": ""Exact"",
+                    ""Value"": ""dotnet""
+                  }
+                ],
+                ""Limits"": {
+                  ""ActionCount"": ""2"",
+                  ""ActionCountSlidingWindowDuration"": ""1:00:00""
+                },
+                ""Trigger"": {
+                  ""Settings"": {
+                    ""ResponseCount"": ""1"",
+                    ""StatusCodes"": [
+                      ""200-202""
+                    ]
+                  },
+                  ""Type"": ""AspNetResponseStatus""
                 }
+              }
             },
             ""CorsConfiguration"": "":NOT PRESENT:"",
             ""DiagnosticPort"": {
-                ""ConnectionMode"": ""Listen"",
-                ""EndpointName"": ""\\\\.\\pipe\\dotnet-monitor-pipe""
+              ""ConnectionMode"": ""Listen"",
+              ""EndpointName"": ""\\\\.\\pipe\\dotnet-monitor-pipe""
             },
             ""Metrics"": {
-                ""Enabled"": ""True"",
-                ""Endpoints"": ""http://localhost:55555"",
-                ""IncludeDefaultProviders"": ""False"",
-                ""MetricCount"": ""2"",
-                ""Providers"": [
-                    {
-                    ""CounterNames"": [
-                        ""connections-per-second""
-                    ],
-                    ""ProviderName"": ""Microsoft-AspNetCore-Server-Kestrel""
-                }]
+              ""Enabled"": ""True"",
+              ""Endpoints"": ""http://localhost:55555"",
+              ""IncludeDefaultProviders"": ""False"",
+              ""MetricCount"": ""2"",
+              ""Providers"": [
+                {
+                  ""CounterNames"": [
+                    ""connections-per-second""
+                  ],
+                  ""ProviderName"": ""Microsoft-AspNetCore-Server-Kestrel""
+                }
+              ]
             },
             ""Storage"": {
-                ""DumpTempFolder"": ""/ephemeral-directory/""
+              ""DumpTempFolder"": ""/ephemeral-directory/""
             },
             ""DefaultProcess"": {
-                ""Filters"": [
-                    {
-                        ""Key"": ""ProcessName"",
-                        ""Value"": ""MyProcess""
-                }]
+              ""Filters"": [
+                {
+                  ""Key"": ""ProcessName"",
+                  ""Value"": ""MyProcess""
+                }
+              ]
             },
             ""Logging"": {
-                ""Logging"": {
-                    ""LogLevel"": {
-                        ""Default"": ""Information"",
-                        ""Microsoft"": ""Warning"",
-                        ""Microsoft.Hosting.Lifetime"": ""Information""
-                    }
+              ""Logging"": {
+                ""LogLevel"": {
+                  ""Default"": ""Information"",
+                  ""Microsoft"": ""Warning"",
+                  ""Microsoft.Hosting.Lifetime"": ""Information""
                 }
+              }
             },
             ""Authentication"": {
-                ""MonitorApiKey"": {
-                    ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff"",
-                    ""PublicKey"": "":REDACTED:""
-                }
+              ""MonitorApiKey"": {
+                ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff"",
+                ""PublicKey"": "":REDACTED:""
+              }
             },
             ""Egress"": {
-                ""Properties"": {
-                    ""MonitorBlobAccountKey"": "":REDACTED:""
-                },
-                ""AzureBlobStorage"": {
-                    ""monitorBlob"": {
-                        ""AccountUri"": ""https://exampleaccount.blob.core.windows.net"",
-                        ""BlobPrefix"": ""artifacts"",
-                        ""ContainerName"": ""dotnet-monitor"",
-                        ""CopyBufferSize"": "":NOT PRESENT:"",
-                        ""SharedAccessSignature"": "":NOT PRESENT:"",
-                        ""AccountKey"": "":NOT PRESENT:"",
-                        ""SharedAccessSignatureName"": "":NOT PRESENT:"",
-                        ""AccountKeyName"": ""MonitorBlobAccountKey""
-                    }
-                },
-                ""FileSystem"": "":NOT PRESENT:""
+              ""Properties"": {
+                ""MonitorBlobAccountKey"": "":REDACTED:""
+              },
+              ""AzureBlobStorage"": {
+                ""monitorBlob"": {
+                  ""AccountUri"": ""https://exampleaccount.blob.core.windows.net"",
+                  ""BlobPrefix"": ""artifacts"",
+                  ""ContainerName"": ""dotnet-monitor"",
+                  ""CopyBufferSize"": "":NOT PRESENT:"",
+                  ""SharedAccessSignature"": "":NOT PRESENT:"",
+                  ""AccountKey"": "":NOT PRESENT:"",
+                  ""SharedAccessSignatureName"": "":NOT PRESENT:"",
+                  ""AccountKeyName"": ""MonitorBlobAccountKey""
+                }
+              },
+              ""FileSystem"": "":NOT PRESENT:""
             }
         }";
 
@@ -475,11 +484,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ""Logging"": "":NOT PRESENT:"",
             ""Authentication"": "":NOT PRESENT:"",
             ""Egress"": {
-                ""FileSystem"": {
-                    ""artifacts"": {
-                        ""directoryPath"": ""/artifacts""
-                    }
+              ""FileSystem"": {
+                ""artifacts"": {
+                  ""directoryPath"": ""/artifacts""
                 }
+              }
             }
         }";
 
@@ -497,15 +506,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ""Logging"": "":NOT PRESENT:"",
             ""Authentication"": "":NOT PRESENT:"",
             ""Egress"": {
-                ""Properties"": "":NOT PRESENT:"",
-                ""AzureBlobStorage"": "":NOT PRESENT:"",
-                ""FileSystem"": {
-                    ""artifacts"": {
-                        ""DirectoryPath"": ""/artifacts"",
-                        ""IntermediateDirectoryPath"": "":NOT PRESENT:"",
-                        ""CopyBufferSize"": "":NOT PRESENT:""
-                    }
+              ""Properties"": "":NOT PRESENT:"",
+              ""AzureBlobStorage"": "":NOT PRESENT:"",
+              ""FileSystem"": {
+                ""artifacts"": {
+                  ""DirectoryPath"": ""/artifacts"",
+                  ""IntermediateDirectoryPath"": "":NOT PRESENT:"",
+                  ""CopyBufferSize"": "":NOT PRESENT:""
                 }
+              }
             }
         }";
 
@@ -519,7 +528,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ""DiagnosticPort"": "":NOT PRESENT:"",
             ""Metrics"": "":NOT PRESENT:"",
             ""Storage"": {
-                ""DumpTempFolder"": ""/ephemeral-directory/""
+              ""DumpTempFolder"": ""/ephemeral-directory/""
             },
             ""DefaultProcess"": "":NOT PRESENT:"",
             ""Logging"": "":NOT PRESENT:"",

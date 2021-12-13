@@ -171,24 +171,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     if (testingMode != ConfigurationTestingMode.None)
                     {
-                        builder.Sources.RemoveAt(0);
-                        builder.Sources.RemoveAt(0);
-                        builder.Sources.RemoveAt(0);
-                        builder.Sources.RemoveAt(0);
+                        while (builder.Sources.Count > 0)
+                        {
+                            builder.Sources.RemoveAt(0);
+                        }
                     }
 
-                    if (testingMode == ConfigurationTestingMode.None || testingMode == ConfigurationTestingMode.All)
+                    if (testingMode == ConfigurationTestingMode.None
+                        || testingMode == ConfigurationTestingMode.All
+                        || testingMode == ConfigurationTestingMode.EndpointInfo)
                     {
                         ConfigureEndpointInfoSource(builder, diagnosticPort);
+                    }
+
+                    if (testingMode == ConfigurationTestingMode.None
+                        || testingMode == ConfigurationTestingMode.All
+                        || testingMode == ConfigurationTestingMode.Metrics)
+                    {
                         ConfigureMetricsEndpoint(builder, metrics, metricUrls);
                         ConfigureGlobalMetrics(builder);
+                    }
+
+                    if (testingMode == ConfigurationTestingMode.None
+                        || testingMode == ConfigurationTestingMode.All
+                        || testingMode == ConfigurationTestingMode.Storage)
+                    {
                         builder.ConfigureStorageDefaults();
+                    }
 
+                    if (testingMode == ConfigurationTestingMode.None
+                        || testingMode == ConfigurationTestingMode.All
+                        || testingMode == ConfigurationTestingMode.URLs)
+                    {
                         builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
+                    }
 
-                        builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
-                        builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
+                    builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
+                    builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
 
+                    // FIX
+                    if (testingMode == ConfigurationTestingMode.None
+                        || testingMode == ConfigurationTestingMode.All
+                        || testingMode == ConfigurationTestingMode.Environment)
+                    {
                         //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
                         //KeyPerFile provider uses a file system watcher to trigger changes.
                         //The watcher does not follow symlinks inside the watched directory, such as mounted files
@@ -207,66 +232,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                         builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
                         builder.AddEnvironmentVariables(ConfigPrefix);
-
-                        if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
-                        {
-                            ConfigureTempApiHashKey(builder, authenticationOptions);
-                        }
                     }
-                    else
+
+                    if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {
-                        // Specifically testing different types of configuration
-
-                        if (testingMode == ConfigurationTestingMode.EndpointInfo)
-                        {
-                            ConfigureEndpointInfoSource(builder, diagnosticPort);
-                        }
-
-                        if (testingMode == ConfigurationTestingMode.Metrics)
-                        {
-                            ConfigureMetricsEndpoint(builder, metrics, metricUrls);
-                            ConfigureGlobalMetrics(builder);
-                        }
-
-                        if (testingMode == ConfigurationTestingMode.Storage)
-                        {
-                            builder.ConfigureStorageDefaults();
-                        }
-
-                        if (testingMode == ConfigurationTestingMode.URLs)
-                        {
-                            builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
-                        }
-
-                        builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
-
-                        // FIX
-                        if (testingMode == ConfigurationTestingMode.Environment)
-                        {
-                            //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
-                            //KeyPerFile provider uses a file system watcher to trigger changes.
-                            //The watcher does not follow symlinks inside the watched directory, such as mounted files
-                            //in Kubernetes.
-                            //We get around this by watching the target folder of the symlink instead.
-                            //See https://github.com/kubernetes/kubernetes/master/pkg/volume/util/atomic_writer.go
-                            string path = SharedConfigDirectoryPath;
-                            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RuntimeInfo.IsInKubernetes)
-                            {
-                                string symlinkTarget = Path.Combine(SharedConfigDirectoryPath, "..data");
-                                if (Directory.Exists(symlinkTarget))
-                                {
-                                    path = symlinkTarget;
-                                }
-                            }
-
-                            builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
-                            builder.AddEnvironmentVariables(ConfigPrefix);
-                        }
-
-                        if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
-                        {
-                            ConfigureTempApiHashKey(builder, authenticationOptions);
-                        }
+                        ConfigureTempApiHashKey(builder, authenticationOptions);
                     }
                 });
 
