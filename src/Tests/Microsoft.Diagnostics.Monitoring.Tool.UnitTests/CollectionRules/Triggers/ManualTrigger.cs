@@ -40,14 +40,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Trigge
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _service.Notify += NotifyHandler;
+            _service.NotifyTrigger += NotifyHandler;
+
+            _service.NotifyStartedSubscribers();
 
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _service.Notify -= NotifyHandler;
+            _service.NotifyTrigger -= NotifyHandler;
 
             return Task.CompletedTask;
         }
@@ -60,11 +62,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Trigge
 
     internal sealed class ManualTriggerService
     {
-        public event EventHandler Notify;
+        public event EventHandler NotifyStarted;
 
-        public void NotifySubscribers()
+        public event EventHandler NotifyTrigger;
+
+        public void NotifyStartedSubscribers()
         {
-            Notify?.Invoke(this, EventArgs.Empty);
+            NotifyStarted?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void NotifyTriggerSubscribers()
+        {
+            NotifyTrigger?.Invoke(this, EventArgs.Empty);
         }
     }
 }
