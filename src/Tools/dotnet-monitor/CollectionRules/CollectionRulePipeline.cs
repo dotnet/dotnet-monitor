@@ -136,7 +136,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         }
                     }
 
-                    DateTime currentTimestamp = DateTime.UtcNow;
+                    DateTime currentTimestamp = _context.Clock.UtcNow.UtcDateTime;
 
                     // If rule has an action count window, Remove all execution timestamps that fall outside the window.
                     if (actionCountWindowDuration.HasValue)
@@ -193,6 +193,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     }
                     else
                     {
+                        _context.ThrottledCallback?.Invoke();
+
                         _context.Logger.CollectionRuleThrottled(_context.Name);
                     }
 

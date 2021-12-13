@@ -2,18 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
     internal class CollectionRuleContext
     {
-        public CollectionRuleContext(string name, CollectionRuleOptions options, IEndpointInfo endpointInfo, ILogger logger)
+        public CollectionRuleContext(string name, CollectionRuleOptions options, IEndpointInfo endpointInfo, ILogger logger, ISystemClock clock = null, Action throttledCallback = null)
         {
             // TODO: Allow null endpointInfo to allow tests to pass, but this should be provided by
             // tests since it will be required by all aspects in the future. For example, the ActionListExecutor
@@ -24,7 +23,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Options = options ?? throw new ArgumentNullException(nameof(options));
             Name = name ?? throw new ArgumentNullException(nameof(name));
+            Clock = clock ?? RealSystemClock.Instance;
+            ThrottledCallback = throttledCallback;
         }
+
+        public ISystemClock Clock { get; }
 
         public IEndpointInfo EndpointInfo { get; }
 
@@ -33,5 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public CollectionRuleOptions Options { get; }
 
         public string Name { get; }
+
+        public Action ThrottledCallback { get; }
     }
 }

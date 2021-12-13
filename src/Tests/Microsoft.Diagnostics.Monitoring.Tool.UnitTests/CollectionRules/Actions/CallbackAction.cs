@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using System;
 using System.Collections.Generic;
@@ -51,6 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
 
     internal sealed class CallbackActionService
     {
+        private readonly ISystemClock _clock;
         private readonly List<CompletionEntry> _entries = new();
         private readonly SemaphoreSlim _entriesSemaphore = new(1);
         private readonly List<DateTime> _executionTimestamps = new();
@@ -58,9 +61,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
 
         private int _nextId = 1;
 
-        public CallbackActionService(ITestOutputHelper outputHelper)
+        public CallbackActionService(ITestOutputHelper outputHelper, ISystemClock clock = null)
         {
             _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
+            _clock = clock ?? RealSystemClock.Instance;
         }
 
         public async Task NotifyListeners(CancellationToken token)
@@ -70,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             {
                 lock (_executionTimestamps)
                 {
-                    _executionTimestamps.Add(DateTime.Now);
+                    _executionTimestamps.Add(_clock.UtcNow.UtcDateTime);
                 }
                 
                 _outputHelper.WriteLine("[Callback] Completing {0} source(s).", _entries.Count);
