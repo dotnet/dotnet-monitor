@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 UserConfigSettingsDirectoryOverrideEnvironmentVariable,
                 Path.Combine(UserConfigDirectoryPath, SettingsFileName));
 
-        private static ConfigurationTestingMode TestingMode = (ConfigurationTestingMode)Enum.Parse(typeof(ConfigurationTestingMode), GetEnvironmentOverrideOrValue(
+        private static readonly ConfigurationTestingMode TestingMode = (ConfigurationTestingMode)Enum.Parse(typeof(ConfigurationTestingMode), GetEnvironmentOverrideOrValue(
                 TestingModeEnvironmentVariable,
                 ConfigurationTestingMode.None.ToString()));
 
