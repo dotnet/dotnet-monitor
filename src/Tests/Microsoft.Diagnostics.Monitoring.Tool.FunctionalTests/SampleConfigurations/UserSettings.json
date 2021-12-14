@@ -1,17 +1,19 @@
 {
-  "urls": "https://localhost:33333",
+  "urls": "https://localhost:44444",
   "GlobalCounter": {
-    "IntervalSeconds": 1
+    "IntervalSeconds": 2
   },
   "Metrics": {
-    "Endpoints": "http://localhost:55555",
-    "IncludeDefaultProviders": "False",
-    "MetricCount": "2",
+    "Enabled": "True",
+    "Endpoints": "http://localhost:52325",
+    "IncludeDefaultProviders": "True",
+    "MetricCount": "10",
     "Providers": [
       {
         "ProviderName": "Microsoft-AspNetCore-Server-Kestrel",
         "CounterNames": [
-          "connections-per-second"
+          "connections-per-second",
+          "total-connections"
         ]
       }
     ]
@@ -25,67 +27,49 @@
   "DefaultProcess": {
     "Filters": [
       {
-        "Key": "ProcessName",
-        "Value": "MyProcess"
+        "Key": "ProcessID",
+        "Value": "12345"
       }
     ]
   },
   "Egress": {
-    "AzureBlobStorage": {
-      "monitorBlob": {
-        "accountUri": "https://exampleaccount.blob.core.windows.net",
-        "containerName": "dotnet-monitor",
-        "blobPrefix": "artifacts",
-        "accountKeyName": "MonitorBlobAccountKey"
+    "FileSystem": {
+      "artifacts": {
+        "directoryPath": "/artifacts"
       }
-    },
-    "Properties": {
-      "MonitorBlobAccountKey": "accountKey"
     }
   },
   "Logging": {
-    "Logging": {
-      "LogLevel": {
-        "Default": "Information",
-        "Microsoft": "Warning",
-        "Microsoft.Hosting.Lifetime": "Information"
-      }
+    "CaptureScopes": true,
+    "Console": {
+      "FormatterOptions": {
+        "ColorBehavior": "Default"
+      },
+      "LogToStandardErrorThreshold": "Error"
     }
   },
   "CollectionRules": {
-    "AspnetStatus": {
-      "Filters": [
-        {
-          "Key": "ProcessName",
-          "Value": "dotnet",
-          "MatchType": "Exact"
-        }
-      ],
+    "LargeGCHeap": {
       "Trigger": {
-        "Type": "AspNetResponseStatus",
+        "Type": "EventCounter",
         "Settings": {
-          "ResponseCount": 1,
-          "StatusCodes": [
-            "200-202"
-          ]
+          "ProviderName": "System.Runtime",
+          "CounterName": "gc-heap-size",
+          "GreaterThan": 10
         }
       },
       "Actions": [
         {
-          "Name": "MyDump",
-          "Type": "CollectDump",
+          "Type": "CollectGCDump",
           "Settings": {
-            "Egress": "artifacts",
-            "Type": "Triage"
-          },
-          "WaitForCompletion": true
-        },
-        {
-          "Type": "Execute",
-          "Settings": {
-            "Path": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe",
-            "Arguments": "\"$(Actions.MyDump.EgressPath)\""
+            "Egress": "artifacts"
           }
+        }
+      ],
+      "Filters": [
+        {
+          "Key": "ProcessName",
+          "Value": "FirstWebApp"
         }
       ],
       "Limits": {
