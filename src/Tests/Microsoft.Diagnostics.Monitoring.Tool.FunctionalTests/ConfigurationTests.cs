@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System.Collections.Generic;
@@ -14,11 +13,11 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
-    [Collection(DefaultCollectionFixture.Name)]
     public class ConfigurationTests
     {
         private readonly ITestOutputHelper _outputHelper;
 
+        // This needs to be updated and kept in order for any future configuration sections
         private readonly List<string> orderedConfigurationKeys = new()
         {
             "urls",
@@ -52,33 +51,33 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             CompareOutput(toolRunner._configurationString, expectedConfiguration);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
         /// <summary>
         /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
         /// assemble properly when combined. NOTE: The UserSettings.json file must follow what's included in the
         /// other json files; thus, if one of them is updated, UserSettings.json should also be updated to reflect the change.
         /// </summary>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         public async Task FullConfigurationTest(bool redact)
         {
-            List<Dictionary<string, string>> dicts = new();
+            List<Dictionary<string, string>> configurations = new();
 
             // NOTE: This should include each category that's we're testing -> if more are added, they should be added here as well.
-            dicts.Add(metricsExpected);
-            dicts.Add(loggingExpected);
-            dicts.Add(defaultProcessExpected);
-            dicts.Add(diagnosticPortExpected);
-            dicts.Add(redact ? egressRedactedExpected : egressFullExpected);
-            dicts.Add(storageExpected);
-            dicts.Add(urlsExpected);
-            dicts.Add(redact ? authenticationRedactedExpected : authenticationFullExpected);
-            dicts.Add(collectionRulesExpected);
+            configurations.Add(metricsExpected);
+            configurations.Add(loggingExpected);
+            configurations.Add(defaultProcessExpected);
+            configurations.Add(diagnosticPortExpected);
+            configurations.Add(redact ? egressRedactedExpected : egressFullExpected);
+            configurations.Add(storageExpected);
+            configurations.Add(urlsExpected);
+            configurations.Add(redact ? authenticationRedactedExpected : authenticationFullExpected);
+            configurations.Add(collectionRulesExpected);
 
-            Dictionary<string, string> fullConfiguration = dicts.SelectMany(x => x).ToDictionary(x => x.Key, y => y.Value);
+            Dictionary<string, string> fullConfiguration = configurations.SelectMany(x => x).ToDictionary(x => x.Key, y => y.Value);
 
             string expectedConfiguration = ConstructExpectedOutput(fullConfiguration);
-            await RunConfigurationTest(redact, "UserSettings.json", ConfigurationTestingMode.CollectionRules, expectedConfiguration);
+            await RunConfigurationTest(redact, "UserSettings.json", ConfigurationTestingMode.All, expectedConfiguration);
         }
 
         [Theory]
@@ -164,10 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private void CompareOutput(string actual, string expected)
         {
-            string expectedCleaned = CleanOutput(expected);
-            string actualCleaned = CleanOutput(actual);
-
-            Assert.Equal(expectedCleaned, actualCleaned);
+            Assert.Equal(CleanOutput(expected), CleanOutput(actual));
         }
 
         private string ConstructExpectedOutput(Dictionary<string, string> categoryMapping)
@@ -193,7 +189,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private string CleanOutput(string rawOutput)
         {
-            return rawOutput.Replace(" ", "").Replace("\n", "").Replace("\r", "");
+            return string.Concat(rawOutput.Where(c => !char.IsWhiteSpace(c)));
         }
 
         private Dictionary<string, string> metricsExpected = new()
