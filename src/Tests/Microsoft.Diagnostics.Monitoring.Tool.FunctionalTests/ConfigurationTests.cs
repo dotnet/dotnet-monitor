@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await toolRunner.StartAsync();
 
-            CompareOutput(toolRunner._configurationString, expectedConfiguration);
+            CompareOutput(toolRunner.ConfigurationString, expectedConfiguration);
         }
 
         /// <summary>

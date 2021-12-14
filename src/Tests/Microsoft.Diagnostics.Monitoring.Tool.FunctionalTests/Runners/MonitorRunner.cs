@@ -25,8 +25,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         protected readonly ITestOutputHelper _outputHelper;
 
-        protected bool _useSettingsConfig = false;
-
         private readonly DotNetRunner _runner = new();
 
         private readonly LoggingRunnerAdapter _adapter;
@@ -144,7 +142,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _runner.EntrypointAssemblyPath = DotNetMonitorPath;
             _runner.Arguments = string.Join(" ", argsList);
 
-            if (!_useSettingsConfig)
+            if (TestingMode == ConfigurationTestingMode.None)
             {
                 // Disable diagnostics on tool
                 _adapter.Environment.Add("COMPlus_EnableDiagnostics", "0");

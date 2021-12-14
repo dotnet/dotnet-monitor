@@ -22,11 +22,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private bool _isDisposed;
 
-        public string _configurationString = "";
+        public string ConfigurationString { get; set; }
 
         public string UserFileName { get; set; }
-
-        public string SharedFileName { get; set; }
 
         /// <summary>
         /// Determines whether or not certain information is redacted from the displayed configuration.
@@ -71,19 +69,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             UserSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations" , UserFileName);
 
-            _useSettingsConfig = true;
-
             using IDisposable _ = token.Register(() => CancelCompletionSources(token));
 
             await base.StartAsync(command, argsList.ToArray(), token);
 
             Task<int> runnerExitTask = RunnerExitedTask;
-            Task endingTask = await Task.WhenAny(_readySource.Task, runnerExitTask);
+            await Task.WhenAny(_readySource.Task, runnerExitTask);
         }
 
         protected override void StandardOutputCallback(string line)
         {
-            _configurationString += line;
+            ConfigurationString += line;
         }
 
         private void CancelCompletionSources(CancellationToken token)
