@@ -119,14 +119,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 options =>
                 {
                     options.CreateCollectionRule(TestRuleName)
-                        .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions)
+                        .SetEventCounterTrigger(options =>
+                        {
+                            // cpu usage greater that 5% for 2 seconds
+                            options.ProviderName = "System.Runtime";
+                            options.CounterName = "cpu-usage";
+                            options.GreaterThan = 5;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
+                        })
                         .AddAction(CallbackAction.ActionName);
-
-                    // cpu usage greater that 5% for 2 seconds
-                    eventCounterOptions.ProviderName = "System.Runtime";
-                    eventCounterOptions.CounterName = "cpu-usage";
-                    eventCounterOptions.GreaterThan = 5;
-                    eventCounterOptions.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                 },
                 async (runner, pipeline, startedTask) =>
                 {
