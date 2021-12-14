@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 UserConfigSettingsDirectoryOverrideEnvironmentVariable,
                 Path.Combine(UserConfigDirectoryPath, SettingsFileName));
 
-        private static ConfigurationTestingMode testingMode = (ConfigurationTestingMode)Enum.Parse(typeof(ConfigurationTestingMode), GetEnvironmentOverrideOrValue(
+        private static ConfigurationTestingMode TestingMode = (ConfigurationTestingMode)Enum.Parse(typeof(ConfigurationTestingMode), GetEnvironmentOverrideOrValue(
                 TestingModeEnvironmentVariable,
                 ConfigurationTestingMode.None.ToString()));
 
@@ -161,7 +161,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     //Note these are in precedence order.
 
-                    if (testingMode != ConfigurationTestingMode.None)
+                    if (TestingMode != ConfigurationTestingMode.None)
                     {
                         while (builder.Sources.Count > 0)
                         {
@@ -169,40 +169,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                     }
 
-                    if (testingMode == ConfigurationTestingMode.None
-                        || testingMode == ConfigurationTestingMode.All)
+                    if (TestingMode == ConfigurationTestingMode.None)
                     {
                         ConfigureEndpointInfoSource(builder, diagnosticPort);
-                    }
 
-                    if (testingMode == ConfigurationTestingMode.None
-                        || testingMode == ConfigurationTestingMode.All
-                        || testingMode == ConfigurationTestingMode.Metrics)
-                    {
                         ConfigureMetricsEndpoint(builder, metrics, metricUrls);
                         ConfigureGlobalMetrics(builder);
-                    }
 
-                    if (testingMode == ConfigurationTestingMode.None
-                        || testingMode == ConfigurationTestingMode.All
-                        || testingMode == ConfigurationTestingMode.Storage)
-                    {
                         builder.ConfigureStorageDefaults();
-                    }
 
-                    if (testingMode == ConfigurationTestingMode.None
-                        || testingMode == ConfigurationTestingMode.All
-                        || testingMode == ConfigurationTestingMode.URLs)
-                    {
                         builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
                     }
 
                     builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
                     builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
 
-                    // FIX
-                    if (testingMode == ConfigurationTestingMode.None
-                        || testingMode == ConfigurationTestingMode.All)
+                    if (TestingMode == ConfigurationTestingMode.None)
                     {
                         //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
                         //KeyPerFile provider uses a file system watcher to trigger changes.

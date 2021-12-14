@@ -222,10 +222,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             { "Egress",
                 @"{
+                  ""AzureBlobStorage"": {
+                    ""monitorBlob"": {
+                      ""accountKeyName"": ""MonitorBlobAccountKey"",
+                      ""accountUri"": ""https://exampleaccount.blob.core.windows.net"",
+                      ""blobPrefix"": ""artifacts"",
+                      ""containerName"": ""dotnet-monitor""
+                    }
+                  },
                   ""FileSystem"": {
                     ""artifacts"": {
                       ""directoryPath"": ""/artifacts""
                     }
+                  },
+                  ""Properties"": {
+                    ""MonitorBlobAccountKey"": ""accountKey""
                   }
                 }"
             }
@@ -235,11 +246,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             { "Egress",
                 @"{
-                  ""Properties"": "":NOT PRESENT:"",
-                  ""AzureBlobStorage"": "":NOT PRESENT:"",
+                  ""Properties"": {
+                    ""MonitorBlobAccountKey"": "":REDACTED:""
+                  },
+                  ""AzureBlobStorage"": {
+                    ""monitorBlob"": {
+                      ""AccountUri"": ""https://exampleaccount.blob.core.windows.net"",
+                      ""BlobPrefix"": ""artifacts"",
+                      ""ContainerName"": ""dotnet -monitor"",
+                      ""CopyBufferSize"": "":NOT PRESENT:"",
+                      ""SharedAccessSignature"": "":NOT PRESENT:"",
+                      ""AccountKey"": "":NOT PRESENT:"",
+                      ""SharedAccessSignatureName"": "":NOT PRESENT:"",
+                      ""AccountKeyName"": ""MonitorBlobAccountKey""
+                    }
+                  },
                   ""FileSystem"": {
                     ""artifacts"": {
-                      ""DirectoryPath"": ""/artifacts"",
+                      ""DirectoryPath"": "" /artifacts"",
                       ""IntermediateDirectoryPath"": "":NOT PRESENT:"",
                       ""CopyBufferSize"": "":NOT PRESENT:""
                     }
