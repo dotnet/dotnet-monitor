@@ -200,11 +200,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return SetTrigger(options, KnownCollectionRuleTriggers.Startup);
         }
 
-        public static CollectionRuleOptions SetTrigger(this CollectionRuleOptions options, string type)
-        {
-            return options.SetTrigger(type);
-        }
-
         public static CollectionRuleOptions SetTrigger(this CollectionRuleOptions options, string type, Action<CollectionRuleTriggerOptions> callback = null)
         {
             CollectionRuleTriggerOptions triggerOptions = new();
