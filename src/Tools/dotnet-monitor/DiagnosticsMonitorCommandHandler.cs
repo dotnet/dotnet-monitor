@@ -47,11 +47,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string UserConfigSettingsDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride";
 
-        // Allows tests to override the user configuration settings directory so there
-        // is better control and access of what is visible during test.
-        private const string SharedConfigSettingsDirectoryOverrideEnvironmentVariable
-            = "DotnetMonitorTestSettings__SharedConfigSettingsDirectoryOverride";
-
         private const string TestingModeEnvironmentVariable = "DotnetMonitorTestSettings__TestingMode";
 
         // Location where shared dotnet-monitor configuration is stored.
@@ -64,10 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), ProductFolderName) :
                     Path.Combine("/etc", ProductFolderName));
 
-        private static readonly string SharedSettingsPath =
-            GetEnvironmentOverrideOrValue(
-                SharedConfigSettingsDirectoryOverrideEnvironmentVariable,
-                Path.Combine(SharedConfigDirectoryPath, SettingsFileName));
+        private static readonly string SharedSettingsPath = Path.Combine(SharedConfigDirectoryPath, SettingsFileName);
 
         // Location where user's dotnet-monitor configuration is stored.
         // Windows: "%USERPROFILE%\.dotnet-monitor"
@@ -178,8 +170,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     }
 
                     if (testingMode == ConfigurationTestingMode.None
-                        || testingMode == ConfigurationTestingMode.All
-                        || testingMode == ConfigurationTestingMode.EndpointInfo)
+                        || testingMode == ConfigurationTestingMode.All)
                     {
                         ConfigureEndpointInfoSource(builder, diagnosticPort);
                     }
@@ -211,8 +202,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     // FIX
                     if (testingMode == ConfigurationTestingMode.None
-                        || testingMode == ConfigurationTestingMode.All
-                        || testingMode == ConfigurationTestingMode.Environment)
+                        || testingMode == ConfigurationTestingMode.All)
                     {
                         //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
                         //KeyPerFile provider uses a file system watcher to trigger changes.

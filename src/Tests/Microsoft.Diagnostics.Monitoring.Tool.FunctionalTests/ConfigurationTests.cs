@@ -46,7 +46,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             toolRunner.Redact = redact;
             toolRunner.UserFileName = userFileName;
             toolRunner.TestingMode = testingMode;
-            toolRunner.SharedFileName = "SharedSettings.json"; // Maybe handle this differently?
 
             await toolRunner.StartAsync();
 
@@ -197,7 +196,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return rawOutput.Replace(" ", "").Replace("\n", "").Replace("\r", "");
         }
 
-        Dictionary<string, string> metricsExpected = new()
+        private Dictionary<string, string> metricsExpected = new()
         {
             { "GlobalCounter",
                 @"{
@@ -223,7 +222,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         };
 
-        Dictionary<string, string> egressFullExpected = new()
+        private Dictionary<string, string> egressFullExpected = new()
         {
             { "Egress",
                 @"{
@@ -236,7 +235,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         };
 
-        Dictionary<string, string> egressRedactedExpected = new()
+        private Dictionary<string, string> egressRedactedExpected = new()
         {
             { "Egress",
                 @"{
@@ -253,7 +252,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         };
 
-        Dictionary<string, string> storageExpected = new()
+        private Dictionary<string, string> storageExpected = new()
         {
             { "Storage",
                 @"{
@@ -262,12 +261,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         };
 
-        Dictionary<string, string> urlsExpected = new()
+        private Dictionary<string, string> urlsExpected = new()
         {
             { "urls", "\"https://localhost:44444\"" }
         };
 
-        Dictionary<string, string> loggingExpected = new()
+        private Dictionary<string, string> loggingExpected = new()
         {
             { "Logging", 
                 @"{
@@ -282,7 +281,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         };
 
-        Dictionary<string, string> defaultProcessExpected = new()
+        private Dictionary<string, string> defaultProcessExpected = new()
         {
             { "DefaultProcess",
                 @"{
@@ -296,7 +295,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         };
 
-        Dictionary<string, string> diagnosticPortExpected = new()
+        private Dictionary<string, string> diagnosticPortExpected = new()
         {
             { "DiagnosticPort",
                 @"{
@@ -306,7 +305,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         };
 
-        Dictionary<string, string> collectionRulesExpected = new()
+        private Dictionary<string, string> collectionRulesExpected = new()
         {
             { "CollectionRules",
                 @"{
@@ -342,7 +341,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         };
 
-        Dictionary<string, string> authenticationFullExpected = new()
+        private Dictionary<string, string> authenticationFullExpected = new()
         {
             { "Authentication",
                 @"{
@@ -354,7 +353,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         };
 
-        Dictionary<string, string> authenticationRedactedExpected = new()
+        private Dictionary<string, string> authenticationRedactedExpected = new()
         {
             { "Authentication",
                 @"{

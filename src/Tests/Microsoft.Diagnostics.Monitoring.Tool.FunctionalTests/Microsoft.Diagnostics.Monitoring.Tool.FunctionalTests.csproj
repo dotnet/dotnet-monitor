@@ -105,9 +105,6 @@
     <None Update="SampleConfigurations\Authentication.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleConfigurations\SharedSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="SampleConfigurations\CollectionRules.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

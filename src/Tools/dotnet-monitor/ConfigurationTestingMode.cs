@@ -13,10 +13,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         DiagnosticPort,
         DefaultProcess,
         Egress,
-        EndpointInfo,
         Storage,
         URLs,
-        Environment,
         All,
         None
     }
