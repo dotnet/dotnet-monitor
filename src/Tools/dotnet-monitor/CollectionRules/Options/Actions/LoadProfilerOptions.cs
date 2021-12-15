@@ -10,7 +10,7 @@ using System.Diagnostics;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 {
     /// <summary>
-    /// Options for the <see cref="CollectionRules.Actions.LoadProfilerAction"/> action.
+    /// Options for the <see cref="CollectionRules.Actions.LoadProfilerActionFactory.LoadProfilerAction"/> action.
     /// </summary>
     [DebuggerDisplay("LoadProfiler")]
     internal sealed class LoadProfilerOptions
@@ -24,7 +24,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoadProfilerOptions_Clsid))]
+        [Required]
+#if !UNITTEST && !SCHEMAGEN
         [RequiredGuid]
+#endif
         public Guid Clsid { get; set; }
     }
 }

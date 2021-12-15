@@ -62,8 +62,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 {
                     DiagnosticsClient client = new DiagnosticsClient(_endpointInfo.Endpoint);
 
-                    _logger.LoadingProfiler(_options.ProfilerGuid, _options.Path, _endpointInfo.ProcessId);
-                    await client.SetStartupProfilerAsync(_options.ProfilerGuid, _options.Path, token);
+                    _logger.LoadingProfiler(_options.Clsid, _options.Path, _endpointInfo.ProcessId);
+                    await client.SetStartupProfilerAsync(_options.Clsid, _options.Path, token);
 
                     if (!startCompletionSource.TrySetResult(null))
                     {
