@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
-    internal sealed partial class LoadProfilerActionFactory :
+    internal sealed class LoadProfilerActionFactory :
         ICollectionRuleActionFactory<LoadProfilerOptions>
     {
         private readonly IServiceProvider _serviceProvider;
