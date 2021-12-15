@@ -64,6 +64,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ActionSettingsTokenizationNotSupported = 51,
         EndpointTimeout = 52,
         LoadingProfiler = 53,
+        SetEnvironmentVariable = 54,
+        GetEnvironmentVariable = 55,
     }
 
     internal static class LoggingEventIdsExtensions

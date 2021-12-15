@@ -521,6 +521,13 @@
   <data name="LogFormatString_EndpointTimeout" xml:space="preserve">
     <value>Unexpected timeout from process {processId}. Process will no longer be monitored.</value>
   </data>
+  <data name="LogFormatString_GetEnvironmentVariable" xml:space="preserve">
+    <value>Getting the environment variable {variableName} from process {processId}.</value>
+    <comment>Gets the format string that is printed in the 55:GetEnvironmentVariable event.
+2 Format parameterts:
+1. variableName: The name of the environment variable being read
+2. processId: The id of the process to which the variable is being read</comment>
+  </data>
   <data name="LogFormatString_InsecureAutheticationConfiguration" xml:space="preserve">
     <value>WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.</value>
     <comment>Gets the format string that is printed in the 14:InsecureAutheticationConfiguration event.
@@ -570,6 +577,13 @@
     <value>The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes)</value>
     <comment>Gets the format string that is printed in the 19:RunningElevated event.
 0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_SetEnvironmentVariable" xml:space="preserve">
+    <value>Setting the environment variable {variableName} in process {processId}.</value>
+    <comment>Gets the format string that is printed in the 54:SetEnvironmentVariable event.
+2 Format parameterts:
+1. variableName: The name of the environment variable being set
+2. processId: The id of the process to which the variable is being set</comment>
   </data>
   <data name="LogFormatString_UnableToListenToAddress" xml:space="preserve">
     <value>Unable to listen to {url}. Dotnet-monitor functionality will be limited.</value>

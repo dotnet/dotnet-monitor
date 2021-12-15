@@ -168,6 +168,35 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 });
         }
 
+        public static CollectionRuleOptions AddSetEnvironmentVariableAction(this CollectionRuleOptions options, string name, string value = null)
+        {
+            return options.AddAction(
+                 KnownCollectionRuleActions.SetEnvironmentVariable,
+                 callback: actionOptions =>
+                 {
+                     SetEnvironmentVariableOptions setEnvOpts = new()
+                     {
+                         Name = name,
+                         Value = value,
+                     };
+                     actionOptions.Settings = setEnvOpts;
+                 });
+        }
+
+        public static CollectionRuleOptions AddGetEnvironmentVariableAction(this CollectionRuleOptions options, string name)
+        {
+            return options.AddAction(
+                 KnownCollectionRuleActions.GetEnvironmentVariable,
+                 callback: actionOptions =>
+                 {
+                     GetEnvironmentVariableOptions getEnvOpts = new()
+                     {
+                         Name = name,
+                     };
+                     actionOptions.Settings = getEnvOpts;
+                 });
+        }
+
         public static CollectionRuleOptions SetActionLimits(this CollectionRuleOptions options, int? count = null, TimeSpan? slidingWindowDuration = null)
         {
             if (null == options.Limits)
@@ -339,6 +368,26 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 
             Assert.Equal(expectedPath, opts.Path);
             Assert.Equal(expectecClsid, opts.Clsid);
+
+            return opts;
+        }
+
+        public static SetEnvironmentVariableOptions VerifySetEnvironmentVariableAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedName, string expectedValue)
+        {
+            SetEnvironmentVariableOptions opts = ruleOptions.VerifyAction<SetEnvironmentVariableOptions>(
+                actionIndex, KnownCollectionRuleActions.SetEnvironmentVariable);
+
+            Assert.Equal(expectedName, opts.Name);
+            Assert.Equal(expectedValue, opts.Value);
+
+            return opts;
+        }
+        public static GetEnvironmentVariableOptions VerifyGetEnvironmentVariableAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedName)
+        {
+            GetEnvironmentVariableOptions opts = ruleOptions.VerifyAction<GetEnvironmentVariableOptions>(
+                actionIndex, KnownCollectionRuleActions.GetEnvironmentVariable);
+
+            Assert.Equal(expectedName, opts.Name);
 
             return opts;
         }

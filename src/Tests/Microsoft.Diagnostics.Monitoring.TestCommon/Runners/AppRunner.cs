@@ -34,6 +34,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private TaskCompletionSource<object> _currentCommandSource;
 
+        private Dictionary<string, TaskCompletionSource<string>> _waitingForEnvironmentVariables;
+
         private bool _isDiposed;
 
         /// <summary>
@@ -75,6 +77,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 tfm);
 
             _runner.TargetFramework = tfm;
+
+            _waitingForEnvironmentVariables = new Dictionary<string, TaskCompletionSource<string>>();
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
@@ -168,10 +172,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         {
             Assert.Null(_currentCommandSource);
             _currentCommandSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+
             _runner.StandardInput.WriteLine(command);
 
             await _currentCommandSource.WithCancellation(token).ConfigureAwait(false);
-
             _currentCommandSource = null;
         }
 
@@ -182,9 +186,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private void HandleProgramEvent(ConsoleLogEvent logEvent)
         {
-            switch (logEvent.EventId)
+            switch ((TestAppLogEventIds)logEvent.EventId)
             {
-                case 1: // ScenarioState
+                case TestAppLogEventIds.ScenarioState:
                     Assert.True(logEvent.State.TryGetValue("state", out TestAppScenarios.SenarioState state));
                     switch (state)
                     {
@@ -193,9 +197,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                             break;
                     }
                     break;
-                case 2: // ReceivedCommand
+                case TestAppLogEventIds.ReceivedCommand:
                     Assert.NotNull(_currentCommandSource);
                     Assert.True(logEvent.State.TryGetValue("expected", out bool expected));
+                    Assert.True(logEvent.State.TryGetValue("command", out _));
                     if (expected)
                     {
                         Assert.True(_currentCommandSource.TrySetResult(null));
@@ -205,7 +210,29 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                         Assert.True(_currentCommandSource.TrySetException(new InvalidOperationException(logEvent.Message)));
                     }
                     break;
+                case TestAppLogEventIds.EnvironmentVariable:
+                    Assert.True(logEvent.State.TryGetValue("name", out string name));
+                    Assert.True(logEvent.State.TryGetValue("value", out string value));
+                    if (_waitingForEnvironmentVariables.TryGetValue(name, out TaskCompletionSource<string> completedGettingVal))
+                    {
+                        _outputHelper.WriteLine($"Processing callback for envVar: {name}");
+                        Assert.True(completedGettingVal.TrySetResult(value));
+                        _waitingForEnvironmentVariables.Remove(name);
+                    }
+                    break;
             }
+        }
+
+        public async Task<string> WaitForEnvironmentVariable(string name, CancellationToken token)
+        {
+            if (_waitingForEnvironmentVariables.ContainsKey(name))
+            {
+                throw new InvalidOperationException();
+            }
+            _waitingForEnvironmentVariables.Add(name, new TaskCompletionSource<string>());
+            TaskCompletionSource<string> waiter = _waitingForEnvironmentVariables[name];
+            string result = await waiter.WithCancellation(token).ConfigureAwait(false);
+            return result;
         }
     }
 }

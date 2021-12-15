@@ -759,6 +759,104 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
 }
 ```
 
+#### `LoadProfiler` Action
+
+An action that loads an ICorProfilerCallback implementation into a target process as a startup profiler. This action must be used in a collection rule with a `Startup` trigger.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Path` | string | true | The path of the profiler library to be loaded. This is typically the same value that would be set as the CORECLR_PROFILER_PATH environment variable. | |
+| `Clsid` | Guid | true | The class identifier (or CLSID, typically a GUID) of the ICorProfilerCallback implementation. This is typically the same value that would be set as the CORECLR_PROFILER environment variable. | |
+
+##### Outputs
+
+No outputs
+
+##### Example
+
+Usage that loads one of the sample profilers from [`dotnet/runtime`: src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp](https://github.com/dotnet/runtime/blob/9ddd58a58d14a7bec5ed6eb777c6703c48aca15d/src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp).
+
+```json
+{
+  "Path": "Profilers\\Profiler.dll",
+  "Clsid": "55b9554d-6115-45a2-be1e-c80f7fa35369"
+}
+```
+
+#### `SetEnvironmentVariable` Action
+
+An action that sets an environment variable value in the target process. This action should be used in a collection rule with a `Startup` trigger.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Name` | string | true | The name of the environment variable to set. | |
+| `Value` | string | false | The value of the environment variable to set. | `null` |
+
+##### Outputs
+
+No outputs
+
+##### Example
+
+Usage that sets a parameter to the profiler you loaded. In this case, your profiler might be looking for an account key defined in `MyProfiler_ApiKey` which is used to communicate to some outside system.
+
+```json
+{
+  "Name": "MyProfiler_ApiKey",
+  "Value": "8fb138d2c44e4aea8545cc2df541ed4c"
+}
+```
+
+#### `GetEnvironmentVariable` Action
+
+An action that gets an environment varaible from the target process. Its value is set as the `Value` action output.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Name` | string | true | The name of the environment variable to get. | |
+
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `Value` | The value of the environment variable in the target process. |
+
+##### Example
+
+Usage that gets a token your app has access to and uses it to send a trace.
+
+***Note:*** the example below is of an entire action list to provide context, only the second json entry represents the `GetEnvironmentVariable` Action.
+
+```json
+[{
+    "Name": "A",
+    "Type": "CollectTrace",
+    "Settings": {
+        "Profile": "Cpu",
+        "Egress": "AzureBlob"
+    }
+},{
+    "Name": "GetEnvAction",
+    "Type": "GetEnvironmentVariable",
+    "Settings": {
+       "Name": "Azure_SASToken",
+    }
+},{
+    "Name": "B",
+    "Type": "Execute",
+    "Settings": {
+        "Path": "azcopy",
+        "Arguments": "$(Actions.A.EgressPath) https://Contoso.blob.core.windows.net/MyTraces/AwesomeAppTrace.nettrace?$(Actions.GetEnvAction.Value)"
+    }
+}]
+```
+
 ### Limits
 
 Collection rules have limits that constrain the lifetime of the rule and how often its actions can be run before being throttled.

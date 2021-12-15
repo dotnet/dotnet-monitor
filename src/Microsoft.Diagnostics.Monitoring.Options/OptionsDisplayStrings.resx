@@ -559,4 +559,16 @@
     <value>The class identifier (or CLSID, typically a GUID) of the ICorProfilerCallback implementation. This is typically the same value that would be set as the CORECLR_PROFILER environment variable.</value>
     <comment>The description provided for the ProfilerGuid parameter on LoadProfilerOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_SetEnvironmentVariableOptions_Name" xml:space="preserve">
+    <value>The name of the environment variable to set.</value>
+    <comment>The description provided for the Name parameter on SetEnvironmentVariableOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SetEnvironmentVariableOptions_Value" xml:space="preserve">
+    <value>The value of the environment variable to set.</value>
+    <comment>The description provided for the Value parameter on SetEnvironmentVariableOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_GetEnvironmentVariableOptions_Name" xml:space="preserve">
+    <value>The name of the environment variable to get.</value>
+    <comment>The description provided for the Name parameter on GetEnvironmentVariableOptions.</comment>
+  </data>
 </root>
