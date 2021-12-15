@@ -3,7 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
@@ -13,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the <see cref="CollectionRules.Actions.LoadProfilerAction"/> action.
     /// </summary>
     [DebuggerDisplay("LoadProfiler")]
-    internal sealed class LoadProfilerOptions
+    internal sealed partial class LoadProfilerOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -25,6 +28,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoadProfilerOptions_Clsid))]
         [RequiredGuid]
-        public Guid Clsid { get; set; }
+        public Guid Clsid { get; set; } = Guid.Empty;
     }
 }

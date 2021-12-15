@@ -283,8 +283,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EndpointTimeout);
 
-        private static readonly Action<ILogger, Guid, string, int, Exception> _loadingProfiler =
-            LoggerMessage.Define<Guid, string, int>(
+        private static readonly Action<ILogger, string, string, string, Exception> _loadingProfiler =
+            LoggerMessage.Define<string, string, string>(
                 eventId: new EventId(LoggingEventIds.LoadingProfiler, "LoadingProfiler"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_LoadingProfiler);
@@ -520,7 +520,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static void LoadingProfiler(this ILogger logger, Guid profilerGuid, string path, int processId)
         {
-            _loadingProfiler(logger, profilerGuid, path, processId, null);
+            _loadingProfiler(logger, profilerGuid.ToString(), path, processId.ToString(), null);
         }
     }
 }
