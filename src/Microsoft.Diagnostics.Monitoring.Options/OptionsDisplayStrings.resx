@@ -555,7 +555,7 @@
     <value>The path of the profiler library to be loaded. This is typically the same value that would be set as the CORECLR_PROFILER_PATH environment variable.</value>
     <comment>The description provided for the Path parameter on LoadProfilerOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_LoadProfilerOptions_ProfilerGuid" xml:space="preserve">
+  <data name="DisplayAttributeDescription_LoadProfilerOptions_Clsid" xml:space="preserve">
     <value>The class identifier (or CLSID, typically a GUID) of the ICorProfilerCallback implementation. This is typically the same value that would be set as the CORECLR_PROFILER environment variable.</value>
     <comment>The description provided for the ProfilerGuid parameter on LoadProfilerOptions.</comment>
   </data>
