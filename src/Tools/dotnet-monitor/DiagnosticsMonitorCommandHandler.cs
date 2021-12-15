@@ -43,6 +43,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string UserConfigDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
 
+        // Location where shared dotnet-monitor configuration is stored.
+        // Windows: Current Directory
+        // Other: /etc/dotnet-monitor
         private static readonly string SharedConfigDirectoryPath =
             GetEnvironmentOverrideOrValue(
                 SharedConfigDirectoryOverrideEnvironmentVariable,
@@ -143,6 +146,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
+                    Console.WriteLine("Curr Directory" + Directory.GetCurrentDirectory());
+
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
