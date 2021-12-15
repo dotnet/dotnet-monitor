@@ -223,6 +223,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The guid {0} is required to be set and can not be empty..
+        /// </summary>
+        internal static string ErrorMessage_GuidRequired {
+            get {
+                return ResourceManager.GetString("ErrorMessage_GuidRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid API key..
         /// </summary>
         internal static string ErrorMessage_InvalidApiKey {

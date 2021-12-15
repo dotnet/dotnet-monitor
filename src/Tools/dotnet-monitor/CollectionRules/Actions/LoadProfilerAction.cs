@@ -52,16 +52,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 _logger = logger ?? throw new ArgumentNullException(nameof(logger));
                 _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
                 _options = options ?? throw new ArgumentNullException(nameof(options));
-
-                if (string.IsNullOrEmpty(_options.Path))
-                {
-                    throw new ArgumentException(nameof(options.Path));
-                }
-
-                if (Guid.Empty == _options.ProfilerGuid)
-                {
-                    throw new ArgumentException(nameof(options.ProfilerGuid));
-                }
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(

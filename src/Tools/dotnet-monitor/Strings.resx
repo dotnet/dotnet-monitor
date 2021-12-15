@@ -206,6 +206,12 @@
     <value>A file could not be found at the provided path: {0}</value>
     <comment>{0} = Provided path to executable.</comment>
   </data>
+  <data name="ErrorMessage_GuidRequired" xml:space="preserve">
+    <value>The guid {0} is required to be set and can not be empty.</value>
+    <comment>Gets the format string for an empty guid.
+1 Format Parameter:
+0. parameterName: The name of the parameter that failed validation</comment>
+  </data>
   <data name="ErrorMessage_InvalidApiKey" xml:space="preserve">
     <value>Invalid API key.</value>
     <comment>Gets a string similar to "Invalid API key.".</comment>
