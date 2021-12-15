@@ -146,8 +146,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
-                    Console.WriteLine("Curr Directory" + Directory.GetCurrentDirectory());
-
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
