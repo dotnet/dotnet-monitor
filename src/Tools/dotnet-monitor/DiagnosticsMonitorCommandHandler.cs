@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             GetEnvironmentOverrideOrValue(
                 SharedConfigDirectoryOverrideEnvironmentVariable,
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), ProductFolderName):
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), ProductFolderName) :
                     Path.Combine("/etc", ProductFolderName));
 
         private static readonly string SharedSettingsPath = Path.Combine(SharedConfigDirectoryPath, SettingsFileName);
