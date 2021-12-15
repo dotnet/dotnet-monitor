@@ -163,7 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 callback: actionOptions =>
                 {
                     LoadProfilerOptions loadProfilerOptions = new();
-                    configureOptions(loadProfilerOptions);
+                    configureOptions?.Invoke(loadProfilerOptions);
                     actionOptions.Settings = loadProfilerOptions;
                 });
         }
