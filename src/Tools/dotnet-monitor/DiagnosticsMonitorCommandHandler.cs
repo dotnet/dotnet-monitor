@@ -30,7 +30,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
-        private const string AppSettingsFileName = "appsettings.json";
         private const string ProductFolderName = "dotnet-monitor";
 
         // Allows tests to override the shared configuration directory so there
@@ -44,16 +43,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
 
         // Location where shared dotnet-monitor configuration is stored.
-        // Windows: Current Directory
+        // Windows: "%ProgramData%\dotnet-monitor
         // Other: /etc/dotnet-monitor
         private static readonly string SharedConfigDirectoryPath =
             GetEnvironmentOverrideOrValue(
                 SharedConfigDirectoryOverrideEnvironmentVariable,
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    Directory.GetCurrentDirectory() :
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), ProductFolderName):
                     Path.Combine("/etc", ProductFolderName));
 
-        private static readonly string SharedSettingsPath = Path.Combine(SharedConfigDirectoryPath, AppSettingsFileName);
+        private static readonly string SharedSettingsPath = Path.Combine(SharedConfigDirectoryPath, SettingsFileName);
 
         // Location where user's dotnet-monitor configuration is stored.
         // Windows: "%USERPROFILE%\.dotnet-monitor"
@@ -144,7 +143,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             EgressOutputConfiguration egressConfiguration = new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress);
 
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
-                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
+                .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, diagnosticPort);
@@ -153,7 +152,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     builder.ConfigureStorageDefaults();
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
-
+                })
+                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
+                {
                     builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
                     builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
 
