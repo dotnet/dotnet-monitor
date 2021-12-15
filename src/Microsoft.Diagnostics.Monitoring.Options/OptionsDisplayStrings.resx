@@ -552,7 +552,7 @@
     <value>Determines the metrics interval for all dotnet-monitor scenarios. This includes prometheus metrics, live metrics, triggers, and traces.</value>
   </data>
   <data name="DisplayAttributeDescription_LoadProfilerOptions_Path" xml:space="preserve">
-    <value>Defines the path to the dll for the profiler to be loaded. This is typically the same value that would be passed in the environment variable CORECLR_PROFILER_PATH.</value>
+    <value>The path of the profiler library to be loaded. This is typically the same value that would be set as the CORECLR_PROFILER_PATH environment variable.</value>
     <comment>The description provided for the Path parameter on LoadProfilerOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_LoadProfilerOptions_ProfilerGuid" xml:space="preserve">
