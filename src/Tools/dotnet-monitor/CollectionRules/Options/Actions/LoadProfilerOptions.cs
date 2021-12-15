@@ -26,8 +26,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoadProfilerOptions_ProfilerGuid))]
-        [Required]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoadProfilerOptions_Clsid))]
+        [RequiredGuid]
         public Guid Clsid { get; set; } = Guid.Empty;
     }
 }
