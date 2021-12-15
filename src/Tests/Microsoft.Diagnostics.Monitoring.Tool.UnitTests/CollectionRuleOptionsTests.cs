@@ -719,31 +719,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public Task CollectionRuleOptions_LoadProfilerAction_MinimumOptions()
-        {
-            const string ExpectedTargetPath = @"C:\My\Path\To\CorProfiler.dll";
-            Guid ExpectedClsid = Guid.NewGuid();
-
-            return ValidateSuccess(
-                rootOptions =>
-                {
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetStartupTrigger()
-                        .AddLoadProfilerAction(
-                        configureOptions: opts =>
-                        {
-                            opts.Path = ExpectedTargetPath;
-                            opts.Clsid = ExpectedClsid;
-                        });
-                },
-                ruleOptions =>
-                {
-                    Assert.Single(ruleOptions.Actions);
-                    ruleOptions.VerifyLoadProfilerAction(0, ExpectedTargetPath, ExpectedClsid);
-                });
-        }
-
-        [Fact(Skip = "This Round-Trip test is the same as the CollectionRuleOptions_LoadProfilerAction_MinimumOptions until more properties are added/")]
         public Task CollectionRuleOptions_LoadProfilerAction_RoundTrip()
         {
             const string ExpectedTargetPath = @"C:\My\Path\To\CorProfiler.dll";
@@ -769,7 +744,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public async Task CollectionRuleOptions_LoadProfiler_PathPropertyValidation()
+        public async Task CollectionRuleOptions_LoadProfilerAction_PathPropertyValidation()
         {
             Guid ExpectedClsid = Guid.NewGuid();
             await ValidateFailure(
@@ -831,7 +806,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public Task CollectionRuleOptions_LoadProfiler_ClsidPropertyValidation()
+        public Task CollectionRuleOptions_LoadProfilerAction_ClsidPropertyValidation()
         {
             const string ExpectedTargetPath = @"C:\My\Path\To\CorProfiler.dll";
             return ValidateFailure(
