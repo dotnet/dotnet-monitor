@@ -30,6 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
+        private const string AppSettingsFileName = "appsettings.json";
         private const string ProductFolderName = "dotnet-monitor";
 
         // Allows tests to override the shared configuration directory so there
@@ -42,17 +43,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string UserConfigDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
 
-        // Location where shared dotnet-monitor configuration is stored.
-        // Windows: "%ProgramData%\dotnet-monitor
-        // Other: /etc/dotnet-monitor
         private static readonly string SharedConfigDirectoryPath =
             GetEnvironmentOverrideOrValue(
                 SharedConfigDirectoryOverrideEnvironmentVariable,
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), ProductFolderName) :
+                    Directory.GetCurrentDirectory() :
                     Path.Combine("/etc", ProductFolderName));
 
-        private static readonly string SharedSettingsPath = Path.Combine(SharedConfigDirectoryPath, SettingsFileName);
+        private static readonly string SharedSettingsPath = Path.Combine(SharedConfigDirectoryPath, AppSettingsFileName);
 
         // Location where user's dotnet-monitor configuration is stored.
         // Windows: "%USERPROFILE%\.dotnet-monitor"
