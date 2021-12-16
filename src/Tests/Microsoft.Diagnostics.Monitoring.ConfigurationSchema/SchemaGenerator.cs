@@ -119,6 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             AddCollectionRuleActionSchema<CollectLogsOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectLogs);
             AddCollectionRuleActionSchema<CollectTraceOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectTrace);
             AddCollectionRuleActionSchema<ExecuteOptions>(context, actionTypeSchema, KnownCollectionRuleActions.Execute);
+            AddCollectionRuleActionSchema<LoadProfilerOptions>(context, actionTypeSchema, KnownCollectionRuleActions.LoadProfiler);
 
             JsonSchema triggerTypeSchema = new JsonSchema();
             triggerTypeSchema.Type = JsonObjectType.String;
