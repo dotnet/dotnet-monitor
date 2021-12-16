@@ -4,7 +4,7 @@ In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is
 
 ## Dockerfile Source
 
-### Shippping Dockerfile
+### Shipping Dockerfile
 
 | Version | Platform | Architecture | Link |
 |---|---|---|---|
