@@ -24,9 +24,9 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>4822e3c3aa77eb82b2fb33c9321f923cf11ddde6</Sha>
     </Dependency>
-    <Dependency Name="System.Text.Json" Version="6.0.1">
+    <Dependency Name="System.Text.Json" Version="6.0.2">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>cfb9e77032ad77f703ff8cc69bdc778daa184363</Sha>
+      <Sha>7ac45bdf3c4cba9a48c5b557d6591348df10a603</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -56,15 +56,15 @@
     </Dependency>
     <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="6.0.2">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>cfb9e77032ad77f703ff8cc69bdc778daa184363</Sha>
+      <Sha>7ac45bdf3c4cba9a48c5b557d6591348df10a603</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.6.0" Version="6.0.2-servicing.21607.18">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>35ae49849d414a0f408829c4e47f0724aa7b3d82</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.2-servicing.21608.7">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.6.0" Version="6.0.2-servicing.21615.9">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>cfb9e77032ad77f703ff8cc69bdc778daa184363</Sha>
+      <Sha>7ac45bdf3c4cba9a48c5b557d6591348df10a603</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
