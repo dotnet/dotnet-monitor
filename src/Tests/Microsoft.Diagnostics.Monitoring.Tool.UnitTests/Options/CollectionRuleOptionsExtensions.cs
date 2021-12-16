@@ -156,6 +156,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleOptions AddLoadProfilerAction(this CollectionRuleOptions options, Action<LoadProfilerOptions> configureOptions)
+        {
+           return options.AddAction(
+                KnownCollectionRuleActions.LoadProfiler,
+                callback: actionOptions =>
+                {
+                    LoadProfilerOptions loadProfilerOptions = new();
+                    configureOptions?.Invoke(loadProfilerOptions);
+                    actionOptions.Settings = loadProfilerOptions;
+                });
+        }
+
         public static CollectionRuleOptions SetActionLimits(this CollectionRuleOptions options, int? count = null, TimeSpan? slidingWindowDuration = null)
         {
             if (null == options.Limits)
@@ -318,6 +330,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             Assert.Equal(expectedArguments, executeOptions.Arguments);
 
             return executeOptions;
+        }
+
+        public static LoadProfilerOptions VerifyLoadProfilerAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedPath, Guid expectecClsid)
+        {
+            LoadProfilerOptions opts = ruleOptions.VerifyAction<LoadProfilerOptions>(
+                actionIndex, KnownCollectionRuleActions.LoadProfiler);
+
+            Assert.Equal(expectedPath, opts.Path);
+            Assert.Equal(expectecClsid, opts.Clsid);
+
+            return opts;
         }
 
         private static TOptions VerifyAction<TOptions>(this CollectionRuleOptions ruleOptions, int actionIndex, string actionType)
