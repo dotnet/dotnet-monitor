@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
@@ -10,6 +11,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -72,6 +74,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     {
                         runner.Environment.Add(DumpTestUtilities.EnableElfDumpOnMacOS, "1");
                     }
+                },
+                configureTool: runner =>
+                {
+                    string dumpTempFolder = Path.Combine(runner.TempPath, "Dumps");
+
+                    // The dump temp folder should not exist in order to test that capturing dumps into the folder
+                    // will work since dotnet-monitor should ensure the folder is created before issuing the dump command.
+                    Assert.False(Directory.Exists(dumpTempFolder), "The dump temp folder should not exist.");
+
+                    runner.ConfigurationFromEnvironment.SetDumpTempFolder(dumpTempFolder);
                 });
         }
     }
