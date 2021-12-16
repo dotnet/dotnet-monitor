@@ -12,21 +12,19 @@ using System.CommandLine;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
     /// <summary>
     /// Used to generate Api Key for authentication. The first output is
     /// part of the Authorization header, and is the Base64 encoded key.
     /// The second output is a hex encoded string of the hash of the secret.
     /// </summary>
-    internal sealed class GenerateApiKeyCommandHandler
+    internal static class GenerateApiKeyCommandHandler
     {
-        public Task<int> GenerateApiKey(CancellationToken token, OutputFormat output, IConsole console)
+        public static Task<int> Invoke(CancellationToken token, OutputFormat output, IConsole console)
         {
             GeneratedJwtKey newJwt = GeneratedJwtKey.Create();
 
@@ -104,7 +102,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return Task.FromResult(0);
         }
 
-        private string GetFormatString(OutputFormat output)
+        private static string GetFormatString(OutputFormat output)
         {
             switch (output)
             {

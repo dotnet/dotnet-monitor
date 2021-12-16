@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Common\CommandExtensions.cs" Link="CommandExtensions.cs" />
+    <Compile Include="..\Common\CommandExtensions.cs" Link="Commands\CommandExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>
