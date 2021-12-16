@@ -72,8 +72,8 @@ spec:
           value: /diag/port
         - name: DOTNETMONITOR_Storage__DumpTempFolder
           value: /dumps
-        # DO NOT remove HTTPS from the URL for deployments in production; this is done for demonstration
-        # purposes only in this example. Please continue reading after this example for further details.
+        # ALWAYS use the HTTPS form of the URL for deployments in production; the removal of HTTPS is done for
+        # demonstration purposes only in this example. Please continue reading after this example for further details.
         - name: DOTNETMONITOR_Urls
           value: http://localhost:52323
         volumeMounts:
