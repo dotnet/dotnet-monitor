@@ -143,7 +143,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             EgressOutputConfiguration egressConfiguration = new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress);
 
             hostBuilder.UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
-                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
+                .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, diagnosticPort);
@@ -152,7 +152,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     builder.ConfigureStorageDefaults();
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
-
+                })
+                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
+                {
                     builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
                     builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
 
