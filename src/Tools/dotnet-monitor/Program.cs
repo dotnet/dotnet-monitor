@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     Delegate.CreateDelegate(
                         typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, bool, Task<int>>),
                         new DiagnosticsMonitorCommandHandler(),
-                        nameof(DiagnosticsMonitorCommandHandler.Start))),
+                        nameof(DiagnosticsMonitorCommandHandler.Collect))),
                 SharedOptions()
             };
 
