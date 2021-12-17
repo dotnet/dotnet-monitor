@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -174,7 +175,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 expectedOutput += "\"" + key + "\"" + ":";
 
-                expectedOutput += categoryMapping.ContainsKey(key) ? categoryMapping[key] : "\":NOT PRESENT:\"";
+                if (categoryMapping.ContainsKey(key))
+                {
+                    string expectedPath = Path.Combine(Directory.GetCurrentDirectory(), "ExpectedConfigurations", categoryMapping[key]);
+                    expectedOutput += File.ReadAllText(expectedPath);
+                }
+                else
+                {
+                    expectedOutput += "\":NOT PRESENT:\"";
+                }
 
                 if (!key.Equals(orderedConfigurationKeys.Last()))
                 {
@@ -194,195 +203,58 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private Dictionary<string, string> metricsExpected = new()
         {
-            { "GlobalCounter",
-                @"{
-                  ""IntervalSeconds"": ""2""
-                }"
-            },
-            { "Metrics",
-                @"{
-                  ""Enabled"": ""True"",
-                  ""Endpoints"": ""http://localhost:52325"",
-                  ""IncludeDefaultProviders"": ""True"",
-                  ""MetricCount"": ""10"",
-                  ""Providers"": [
-                    {
-                      ""CounterNames"": [
-                        ""connections-per-second"",
-                        ""total-connections""
-                      ],
-                      ""ProviderName"": ""Microsoft-AspNetCore-Server-Kestrel""
-                    }
-                  ]
-                }"
-            }
+            { "GlobalCounter", "GlobalCounter.json" },
+            { "Metrics", "Metrics.json" }
         };
 
         private Dictionary<string, string> egressFullExpected = new()
         {
-            { "Egress",
-                @"{
-                  ""AzureBlobStorage"": {
-                    ""monitorBlob"": {
-                      ""accountKeyName"": ""MonitorBlobAccountKey"",
-                      ""accountUri"": ""https://exampleaccount.blob.core.windows.net"",
-                      ""blobPrefix"": ""artifacts"",
-                      ""containerName"": ""dotnet-monitor""
-                    }
-                  },
-                  ""FileSystem"": {
-                    ""artifacts"": {
-                      ""directoryPath"": ""/artifacts""
-                    }
-                  },
-                  ""Properties"": {
-                    ""MonitorBlobAccountKey"": ""accountKey""
-                  }
-                }"
-            }
+            { "Egress", "EgressFull.json" }
         };
 
         private Dictionary<string, string> egressRedactedExpected = new()
         {
-            { "Egress",
-                @"{
-                  ""Properties"": {
-                    ""MonitorBlobAccountKey"": "":REDACTED:""
-                  },
-                  ""AzureBlobStorage"": {
-                    ""monitorBlob"": {
-                      ""AccountUri"": ""https://exampleaccount.blob.core.windows.net"",
-                      ""BlobPrefix"": ""artifacts"",
-                      ""ContainerName"": ""dotnet -monitor"",
-                      ""CopyBufferSize"": "":NOT PRESENT:"",
-                      ""SharedAccessSignature"": "":NOT PRESENT:"",
-                      ""AccountKey"": "":NOT PRESENT:"",
-                      ""SharedAccessSignatureName"": "":NOT PRESENT:"",
-                      ""AccountKeyName"": ""MonitorBlobAccountKey""
-                    }
-                  },
-                  ""FileSystem"": {
-                    ""artifacts"": {
-                      ""DirectoryPath"": "" /artifacts"",
-                      ""IntermediateDirectoryPath"": "":NOT PRESENT:"",
-                      ""CopyBufferSize"": "":NOT PRESENT:""
-                    }
-                  }
-                }"
-            }
+            { "Egress", "EgressRedacted.json" }
         };
 
         private Dictionary<string, string> storageExpected = new()
         {
-            { "Storage",
-                @"{
-                  ""DumpTempFolder"": ""/ephemeral-directory/""
-                }"
-            }
+            { "Storage", "Storage.json" }
         };
 
         private Dictionary<string, string> urlsExpected = new()
         {
-            { "urls", "\"https://localhost:44444\"" }
+            { "urls", "URLs.json" }
         };
 
         private Dictionary<string, string> loggingExpected = new()
         {
-            { "Logging", 
-                @"{
-                  ""CaptureScopes"": ""True"",
-                  ""Console"": {
-                    ""FormatterOptions"": {
-                      ""ColorBehavior"": ""Default""
-                    },
-                    ""LogToStandardErrorThreshold"": ""Error""
-                  }
-                }"
-            }
+            { "Logging", "Logging.json" }
         };
 
         private Dictionary<string, string> defaultProcessExpected = new()
         {
-            { "DefaultProcess",
-                @"{
-                  ""Filters"": [
-                    {
-                      ""Key"": ""ProcessID"",
-                      ""Value"": ""12345""
-                    }
-                  ]
-                }"
-            }
+            { "DefaultProcess", "DefaultProcess.json" }
         };
 
         private Dictionary<string, string> diagnosticPortExpected = new()
         {
-            { "DiagnosticPort",
-                @"{
-                  ""ConnectionMode"": ""Listen"",
-                  ""EndpointName"": ""\\\\.\\pipe\\dotnet-monitor-pipe""
-                }"
-            }
+            { "DiagnosticPort", "DiagnosticPort.json" }
         };
 
         private Dictionary<string, string> collectionRulesExpected = new()
         {
-            { "CollectionRules",
-                @"{
-                  ""LargeGCHeap"": {
-                    ""Actions"": [
-                      {
-                        ""Settings"": {
-                          ""Egress"": ""artifacts""
-                        },
-                        ""Type"": ""CollectGCDump""
-                      }
-                    ],
-                    ""Filters"": [
-                      {
-                        ""Key"": ""ProcessName"",
-                        ""Value"": ""FirstWebApp""
-                      }
-                    ],
-                    ""Limits"": {
-                      ""ActionCount"": ""2"",
-                      ""ActionCountSlidingWindowDuration"": ""1:00:00""
-                    },
-                    ""Trigger"": {
-                      ""Settings"": {
-                        ""CounterName"": ""gc-heap-size"",
-                        ""GreaterThan"": ""10"",
-                        ""ProviderName"": ""System.Runtime""
-                      },
-                      ""Type"": ""EventCounter""
-                    }
-                  }
-                }"
-            }
+            { "CollectionRules", "CollectionRules.json"}
         };
 
         private Dictionary<string, string> authenticationFullExpected = new()
         {
-            { "Authentication",
-                @"{
-                  ""MonitorApiKey"": {
-                    ""PublicKey"": ""eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"",
-                    ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff""
-                  }
-                }"
-            }
+            { "Authentication", "AuthenticationFull.json" }
         };
 
         private Dictionary<string, string> authenticationRedactedExpected = new()
         {
-            { "Authentication",
-                @"{
-                  ""MonitorApiKey"": {
-                    ""Subject"": ""ae5473b6-8dad-498d-b915-ffffffffffff"",
-                    ""PublicKey"": "":REDACTED:""
-                  }
-                }"
-            }
+            { "Authentication", "AuthenticationRedacted.json" }
         };
     }
 }
