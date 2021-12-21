@@ -36,9 +36,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndDumpTypes), MemberType = typeof(ActionTestsHelper))]
         public async Task CollectDumpAction_Success(TargetFrameworkMoniker tfm, DumpType? dumpType)
         {
-            // MacOS dumps inconsistently segfault the runtime on .NET 5: https://github.com/dotnet/dotnet-monitor/issues/174
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && tfm == TargetFrameworkMoniker.Net50)
+            
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
+                switch (tfm)
+                {
+                    case TargetFrameworkMoniker.NetCoreApp31:
+                        // MacOS dumps not supported for .NET Core 3.1 or lower.
+                        return;
+                    case TargetFrameworkMoniker.Net50:
+                        // MacOS dumps inconsistently segfault the runtime on .NET 5: https://github.com/dotnet/dotnet-monitor/issues/174
+                        return;
+                }
                 return;
             }
 
