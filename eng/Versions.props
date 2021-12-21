@@ -68,7 +68,7 @@
     <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
     <MicrosoftIdentityModelTokensVersion>6.11.1</MicrosoftIdentityModelTokensVersion>
     <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
-    <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
+    <SystemCommandLineVersion>2.0.0-beta2.21617.1</SystemCommandLineVersion>
     <SystemComponentModelAnnotationsVersion>5.0.0</SystemComponentModelAnnotationsVersion>
     <SystemIdentityModelTokensJwtVersion>6.11.1</SystemIdentityModelTokensJwtVersion>
     <SystemIOPipelinesVersion>4.5.1</SystemIOPipelinesVersion>
