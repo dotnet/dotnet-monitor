@@ -20,27 +20,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public Task WaitForCollectionRuleActionsCompletedAsync(string ruleName, CancellationToken token)
         {
-            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleActionsCompleted, ruleName, token);
+            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleActionsCompleted.Id(), ruleName, token);
         }
 
         public Task WaitForCollectionRuleCompleteAsync(string ruleName, CancellationToken token)
         {
-            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleCompleted, ruleName, token);
+            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleCompleted.Id(), ruleName, token);
         }
 
         public Task WaitForCollectionRuleUnmatchedFiltersAsync(string ruleName, CancellationToken token)
         {
-            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleUnmatchedFilters, ruleName, token);
+            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleUnmatchedFilters.Id(), ruleName, token);
         }
 
         public Task WaitForCollectionRuleStartedAsync(string ruleName, CancellationToken token)
         {
-            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleStarted, ruleName, token);
+            return WaitForCollectionRuleEventAsync(LoggingEventIds.CollectionRuleStarted.Id(), ruleName, token);
         }
 
         public Task WaitForCollectionRulesStoppedAsync(CancellationToken token)
         {
-            return WaitForEventAsync(LoggingEventIds.CollectionRulesStopped, token);
+            return WaitForEventAsync(LoggingEventIds.CollectionRulesStopped.Id(), token);
         }
 
         private async Task WaitForCollectionRuleEventAsync(int eventId, string ruleName, CancellationToken token)
@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             CollectionRuleKey eventKey = new(eventId, ruleName);
-            CollectionRuleKey failedKey = new(LoggingEventIds.CollectionRuleFailed, ruleName);
+            CollectionRuleKey failedKey = new(LoggingEventIds.CollectionRuleFailed.Id(), ruleName);
 
             AddCollectionRuleCallback(eventKey, tcs);
             AddCollectionRuleCallback(failedKey, tcs);
@@ -87,13 +87,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 CollectionRuleKey key = new(logEvent.EventId, ruleName);
                 switch (logEvent.EventId)
                 {
-                    case LoggingEventIds.CollectionRuleActionsCompleted:
-                    case LoggingEventIds.CollectionRuleCompleted:
-                    case LoggingEventIds.CollectionRuleUnmatchedFilters:
-                    case LoggingEventIds.CollectionRuleStarted:
+                    case (int)LoggingEventIds.CollectionRuleActionsCompleted:
+                    case (int)LoggingEventIds.CollectionRuleCompleted:
+                    case (int)LoggingEventIds.CollectionRuleUnmatchedFilters:
+                    case (int)LoggingEventIds.CollectionRuleStarted:
                         CompleteCollectionRuleCallbacks(key);
                         break;
-                    case LoggingEventIds.CollectionRuleFailed:
+                    case (int)LoggingEventIds.CollectionRuleFailed:
                         FailCollectionRuleCallbacks(key, logEvent.Exception);
                         break;
                 }
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             {
                 switch (logEvent.EventId)
                 {
-                    case LoggingEventIds.CollectionRulesStopped:
+                    case (int)LoggingEventIds.CollectionRulesStopped:
                         CompleteEventCallbacks(logEvent.EventId);
                         break;
                 }

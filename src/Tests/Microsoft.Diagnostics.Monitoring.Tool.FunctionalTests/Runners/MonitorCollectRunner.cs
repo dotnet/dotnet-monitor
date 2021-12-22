@@ -222,21 +222,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             switch (logEvent.EventId)
             {
-                case LoggingEventIds.BoundDefaultAddress:
+                case (int)LoggingEventIds.BoundDefaultAddress:
                     if (logEvent.State.TryGetValue("address", out string defaultAddress))
                     {
                         _outputHelper.WriteLine("Default Address: {0}", defaultAddress);
                         Assert.True(_defaultAddressSource.TrySetResult(defaultAddress));
                     }
                     break;
-                case LoggingEventIds.BoundMetricsAddress:
+                case (int)LoggingEventIds.BoundMetricsAddress:
                     if (logEvent.State.TryGetValue("address", out string metricsAddress))
                     {
                         _outputHelper.WriteLine("Metrics Address: {0}", metricsAddress);
                         Assert.True(_metricsAddressSource.TrySetResult(metricsAddress));
                     }
                     break;
-                case LoggingEventIds.LogTempApiKey:
+                case (int)LoggingEventIds.LogTempApiKey:
                     if (logEvent.State.TryGetValue("MonitorApiKey", out string monitorApiKey))
                     {
                         _outputHelper.WriteLine("MonitorApiKey: {0}", monitorApiKey);
@@ -250,7 +250,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             switch (logEvent.EventId)
             {
-                case LoggingEventIds.NotifyPrivateKey:
+                case (int)LoggingEventIds.NotifyPrivateKey:
                     if (logEvent.State.TryGetValue("fieldName", out string fieldName))
                     {
                         _outputHelper.WriteLine("Private Key data detected in field: {0}", fieldName);

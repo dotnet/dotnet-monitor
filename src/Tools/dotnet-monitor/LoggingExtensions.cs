@@ -15,277 +15,277 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private static readonly Action<ILogger, string, Exception> _egressProviderInvalidOptions =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.EgressProviderInvalidOptions, "EgressProviderInvalidOptions"),
+                eventId: LoggingEventIds.EgressProviderInvalidOptions.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_EgressProviderInvalidOptions);
 
         private static readonly Action<ILogger, int, Exception> _egressCopyActionStreamToEgressStream =
             LoggerMessage.Define<int>(
-                eventId: new EventId(LoggingEventIds.EgressCopyActionStreamToEgressStream, "EgressCopyActionStreamToEgressStream"),
+                eventId: LoggingEventIds.EgressCopyActionStreamToEgressStream.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EgressCopyActionStreamToEgressStream);
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderOptionsValidationFailure =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.EgressProviderOptionsValidationFailure, "EgressProviderOptionsValidationFailure"),
+                eventId: LoggingEventIds.EgressProviderOptionsValidationFailure.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_EgressProviderOptionsValidationError);
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.EgressProvideUnableToFindPropertyKey, "EgressProvideUnableToFindPropertyKey"),
+                eventId: LoggingEventIds.EgressProvideUnableToFindPropertyKey.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EgressProvideUnableToFindPropertyKey);
 
         private static readonly Action<ILogger, string, Exception> _egressProviderInvokeStreamAction =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.EgressProviderInvokeStreamAction, "EgressProviderInvokeStreamAction"),
+                eventId: LoggingEventIds.EgressProviderInvokeStreamAction.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EgressProviderInvokeStreamAction);
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderSavedStream =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.EgressProviderSavedStream, "EgressProviderSavedStream"),
+                eventId: LoggingEventIds.EgressProviderSavedStream.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EgressProviderSavedStream);
 
         private static readonly Action<ILogger, Exception> _noAuthentication =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.NoAuthentication, "NoAuthentication"),
+                eventId: LoggingEventIds.NoAuthentication.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_NoAuthentication);
 
         private static readonly Action<ILogger, Exception> _insecureAuthenticationConfiguration =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.InsecureAutheticationConfiguration, "InsecureAutheticationConfiguration"),
+                eventId: LoggingEventIds.InsecureAutheticationConfiguration.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_InsecureAutheticationConfiguration);
 
         private static readonly Action<ILogger, string, Exception> _unableToListenToAddress =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.UnableToListenToAddress, "UnableToListenToAddress"),
+                eventId: LoggingEventIds.UnableToListenToAddress.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_UnableToListenToAddress);
 
         private static readonly Action<ILogger, string, Exception> _boundDefaultAddress =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.BoundDefaultAddress, "BoundDefaultAddress"),
+                eventId: LoggingEventIds.BoundDefaultAddress.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_BoundDefaultAddress);
 
         private static readonly Action<ILogger, string, Exception> _boundMetricsAddress =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.BoundMetricsAddress, "BoundMetricsAddress"),
+                eventId: LoggingEventIds.BoundMetricsAddress.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_BoundMetricsAddress);
 
         private static readonly Action<ILogger, string, Exception> _optionsValidationFalure =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.OptionsValidationFailure, "OptionsValidationFailure"),
+                eventId: LoggingEventIds.OptionsValidationFailure.EventId(),
                 logLevel: LogLevel.Critical,
                 formatString: Strings.LogFormatString_OptionsValidationFailure);
 
         private static readonly Action<ILogger, Exception> _runningElevated =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.RunningElevated, "RunningElevated"),
+                eventId: LoggingEventIds.RunningElevated.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_RunningElevated);
 
         private static readonly Action<ILogger, Exception> _disabledNegotiateWhileElevated =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.DisabledNegotiateWhileElevated, "DisabledNegotiateWhileElevated"),
+                eventId: LoggingEventIds.DisabledNegotiateWhileElevated.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DisabledNegotiateWhileElevated);
 
         private static readonly Action<ILogger, string, string, Exception> _apiKeyValidationFailure =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.ApiKeyValidationFailure, "ApiKeyValidationFailure"),
+                eventId: LoggingEventIds.ApiKeyValidationFailure.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ApiKeyValidationFailure);
 
         private static readonly Action<ILogger, string, string, string, string, Exception> _logTempKey =
             LoggerMessage.Define<string, string, string, string>(
-                eventId: new EventId(LoggingEventIds.LogTempApiKey, "LogTempApiKey"),
+                eventId: LoggingEventIds.LogTempApiKey.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_LogTempApiKey);
 
         private static readonly Action<ILogger, string, string, string, Exception> _duplicateEgressProviderIgnored =
             LoggerMessage.Define<string, string, string>(
-                eventId: new EventId(LoggingEventIds.DuplicateEgressProviderIgnored, "DuplicateEgressProviderIgnored"),
+                eventId: LoggingEventIds.DuplicateEgressProviderIgnored.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DuplicateEgressProviderIgnored);
 
         private static readonly Action<ILogger, string, Exception> _apiKeyAuthenticationOptionsValidated =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.ApiKeyAuthenticationOptionsValidated, "ApiKeyAuthenticationOptionsValidated"),
+                eventId: LoggingEventIds.ApiKeyAuthenticationOptionsValidated.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ApiKeyAuthenticationOptionsValidated);
 
         private static readonly Action<ILogger, string, Exception> _notifyPrivateKey =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.NotifyPrivateKey, "NotifyPrivateKey"),
+                eventId: LoggingEventIds.NotifyPrivateKey.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_NotifyPrivateKey);
 
         private static readonly Action<ILogger, string, Exception> _duplicateCollectionRuleActionIgnored =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.DuplicateCollectionRuleActionIgnored, "DuplicateCollectionRuleActionIgnored"),
+                eventId: LoggingEventIds.DuplicateCollectionRuleActionIgnored.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DuplicateCollectionRuleActionIgnored);
 
         private static readonly Action<ILogger, string, Exception> _duplicateCollectionRuleTriggerIgnored =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.DuplicateCollectionRuleTriggerIgnored, "DuplicateCollectionRuleTriggerIgnored"),
+                eventId: LoggingEventIds.DuplicateCollectionRuleTriggerIgnored.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DuplicateCollectionRuleTriggerIgnored);
 
         private static readonly Action<ILogger, string, Exception> _collectionRuleStarted =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleStarted, "CollectionRuleStarted"),
+                eventId: LoggingEventIds.CollectionRuleStarted.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleStarted);
 
         private static readonly Action<ILogger, string, Exception> _collectionRuleFailed =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleFailed, "CollectionRuleFailed"),
+                eventId: LoggingEventIds.CollectionRuleFailed.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_CollectionRuleFailed);
 
         private static readonly Action<ILogger, string, Exception> _collectionRuleCompleted =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleCompleted, "CollectionRuleCompleted"),
+                eventId: LoggingEventIds.CollectionRuleCompleted.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleCompleted);
 
         private static readonly Action<ILogger, Exception> _collectionRulesStarted =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.CollectionRulesStarted, "CollectionRulesStarted"),
+                eventId: LoggingEventIds.CollectionRulesStarted.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRulesStarted);
 
         private static readonly Action<ILogger, string, string, Exception> _collectionRuleActionStarted =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleActionStarted, "CollectionRuleActionStarted"),
+                eventId: LoggingEventIds.CollectionRuleActionStarted.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleActionStarted);
 
         private static readonly Action<ILogger, string, string, Exception> _collectionRuleActionCompleted =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleActionCompleted, "CollectionRuleActionCompleted"),
+                eventId: LoggingEventIds.CollectionRuleActionCompleted.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleActionCompleted);
 
         private static readonly Action<ILogger, string, string, Exception> _collectionRuleTriggerStarted =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleTriggerStarted, "CollectionRuleTriggerStarted"),
+                eventId: LoggingEventIds.CollectionRuleTriggerStarted.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleTriggerStarted);
 
         private static readonly Action<ILogger, string, string, Exception> _collectionRuleTriggerCompleted =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleTriggerCompleted, "CollectionRuleTriggerCompleted"),
+                eventId: LoggingEventIds.CollectionRuleTriggerCompleted.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleTriggerCompleted);
 
         private static readonly Action<ILogger, string, Exception> _collectionRuleActionsThrottled =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleActionsThrottled, "CollectionRuleActionsThrottled"),
+                eventId: LoggingEventIds.CollectionRuleActionsThrottled.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_CollectionRuleActionsThrottled);
 
         private static readonly Action<ILogger, string, string, Exception> _collectionRuleActionFailed =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleActionFailed, "CollectionRuleActionFailed"),
+                eventId: LoggingEventIds.CollectionRuleActionFailed.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_CollectionRuleActionFailed);
 
         private static readonly Action<ILogger, string, Exception> _collectionRuleActionsCompleted =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleActionsCompleted, "CollectionRuleActionsCompleted"),
+                eventId: LoggingEventIds.CollectionRuleActionsCompleted.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleActionsCompleted);
 
         private static readonly Action<ILogger, Exception> _collectionRulesStarting =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.CollectionRulesStarting, "CollectionRulesStarting"),
+                eventId: LoggingEventIds.CollectionRulesStarting.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRulesStarting);
 
         private static readonly Action<ILogger, int, Exception> _diagnosticRequestCancelled =
             LoggerMessage.Define<int>(
-                eventId: new EventId(LoggingEventIds.DiagnosticRequestCancelled, "DiagnosticRequestCancelled"),
+                eventId: LoggingEventIds.DiagnosticRequestCancelled.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticRequestCancelled);
 
         private static readonly Action<ILogger, string, Exception> _collectionRuleUnmatchedFilters =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleUnmatchedFilters, "CollectionRuleUnmatchedFilters"),
+                eventId: LoggingEventIds.CollectionRuleUnmatchedFilters.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleUnmatchedFilters);
 
         private static readonly Action<ILogger, Exception> _collectionRuleConfigurationChanged =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.CollectionRuleConfigurationChanged, "CollectionRuleConfigurationChanged"),
+                eventId: LoggingEventIds.CollectionRuleConfigurationChanged.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleConfigurationChanged);
 
         private static readonly Action<ILogger, Exception> _collectionRulesStopping =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.CollectionRulesStopping, "CollectionRulesStopping"),
+                eventId: LoggingEventIds.CollectionRulesStopping.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRulesStopping);
 
         private static readonly Action<ILogger, Exception> _collectionRulesStopped =
             LoggerMessage.Define(
-                eventId: new EventId(LoggingEventIds.CollectionRulesStopped, "CollectionRulesStopped"),
+                eventId: LoggingEventIds.CollectionRulesStopped.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRulesStopped);
 
         private static readonly Action<ILogger, string, Exception> _collectionRuleCancelled =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.CollectionRuleCancelled, "CollectionRuleCancelled"),
+                eventId: LoggingEventIds.CollectionRuleCancelled.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_CollectionRuleCancelled);
 
         private static readonly Action<ILogger, int, Exception> _diagnosticRequestFailed =
             LoggerMessage.Define<int>(
-                eventId: new EventId(LoggingEventIds.DiagnosticRequestFailed, "DiagnosticRequestFailed"),
+                eventId: LoggingEventIds.DiagnosticRequestFailed.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_DiagnosticRequestFailed);
 
         private static readonly Action<ILogger, string, string, Exception> _invalidActionReferenceToken =
             LoggerMessage.Define<string, string>(
-                eventId: new EventId(LoggingEventIds.InvalidActionReferenceToken, "InvalidActionReferenceToken"),
+                eventId: LoggingEventIds.InvalidActionReferenceToken.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_InvalidToken);
 
         private static readonly Action<ILogger, string, Exception> _invalidActionReference =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.InvalidActionReference, "InvalidActionReference"),
+                eventId: LoggingEventIds.InvalidActionReference.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_InvalidActionReference);
 
         private static readonly Action<ILogger, string, Exception> _invalidActionResultReference =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.InvalidActionResultReference, "InvalidActionResultReference"),
+                eventId: LoggingEventIds.InvalidActionResultReference.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_InvalidActionResultReference);
 
         private static readonly Action<ILogger, string, Exception> _actionSettingsTokenizationNotSupported =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.ActionSettingsTokenizationNotSupported, "ActionSettingsTokenizationNotSupported"),
+                eventId: LoggingEventIds.ActionSettingsTokenizationNotSupported.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ActionSettingsTokenizationNotSupported);
 
         private static readonly Action<ILogger, string, Exception> _endpointTimeout =
             LoggerMessage.Define<string>(
-                eventId: new EventId(LoggingEventIds.EndpointTimeout, "EndpointTimeout"),
+                eventId: LoggingEventIds.EndpointTimeout.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EndpointTimeout);
 
         private static readonly Action<ILogger, Guid, string, int, Exception> _loadingProfiler =
             LoggerMessage.Define<Guid, string, int>(
-                eventId: new EventId(LoggingEventIds.LoadingProfiler, "LoadingProfiler"),
+                eventId: LoggingEventIds.LoadingProfiler.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_LoadingProfiler);
 
