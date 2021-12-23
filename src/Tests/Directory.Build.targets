@@ -1,0 +1,5 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.targets"/>
+
+  <Import Project="$(MSBuildThisFileDirectory)MultiTarget.targets" Condition="'$(TargetFramework)' == ''" />
+</Project>
