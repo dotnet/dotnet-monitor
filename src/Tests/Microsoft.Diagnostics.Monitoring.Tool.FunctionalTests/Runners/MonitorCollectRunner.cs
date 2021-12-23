@@ -220,23 +220,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private void HandleStartupEvent(ConsoleLogEvent logEvent)
         {
-            switch (logEvent.EventId)
+            switch ((LoggingEventIds)logEvent.EventId)
             {
-                case (int)LoggingEventIds.BoundDefaultAddress:
+                case LoggingEventIds.BoundDefaultAddress:
                     if (logEvent.State.TryGetValue("address", out string defaultAddress))
                     {
                         _outputHelper.WriteLine("Default Address: {0}", defaultAddress);
                         Assert.True(_defaultAddressSource.TrySetResult(defaultAddress));
                     }
                     break;
-                case (int)LoggingEventIds.BoundMetricsAddress:
+                case LoggingEventIds.BoundMetricsAddress:
                     if (logEvent.State.TryGetValue("address", out string metricsAddress))
                     {
                         _outputHelper.WriteLine("Metrics Address: {0}", metricsAddress);
                         Assert.True(_metricsAddressSource.TrySetResult(metricsAddress));
                     }
                     break;
-                case (int)LoggingEventIds.LogTempApiKey:
+                case LoggingEventIds.LogTempApiKey:
                     if (logEvent.State.TryGetValue("MonitorApiKey", out string monitorApiKey))
                     {
                         _outputHelper.WriteLine("MonitorApiKey: {0}", monitorApiKey);
@@ -248,9 +248,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private void HandleGenericLogEvent(ConsoleLogEvent logEvent)
         {
-            switch (logEvent.EventId)
+            switch ((LoggingEventIds)logEvent.EventId)
             {
-                case (int)LoggingEventIds.NotifyPrivateKey:
+                case LoggingEventIds.NotifyPrivateKey:
                     if (logEvent.State.TryGetValue("fieldName", out string fieldName))
                     {
                         _outputHelper.WriteLine("Private Key data detected in field: {0}", fieldName);

@@ -85,24 +85,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             if (logEvent.State.TryGetValue("ruleName", out string ruleName))
             {
                 CollectionRuleKey key = new(logEvent.EventId, ruleName);
-                switch (logEvent.EventId)
+                switch ((LoggingEventIds)logEvent.EventId)
                 {
-                    case (int)LoggingEventIds.CollectionRuleActionsCompleted:
-                    case (int)LoggingEventIds.CollectionRuleCompleted:
-                    case (int)LoggingEventIds.CollectionRuleUnmatchedFilters:
-                    case (int)LoggingEventIds.CollectionRuleStarted:
+                    case LoggingEventIds.CollectionRuleActionsCompleted:
+                    case LoggingEventIds.CollectionRuleCompleted:
+                    case LoggingEventIds.CollectionRuleUnmatchedFilters:
+                    case LoggingEventIds.CollectionRuleStarted:
                         CompleteCollectionRuleCallbacks(key);
                         break;
-                    case (int)LoggingEventIds.CollectionRuleFailed:
+                    case LoggingEventIds.CollectionRuleFailed:
                         FailCollectionRuleCallbacks(key, logEvent.Exception);
                         break;
                 }
             }
             else
             {
-                switch (logEvent.EventId)
+                switch ((LoggingEventIds)logEvent.EventId)
                 {
-                    case (int)LoggingEventIds.CollectionRulesStopped:
+                    case LoggingEventIds.CollectionRulesStopped:
                         CompleteEventCallbacks(logEvent.EventId);
                         break;
                 }
