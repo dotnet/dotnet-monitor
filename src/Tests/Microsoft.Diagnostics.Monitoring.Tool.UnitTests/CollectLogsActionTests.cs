@@ -203,14 +203,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectLogsAction(ActionTestsConstants.ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions)
+                    .AddCollectLogsAction(ActionTestsConstants.ExpectedEgressProvider, options =>
+                    {
+                        options.Duration = CommonTestTimeouts.LogsDuration;
+                        options.FilterSpecs = configuration.FilterSpecs;
+                        options.DefaultLevel = configuration.LogLevel;
+                        options.Format = logFormat;
+                        options.UseAppFilters = configuration.UseAppFilters;
+                    })
                     .SetStartupTrigger();
-
-                collectLogsOptions.Duration = CommonTestTimeouts.LogsDuration;
-                collectLogsOptions.FilterSpecs = configuration.FilterSpecs;
-                collectLogsOptions.DefaultLevel = configuration.LogLevel;
-                collectLogsOptions.Format = logFormat;
-                collectLogsOptions.UseAppFilters = configuration.UseAppFilters;
             }, async host =>
             {
                 CollectLogsOptions options = ActionTestsHelper.GetActionOptions<CollectLogsOptions>(host, DefaultRuleName);

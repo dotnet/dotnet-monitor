@@ -223,6 +223,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The guid {0} is required to be set and can not be empty..
+        /// </summary>
+        internal static string ErrorMessage_GuidRequired {
+            get {
+                return ResourceManager.GetString("ErrorMessage_GuidRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid API key..
         /// </summary>
         internal static string ErrorMessage_InvalidApiKey {
@@ -858,6 +867,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_InvalidToken {
             get {
                 return ResourceManager.GetString("LogFormatString_InvalidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading the startup profiler with id {profilerGuid} from {path} into process with id {processId}..
+        /// </summary>
+        internal static string LogFormatString_LoadingProfiler {
+            get {
+                return ResourceManager.GetString("LogFormatString_LoadingProfiler", resourceCulture);
             }
         }
         

@@ -63,9 +63,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
 
                 Assert.Equal(3, record.Events.Count);
-                Assert.Equal(LoggingEventIds.InvalidActionReferenceToken, record.Events[0].EventId.Id);
-                Assert.Equal(LoggingEventIds.InvalidActionReference, record.Events[1].EventId.Id);
-                Assert.Equal(LoggingEventIds.InvalidActionResultReference, record.Events[2].EventId.Id);
+                Assert.Equal(LoggingEventIds.InvalidActionReferenceToken.Id(), record.Events[0].EventId.Id);
+                Assert.Equal(LoggingEventIds.InvalidActionReference.Id(), record.Events[1].EventId.Id);
+                Assert.Equal(LoggingEventIds.InvalidActionResultReference.Id(), record.Events[2].EventId.Id);
 
             }, serviceCollection =>
             {
