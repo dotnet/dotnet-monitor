@@ -8,9 +8,9 @@ If you are using `dotnet monitor` as local development tool on Windows you have 
 
 ### Local configuration
 
-In order to efficiently debug a specific local process one of the possible options inclulde defining a default process. This will ensure `dotnet monitor` automatically collects artifacts and logs based on, for example, a specific process name.
+To monitor a specific local process you can use the settings file to define a default process. This ensures `dotnet monitor` automatically collects artifacts and logs based on a process criteria you have identified (e.g. process name, process id, etc.).
 
-Defining a default process on Windows requires define settings filee is in the following user path `%USERPROFILE%\.dotnet-monitor\settings.json`. In the following example `dotnet monitor` default process is configured to look for a process named __BuggyDemoCode__.
+Defining a default process on Windows requires creating a settings file in the user path (`%USERPROFILE%\.dotnet-monitor\settings.json`). In the following example the default process has a process name of __BuggyDemoCode__.
 
 ```json
 {
@@ -32,9 +32,7 @@ To start using `dotnet monitor` run the following command from a Powershell or C
 dotnet-monitor collect
 ```
 
-Assuming your default process is running you can use the endpoints exposed by `dotnet-monitor` to view metrics, logs or download traces and memory dumps.
-
-When using Windows Authentication, your browser will automatically handle the Windows authentication challenge and as such you can navigate to this endpoints directly. 
+Assuming your default process is running you can use the endpoints exposed by `dotnet-monitor` to view metrics, logs or download traces and memory dumps. When using Windows Authentication, your browser will automatically handle the Windows authentication challenge and as such you can navigate to this endpoints directly. 
 
 ```http
 /dump 
@@ -44,9 +42,6 @@ When using Windows Authentication, your browser will automatically handle the Wi
 /trace
 ```
 
-Alternatively, if you are using an API Key, you must [specify it via the Authorization header](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/authentication.md#authenticating-requests), you can accomplish that with CLI tool like CURL.
+Alternatively, if you are using an API Key, you must [specify it via the Authorization header](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/authentication.md#authenticating-requests), you can accomplish that with a CLI tool like CURL.
 
-Artifacts will be eggressed to the local download folder by default ('%USERPROFILE%\Downloads'), however, an [egress file provider](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/configuration.md#filesystem-egress-provider) can be defined in the settings file.
-
-### Triggers
-
+Artifacts will be output to the local download folder by default ('%USERPROFILE%\Downloads'), however, an [egress file provider](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/configuration.md#filesystem-egress-provider) can be defined in the settings file.
