@@ -41,17 +41,14 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
             // Create all of the same services as dotnet-monitor and add
             // OpenAPI generation in order to have it inspect the ASP.NET Core
             // registrations and descriptions.
-            IHost host = DiagnosticsMonitorCommandHandler
+            IHost host = HostBuilderHelper
                 .CreateHostBuilder(
-                    console: null,
                     urls: Array.Empty<string>(),
                     metricUrls: Array.Empty<string>(),
                     metrics: true,
                     diagnosticPort: null,
                     noAuth: false,
-                    tempApiKey: false,
-                    noHttpEgress: false,
-                    configOnly: false)
+                    tempApiKey: false)
                 .ConfigureServices(services =>
                 {
                     services.AddSwaggerGen(options =>

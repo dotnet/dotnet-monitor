@@ -3,14 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Diagnostics.Tools.Monitor.Commands;
 using Microsoft.Tools.Common;
-using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -22,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 name: "generatekey",
                 description: Strings.HelpDescription_CommandGenerateKey)
             {
-                CommandHandler.Create<CancellationToken, OutputFormat, IConsole>(new GenerateApiKeyCommandHandler().GenerateApiKey),
+                CommandHandler.Create(GenerateApiKeyCommandHandler.Invoke),
                 Output()
             };
 
@@ -32,11 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 description: Strings.HelpDescription_CommandCollect)
             {
                 // Handler
-                CommandHandler.Create(
-                    Delegate.CreateDelegate(
-                        typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, bool, Task<int>>),
-                        new DiagnosticsMonitorCommandHandler(),
-                        nameof(DiagnosticsMonitorCommandHandler.Start))),
+                CommandHandler.Create(CollectCommandHandler.Invoke),
                 SharedOptions()
             };
 
@@ -50,11 +45,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     description: Strings.HelpDescription_CommandShow)
                 {
                     // Handler
-                    CommandHandler.Create(
-                        Delegate.CreateDelegate(
-                            typeof(Func<CancellationToken, IConsole, string[], string[], bool, string, bool, bool, bool, ConfigDisplayLevel, Task<int>>),
-                            new DiagnosticsMonitorCommandHandler(),
-                            nameof(DiagnosticsMonitorCommandHandler.ShowConfig))),
+                    CommandHandler.Create(ConfigShowCommandHandler.Invoke),
                     SharedOptions(),
                     ConfigLevel()
                 }

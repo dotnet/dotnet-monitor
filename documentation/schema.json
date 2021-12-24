@@ -700,6 +700,19 @@
               "$ref": "#/definitions/ExecuteOptions"
             }
           }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "LoadProfiler"
+            },
+            "Settings": {
+              "$ref": "#/definitions/LoadProfilerOptions"
+            }
+          }
         }
       ]
     },
@@ -1050,7 +1063,8 @@
         "CollectGCDump",
         "CollectLogs",
         "CollectTrace",
-        "Execute"
+        "Execute",
+        "LoadProfiler"
       ]
     },
     "CollectDumpOptions": {
@@ -1351,6 +1365,27 @@
             "null"
           ],
           "default": false
+        }
+      }
+    },
+    "LoadProfilerOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Path",
+        "Clsid"
+      ],
+      "properties": {
+        "Path": {
+          "type": "string",
+          "description": "The path of the profiler library to be loaded. This is typically the same value that would be set as the CORECLR_PROFILER_PATH environment variable.",
+          "minLength": 1
+        },
+        "Clsid": {
+          "type": "string",
+          "description": "The class identifier (or CLSID, typically a GUID) of the ICorProfilerCallback implementation. This is typically the same value that would be set as the CORECLR_PROFILER environment variable.",
+          "format": "guid",
+          "minLength": 1
         }
       }
     },
