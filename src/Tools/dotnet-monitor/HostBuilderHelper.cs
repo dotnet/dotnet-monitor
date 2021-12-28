@@ -30,15 +30,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string UserConfigDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
 
-        // Allows tests to override the user configuration settings directory so there
-        // is better control and access of what is visible during test.
-        //private const string UserConfigSettingsDirectoryOverrideEnvironmentVariable
-        //    = "DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride";
-
-        //public static string UserConfigSettingsDirectoryOverrideEnvironmentVariable = null;
-
-        //private const string TestingModeEnvironmentVariable = "DotnetMonitorTestSettings__TestingMode";
-
         // Location where shared dotnet-monitor configuration is stored.
         // Windows: "%ProgramData%\dotnet-monitor
         // Other: /etc/dotnet-monitor
@@ -62,15 +53,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName));
 
         public static string UserSettingsPath = Path.Combine(UserConfigDirectoryPath, SettingsFileName);
-        /*GetEnvironmentOverrideOrValue(
-            UserConfigSettingsDirectoryOverrideEnvironmentVariable,
-            Path.Combine(UserConfigDirectoryPath, SettingsFileName));
-        */
+
         public static ConfigurationTestingMode TestingMode = ConfigurationTestingMode.None;
-            /*(ConfigurationTestingMode)Enum.Parse(typeof(ConfigurationTestingMode), GetEnvironmentOverrideOrValue(
-                TestingModeEnvironmentVariable,
-                ConfigurationTestingMode.None.ToString()));
-            */
+
         public static IHostBuilder CreateHostBuilder(string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey)
         {
             return CreateHostBuilder(urls, metricUrls, metrics, diagnosticPort, CreateAuthConfiguration(noAuth, tempApiKey));

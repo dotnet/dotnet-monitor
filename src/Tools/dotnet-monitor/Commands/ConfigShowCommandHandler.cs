@@ -26,9 +26,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             {
                 HostBuilderHelper.UserSettingsPath = userSettingsFilePath;
                 HostBuilderHelper.TestingMode = testingMode;
-
-                Environment.SetEnvironmentVariable("DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride", userSettingsFilePath);
-                Environment.SetEnvironmentVariable("DotnetMonitorTestSettings__TestingMode", testingMode.ToString());
             }
 
             IHost host = HostBuilderHelper.CreateHostBuilder(urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey).Build();

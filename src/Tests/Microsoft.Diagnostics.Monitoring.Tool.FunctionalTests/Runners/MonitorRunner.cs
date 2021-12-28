@@ -63,22 +63,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         private string UserConfigDirectoryPath =>
             Path.Combine(TempPath, "UserConfig");
 
-        protected string UserSettingsFilePath
-        {
-            get
-            {
-                return _userConfigDirectoryPath ?? Path.Combine(UserConfigDirectoryPath, "settings.json");
-            }
-
-            set
-            {
-                _userConfigDirectoryPath = value;
-            }
-        }
-
-        public ConfigurationTestingMode TestingMode = ConfigurationTestingMode.None;
-
-        private string _userConfigDirectoryPath;
+        private string UserSettingsFilePath =>
+            Path.Combine(UserConfigDirectoryPath, "settings.json");
 
         public string TempPath { get; } =
             Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
@@ -142,37 +128,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _runner.EntrypointAssemblyPath = DotNetMonitorPath;
             _runner.Arguments = string.Join(" ", argsList);
 
-            if (TestingMode == ConfigurationTestingMode.None)
+            // Disable diagnostics on tool
+            _adapter.Environment.Add("COMPlus_EnableDiagnostics", "0");
+            // Console output in JSON for easy parsing
+            _adapter.Environment.Add("Logging__Console__FormatterName", "json");
+            // Enable Information on ASP.NET Core logs for better ability to diagnose issues.
+            _adapter.Environment.Add("Logging__LogLevel__Microsoft.AspNetCore", "Information");
+            // Enable Debug on Microsoft.Diagnostics to get lifetime and address events as well as for diagnosing issues.
+            _adapter.Environment.Add("Logging__LogLevel__Microsoft.Diagnostics", "Debug");
+
+            // Override the shared config directory
+            _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
+            // Override the user config directory
+            _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
+
+            // Set configuration via environment variables
+            var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration(useDotnetMonitorPrefix: true);
+            if (configurationViaEnvironment.Count > 0)
             {
-                // Disable diagnostics on tool
-                _adapter.Environment.Add("COMPlus_EnableDiagnostics", "0");
-                // Console output in JSON for easy parsing
-                _adapter.Environment.Add("Logging__Console__FormatterName", "json");
-                // Enable Information on ASP.NET Core logs for better ability to diagnose issues.
-                _adapter.Environment.Add("Logging__LogLevel__Microsoft.AspNetCore", "Information");
-                // Enable Debug on Microsoft.Diagnostics to get lifetime and address events as well as for diagnosing issues.
-                _adapter.Environment.Add("Logging__LogLevel__Microsoft.Diagnostics", "Debug");
-
-                // Override the shared config directory
-                _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
-                // Override the user config directory
-                _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
-
-                // Set configuration via environment variables
-                var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration(useDotnetMonitorPrefix: true);
-                if (configurationViaEnvironment.Count > 0)
+                // Set additional environment variables from configuration
+                foreach (var variable in configurationViaEnvironment)
                 {
-                    // Set additional environment variables from configuration
-                    foreach (var variable in configurationViaEnvironment)
-                    {
-                        _adapter.Environment.Add(variable.Key, variable.Value);
-                    }
+                    _adapter.Environment.Add(variable.Key, variable.Value);
                 }
-            }
-            else
-            {
-                _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigSettingsDirectoryOverride", UserSettingsFilePath);
-                _adapter.Environment.Add("DotnetMonitorTestSettings__TestingMode", TestingMode.ToString());
             }
 
             _outputHelper.WriteLine("User Settings Path: {0}", UserSettingsFilePath);

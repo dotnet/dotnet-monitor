@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Commands;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,11 +44,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string userSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations", userFileName);
 
             Stream stream = new MemoryStream();
-            ConfigShowCommandHandler.Write(stream, System.Array.Empty<string>(), System.Array.Empty<string>(), false, "", false, false, redact ? ConfigDisplayLevel.Redacted : ConfigDisplayLevel.Full, userSettingsFilePath, testingMode);
+            ConfigShowCommandHandler.Write(stream, Array.Empty<string>(), Array.Empty<string>(), false, string.Empty, false, false, redact ? ConfigDisplayLevel.Redacted : ConfigDisplayLevel.Full, userSettingsFilePath, testingMode);
 
             stream.Position = 0;
 
             string configString = "";
+
             using (var streamReader = new StreamReader(stream))
             {
                 configString = streamReader.ReadToEnd();
@@ -56,19 +58,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _outputHelper.WriteLine(configString);
 
             CompareOutput(configString, expectedConfiguration);
-
-
-            /*
-            await using MonitorConfigRunner toolRunner = new(_outputHelper);
-            toolRunner.Redact = redact;
-            toolRunner.UserFileName = userFileName;
-            toolRunner.TestingMode = testingMode;
-
-            await toolRunner.StartAsync();
-
-            CompareOutput(toolRunner.ConfigurationString, expectedConfiguration);
-            */
-
         }
 
         /// <summary>
@@ -201,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
                 else
                 {
-                    expectedOutput += "\":NOT PRESENT:\"";
+                    expectedOutput += "\"" + Strings.Placeholder_NotPresent + "\"";
                 }
 
                 if (!key.Equals(orderedConfigurationKeys.Last()))

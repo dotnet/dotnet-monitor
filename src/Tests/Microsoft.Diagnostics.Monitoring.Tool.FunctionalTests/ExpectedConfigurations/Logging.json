@@ -1,9 +1,0 @@
-{
-  "CaptureScopes": "True",
-  "Console": {
-    "FormatterOptions": {
-      "ColorBehavior": "Default"
-    },
-    "LogToStandardErrorThreshold": "Error"
-  }
-}

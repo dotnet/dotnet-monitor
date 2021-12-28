@@ -142,4 +142,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return parser.InvokeAsync(args);
         }
     }
+
+    internal enum ConfigDisplayLevel
+    {
+        Redacted,
+        Full,
+    }
 }
