@@ -2,17 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.Commands;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
+namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public class ConfigurationTests
     {
@@ -40,8 +38,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-        private async Task RunConfigurationTest(bool redact, string userFileName, ConfigurationTestingMode testingMode, string expectedConfiguration)
+        private void RunConfigurationTest(bool redact, string userFileName, ConfigurationTestingMode testingMode, string expectedConfiguration)
         {
+            string userSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations", userFileName);
+
+            Stream stream = new MemoryStream();
+            ConfigShowCommandHandler.Write(stream, System.Array.Empty<string>(), System.Array.Empty<string>(), false, "", false, false, redact ? ConfigDisplayLevel.Redacted : ConfigDisplayLevel.Full, userSettingsFilePath, testingMode);
+
+            stream.Position = 0;
+
+            string configString = "";
+            using (var streamReader = new StreamReader(stream))
+            {
+                configString = streamReader.ReadToEnd();
+            }
+
+            _outputHelper.WriteLine(configString);
+
+            CompareOutput(configString, expectedConfiguration);
+
+
+            /*
             await using MonitorConfigRunner toolRunner = new(_outputHelper);
             toolRunner.Redact = redact;
             toolRunner.UserFileName = userFileName;
@@ -50,6 +67,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await toolRunner.StartAsync();
 
             CompareOutput(toolRunner.ConfigurationString, expectedConfiguration);
+            */
+
         }
 
         /// <summary>
@@ -60,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task FullConfigurationTest(bool redact)
+        public void FullConfigurationTest(bool redact)
         {
             List<Dictionary<string, string>> configurations = new();
 
@@ -78,88 +97,88 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Dictionary<string, string> fullConfiguration = configurations.SelectMany(x => x).ToDictionary(x => x.Key, y => y.Value);
 
             string expectedConfiguration = ConstructExpectedOutput(fullConfiguration);
-            await RunConfigurationTest(redact, "UserSettings.json", ConfigurationTestingMode.All, expectedConfiguration);
+            RunConfigurationTest(redact, "UserSettings.json", ConfigurationTestingMode.All, expectedConfiguration);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task CollectionRulesTest(bool redact)
+        public void CollectionRulesTest(bool redact)
         {
             string expectedConfiguration = ConstructExpectedOutput(collectionRulesExpected);
-            await RunConfigurationTest(redact, "CollectionRules.json", ConfigurationTestingMode.CollectionRules, expectedConfiguration);
+            RunConfigurationTest(redact, "CollectionRules.json", ConfigurationTestingMode.CollectionRules, expectedConfiguration);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task MetricsTest(bool redact)
+        public void MetricsTest(bool redact)
         {
             string expectedConfiguration = ConstructExpectedOutput(metricsExpected);
-            await RunConfigurationTest(redact, "Metrics.json", ConfigurationTestingMode.Metrics, expectedConfiguration);
+            RunConfigurationTest(redact, "Metrics.json", ConfigurationTestingMode.Metrics, expectedConfiguration);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task AuthenticationTest(bool redact)
+        public void AuthenticationTest(bool redact)
         {
             string expectedConfiguration = ConstructExpectedOutput(redact ? authenticationRedactedExpected : authenticationFullExpected);
-            await RunConfigurationTest(redact, "Authentication.json", ConfigurationTestingMode.Authentication, expectedConfiguration);
+            RunConfigurationTest(redact, "Authentication.json", ConfigurationTestingMode.Authentication, expectedConfiguration);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task DefaultProcessTest(bool redact)
+        public void DefaultProcessTest(bool redact)
         {
             string expectedConfiguration = ConstructExpectedOutput(defaultProcessExpected);
-            await RunConfigurationTest(redact, "DefaultProcess.json", ConfigurationTestingMode.DefaultProcess, expectedConfiguration);
+            RunConfigurationTest(redact, "DefaultProcess.json", ConfigurationTestingMode.DefaultProcess, expectedConfiguration);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task StorageTest(bool redact)
+        public void StorageTest(bool redact)
         {
             string expectedConfiguration = ConstructExpectedOutput(storageExpected);
-            await RunConfigurationTest(redact, "Storage.json", ConfigurationTestingMode.Storage, expectedConfiguration);
+            RunConfigurationTest(redact, "Storage.json", ConfigurationTestingMode.Storage, expectedConfiguration);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task UrlsTest(bool redact)
+        public void UrlsTest(bool redact)
         {
             string expectedConfiguration = ConstructExpectedOutput(urlsExpected);
-            await RunConfigurationTest(redact, "URLs.json", ConfigurationTestingMode.URLs, expectedConfiguration);
+            RunConfigurationTest(redact, "URLs.json", ConfigurationTestingMode.URLs, expectedConfiguration);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task EgressTest(bool redact)
+        public void EgressTest(bool redact)
         {
             string expectedConfiguration = ConstructExpectedOutput(redact ? egressRedactedExpected : egressFullExpected);
-            await RunConfigurationTest(redact, "Egress.json", ConfigurationTestingMode.Egress, expectedConfiguration);
+            RunConfigurationTest(redact, "Egress.json", ConfigurationTestingMode.Egress, expectedConfiguration);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task LoggingTest(bool redact)
+        public void LoggingTest(bool redact)
         {
             string expectedConfiguration = ConstructExpectedOutput(loggingExpected);
-            await RunConfigurationTest(redact, "Logging.json", ConfigurationTestingMode.Logging, expectedConfiguration);
+            RunConfigurationTest(redact, "Logging.json", ConfigurationTestingMode.Logging, expectedConfiguration);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task DiagnosticPortTest(bool redact)
+        public void DiagnosticPortTest(bool redact)
         {
             string expectedConfiguration = ConstructExpectedOutput(diagnosticPortExpected);
-            await RunConfigurationTest(redact, "DiagnosticPort.json", ConfigurationTestingMode.DiagnosticPort, expectedConfiguration);
+            RunConfigurationTest(redact, "DiagnosticPort.json", ConfigurationTestingMode.DiagnosticPort, expectedConfiguration);
         }
 
         private void CompareOutput(string actual, string expected)

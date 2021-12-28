@@ -43,6 +43,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions SetDumpTempFolder(this RootOptions options, string directoryPath)
+        {
+            if (null == options.Storage)
+            {
+                options.Storage = new StorageOptions();
+            }
+
+            options.Storage.DumpTempFolder = directoryPath;
+
+            return options;
+        }
+
         /// <summary>
         /// Sets API Key authentication. Use this overload for most operations, unless specifically testing Authentication or Authorization.
         /// </summary>

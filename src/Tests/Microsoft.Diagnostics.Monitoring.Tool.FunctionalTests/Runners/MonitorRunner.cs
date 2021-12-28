@@ -29,9 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private readonly LoggingRunnerAdapter _adapter;
 
-        private readonly string _runnerTmpPath =
-            Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
-
         private bool _isDisposed;
 
         /// <summary>
@@ -61,10 +58,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 #endif
 
         private string SharedConfigDirectoryPath =>
-            Path.Combine(_runnerTmpPath, "SharedConfig");
+            Path.Combine(TempPath, "SharedConfig");
 
         private string UserConfigDirectoryPath =>
-            Path.Combine(_runnerTmpPath, "UserConfig");
+            Path.Combine(TempPath, "UserConfig");
 
         protected string UserSettingsFilePath
         {
@@ -82,6 +79,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public ConfigurationTestingMode TestingMode = ConfigurationTestingMode.None;
 
         private string _userConfigDirectoryPath;
+
+        public string TempPath { get; } =
+            Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
 
         public MonitorRunner(ITestOutputHelper outputHelper)
         {
@@ -117,11 +117,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             try
             {
-                Directory.Delete(_runnerTmpPath, recursive: true);
+                Directory.Delete(TempPath, recursive: true);
             }
             catch (Exception ex)
             {
-                _outputHelper.WriteLine("Unable to delete '{0}': {1}", _runnerTmpPath, ex);
+                _outputHelper.WriteLine("Unable to delete '{0}': {1}", TempPath, ex);
             }
         }
 

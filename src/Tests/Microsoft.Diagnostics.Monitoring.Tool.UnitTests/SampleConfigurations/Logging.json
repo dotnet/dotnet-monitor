@@ -1,0 +1,11 @@
+{
+  "Logging": {
+    "CaptureScopes": true,
+    "Console": {
+      "FormatterOptions": {
+        "ColorBehavior": "Default"
+      },
+      "LogToStandardErrorThreshold": "Error"
+    }
+  }
+}

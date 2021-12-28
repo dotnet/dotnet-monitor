@@ -25,6 +25,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectTraceOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectTraceOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptions.cs" Link="Options\CollectionRules\Actions\ExecuteOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptionsDefaults.cs" Link="Options\CollectionRules\Actions\ExecuteOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\LoadProfilerOptions.cs" Link="Options\CollectionRules\Actions\LoadProfilerOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptions.cs" Link="Options\CollectionRules\CollectionRuleActionOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptionsDefaults.cs" Link="Options\CollectionRules\CollectionRuleActionOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptions.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptions.cs" />
@@ -66,6 +67,11 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <PackageReference Include="Microsoft.Extensions.Configuration.KeyPerFile" Version="$(MicrosoftExtensionsConfigurationKeyPerFileVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsoleVersion)" />
   </ItemGroup>
 
   <ItemGroup>

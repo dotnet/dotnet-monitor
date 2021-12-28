@@ -38,7 +38,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new ArgumentNullException(nameof(endpointInfo));
             }
 
-            string dumpFilePath = Path.Combine(_storageOptions.CurrentValue.DumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{endpointInfo.ProcessId}"));
+            string dumpTempFolder = _storageOptions.CurrentValue.DumpTempFolder;
+
+            // Ensure folder exists before issue command.
+            if (!Directory.Exists(dumpTempFolder))
+            {
+                Directory.CreateDirectory(dumpTempFolder);
+            }
+
+            string dumpFilePath = Path.Combine(dumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{endpointInfo.ProcessId}"));
             DumpType dumpType = MapDumpType(mode);
 
             IDisposable operationRegistration = null;

@@ -6,7 +6,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class ConfigurationHelper
+    public static class ConfigurationHelper
     {
         private const char ValueSeparator = ';';
         private static readonly char[] ValueSeparatorArray = new char[] { ValueSeparator };
