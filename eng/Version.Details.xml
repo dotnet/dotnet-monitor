@@ -26,9 +26,9 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>0cd94b1d02c03377d99f3739beb191591f6abee5</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.260601">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.262801">
       <Uri>https://github.com/dotnet/symstore</Uri>
-      <Sha>3cb08015ea49f070b1e8b036d0a74ce57ba0863f</Sha>
+      <Sha>c77badb1bf0c5205ee59126379e3caf833d349c7</Sha>
     </Dependency>
     <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="7.0.0-alpha.1.21624.1">
       <Uri>https://github.com/dotnet/runtime</Uri>
