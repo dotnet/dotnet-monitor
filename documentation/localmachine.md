@@ -4,11 +4,13 @@
 
 ### Local authentication options
 
-If you are using `dotnet monitor` as local development tool on Windows you have the option to use Windows Authentication which requires no further configuration, [additional security details can be reviewed here](./authentication.md#windows-authentication).
+If you are using `dotnet monitor` as local development tool on Windows you have the option to use Windows Authentication which requires no additional configuration.
+
+There are a number of local development scenarios that are much more efficient without authentication, `dotnet monitor` can explicitly configured to [disable authentication](./authentication.md#disabling-authentication). Additional [security details can be reviewed here](./authentication.md#windows-authentication).
 
 ### Local configuration
 
-To monitor a specific local process you can use the settings file to define a default process. This ensures `dotnet monitor` automatically collects artifacts and logs based on a process criteria you have identified (e.g. process name, process id, etc.).
+To monitor a specific local process you can use the settings file to define a default process. This ensures `dotnet monitor` automatically collects artifacts and logs based on a process criteria you have identified (e.g. process name, processs id, etc.).
 
 Defining a default process on Windows requires creating a settings file in the user path (`%USERPROFILE%\.dotnet-monitor\settings.json`). In the following example the default process has a process name of __BuggyDemoCode__.
 
@@ -44,4 +46,4 @@ Assuming your default process is running you can use the endpoints exposed by `d
 
 Alternatively, if you are using an API Key, you must [specify it via the Authorization header](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/authentication.md#authenticating-requests), you can accomplish that with a CLI tool like CURL.
 
-Artifacts will be output to the local download folder by default ('%USERPROFILE%\Downloads'), however, an [egress file provider](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/configuration.md#filesystem-egress-provider) can be defined in the settings file.
+Artifacts can be output to specific local directories by configuring [egress file providers](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/configuration.md#filesystem-egress-provider) in the settings file.
