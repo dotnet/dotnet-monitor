@@ -16,7 +16,12 @@ Defining a default process on Windows requires creating a settings file in the u
 
 ```json
 {
-"$schema": "https://aka.ms/dotnet-monitor-schema",
+    "$schema": "https://aka.ms/dotnet-monitor-schema",
+    "DefaultProcess": {
+        "Filters": [{
+            "Key": "ProcessName",
+            "Value": "BuggyDemoWeb"
+        }]
 "DefaultProcess": {
     "Filters": [{
         "Key": "ProcessName",
