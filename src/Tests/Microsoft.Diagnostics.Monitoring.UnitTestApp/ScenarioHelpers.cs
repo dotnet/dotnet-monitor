@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                     // We successfully received an app-level command and processed it.
                     // Restart the loop and wait for the command the scenario is expecting.
                     receivedExpected = false;
-                    // Still acknoledge this command and say it was expected
+                    // Still acknowledge this command and say it was expected
                     logger.ReceivedCommand(line, expected: true);
                     continue;
                 }
