@@ -232,6 +232,12 @@
 1. value: The value of the string that could not be parsed.
 2. errorMessage: Additional error message text.</comment>
   </data>
+  <data name="ErrorMessage_NoEnvironmentVariable" xml:space="preserve">
+    <value>The environment block does not contain the '{0}' variable.</value>
+    <comment>Gets the format string for an error when the given environment variable does not exist.
+1 Format Parameter:
+0. variableName: The name of the environment variable that is missing</comment>
+  </data>
   <data name="ErrorMessage_NonzeroExitCode" xml:space="preserve">
     <value>The process exited with exit code {0}</value>
     <comment>{0} = Nonzero exit code.</comment>

@@ -213,26 +213,33 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 case TestAppLogEventIds.EnvironmentVariable:
                     Assert.True(logEvent.State.TryGetValue("name", out string name));
                     Assert.True(logEvent.State.TryGetValue("value", out string value));
-                    if (_waitingForEnvironmentVariables.TryGetValue(name, out TaskCompletionSource<string> completedGettingVal))
+                    lock (_waitingForEnvironmentVariables)
                     {
-                        _outputHelper.WriteLine($"Processing callback for envVar: {name}");
-                        Assert.True(completedGettingVal.TrySetResult(value));
-                        _waitingForEnvironmentVariables.Remove(name);
+                        if (_waitingForEnvironmentVariables.TryGetValue(name, out TaskCompletionSource<string> completedGettingVal))
+                        {
+                            _outputHelper.WriteLine($"Processing callback for envVar: {name}");
+                            Assert.True(completedGettingVal.TrySetResult(value));
+                            _waitingForEnvironmentVariables.Remove(name);
+                        }
                     }
                     break;
             }
         }
 
-        public async Task<string> WaitForEnvironmentVariable(string name, CancellationToken token)
+        public Task<string> WaitForEnvironmentVariable(string name, CancellationToken token)
         {
-            if (_waitingForEnvironmentVariables.ContainsKey(name))
+            TaskCompletionSource<string> waiter;
+            lock (_waitingForEnvironmentVariables)
             {
-                throw new InvalidOperationException();
+                if (_waitingForEnvironmentVariables.ContainsKey(name))
+                {
+                    throw new InvalidOperationException();
+                }
+                _waitingForEnvironmentVariables.Add(name, new TaskCompletionSource<string>());
+                waiter = _waitingForEnvironmentVariables[name];
             }
-            _waitingForEnvironmentVariables.Add(name, new TaskCompletionSource<string>());
-            TaskCompletionSource<string> waiter = _waitingForEnvironmentVariables[name];
-            string result = await waiter.WithCancellation(token).ConfigureAwait(false);
-            return result;
+
+            return waiter.WithCancellation(token);
         }
     }
 }

@@ -65,7 +65,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                     _logger.GettingEnvironmentVariable(_options.Name, _endpointInfo.ProcessId);
                     Dictionary<string, string> envBlock = await client.GetProcessEnvironmentAsync(token);
-                    envBlock.TryGetValue(Options.Name, out string value);
+                    if (!envBlock.TryGetValue(Options.Name, out string value))
+                    {
+                        InvalidOperationException innerEx =
+                            new InvalidOperationException(
+                                string.Format(
+                                    Strings.ErrorMessage_NoEnvironmentVariable,
+                                    Options.Name));
+                        throw new CollectionRuleActionException(innerEx);
+                    }
 
                     if (!startCompletionSource.TrySetResult(null))
                     {

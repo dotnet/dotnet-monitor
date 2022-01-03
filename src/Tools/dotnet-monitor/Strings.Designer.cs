@@ -268,6 +268,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The environment block does not contain the &apos;{0}&apos; variable..
+        /// </summary>
+        internal static string ErrorMessage_NoEnvironmentVariable {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoEnvironmentVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The process exited with exit code {0}.
         /// </summary>
         internal static string ErrorMessage_NonzeroExitCode {

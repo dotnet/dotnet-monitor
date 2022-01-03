@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
@@ -90,17 +91,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(ActionTestsHelper.Get6PlusTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestGetEnvVar(TargetFrameworkMoniker tfm)
         {
+            const string VariableDoesNotExist = "SomeEnvVarThatIsNotSet";
             await TestHostHelper.CreateCollectionRulesHost(
                 outputHelper: _outputHelper,
                 setup: (Tools.Monitor.RootOptions rootOptions) =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddGetEnvironmentVariableAction(TestAppScenarios.EnvironmentVariables.IncrementVariableName);
+                        .AddGetEnvironmentVariableAction(TestAppScenarios.EnvironmentVariables.IncrementVariableName)
+                        .AddGetEnvironmentVariableAction(VariableDoesNotExist);
                 },
                 hostCallback: async (Extensions.Hosting.IHost host) =>
                 {
                     GetEnvironmentVariableOptions getOpts = ActionTestsHelper.GetActionOptions<GetEnvironmentVariableOptions>(host, DefaultRuleName, 0);
+                    GetEnvironmentVariableOptions getFailOpts = ActionTestsHelper.GetActionOptions<GetEnvironmentVariableOptions>(host, DefaultRuleName, 1);
 
                     ICollectionRuleActionOperations actionOperationsService = host.Services.GetService<ICollectionRuleActionOperations>();
                     Assert.True(actionOperationsService.TryCreateFactory(KnownCollectionRuleActions.GetEnvironmentVariable, out ICollectionRuleActionFactoryProxy getFactory));
@@ -130,6 +134,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                         await runner.SendCommandAsync(TestAppScenarios.EnvironmentVariables.Commands.IncVar);
                         Assert.Equal("3", await runner.GetEnvironmentVariable(TestAppScenarios.EnvironmentVariables.IncrementVariableName, CommonTestTimeouts.EnvVarsTimeout));
+
+                        ICollectionRuleAction getActionFailure = getFactory.Create(endpointInfo, getFailOpts);
+                        CollectionRuleActionException thrownEx = await Assert.ThrowsAsync<CollectionRuleActionException>(async () =>
+                        {
+                            await ActionTestsHelper.ExecuteAndDisposeAsync(getActionFailure, CommonTestTimeouts.EnvVarsTimeout);
+                        });
+                        Assert.Contains(VariableDoesNotExist, thrownEx.Message);
 
                         await runner.SendCommandAsync(TestAppScenarios.EnvironmentVariables.Commands.ShutdownScenario);
                     });
