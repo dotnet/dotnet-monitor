@@ -1,0 +1,22 @@
+<Project>
+  <!--
+    Arcade uses target batching to run each test assembly TFM for a single test project.
+    This causes subsequent items in the batch to not be run if a prior items fail. For example,
+    if a test project has the 3.1, 5.0, and 6.0 TFMs and its tests are run in that order and
+    the 3.1 TFM has test failures, the 5.0 and 6.0 TFMs will not be run. Override Arcade's
+    RunTests target to use MSBuild to call the Test target for each TFM.
+   -->
+  <Target Name="RunTests">
+    <ItemGroup>
+      <_TargetFramework Include="$(TargetFrameworks)" />
+      <!-- Make normalization explicit: Trim; Deduplicate by keeping first occurrence, case insensitive -->
+      <_TargetFrameworkNormalized Include="@(_TargetFramework->Trim()->Distinct())" />
+      <_InnerBuildProjectsForTest Include="$(MSBuildProjectFile)">
+        <AdditionalProperties>TargetFramework=%(_TargetFrameworkNormalized.Identity)</AdditionalProperties>
+      </_InnerBuildProjectsForTest>
+    </ItemGroup>
+    <MSBuild Projects="@(_InnerBuildProjectsForTest)"
+             Condition="'@(_InnerBuildProjectsForTest)' != '' "
+             Targets="Test" />
+  </Target>
+</Project>
