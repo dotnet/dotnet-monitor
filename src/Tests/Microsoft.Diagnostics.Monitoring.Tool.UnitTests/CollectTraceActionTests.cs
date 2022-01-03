@@ -47,10 +47,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectTraceAction(traceProfile, ActionTestsConstants.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .AddCollectTraceAction(traceProfile, ActionTestsConstants.ExpectedEgressProvider, options =>
+                    {
+                        options.Duration = TimeSpan.FromSeconds(2);
+                    })
                     .SetStartupTrigger();
-
-                collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
             }, async host =>
             {
                 await PerformTrace(host, tfm);
@@ -73,10 +74,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectTraceAction(ExpectedProviders, ActionTestsConstants.ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions)
+                    .AddCollectTraceAction(ExpectedProviders, ActionTestsConstants.ExpectedEgressProvider, options =>
+                    {
+                        options.Duration = TimeSpan.FromSeconds(2);
+                    })
                     .SetStartupTrigger();
-
-                collectTraceOptions.Duration = TimeSpan.FromSeconds(2);
             }, async host =>
             {
                 await PerformTrace(host, tfm);

@@ -109,15 +109,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureTool: runner =>
                 {
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
-                        .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions)
+                        .SetEventCounterTrigger(options =>
+                        {
+                            // cpu usage greater that 5% for 2 seconds
+                            options.ProviderName = "System.Runtime";
+                            options.CounterName = "cpu-usage";
+                            options.GreaterThan = 5;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
+                        })
                         .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent)
                         .SetActionLimits(count: 1);
-
-                    // cpu usage greater that 5% for 2 seconds
-                    eventCounterOptions.ProviderName = "System.Runtime";
-                    eventCounterOptions.CounterName = "cpu-usage";
-                    eventCounterOptions.GreaterThan = 5;
-                    eventCounterOptions.SlidingWindowDuration = TimeSpan.FromSeconds(2);
 
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
@@ -330,12 +331,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Create a rule with some settings
             RootOptions originalOptions = new();
             originalOptions.CreateCollectionRule(DefaultRuleName)
-                .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions);
-
-            eventCounterOptions.ProviderName = "System.Runtime";
-            eventCounterOptions.CounterName = "cpu-usage";
-            eventCounterOptions.GreaterThan = 1000; // Intentionally unobtainable
-            eventCounterOptions.SlidingWindowDuration = TimeSpan.FromSeconds(1);
+                .SetEventCounterTrigger(options =>
+                {
+                    options.ProviderName = "System.Runtime";
+                    options.CounterName = "cpu-usage";
+                    options.GreaterThan = 1000; // Intentionally unobtainable
+                    options.SlidingWindowDuration = TimeSpan.FromSeconds(1);
+                });
 
             await toolRunner.WriteUserSettingsAsync(originalOptions);
 

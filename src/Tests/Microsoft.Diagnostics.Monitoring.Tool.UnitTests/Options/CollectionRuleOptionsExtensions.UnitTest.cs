@@ -11,9 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
     {
         public static CollectionRuleOptions SetManualTrigger(this CollectionRuleOptions options)
         {
-            SetTrigger(options, ManualTrigger.TriggerName, out _);
-
-            return options;
+            return SetTrigger(options, ManualTrigger.TriggerName);
         }
     }
 }

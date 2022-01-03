@@ -220,7 +220,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private void HandleStartupEvent(ConsoleLogEvent logEvent)
         {
-            switch (logEvent.EventId)
+            switch ((LoggingEventIds)logEvent.EventId)
             {
                 case LoggingEventIds.BoundDefaultAddress:
                     if (logEvent.State.TryGetValue("address", out string defaultAddress))
@@ -248,7 +248,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private void HandleGenericLogEvent(ConsoleLogEvent logEvent)
         {
-            switch (logEvent.EventId)
+            switch ((LoggingEventIds)logEvent.EventId)
             {
                 case LoggingEventIds.NotifyPrivateKey:
                     if (logEvent.State.TryGetValue("fieldName", out string fieldName))

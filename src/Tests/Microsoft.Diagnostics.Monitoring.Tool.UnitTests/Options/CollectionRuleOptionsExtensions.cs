@@ -11,7 +11,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
@@ -42,15 +41,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleOptions AddAction(this CollectionRuleOptions options, string type)
+        public static CollectionRuleOptions AddAction(this CollectionRuleOptions options, string type, Action<CollectionRuleActionOptions> callback = null)
         {
-            return options.AddAction(type, out _);
-        }
-
-        public static CollectionRuleOptions AddAction(this CollectionRuleOptions options, string type, out CollectionRuleActionOptions actionOptions)
-        {
-            actionOptions = new();
+            CollectionRuleActionOptions actionOptions = new();
             actionOptions.Type = type;
+
+            callback?.Invoke(actionOptions);
 
             options.Actions.Add(actionOptions);
 
@@ -59,94 +55,91 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 
         public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress, DumpType? type = null)
         {
-            options.AddAction(KnownCollectionRuleActions.CollectDump, out CollectionRuleActionOptions actionOptions);
+            return options.AddAction(
+                KnownCollectionRuleActions.CollectDump,
+                actionOptions =>
+                {
+                    CollectDumpOptions collectDumpOptions = new();
+                    collectDumpOptions.Egress = egress;
+                    collectDumpOptions.Type = type;
 
-            CollectDumpOptions collectDumpOptions = new();
-            collectDumpOptions.Egress = egress;
-            collectDumpOptions.Type = type;
-
-            actionOptions.Settings = collectDumpOptions;
-
-            return options;
+                    actionOptions.Settings = collectDumpOptions;
+                });
         }
 
         public static CollectionRuleOptions AddCollectGCDumpAction(this CollectionRuleOptions options, string egress)
         {
-            options.AddAction(KnownCollectionRuleActions.CollectGCDump, out CollectionRuleActionOptions actionOptions);
+            return options.AddAction(
+                KnownCollectionRuleActions.CollectGCDump,
+                actionOptions =>
+                {
+                    CollectGCDumpOptions collectGCDumpOptions = new();
+                    collectGCDumpOptions.Egress = egress;
 
-            CollectGCDumpOptions collectGCDumpOptions = new();
-            collectGCDumpOptions.Egress = egress;
-
-            actionOptions.Settings = collectGCDumpOptions;
-
-            return options;
+                    actionOptions.Settings = collectGCDumpOptions;
+                });
         }
 
-        public static CollectionRuleOptions AddCollectLogsAction(this CollectionRuleOptions options, string egress)
+        public static CollectionRuleOptions AddCollectLogsAction(this CollectionRuleOptions options, string egress, Action<CollectLogsOptions> callback = null)
         {
-            return options.AddCollectLogsAction(egress, out _);
+            return options.AddAction(
+                KnownCollectionRuleActions.CollectLogs,
+                actionOptions =>
+                {
+                    CollectLogsOptions collectLogsOptions = new();
+                    collectLogsOptions.Egress = egress;
+
+                    callback?.Invoke(collectLogsOptions);
+
+                    actionOptions.Settings = collectLogsOptions;
+                });
         }
 
-        public static CollectionRuleOptions AddCollectLogsAction(this CollectionRuleOptions options, string egress, out CollectLogsOptions collectLogsOptions)
+        public static CollectionRuleOptions AddCollectTraceAction(this CollectionRuleOptions options, TraceProfile profile, string egress, Action<CollectTraceOptions> callback = null)
         {
-            options.AddAction(KnownCollectionRuleActions.CollectLogs, out CollectionRuleActionOptions actionOptions);
+            return options.AddAction(
+                KnownCollectionRuleActions.CollectTrace,
+                actionOptions =>
+                {
+                    CollectTraceOptions collectTraceOptions = new();
+                    collectTraceOptions.Profile = profile;
+                    collectTraceOptions.Egress = egress;
 
-            collectLogsOptions = new();
-            collectLogsOptions.Egress = egress;
+                    callback?.Invoke(collectTraceOptions);
 
-            actionOptions.Settings = collectLogsOptions;
-
-            return options;
+                    actionOptions.Settings = collectTraceOptions;
+                });
         }
 
-        public static CollectionRuleOptions AddCollectTraceAction(this CollectionRuleOptions options, TraceProfile profile, string egress)
+        public static CollectionRuleOptions AddCollectTraceAction(this CollectionRuleOptions options, IEnumerable<EventPipeProvider> providers, string egress, Action<CollectTraceOptions> callback = null)
         {
-            return options.AddCollectTraceAction(profile, egress, out _);
-        }
+            return options.AddAction(
+                KnownCollectionRuleActions.CollectTrace,
+                actionOptions =>
+                {
+                    CollectTraceOptions collectTraceOptions = new();
+                    collectTraceOptions.Providers = new List<EventPipeProvider>(providers);
+                    collectTraceOptions.Egress = egress;
 
-        public static CollectionRuleOptions AddCollectTraceAction(this CollectionRuleOptions options, TraceProfile profile, string egress, out CollectTraceOptions collectTraceOptions)
-        {
-            options.AddAction(KnownCollectionRuleActions.CollectTrace, out CollectionRuleActionOptions actionOptions);
+                    callback?.Invoke(collectTraceOptions);
 
-            collectTraceOptions = new();
-            collectTraceOptions.Profile = profile;
-            collectTraceOptions.Egress = egress;
-
-            actionOptions.Settings = collectTraceOptions;
-
-            return options;
-        }
-
-        public static CollectionRuleOptions AddCollectTraceAction(this CollectionRuleOptions options, IEnumerable<EventPipeProvider> providers, string egress)
-        {
-            return options.AddCollectTraceAction(providers, egress, out _);
-        }
-
-        public static CollectionRuleOptions AddCollectTraceAction(this CollectionRuleOptions options, IEnumerable<EventPipeProvider> providers, string egress, out CollectTraceOptions collectTraceOptions)
-        {
-            options.AddAction(KnownCollectionRuleActions.CollectTrace, out CollectionRuleActionOptions actionOptions);
-
-            collectTraceOptions = new();
-            collectTraceOptions.Providers = new List<EventPipeProvider>(providers);
-            collectTraceOptions.Egress = egress;
-
-            actionOptions.Settings = collectTraceOptions;
-
-            return options;
+                    actionOptions.Settings = collectTraceOptions;
+                });
         }
 
         public static CollectionRuleOptions AddExecuteAction(this CollectionRuleOptions options, string path, string arguments = null, bool? waitForCompletion = null)
         {
-            options.AddAction(KnownCollectionRuleActions.Execute, out CollectionRuleActionOptions actionOptions);
+            return options.AddAction(
+                KnownCollectionRuleActions.Execute,
+                actionOptions =>
+                {
+                    ExecuteOptions executeOptions = new();
+                    executeOptions.Arguments = arguments;
+                    executeOptions.Path = path;
 
-            ExecuteOptions executeOptions = new();
-            executeOptions.Arguments = arguments;
-            executeOptions.Path = path;
-
-            actionOptions.Settings = executeOptions;
-            actionOptions.WaitForCompletion = waitForCompletion;
-
-            return options;
+                    actionOptions.Settings = executeOptions;
+                    actionOptions.WaitForCompletion = waitForCompletion;
+                });
         }
 
         public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, params string[] args)
@@ -161,6 +154,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             options.AddExecuteAction(DotNetHost.HostExePath, ExecuteActionTestHelper.GenerateArgumentsString(args), waitForCompletion);
 
             return options;
+        }
+
+        public static CollectionRuleOptions AddLoadProfilerAction(this CollectionRuleOptions options, Action<LoadProfilerOptions> configureOptions)
+        {
+           return options.AddAction(
+                KnownCollectionRuleActions.LoadProfiler,
+                callback: actionOptions =>
+                {
+                    LoadProfilerOptions loadProfilerOptions = new();
+                    configureOptions?.Invoke(loadProfilerOptions);
+                    actionOptions.Settings = loadProfilerOptions;
+                });
         }
 
         public static CollectionRuleOptions SetActionLimits(this CollectionRuleOptions options, int? count = null, TimeSpan? slidingWindowDuration = null)
@@ -188,31 +193,31 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleOptions SetEventCounterTrigger(this CollectionRuleOptions options, out EventCounterOptions settings)
+        public static CollectionRuleOptions SetEventCounterTrigger(this CollectionRuleOptions options, Action<EventCounterOptions> callback = null)
         {
-            SetTrigger(options, KnownCollectionRuleTriggers.EventCounter, out CollectionRuleTriggerOptions triggerOptions);
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.EventCounter,
+                triggerOptions =>
+                {
+                    EventCounterOptions settings = new();
 
-            settings = new();
+                    callback?.Invoke(settings);
 
-            triggerOptions.Settings = settings;
-
-            return options;
+                    triggerOptions.Settings = settings;
+                });
         }
 
         public static CollectionRuleOptions SetStartupTrigger(this CollectionRuleOptions options)
         {
-            return SetTrigger(options, KnownCollectionRuleTriggers.Startup, out _);
+            return SetTrigger(options, KnownCollectionRuleTriggers.Startup);
         }
 
-        public static CollectionRuleOptions SetTrigger(this CollectionRuleOptions options, string type)
+        public static CollectionRuleOptions SetTrigger(this CollectionRuleOptions options, string type, Action<CollectionRuleTriggerOptions> callback = null)
         {
-            return options.SetTrigger(type, out _);
-        }
-
-        public static CollectionRuleOptions SetTrigger(this CollectionRuleOptions options, string type, out CollectionRuleTriggerOptions triggerOptions)
-        {
-            triggerOptions = new();
+            CollectionRuleTriggerOptions triggerOptions = new();
             triggerOptions.Type = type;
+
+            callback?.Invoke(triggerOptions);
 
             options.Trigger = triggerOptions;
 
@@ -325,6 +330,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             Assert.Equal(expectedArguments, executeOptions.Arguments);
 
             return executeOptions;
+        }
+
+        public static LoadProfilerOptions VerifyLoadProfilerAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedPath, Guid expectecClsid)
+        {
+            LoadProfilerOptions opts = ruleOptions.VerifyAction<LoadProfilerOptions>(
+                actionIndex, KnownCollectionRuleActions.LoadProfiler);
+
+            Assert.Equal(expectedPath, opts.Path);
+            Assert.Equal(expectecClsid, opts.Clsid);
+
+            return opts;
         }
 
         private static TOptions VerifyAction<TOptions>(this CollectionRuleOptions ruleOptions, int actionIndex, string actionType)
