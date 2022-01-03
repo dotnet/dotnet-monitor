@@ -32,12 +32,21 @@ While the rest of this document will showcase configuration examples in a json f
 }
 ```
 
-The same configuration can be expressed via environment variables using the `DotnetMonitor_` prefix and using `__`(double underscore) as the hierarchical separator
+The same configuration can be expressed via environment variables using the using `__`(double underscore) as the hierarchical separator:
 
 ```bash
 export Authentication__MonitorApiKey__Subject="ae5473b6-8dad-498d-b915-ffffffffffff"
 export Authentication__MonitorApiKey__PublicKey="eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"
 ```
+
+Environment variables _can_ be prefixed with `DotnetMonitor_` (single underscore) to give them a higher precedence over environment variables without this prefix. In the following example:
+
+```bash
+export DotnetMonitor_DefaultProcess__Filters__0__Key="myapp"
+export DefaultProcess__Filters__0__Key="dotnet"
+```
+
+The value from the variable `DotnetMonitor_DefaultProcess__Filters__0__Key` will be observed rather than the value from the variable `DefaultProcess__Filters__0__Key`, thus `dotnet monitor` will observe `DefaultProcess:Filters:0:Key` to be `myapp`.
 
 #### Kubernetes
 
