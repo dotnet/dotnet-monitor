@@ -22,12 +22,6 @@ Defining a default process on Windows requires creating a settings file in the u
             "Key": "ProcessName",
             "Value": "BuggyDemoWeb"
         }]
-"DefaultProcess": {
-    "Filters": [{
-        "Key": "ProcessName",
-        "Value": "BuggyDemoWeb"
-    }]
-    }
 }
 ```
 
@@ -51,4 +45,4 @@ Assuming your default process is running you can use the endpoints exposed by `d
 
 Alternatively, if you are using an API Key, you must [specify it via the Authorization header](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/authentication.md#authenticating-requests), you can accomplish that with a CLI tool like CURL.
 
-Artifacts can be output to specific local directories by configuring [egress file providers](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/configuration.md#filesystem-egress-provider) in the settings file.
+In addition to downloading artifacts directly over HTTP, artifacts can be output to specific local directories by configuring [egress file providers](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/configuration.md#filesystem-egress-provider) in the settings file.
