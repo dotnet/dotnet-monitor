@@ -264,7 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 services =>
                 {
-                    services.AddSingleton(clock);
+                    services.AddSingleton<ISystemClock>(clock);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
                 });
@@ -323,7 +323,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // Action list should have been executed the expected number of times
                     VerifyExecutionCount(callbackService, ExpectedActionExecutionCount);
 
-                    clock.Increment(SlidingWindowDuration);
+                    clock.Increment(2 * SlidingWindowDuration);
 
                     await ManualTriggerAsync(
                         triggerService,
@@ -348,7 +348,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 services =>
                 {
-                    services.AddSingleton(clock);
+                    services.AddSingleton<ISystemClock>(clock);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
                 });
