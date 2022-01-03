@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     internal class MockSystemClock : ISystemClock
     {
-        private DateTimeOffset _utcNow = DateTime.UtcNow;
+        private DateTimeOffset _utcNow = DateTimeOffset.UtcNow;
 
         public void Increment(TimeSpan timeSpan)
         {
