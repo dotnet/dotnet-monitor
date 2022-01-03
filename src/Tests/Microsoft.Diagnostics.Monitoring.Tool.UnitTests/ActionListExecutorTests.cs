@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor;
@@ -52,8 +53,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, clock);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -92,8 +94,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, clock);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -137,8 +140,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, clock);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -183,8 +187,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, clock);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;

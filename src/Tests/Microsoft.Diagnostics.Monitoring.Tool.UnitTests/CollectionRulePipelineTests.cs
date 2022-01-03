@@ -264,10 +264,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 services =>
                 {
+                    services.AddSingleton(clock);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
-                },
-                clock);
+                });
         }
 
         /// <summary>
@@ -348,10 +348,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 services =>
                 {
+                    services.AddSingleton(clock);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
-                },
-                clock);
+                });
         }
 
         /// <summary>
@@ -471,8 +471,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string collectionRuleName,
             Action<Tools.Monitor.RootOptions> setup,
             Func<AppRunner, CollectionRulePipeline, PipelineCallbacks, Task> pipelineCallback,
-            Action<IServiceCollection> servicesCallback = null,
-            ISystemClock clock = null)
+            Action<IServiceCollection> servicesCallback = null)
         {
             EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
             EndpointUtilities endpointUtilities = new(_outputHelper);
@@ -502,6 +501,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
                         ILogger<CollectionRuleService> logger =
                             host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+                        ISystemClock clock =
+                            host.Services.GetRequiredService<ISystemClock>();
 
                         PipelineCallbacks callbacks = new();
 
