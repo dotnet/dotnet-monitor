@@ -802,11 +802,11 @@ No outputs
 
 ##### Example
 
-Usage that sets a parameter to the profiler you loaded. In this case, your profiler might be looking for an account key defined in `MyProfiler_ApiKey` which is used to communicate to some outside system.
+Usage that sets a parameter to the profiler you loaded. In this case, your profiler might be looking for an account key defined in `MyProfiler_AccountId` which is used to communicate to some outside system.
 
 ```json
 {
-  "Name": "MyProfiler_ApiKey",
+  "Name": "MyProfiler_AccountId",
   "Value": "8fb138d2c44e4aea8545cc2df541ed4c"
 }
 ```
