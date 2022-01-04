@@ -22,6 +22,7 @@ Defining a default process on Windows requires creating a settings file in the u
             "Key": "ProcessName",
             "Value": "BuggyDemoWeb"
         }]
+    }
 }
 ```
 
