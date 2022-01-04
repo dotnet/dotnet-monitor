@@ -96,7 +96,7 @@ spec:
       secretName: apikey
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor
+    image: mcr.microsoft.com/dotnet/monitor:6.0
     volumeMounts:
       - name: apikey
         mountPath: /etc/dotnet-monitor
