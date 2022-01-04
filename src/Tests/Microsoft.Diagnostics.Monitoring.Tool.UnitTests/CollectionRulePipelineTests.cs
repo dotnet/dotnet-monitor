@@ -435,12 +435,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 iteration++;
 
+                TaskCompletionSource<object> startedSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                EventHandler startedHandler = (s, e) => startedSource.TrySetResult(null);
+                using var _ = token.Register(() => startedSource.TrySetCanceled(token));
+
                 actionsThrottledTask = callbacks.StartWaitForActionsThrottled();
 
+                triggerService.NotifyStarted += startedHandler;
+
+                // Manually invoke the trigger.
                 triggerService.NotifyTriggerSubscribers();
 
                 // Check throttling has occurred.
                 await actionsThrottledTask.WithCancellation(token);
+
+                await startedSource.WithCancellation(token);
+
+                triggerService.NotifyStarted -= startedHandler;
 
                 // Advance the clock source.
                 clock.Increment(clockIncrementDuration);
