@@ -6,6 +6,8 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,17 +60,38 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
 
         public static async Task WaitForCommandAsync(string expectedCommand, ILogger logger)
         {
+            await WaitForCommandAsync(new string[] { expectedCommand }, logger);
+        }
+
+        public static async Task<string> WaitForCommandAsync(string[] expectedCommands, ILogger logger)
+        {
             logger.ScenarioState(TestAppScenarios.SenarioState.Waiting);
 
             bool receivedExpected = false;
-            string line;
+            string line, commandReceived = null;
 
             while (!receivedExpected && null != (line = await Console.In.ReadLineAsync()))
             {
-                receivedExpected = string.Equals(expectedCommand, line, StringComparison.Ordinal);
+                if (await AppCommands.TryProcessAppCommand(line, logger))
+                {
+                    // We successfully received an app-level command and processed it.
+                    // Restart the loop and wait for the command the scenario is expecting.
+                    receivedExpected = false;
+                    // Still acknowledge this command and say it was expected
+                    logger.ReceivedCommand(line, expected: true);
+                    continue;
+                }
+
+                receivedExpected = expectedCommands.Contains(line, StringComparer.Ordinal);
+                if (receivedExpected)
+                {
+                    commandReceived = line;
+                }
 
                 logger.ReceivedCommand(line, receivedExpected);
             }
+
+            return commandReceived;
         }
     }
 }
