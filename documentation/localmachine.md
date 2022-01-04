@@ -33,7 +33,7 @@ To start using `dotnet monitor` run the following command from a Powershell or C
 dotnet-monitor collect
 ```
 
-Assuming your default process is running you can use the endpoints exposed by `dotnet-monitor` to view metrics, logs or download traces and memory dumps. When using Windows Authentication, your browser will automatically handle the Windows authentication challenge and as such you can navigate to this endpoints directly. 
+Assuming your default process is running you can use the endpoints exposed by `dotnet monitor` to view metrics and logs or to download traces and memory dumps. When using Windows Authentication, your browser will automatically handle the Windows authentication challenge and as such you can navigate to these endpoints directly. 
 
 ```http
 /dump 
