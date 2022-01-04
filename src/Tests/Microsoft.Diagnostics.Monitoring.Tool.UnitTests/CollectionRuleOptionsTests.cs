@@ -774,7 +774,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .AddLoadProfilerAction(
                         configureOptions: opts =>
                         {
-                            opts.Path = String.Empty;
+                            opts.Path = string.Empty;
                             opts.Clsid = ExpectedClsid;
                         });
                 },
@@ -826,6 +826,156 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
                     VerifyRequiredGuidMessage(failures, 0, nameof(LoadProfilerOptions.Clsid));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SetEnvironmentVariable_MinimumOptions()
+        {
+            const string VariableName = "MyProfiler_OptionA";
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddSetEnvironmentVariableAction(VariableName);
+                },
+                ruleOptions =>
+                {
+                    Assert.Single(ruleOptions.Actions);
+                    ruleOptions.VerifySetEnvironmentVariableAction(0, VariableName, null);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SetEnvironmentVariable_RoundTrip()
+        {
+            const string VariableName = "MyProfiler_OptionA";
+            const string VariableValue = "MyValue!@#$%^&*()_+-{}{]|";
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddSetEnvironmentVariableAction(VariableName, VariableValue);
+                },
+                ruleOptions =>
+                {
+                    Assert.Single(ruleOptions.Actions);
+                    ruleOptions.VerifySetEnvironmentVariableAction(0, VariableName, VariableValue);
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_SetEnvironmentVariable_NamePropertyValidation()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddSetEnvironmentVariableAction(null);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredMessage(failures, 0, nameof(SetEnvironmentVariableOptions.Name));
+                });
+
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddSetEnvironmentVariableAction(string.Empty);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredMessage(failures, 0, nameof(SetEnvironmentVariableOptions.Name));
+                });
+
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddSetEnvironmentVariableAction("    ");
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredMessage(failures, 0, nameof(SetEnvironmentVariableOptions.Name));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_GetEnvironmentVariable_RoundTrip()
+        {
+            const string VariableName = "MyGettingVar";
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddGetEnvironmentVariableAction(VariableName);
+                },
+                ruleOptions =>
+                {
+                    Assert.Single(ruleOptions.Actions);
+                    ruleOptions.VerifyGetEnvironmentVariableAction(0, VariableName);
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_GetEnvironmentVariable_NamePropertyValidation()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddGetEnvironmentVariableAction(null);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions.Name));
+                });
+
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddGetEnvironmentVariableAction(string.Empty);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions.Name));
+                });
+
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddGetEnvironmentVariableAction("    ");
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions.Name));
                 });
         }
 

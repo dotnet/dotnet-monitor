@@ -10,6 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             public const string EndScenario = nameof(EndScenario);
             public const string StartScenario = nameof(StartScenario);
+            public const string PrintEnvironmentVariables = nameof(PrintEnvironmentVariables);
         }
 
         public enum SenarioState
@@ -27,6 +28,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public static class Commands
             {
                 public const string Continue = nameof(Continue);
+            }
+        }
+
+        public static class EnvironmentVariables
+        {
+            public const string Name = nameof(EnvironmentVariables);
+            public const string IncrementVariableName = nameof(IncrementVariableName);
+
+            public static class Commands
+            {
+                public const string IncVar = nameof(IncVar);
+                public const string ShutdownScenario = nameof(ShutdownScenario);
             }
         }
 

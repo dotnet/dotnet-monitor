@@ -17,6 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 .AddCommand(AsyncWaitScenario.Command())
                 .AddCommand(LoggerScenario.Command())
                 .AddCommand(SpinWaitScenario.Command())
+                .AddCommand(EnvironmentVariablesScenario.Command())
                 .UseDefaults()
                 .Build()
                 .InvokeAsync(args);
