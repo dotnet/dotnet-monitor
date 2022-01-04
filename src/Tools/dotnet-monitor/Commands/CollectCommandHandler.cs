@@ -85,6 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
                 //TODO Many of these service additions should be done through extension methods
+                services.AddSingleton(RealSystemClock.Instance);
 
                 services.AddSingleton<IAuthConfiguration>(authenticationOptions);
 

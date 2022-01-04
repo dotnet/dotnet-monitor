@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -28,6 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly IProcessInfo _processInfo;
         private readonly IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
         private readonly List<Task> _runTasks = new();
+        private readonly ISystemClock _systemClock;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         private long _disposalState;
@@ -48,6 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             _actionListExecutor = serviceProvider.GetRequiredService<ActionListExecutor>();
             _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
+            _systemClock = serviceProvider.GetRequiredService<ISystemClock>();
             _triggerOperations = serviceProvider.GetRequiredService<ICollectionRuleTriggerOperations>();
         }
 
@@ -194,7 +197,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleStarted(ruleName);
 
-                CollectionRuleContext context = new(ruleName, options, _processInfo.EndpointInfo, _logger);
+                CollectionRuleContext context = new(ruleName, options, _processInfo.EndpointInfo, _logger, _systemClock);
 
                 await using CollectionRulePipeline pipeline = new(
                     _actionListExecutor,
