@@ -47,11 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
                 context.HttpContext.Response.Headers["Content-Type"] = _contentType;
 
-#if !NETSTANDARD2_0
                 context.HttpContext.Features.Get<AspNetCore.Http.Features.IHttpResponseBodyFeature>()?.DisableBuffering();
-#else
-                context.HttpContext.Features.Get<AspNetCore.Http.Features.IHttpBufferingFeature>()?.DisableResponseBuffering();
-#endif
 
                 await _action(context.HttpContext.Response.Body, token);
 
