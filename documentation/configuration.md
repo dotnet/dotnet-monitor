@@ -70,7 +70,7 @@ spec:
       secretName: apikey
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0
+    image: mcr.microsoft.com/dotnet/monitor:6.0
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -97,7 +97,7 @@ spec:
       name: my-configmap
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0
+    image: mcr.microsoft.com/dotnet/monitor:6.0
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -117,7 +117,7 @@ spec:
             name: my-configmap
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0
+    image: mcr.microsoft.com/dotnet/monitor:6.0
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
