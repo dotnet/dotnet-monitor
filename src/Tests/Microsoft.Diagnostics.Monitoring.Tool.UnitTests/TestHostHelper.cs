@@ -83,9 +83,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 .ConfigureLogging( loggingBuilder =>
                 {
                     loggingCallback?.Invoke(loggingBuilder);
+
+                    loggingBuilder.Services.AddSingleton<ILoggerProvider, TestOutputLoggerProvider>();
                 })
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
+                    services.AddSingleton<ITestOutputHelper>(outputHelper);
                     services.AddSingleton(RealSystemClock.Instance);
                     services.ConfigureGlobalCounter(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
