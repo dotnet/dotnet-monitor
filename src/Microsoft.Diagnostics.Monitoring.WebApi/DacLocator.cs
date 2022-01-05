@@ -145,7 +145,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 suffix = versionParts[1];
             }
 
-            runtime = new Runtime { Name = name, Version = new Version(version), Path = path, VersionSuffix = suffix };
+            if (!Version.TryParse(version, out Version runtimeVersion))
+            {
+                return false;
+            }
+
+            runtime = new Runtime { Name = name, Version = runtimeVersion, Path = path, VersionSuffix = suffix };
             return true;
         }
     }
