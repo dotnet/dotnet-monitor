@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -21,15 +22,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly OperationTrackerService _operationTrackerService;
         private readonly IOptionsMonitor<DiagnosticPortOptions> _portOptions;
         private readonly IOptionsMonitor<StorageOptions> _storageOptions;
+        private readonly ILogger<DumpService> _logger;
 
         public DumpService(
             IOptionsMonitor<StorageOptions> storageOptions,
             IOptionsMonitor<DiagnosticPortOptions> portOptions,
-            OperationTrackerService operationTrackerService)
+            OperationTrackerService operationTrackerService,
+            ILogger<DumpService> logger)
         {
             _portOptions = portOptions ?? throw new ArgumentNullException(nameof(portOptions));
             _storageOptions = storageOptions ?? throw new ArgumentNullException(nameof(StorageOptions));
             _operationTrackerService = operationTrackerService ?? throw new ArgumentNullException(nameof(operationTrackerService));
+            _logger = logger;
         }
 
         public async Task<Stream> DumpAsync(IEndpointInfo endpointInfo, Models.DumpType type, Models.PackageMode mode, CancellationToken token)
@@ -89,21 +93,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string dbi = null;
             if (mode.HasFlag(Models.PackageMode.IncludeDacDbi))
             {
-                //TODO Consider throwing NotSupportedException for Windows.
-
-                string runtimeDir = await DacLocator.LocateRuntime(token);
-                if (!string.IsNullOrEmpty(runtimeDir))
+                try
                 {
-                    dac = Path.Combine(runtimeDir, "libmscordaccore.so");
-                    if (!File.Exists(dac)) 
-                    {
-                        dac = null;
-                    }
-                    dbi = Path.Combine(runtimeDir, "libmscordbi.so");
-                    if (!File.Exists(dbi))
-                    {
-                        dbi = null;
-                    }
+                    string runtimeDir = DacLocator.LocateRuntimeComponents(endpointInfo, out dac, out dbi);
+                }
+                catch (InvalidOperationException e)
+                {
+                    _logger.LogWarning($"Unable to locate runtime components: {e.Message}");
                 }
             }
             if (mode.HasFlag(Models.PackageMode.DiagSession))
@@ -153,7 +149,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         nameof(dumpType));
             }
         }
-
-
     }
 }

@@ -19,6 +19,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -208,6 +209,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Models.PackageMode mode = Models.PackageMode.None)
         {
+            if (mode.HasFlag(Models.PackageMode.IncludeDacDbi) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                throw new PlatformNotSupportedException();
+            }
+
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async processInfo =>
