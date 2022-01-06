@@ -293,6 +293,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return true;
 #else
             return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+#endif
         }
 
         private async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
