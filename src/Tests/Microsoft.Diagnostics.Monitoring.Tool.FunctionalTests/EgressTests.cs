@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -108,7 +109,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Fact]
+        // https://github.com/dotnet/dotnet-monitor/issues/1285
+        [ConditionalFact(nameof(IsNotCore31OnOSX))]
         public async Task EgressListTest()
         {
             await ScenarioRunner.SingleTarget(
@@ -283,6 +285,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
+        }
+
+        public static bool IsNotCore31OnOSX()
+        {
+#if NET5_0_OR_GREATER
+            return true;
+#else
+            return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
         }
 
         private async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
