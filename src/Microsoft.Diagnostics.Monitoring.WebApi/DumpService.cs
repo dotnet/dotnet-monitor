@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 try
                 {
-                    string runtimeDir = DacLocator.LocateRuntimeComponents(endpointInfo, out dac, out dbi);
+                    DacLocator.LocateRuntimeComponents(endpointInfo, out dac, out dbi);
                 }
                 catch (InvalidOperationException e)
                 {

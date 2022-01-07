@@ -6,6 +6,11 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
+    /// <summary>
+    /// Indicates packaging options for artifacts.
+    /// The lower 2 bytes indicate the type of packaging, while the upper 2 bytes can be used to add
+    /// additional payloads.
+    /// </summary>
     [Flags]
     public enum PackageMode
     {

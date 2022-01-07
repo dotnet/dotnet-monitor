@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class DacLocator
     {
-        public static string LocateRuntimeComponents(IEndpointInfo endpointInfo, out string dac, out string dbi)
+        public static void LocateRuntimeComponents(IEndpointInfo endpointInfo, out string dac, out string dbi)
         {
             if (Environment.GetEnvironmentVariable("DOTNET_MONITOR_VERSION") != null)
             {
@@ -66,8 +66,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 throw new InvalidOperationException(e.Message, e);
             }
-
-            return null;
         }
     }
 }
