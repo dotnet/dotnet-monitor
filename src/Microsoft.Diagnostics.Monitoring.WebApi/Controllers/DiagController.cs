@@ -211,7 +211,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             if (mode.HasFlag(Models.PackageMode.IncludeDacDbi) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                throw new PlatformNotSupportedException();
+                return Task.FromResult<ActionResult>(this.Problem(new PlatformNotSupportedException()));
             }
 
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
