@@ -136,6 +136,9 @@
     <value>Metrics was not enabled.</value>
     <comment>Gets a string similar to "Metrics was not enabled.".</comment>
   </data>
+  <data name="ErrorMessage_MissingRuntimeComponent" xml:space="preserve">
+    <value>Unable to locate runtime component at '{0}'.</value>
+  </data>
   <data name="ErrorMessage_MultipleTargetProcesses" xml:space="preserve">
     <value>Unable to select a single target process because multiple target processes have been discovered.</value>
     <comment>Gets a string similar to "Unable to select a single target process because multiple target processes have been discovered.".</comment>
@@ -143,6 +146,9 @@
   <data name="ErrorMessage_NoDefaultProcessConfig" xml:space="preserve">
     <value>No default process configuration has been set.</value>
     <comment>Gets a string similar to "No default process configuration has been set.".</comment>
+  </data>
+  <data name="ErrorMessage_NoRuntimeFolder" xml:space="preserve">
+    <value>Unable to locate runtime folder.</value>
   </data>
   <data name="ErrorMessage_NoTargetProcess" xml:space="preserve">
     <value>Unable to discover a target process.</value>
@@ -174,6 +180,9 @@
 0. typeName: Name of the type that has the unexpected value
 1. value: The value that was unexpected</comment>
   </data>
+  <data name="ErrorMessage_UnsupportedInSidecar" xml:space="preserve">
+    <value>Cannot locate runtime when using dotnet-monitor as a sidecar container.</value>
+  </data>
   <data name="ErrorMessage_ValueEmptyNullWhitespace" xml:space="preserve">
     <value>Value cannot be null, empty, or whitespace.</value>
     <comment>Gets a string similar to "Value cannot be null, empty, or whitespace.".</comment>
@@ -199,6 +208,9 @@
     <comment>Gets the format string that is printed in the 4:EgressedArtifact event.
 1 Format Parameter:
 1. location: The location that the artifact was egressed to</comment>
+  </data>
+  <data name="LogFormatString_MissingDacDbi" xml:space="preserve">
+    <value>Unable to locate runtime component: '{path}'.</value>
   </data>
   <data name="LogFormatString_RequestCanceled" xml:space="preserve">
     <value>Request canceled.</value>

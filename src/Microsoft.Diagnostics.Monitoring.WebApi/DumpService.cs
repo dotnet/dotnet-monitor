@@ -99,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
                 catch (InvalidOperationException e)
                 {
-                    _logger.LogWarning($"Unable to locate runtime components: {e.Message}");
+                    _logger.MissingDacDbi(e.Message);
                 }
             }
             if (mode.HasFlag(Models.PackageMode.DiagSession))

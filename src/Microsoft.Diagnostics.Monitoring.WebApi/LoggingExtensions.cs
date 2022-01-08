@@ -45,6 +45,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ThrottledEndpoint);
 
+        private static readonly Action<ILogger, string, Exception> _missingDacDbi =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(7, "MissingDacDbi"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_MissingDacDbi);
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -73,6 +79,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static void WrittenToHttpStream(this ILogger logger)
         {
             _writtenToHttpStream(logger, null);
+        }
+
+        public static void MissingDacDbi(this ILogger logger, string path)
+        {
+            _missingDacDbi(logger, path, null);
         }
     }
 }

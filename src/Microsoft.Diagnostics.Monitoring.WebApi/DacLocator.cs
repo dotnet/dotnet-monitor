@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 //TODO This is not really a comprehensive way to detect that we are in a sidecar.
                 // We cannot use CommandLine since we didn't start the process.
-                throw new InvalidOperationException("Cannot locate runtime when using dotnet-monitor as a sidecar container.");
+                throw new InvalidOperationException(Strings.ErrorMessage_UnsupportedInSidecar);
             }
 
             Process process = null;
@@ -48,18 +49,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 if (runtimeDir == null)
                 {
-                    throw new InvalidOperationException("Unable to locate runtime folder.");
+                    throw new InvalidOperationException(Strings.ErrorMessage_NoRuntimeFolder);
                 }
 
                 dac = Path.Combine(runtimeDir, "libmscordaccore.so");
                 if (!File.Exists(dac))
                 {
-                    throw new InvalidOperationException($"Unable to locate runtime component at {dac}");
+                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_MissingRuntimeComponent, dac));
                 }
                 dbi = Path.Combine(runtimeDir, "libmscordbi.so");
                 if (!File.Exists(dbi))
                 {
-                    throw new InvalidOperationException($"Unable to locate runtime component at {dbi}");
+                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_MissingRuntimeComponent, dbi));
                 }
             }
             catch (NotSupportedException e)

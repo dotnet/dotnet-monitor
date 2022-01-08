@@ -106,6 +106,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to locate runtime component at &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_MissingRuntimeComponent {
+            get {
+                return ResourceManager.GetString("ErrorMessage_MissingRuntimeComponent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to select a single target process because multiple target processes have been discovered..
         /// </summary>
         internal static string ErrorMessage_MultipleTargetProcesses {
@@ -120,6 +129,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string ErrorMessage_NoDefaultProcessConfig {
             get {
                 return ResourceManager.GetString("ErrorMessage_NoDefaultProcessConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to locate runtime folder..
+        /// </summary>
+        internal static string ErrorMessage_NoRuntimeFolder {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoRuntimeFolder", resourceCulture);
             }
         }
         
@@ -187,6 +205,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot locate runtime when using dotnet-monitor as a sidecar container..
+        /// </summary>
+        internal static string ErrorMessage_UnsupportedInSidecar {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnsupportedInSidecar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Value cannot be null, empty, or whitespace..
         /// </summary>
         internal static string ErrorMessage_ValueEmptyNullWhitespace {
@@ -228,6 +255,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string LogFormatString_EgressedArtifact {
             get {
                 return ResourceManager.GetString("LogFormatString_EgressedArtifact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to locate runtime component: &apos;{path}&apos;..
+        /// </summary>
+        internal static string LogFormatString_MissingDacDbi {
+            get {
+                return ResourceManager.GetString("LogFormatString_MissingDacDbi", resourceCulture);
             }
         }
         
