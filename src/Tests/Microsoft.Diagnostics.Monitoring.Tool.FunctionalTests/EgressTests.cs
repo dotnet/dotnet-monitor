@@ -292,7 +292,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 #if NET5_0_OR_GREATER
             return true;
 #else
-            return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+            return !RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 #endif
         }
 
