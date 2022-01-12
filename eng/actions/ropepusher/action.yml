@@ -1,0 +1,13 @@
+name: 'PR Pusher - RopePusher'
+description: 'Retries check-runs until they succeeds'
+inputs:
+  commentId:
+    description: 'The GitHub ID of the comment posted to the page that will be updated.'
+  retries:
+    description: 'Max number of retries to attempt for each check-run.'
+  auth_token:
+    description: 'The token used to authenticate to GitHub.'
+
+runs:
+  using: 'node12'
+  main: 'ropepusher.js'
