@@ -45,10 +45,11 @@ async function AppendCommentContent(text) {
     console.log(`Completed update to comment #${commentId}. Requests remaining=${newComment.headers['x-ratelimit-remaining']}`);
 }
 
-async function EvaluateRerun(run, allRuns) {
+function EvaluateRerun(run, allRuns) {
     const core = require("@actions/core");
     let requiredSuccesses = core.getInput("requiredSuccesses", { required: true });
 
+    console.log(`Evaluating build ${run.name} for retry.`);
     if (!(run.status === "completed" && run.conclusion === "failure")) {
         // if it didn't fail yet, don't do anything
         return "wait";
@@ -62,8 +63,9 @@ async function EvaluateRerun(run, allRuns) {
     let totalRuns = 0;
     let successfulRuns = 0;
     let inProgress = 0;
-    for (let i = 0; i < allRuns.length; i++) {
-        if (allRuns[i].app.id == appType) {
+    for (let i = 0; i < allRuns.total_count; i++) {
+        let evalRun = allRuns.check_run[i];
+        if (evalRun.app.id == appType) {
             totalRuns++;
             if (run.status === "completed" && run.conclusion === "success") {
                 successfulRuns++;
@@ -73,6 +75,7 @@ async function EvaluateRerun(run, allRuns) {
             }
         }
     }
+    console.log(`check stats: totalRuns: ${totalRuns}; successfulRuns: ${successfulRuns}; inProgress: ${inProgress}; requiredSuccesses: ${requiredSuccesses}.`);
 
     // subtract our check-run
     let otherBuilds = totalRuns - 1;
@@ -168,7 +171,8 @@ async function run() {
             let successfulNeeded = checkruns.total_count;
             for (let i = 0; i < checkruns.total_count; i++) {
                 let run = checkruns.check_run[i];
-                let rerunState = await EvaluateRerun(run, checkruns.check_run);
+                let rerunState = EvaluateRerun(run, checkruns);
+                console.log(`Eval for build ${run.name}: ${rerunState}`);
 
                 if (rerunState === "stop") {
                     throw new BuildKickerException(`Error: not enough successful runs to retry \`${run.name}\`.`);
