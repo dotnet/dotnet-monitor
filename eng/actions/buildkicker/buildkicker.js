@@ -168,9 +168,13 @@ async function run() {
             })).data;
             console.log(`checkruns: ${JSON.stringify(checkruns)}`);
 
+            console.log(`print cr complete`);
             let successfulNeeded = checkruns.total_count;
+            console.log(`totalCt: ${successfulNeeded}`);
             for (let i = 0; i < checkruns.total_count; i++) {
+                console.log(`eval ind: ${i}`);
                 let run = checkruns.check_run[i];
+                console.log(`check name: ${run.name}`);
                 let rerunState = EvaluateRerun(run, checkruns);
                 console.log(`Eval for build ${run.name}: ${rerunState}`);
 
