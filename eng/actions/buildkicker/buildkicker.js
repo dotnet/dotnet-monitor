@@ -186,7 +186,7 @@ async function run() {
                         rerunCounts.set(run.Id, 0);
                     }
 
-                    let reruns = rerun.get(run.Id);
+                    let reruns = rerunCounts.get(run.Id);
 
                     if (reruns < retries) {
                         let newRerunCount = reruns + 1;
