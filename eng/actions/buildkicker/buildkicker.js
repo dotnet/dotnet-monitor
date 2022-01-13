@@ -64,7 +64,7 @@ function EvaluateRerun(run, allRuns) {
     let successfulRuns = 0;
     let inProgress = 0;
     for (let i = 0; i < allRuns.total_count; i++) {
-        let evalRun = allRuns.check_run[i];
+        let evalRun = allRuns.check_runs[i];
         if (evalRun.app.id == appType) {
             totalRuns++;
             if (run.status === "completed" && run.conclusion === "success") {
@@ -173,7 +173,7 @@ async function run() {
             console.log(`totalCt: ${successfulNeeded}`);
             for (let i = 0; i < checkruns.total_count; i++) {
                 console.log(`eval ind: ${i}`);
-                let run = checkruns.check_run[i];
+                let run = checkruns.check_runs[i];
                 console.log(`check name: ${run.name}`);
                 let rerunState = EvaluateRerun(run, checkruns);
                 console.log(`Eval for build ${run.name}: ${rerunState}`);
