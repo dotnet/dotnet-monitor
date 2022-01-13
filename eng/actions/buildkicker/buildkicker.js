@@ -3,8 +3,6 @@
 
 const { Console } = require("console");
 
-const WaitSec = 60;
-
 function BuildKickerException(message, postToGitHub = true) {
     this.message = message;
     this.postToGitHub = postToGitHub;
@@ -47,6 +45,53 @@ async function AppendCommentContent(text) {
     console.log(`Completed update to comment #${commentId}. Requests remaining=${newComment.headers['x-ratelimit-remaining']}`);
 }
 
+async function EvaluateRerun(run, allRuns) {
+    const core = require("@actions/core");
+    let requiredSuccesses = core.getInput("requiredSuccesses", { required: true });
+
+    if (!(run.status === "completed" && run.conclusion === "failure")) {
+        // if it didn't fail yet, don't do anything
+        return "wait";
+    }
+
+    if (run.status === "completed" && run.conclusion === "success") {
+        return "success";
+    }
+
+    let appType = run.app.id;
+    let totalRuns = 0;
+    let successfulRuns = 0;
+    let inProgress = 0;
+    for (let i = 0; i < allRuns.length; i++) {
+        if (allRuns[i].app.id == appType) {
+            totalRuns++;
+            if (run.status === "completed" && run.conclusion === "success") {
+                successfulRuns++;
+            }
+            if (run.status === "in_progress") {
+                inProgress++;
+            }
+        }
+    }
+
+    // subtract our check-run
+    let otherBuilds = totalRuns - 1;
+    if (otherBuilds < requiredSuccesses) {
+        requiredSuccesses = otherBuilds;
+    }
+
+    if (successfulRuns >= requiredSuccesses) {
+        return "rerun";
+    }
+
+    let maySucceed = successfulRuns + inProgress;
+    if (maySucceed >= requiredSuccesses) {
+        return "wait";
+    }
+
+    return "stop";
+}
+
 async function run() {
     const util = require("util");
     const jsExec = util.promisify(require("child_process").exec);
@@ -59,7 +104,6 @@ async function run() {
 
     const core = require("@actions/core");
     const github = require("@actions/github");
-    const exec = require("@actions/exec");
 
     const repo_owner = github.context.payload.repository.owner.login;
     const repo_name = github.context.payload.repository.name;
@@ -69,6 +113,8 @@ async function run() {
     let octokit = github.getOctokit(core.getInput("auth_token", { required: true }));
     let retries = core.getInput("retries", { required: true });
     let commentId = core.getInput("commentId", { required: true });
+    let pollInterval = core.getInput("pollInterval", { required: true });
+    let waitSec = 60 * pollInterval;
 
     let failed = true;
     try {
@@ -119,12 +165,15 @@ async function run() {
             })).data;
             console.log(`checkruns: ${JSON.stringify(checkruns)}`);
 
-            let allComplete = true;
+            let successfulNeeded = checkruns.total_count;
             for (let i = 0; i < checkruns.total_count; i++) {
                 let run = checkruns.check_run[i];
-                if (run.status === "completed" && run.conclusion === "failure") {
-                    console.log(`Check-Run #${run.Id} is in failed state is being evaluated for retry.`);
+                let rerunState = await EvaluateRerun(run, checkruns.check_run);
 
+                if (rerunState === "stop") {
+                    throw new BuildKickerException(`Error: not enough successful runs to retry \`${run.name}\`.`);
+                }
+                else if (rerunState === "rerun") {
                     // We want to re-run this instance
                     if (!rerunCounts.has(run.id)) {
                         rerunCounts.set(run.Id, 0);
@@ -150,13 +199,12 @@ async function run() {
                         throw new BuildKickerException(`Error: out of retries for \`${run.name}\`.`);
                     }
                 }
-
-                if (!(run.status === "completed" && run.conclusion === "success")) {
-                    allComplete = false;
+                else if (rerunState === "success") {
+                    successfulNeeded--;
                 }
             }
 
-            if (allComplete) {
+            if (successfulNeeded == 0) {
                 console.log(`All checks completed`);
                 let timestamp = new Date(Date.now());
                 let newCommentEntry = `- \`${timestamp.toISOString()}\` Found ${checkruns.total_count} runs and all are in the \`completed\` + \`success\` state.`;
@@ -165,8 +213,8 @@ async function run() {
                 break;
             }
 
-            console.log(`Waiting ${WaitSec} Seconds...`);
-            await sleep(WaitSec);
+            console.log(`Waiting ${waitSec} Seconds...`);
+            await sleep(waitSec);
         }
 
         if (ctr <= 0) {

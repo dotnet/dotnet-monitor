@@ -58,6 +58,8 @@ jobs:
     - name: Run BuildKicker
       uses: ./eng/actions/buildkicker
       with:
+        requiredSuccesses: 2
+        pollInterval: 5
         commentId: ${{ steps.comment-poster.outputs.result }}
         retries: ${{ steps.retries-extractor.outputs.result }}
         auth_token: ${{ secrets.GITHUB_TOKEN }}
