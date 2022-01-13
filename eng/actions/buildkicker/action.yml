@@ -1,4 +1,4 @@
-name: 'PR Pusher - RopePusher'
+name: 'BuildKicker'
 description: 'Retries check-runs until they succeeds'
 inputs:
   commentId:
@@ -10,4 +10,4 @@ inputs:
 
 runs:
   using: 'node12'
-  main: 'ropepusher.js'
+  main: 'buildkicker.js'

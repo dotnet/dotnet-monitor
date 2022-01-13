@@ -6,11 +6,11 @@ on:
 permissions:
   contents: write
   issues: write
-  pull-requests: write
+  pull-requests: read
 
 jobs:
-  PushRope:
-    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/pushrope')
+  KickBuild:
+    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/kickbuild')
     runs-on: ubuntu-20.04
     steps:
     - name: Extract retries allowed
@@ -24,11 +24,11 @@ jobs:
 
           // extract the optional retry count attached to the end of the command
           // The expected format for the command is one of 2 examples:
-          // 1. `/pushrope`
-          // 2. `/pushrope 32` Where "32" is a string of digits representing the number of retries allowed for each check-run. (note this is limited to 2 digits, so no more than 99 retries)
-          const regex = /\/pushrope( ([\d]{1,2}))?/;
+          // 1. `/kickbuild`
+          // 2. `/kickbuild 32` Where "32" is a string of digits representing the number of retries allowed for each check-run. (note this is limited to 2 digits, so no more than 99 retries)
+          const regex = /\/kickbuild( ([\d]{1,2}))?/;
           retries = regex.exec(context.payload.comment.body);
-          if (retries == null) throw "Error: Command does not match expected format: `/pushrope XX`.";
+          if (retries == null) throw "Error: Command does not match expected format: `/kickbuild XX`.";
 
           if (retries[2] != null) {
               return Number.parseInt(retries[2]);
@@ -43,8 +43,7 @@ jobs:
         debug: true
         script: |
           const retries = ${{ steps.retries-extractor.outputs.result }};
-          console.log("RopePusher `Hello, World!`");
-          const ack_bodytext = `### Rope Pusher\n\nStarted pushing on rope, **Rope Pusher** may re-request each check-run at most ${retries} time(s).<details>\n<summary>Details</summary>\n\n**Rope Pusher** is a github action defined at \`.github/workflows/ropepusher.yml\` used to automatically retry failed check-runs.\n\nThis instance was invoked by \`@${context.payload.comment.user.login}\` by adding a comment with the text \`/pushrope\`. \n\n> This is called _Rope Pusher_ because I think retrying tests until they succeed is about as useful as pushing on rope, which is to say, not that useful.\n\n[GitHub Action Details](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID})</details>\n`;
+          const ack_bodytext = `### Build Kicker\n\nStarted kicking build, **Build Kicker** may re-request each check-run at most ${retries} time(s).<details>\n<summary>Details</summary>\n\n**Build Kicker** is a github action defined at \`.github/workflows/buildkicker.yml\` used to automatically retry failed check-runs.\n\nThis instance was invoked by \`@${context.payload.comment.user.login}\` by adding a comment with the text \`/kickbuild\`. \n\n> Retrying tests until they suceed isn't a great engineering practice; so, use this command with caution.\n\n[GitHub Action Details](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID})</details>\n`;
           let comment = await github.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
@@ -56,8 +55,8 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-    - name: Run RopePusher
-      uses: ./eng/actions/ropepusher
+    - name: Run BuildKicker
+      uses: ./eng/actions/buildkicker
       with:
         commentId: ${{ steps.comment-poster.outputs.result }}
         retries: ${{ steps.retries-extractor.outputs.result }}

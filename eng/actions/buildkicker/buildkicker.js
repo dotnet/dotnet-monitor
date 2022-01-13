@@ -5,7 +5,7 @@ const { Console } = require("console");
 
 const WaitSec = 60;
 
-function RopePusherException(message, postToGitHub = true) {
+function BuildKickerException(message, postToGitHub = true) {
     this.message = message;
     this.postToGitHub = postToGitHub;
 }
@@ -82,7 +82,7 @@ async function run() {
             console.log(`Verified ${comment_user} is a repo collaborator.`);
         } catch (error) {
             console.log(error);
-            throw new RopePusherException(`Error: @${comment_user} is not a repo collaborator, using RopePusher is not allowed.`);
+            throw new BuildKickerException(`Error: @${comment_user} is not a repo collaborator, using \`BuildKicker\` is not allowed.`);
         }
 
         const rerunCounts = new Map();
@@ -100,11 +100,11 @@ async function run() {
             console.log(`myPR: ${JSON.stringify(myPr)}`);
 
             if (myPr === undefined || myPr === null || myPr.head === undefined || myPr.head === null || myPr.head.sha === undefined || myPr.head.sha === null) {
-                throw new RopePusherException(`Error: Didn't get valid [PR].head.sha value when accessing PR #${pr_number}.`);
+                throw new BuildKickerException(`Error: Didn't get valid [PR].head.sha value when accessing PR #${pr_number}.`);
             }
 
             if (!myPr.mergeable) {
-                throw new RopePusherException(`Error: The PR must be mergeable before RopePusher may be used.`);
+                throw new BuildKickerException(`Error: The PR must be mergeable before \`BuildKicker\` may be used.`);
             }
 
             if (myPr.merged) {
@@ -147,7 +147,7 @@ async function run() {
                         });
                     }
                     else {
-                        throw new RopePusherException(`Error: out of retries for \`${run.name}\`.`);
+                        throw new BuildKickerException(`Error: out of retries for \`${run.name}\`.`);
                     }
                 }
 
@@ -170,7 +170,7 @@ async function run() {
         }
 
         if (ctr <= 0) {
-            throw new RopePusherException(`Error: exceeded max runtime.`);
+            throw new BuildKickerException(`Error: exceeded max runtime.`);
         }
     }
     catch (error) {
@@ -178,7 +178,7 @@ async function run() {
 
         if (error.postToGitHub === undefined || error.postToGitHub == true) {
             let timestamp = new Date(Date.now());
-            await AppendCommentContent(`\n\`${timestamp.toISOString()}\` @${comment_user}, **Rope Pusher** run failed!\n\n\`\`\`\n${error.message}\n\`\`\``);
+            await AppendCommentContent(`\n\`${timestamp.toISOString()}\` @${comment_user}, **Build Kicker** run failed!\n\n\`\`\`\n${error.message}\n\`\`\``);
             await octokit.rest.reactions.createForIssueComment({
                 owner: repo_owner,
                 repo: repo_name,
@@ -190,7 +190,7 @@ async function run() {
 
     if (!failed) {
         let timestamp = new Date(Date.now());
-        await AppendCommentContent(`\n\`${timestamp.toISOString()}\` @${comment_user}, **Rope Pusher** run complete!`)
+        await AppendCommentContent(`\n\`${timestamp.toISOString()}\` @${comment_user}, **Build Kicker** run complete!`)
         await octokit.rest.reactions.createForIssueComment({
             owner: repo_owner,
             repo: repo_name,
