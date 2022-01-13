@@ -71,7 +71,7 @@ function EvaluateRerun(run, allRuns) {
         let evalRun = allRuns.check_runs[i];
         if (evalRun.app.id == 9426 && !evalRun.details_url.includes("jobId=")) {
             // this is a root-level check and should be ignored
-            return "wait";
+            continue;
         }
         if (evalRun.app.id == run.app.id) {
             totalRuns++;
