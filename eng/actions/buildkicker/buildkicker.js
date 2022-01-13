@@ -59,18 +59,17 @@ function EvaluateRerun(run, allRuns) {
         return "success";
     }
 
-    let appType = run.app.id;
     let totalRuns = 0;
     let successfulRuns = 0;
     let inProgress = 0;
     for (let i = 0; i < allRuns.total_count; i++) {
         let evalRun = allRuns.check_runs[i];
-        if (evalRun.app.id == appType) {
+        if (evalRun.app.id == run.app.id) {
             totalRuns++;
-            if (run.status === "completed" && run.conclusion === "success") {
+            if (evalRun.status === "completed" && evalRun.conclusion === "success") {
                 successfulRuns++;
             }
-            if (run.status === "in_progress") {
+            if (evalRun.status === "in_progress") {
                 inProgress++;
             }
         }
