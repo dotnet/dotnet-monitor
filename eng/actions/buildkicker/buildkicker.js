@@ -59,11 +59,20 @@ function EvaluateRerun(run, allRuns) {
         return "success";
     }
 
+    if (run.app.id == 9426 && !run.details_url.includes("jobId=")) {
+        // this is a root-level check and should be ignored
+        return "wait";
+    }
+
     let totalRuns = 0;
     let successfulRuns = 0;
     let inProgress = 0;
     for (let i = 0; i < allRuns.total_count; i++) {
         let evalRun = allRuns.check_runs[i];
+        if (evalRun.app.id == 9426 && !evalRun.details_url.includes("jobId=")) {
+            // this is a root-level check and should be ignored
+            return "wait";
+        }
         if (evalRun.app.id == run.app.id) {
             totalRuns++;
             if (evalRun.status === "completed" && evalRun.conclusion === "success") {
@@ -167,15 +176,12 @@ async function run() {
             })).data;
             console.log(`checkruns: ${JSON.stringify(checkruns)}`);
 
-            console.log(`print cr complete`);
             let successfulNeeded = checkruns.total_count;
-            console.log(`totalCt: ${successfulNeeded}`);
+            console.log(`Found ${successfulNeeded} check run(s)`);
             for (let i = 0; i < checkruns.total_count; i++) {
-                console.log(`eval ind: ${i}`);
                 let run = checkruns.check_runs[i];
-                console.log(`check name: ${run.name}`);
                 let rerunState = EvaluateRerun(run, checkruns);
-                console.log(`Eval for build ${run.name}: ${rerunState}`);
+                console.log(`Eval for check[${i}]=${run.name}: ${rerunState}`);
 
                 if (rerunState === "stop") {
                     throw new BuildKickerException(`Error: not enough successful runs to retry \`${run.name}\`.`);
@@ -183,14 +189,16 @@ async function run() {
                 else if (rerunState === "rerun") {
                     // We want to re-run this instance
                     if (!rerunCounts.has(run.id)) {
-                        rerunCounts.set(run.Id, 0);
+                        console.log(`No reruns for [${run.id}], setting retry count = 0.`);
+                        rerunCounts.set(run.id, 0);
                     }
 
-                    let reruns = rerunCounts.get(run.Id);
+                    let reruns = rerunCounts.get(run.id);
 
                     if (reruns < retries) {
                         let newRerunCount = reruns + 1;
-                        rerunCounts.set(run.Id, newRerunCount);
+                        console.log(`Setting retry count[${run.id}]=${newRerunCount}.`);
+                        rerunCounts.set(run.id, newRerunCount);
 
                         let timestamp = new Date(Date.now());
                         let newCommentEntry = `- \`${timestamp.toISOString()}\` Retrying \`${run.name}\`, attempt # \`${newRerunCount + 1}\`, \`${retries - newRerunCount}\` retries left.`;
@@ -199,7 +207,7 @@ async function run() {
                         octokit.rest.checks.rerequestRun({
                             owner: repo_owner,
                             repo: repo_name,
-                            check_run_id: run.Id,
+                            check_run_id: run.id,
                         });
                     }
                     else {
