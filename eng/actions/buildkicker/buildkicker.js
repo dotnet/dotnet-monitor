@@ -204,7 +204,7 @@ async function run() {
                         let newCommentEntry = `- \`${timestamp.toISOString()}\` Retrying \`${run.name}\`, attempt # \`${newRerunCount + 1}\`, \`${retries - newRerunCount}\` retries left.`;
                         await AppendCommentContent(newCommentEntry);
 
-                        octokit.rest.checks.rerequestRun({
+                        await octokit.rest.checks.rerequestRun({
                             owner: repo_owner,
                             repo: repo_name,
                             check_run_id: run.id,
