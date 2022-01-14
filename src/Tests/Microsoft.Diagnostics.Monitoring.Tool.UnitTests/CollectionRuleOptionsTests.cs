@@ -123,11 +123,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions);
-
-                    eventCounterOptions.ProviderName = ExpectedProviderName;
-                    eventCounterOptions.CounterName = ExpectedCounterName;
-                    eventCounterOptions.GreaterThan = ExpectedGreaterThan;
+                        .SetEventCounterTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.CounterName = ExpectedCounterName;
+                            options.GreaterThan = ExpectedGreaterThan;
+                        });
                 },
                 ruleOptions =>
                 {
@@ -151,13 +152,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions);
-
-                    eventCounterOptions.ProviderName = ExpectedProviderName;
-                    eventCounterOptions.CounterName = ExpectedCounterName;
-                    eventCounterOptions.GreaterThan = ExpectedGreaterThan;
-                    eventCounterOptions.LessThan = ExpectedLessThan;
-                    eventCounterOptions.SlidingWindowDuration = ExpectedDuration;
+                        .SetEventCounterTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.CounterName = ExpectedCounterName;
+                            options.GreaterThan = ExpectedGreaterThan;
+                            options.LessThan = ExpectedLessThan;
+                            options.SlidingWindowDuration = ExpectedDuration;
+                        });
                 },
                 ruleOptions =>
                 {
@@ -177,9 +179,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions);
-
-                    eventCounterOptions.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                        .SetEventCounterTrigger(options =>
+                        {
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                        });
                 },
                 ex =>
                 {
@@ -205,10 +208,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions);
-
-                    eventCounterOptions.ProviderName = ExpectedProviderName;
-                    eventCounterOptions.CounterName = ExpectedCounterName;
+                        .SetEventCounterTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.CounterName = ExpectedCounterName;
+                        });
                 },
                 ex =>
                 {
@@ -229,12 +233,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetEventCounterTrigger(out EventCounterOptions eventCounterOptions);
-
-                    eventCounterOptions.ProviderName = ExpectedProviderName;
-                    eventCounterOptions.CounterName = ExpectedCounterName;
-                    eventCounterOptions.GreaterThan = 0.75;
-                    eventCounterOptions.LessThan = 0.5;
+                        .SetEventCounterTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.CounterName = ExpectedCounterName;
+                            options.GreaterThan = 0.75;
+                            options.LessThan = 0.5;
+                        });
                 },
                 ex =>
                 {
@@ -357,12 +362,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions);
-
-                    collectLogsOptions.UseAppFilters = ExpectedUseAppFilters;
-                    collectLogsOptions.DefaultLevel = ExpectedLogLevel;
-                    collectLogsOptions.FilterSpecs = ExpectedFilterSpecs;
-                    collectLogsOptions.Duration = ExpectedDuration;
+                        .AddCollectLogsAction(ExpectedEgressProvider, options =>
+                        {
+                            options.UseAppFilters = ExpectedUseAppFilters;
+                            options.DefaultLevel = ExpectedLogLevel;
+                            options.FilterSpecs = ExpectedFilterSpecs;
+                            options.Duration = ExpectedDuration;
+                        });
 
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },
@@ -390,10 +396,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectLogsAction(egress: null, out CollectLogsOptions collectLogsOptions);
-
-                    collectLogsOptions.DefaultLevel = (LogLevel)100;
-                    collectLogsOptions.Duration = TimeSpan.FromDays(3);
+                        .AddCollectLogsAction(egress: null, options =>
+                        {
+                            options.DefaultLevel = (LogLevel)100;
+                            options.Duration = TimeSpan.FromDays(3);
+                        });
                 },
                 ex =>
                 {
@@ -416,12 +423,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectLogsAction(ExpectedEgressProvider, out CollectLogsOptions collectLogsOptions);
-
-                    collectLogsOptions.FilterSpecs = new Dictionary<string, LogLevel?>()
-                    {
-                        { "CategoryA", (LogLevel)50 }
-                    };
+                        .AddCollectLogsAction(ExpectedEgressProvider, options =>
+                        {
+                            options.FilterSpecs = new Dictionary<string, LogLevel?>()
+                            {
+                                { "CategoryA", (LogLevel)50 }
+                            };
+                        });
 
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },
@@ -488,9 +496,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectTraceAction(ExpectedProfile, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions);
-
-                    collectTraceOptions.Duration = ExpectedDuration;
+                        .AddCollectTraceAction(ExpectedProfile, ExpectedEgressProvider, options =>
+                        {
+                            options.Duration = ExpectedDuration;
+                        });
 
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },
@@ -528,11 +537,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions);
-
-                    collectTraceOptions.BufferSizeMegabytes = ExpectedBufferSizeMegabytes;
-                    collectTraceOptions.Duration = ExpectedDuration;
-                    collectTraceOptions.RequestRundown = ExpectedRequestRundown;
+                        .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, options =>
+                        {
+                            options.BufferSizeMegabytes = ExpectedBufferSizeMegabytes;
+                            options.Duration = ExpectedDuration;
+                            options.RequestRundown = ExpectedRequestRundown;
+                        });
 
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },
@@ -554,10 +564,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectTraceAction((TraceProfile)75, egress: null, out CollectTraceOptions collectTraceOptions);
-
-                    collectTraceOptions.BufferSizeMegabytes = 2048;
-                    collectTraceOptions.Duration = TimeSpan.FromDays(7);
+                        .AddCollectTraceAction((TraceProfile)75, egress: null, options =>
+                        {
+                            options.BufferSizeMegabytes = 2048;
+                            options.Duration = TimeSpan.FromDays(7);
+                        });
                 },
                 ex =>
                 {
@@ -605,12 +616,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectTraceAction(TraceProfile.Metrics, ExpectedEgressProvider, out CollectTraceOptions collectTraceOptions);
-
-                    collectTraceOptions.Providers = new List<EventPipeProvider>()
-                    {
-                        new() { Name = "Microsoft-Extensions-Logging" }
-                    };
+                        .AddCollectTraceAction(TraceProfile.Metrics, ExpectedEgressProvider, options =>
+                        {
+                            options.Providers = new List<EventPipeProvider>()
+                            {
+                                new() { Name = "Microsoft-Extensions-Logging" }
+                            };
+                        });
 
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },

@@ -21,17 +21,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         public static CollectionRuleOptions AddPassThroughAction(this CollectionRuleOptions options, string name,
             string input1, string input2, string input3)
         {
-            options.AddAction(nameof(PassThroughAction), out CollectionRuleActionOptions actionOptions);
-
-            PassThroughOptions settings = new PassThroughOptions()
-            {
-                Input1 = input1,
-                Input2 = input2,
-                Input3 = input3
-            };
-            actionOptions.Name = name;
-            actionOptions.Settings = settings;
-            return options;
+            return options.AddAction(
+                nameof(PassThroughAction),
+                actionOptions =>
+                {
+                    PassThroughOptions settings = new PassThroughOptions()
+                    {
+                        Input1 = input1,
+                        Input2 = input2,
+                        Input3 = input3
+                    };
+                    actionOptions.Name = name;
+                    actionOptions.Settings = settings;
+                });
         }
     }
 }
