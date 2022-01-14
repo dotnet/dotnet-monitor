@@ -121,8 +121,8 @@ async function run() {
     const pr_number = github.context.payload.issue.number;
     const comment_user = github.context.payload.comment.user.login;
 
-    const { OctokitRest } = require("@octokit/rest");
-    const octokit2 = new OctokitRest({
+    const { Octokit } = require("@octokit/rest");
+    const octokit2 = new Octokit({
         auth: core.getInput("auth_token", { required: true }),
         log: {
             debug: console.log,
