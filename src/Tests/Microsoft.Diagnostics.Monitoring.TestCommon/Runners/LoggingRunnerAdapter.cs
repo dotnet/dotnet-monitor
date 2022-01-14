@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 await _runner.WaitForExitAsync(token).ConfigureAwait(false);
                 exitCode = _runner.ExitCode;
             }
-            _outputHelper.WriteLine("Exit Code: {0}", _exitCode);
+            _outputHelper.WriteLine("Exit Code: {0}", exitCode);
             _exitCode = exitCode;
             return exitCode.Value;
         }
