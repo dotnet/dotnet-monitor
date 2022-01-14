@@ -43,19 +43,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         protected Task<int> RunnerExitedTask => _runner.ExitedTask;
 
         /// <summary>
-        /// The path to dotnet-monitor. The tool is currently built for netcoreapp3.1 and net6.0.
-        /// For netcoreapp3.1 and net5.0 testing, use the netcoreapp3.1 version. For net6.0+,
-        /// use the net6.0 version.
+        /// The path to dotnet-monitor.
         /// </summary>
         private static string DotNetMonitorPath =>
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 "dotnet-monitor",
-#if NET6_0_OR_GREATER
                 TargetFrameworkMoniker.Net60);
-#else
-                TargetFrameworkMoniker.NetCoreApp31);
-#endif
 
         private string SharedConfigDirectoryPath =>
             Path.Combine(TempPath, "SharedConfig");
@@ -77,6 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             // the correct ASP.NET Core version (which can be different than the .NET
             // version, especially for prereleases).
             _runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
+            _runner.TargetFramework = TargetFrameworkMoniker.Net60;
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
