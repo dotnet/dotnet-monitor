@@ -121,6 +121,16 @@ async function run() {
     const pr_number = github.context.payload.issue.number;
     const comment_user = github.context.payload.comment.user.login;
 
+    const { OctokitRest } = require("@octokit/rest");
+    const octokit2 = new OctokitRest({
+        auth: core.getInput("auth_token", { required: true }),
+        log: {
+            debug: console.log,
+            info: console.log,
+            warn: console.warn,
+            error: console.error
+          },
+      });
     let octokit = github.getOctokit(core.getInput("auth_token", { required: true }));
     let retries = core.getInput("retries", { required: true });
     let commentId = core.getInput("commentId", { required: true });
@@ -204,11 +214,16 @@ async function run() {
                         let newCommentEntry = `- \`${timestamp.toISOString()}\` Retrying \`${run.name}\`, attempt # \`${newRerunCount + 1}\`, \`${retries - newRerunCount}\` retries left.`;
                         await AppendCommentContent(newCommentEntry);
 
-                        await octokit.request('POST /repos/{owner}/{repo}/check-runs/{check_run_id}/rerequest', {
+                        let reqParams = {
                             owner: repo_owner,
                             repo: repo_name,
-                            check_run_id: run.id
-                        });
+                            check_run_id: run.id,
+                          };
+                        console.log("Executing rerequestRun on octokit2: " + JSON.stringify(reqParams));
+                        await octokit2.rest.checks.rerequestRun(reqParams);
+                        let rerunRequestCmd = `POST /repos/${repo_owner}/${repo_name}/check-runs/${run.id}/rerequest`;
+                        console.log("Command to execute: " + rerunRequestCmd);
+                        await octokit.request(rerunRequestCmd);
                     }
                     else {
                         throw new BuildKickerException(`Error: out of retries for \`${run.name}\`.`);
