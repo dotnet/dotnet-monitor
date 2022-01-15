@@ -6,7 +6,7 @@
 
 If you are using `dotnet monitor` as local development tool on Windows you have the option to use Windows Authentication which requires no additional configuration.
 
-There are a number of local development scenarios that are much more efficient without authentication, `dotnet monitor` can explicitly configured to [disable authentication](./authentication.md#disabling-authentication). Additional [security details can be reviewed here](./authentication.md#windows-authentication).
+There are a number of local development scenarios that are much more efficient without authentication; `dotnet monitor` can be explicitly configured to [disable authentication](./authentication.md#disabling-authentication). Additional [security details can be reviewed here](./authentication.md#windows-authentication).
 
 ### Local configuration
 
