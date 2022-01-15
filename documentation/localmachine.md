@@ -12,7 +12,7 @@ There are a number of local development scenarios that are much more efficient w
 
 To monitor a specific local process you can use the settings file to define a default process. This ensures `dotnet monitor` automatically collects artifacts and logs based on a process criteria you have identified (e.g. process name, processs id, etc.).
 
-Defining a default process on Windows requires creating a settings file in the user path (`%USERPROFILE%\.dotnet-monitor\settings.json`). In the following example the default process has a process name of __BuggyDemoCode__.
+Defining a default process on Windows requires creating a settings file in the user path (`%USERPROFILE%\.dotnet-monitor\settings.json`). In the following example the default process has a process name of __BuggyDemoWeb__.
 
 ```json
 {
