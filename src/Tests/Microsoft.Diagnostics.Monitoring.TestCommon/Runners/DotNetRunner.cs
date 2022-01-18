@@ -134,7 +134,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     // parameter from having the correct effect of using the exact framework version
                     // that we want. Disabling this forced version usage for ASP.NET 6+ applications
                     // until it can be resolved.
-                    if (!TargetFramework.IsEffectively(TargetFrameworkMoniker.Net60))
+                    if (!TargetFramework.IsEffectively(TargetFrameworkMoniker.Net60) &&
+                        !TargetFramework.IsEffectively(TargetFrameworkMoniker.Net70))
                     {
                         frameworkVersion = TargetFramework.GetAspNetCoreFrameworkVersionString();
                     }

@@ -1,7 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+    <!--
+      Ideally, this would be TestTargetFrameworks, but some of the test
+      assemblies have a binary dependency on the older TFMs.
+      -->
+    <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <IsShippingAssembly>true</IsShippingAssembly>
     <OutputType>Library</OutputType>
   </PropertyGroup>
