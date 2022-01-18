@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Configuration;
@@ -85,6 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 })
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
+                    services.AddSingleton(RealSystemClock.Instance);
                     services.ConfigureGlobalCounter(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
