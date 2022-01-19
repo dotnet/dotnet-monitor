@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -71,18 +72,29 @@ namespace ReleaseTool.Core
                 unusedFiles = await LayoutFilesAsync(ct);
 
                 // TODO: Implement switch to ignore files that are not used as option.
-                if (unusedFiles != 0)
+                if (unusedFiles > 0)
                 {
                     _logger.LogError("{unusedFiles} files were not handled for release.", unusedFiles);
+                    return unusedFiles;
+                }
+
+                if (unusedFiles < 0)
+                {
+                    _logger.LogError("Error processing file layout for release.");
                     return unusedFiles;
                 }
 
                 // TODO: Verification
 
                 unusedFiles = await PublishFiles(ct);
-                if (unusedFiles != 0)
+                if (unusedFiles > 0)
                 {
                     _logger.LogError("{unusedFiles} files were not published.", unusedFiles);
+                    return unusedFiles;
+                }
+                if (unusedFiles < 0)
+                {
+                    _logger.LogError("Error processing publish files for release.");
                     return unusedFiles;
                 }
 
@@ -221,8 +233,10 @@ namespace ReleaseTool.Core
 
                         isProcessed = true;
 
-                        foreach ((FileMapping fileMap, FileMetadata fileMetadata) in layoutResult.LayoutDataEnumerable)
+                        (FileMapping fileMap, FileMetadata fileMetadata)[] layoutResultArray = layoutResult.LayoutDataEnumerable.ToArray();
+                        for (int i = 0; i < layoutResultArray.Length; i++)
                         {
+                            (FileMapping fileMap, FileMetadata fileMetadata) = layoutResultArray[i];
                             string srcPath = fileMap.LocalSourcePath;
                             string dstPath = fileMap.RelativeOutputPath;
                             if (relativePublishPathsUsed.Contains(dstPath))
@@ -231,7 +245,7 @@ namespace ReleaseTool.Core
                                 return -1;
                             }
                             relativePublishPathsUsed.Add(dstPath);
-                            _logger.LogTrace("{srcPath} -> {dstPath} [{fileMetadata}]", srcPath, dstPath, fileMetadata);
+                            _logger.LogTrace("[{buildFilePath}, {worker}, {layoutInd}] {srcPath} -> {dstPath} [{fileMetadata}]", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata);
                             _filesToRelease.Add(new FileReleaseData(fileMap, fileMetadata));
                         }
                     }
