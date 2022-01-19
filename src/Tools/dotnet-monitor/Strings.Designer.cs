@@ -268,6 +268,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The environment block does not contain the &apos;{0}&apos; variable..
+        /// </summary>
+        internal static string ErrorMessage_NoEnvironmentVariable {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoEnvironmentVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The process exited with exit code {0}.
         /// </summary>
         internal static string ErrorMessage_NonzeroExitCode {
@@ -835,6 +844,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Getting the environment variable {variableName} from process {processId}..
+        /// </summary>
+        internal static string LogFormatString_GetEnvironmentVariable {
+            get {
+                return ResourceManager.GetString("LogFormatString_GetEnvironmentVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments..
         /// </summary>
         internal static string LogFormatString_InsecureAutheticationConfiguration {
@@ -871,7 +889,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loading the startup profiler with id {profilerGuid} from {path} into process with id {processId}..
+        ///   Looks up a localized string similar to Loading the profiler with CLSID {clsid} from {path} into process {processId}..
         /// </summary>
         internal static string LogFormatString_LoadingProfiler {
             get {
@@ -921,6 +939,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_RunningElevated {
             get {
                 return ResourceManager.GetString("LogFormatString_RunningElevated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Setting the environment variable {variableName} in process {processId}..
+        /// </summary>
+        internal static string LogFormatString_SetEnvironmentVariable {
+            get {
+                return ResourceManager.GetString("LogFormatString_SetEnvironmentVariable", resourceCulture);
             }
         }
         

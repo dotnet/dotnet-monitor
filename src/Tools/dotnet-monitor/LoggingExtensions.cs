@@ -289,6 +289,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_LoadingProfiler);
 
+        private static readonly Action<ILogger, string, int, Exception> _setEnvironmentVariable =
+            LoggerMessage.Define<string, int>(
+                eventId: LoggingEventIds.SetEnvironmentVariable.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_SetEnvironmentVariable);
+
+        private static readonly Action<ILogger, string, int, Exception> _getEnvironmentVariable =
+            LoggerMessage.Define<string, int>(
+                eventId: LoggingEventIds.GetEnvironmentVariable.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_GetEnvironmentVariable);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -521,6 +533,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void LoadingProfiler(this ILogger logger, Guid profilerGuid, string path, int processId)
         {
             _loadingProfiler(logger, profilerGuid, path, processId, null);
+        }
+
+        public static void SettingEnvironmentVariable(this ILogger logger, string variableName, int processId)
+        {
+            _setEnvironmentVariable(logger, variableName, processId, null);
+        }
+
+        public static void GettingEnvironmentVariable(this ILogger logger, string variableName, int processId)
+        {
+            _getEnvironmentVariable(logger, variableName, processId, null);
         }
     }
 }

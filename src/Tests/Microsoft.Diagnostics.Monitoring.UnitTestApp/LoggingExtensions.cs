@@ -12,15 +12,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
     {
         private static readonly Action<ILogger, TestAppScenarios.SenarioState, Exception> _scenarioState =
             LoggerMessage.Define<TestAppScenarios.SenarioState>(
-                eventId: new EventId(1, "ScenarioState"),
+                eventId: TestAppLogEventIds.ScenarioState.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: "State: {state}");
 
         private static readonly Action<ILogger, string, bool, Exception> _receivedCommand =
             LoggerMessage.Define<string, bool>(
-                eventId: new EventId(2, "ReceivedCommand"),
+                eventId: TestAppLogEventIds.ReceivedCommand.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: "Received command: {command}; Expected: {expected}");
+
+        private static readonly Action<ILogger, string, string, Exception> _environmentVariable =
+            LoggerMessage.Define<string, string>(
+                eventId: TestAppLogEventIds.EnvironmentVariable.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: "Environment Variable: {name} = {value}");
 
         public static void ScenarioState(this ILogger logger, TestAppScenarios.SenarioState state)
         {
@@ -30,6 +36,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
         public static void ReceivedCommand(this ILogger logger, string command, bool expected)
         {
             _receivedCommand(logger, command, expected, null);
+        }
+
+        public static void EnvironmentVariable(this ILogger logger, string name, string value)
+        {
+            _environmentVariable(logger, name, value, null);
         }
     }
 }
