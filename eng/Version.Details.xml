@@ -30,13 +30,13 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>ae1a6cbe225b99c0bf38b7e31bf60cb653b73a52</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.21620.3">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.22062.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>a42dc50e586cfe499287120990ad916ecd504c6f</Sha>
+      <Sha>23aac30db027b929a600791b1cf04e6d50182a6c</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="6.0.0-beta.21620.3">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="6.0.0-beta.22062.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>a42dc50e586cfe499287120990ad916ecd504c6f</Sha>
+      <Sha>23aac30db027b929a600791b1cf04e6d50182a6c</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
