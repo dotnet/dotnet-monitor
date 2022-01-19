@@ -775,6 +775,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The class identifier (or CLSID, typically a GUID) of the ICorProfilerCallback implementation. This is typically the same value that would be set as the CORECLR_PROFILER environment variable..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoadProfilerOptions_Clsid {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoadProfilerOptions_Clsid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path of the profiler library to be loaded. This is typically the same value that would be set as the CORECLR_PROFILER_PATH environment variable..
+        /// </summary>
+        public static string DisplayAttributeDescription_LoadProfilerOptions_Path {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_LoadProfilerOptions_Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets or sets whether logging scopes are being captured. Defaults to true..
         /// </summary>
         public static string DisplayAttributeDescription_LoggingOptions_CaptureScopes {

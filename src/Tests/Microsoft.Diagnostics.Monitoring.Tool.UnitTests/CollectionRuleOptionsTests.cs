@@ -718,6 +718,117 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+        [Fact]
+        public Task CollectionRuleOptions_LoadProfilerAction_RoundTrip()
+        {
+            const string ExpectedTargetPath = @"C:\My\Path\To\CorProfiler.dll";
+            Guid ExpectedClsid = Guid.NewGuid();
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddLoadProfilerAction(
+                        configureOptions: opts =>
+                        {
+                            opts.Path = ExpectedTargetPath;
+                            opts.Clsid = ExpectedClsid;
+                        });
+                },
+                ruleOptions =>
+                {
+                    Assert.Single(ruleOptions.Actions);
+                    ruleOptions.VerifyLoadProfilerAction(0, ExpectedTargetPath, ExpectedClsid);
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_LoadProfilerAction_PathPropertyValidation()
+        {
+            Guid ExpectedClsid = Guid.NewGuid();
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddLoadProfilerAction(
+                        configureOptions: opts =>
+                        {
+                            opts.Path = null;
+                            opts.Clsid = ExpectedClsid;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredMessage(failures, 0, nameof(LoadProfilerOptions.Path));
+                });
+
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddLoadProfilerAction(
+                        configureOptions: opts =>
+                        {
+                            opts.Path = String.Empty;
+                            opts.Clsid = ExpectedClsid;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredMessage(failures, 0, nameof(LoadProfilerOptions.Path));
+                });
+
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddLoadProfilerAction(
+                        configureOptions: opts =>
+                        {
+                            opts.Path = "   "; // White space is not allowed by the [Required] Attribute
+                            opts.Clsid = ExpectedClsid;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredMessage(failures, 0, nameof(LoadProfilerOptions.Path));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_LoadProfilerAction_ClsidPropertyValidation()
+        {
+            const string ExpectedTargetPath = @"C:\My\Path\To\CorProfiler.dll";
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddLoadProfilerAction(
+                        configureOptions: opts =>
+                        {
+                            opts.Path = ExpectedTargetPath;
+                            opts.Clsid = Guid.Empty;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyRequiredGuidMessage(failures, 0, nameof(LoadProfilerOptions.Clsid));
+                });
+        }
+
         private Task Validate(
             Action<RootOptions> setup,
             Action<IOptionsMonitor<CollectionRuleOptions>> validate)
@@ -774,6 +885,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private static void VerifyRequiredMessage(string[] failures, int index, string fieldName)
         {
             string message = (new RequiredAttribute()).FormatErrorMessage(fieldName);
+
+            Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyRequiredGuidMessage(string[] failures, int index, string fieldName)
+        {
+            string message = (new RequiredGuidAttribute()).FormatErrorMessage(fieldName);
 
             Assert.Equal(message, failures[index]);
         }

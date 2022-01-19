@@ -206,6 +206,12 @@
     <value>A file could not be found at the provided path: {0}</value>
     <comment>{0} = Provided path to executable.</comment>
   </data>
+  <data name="ErrorMessage_GuidRequired" xml:space="preserve">
+    <value>The guid {0} is required to be set and can not be empty.</value>
+    <comment>Gets the format string for an empty guid.
+1 Format Parameter:
+0. parameterName: The name of the parameter that failed validation</comment>
+  </data>
   <data name="ErrorMessage_InvalidApiKey" xml:space="preserve">
     <value>Invalid API key.</value>
     <comment>Gets a string similar to "Invalid API key.".</comment>
@@ -528,6 +534,14 @@
   </data>
   <data name="LogFormatString_InvalidToken" xml:space="preserve">
     <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>
+  </data>
+  <data name="LogFormatString_LoadingProfiler" xml:space="preserve">
+    <value>Loading the profiler with CLSID {clsid} from {path} into process {processId}.</value>
+    <comment>Gets the format string that is printed in the 53:LoadingProfiler event.
+3 Format parameterts:
+1. profilerGuid: The id in guid form of the cor profiler in question
+2. path: The file path to the profiler being loaded relative to target process
+3. processId: The id of the process to which the profiler is being loaded</comment>
   </data>
   <data name="LogFormatString_LogTempApiKey" xml:space="preserve">
     <value>Generated one-time-use ApiKey for dotnet-monitor; use the following header for authorization:{NewLine}{AuthHeaderName}: {AuthScheme} {MonitorApiKey}</value>

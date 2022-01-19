@@ -283,6 +283,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EndpointTimeout);
 
+        private static readonly Action<ILogger, Guid, string, int, Exception> _loadingProfiler =
+            LoggerMessage.Define<Guid, string, int>(
+                eventId: LoggingEventIds.LoadingProfiler.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_LoadingProfiler);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -510,6 +516,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EndpointTimeout(this ILogger logger, string processId)
         {
             _endpointTimeout(logger, processId, null);
+        }
+
+        public static void LoadingProfiler(this ILogger logger, Guid profilerGuid, string path, int processId)
+        {
+            _loadingProfiler(logger, profilerGuid, path, processId, null);
         }
     }
 }

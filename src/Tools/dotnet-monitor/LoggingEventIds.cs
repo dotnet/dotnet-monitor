@@ -63,6 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         InvalidActionResultReference = 50,
         ActionSettingsTokenizationNotSupported = 51,
         EndpointTimeout = 52,
+        LoadingProfiler = 53,
     }
 
     internal static class LoggingEventIdsExtensions
