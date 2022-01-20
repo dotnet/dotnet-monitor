@@ -255,6 +255,7 @@ namespace ReleaseTool.Core
                                 }
                             }
                             relativePublishPathsToHash.Add(dstPath, fileMetadata.Sha512);
+
                             _logger.LogTrace("[{buildFilePath}, {worker}, {layoutInd}: {srcPath} -> {dstPath}, {fileMetadata}] adding layout to release data.", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata);
                             _filesToRelease.Add(new FileReleaseData(fileMap, fileMetadata));
                         }
