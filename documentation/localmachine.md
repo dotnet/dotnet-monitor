@@ -41,6 +41,7 @@ Assuming your default process is running you can use the endpoints exposed by `d
 /dump 
 ```
 
+[HTTP /trace API](./trace-get.md)
 ```http
 /trace
 ```
