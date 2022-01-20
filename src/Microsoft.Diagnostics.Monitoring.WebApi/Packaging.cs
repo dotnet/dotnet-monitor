@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private static readonly XNamespace Ns = "urn:diagnosticshub-package-metadata-2-1";
 
-        public static async Task<string> CreateDiagSession(string dumpFilePath, string dac, string dbi, CancellationToken token)
+        public static async Task<string> CreateDiagSession(string dumpFilePath, CancellationToken token)
         {
             string packagePath = Path.ChangeExtension(dumpFilePath, ".diagsession");
 
@@ -41,16 +41,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             XElement dumpResource = await CreateResource(package, dumpFilePath, token);
             content.Add(dumpResource);
-            if (!string.IsNullOrEmpty(dac))
-            {
-                XElement dacResource = await CreateResource(package, dac, token);
-                content.Add(dacResource);
-            }
-            if (!string.IsNullOrEmpty(dbi))
-            {
-                XElement dbiResource = await CreateResource(package, dbi, token);
-                content.Add(dbiResource);
-            }
 
             //After all the content nodes are added, add the metadata.xml file
             Uri metadataUri = PackUriHelper.CreatePartUri(new Uri("/metadata.xml", UriKind.Relative));

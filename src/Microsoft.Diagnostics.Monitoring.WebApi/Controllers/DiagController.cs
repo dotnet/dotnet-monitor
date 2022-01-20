@@ -209,11 +209,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Models.PackageMode mode = Models.PackageMode.None)
         {
-            if (mode.HasFlag(Models.PackageMode.IncludeDacDbi) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return Task.FromResult<ActionResult>(this.Problem(new PlatformNotSupportedException()));
-            }
-
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async processInfo =>

@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    PackageMode packageMode = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? PackageMode.DiagSession : PackageMode.IncludeDacDbi;
+                    PackageMode packageMode = PackageMode.DiagSession;
 
                     using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type, packageMode);
                     Assert.NotNull(holder);
@@ -135,14 +135,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     //Validate here
                     using Package package = Package.Open(fileStream, FileMode.Open, FileAccess.Read);
 
-                    //2-4 parts:
+                    //2 parts:
                     //Metadatata
                     //dmp
-                    //[Linux only]
-                    //dac
-                    //dbi
 
-                    int expectedParts = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 2 : 4;
+                    const int expectedParts = 2;
 
                     PackagePartCollection parts = package.GetParts();
                     Assert.Equal(expectedParts, parts.Count());
@@ -151,14 +148,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.NotNull(metadata);
                     PackagePart dump = parts.FirstOrDefault(p => p.Uri.ToString().EndsWith(".dmp"));
                     Assert.NotNull(dump);
-
-                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    {
-                        PackagePart dac = parts.FirstOrDefault(p => p.Uri.ToString().Contains("mscordaccore"));
-                        Assert.NotNull(dac);
-                        PackagePart dbi = parts.FirstOrDefault(p => p.Uri.ToString().Contains("mscordbi"));
-                        Assert.NotNull(dbi);
-                    }
 
                     //TODO Also do verification on metadata file here
 

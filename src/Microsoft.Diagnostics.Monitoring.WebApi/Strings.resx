@@ -209,9 +209,6 @@
 1 Format Parameter:
 1. location: The location that the artifact was egressed to</comment>
   </data>
-  <data name="LogFormatString_MissingDacDbi" xml:space="preserve">
-    <value>Unable to locate runtime component: '{path}'.</value>
-  </data>
   <data name="LogFormatString_RequestCanceled" xml:space="preserve">
     <value>Request canceled.</value>
     <comment>Gets the format string that is printed in the 2:RequestCanceled event.

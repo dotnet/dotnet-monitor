@@ -1193,8 +1193,7 @@
       "PackageMode": {
         "enum": [
           "None",
-          "DiagSession",
-          "IncludeDacDbi"
+          "DiagSession"
         ],
         "type": "string"
       },

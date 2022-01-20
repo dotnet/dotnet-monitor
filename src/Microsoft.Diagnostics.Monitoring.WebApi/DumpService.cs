@@ -89,22 +89,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             string resultPath = dumpFilePath;
-            string dac = null;
-            string dbi = null;
-            if (mode.HasFlag(Models.PackageMode.IncludeDacDbi))
-            {
-                try
-                {
-                    DacLocator.LocateRuntimeComponents(endpointInfo, out dac, out dbi);
-                }
-                catch (InvalidOperationException e)
-                {
-                    _logger.MissingDacDbi(e.Message);
-                }
-            }
             if (mode.HasFlag(Models.PackageMode.DiagSession))
             {
-                resultPath = await Packaging.CreateDiagSession(dumpFilePath, dac, dbi, token);
+                resultPath = await Packaging.CreateDiagSession(dumpFilePath, token);
             }
 
             return new AutoDeleteFileStream(resultPath);

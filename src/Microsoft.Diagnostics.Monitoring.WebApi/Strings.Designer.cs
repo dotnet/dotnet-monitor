@@ -259,15 +259,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to locate runtime component: &apos;{path}&apos;..
-        /// </summary>
-        internal static string LogFormatString_MissingDacDbi {
-            get {
-                return ResourceManager.GetString("LogFormatString_MissingDacDbi", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Request canceled..
         /// </summary>
         internal static string LogFormatString_RequestCanceled {
