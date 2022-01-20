@@ -1,6 +1,6 @@
 # Running on a local machine
 
-`dotnet monitor` can be installed as global tool providing observability, diagnostics artifact collection, and triggering in local development and testing scenarios [(more details here)](./setup.md#net-core-global-tool).
+`dotnet monitor` can be installed as global tool providing observability, diagnostics artifact collection, and triggering in local development and testing scenarios. You can run `dotnet tool install -g dotnet-monitor` to install the latest version, see the [(full details here)](./setup.md#net-core-global-tool).
 
 ### Local authentication options
 
