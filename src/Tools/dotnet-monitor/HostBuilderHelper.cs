@@ -187,7 +187,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
         {
-            // Only set the Diagnostic Port's value if diagnosticPort is specified
+            // Only proceed if diagnosticPort is specified
             if (string.IsNullOrEmpty(diagnosticPort))
             {
                 return;

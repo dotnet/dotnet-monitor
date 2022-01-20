@@ -5,8 +5,6 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
-using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -24,6 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public void Configure(DiagnosticPortOptions options)
         {
             IConfigurationSection diagPortSection = _configuration.GetSection(nameof(RootOptions.DiagnosticPort));
+
             if (diagPortSection.Exists() && !string.IsNullOrEmpty(diagPortSection.Value))
             {
                 BindDiagnosticPortSettings(diagPortSection, options);
@@ -31,23 +30,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             else if (!diagPortSection.Exists())
             {
                 options.ConnectionMode = DiagnosticPortConnectionMode.Connect;
+            }
 
-                diagPortSection.Bind(options);
-            }
-            else
-            {
-                diagPortSection.Bind(options);
-            }
+            diagPortSection.Bind(options);
         }
 
         private void BindDiagnosticPortSettings(IConfigurationSection diagPortSection, DiagnosticPortOptions dpOptions)
         {
             // NOTE: This will only be hit in the event that a string value is provided for DiagnosticPort
-
             dpOptions.ConnectionMode = DiagnosticPortConnectionMode.Listen;
             dpOptions.EndpointName = diagPortSection.Value;
-
-            diagPortSection.Bind(dpOptions);
         }
     }
 }
