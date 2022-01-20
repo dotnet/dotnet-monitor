@@ -161,16 +161,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return ConfigureOptions<ProcessFilterOptions>(services, configuration, ConfigurationKeys.DefaultProcess);
         }
 
-        /*
-        public static IServiceCollection ConfigureDiagnosticPort(this IServiceCollection services, IConfiguration configuration)
-        {
-            //return ConfigureOptions<DiagnosticPortNamedOptions>(services, configuration, ConfigurationKeys.DiagnosticPort);
-            services.AddSingleton<IConfigureOptions<RootOptions>, DiagnosticPortNamedOptions>();
-
-            return services;
-        }
-        */
-
         private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class
         {
             return services.Configure<T>(configuration.GetSection(key));

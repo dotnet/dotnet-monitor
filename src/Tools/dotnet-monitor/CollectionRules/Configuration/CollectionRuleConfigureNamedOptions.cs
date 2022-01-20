@@ -32,8 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public void Configure(string name, CollectionRuleOptions options)
         {
-            Console.Error.WriteLine("THIS IS A DEBUG MESSAGE 1");
-
             IConfigurationSection ruleSection = _configurationProvider.GetCollectionRuleSection(name);
             if (ruleSection.Exists())
             {
@@ -73,8 +71,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         private void BindTriggerSettings(IConfigurationSection ruleSection, CollectionRuleOptions ruleOptions)
         {
-            Console.Error.WriteLine("THIS IS A DEBUG MESSAGE 2");
-
             CollectionRuleTriggerOptions triggerOptions = ruleOptions.Trigger;
 
             if (null != triggerOptions &&

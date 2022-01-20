@@ -19,65 +19,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IConfiguration configuration)
         {
             _configuration = configuration;
-            Console.Error.WriteLine("THIS IS A DEBUG MESSAGE 2.5");
         }
 
-        public void Configure(string name, DiagnosticPortOptions options)
+        public void Configure(DiagnosticPortOptions options)
         {
-            Console.Error.WriteLine("THIS IS A DEBUG MESSAGE 3");
-
             IConfigurationSection diagPortSection = _configuration.GetSection(nameof(RootOptions.DiagnosticPort));
-            if (diagPortSection.Exists())
+            if (diagPortSection.Exists() && !string.IsNullOrEmpty(diagPortSection.Value))
             {
                 diagPortSection.Bind(options);
 
                 BindDiagnosticPortSettings(diagPortSection, options);
             }
-        }
-
-        public void Configure(DiagnosticPortOptions options)
-        {
-            Console.Error.WriteLine("THIS IS A DEBUG MESSAGE 3");
-
-            IConfigurationSection diagPortSection = _configuration.GetSection(nameof(RootOptions.DiagnosticPort));
-            if (diagPortSection.Exists())
+            else if (!diagPortSection.Exists())
             {
-                diagPortSection.Bind(options);
+                options.ConnectionMode = DiagnosticPortConnectionMode.Connect;
 
-                BindDiagnosticPortSettings(diagPortSection, options);
+                diagPortSection.Bind(options);
             }
         }
 
         private void BindDiagnosticPortSettings(IConfigurationSection diagPortSection, DiagnosticPortOptions dpOptions)
         {
-            Console.Error.WriteLine("THIS IS A DEBUG MESSAGE 4");
+            // NOTE: This will only be hit in the event that a string value is provided for DiagnosticPort
 
             dpOptions.ConnectionMode = DiagnosticPortConnectionMode.Listen;
             dpOptions.EndpointName = diagPortSection.Value;
 
-            //DiagnosticPortOptions options = new DiagnosticPortOptions();
-            //options.ConnectionMode = DiagnosticPortConnectionMode.Listen;
-            //options.EndpointName = "\\\\.\\pipe\\dotnet-monitor-pipe";
-
-
-
-            //ruleSection.GetSection(nameof(RootOptions.DiagnosticPort)).ToString();
-
             diagPortSection.Bind(dpOptions);
-
-            //dpOptions = options;
-
-            /*
-            if (null != rootOptions &&
-                _triggerOperations.TryCreateOptions(triggerOptions.Type, out object triggerSettings))
-            {
-                IConfigurationSection diagPortSection = ruleSection.GetSection(nameof(RootOptions.DiagnosticPort));
-
-                diagPortSection.Bind(triggerSettings);
-
-                rootOptions.DiagnosticPort = triggerSettings;
-            }
-            */
         }
     }
 }
