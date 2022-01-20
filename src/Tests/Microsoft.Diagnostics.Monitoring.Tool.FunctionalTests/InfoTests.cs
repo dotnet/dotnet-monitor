@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.NotNull(info.Version); // Not sure of how to get Dotnet Monitor version from within tests...
                     Assert.True(Version.TryParse(info.RuntimeVersion, out Version runtimeVersion), "Unable to parse version from RuntimeVersion property.");
 
-#if NET7_OR_GREATER
+#if NET7_0_OR_GREATER
                     Version currentAspNetVersion = TargetFrameworkMoniker.Current.GetAspNetCoreFrameworkVersion();
 #else
                     Version currentAspNetVersion = TargetFrameworkMoniker.Net60.GetAspNetCoreFrameworkVersion();
