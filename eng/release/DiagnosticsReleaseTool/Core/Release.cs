@@ -162,11 +162,12 @@ namespace ReleaseTool.Core
             using IDisposable scope = _logger.BeginScope("Publishing files");
             _logger.LogInformation("Publishing {fileCount} files", _filesToRelease.Count);
 
-            foreach (FileReleaseData releaseData in _filesToRelease)
+            for (int i = 0; i < _filesToRelease.Count; i++)
             {
+                FileReleaseData releaseData = _filesToRelease[i];
                 if (ct.IsCancellationRequested)
                 {
-                    _logger.LogError("Cancellation issued.");
+                    _logger.LogError("[{ind}: {srcPath} -> {dstPath}, {fileMetadata}] Cancellation issued.", i, releaseData.FileMap.LocalSourcePath, releaseData.FileMap.RelativeOutputPath, releaseData.FileMetadata);
                     return -1;
                 }
 
@@ -175,12 +176,12 @@ namespace ReleaseTool.Core
                 string publishUri = await _publisher.PublishFileAsync(releaseData.FileMap, ct);
                 if (publishUri is null)
                 {
-                    _logger.LogWarning("Failed to publish {sourcePath}", sourcePath);
+                    _logger.LogWarning("[{ind}: {srcPath} -> {dstPath}, {fileMetadata}] Failed to publish {sourcePath}", i, releaseData.FileMap.LocalSourcePath, releaseData.FileMap.RelativeOutputPath, releaseData.FileMetadata, sourcePath);
                     unpublishedFiles++;
                 }
                 else
                 {
-                    _logger.LogTrace("Published {sourcePath} to relative path {relOutputPath} at {publishUri}", sourcePath, relOutputPath, publishUri);
+                    _logger.LogTrace("[{ind}: {srcPath} -> {dstPath}, {fileMetadata}] Published {sourcePath} to relative path {relOutputPath} at {publishUri}", i, releaseData.FileMap.LocalSourcePath, releaseData.FileMap.RelativeOutputPath, releaseData.FileMetadata, sourcePath, relOutputPath, publishUri);
                     releaseData.PublishUri = publishUri;
                 }
             }
@@ -208,7 +209,7 @@ namespace ReleaseTool.Core
                 {
                     if (ct.IsCancellationRequested)
                     {
-                        _logger.LogError($"Cancellation issued.");
+                        _logger.LogError("[{buildFilePath}, {worker}] Cancellation issued.", file.FullName, worker.GetType().FullName);
                         return -1;
                     }
 
@@ -217,7 +218,7 @@ namespace ReleaseTool.Core
 
                     if (layoutResult.Status == LayoutResultStatus.Error)
                     {
-                        _logger.LogError($"Error handling file.");
+                        _logger.LogError("[{buildFilePath}, {worker}] Error handling file.", file.FullName, worker.GetType().FullName);
                         return -1;
                     }
 
@@ -227,7 +228,7 @@ namespace ReleaseTool.Core
                         {
                             // TODO: Might be worth to relax this limitation. It just needs to turn the
                             //      source -> fileData relationship to something like source -> List<FileData>).
-                            _logger.LogError("File {file} is getting handled by several workers.", file);
+                            _logger.LogError("[{buildFilePath}, {worker}] File {file} is getting handled by several workers.", file.FullName, worker.GetType().FullName, file);
                             return -1;
                         }
 
@@ -241,11 +242,11 @@ namespace ReleaseTool.Core
                             string dstPath = fileMap.RelativeOutputPath;
                             if (relativePublishPathsUsed.Contains(dstPath))
                             {
-                                _logger.LogError("File {srcPath} is getting published to relative path {dstPath} which is already in use.", srcPath, dstPath);
+                                _logger.LogError("[{buildFilePath}, {worker}, {layoutInd}: {srcPath} -> {dstPath}, {fileMetadata}] Destination path {dstPath2} already in use.", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata, dstPath);
                                 return -1;
                             }
                             relativePublishPathsUsed.Add(dstPath);
-                            _logger.LogTrace("[{buildFilePath}, {worker}, {layoutInd}] {srcPath} -> {dstPath} [{fileMetadata}]", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata);
+                            _logger.LogTrace("[{buildFilePath}, {worker}, {layoutInd}: {srcPath} -> {dstPath}, {fileMetadata}] adding layout to release data.", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata);
                             _filesToRelease.Add(new FileReleaseData(fileMap, fileMetadata));
                         }
                     }
@@ -253,7 +254,7 @@ namespace ReleaseTool.Core
 
                 if (!isProcessed)
                 {
-                    _logger.LogWarning("File not handled {file}", file);
+                    _logger.LogWarning("[{buildFilePath}] File not handled {file}", file.FullName, file);
                     unhandledFiles++;
                 }
             }
