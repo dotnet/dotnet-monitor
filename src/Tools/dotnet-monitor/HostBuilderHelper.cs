@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
-                    ConfigureEndpointInfoSource(builder, diagnosticPort);
+                    //ConfigureEndpointInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
                     ConfigureGlobalMetrics(builder);
                     builder.ConfigureStorageDefaults();

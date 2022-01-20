@@ -12,6 +12,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public ValidateOptionsResult Validate(string name, DiagnosticPortOptions options)
         {
+            System.Console.Error.WriteLine("THIS IS A DEBUG MESSAGE VALIDATION");
+
             if (options.ConnectionMode == DiagnosticPortConnectionMode.Listen
                 && string.IsNullOrEmpty(options.EndpointName))
             {

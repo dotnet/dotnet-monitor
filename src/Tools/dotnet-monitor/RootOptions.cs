@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public CorsConfigurationOptions CorsConfiguration { get; set; }
 
-        public DiagnosticPortOptions DiagnosticPort { get; set; }
+        public object DiagnosticPort { get; set; }
 
         public EgressOptions Egress { get; set; }
 

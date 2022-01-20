@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
@@ -31,6 +32,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public void Configure(string name, CollectionRuleOptions options)
         {
+            Console.Error.WriteLine("THIS IS A DEBUG MESSAGE 1");
+
             IConfigurationSection ruleSection = _configurationProvider.GetCollectionRuleSection(name);
             if (ruleSection.Exists())
             {
@@ -70,6 +73,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         private void BindTriggerSettings(IConfigurationSection ruleSection, CollectionRuleOptions ruleOptions)
         {
+            Console.Error.WriteLine("THIS IS A DEBUG MESSAGE 2");
+
             CollectionRuleTriggerOptions triggerOptions = ruleOptions.Trigger;
 
             if (null != triggerOptions &&

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -141,6 +143,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
                 }
 
+                services.AddSingleton<IConfigureOptions<DiagnosticPortOptions>, DiagnosticPortNamedOptions>();
+
+                IConfigurationSection section = context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort);
+
                 services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
                 services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
                 services.AddSingleton<OperationTrackerService>();
@@ -148,6 +154,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureGlobalCounter(context.Configuration);
 
                 services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
+
                 services.AddSingleton<ServerEndpointInfoSource>();
                 services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
                 services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
