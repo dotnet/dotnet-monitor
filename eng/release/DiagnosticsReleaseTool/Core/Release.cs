@@ -192,7 +192,7 @@ namespace ReleaseTool.Core
         private async Task<int> LayoutFilesAsync(CancellationToken ct)
         {
             int unhandledFiles = 0;
-            var relativePublishPathsUsed = new HashSet<string>();
+            var relativePublishPathsToHash = new Dictionary<string, string>();
 
             using var scope = _logger.BeginScope("Laying out files");
 
@@ -240,12 +240,22 @@ namespace ReleaseTool.Core
                             (FileMapping fileMap, FileMetadata fileMetadata) = layoutResultArray[i];
                             string srcPath = fileMap.LocalSourcePath;
                             string dstPath = fileMap.RelativeOutputPath;
-                            if (relativePublishPathsUsed.Contains(dstPath))
+                            if (relativePublishPathsToHash.ContainsKey(dstPath))
                             {
-                                _logger.LogError("[{buildFilePath}, {worker}, {layoutInd}: {srcPath} -> {dstPath}, {fileMetadata}] Destination path {dstPath2} already in use.", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata, dstPath);
-                                return -1;
+                                if (!string.IsNullOrEmpty(fileMetadata.Sha512) &&
+                                    !string.IsNullOrEmpty(relativePublishPathsToHash[dstPath]) &&
+                                    relativePublishPathsToHash[dstPath] == fileMetadata.Sha512)
+                                {
+                                    _logger.LogInformation("[{buildFilePath}, {worker}, {layoutInd}: {srcPath} -> {dstPath}, {fileMetadata}] File already published to {dstPath} with same hash: {hash}. This is being allowed.", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata, dstPath, fileMetadata.Sha512);
+                                }
+                                else
+                                {
+                                    _logger.LogError("[{buildFilePath}, {worker}, {layoutInd}: {srcPath} -> {dstPath}, {fileMetadata}] Destination path {dstPath2} already in use and hashes do not match (or hashes are empty). Published file hash: {hash1}; File attempted to publish: {hash2}", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata, dstPath, relativePublishPathsToHash[dstPath], fileMetadata.Sha512);
+                                    return -1;
+                                }
                             }
-                            relativePublishPathsUsed.Add(dstPath);
+                            relativePublishPathsToHash.Add(dstPath, fileMetadata.Sha512);
+
                             _logger.LogTrace("[{buildFilePath}, {worker}, {layoutInd}: {srcPath} -> {dstPath}, {fileMetadata}] adding layout to release data.", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata);
                             _filesToRelease.Add(new FileReleaseData(fileMap, fileMetadata));
                         }
