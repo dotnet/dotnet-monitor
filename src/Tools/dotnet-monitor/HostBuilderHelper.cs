@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
-                    //ConfigureEndpointInfoSource(builder, diagnosticPort);
+                    ConfigureEndpointInfoSource(builder, diagnosticPort);
                     ConfigureMetricsEndpoint(builder, metrics, metricUrls);
                     ConfigureGlobalMetrics(builder);
                     builder.ConfigureStorageDefaults();
@@ -187,6 +187,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
         {
+            // Only set the Diagnostic Port's value if diagnosticPort is specified
+            if (string.IsNullOrEmpty(diagnosticPort))
+            {
+                return;
+            }
+
             DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {

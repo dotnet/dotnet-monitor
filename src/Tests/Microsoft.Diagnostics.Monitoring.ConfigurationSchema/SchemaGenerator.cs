@@ -64,19 +64,14 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
         private static void AddDiagnosticPortSchema(GenerationContext context, JsonSchema schema)
         {
-            schema.Properties["DiagnosticPort"].OneOf.Clear();
-
-            JsonSchema tempSchema1 = new JsonSchema() { Type = JsonObjectType.Null };
-
-            JsonSchema tempSchema2 = new JsonSchema() { Type = JsonObjectType.String };
-
-            JsonSchema tempSchema3 = new JsonSchema() { Reference = context.AddTypeIfNotExist<WebApi.DiagnosticPortOptions>() };
+            JsonSchema nullSchema = new JsonSchema() { Type = JsonObjectType.Null };
+            JsonSchema diagPortOptionsSchema = new JsonSchema() { Reference = context.AddTypeIfNotExist<WebApi.DiagnosticPortOptions>() };
+            JsonSchema stringSchema = new JsonSchema() { Type = JsonObjectType.String };
 
             schema.Properties["DiagnosticPort"].OneOf.Clear();
-            schema.Properties["DiagnosticPort"].OneOf.Add(tempSchema1);
-            schema.Properties["DiagnosticPort"].OneOf.Add(tempSchema3);
-            schema.Properties["DiagnosticPort"].OneOf.Add(tempSchema2);
-
+            schema.Properties["DiagnosticPort"].OneOf.Add(nullSchema);
+            schema.Properties["DiagnosticPort"].OneOf.Add(diagPortOptionsSchema);
+            schema.Properties["DiagnosticPort"].OneOf.Add(stringSchema);
         }
 
         private static void AddConsoleLoggerFormatterSubSchemas(GenerationContext context)
@@ -204,25 +199,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
             triggerTypeSchema.Enumeration.Add(triggerType);
         }
-
-        /*
-        private static void AddDiagnosticPortSchema<TOptions>(GenerationContext context)
-        {
-            JsonSchema subSchema = new JsonSchema();
-            subSchema.RequiredProperties.Add(nameof(CollectionRuleTriggerOptions.Settings));
-
-            JsonSchemaProperty settingsProperty = AddDiscriminatedSubSchema(
-                context.Schema.Definitions[nameof(CollectionRuleTriggerOptions)],
-                nameof(CollectionRuleTriggerOptions.Type),
-                triggerType,
-                nameof(CollectionRuleTriggerOptions.Settings),
-                subSchema);
-
-            settingsProperty.Reference = context.AddTypeIfNotExist<TOptions>();
-
-            triggerTypeSchema.Enumeration.Add(triggerType);
-        }
-        */
 
         private static JsonSchemaProperty AddDiscriminatedSubSchema(
             JsonSchema parentSchema,

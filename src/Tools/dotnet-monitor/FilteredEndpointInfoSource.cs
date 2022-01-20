@@ -32,8 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IOptions<DiagnosticPortOptions> portOptions,
             ILogger<ClientEndpointInfoSource> clientSourceLogger)
         {
-            Console.Error.WriteLine("THIS IS A DEBUG MESSAGE 5");
-
             _portOptions = portOptions.Value;
 
             DiagnosticPortConnectionMode connectionMode = _portOptions.GetConnectionMode();

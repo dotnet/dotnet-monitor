@@ -26,14 +26,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IConfigurationSection diagPortSection = _configuration.GetSection(nameof(RootOptions.DiagnosticPort));
             if (diagPortSection.Exists() && !string.IsNullOrEmpty(diagPortSection.Value))
             {
-                diagPortSection.Bind(options);
-
                 BindDiagnosticPortSettings(diagPortSection, options);
             }
             else if (!diagPortSection.Exists())
             {
                 options.ConnectionMode = DiagnosticPortConnectionMode.Connect;
 
+                diagPortSection.Bind(options);
+            }
+            else
+            {
                 diagPortSection.Bind(options);
             }
         }
