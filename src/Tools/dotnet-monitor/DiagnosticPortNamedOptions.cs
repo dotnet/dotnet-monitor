@@ -5,6 +5,8 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -25,21 +27,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (diagPortSection.Exists() && !string.IsNullOrEmpty(diagPortSection.Value))
             {
-                BindDiagnosticPortSettings(diagPortSection, options);
-            }
-            else if (!diagPortSection.Exists())
-            {
-                options.ConnectionMode = DiagnosticPortConnectionMode.Connect;
-            }
+                var children = diagPortSection.GetChildren();
 
-            diagPortSection.Bind(options);
+                UpdateChild(children, nameof(DiagnosticPortOptions.ConnectionMode), nameof(DiagnosticPortConnectionMode.Listen));
+                UpdateChild(children, nameof(DiagnosticPortOptions.EndpointName), diagPortSection.Value);
+
+                options.ConnectionMode = DiagnosticPortConnectionMode.Listen;
+                options.EndpointName = diagPortSection.Value;
+
+                diagPortSection.Bind(options);
+            }
         }
 
-        private void BindDiagnosticPortSettings(IConfigurationSection diagPortSection, DiagnosticPortOptions dpOptions)
+        private void UpdateChild(IEnumerable<IConfigurationSection> children, string childKey, string childValue)
         {
-            // NOTE: This will only be hit in the event that a string value is provided for DiagnosticPort
-            dpOptions.ConnectionMode = DiagnosticPortConnectionMode.Listen;
-            dpOptions.EndpointName = diagPortSection.Value;
+            var foundChild = children.FirstOrDefault(child => child.Key.Equals(childKey));
+
+            if (foundChild != null)
+            {
+                foundChild.Value = childValue;
+            }
         }
     }
 }

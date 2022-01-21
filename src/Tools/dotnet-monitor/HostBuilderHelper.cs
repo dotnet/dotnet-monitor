@@ -187,12 +187,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
         {
-            // Only proceed if diagnosticPort is specified
-            if (string.IsNullOrEmpty(diagnosticPort))
-            {
-                return;
-            }
-
             DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
