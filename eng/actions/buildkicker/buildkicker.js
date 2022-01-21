@@ -264,7 +264,7 @@ async function run() {
                             check_run_id: run.id,
                           };
                         console.log("Executing rerequestRun on octokit: " + JSON.stringify(reqParams));
-                        octokit.rest.checks.rerequestRun(reqParams);
+                        await octokit.rest.checks.rerequestRun(reqParams);
                     }
                     else {
                         // If we are out of retries, abort
