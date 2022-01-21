@@ -13,6 +13,18 @@
     -->
     <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
   </PropertyGroup>
+  <PropertyGroup Label="TargetFrameworks">
+    <!-- The TFMs of the dotnet-monitor tool.  -->
+    <ToolTargetFrameworks>net6.0</ToolTargetFrameworks>
+    <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
+    <ToolTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(ToolTargetFrameworks);net7.0</ToolTargetFrameworks>
+    <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
+    <TestTargetFrameworks>netcoreapp3.1;net5.0;net6.0</TestTargetFrameworks>
+    <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
+    <TestTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(TestTargetFrameworks);net7.0</TestTargetFrameworks>
+    <!-- The TFM for generating schema.json and OpenAPI docs. -->
+    <SchemaTargetFramework>net6.0</SchemaTargetFramework>
+  </PropertyGroup>
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
     <UsingToolNetFrameworkReferenceAssemblies>false</UsingToolNetFrameworkReferenceAssemblies>

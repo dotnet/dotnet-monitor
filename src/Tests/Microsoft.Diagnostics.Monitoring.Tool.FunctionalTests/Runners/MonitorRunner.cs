@@ -49,7 +49,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 "dotnet-monitor",
-                TargetFrameworkMoniker.Net60);
+#if NET7_0_OR_GREATER
+                TargetFrameworkMoniker.Net70
+#else
+                TargetFrameworkMoniker.Net60
+#endif
+                );
 
         private string SharedConfigDirectoryPath =>
             Path.Combine(TempPath, "SharedConfig");
