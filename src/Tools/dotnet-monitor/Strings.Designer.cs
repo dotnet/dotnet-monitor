@@ -511,7 +511,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format to display the output in. Valid values are Json, Text, and EnvVar..
+        ///   Looks up a localized string similar to The output format of the API Key configuration..
         /// </summary>
         internal static string HelpDescription_OutputFormat {
             get {
