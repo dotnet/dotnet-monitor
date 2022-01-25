@@ -23,10 +23,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         {
             try
             {
-                AuthConfiguration authenticationOptions = HostBuilderHelper.CreateAuthConfiguration(noAuth, tempApiKey);
+                AuthConfiguration authConfiguration = HostBuilderHelper.CreateAuthConfiguration(noAuth, tempApiKey);
+                HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authConfiguration);
 
-                IHost host = HostBuilderHelper.CreateHostBuilder(urls, metricUrls, metrics, diagnosticPort, authenticationOptions)
-                    .ConfigureServices(authenticationOptions, noHttpEgress)
+                IHost host = HostBuilderHelper.CreateHostBuilder(settings)
+                    .ConfigureServices(authConfiguration, noHttpEgress)
                     .Build();
 
                 try
