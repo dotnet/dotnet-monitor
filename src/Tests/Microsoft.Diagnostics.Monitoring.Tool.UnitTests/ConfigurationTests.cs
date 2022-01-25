@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static readonly Dictionary<string, string> DotnetEnvironmentVariables = new(StringComparer.Ordinal)
         {
-            { WebHostDefaults.ServerUrlsKey, nameof(ConfigurationLevel.DotnetEnviroment) }
+            { WebHostDefaults.ServerUrlsKey, nameof(ConfigurationLevel.DotnetEnvironment) }
         };
 
         private static readonly Dictionary<string, string> MonitorEnvironmentVariables = new(StringComparer.Ordinal)
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             { WebHostDefaults.ServerUrlsKey, nameof(ConfigurationLevel.MonitorEnvironment) }
         };
 
-        private static readonly string[] MonitorUrls = new[] { nameof(ConfigurationLevel.MonitorUrls) };
+        private static readonly string[] MonitorUrls = new[] { nameof(ConfigurationLevel.HostBuilderSettingsUrl) };
 
         private static readonly Dictionary<string, string> SharedSettingsContent = new(StringComparer.Ordinal)
         {
@@ -65,8 +65,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// </summary>
         [Theory]
         [InlineData(ConfigurationLevel.None)]
-        [InlineData(ConfigurationLevel.DotnetEnviroment)]
-        [InlineData(ConfigurationLevel.MonitorUrls)]
+        [InlineData(ConfigurationLevel.DotnetEnvironment)]
+        [InlineData(ConfigurationLevel.HostBuilderSettingsUrl)]
         [InlineData(ConfigurationLevel.AspnetEnvironment)]
         [InlineData(ConfigurationLevel.AppSettings)]
         [InlineData(ConfigurationLevel.UserSettings)]
@@ -87,12 +87,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName
             };
-            if (level >= ConfigurationLevel.MonitorUrls)
+            if (level >= ConfigurationLevel.HostBuilderSettingsUrl)
             {
                 settings.Urls = MonitorUrls;
             }
 
-            // Write all all of the test files
+            // Write all of the test files
             if (level >= ConfigurationLevel.AppSettings)
             {
                 // This is the appsettings.json file that is normally next to the entrypoint assembly.
@@ -126,8 +126,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Override the environment configurations to use predefined values so that the test host
             // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
             // in-memory collection source.
-            builder.ReplaceAspnetEnvironment(level >= ConfigurationLevel.AspnetEnvironment ? AspnetEnvironmentVariables : null); ;
-            builder.ReplaceDotnetEnvironment(level >= ConfigurationLevel.DotnetEnviroment ? DotnetEnvironmentVariables : null);
+            builder.ReplaceAspnetEnvironment(level >= ConfigurationLevel.AspnetEnvironment ? AspnetEnvironmentVariables : null);
+            builder.ReplaceDotnetEnvironment(level >= ConfigurationLevel.DotnetEnvironment ? DotnetEnvironmentVariables : null);
             builder.ReplaceMonitorEnvironment(level >= ConfigurationLevel.MonitorEnvironment ? MonitorEnvironmentVariables : null);
 
             // Build the host and get the Urls property from configuration.
@@ -141,7 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 Assert.Null(configuredUrls);
             }
-            else if (level == ConfigurationLevel.DotnetEnviroment)
+            else if (level == ConfigurationLevel.DotnetEnvironment)
             {
                 // Not sure this was the intent that setting DOTNET_Urls via environment yields no
                 // configured URLS, however, this does not happen because the --urls command line
@@ -160,8 +160,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public enum ConfigurationLevel
         {
             None,
-            DotnetEnviroment,
-            MonitorUrls,
+            DotnetEnvironment,
+            HostBuilderSettingsUrl,
             AspnetEnvironment,
             AppSettings,
             UserSettings,
