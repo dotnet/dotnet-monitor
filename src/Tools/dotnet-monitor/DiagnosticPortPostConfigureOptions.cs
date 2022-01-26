@@ -8,12 +8,12 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class DiagnosticPortNamedOptions :
+    internal sealed class DiagnosticPortPostConfigureOptions :
         IPostConfigureOptions<DiagnosticPortOptions>
     {
         private readonly IConfiguration  _configuration;
 
-        public DiagnosticPortNamedOptions(
+        public DiagnosticPortPostConfigureOptions(
             IConfiguration configuration)
         {
             _configuration = configuration;
