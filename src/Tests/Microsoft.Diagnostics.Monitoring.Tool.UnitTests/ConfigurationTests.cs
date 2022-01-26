@@ -151,7 +151,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
             else
             {
-                Assert.Equal(Enum.GetName(level), configuredUrls);
+                Assert.Equal(Enum.GetName(typeof(ConfigurationLevel), level), configuredUrls);
             }
         }
 
