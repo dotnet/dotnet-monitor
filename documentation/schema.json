@@ -807,6 +807,51 @@
         }
       }
     },
+    "DiagnosticPortOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ConnectionMode": {
+          "description": "In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen' mode, the application connects to dotnet-monitor via EndpointName.",
+          "default": "Connect",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/DiagnosticPortConnectionMode"
+            }
+          ]
+        },
+        "EndpointName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "In 'Listen' mode, specifies the name of the named pipe or unix domain socket to use for connecting to the diagnostic server."
+        },
+        "MaxConnections": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "In 'Listen' mode, the maximum amount of connections to accept.",
+          "format": "int32"
+        }
+      }
+    },
+    "DiagnosticPortConnectionMode": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Connect",
+        "Listen"
+      ],
+      "enum": [
+        "Connect",
+        "Listen"
+      ]
+    },
     "EgressOptions": {
       "type": "object",
       "additionalProperties": false,
@@ -1751,51 +1796,6 @@
           "default": false
         }
       }
-    },
-    "DiagnosticPortOptions": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "ConnectionMode": {
-          "description": "In 'Connect' mode, dotnet-monitor connects to the application for diagnostics. In 'Listen' mode, the application connects to dotnet-monitor via EndpointName.",
-          "default": "Connect",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/DiagnosticPortConnectionMode"
-            }
-          ]
-        },
-        "EndpointName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "In 'Listen' mode, specifies the name of the named pipe or unix domain socket to use for connecting to the diagnostic server."
-        },
-        "MaxConnections": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "In 'Listen' mode, the maximum amount of connections to accept.",
-          "format": "int32"
-        }
-      }
-    },
-    "DiagnosticPortConnectionMode": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Connect",
-        "Listen"
-      ],
-      "enum": [
-        "Connect",
-        "Listen"
-      ]
     }
   }
 }
