@@ -4,13 +4,13 @@
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>166610c56ff732093f0145a2911d4f6c40b786da</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.22074.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.22075.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>5ea11f6d5ca470f930fbe291e9040bf6ace0bc33</Sha>
+      <Sha>6514686c2e5da134a82840c09a2e056954fd6395</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.22074.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.22075.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>5ea11f6d5ca470f930fbe291e9040bf6ace0bc33</Sha>
+      <Sha>6514686c2e5da134a82840c09a2e056954fd6395</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
