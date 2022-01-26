@@ -22,7 +22,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
         public static void Write(Stream stream, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, ConfigDisplayLevel level)
         {
-            IHost host = HostBuilderHelper.CreateHostBuilder(urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey).Build();
+            IAuthConfiguration authConfiguration = HostBuilderHelper.CreateAuthConfiguration(noAuth, tempApiKey);
+            HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authConfiguration);
+            IHost host = HostBuilderHelper.CreateHostBuilder(settings).Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
             jsonWriter.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false);
