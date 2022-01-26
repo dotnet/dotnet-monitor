@@ -133,11 +133,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static Task<int> Main(string[] args)
         {
-            //System.Environment.SetEnvironmentVariable("DotnetMonitor_DiagnosticPort", "\\\\.\\pipe\\dotnet-monitor-pipe");
-
-            //System.Environment.SetEnvironmentVariable("DotnetMonitor_DiagnosticPort__ConnectionMode", "Connect");
-
-
             var parser = new CommandLineBuilder()
                 .AddCommand(CollectCommand())
                 .AddCommand(ConfigCommand())

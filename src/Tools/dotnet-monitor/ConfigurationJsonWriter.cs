@@ -200,8 +200,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             IEnumerable<IConfigurationSection> children = section.GetChildren();
 
+            bool hasValidChildren = SectionHasValidChildren(section, children);
+
             //If we do not traverse the child sections, the caller is responsible for creating the value
-            if (includeChildSections && children.Any())
+            if (includeChildSections && hasValidChildren)
             {
                 bool isSequentialIndices = CheckForSequentialIndices(children);
 
@@ -230,10 +232,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     ProcessChildren(section, includeChildSections, redact);
                 }
             }
-            else if (!children.Any())
+            else if (!hasValidChildren)
             {
                 WriteValue(section.Value, redact);
             }
+        }
+
+        private bool SectionHasValidChildren(IConfigurationSection section, IEnumerable<IConfigurationSection> children)
+        {
+            if (section.Key.Equals(nameof(RootOptions.DiagnosticPort)))
+            {
+                return string.IsNullOrEmpty(section.Value);
+            }
+
+            return children.Any();
         }
 
         private void WriteValue(string value, bool redact)

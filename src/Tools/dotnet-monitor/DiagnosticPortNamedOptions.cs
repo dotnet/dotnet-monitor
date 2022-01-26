@@ -5,13 +5,11 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class DiagnosticPortNamedOptions :
-        IConfigureOptions<DiagnosticPortOptions>
+        IPostConfigureOptions<DiagnosticPortOptions>
     {
         private readonly IConfiguration  _configuration;
 
@@ -21,31 +19,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _configuration = configuration;
         }
 
-        public void Configure(DiagnosticPortOptions options)
+        public void PostConfigure(string name, DiagnosticPortOptions options)
         {
             IConfigurationSection diagPortSection = _configuration.GetSection(nameof(RootOptions.DiagnosticPort));
 
+            // If there is a value for diagPortSection, then the options will obey that and disregard diagPortSection's children
             if (diagPortSection.Exists() && !string.IsNullOrEmpty(diagPortSection.Value))
             {
-                var children = diagPortSection.GetChildren();
-
-                UpdateChild(children, nameof(DiagnosticPortOptions.ConnectionMode), nameof(DiagnosticPortConnectionMode.Listen));
-                UpdateChild(children, nameof(DiagnosticPortOptions.EndpointName), diagPortSection.Value);
-
                 options.ConnectionMode = DiagnosticPortConnectionMode.Listen;
                 options.EndpointName = diagPortSection.Value;
-
-                diagPortSection.Bind(options);
-            }
-        }
-
-        private void UpdateChild(IEnumerable<IConfigurationSection> children, string childKey, string childValue)
-        {
-            var foundChild = children.FirstOrDefault(child => child.Key.Equals(childKey));
-
-            if (foundChild != null)
-            {
-                foundChild.Value = childValue;
             }
         }
     }

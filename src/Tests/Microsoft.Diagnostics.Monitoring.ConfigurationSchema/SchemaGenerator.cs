@@ -64,14 +64,8 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
         private static void AddDiagnosticPortSchema(GenerationContext context, JsonSchema schema)
         {
-            JsonSchema nullSchema = new JsonSchema() { Type = JsonObjectType.Null };
-            JsonSchema diagPortOptionsSchema = new JsonSchema() { Reference = context.AddTypeIfNotExist<WebApi.DiagnosticPortOptions>() };
             JsonSchema stringSchema = new JsonSchema() { Type = JsonObjectType.String };
-
-            schema.Properties["DiagnosticPort"].OneOf.Clear();
-            schema.Properties["DiagnosticPort"].OneOf.Add(nullSchema);
-            schema.Properties["DiagnosticPort"].OneOf.Add(diagPortOptionsSchema);
-            schema.Properties["DiagnosticPort"].OneOf.Add(stringSchema);
+            schema.Properties[nameof(RootOptions.DiagnosticPort)].OneOf.Add(stringSchema);
         }
 
         private static void AddConsoleLoggerFormatterSubSchemas(GenerationContext context)

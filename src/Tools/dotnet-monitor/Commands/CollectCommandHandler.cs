@@ -142,7 +142,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 }
 
                 services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
-                services.AddSingleton<IConfigureOptions<DiagnosticPortOptions>, DiagnosticPortNamedOptions>();
+                services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortNamedOptions>();
                 services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
                 services.AddSingleton<OperationTrackerService>();
 
