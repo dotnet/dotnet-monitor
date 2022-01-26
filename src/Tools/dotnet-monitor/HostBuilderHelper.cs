@@ -61,8 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, AuthConfiguration authenticationOptions)
         {
-            return Host.CreateDefaultBuilder()
-                .UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
+            return new HostBuilder()
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
@@ -73,6 +72,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
                 })
+                .ConfigureDefaults(args: null)
+                .UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
                     builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
