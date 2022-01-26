@@ -2,8 +2,8 @@
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>6.1.0</VersionPrefix>
-    <PreReleaseVersionLabel>alpha</PreReleaseVersionLabel>
-    <PreReleaseVersionIteration>1</PreReleaseVersionIteration>
+    <PreReleaseVersionLabel>rtm</PreReleaseVersionLabel>
+    <DotNetFinalVersionKind>release</DotNetFinalVersionKind>
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
     <!--
       Build quality notion for blob group naming, similar to aka.ms channel build quality in Arcade:
@@ -11,7 +11,7 @@
       - 'prerelease': allows the blob group release name to use prerelease version information.
       - 'release': sets the blob group release name to 'release'.
     -->
-    <BlobGroupBuildQuality>prerelease</BlobGroupBuildQuality>
+    <BlobGroupBuildQuality>release</BlobGroupBuildQuality>
   </PropertyGroup>
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
