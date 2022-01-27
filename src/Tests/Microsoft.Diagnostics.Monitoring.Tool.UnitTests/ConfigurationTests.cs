@@ -2,22 +2,22 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-
     public sealed class ConfigurationTests
     {
         private static readonly Dictionary<string, string> AppSettingsContent = new(StringComparer.Ordinal)
@@ -52,6 +52,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             { WebHostDefaults.ServerUrlsKey, nameof(ConfigurationLevel.UserSettings) }
         };
 
+        // This needs to be updated and kept in order for any future configuration sections
+        private readonly List<string> orderedConfigurationKeys = new()
+        {
+            "urls",
+            "Kestrel",
+            "GlobalCounter",
+            "CollectionRules",
+            "CorsConfiguration",
+            "DiagnosticPort",
+            "Metrics",
+            "Storage",
+            "DefaultProcess",
+            "Logging",
+            "Authentication",
+            "Egress"
+        };
+
         private readonly ITestOutputHelper _outputHelper;
 
         public ConfigurationTests(ITestOutputHelper outputHelper)
@@ -66,8 +83,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// </summary>
         [Theory]
         [InlineData(ConfigurationLevel.None)]
-        [InlineData(ConfigurationLevel.HostBuilderSettingsUrl)]
         [InlineData(ConfigurationLevel.DotnetEnvironment)]
+        [InlineData(ConfigurationLevel.HostBuilderSettingsUrl)]
         [InlineData(ConfigurationLevel.AspnetEnvironment)]
         [InlineData(ConfigurationLevel.AppSettings)]
         [InlineData(ConfigurationLevel.UserSettings)]
@@ -142,10 +159,161 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 Assert.Null(configuredUrls);
             }
+            else if (level == ConfigurationLevel.DotnetEnvironment)
+            {
+                // Not sure this was the intent that setting DOTNET_Urls via environment yields no
+                // configured URLS, however, this does not happen because the --urls command line
+                // parameter always supercedes this environment variable (again, not sure this was
+                // intended either).
+                Assert.Null(configuredUrls);
+            }
             else
             {
                 Assert.Equal(Enum.GetName(level), configuredUrls);
             }
+        }
+
+        private void ConfigShowOutputTest(bool redact, string userSettingsFilePath, string expectedConfiguration)
+        {
+            using TemporaryDirectory contentRootDirectory = new(_outputHelper);
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                ContentRootDirectory = contentRootDirectory.FullName,
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
+
+            // This is the settings.json file in the user profile directory.
+            string userSettingsContent = File.ReadAllText(userSettingsFilePath);
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), userSettingsContent);
+
+            // Create the initial host builder.
+            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
+
+            // Override the environment configurations to use predefined values so that the test host
+            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
+            // in-memory collection source.
+            builder.ReplaceAspnetEnvironment(null);
+            builder.ReplaceDotnetEnvironment(null);
+            builder.ReplaceMonitorEnvironment(null);
+
+            // Build the host and get the Urls property from configuration.
+            IHost host = builder.Build();
+            IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
+
+            Stream stream = new MemoryStream();
+
+            using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
+            jsonWriter.Write(rootConfiguration, full: redact != true, skipNotPresent: false);
+            jsonWriter.Dispose();
+
+            stream.Position = 0;
+
+            using (var streamReader = new StreamReader(stream))
+            {
+                string configString = streamReader.ReadToEnd();
+
+                _outputHelper.WriteLine(configString);
+
+                CompareOutput(configString, expectedConfiguration);
+            }
+        }
+
+        /// <summary>
+        /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
+        /// assemble properly when combined.
+        /// </summary>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void FullConfigurationTest(bool redact)
+        {
+            using TemporaryDirectory generatedUserSettingsDirectory = new(_outputHelper);
+            string userSettingsFilePath = Path.Combine(generatedUserSettingsDirectory.FullName, "settings.json");
+            File.WriteAllText(userSettingsFilePath, ConstructUserSettingsJson());
+
+            ConfigShowOutputTest(redact, userSettingsFilePath, ConstructExpectedOutput(redact));
+        }
+
+        private string ConstructUserSettingsJson()
+        {
+            string generatedUserSettings = "{";
+
+            string[] fileNames = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations"));
+
+            foreach (var fileName in fileNames)
+            {
+                string fileContents = File.ReadAllText(fileName);
+
+                fileContents = fileContents.Remove(fileContents.LastIndexOf("}"));
+                fileContents = fileContents.Remove(fileContents.IndexOf("{"), 1);
+
+                generatedUserSettings += fileContents + (!fileName.Equals(fileNames.Last()) ? "," : "");
+            }
+
+            generatedUserSettings += "}";
+
+            return generatedUserSettings;
+        }
+
+        private void CompareOutput(string actual, string expected)
+        {
+            Assert.Equal(CleanWhitespace(expected), CleanWhitespace(actual));
+        }
+
+        private string ConstructExpectedOutput(bool redact)
+        {
+            Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact);
+
+            string expectedOutput = "{";
+
+            foreach (var key in orderedConfigurationKeys)
+            {
+                expectedOutput += "\"" + key + "\"" + ":";
+
+                if (categoryMapping.ContainsKey(key))
+                {
+                    string expectedPath = Path.Combine(Directory.GetCurrentDirectory(), "ExpectedConfigurations", categoryMapping[key]);
+                    expectedOutput += File.ReadAllText(expectedPath);
+                }
+                else
+                {
+                    expectedOutput += "\"" + Strings.Placeholder_NotPresent + "\"";
+                }
+
+                expectedOutput += (!key.Equals(orderedConfigurationKeys.Last())) ? "," : "";
+            }
+
+            expectedOutput += "}";
+
+            return expectedOutput;
+        }
+
+        private string CleanWhitespace(string rawText)
+        {
+            return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
+        }
+
+        private Dictionary<string, string> GetConfigurationFileNames(bool redact)
+        {
+            return new Dictionary<string, string>()
+            {
+                { "GlobalCounter", "GlobalCounter.json" },
+                { "Metrics", "Metrics.json" },
+                { "Egress", redact ? "EgressRedacted.json" : "EgressFull.json" },
+                { "Storage", "Storage.json" },
+                { "urls", "URLs.json" },
+                { "Logging", "Logging.json" },
+                { "DefaultProcess", "DefaultProcess.json" },
+                { "DiagnosticPort", "DiagnosticPort.json" },
+                { "CollectionRules", "CollectionRules.json" },
+                { "Authentication", redact ? "AuthenticationRedacted.json" : "AuthenticationFull.json" }
+            };
         }
 
         /// This is the order of configuration sources where a name with a lower
@@ -153,8 +321,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public enum ConfigurationLevel
         {
             None,
-            HostBuilderSettingsUrl,
             DotnetEnvironment,
+            HostBuilderSettingsUrl,
             AspnetEnvironment,
             AppSettings,
             UserSettings,

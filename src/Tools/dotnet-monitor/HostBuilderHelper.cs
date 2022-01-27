@@ -21,10 +21,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
         {
-            return new HostBuilder()
+            return Host.CreateDefaultBuilder()
+                .UseContentRoot(settings.ContentRootDirectory)
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
-
                     //Note these are in precedence order.
                     ConfigureEndpointInfoSource(builder, settings.DiagnosticPort);
                     ConfigureMetricsEndpoint(builder, settings.EnableMetrics, settings.MetricsUrls ?? Array.Empty<string>());
@@ -33,11 +33,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>()) });
                 })
-                .ConfigureDefaults(args: null)
-                .UseContentRoot(settings.ContentRootDirectory)
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
-
                     string userSettingsPath = Path.Combine(settings.UserConfigDirectory, SettingsFileName);
                     builder.AddJsonFile(userSettingsPath, optional: true, reloadOnChange: true);
 
@@ -56,16 +53,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         string symlinkTarget = Path.Combine(settings.SharedConfigDirectory, "..data");
                         if (Directory.Exists(symlinkTarget))
                         {
-                            string symlinkTarget = Path.Combine(SharedConfigDirectoryPath, "..data");
-                            if (Directory.Exists(symlinkTarget))
-                            {
-                                path = symlinkTarget;
-                            }
+                            path = symlinkTarget;
                         }
-
-                        builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
-                        builder.AddEnvironmentVariables(ConfigPrefix);
                     }
+
+                    builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
+                    builder.AddEnvironmentVariables(ConfigPrefix);
 
                     if (settings.Authentication.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {
@@ -90,8 +83,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //3) Environment variables (ASPNETCORE_URLS, then DOTNETCORE_URLS)
 
                         //Our precedence
-                        //1) Command line arguments (these have defaults) --urls, --metricUrls
-                        //2) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
+                        //1) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
+                        //2) Command line arguments (these have defaults) --urls, --metricUrls
                         //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
 
                         string hostingUrl = context.Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
