@@ -173,6 +173,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
+        /// <summary>
+        /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
+        /// assemble properly when combined.
+        /// </summary>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void FullConfigurationTest(bool redact)
+        {
+            using TemporaryDirectory generatedUserSettingsDirectory = new(_outputHelper);
+            string userSettingsFilePath = Path.Combine(generatedUserSettingsDirectory.FullName, "settings.json");
+            File.WriteAllText(userSettingsFilePath, ConstructUserSettingsJson());
+
+            ConfigShowOutputTest(redact, userSettingsFilePath, ConstructExpectedOutput(redact));
+        }
+
         private void ConfigShowOutputTest(bool redact, string userSettingsFilePath, string expectedConfiguration)
         {
             using TemporaryDirectory contentRootDirectory = new(_outputHelper);
@@ -222,22 +238,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CompareOutput(configString, expectedConfiguration);
             }
-        }
-
-        /// <summary>
-        /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
-        /// assemble properly when combined.
-        /// </summary>
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void FullConfigurationTest(bool redact)
-        {
-            using TemporaryDirectory generatedUserSettingsDirectory = new(_outputHelper);
-            string userSettingsFilePath = Path.Combine(generatedUserSettingsDirectory.FullName, "settings.json");
-            File.WriteAllText(userSettingsFilePath, ConstructUserSettingsJson());
-
-            ConfigShowOutputTest(redact, userSettingsFilePath, ConstructExpectedOutput(redact));
         }
 
         private string ConstructUserSettingsJson()
