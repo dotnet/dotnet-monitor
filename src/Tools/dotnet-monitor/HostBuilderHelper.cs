@@ -21,6 +21,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
         {
+            // The configuration is built in a precedence order such that sources that are configured
+            // later will have a higher precedence. Typically, an application would call Host.CreateDefaultBuilder
+            // and pass command line arguments to this call. This would setup DOTNET_* environment variables at a
+            // lower precedence compared to the command line arguments. For dotnet-monitor, the desired order of
+            // precedence is (where 1 is the highest precedence):
+            //
+            // 1) DOTNETMONITOR_* environment variables
+            // 2) User and shared settings and key-per-file files
+            // 3) appsettings.*.json files
+            // 4) DOTNET_* and ASPNETCORE_* environment variables
+            // 5) Command Line Arguments and defaults
+            //
+            // In order to achieve this, create an empty host builder, add the command line arguments and defaults
+            // as host configuration, then configure the defaults (which includes DOTNET_* environment variables
+            // and appsettings.*.json files), and finally configure the remaining dotnet-monitor specific sources.
             return new HostBuilder()
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
@@ -79,13 +94,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         //Note our priorities for hosting urls don't match the default behavior.
                         //Default Kestrel behavior priority
+                        // (1 is the higher precedence)
                         //1) ConfigureKestrel settings
                         //2) Command line arguments (--urls)
                         //3) Environment variables (ASPNETCORE_URLS, then DOTNETCORE_URLS)
 
                         //Our precedence
-                        //1) Command line arguments (these have defaults) --urls, --metricUrls
-                        //2) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
+                        //1) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
+                        //2) Command line arguments (these have defaults) --urls, --metricUrls
                         //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
 
                         string hostingUrl = context.Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
