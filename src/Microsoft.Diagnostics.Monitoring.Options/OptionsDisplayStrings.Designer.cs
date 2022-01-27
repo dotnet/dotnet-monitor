@@ -757,6 +757,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the environment variable to get..
+        /// </summary>
+        public static string DisplayAttributeDescription_GetEnvironmentVariableOptions_Name {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GetEnvironmentVariableOptions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Determines the metrics interval for all dotnet-monitor scenarios. This includes prometheus metrics, live metrics, triggers, and traces..
         /// </summary>
         public static string DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds {
@@ -1014,6 +1023,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_ProcessFilterType_Exact {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_ProcessFilterType_Exact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the environment variable to set..
+        /// </summary>
+        public static string DisplayAttributeDescription_SetEnvironmentVariableOptions_Name {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_SetEnvironmentVariableOptions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value of the environment variable to set..
+        /// </summary>
+        public static string DisplayAttributeDescription_SetEnvironmentVariableOptions_Value {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_SetEnvironmentVariableOptions_Value", resourceCulture);
             }
         }
         

@@ -32,12 +32,21 @@ While the rest of this document will showcase configuration examples in a json f
 }
 ```
 
-The same configuration can be expressed via environment variables using the `DotnetMonitor_` prefix and using `__`(double underscore) as the hierarchical separator
+The same configuration can be expressed via environment variables using the using `__`(double underscore) as the hierarchical separator:
 
 ```bash
 export Authentication__MonitorApiKey__Subject="ae5473b6-8dad-498d-b915-ffffffffffff"
 export Authentication__MonitorApiKey__PublicKey="eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19"
 ```
+
+Environment variables _can_ be prefixed with `DotnetMonitor_` (single underscore) to give them a higher precedence over environment variables without this prefix. In the following example:
+
+```bash
+export DotnetMonitor_DefaultProcess__Filters__0__Key="myapp"
+export DefaultProcess__Filters__0__Key="dotnet"
+```
+
+The value from the variable `DotnetMonitor_DefaultProcess__Filters__0__Key` will be observed rather than the value from the variable `DefaultProcess__Filters__0__Key`, thus `dotnet monitor` will observe `DefaultProcess:Filters:0:Key` to be `myapp`.
 
 #### Kubernetes
 
@@ -61,7 +70,7 @@ spec:
       secretName: apikey
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0
+    image: mcr.microsoft.com/dotnet/monitor:6.0
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -88,7 +97,7 @@ spec:
       name: my-configmap
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0
+    image: mcr.microsoft.com/dotnet/monitor:6.0
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -108,7 +117,7 @@ spec:
             name: my-configmap
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/dotnet-monitor:6.0.0
+    image: mcr.microsoft.com/dotnet/monitor:6.0
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -757,6 +766,104 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
   "Path": "C:\\Program Files\\dotnet\\dotnet.exe",
   "Arguments": "C:\\Program Files\\MyApp\\myapp.dll"
 }
+```
+
+#### `LoadProfiler` Action
+
+An action that loads an ICorProfilerCallback implementation into a target process as a startup profiler. This action must be used in a collection rule with a `Startup` trigger.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Path` | string | true | The path of the profiler library to be loaded. This is typically the same value that would be set as the CORECLR_PROFILER_PATH environment variable. | |
+| `Clsid` | Guid | true | The class identifier (or CLSID, typically a GUID) of the ICorProfilerCallback implementation. This is typically the same value that would be set as the CORECLR_PROFILER environment variable. | |
+
+##### Outputs
+
+No outputs
+
+##### Example
+
+Usage that loads one of the sample profilers from [`dotnet/runtime`: src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp](https://github.com/dotnet/runtime/blob/9ddd58a58d14a7bec5ed6eb777c6703c48aca15d/src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp).
+
+```json
+{
+  "Path": "Profilers\\Profiler.dll",
+  "Clsid": "55b9554d-6115-45a2-be1e-c80f7fa35369"
+}
+```
+
+#### `SetEnvironmentVariable` Action
+
+An action that sets an environment variable value in the target process. This action should be used in a collection rule with a `Startup` trigger.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Name` | string | true | The name of the environment variable to set. | |
+| `Value` | string | false | The value of the environment variable to set. | `null` |
+
+##### Outputs
+
+No outputs
+
+##### Example
+
+Usage that sets a parameter to the profiler you loaded. In this case, your profiler might be looking for an account key defined in `MyProfiler_AccountId` which is used to communicate to some outside system.
+
+```json
+{
+  "Name": "MyProfiler_AccountId",
+  "Value": "8fb138d2c44e4aea8545cc2df541ed4c"
+}
+```
+
+#### `GetEnvironmentVariable` Action
+
+An action that gets an environment varaible from the target process. Its value is set as the `Value` action output.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Name` | string | true | The name of the environment variable to get. | |
+
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `Value` | The value of the environment variable in the target process. |
+
+##### Example
+
+Usage that gets a token your app has access to and uses it to send a trace.
+
+***Note:*** the example below is of an entire action list to provide context, only the second json entry represents the `GetEnvironmentVariable` Action.
+
+```json
+[{
+    "Name": "A",
+    "Type": "CollectTrace",
+    "Settings": {
+        "Profile": "Cpu",
+        "Egress": "AzureBlob"
+    }
+},{
+    "Name": "GetEnvAction",
+    "Type": "GetEnvironmentVariable",
+    "Settings": {
+       "Name": "Azure_SASToken",
+    }
+},{
+    "Name": "B",
+    "Type": "Execute",
+    "Settings": {
+        "Path": "azcopy",
+        "Arguments": "$(Actions.A.EgressPath) https://Contoso.blob.core.windows.net/MyTraces/AwesomeAppTrace.nettrace?$(Actions.GetEnvAction.Value)"
+    }
+}]
 ```
 
 ### Limits

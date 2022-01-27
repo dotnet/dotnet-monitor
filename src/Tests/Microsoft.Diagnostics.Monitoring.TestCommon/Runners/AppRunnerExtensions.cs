@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -122,6 +123,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         {
             using CancellationTokenSource cancellation = new(timeout);
             await runner.StartAsync(cancellation.Token).ConfigureAwait(false);
+        }
+
+        public static async Task<string> GetEnvironmentVariable(this AppRunner runner, string name, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+            ConfiguredTaskAwaitable<string> getVarTask = runner.WaitForEnvironmentVariable(name, cancellation.Token).ConfigureAwait(false);
+            await runner.SendCommandAsync(TestAppScenarios.Commands.PrintEnvironmentVariables).ConfigureAwait(false);
+            string result = await getVarTask;
+            return result;
         }
 
         public static Task<int> WaitForExitAsync(this AppRunner runner)

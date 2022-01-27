@@ -23,10 +23,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         {
             try
             {
-                AuthConfiguration authenticationOptions = HostBuilderHelper.CreateAuthConfiguration(noAuth, tempApiKey);
+                AuthConfiguration authConfiguration = HostBuilderHelper.CreateAuthConfiguration(noAuth, tempApiKey);
+                HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authConfiguration);
 
-                IHost host = HostBuilderHelper.CreateHostBuilder(urls, metricUrls, metrics, diagnosticPort, authenticationOptions)
-                    .ConfigureServices(authenticationOptions, noHttpEgress)
+                IHost host = HostBuilderHelper.CreateHostBuilder(settings)
+                    .ConfigureServices(authConfiguration, noHttpEgress)
                     .Build();
 
                 try
@@ -85,6 +86,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
                 //TODO Many of these service additions should be done through extension methods
+                services.AddSingleton(RealSystemClock.Instance);
 
                 services.AddSingleton<IAuthConfiguration>(authenticationOptions);
 
@@ -141,6 +143,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 }
 
                 services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
+                services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
                 services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
                 services.AddSingleton<OperationTrackerService>();
 

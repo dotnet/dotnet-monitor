@@ -18,89 +18,43 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
-        private const string ProductFolderName = "dotnet-monitor";
 
-        // Allows tests to override the shared configuration directory so there
-        // is better control and access of what is visible during test.
-        private const string SharedConfigDirectoryOverrideEnvironmentVariable
-            = "DotnetMonitorTestSettings__SharedConfigDirectoryOverride";
-
-        // Allows tests to override the user configuration directory so there
-        // is better control and access of what is visible during test.
-        private const string UserConfigDirectoryOverrideEnvironmentVariable
-            = "DotnetMonitorTestSettings__UserConfigDirectoryOverride";
-
-        // Location where shared dotnet-monitor configuration is stored.
-        // Windows: "%ProgramData%\dotnet-monitor
-        // Other: /etc/dotnet-monitor
-        private static readonly string SharedConfigDirectoryPath =
-            GetEnvironmentOverrideOrValue(
-                SharedConfigDirectoryOverrideEnvironmentVariable,
-                RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), ProductFolderName) :
-                    Path.Combine("/etc", ProductFolderName));
-
-        private static readonly string SharedSettingsPath = Path.Combine(SharedConfigDirectoryPath, SettingsFileName);
-
-        // Location where user's dotnet-monitor configuration is stored.
-        // Windows: "%USERPROFILE%\.dotnet-monitor"
-        // Other: "%XDG_CONFIG_HOME%/dotnet-monitor" OR "%HOME%/.config/dotnet-monitor"
-        private static readonly string UserConfigDirectoryPath =
-            GetEnvironmentOverrideOrValue(
-                UserConfigDirectoryOverrideEnvironmentVariable,
-                RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + ProductFolderName) :
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName));
-
-        public static string UserSettingsPath = Path.Combine(UserConfigDirectoryPath, SettingsFileName);
-
-        public static ConfigurationTestingMode TestingMode = ConfigurationTestingMode.None;
-
-        public static IHostBuilder CreateHostBuilder(string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey)
+        public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
         {
-            return CreateHostBuilder(urls, metricUrls, metrics, diagnosticPort, CreateAuthConfiguration(noAuth, tempApiKey));
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, AuthConfiguration authenticationOptions)
-        {
-            return Host.CreateDefaultBuilder()
-                .UseContentRoot(AppContext.BaseDirectory) // Use the application root instead of the current directory
+            return new HostBuilder()
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
-                    if (TestingMode == ConfigurationTestingMode.None)
-                    {
-                        //Note these are in precedence order.
-                        ConfigureEndpointInfoSource(builder, diagnosticPort);
-                        ConfigureMetricsEndpoint(builder, metrics, metricUrls);
-                        ConfigureGlobalMetrics(builder);
-                        builder.ConfigureStorageDefaults();
 
-                        builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(urls) });
-                    }
+                    //Note these are in precedence order.
+                    ConfigureEndpointInfoSource(builder, settings.DiagnosticPort);
+                    ConfigureMetricsEndpoint(builder, settings.EnableMetrics, settings.MetricsUrls ?? Array.Empty<string>());
+                    ConfigureGlobalMetrics(builder);
+                    builder.ConfigureStorageDefaults();
+
+                    builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>()) });
                 })
+                .ConfigureDefaults(args: null)
+                .UseContentRoot(settings.ContentRootDirectory)
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
-                    if (TestingMode != ConfigurationTestingMode.None)
-                    {
-                        while (builder.Sources.Count > 0)
-                        {
-                            builder.Sources.RemoveAt(0);
-                        }
-                    }
 
-                    builder.AddJsonFile(UserSettingsPath, optional: true, reloadOnChange: true);
-                    builder.AddJsonFile(SharedSettingsPath, optional: true, reloadOnChange: true);
+                    string userSettingsPath = Path.Combine(settings.UserConfigDirectory, SettingsFileName);
+                    builder.AddJsonFile(userSettingsPath, optional: true, reloadOnChange: true);
 
-                    if (TestingMode == ConfigurationTestingMode.None)
+                    string sharedSettingsPath = Path.Combine(settings.SharedConfigDirectory, SettingsFileName);
+                    builder.AddJsonFile(sharedSettingsPath, optional: true, reloadOnChange: true);
+
+                    //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
+                    //KeyPerFile provider uses a file system watcher to trigger changes.
+                    //The watcher does not follow symlinks inside the watched directory, such as mounted files
+                    //in Kubernetes.
+                    //We get around this by watching the target folder of the symlink instead.
+                    //See https://github.com/kubernetes/kubernetes/master/pkg/volume/util/atomic_writer.go
+                    string path = settings.SharedConfigDirectory;
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RuntimeInfo.IsInKubernetes)
                     {
-                        //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
-                        //KeyPerFile provider uses a file system watcher to trigger changes.
-                        //The watcher does not follow symlinks inside the watched directory, such as mounted files
-                        //in Kubernetes.
-                        //We get around this by watching the target folder of the symlink instead.
-                        //See https://github.com/kubernetes/kubernetes/master/pkg/volume/util/atomic_writer.go
-                        string path = SharedConfigDirectoryPath;
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RuntimeInfo.IsInKubernetes)
+                        string symlinkTarget = Path.Combine(settings.SharedConfigDirectory, "..data");
+                        if (Directory.Exists(symlinkTarget))
                         {
                             string symlinkTarget = Path.Combine(SharedConfigDirectoryPath, "..data");
                             if (Directory.Exists(symlinkTarget))
@@ -113,9 +67,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         builder.AddEnvironmentVariables(ConfigPrefix);
                     }
 
-                    if (authenticationOptions.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
+                    if (settings.Authentication.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {
-                        ConfigureTempApiHashKey(builder, authenticationOptions);
+                        ConfigureTempApiHashKey(builder, settings.Authentication);
                     }
                 })
                 //Note this is necessary for config only because Kestrel configuration
@@ -136,18 +90,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //3) Environment variables (ASPNETCORE_URLS, then DOTNETCORE_URLS)
 
                         //Our precedence
-                        //1) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
-                        //2) Command line arguments (these have defaults) --urls, --metricUrls
+                        //1) Command line arguments (these have defaults) --urls, --metricUrls
+                        //2) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
                         //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
 
                         string hostingUrl = context.Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
-                        urls = ConfigurationHelper.SplitValue(hostingUrl);
+                        string[] urls = ConfigurationHelper.SplitValue(hostingUrl);
 
                         var metricsOptions = new MetricsOptions();
                         context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
 
                         string metricHostingUrls = metricsOptions.Endpoints;
-                        metricUrls = ConfigurationHelper.SplitValue(metricHostingUrls);
+                        string[] metricUrls = ConfigurationHelper.SplitValue(metricHostingUrls);
 
                         //Workaround for lack of default certificate. See https://github.com/dotnet/aspnetcore/issues/28120
                         options.Configure(context.Configuration.GetSection("Kestrel")).Load();
@@ -170,7 +124,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return new AuthConfiguration(authMode);
         }
 
-        private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, AuthConfiguration authenticationOptions)
+        private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, IAuthConfiguration authenticationOptions)
         {
             if (authenticationOptions.TemporaryJwtKey != null)
             {
@@ -214,11 +168,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static DiagnosticPortConnectionMode GetConnectionMode(string diagnosticPort)
         {
             return string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
-        }
-
-        private static string GetEnvironmentOverrideOrValue(string overrideEnvironmentVariable, string value)
-        {
-            return Environment.GetEnvironmentVariable(overrideEnvironmentVariable) ?? value;
         }
     }
 }

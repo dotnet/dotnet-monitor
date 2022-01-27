@@ -67,6 +67,9 @@
         },
         {
           "$ref": "#/definitions/DiagnosticPortOptions"
+        },
+        {
+          "type": "string"
         }
       ]
     },
@@ -713,6 +716,32 @@
               "$ref": "#/definitions/LoadProfilerOptions"
             }
           }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "SetEnvironmentVariable"
+            },
+            "Settings": {
+              "$ref": "#/definitions/SetEnvironmentVariableOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "GetEnvironmentVariable"
+            },
+            "Settings": {
+              "$ref": "#/definitions/GetEnvironmentVariableOptions"
+            }
+          }
         }
       ]
     },
@@ -1064,7 +1093,9 @@
         "CollectLogs",
         "CollectTrace",
         "Execute",
-        "LoadProfiler"
+        "LoadProfiler",
+        "SetEnvironmentVariable",
+        "GetEnvironmentVariable"
       ]
     },
     "CollectDumpOptions": {
@@ -1385,6 +1416,41 @@
           "type": "string",
           "description": "The class identifier (or CLSID, typically a GUID) of the ICorProfilerCallback implementation. This is typically the same value that would be set as the CORECLR_PROFILER environment variable.",
           "format": "guid",
+          "minLength": 1
+        }
+      }
+    },
+    "SetEnvironmentVariableOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Name"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "The name of the environment variable to set.",
+          "minLength": 1
+        },
+        "Value": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The value of the environment variable to set."
+        }
+      }
+    },
+    "GetEnvironmentVariableOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Name"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "The name of the environment variable to get.",
           "minLength": 1
         }
       }

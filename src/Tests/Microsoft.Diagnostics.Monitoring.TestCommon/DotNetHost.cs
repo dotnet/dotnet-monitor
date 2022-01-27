@@ -37,6 +37,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 return TargetFrameworkMoniker.Net50;
 #elif NET6_0
                 return TargetFrameworkMoniker.Net60;
+#elif NET7_0
+                return TargetFrameworkMoniker.Net70;
 #endif
             }
         }
