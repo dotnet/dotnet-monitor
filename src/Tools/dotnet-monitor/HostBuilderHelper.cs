@@ -21,8 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
         {
-            return Host.CreateDefaultBuilder()
-                .UseContentRoot(settings.ContentRootDirectory)
+            return new HostBuilder()
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
                     //Note these are in precedence order.
@@ -33,6 +32,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>()) });
                 })
+                .ConfigureDefaults(args: null)
+                .UseContentRoot(settings.ContentRootDirectory)
                 .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
                 {
                     string userSettingsPath = Path.Combine(settings.UserConfigDirectory, SettingsFileName);
@@ -83,8 +84,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //3) Environment variables (ASPNETCORE_URLS, then DOTNETCORE_URLS)
 
                         //Our precedence
-                        //1) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
-                        //2) Command line arguments (these have defaults) --urls, --metricUrls
+                        //1) Command line arguments (these have defaults) --urls, --metricUrls
+                        //2) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
                         //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
 
                         string hostingUrl = context.Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
