@@ -313,8 +313,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public enum ConfigurationLevel
         {
             None,
-            DotnetEnvironment,
             HostBuilderSettingsUrl,
+            DotnetEnvironment,
             AspnetEnvironment,
             AppSettings,
             UserSettings,
