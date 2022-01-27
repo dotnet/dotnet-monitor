@@ -38,17 +38,18 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
             // Create directory if it does not exist
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 
+            HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(
+                urls: null,
+                metricUrls: null,
+                metrics: false,
+                diagnosticPort: null,
+                authConfiguration: HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false));
+
             // Create all of the same services as dotnet-monitor and add
             // OpenAPI generation in order to have it inspect the ASP.NET Core
             // registrations and descriptions.
             IHost host = HostBuilderHelper
-                .CreateHostBuilder(
-                    urls: Array.Empty<string>(),
-                    metricUrls: Array.Empty<string>(),
-                    metrics: true,
-                    diagnosticPort: null,
-                    noAuth: false,
-                    tempApiKey: false)
+                .CreateHostBuilder(settings)
                 .ConfigureServices(services =>
                 {
                     services.AddSwaggerGen(options =>
