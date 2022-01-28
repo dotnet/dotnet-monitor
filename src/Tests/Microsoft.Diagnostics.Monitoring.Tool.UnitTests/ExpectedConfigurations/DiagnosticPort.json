@@ -1,0 +1,4 @@
+{
+  "ConnectionMode": "Listen",
+  "EndpointName": "\\\\.\\pipe\\dotnet-monitor-pipe"
+}

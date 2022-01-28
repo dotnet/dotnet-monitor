@@ -1,0 +1,5 @@
+{
+  "Storage": {
+    "DumpTempFolder": "/ephemeral-directory/"
+  }
+}
