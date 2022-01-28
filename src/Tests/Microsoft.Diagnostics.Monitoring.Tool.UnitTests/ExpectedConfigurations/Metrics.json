@@ -1,0 +1,15 @@
+{
+  "Enabled": "True",
+  "Endpoints": "http://localhost:52325",
+  "IncludeDefaultProviders": "True",
+  "MetricCount": "10",
+  "Providers": [
+    {
+      "CounterNames": [
+        "connections-per-second",
+        "total-connections"
+      ],
+      "ProviderName": "Microsoft-AspNetCore-Server-Kestrel"
+    }
+  ]
+}
