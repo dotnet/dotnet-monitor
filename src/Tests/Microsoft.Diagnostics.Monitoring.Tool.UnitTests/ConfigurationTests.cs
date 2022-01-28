@@ -236,7 +236,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private string ConstructUserSettingsJson()
         {
-            string[] fileNames = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations"));
+            string[] fileNames = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations"));
 
             IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
 
@@ -272,7 +272,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 if (categoryMapping.ContainsKey(key))
                 {
-                    string expectedPath = Path.Combine(Directory.GetCurrentDirectory(), "ExpectedConfigurations", categoryMapping[key]);
+                    string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ExpectedConfigurations", categoryMapping[key]);
 
                     writer.WriteRawValue(File.ReadAllText(expectedPath));
                 }
