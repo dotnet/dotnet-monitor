@@ -1,7 +1,4 @@
 {
-  "GlobalCounter": {
-    "IntervalSeconds": 2
-  },
   "Metrics": {
     "Enabled": "True",
     "Endpoints": "http://localhost:52325",

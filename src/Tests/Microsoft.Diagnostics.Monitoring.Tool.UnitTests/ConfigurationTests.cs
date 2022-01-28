@@ -12,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
@@ -53,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         };
 
         // This needs to be updated and kept in order for any future configuration sections
-        private readonly List<string> orderedConfigurationKeys = new()
+        private static readonly List<string> OrderedConfigurationKeys = new()
         {
             "urls",
             "Kestrel",
@@ -206,9 +208,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Override the environment configurations to use predefined values so that the test host
             // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
             // in-memory collection source.
-            builder.ReplaceAspnetEnvironment(null);
-            builder.ReplaceDotnetEnvironment(null);
-            builder.ReplaceMonitorEnvironment(null);
+            builder.ReplaceAspnetEnvironment();
+            builder.ReplaceDotnetEnvironment();
+            builder.ReplaceMonitorEnvironment();
 
             // Build the host and get the Urls property from configuration.
             IHost host = builder.Build();
@@ -234,21 +236,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private string ConstructUserSettingsJson()
         {
-            string generatedUserSettings = "{";
-
             string[] fileNames = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "SampleConfigurations"));
+
+            IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
 
             foreach (var fileName in fileNames)
             {
-                string fileContents = File.ReadAllText(fileName);
+                IDictionary<string, JsonElement> deserializedFile = JsonSerializer.Deserialize<IDictionary<string, JsonElement>>(File.ReadAllText(fileName));
 
-                fileContents = fileContents.Remove(fileContents.LastIndexOf("}"));
-                fileContents = fileContents.Remove(fileContents.IndexOf("{"), 1);
-
-                generatedUserSettings += fileContents + (!fileName.Equals(fileNames.Last()) ? "," : "");
+                combinedFiles = combinedFiles.Union(deserializedFile).ToDictionary(pair => pair.Key, pair => pair.Value);
             }
 
-            generatedUserSettings += "}";
+            string generatedUserSettings = JsonSerializer.Serialize(combinedFiles);
 
             return generatedUserSettings;
         }
@@ -262,28 +261,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact);
 
-            string expectedOutput = "{";
+            using var stream = new MemoryStream();
+            using var writer = new Utf8JsonWriter(stream);
 
-            foreach (var key in orderedConfigurationKeys)
+            writer.WriteStartObject();
+
+            foreach (var key in OrderedConfigurationKeys)
             {
-                expectedOutput += "\"" + key + "\"" + ":";
+                writer.WritePropertyName(key);
 
                 if (categoryMapping.ContainsKey(key))
                 {
                     string expectedPath = Path.Combine(Directory.GetCurrentDirectory(), "ExpectedConfigurations", categoryMapping[key]);
-                    expectedOutput += File.ReadAllText(expectedPath);
+
+                    writer.WriteRawValue(File.ReadAllText(expectedPath));
                 }
                 else
                 {
-                    expectedOutput += "\"" + Strings.Placeholder_NotPresent + "\"";
+                    writer.WriteStringValue(Strings.Placeholder_NotPresent);
                 }
-
-                expectedOutput += (!key.Equals(orderedConfigurationKeys.Last())) ? "," : "";
             }
 
-            expectedOutput += "}";
+            writer.WriteEndObject();
+            writer.Flush();
 
-            return expectedOutput;
+            return Encoding.UTF8.GetString(stream.ToArray());
         }
 
         private string CleanWhitespace(string rawText)
