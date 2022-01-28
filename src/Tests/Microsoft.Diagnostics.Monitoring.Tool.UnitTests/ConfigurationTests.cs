@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
@@ -174,8 +174,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(false)]
         public void FullConfigurationTest(bool redact)
         {
-            using TemporaryDirectory generatedUserSettingsDirectory = new(_outputHelper);
-            string userSettingsFilePath = Path.Combine(generatedUserSettingsDirectory.FullName, "settings.json");
+            using TemporaryDirectory userSettingsDirectory = new(_outputHelper);
+            string userSettingsFilePath = Path.Combine(userSettingsDirectory.FullName, "settings.json");
             File.WriteAllText(userSettingsFilePath, ConstructUserSettingsJson());
 
             ConfigShowOutputTest(redact, userSettingsFilePath, ConstructExpectedOutput(redact));
@@ -217,7 +217,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Stream stream = new MemoryStream();
 
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
-            jsonWriter.Write(rootConfiguration, full: redact != true, skipNotPresent: false);
+            jsonWriter.Write(rootConfiguration, full: !redact, skipNotPresent: false);
             jsonWriter.Dispose();
 
             stream.Position = 0;
