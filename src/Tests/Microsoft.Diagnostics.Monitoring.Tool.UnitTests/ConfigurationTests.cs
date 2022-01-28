@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
@@ -144,6 +146,85 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             else
             {
                 Assert.Equal(Enum.GetName(level), configuredUrls);
+            }
+        }
+
+        private static readonly Dictionary<string, string> DiagPortNewListen_MonitorEnvironmentVariables = new(StringComparer.Ordinal)
+        {
+            { "DiagnosticPort", "ABC" } // Should probably choose something different, but this is fine for now
+        };
+
+        private static readonly Dictionary<string, string> DiagPortOldListen_MonitorEnvironmentVariables = new(StringComparer.Ordinal)
+        {
+            { "DiagnosticPort__ConnectionMode", nameof(DiagnosticPortConnectionMode.Listen) },
+            { "DiagnosticPort__EndpointName", "DEF" } // Should probably choose something different, but this is fine for now
+        };
+
+        private static readonly Dictionary<string, string> DiagPortConnect_MonitorEnvironmentVariables = new(StringComparer.Ordinal)
+        {
+            { "DiagnosticPort__ConnectionMode", nameof(DiagnosticPortConnectionMode.Connect) }
+        };
+
+        /// <summary>
+        /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
+        /// </summary>
+        [Fact]
+        public void SimplifiedDiagnosticPortTest()
+        {
+            TestConnectionMode(DiagPortNewListen_MonitorEnvironmentVariables);
+            TestConnectionMode(DiagPortOldListen_MonitorEnvironmentVariables);
+            TestConnectionMode(DiagPortConnect_MonitorEnvironmentVariables);
+        }
+
+        private void TestConnectionMode(IDictionary<string, string> diagnosticPortEnvironmentVariables)
+        {
+            using TemporaryDirectory contentRootDirectory = new(_outputHelper);
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                ContentRootDirectory = contentRootDirectory.FullName,
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
+
+            // Create the initial host builder.
+            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
+
+            // Override the environment configurations to use predefined values so that the test host
+            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
+            // in-memory collection source.
+            builder.ReplaceAspnetEnvironment();
+            builder.ReplaceDotnetEnvironment();
+            builder.ReplaceMonitorEnvironment(diagnosticPortEnvironmentVariables);
+
+            // Build the host and get the Urls property from configuration.
+            IHost host = builder.Build();
+            IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
+
+            IConfigurationSection diagPortSection = rootConfiguration.GetSection(nameof(RootOptions.DiagnosticPort));
+
+            var children = diagPortSection.GetChildren().ToList();
+            var value = diagPortSection.Value;
+
+            foreach (var entry in diagnosticPortEnvironmentVariables)
+            {
+                if (entry.Key.Equals("DiagnosticPort"))
+                {
+                    Assert.Equal(entry.Value, value);
+                }
+                else if (entry.Key.Equals("DotnetMonitor_DiagnosticPort__EndpointName"))
+                {
+                    Assert.Equal(entry.Value, children.Find(x => x.Key.ToString().Equals("EndpointName")).Value);
+
+                }
+                else if (entry.Key.Equals("DotnetMonitor_DiagnosticPort__ConnectionMode"))
+                {
+                    Assert.Equal(entry.Value, children.Find(x => x.Key.ToString().Equals("ConnectionMode")).Value);
+                }
             }
         }
 
