@@ -176,15 +176,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(false)]
         public void FullConfigurationTest(bool redact)
         {
-            using TemporaryDirectory userSettingsDirectory = new(_outputHelper);
-            string userSettingsFilePath = Path.Combine(userSettingsDirectory.FullName, "settings.json");
-            File.WriteAllText(userSettingsFilePath, ConstructUserSettingsJson());
-
-            ConfigShowOutputTest(redact, userSettingsFilePath, ConstructExpectedOutput(redact));
-        }
-
-        private void ConfigShowOutputTest(bool redact, string userSettingsFilePath, string expectedConfiguration)
-        {
             using TemporaryDirectory contentRootDirectory = new(_outputHelper);
             using TemporaryDirectory sharedConfigDir = new(_outputHelper);
             using TemporaryDirectory userConfigDir = new(_outputHelper);
@@ -199,8 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
 
             // This is the settings.json file in the user profile directory.
-            string userSettingsContent = File.ReadAllText(userSettingsFilePath);
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), userSettingsContent);
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructUserSettingsJson());
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -230,7 +220,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 _outputHelper.WriteLine(configString);
 
-                CompareOutput(configString, expectedConfiguration);
+                Assert.Equal(CleanWhitespace(configString), CleanWhitespace(ConstructExpectedOutput(redact)));
+            }
+
+            static string CleanWhitespace(string rawText)
+            {
+                return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
             }
         }
 
@@ -244,17 +239,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 IDictionary<string, JsonElement> deserializedFile = JsonSerializer.Deserialize<IDictionary<string, JsonElement>>(File.ReadAllText(fileName));
 
-                combinedFiles = combinedFiles.Union(deserializedFile).ToDictionary(pair => pair.Key, pair => pair.Value);
+                foreach ((string key, JsonElement element) in deserializedFile)
+                {
+                    combinedFiles.Add(key, element);
+                }
             }
 
             string generatedUserSettings = JsonSerializer.Serialize(combinedFiles);
 
             return generatedUserSettings;
-        }
-
-        private void CompareOutput(string actual, string expected)
-        {
-            Assert.Equal(CleanWhitespace(expected), CleanWhitespace(actual));
         }
 
         private string ConstructExpectedOutput(bool redact)
@@ -270,9 +263,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 writer.WritePropertyName(key);
 
-                if (categoryMapping.ContainsKey(key))
+                if (categoryMapping.TryGetValue(key, out string fileName))
                 {
-                    string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ExpectedConfigurations", categoryMapping[key]);
+                    string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ExpectedConfigurations", fileName);
 
                     writer.WriteRawValue(File.ReadAllText(expectedPath));
                 }
@@ -286,11 +279,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             writer.Flush();
 
             return Encoding.UTF8.GetString(stream.ToArray());
-        }
-
-        private string CleanWhitespace(string rawText)
-        {
-            return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
         private Dictionary<string, string> GetConfigurationFileNames(bool redact)
