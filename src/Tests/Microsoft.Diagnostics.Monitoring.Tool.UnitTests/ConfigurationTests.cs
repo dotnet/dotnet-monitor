@@ -232,13 +232,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static readonly Dictionary<string, string> DiagPortNewListen_MonitorEnvironmentVariables = new(StringComparer.Ordinal)
         {
-            { "DiagnosticPort", "ABC" } // Should probably choose something different, but this is fine for now
+            { "DiagnosticPort", "SimplifiedDiagnosticPort" } // Should probably choose something different, but this is fine for now
         };
 
         private static readonly Dictionary<string, string> DiagPortOldListen_MonitorEnvironmentVariables = new(StringComparer.Ordinal)
         {
             { "DiagnosticPort:ConnectionMode", nameof(DiagnosticPortConnectionMode.Listen) },
-            { "DiagnosticPort:EndpointName", "DEF" } // Should probably choose something different, but this is fine for now
+            { "DiagnosticPort:EndpointName", "FullDiagnosticPort" } // Should probably choose something different, but this is fine for now
         };
 
         private static readonly Dictionary<string, string> DiagPortConnect_MonitorEnvironmentVariables = new(StringComparer.Ordinal)
@@ -252,12 +252,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public void SimplifiedDiagnosticPortTest()
         {
-            TestConnectionMode(DiagPortNewListen_MonitorEnvironmentVariables);
-            TestConnectionMode(DiagPortOldListen_MonitorEnvironmentVariables);
-            TestConnectionMode(DiagPortConnect_MonitorEnvironmentVariables);
+            // Note that these are txt files (since there are no opening/closing braces, they would be considered illegal json). Should this be changed?
+            TestConnectionMode(DiagPortNewListen_MonitorEnvironmentVariables, "SimplifiedListen.txt");
+            TestConnectionMode(DiagPortOldListen_MonitorEnvironmentVariables, "FullListen.txt");
+            TestConnectionMode(DiagPortConnect_MonitorEnvironmentVariables, "Connect.txt");
         }
 
-        private void TestConnectionMode(IDictionary<string, string> diagnosticPortEnvironmentVariables)
+        private void TestConnectionMode(IDictionary<string, string> diagnosticPortEnvironmentVariables, string fileName)
         {
             using TemporaryDirectory contentRootDirectory = new(_outputHelper);
             using TemporaryDirectory sharedConfigDir = new(_outputHelper);
@@ -288,23 +289,30 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             IConfigurationSection diagPortSection = rootConfiguration.GetSection(nameof(RootOptions.DiagnosticPort));
 
-            var children = diagPortSection.GetChildren().ToList();
-            var value = diagPortSection.Value;
+            Stream stream = new MemoryStream();
 
-            foreach (var entry in diagnosticPortEnvironmentVariables)
+            using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
+            jsonWriter.Write(rootConfiguration, full: true, skipNotPresent: false);
+            jsonWriter.Dispose();
+
+            stream.Position = 0;
+
+            string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DiagnosticPortConfigurations", fileName);
+
+            string expectedDiagPortConfig = File.ReadAllText(expectedPath);
+
+            using (var streamReader = new StreamReader(stream))
             {
-                if (entry.Key.Equals("DiagnosticPort"))
-                {
-                    Assert.Equal(entry.Value, value);
-                }
-                else if (entry.Key.Equals("DiagnosticPort:EndpointName"))
-                {
-                    Assert.Equal(entry.Value, children.Find(x => x.Key.ToString().Equals("EndpointName")).Value);
-                }
-                else if (entry.Key.Equals("DiagnosticPort:ConnectionMode"))
-                {
-                    Assert.Equal(entry.Value, children.Find(x => x.Key.ToString().Equals("ConnectionMode")).Value);
-                }
+                string configString = streamReader.ReadToEnd();
+
+                _outputHelper.WriteLine(configString);
+
+                Assert.Contains(CleanWhitespace(expectedDiagPortConfig), CleanWhitespace(configString));
+            }
+
+            static string CleanWhitespace(string rawText)
+            {
+                return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
             }
         }
 
