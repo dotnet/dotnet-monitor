@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -56,13 +57,36 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
+        public static async Task CreateDiagnosticPortHost(
+            ITestOutputHelper outputHelper,
+            Action<RootOptions> setup,
+            Action<IHost> hostCallback,
+            IDictionary<string, string> diagnosticPortEnvironmentVariables,
+            Action<IServiceCollection> servicesCallback = null,
+            Action<ILoggingBuilder> loggingCallback = null)
+        {
+            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, diagnosticPortEnvironmentVariables);
+
+            try
+            {
+                hostCallback(host);
+            }
+            finally
+            {
+                await DisposeHost(host);
+            }
+        }
+
         public static IHost CreateHost(
             ITestOutputHelper outputHelper,
             Action<RootOptions> setup,
             Action<IServiceCollection> servicesCallback,
-            Action<ILoggingBuilder> loggingCallback = null)
+            Action<ILoggingBuilder> loggingCallback = null,
+            IDictionary<string, string> diagnosticPortEnvironmentVariables = null)
         {
-            return new HostBuilder()
+            IHostBuilder hostBuilder = (null != diagnosticPortEnvironmentVariables) ? DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(outputHelper, diagnosticPortEnvironmentVariables) : new HostBuilder();
+
+            return hostBuilder
                 .ConfigureAppConfiguration(builder =>
                 {
                     RootOptions options = new();
@@ -94,6 +118,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();
+
+                    services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
+                    services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
+                    services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
 
                     services.AddSingleton<IDumpService, DumpService>();
                     services.ConfigureStorage(context.Configuration);

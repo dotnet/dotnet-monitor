@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task SimplifiedListenConfiguration()
         {
-            await DiagnosticPortTestsHostHelper.CreateDiagnosticPortHost(_outputHelper, host =>
+            await TestHostHelper.CreateDiagnosticPortHost(_outputHelper, rootOptions => { }, host =>
             {
                 IOptionsMonitor<DiagnosticPortOptions> options = host.Services.GetService<IOptionsMonitor<DiagnosticPortOptions>>();
 
@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task FullListenConfiguration()
         {
-            await DiagnosticPortTestsHostHelper.CreateDiagnosticPortHost(_outputHelper, host =>
+            await TestHostHelper.CreateDiagnosticPortHost(_outputHelper, rootOptions => { }, host =>
             {
                 IOptionsMonitor<DiagnosticPortOptions> options = host.Services.GetService<IOptionsMonitor<DiagnosticPortOptions>>();
 
@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ConnectConfiguration()
         {
-            await DiagnosticPortTestsHostHelper.CreateDiagnosticPortHost(_outputHelper, host =>
+            await TestHostHelper.CreateDiagnosticPortHost(_outputHelper, rootOptions => { }, host =>
             {
                 IOptionsMonitor<DiagnosticPortOptions> options = host.Services.GetService<IOptionsMonitor<DiagnosticPortOptions>>();
 
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task SimplifiedListenOverrideConfiguration()
         {
-            await DiagnosticPortTestsHostHelper.CreateDiagnosticPortHost(_outputHelper, host =>
+            await TestHostHelper.CreateDiagnosticPortHost(_outputHelper, rootOptions => { }, host =>
             {
                 IOptionsMonitor<DiagnosticPortOptions> options = host.Services.GetService<IOptionsMonitor<DiagnosticPortOptions>>();
 
