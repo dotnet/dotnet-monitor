@@ -202,7 +202,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             builder.ReplaceDotnetEnvironment();
             builder.ReplaceMonitorEnvironment();
 
-            // Build the host and get the Urls property from configuration.
+            // Build the host and get the configuration.
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
@@ -220,25 +220,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             IHostBuilder builder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, diagnosticPortEnvironmentVariables);
 
-            // Build the host and get the Urls property from configuration.
+            // Build the host and get the configuration
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
-            string configString = WriteAndRetrieveConfiguration(rootConfiguration, redact: false);
+            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact: false);
 
-            string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DiagnosticPortConfigurations", fileName);
+            string expectedDiagnosticPortConfig = File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DiagnosticPortConfigurations", fileName));
 
-            string expectedDiagPortConfig = File.ReadAllText(expectedPath);
-
-            Assert.Contains(CleanWhitespace(expectedDiagPortConfig), CleanWhitespace(configString));
+            Assert.Contains(CleanWhitespace(expectedDiagnosticPortConfig), CleanWhitespace(generatedConfig));
         }
 
-        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact)
+        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent=false)
         {
             Stream stream = new MemoryStream();
 
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
-            jsonWriter.Write(configuration, full: !redact, skipNotPresent: false);
+            jsonWriter.Write(configuration, full: !redact, skipNotPresent: skipNotPresent);
             jsonWriter.Dispose();
 
             stream.Position = 0;
