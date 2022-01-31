@@ -206,9 +206,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
-            string configString = WriteAndRetrieveConfiguration(rootConfiguration, redact);
+            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact);
 
-            Assert.Equal(CleanWhitespace(configString), CleanWhitespace(ConstructExpectedOutput(redact)));
+            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact)));
         }
 
         /// <summary>
@@ -216,9 +216,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// </summary>
         [Theory]
         [MemberData(nameof(DiagnosticPortTestsHelper.GetFileNamesAndEnvironmentVariables), MemberType = typeof(DiagnosticPortTestsHelper))]
-        public void TestConnectionMode(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
+        public void TestConnectionMode(string fileName, IDictionary<string, string> environmentVariables)
         {
-            IHostBuilder builder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, diagnosticPortEnvironmentVariables);
+            IHostBuilder builder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, environmentVariables);
 
             // Build the host and get the configuration
             IHost host = builder.Build();
