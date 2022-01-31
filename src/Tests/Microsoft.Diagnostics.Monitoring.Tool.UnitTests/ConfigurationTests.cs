@@ -240,18 +240,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
         /// </summary>
-        [Fact]
-        public void SimplifiedDiagnosticPortTest()
-        {
-            // Note that these are txt files (since there are no opening/closing braces, they would be considered illegal json). Should this be changed?
-            TestConnectionMode(DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables, "SimplifiedListen.txt");
-            TestConnectionMode(DiagnosticPortTestsConstants.FullListen_EnvironmentVariables, "FullListen.txt");
-            TestConnectionMode(DiagnosticPortTestsConstants.Connect_EnvironmentVariables, "Connect.txt");
-        }
+        [Theory]
+        [MemberData(nameof(DiagnosticPortTestsHelper.GetFileNamesAndEnvironmentVariables), MemberType = typeof(DiagnosticPortTestsHelper))]
 
-        private void TestConnectionMode(IDictionary<string, string> diagnosticPortEnvironmentVariables, string fileName)
+        public void TestConnectionMode(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
         {
-            IHostBuilder builder = ActionTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, diagnosticPortEnvironmentVariables);
+            IHostBuilder builder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, diagnosticPortEnvironmentVariables);
 
             // Build the host and get the Urls property from configuration.
             IHost host = builder.Build();

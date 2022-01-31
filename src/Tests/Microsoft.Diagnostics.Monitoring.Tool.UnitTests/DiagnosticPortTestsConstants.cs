@@ -35,5 +35,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             { "DiagnosticPort:ConnectionMode", nameof(DiagnosticPortConnectionMode.Listen) },
             { "DiagnosticPort:EndpointName", FullDiagnosticPort }
         };
+
+        /*
+                 public static readonly Dictionary<string, Dictionary<string, string>> DiagnosticPort_EnvironmentVariables = new(StringComparer.Ordinal)
+        {
+            {
+                "FullListen", new(StringComparer.Ordinal) 
+                {
+                    { "DiagnosticPort:ConnectionMode", nameof(DiagnosticPortConnectionMode.Listen) },
+                    { "DiagnosticPort:EndpointName", FullDiagnosticPort }
+                }
+            },
+            {
+                "SimplifiedListen",
+                new(StringComparer.Ordinal)
+                {
+                    { "DiagnosticPort", SimplifiedDiagnosticPort }
+                }
+            },
+            {
+                "Connect",
+                new(StringComparer.Ordinal)
+                {
+                    { "DiagnosticPort:ConnectionMode", nameof(DiagnosticPortConnectionMode.Connect) }
+                }
+            },
+            {
+                "AllListen",
+                new(StringComparer.Ordinal)
+                {
+                    { "DiagnosticPort:ConnectionMode", nameof(DiagnosticPortConnectionMode.Listen) },
+                    { "DiagnosticPort:EndpointName", FullDiagnosticPort },
+                    { "DiagnosticPort", SimplifiedDiagnosticPort }
+                }
+            }
+        };
+         */
+
     }
 }

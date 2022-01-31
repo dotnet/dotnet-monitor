@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ITestOutputHelper outputHelper,
             IDictionary<string, string> diagnosticPortEnvironmentVariables)
         {
-            IHostBuilder hostBuilder = ActionTestsHelper.GetDiagnosticPortHostBuilder(outputHelper, diagnosticPortEnvironmentVariables);
+            IHostBuilder hostBuilder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(outputHelper, diagnosticPortEnvironmentVariables);
 
             return hostBuilder
                 .ConfigureAppConfiguration(builder =>

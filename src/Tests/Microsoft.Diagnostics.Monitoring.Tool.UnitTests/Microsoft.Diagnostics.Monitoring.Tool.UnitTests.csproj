@@ -15,6 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DiagnosticPortConfigurations\AllListen.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ExpectedConfigurations\AuthenticationFull.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
