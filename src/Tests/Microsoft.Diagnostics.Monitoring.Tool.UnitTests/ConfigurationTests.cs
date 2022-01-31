@@ -216,9 +216,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// </summary>
         [Theory]
         [MemberData(nameof(DiagnosticPortTestsHelper.GetFileNamesAndEnvironmentVariables), MemberType = typeof(DiagnosticPortTestsHelper))]
-        public void TestConnectionMode(string fileName, IDictionary<string, string> environmentVariables)
+        public void TestConnectionMode(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
         {
-            IHostBuilder builder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, environmentVariables);
+            IHostBuilder builder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, diagnosticPortEnvironmentVariables);
 
             // Build the host and get the configuration
             IHost host = builder.Build();
