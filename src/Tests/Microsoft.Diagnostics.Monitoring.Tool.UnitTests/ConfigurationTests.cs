@@ -207,10 +207,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
+            string configString = WriteConfiguration(rootConfiguration, redact);
+
+            Assert.Equal(CleanWhitespace(configString), CleanWhitespace(ConstructExpectedOutput(redact)));
+        }
+
+        private string WriteConfiguration(IConfiguration configuration, bool redact)
+        {
             Stream stream = new MemoryStream();
 
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
-            jsonWriter.Write(rootConfiguration, full: !redact, skipNotPresent: false);
+            jsonWriter.Write(configuration, full: !redact, skipNotPresent: false);
             jsonWriter.Dispose();
 
             stream.Position = 0;
@@ -221,30 +228,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 _outputHelper.WriteLine(configString);
 
-                Assert.Equal(CleanWhitespace(configString), CleanWhitespace(ConstructExpectedOutput(redact)));
-            }
-
-            static string CleanWhitespace(string rawText)
-            {
-                return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
+                return configString;
             }
         }
 
-        private static readonly Dictionary<string, string> DiagPortNewListen_MonitorEnvironmentVariables = new(StringComparer.Ordinal)
+        private string CleanWhitespace(string rawText)
         {
-            { "DiagnosticPort", "SimplifiedDiagnosticPort" } // Should probably choose something different, but this is fine for now
-        };
-
-        private static readonly Dictionary<string, string> DiagPortOldListen_MonitorEnvironmentVariables = new(StringComparer.Ordinal)
-        {
-            { "DiagnosticPort:ConnectionMode", nameof(DiagnosticPortConnectionMode.Listen) },
-            { "DiagnosticPort:EndpointName", "FullDiagnosticPort" } // Should probably choose something different, but this is fine for now
-        };
-
-        private static readonly Dictionary<string, string> DiagPortConnect_MonitorEnvironmentVariables = new(StringComparer.Ordinal)
-        {
-            { "DiagnosticPort:ConnectionMode", nameof(DiagnosticPortConnectionMode.Connect) }
-        };
+            return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
+        }
 
         /// <summary>
         /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
@@ -253,67 +244,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public void SimplifiedDiagnosticPortTest()
         {
             // Note that these are txt files (since there are no opening/closing braces, they would be considered illegal json). Should this be changed?
-            TestConnectionMode(DiagPortNewListen_MonitorEnvironmentVariables, "SimplifiedListen.txt");
-            TestConnectionMode(DiagPortOldListen_MonitorEnvironmentVariables, "FullListen.txt");
-            TestConnectionMode(DiagPortConnect_MonitorEnvironmentVariables, "Connect.txt");
+            TestConnectionMode(DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables, "SimplifiedListen.txt");
+            TestConnectionMode(DiagnosticPortTestsConstants.FullListen_EnvironmentVariables, "FullListen.txt");
+            TestConnectionMode(DiagnosticPortTestsConstants.Connect_EnvironmentVariables, "Connect.txt");
         }
 
         private void TestConnectionMode(IDictionary<string, string> diagnosticPortEnvironmentVariables, string fileName)
         {
-            using TemporaryDirectory contentRootDirectory = new(_outputHelper);
-            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
-            using TemporaryDirectory userConfigDir = new(_outputHelper);
-
-            // Set up the initial settings used to create the host builder.
-            HostBuilderSettings settings = new()
-            {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
-                ContentRootDirectory = contentRootDirectory.FullName,
-                SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
-            };
-
-            // Create the initial host builder.
-            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
-
-            // Override the environment configurations to use predefined values so that the test host
-            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
-            // in-memory collection source.
-            builder.ReplaceAspnetEnvironment();
-            builder.ReplaceDotnetEnvironment();
-            builder.ReplaceMonitorEnvironment(diagnosticPortEnvironmentVariables);
+            IHostBuilder builder = ActionTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, diagnosticPortEnvironmentVariables);
 
             // Build the host and get the Urls property from configuration.
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
-            IConfigurationSection diagPortSection = rootConfiguration.GetSection(nameof(RootOptions.DiagnosticPort));
-
-            Stream stream = new MemoryStream();
-
-            using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
-            jsonWriter.Write(rootConfiguration, full: true, skipNotPresent: false);
-            jsonWriter.Dispose();
-
-            stream.Position = 0;
+            string configString = WriteConfiguration(rootConfiguration, redact: false);
 
             string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DiagnosticPortConfigurations", fileName);
 
             string expectedDiagPortConfig = File.ReadAllText(expectedPath);
 
-            using (var streamReader = new StreamReader(stream))
-            {
-                string configString = streamReader.ReadToEnd();
-
-                _outputHelper.WriteLine(configString);
-
-                Assert.Contains(CleanWhitespace(expectedDiagPortConfig), CleanWhitespace(configString));
-            }
-
-            static string CleanWhitespace(string rawText)
-            {
-                return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
-            }
+            Assert.Contains(CleanWhitespace(expectedDiagPortConfig), CleanWhitespace(configString));
         }
 
         private string ConstructUserSettingsJson()
