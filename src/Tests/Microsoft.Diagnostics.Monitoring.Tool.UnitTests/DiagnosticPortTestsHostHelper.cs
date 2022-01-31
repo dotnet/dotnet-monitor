@@ -40,10 +40,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IHostBuilder hostBuilder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(outputHelper, diagnosticPortEnvironmentVariables);
 
             return hostBuilder
-                .ConfigureAppConfiguration(builder =>
-                {
-                    builder.ConfigureStorageDefaults();
-                })
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
                     services.AddSingleton<ITestOutputHelper>(outputHelper);

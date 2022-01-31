@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             yield return new object[] { "SimplifiedListen.txt", DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables };
             yield return new object[] { "FullListen.txt", DiagnosticPortTestsConstants.FullListen_EnvironmentVariables };
             yield return new object[] { "Connect.txt", DiagnosticPortTestsConstants.Connect_EnvironmentVariables };
-            yield return new object[] { "AllListen.txt", DiagnosticPortTestsConstants.AllListen_EnvironmentVariables };
+            yield return new object[] { "SimplifiedListen.txt", DiagnosticPortTestsConstants.AllListen_EnvironmentVariables };
         }
 
         internal static IHostBuilder GetDiagnosticPortHostBuilder(ITestOutputHelper outputHelper, IDictionary<string, string> diagnosticPortEnvironmentVariables)

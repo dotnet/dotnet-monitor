@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -207,12 +206,34 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
-            string configString = WriteConfiguration(rootConfiguration, redact);
+            string configString = WriteAndRetrieveConfiguration(rootConfiguration, redact);
 
             Assert.Equal(CleanWhitespace(configString), CleanWhitespace(ConstructExpectedOutput(redact)));
         }
 
-        private string WriteConfiguration(IConfiguration configuration, bool redact)
+        /// <summary>
+        /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(DiagnosticPortTestsHelper.GetFileNamesAndEnvironmentVariables), MemberType = typeof(DiagnosticPortTestsHelper))]
+        public void TestConnectionMode(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
+        {
+            IHostBuilder builder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, diagnosticPortEnvironmentVariables);
+
+            // Build the host and get the Urls property from configuration.
+            IHost host = builder.Build();
+            IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
+
+            string configString = WriteAndRetrieveConfiguration(rootConfiguration, redact: false);
+
+            string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DiagnosticPortConfigurations", fileName);
+
+            string expectedDiagPortConfig = File.ReadAllText(expectedPath);
+
+            Assert.Contains(CleanWhitespace(expectedDiagPortConfig), CleanWhitespace(configString));
+        }
+
+        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact)
         {
             Stream stream = new MemoryStream();
 
@@ -235,29 +256,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private string CleanWhitespace(string rawText)
         {
             return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
-        }
-
-        /// <summary>
-        /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
-        /// </summary>
-        [Theory]
-        [MemberData(nameof(DiagnosticPortTestsHelper.GetFileNamesAndEnvironmentVariables), MemberType = typeof(DiagnosticPortTestsHelper))]
-
-        public void TestConnectionMode(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
-        {
-            IHostBuilder builder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, diagnosticPortEnvironmentVariables);
-
-            // Build the host and get the Urls property from configuration.
-            IHost host = builder.Build();
-            IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
-
-            string configString = WriteConfiguration(rootConfiguration, redact: false);
-
-            string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DiagnosticPortConfigurations", fileName);
-
-            string expectedDiagPortConfig = File.ReadAllText(expectedPath);
-
-            Assert.Contains(CleanWhitespace(expectedDiagPortConfig), CleanWhitespace(configString));
         }
 
         private string ConstructUserSettingsJson()
@@ -302,7 +300,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
                 else
                 {
-                    writer.WriteStringValue(Tools.Monitor.Strings.Placeholder_NotPresent);
+                    writer.WriteStringValue(Strings.Placeholder_NotPresent);
                 }
             }
 

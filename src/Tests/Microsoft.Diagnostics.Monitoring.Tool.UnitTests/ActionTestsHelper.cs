@@ -5,7 +5,6 @@
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +16,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -109,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
             finally
             {
-                await TestCommon.DisposableHelper.DisposeAsync(action);
+                await DisposableHelper.DisposeAsync(action);
             }
 
             return result;
