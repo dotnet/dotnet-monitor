@@ -21,6 +21,7 @@ jobs:
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     enableMicrobuild: true
     enableTelemetry: true
+    disableComponentGovernance: ${{ eq(parameters.osGroup, 'Linux_Musl') }}
     helixRepo: dotnet/dotnet-monitor
     artifacts:
       publish:
