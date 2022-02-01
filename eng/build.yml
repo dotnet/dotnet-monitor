@@ -21,6 +21,7 @@ jobs:
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     enableMicrobuild: true
     enableTelemetry: true
+    disableComponentGovernance: ${{ eq(parameters.osGroup, 'Linux_Musl') }}
     helixRepo: dotnet/dotnet-monitor
     artifacts:
       publish:
@@ -78,6 +79,10 @@ jobs:
     - _InternalBuildArgs: ''
     - _InternalSignArgs: ''
     - _InternalPublishArgs: ''
+
+    # Component Governance does not work on Musl
+    - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+      - skipComponentGovernanceDetection: true
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
