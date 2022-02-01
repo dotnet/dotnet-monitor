@@ -355,6 +355,10 @@
     <value>Turn off HTTP response egress</value>
     <comment>Gets the string to display in help that explains what the '--no-http-egress' option does.</comment>
   </data>
+  <data name="HelpDescription_OptionShowSources" xml:space="preserve">
+    <value>Show loaded configuration providers from high to low priority</value>
+    <comment>Gets the string to display in help that explains what the '--sources' option does.</comment>
+  </data>
   <data name="HelpDescription_OptionTempApiKey" xml:space="preserve">
     <value>Generates a new MonitorApiKey for each launch of the process.</value>
     <comment>Gets the string to display in help that explains what the '--temp-apikey' option does.</comment>
