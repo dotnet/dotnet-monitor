@@ -203,6 +203,12 @@ It is possible to change this behavior and have .NET processes connect to `dotne
   }
 ```
 
+Alternatively, `dotnet monitor` can be set to `Listen` mode using a simplified format that only specifies the endpoint. In the event of conflicting configuration, this format will take priority.
+
+```json
+  "DiagnosticPort": "\\\\.\\pipe\\dotnet-monitor-pipe"
+```
+
 When `dotnet monitor` is in `Listen` mode, you have to configure .NET processes to connect to `dotnet monitor`. You can do so by specifying the appropriate environment variable on your .NET process
 
 ```powershell
