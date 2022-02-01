@@ -218,7 +218,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(DiagnosticPortTestsHelper.GetFileNamesAndEnvironmentVariables), MemberType = typeof(DiagnosticPortTestsHelper))]
         public void TestConnectionMode(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
         {
-            IHostBuilder builder = DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(_outputHelper, diagnosticPortEnvironmentVariables);
+            TemporaryDirectory contentRootDirectory = new(_outputHelper);
+            TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                ContentRootDirectory = contentRootDirectory.FullName,
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
+
+            // Create the initial host builder.
+            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
+
+            // Override the environment configurations to use predefined values so that the test host
+            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
+            // in-memory collection source.
+            builder.ReplaceAspnetEnvironment();
+            builder.ReplaceDotnetEnvironment();
+            builder.ReplaceMonitorEnvironment(diagnosticPortEnvironmentVariables);
 
             // Build the host and get the configuration
             IHost host = builder.Build();

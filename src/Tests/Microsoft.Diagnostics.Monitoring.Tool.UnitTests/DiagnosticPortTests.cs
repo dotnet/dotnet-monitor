@@ -23,52 +23,52 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task SimplifiedListenConfiguration()
         {
-            await TestHostHelper.CreateDiagnosticPortHost(_outputHelper, rootOptions => { }, host =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => { }, host =>
             {
                 IOptionsMonitor<DiagnosticPortOptions> options = host.Services.GetService<IOptionsMonitor<DiagnosticPortOptions>>();
 
                 Assert.Equal(DiagnosticPortTestsConstants.SimplifiedDiagnosticPort, options.CurrentValue.EndpointName);
                 Assert.Equal(DiagnosticPortConnectionMode.Listen, options.CurrentValue.ConnectionMode);
 
-            }, DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables);
+            }, overrideSource: DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables);
         }
 
         [Fact]
         public async Task FullListenConfiguration()
         {
-            await TestHostHelper.CreateDiagnosticPortHost(_outputHelper, rootOptions => { }, host =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => { }, host =>
             {
                 IOptionsMonitor<DiagnosticPortOptions> options = host.Services.GetService<IOptionsMonitor<DiagnosticPortOptions>>();
 
                 Assert.Equal(DiagnosticPortTestsConstants.FullDiagnosticPort, options.CurrentValue.EndpointName);
                 Assert.Equal(DiagnosticPortConnectionMode.Listen, options.CurrentValue.ConnectionMode);
 
-            }, DiagnosticPortTestsConstants.FullListen_EnvironmentVariables);
+            }, overrideSource: DiagnosticPortTestsConstants.FullListen_EnvironmentVariables);
         }
 
         [Fact]
         public async Task ConnectConfiguration()
         {
-            await TestHostHelper.CreateDiagnosticPortHost(_outputHelper, rootOptions => { }, host =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => { }, host =>
             {
                 IOptionsMonitor<DiagnosticPortOptions> options = host.Services.GetService<IOptionsMonitor<DiagnosticPortOptions>>();
 
                 Assert.Equal(DiagnosticPortConnectionMode.Connect, options.CurrentValue.ConnectionMode);
 
-            }, DiagnosticPortTestsConstants.Connect_EnvironmentVariables);
+            }, overrideSource: DiagnosticPortTestsConstants.Connect_EnvironmentVariables);
         }
 
         [Fact]
         public async Task SimplifiedListenOverrideConfiguration()
         {
-            await TestHostHelper.CreateDiagnosticPortHost(_outputHelper, rootOptions => { }, host =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => { }, host =>
             {
                 IOptionsMonitor<DiagnosticPortOptions> options = host.Services.GetService<IOptionsMonitor<DiagnosticPortOptions>>();
 
                 Assert.Equal(DiagnosticPortTestsConstants.SimplifiedDiagnosticPort, options.CurrentValue.EndpointName);
                 Assert.Equal(DiagnosticPortConnectionMode.Listen, options.CurrentValue.ConnectionMode);
 
-            }, DiagnosticPortTestsConstants.AllListen_EnvironmentVariables);
+            }, overrideSource: DiagnosticPortTestsConstants.AllListen_EnvironmentVariables);
         }
     }
 }

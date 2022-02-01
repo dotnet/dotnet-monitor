@@ -24,9 +24,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<RootOptions> setup,
             Func<IHost, Task> hostCallback,
             Action<IServiceCollection> servicesCallback = null,
-            Action<ILoggingBuilder> loggingCallback = null)
+            Action<ILoggingBuilder> loggingCallback = null,
+            IDictionary<string, string> overrideSource = null)
         {
-            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource);
 
             try
             {
@@ -43,29 +44,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<RootOptions> setup,
             Action<IHost> hostCallback,
             Action<IServiceCollection> servicesCallback = null,
-            Action<ILoggingBuilder> loggingCallback = null)
+            Action<ILoggingBuilder> loggingCallback = null,
+            IDictionary<string, string> overrideSource = null)
         {
-            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback);
-
-            try
-            {
-                hostCallback(host);
-            }
-            finally
-            {
-                await DisposeHost(host);
-            }
-        }
-
-        public static async Task CreateDiagnosticPortHost(
-            ITestOutputHelper outputHelper,
-            Action<RootOptions> setup,
-            Action<IHost> hostCallback,
-            IDictionary<string, string> diagnosticPortEnvironmentVariables,
-            Action<IServiceCollection> servicesCallback = null,
-            Action<ILoggingBuilder> loggingCallback = null)
-        {
-            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, diagnosticPortEnvironmentVariables);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource);
 
             try
             {
@@ -82,11 +64,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<RootOptions> setup,
             Action<IServiceCollection> servicesCallback,
             Action<ILoggingBuilder> loggingCallback = null,
-            IDictionary<string, string> diagnosticPortEnvironmentVariables = null)
+            IDictionary<string, string> overrideSource = null)
         {
-            IHostBuilder hostBuilder = (null != diagnosticPortEnvironmentVariables) ? DiagnosticPortTestsHelper.GetDiagnosticPortHostBuilder(outputHelper, diagnosticPortEnvironmentVariables) : new HostBuilder();
-
-            return hostBuilder
+            return new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
                 {
                     RootOptions options = new();
@@ -103,6 +83,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     builder.AddInMemoryCollection(configurationValues);
 
                     builder.ConfigureStorageDefaults();
+
+                    if (null != overrideSource)
+                    {
+                        builder.AddInMemoryCollection(overrideSource);
+                    }
                 })
                 .ConfigureLogging( loggingBuilder =>
                 {
@@ -119,9 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();
 
-                    services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
-                    services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
-                    services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
+                    services.ConfigureDiagnosticPort(context.Configuration);
 
                     services.AddSingleton<IDumpService, DumpService>();
                     services.ConfigureStorage(context.Configuration);
