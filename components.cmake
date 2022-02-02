@@ -1,0 +1,2 @@
+set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME monitor)
+add_component(monitor)
