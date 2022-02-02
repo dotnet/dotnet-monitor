@@ -131,7 +131,7 @@ if not exist "%__BinDir%"           md "%__BinDir%"
 if not exist "%__IntermediatesDir%" md "%__IntermediatesDir%"
 if not exist "%__LogDir%"           md "%__LogDir%"
 
-echo %__MsgPrefix%Commencing diagnostics repo build
+echo %__MsgPrefix%Commencing dotnet-monitor repo build
 
 :: Set the remaining variables based upon the determined build configuration
 
@@ -293,19 +293,6 @@ if %__Build% EQU 1 (
     endlocal
 )
 
-REM Copy the native SOS binaries to where these tools expect for CI & VS testing
-
-set "__dotnet_sos=%__RootBinDir%\bin\dotnet-sos\%__BuildType%\netcoreapp3.1"
-set "__dotnet_dump=%__RootBinDir%\bin\dotnet-dump\%__BuildType%\netcoreapp3.1"
-mkdir %__dotnet_sos%\win-%__BuildArch%
-mkdir %__dotnet_sos%\publish\win-%__BuildArch%
-mkdir %__dotnet_dump%\win-%__BuildArch%
-mkdir %__dotnet_dump%\publish\win-%__BuildArch%
-xcopy /y /q /i %__BinDir% %__dotnet_sos%\win-%__BuildArch%
-xcopy /y /q /i %__BinDir% %__dotnet_sos%\publish\win-%__BuildArch%
-xcopy /y /q /i %__BinDir% %__dotnet_dump%\win-%__BuildArch%
-xcopy /y /q /i %__BinDir% %__dotnet_dump%\publish\win-%__BuildArch%
-
 REM =========================================================================================
 REM ===
 REM === All builds complete!
@@ -337,7 +324,7 @@ REM ============================================================================
 
 :Usage
 echo.
-echo Build the Diagnostics repo.
+echo Build the dotnet-monitor repo.
 echo.
 echo Usage:
 echo     build-native.cmd [option1] [option2]
