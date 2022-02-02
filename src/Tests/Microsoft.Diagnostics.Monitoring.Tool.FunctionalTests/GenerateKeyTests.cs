@@ -34,6 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [InlineData(OutputFormat.Cmd)]
         [InlineData(OutputFormat.PowerShell)]
         [InlineData(OutputFormat.Shell)]
+        [InlineData(OutputFormat.MachineJson)]
         public async Task GenerateKey(OutputFormat? format)
         {
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TestTimeouts.OperationTimeout);
@@ -47,9 +48,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             string tokenStr = await toolRunner.GetBearerToken(cancellationToken);
             Assert.NotNull(tokenStr);
 
-            string formatStr = await toolRunner.GetFormat(cancellationToken);
-            Assert.NotNull(formatStr);
-            Assert.Equal(toolRunner.FormatUsed.ToString(), formatStr);
+            // MachineJson doesn't have a format string header
+            if (format != OutputFormat.MachineJson)
+            {
+                string formatStr = await toolRunner.GetFormat(cancellationToken);
+                Assert.NotNull(formatStr);
+                Assert.Equal(toolRunner.FormatUsed.ToString(), formatStr);
+            }
 
             string subject = await toolRunner.GetSubject(cancellationToken);
             Assert.NotNull(subject);
