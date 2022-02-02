@@ -136,8 +136,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         /// Represents the output format for <see cref="OutputFormat.MachineJson" />.
         /// </summary>
         /// <remarks>
-        /// This is intentionally a second copy of the class so that any changes to the first copy will cause a test failure.
-        /// We shouldn't change this format; if you find yourself here editing this, 
+        /// This is the first copy of this class, the testing companion is
+        /// Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners.MonitorGenerateKeyRunner.ExpectedMachineOutputFormat
+        /// ExpectedMachineOutputFormat. Any breaking changes here will cause a test failure.
+        /// If you find yourself here editing this, 
         /// be careful of any downstream dependencies that are depending on this remaining stable.
         /// </remarks>
         internal class MachineOutputFormat

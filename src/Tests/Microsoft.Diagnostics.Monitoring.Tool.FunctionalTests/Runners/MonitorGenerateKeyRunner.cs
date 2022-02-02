@@ -162,7 +162,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
             else if (FormatUsed == OutputFormat.MachineJson)
             {
-                MachineOutputFormat parsedPayload = JsonSerializer.Deserialize<MachineOutputFormat>(_fullOutputBuilder.ToString());
+                ExpectedMachineOutputFormat parsedPayload = JsonSerializer.Deserialize<ExpectedMachineOutputFormat>(_fullOutputBuilder.ToString());
 
                 Assert.NotNull(parsedPayload);
 
@@ -262,14 +262,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         }
 
         /// <summary>
-        /// Expected output format for <see cref="OutputFormat.MachineJson" />
+        /// Expected output format for <see cref="OutputFormat.MachineJson" />.
         /// </summary>
         /// <remarks>
-        /// This is intentionally a second copy of the class so that any changes to the first copy will cause a test failure.
-        /// We shouldn't change this format; if you find yourself here editing this, 
+        /// This is intentionally a second copy of the class used to generate the output, 
+        /// Microsoft.Diagnostics.Tools.Monitor.Commands.GenerateApiKeyCommandHandler.MachineOutputForma.
+        /// This is separate so that any breaking changes to the first copy will cause a test failure.
+        /// We shouldn't break this format; if you find yourself here editing this, 
         /// be careful of any downstream dependencies that are depending on this remaining stable.
         /// </remarks>
-        internal class MachineOutputFormat
+        internal class ExpectedMachineOutputFormat
         {
             public AuthenticationOptions Authentication { get; set; }
             public string AuthorizationHeader { get; set; }
