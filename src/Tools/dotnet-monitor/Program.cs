@@ -134,10 +134,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static Option ShowSources() =>
             new Option(
-                alias: "--sources",
+                alias: "--showSources",
                 description: Strings.HelpDescription_OptionShowSources)
             {
-                Argument = new Argument<bool>(name: "sources", getDefaultValue: () => true)
+                Argument = new Argument<bool>(name: "showSources", getDefaultValue: () => false)
             };
 
         public static Task<int> Main(string[] args)

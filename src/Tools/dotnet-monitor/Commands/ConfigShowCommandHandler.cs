@@ -42,8 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
             StreamWriter writer = new StreamWriter(stream);
 
-            writer.WriteLine("ConfigurationProviders (High to Low Priority):");
-
+            writer.WriteLine("Configuration Providers (High to Low Priority):");
 
             foreach (var provider in configurationProviders)
             {
