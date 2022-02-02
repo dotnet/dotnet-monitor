@@ -43,7 +43,7 @@ stages:
           targetType: filePath
           filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
           arguments: >-
-            -BarBuildId "$(setReleaseVars.BARBuildId)" 
+            -BarBuildId "$(BARBuildId)" 
             -AzdoToken "$(dn-bot-dotnet-all-scopes)" 
             -MaestroToken "$(MaestroAccessToken)" 
             -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)" 
