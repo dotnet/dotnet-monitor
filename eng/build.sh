@@ -13,8 +13,6 @@ __Compiler=clang
 __CompilerMajorVersion=
 __CompilerMinorVersion=
 __CrossBuild=0
-__DotnetRuntimeDownloadVersion="default"
-__DotnetRuntimeVersion="default"
 __ExtraCmakeArgs=
 __HostArch=x64
 __HostOS=Linux
@@ -24,7 +22,6 @@ __ManagedBuildArgs=
 __NativeBuild=1
 __NumProc=1
 __PortableBuild=1
-__PrivateBuildPath=
 __RootBinDir="$__RepoRootDir"/artifacts
 __RuntimeSourceFeed=
 __RuntimeSourceFeedKey=
@@ -36,7 +33,6 @@ __UnprocessedBuildArgs=
 
 usage_list+=("-skipmanaged: do not build managed components.")
 usage_list+=("-skipnative: do not build native components.")
-usage_list+=("-privatebuildpath: path to local private runtime build to test.")
 usage_list+=("-test: run xunit tests")
 
 handle_arguments() {
@@ -67,27 +63,13 @@ handle_arguments() {
             __ManagedBuildArgs="$__ManagedBuildArgs $1"
             ;;
 
-        -dotnetruntimeversion)
-            __DotnetRuntimeVersion="$2"
-            __ShiftArgs=1
-            ;;
-
-        -dotnetruntimedownloadversion)
-            __DotnetRuntimeDownloadVersion="$2"
-            __ShiftArgs=1
-            ;;
-
-        privatebuildpath|-privatebuildpath)
-            __PrivateBuildPath="$1"
-            ;;
-
         -runtimesourcefeed)
-            __RuntimeSourceFeed="$2"
+            __ManagedBuildArgs="$__ManagedBuildArgs /p:DotNetRuntimeSourceFeed=$2"
             __ShiftArgs=1
             ;;
 
         -runtimesourcefeedkey)
-            __RuntimeSourceFeedKey="$2"
+            __ManagedBuildArgs="$__ManagedBuildArgs /p:DotNetRuntimeSourceFeedKey=$2"
             __ShiftArgs=1
              ;;
 
@@ -217,25 +199,15 @@ if [[ "$__NativeBuild" == 1 ]]; then
         exit 1
     fi
 
-    build_native "$__TargetOS" "$__BuildArch" "$__RepoRootDir" "$__IntermediatesDir" "install" "$__ExtraCmakeArgs" "diagnostic component" | tee "$__LogsDir"/make.log
-fi
+    set -o pipefail
+    build_native "$__TargetOS" "$__BuildArch" "$__RepoRootDir" "$__IntermediatesDir" "install" "$__ExtraCmakeArgs" "dotnet-monitor component" | tee "$__LogsDir"/make.log
+    exit_code="$?"
+    set +o pipefail
 
-#
-# Copy the native SOS binaries to where these tools expect for testing
-#
-
-if [[ "$__NativeBuild" == 1 || "$__Test" == 1 ]]; then
-    __dotnet_sos=$__RootBinDir/bin/dotnet-sos/$__BuildType/netcoreapp3.1/publish/$__DistroRid
-    __dotnet_dump=$__RootBinDir/bin/dotnet-dump/$__BuildType/netcoreapp3.1/publish/$__DistroRid
-
-    mkdir -p "$__dotnet_sos"
-    mkdir -p "$__dotnet_dump"
-
-    cp "$__BinDir"/* "$__dotnet_sos"
-    echo "Copied SOS to $__dotnet_sos"
-
-    cp "$__BinDir"/* "$__dotnet_dump"
-    echo "Copied SOS to $__dotnet_dump"
+    if [ $exit_code != 0 ]; then
+        echo "Native build failed."
+        exit 1
+    fi
 fi
 
 #
@@ -271,11 +243,6 @@ if [[ "$__Test" == 1 ]]; then
         --configuration "$__BuildType" \
         /bl:"$__LogsDir"/Test.binlog \
         /p:BuildArch="$__BuildArch" \
-        /p:PrivateBuildPath="$__PrivateBuildPath" \
-        /p:DotnetRuntimeVersion="$__DotnetRuntimeVersion" \
-        /p:DotnetRuntimeDownloadVersion="$__DotnetRuntimeDownloadVersion" \
-        /p:RuntimeSourceFeed="$__RuntimeSourceFeed" \
-        /p:RuntimeSourceFeedKey="$__RuntimeSourceFeedKey" \
         $__CommonMSBuildArgs
 
       if [ $? != 0 ]; then
