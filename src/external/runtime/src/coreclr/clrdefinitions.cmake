@@ -1,5 +1,3 @@
-include(${CMAKE_CURRENT_LIST_DIR}/clrfeatures.cmake)
-
 add_compile_definitions($<$<BOOL:$<TARGET_PROPERTY:DAC_COMPONENT>>:DACCESS_COMPILE>)
 
 if (CLR_CMAKE_TARGET_ARCH_ARM64)

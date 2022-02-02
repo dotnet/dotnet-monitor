@@ -10,6 +10,5 @@ src/coreclr/palrt/*
 !src/coreclr/palrt/tools/*
 src/coreclr/CMakeLists.txt
 src/coreclr/clrdefinitions.cmake
-src/coreclr/clrfeatures.cmake
 src/coreclr/components.cmake
 src/native/minipal/*
