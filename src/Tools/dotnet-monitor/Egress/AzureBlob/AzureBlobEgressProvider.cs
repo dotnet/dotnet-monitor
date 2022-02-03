@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 if (!string.IsNullOrEmpty(options.QueueName))
                 {
-                    await InsertMessage("Writing file to blob", options, token);
+                    await InsertMessage($"Writing {artifactSettings.Name} to blob storage", options, token);
                 }
 
                 BlobClient blobClient = containerClient.GetBlobClient(GetBlobName(options, artifactSettings));
@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 if (!string.IsNullOrEmpty(options.QueueName))
                 {
-                    await InsertMessage("Writing file to blob", options, token);
+                    await InsertMessage($"Writing {artifactSettings.Name} to blob storage", options, token);
                 }
 
                 // Write blob content
@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             var queueUribuilder = new QueueUriBuilder(options.QueueAccountUri);
 
             queueUribuilder.Query = null;
-            queueUribuilder.QueueName = null; // try setting this to null...
+            queueUribuilder.QueueName = null;
 
             accountName = queueUribuilder.AccountName;
 
@@ -199,8 +199,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     options.AccountKey);
 
                 serviceClient = new QueueServiceClient(accountUri, credential);
-
-                //connectionString = $"DefaultEndpointsProtocol=https;AccountName={accountName};AccountKey={options.AccountKey}";
             }
             else
             {
@@ -208,8 +206,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
 
             QueueClient queueClient = serviceClient.GetQueueClient(options.QueueName);
-
-            //QueueClient queueClient = new QueueClient(connectionString, options.QueueName);
 
             await queueClient.CreateIfNotExistsAsync(cancellationToken: token);
 
