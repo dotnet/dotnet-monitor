@@ -177,12 +177,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
         private async Task<QueueClient> GetQueueClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
         {
-            //string connectionString = "";
-
             QueueServiceClient serviceClient;
             if (!string.IsNullOrWhiteSpace(options.SharedAccessSignature))
             {
-                var serviceUriBuilder = new UriBuilder(options.AccountUri)
+                var serviceUriBuilder = new UriBuilder(options.QueueAccountUri)
                 {
                     Query = options.SharedAccessSignature
                 };
