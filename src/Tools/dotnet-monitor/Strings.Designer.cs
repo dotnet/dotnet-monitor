@@ -1015,6 +1015,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configuration Providers (High to Low Priority):.
+        /// </summary>
+        internal static string Message_ShowSources {
+            get {
+                return ResourceManager.GetString("Message_ShowSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to :NOT PRESENT:.
         /// </summary>
         internal static string Placeholder_NotPresent {

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -108,6 +109,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     }
                 }
             }
+        }
+
+        public void WriteProviders(IConfiguration configuration)
+        {
+            var configurationProviders = ((IConfigurationRoot)configuration).Providers.Reverse();
+
+            StringBuilder providersOutput = new StringBuilder();
+
+            providersOutput.AppendLine(Strings.Message_ShowSources);
+
+            foreach (var provider in configurationProviders)
+            {
+                providersOutput.AppendLine(" - " + provider.ToString());
+            }
+
+            _writer.WriteCommentValue(providersOutput.ToString());
         }
 
         private void ProcessEgressSection(IConfiguration egress, bool skipNotPresent)

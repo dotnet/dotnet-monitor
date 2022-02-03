@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
@@ -32,26 +31,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
             if (showSources)
             {
-                WriteConfigurationProviders(stream, configuration);
+                jsonWriter.WriteProviders(configuration);
             }
-        }
-
-        private static void WriteConfigurationProviders(Stream stream, IConfiguration configuration)
-        {
-            var configurationProviders = ((IConfigurationRoot)configuration).Providers.Reverse();
-
-            StreamWriter writer = new StreamWriter(stream);
-
-            writer.WriteLine("Configuration Providers (High to Low Priority):");
-
-            foreach (var provider in configurationProviders)
-            {
-                writer.WriteLine(" - " + provider.ToString());
-            }
-
-            writer.WriteLine();
-
-            writer.Flush();
         }
     }
 }
