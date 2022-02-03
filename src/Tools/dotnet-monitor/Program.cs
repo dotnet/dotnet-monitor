@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static Option ShowSources() =>
             new Option(
-                alias: "--showSources",
+                alias: "--show-sources",
                 description: Strings.HelpDescription_OptionShowSources)
             {
                 Argument = new Argument<bool>(name: "showSources", getDefaultValue: () => false)

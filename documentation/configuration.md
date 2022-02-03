@@ -191,7 +191,7 @@ The output of the command should resemble the following JSON object:
 To view the loaded configuration providers, run the following command:
 
 ```cmd
-dotnet monitor config show --showSources
+dotnet monitor config show --show-sources
 ```
 
 ## Diagnostic Port Configuration
