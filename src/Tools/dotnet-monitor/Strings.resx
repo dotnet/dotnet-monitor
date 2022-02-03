@@ -597,6 +597,10 @@
 1 Format Parameter:
 1. url: The URL that could not have a listener attached to it</comment>
   </data>
+  <data name="Message_AzureQueueEgress" xml:space="preserve">
+    <value>Writing {0} to blob storage.</value>
+    <comment>Gets the string for writing a message to an Azure queue.</comment>
+  </data>
   <data name="Message_GenerateApiKey" xml:space="preserve">
     <value>Generated ApiKey for dotnet-monitor; use the following header for authorization:</value>
     <comment>Gets a header string for the output of GenerateApiKeyCommand.</comment>

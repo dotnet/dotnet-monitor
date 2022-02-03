@@ -161,11 +161,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             {
                 QueueClient queueClient = await GetQueueClientAsync(options, token);
 
-                string message = $"Writing {artifactName} to blob storage.";
-
                 if (queueClient.Exists())
                 {
-                    queueClient.SendMessage(message);
+                    queueClient.SendMessage(string.Format(CultureInfo.CurrentCulture, Strings.Message_AzureQueueEgress, artifactName));
                 }
             }
             catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)

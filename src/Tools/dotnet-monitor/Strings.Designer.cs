@@ -961,6 +961,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Writing {0} to blob storage..
+        /// </summary>
+        internal static string Message_AzureQueueEgress {
+            get {
+                return ResourceManager.GetString("Message_AzureQueueEgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generated ApiKey for dotnet-monitor; use the following header for authorization:.
         /// </summary>
         internal static string Message_GenerateApiKey {
