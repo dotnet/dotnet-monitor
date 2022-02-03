@@ -215,8 +215,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
         /// </summary>
         [Theory]
-        [MemberData(nameof(DiagnosticPortTestsHelper.GetFileNamesAndEnvironmentVariables), MemberType = typeof(DiagnosticPortTestsHelper))]
-        public void TestConnectionMode(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
+        [MemberData(nameof(GetConnectionModeTestArguments))]
+        public void ConnectionModeTest(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
         {
             TemporaryDirectory contentRootDirectory = new(_outputHelper);
             TemporaryDirectory sharedConfigDir = new(_outputHelper);
@@ -344,6 +344,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 { "CollectionRules", "CollectionRules.json" },
                 { "Authentication", redact ? "AuthenticationRedacted.json" : "AuthenticationFull.json" }
             };
+        }
+
+        public static IEnumerable<object[]> GetConnectionModeTestArguments()
+        {
+            yield return new object[] { "SimplifiedListen.txt", DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables };
+            yield return new object[] { "FullListen.txt", DiagnosticPortTestsConstants.FullListen_EnvironmentVariables };
+            yield return new object[] { "Connect.txt", DiagnosticPortTestsConstants.Connect_EnvironmentVariables };
+            yield return new object[] { "SimplifiedListen.txt", DiagnosticPortTestsConstants.AllListen_EnvironmentVariables };
         }
 
         /// This is the order of configuration sources where a name with a lower
