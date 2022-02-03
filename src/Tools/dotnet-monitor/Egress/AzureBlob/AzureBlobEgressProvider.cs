@@ -43,11 +43,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             {
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
-                if (!string.IsNullOrEmpty(options.QueueName))
-                {
-                    await InsertMessage($"Writing {artifactSettings.Name} to blob storage", options, token);
-                }
-
                 BlobClient blobClient = containerClient.GetBlobClient(GetBlobName(options, artifactSettings));
 
                 Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
@@ -56,8 +51,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 // Write blob content, headers, and metadata
                 await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), artifactSettings.Metadata, cancellationToken: token);
 
+                if (!string.IsNullOrEmpty(options.QueueName))
+                {
+                    await EgressMessageToQueue(artifactSettings.Name, options, token);
+                }
+
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
+
                 return blobUriString;
             }
             catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)
@@ -82,11 +83,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 BlockBlobClient blobClient = containerClient.GetBlockBlobClient(GetBlobName(options, artifactSettings));
 
-                if (!string.IsNullOrEmpty(options.QueueName))
-                {
-                    await InsertMessage($"Writing {artifactSettings.Name} to blob storage", options, token);
-                }
-
                 // Write blob content
 
                 var bloboptions = new BlockBlobOpenWriteOptions
@@ -94,18 +90,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     BufferSize = BlobStorageBufferSize,
                 };
                 using (Stream blobStream = await blobClient.OpenWriteAsync(overwrite: true, options: bloboptions, cancellationToken: token))
-                using (AutoFlushStream flushStream = new AutoFlushStream(blobStream, BlobStorageBufferSize))
                 {
-                    //Azure's stream from OpenWriteAsync will do the following
-                    //1. Write the data to a local buffer
-                    //2. Once that buffer is full, stage the data remotely (this data is not considered valid yet)
-                    //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
-                    //the stream.
-                    // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
-                    Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
-                    await action(flushStream, token);
+                    if (!string.IsNullOrEmpty(options.QueueName))
+                    {
+                        await EgressMessageToQueue(artifactSettings.Name, options, token);
+                    }
 
-                    await flushStream.FlushAsync(token);
+                    using (AutoFlushStream flushStream = new AutoFlushStream(blobStream, BlobStorageBufferSize))
+                    {
+                        //Azure's stream from OpenWriteAsync will do the following
+                        //1. Write the data to a local buffer
+                        //2. Once that buffer is full, stage the data remotely (this data is not considered valid yet)
+                        //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
+                        //the stream.
+                        // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
+                        Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
+                        await action(flushStream, token);
+
+                        await flushStream.FlushAsync(token);
+                    }
                 }
 
                 // Write blob headers
@@ -116,6 +119,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
+
                 return blobUriString;
             }
             catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)
@@ -128,7 +132,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
         }
 
-        private Uri GetAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
+        private Uri GetBlobAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
         {
             var blobUriBuilder = new BlobUriBuilder(options.AccountUri);
             blobUriBuilder.Query = null;
@@ -151,19 +155,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             return queueUribuilder.ToUri();
         }
-        public async Task InsertMessage(string message, AzureBlobEgressProviderOptions options, CancellationToken token)
+        public async Task EgressMessageToQueue(string artifactName, AzureBlobEgressProviderOptions options, CancellationToken token)
         {
             try
             {
                 QueueClient queueClient = await GetQueueClientAsync(options, token);
 
+                string message = $"Writing {artifactName} to blob storage.";
+
                 if (queueClient.Exists())
                 {
-                    // Send a message to the queue
                     queueClient.SendMessage(message);
                 }
-
-                Console.WriteLine($"Inserted: {message}");
             }
             catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)
             {
@@ -225,7 +228,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             else if (!string.IsNullOrEmpty(options.AccountKey))
             {
                 // Remove Query in case SAS token was specified
-                Uri accountUri = GetAccountUri(options, out string accountName);
+                Uri accountUri = GetBlobAccountUri(options, out string accountName);
 
                 StorageSharedKeyCredential credential = new StorageSharedKeyCredential(
                     accountName,
