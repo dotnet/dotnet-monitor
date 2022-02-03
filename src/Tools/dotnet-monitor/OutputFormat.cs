@@ -20,5 +20,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         Cmd,
         Shell,
         PowerShell,
+        MachineJson,
     }
 }
