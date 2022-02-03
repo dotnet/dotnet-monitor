@@ -27,12 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             IHost host = HostBuilderHelper.CreateHostBuilder(settings).Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
-            jsonWriter.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false);
-
-            if (showSources)
-            {
-                jsonWriter.WriteProviders(configuration);
-            }
+            jsonWriter.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false, showSources);
         }
     }
 }
