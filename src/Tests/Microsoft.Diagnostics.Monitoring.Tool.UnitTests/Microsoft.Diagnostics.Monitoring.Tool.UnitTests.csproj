@@ -51,6 +51,15 @@
     <None Update="ExpectedConfigurations\URLs.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="DiagnosticPortConfigurations\Connect.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DiagnosticPortConfigurations\FullListen.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DiagnosticPortConfigurations\SimplifiedListen.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="SampleConfigurations\Authentication.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

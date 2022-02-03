@@ -202,14 +202,62 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             builder.ReplaceDotnetEnvironment();
             builder.ReplaceMonitorEnvironment();
 
-            // Build the host and get the Urls property from configuration.
+            // Build the host and get the configuration.
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
+            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact);
+
+            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact)));
+        }
+
+        /// <summary>
+        /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(GetConnectionModeTestArguments))]
+        public void ConnectionModeTest(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
+        {
+            TemporaryDirectory contentRootDirectory = new(_outputHelper);
+            TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                ContentRootDirectory = contentRootDirectory.FullName,
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
+
+            // Create the initial host builder.
+            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
+
+            // Override the environment configurations to use predefined values so that the test host
+            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
+            // in-memory collection source.
+            builder.ReplaceAspnetEnvironment();
+            builder.ReplaceDotnetEnvironment();
+            builder.ReplaceMonitorEnvironment(diagnosticPortEnvironmentVariables);
+
+            // Build the host and get the configuration
+            IHost host = builder.Build();
+            IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
+
+            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact: false);
+
+            string expectedDiagnosticPortConfig = File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DiagnosticPortConfigurations", fileName));
+
+            Assert.Contains(CleanWhitespace(expectedDiagnosticPortConfig), CleanWhitespace(generatedConfig));
+        }
+
+        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent=false)
+        {
             Stream stream = new MemoryStream();
 
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
-            jsonWriter.Write(rootConfiguration, full: !redact, skipNotPresent: false);
+            jsonWriter.Write(configuration, full: !redact, skipNotPresent: skipNotPresent);
             jsonWriter.Dispose();
 
             stream.Position = 0;
@@ -220,13 +268,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 _outputHelper.WriteLine(configString);
 
-                Assert.Equal(CleanWhitespace(configString), CleanWhitespace(ConstructExpectedOutput(redact)));
+                return configString;
             }
+        }
 
-            static string CleanWhitespace(string rawText)
-            {
-                return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
-            }
+        private string CleanWhitespace(string rawText)
+        {
+            return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
         private string ConstructUserSettingsJson()
@@ -296,6 +344,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 { "CollectionRules", "CollectionRules.json" },
                 { "Authentication", redact ? "AuthenticationRedacted.json" : "AuthenticationFull.json" }
             };
+        }
+
+        public static IEnumerable<object[]> GetConnectionModeTestArguments()
+        {
+            yield return new object[] { "SimplifiedListen.txt", DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables };
+            yield return new object[] { "FullListen.txt", DiagnosticPortTestsConstants.FullListen_EnvironmentVariables };
+            yield return new object[] { "Connect.txt", DiagnosticPortTestsConstants.Connect_EnvironmentVariables };
+            yield return new object[] { "SimplifiedListen.txt", DiagnosticPortTestsConstants.AllListen_EnvironmentVariables };
         }
 
         /// This is the order of configuration sources where a name with a lower

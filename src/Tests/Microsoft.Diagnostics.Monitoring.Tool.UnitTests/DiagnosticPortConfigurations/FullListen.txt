@@ -1,0 +1,4 @@
+"DiagnosticPort": {
+  "ConnectionMode": "Listen",
+  "EndpointName": "FullDiagnosticPort"
+}
