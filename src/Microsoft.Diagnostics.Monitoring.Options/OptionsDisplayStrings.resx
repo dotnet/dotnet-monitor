@@ -571,4 +571,12 @@
     <value>The name of the environment variable to get.</value>
     <comment>The description provided for the Name parameter on GetEnvironmentVariableOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri" xml:space="preserve">
+    <value>The URI of the Azure queue account.</value>
+    <comment>The description provided for the QueueAccountUri parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName" xml:space="preserve">
+    <value>The name of the queue to which a message will be dispatched upon writing to a blob.</value>
+    <comment>The description provided for the QueueName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
 </root>

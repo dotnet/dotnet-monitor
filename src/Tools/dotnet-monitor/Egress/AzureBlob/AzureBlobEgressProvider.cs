@@ -7,6 +7,7 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
+using Azure.Storage.Queues;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
@@ -42,6 +43,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             {
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
+                if (!string.IsNullOrEmpty(options.QueueName))
+                {
+                    await InsertMessage("Writing file to blob", options, token);
+                }
+
                 BlobClient blobClient = containerClient.GetBlobClient(GetBlobName(options, artifactSettings));
 
                 Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
@@ -75,6 +81,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
                 BlockBlobClient blobClient = containerClient.GetBlockBlobClient(GetBlobName(options, artifactSettings));
+
+                if (!string.IsNullOrEmpty(options.QueueName))
+                {
+                    await InsertMessage("Writing file to blob", options, token);
+                }
 
                 // Write blob content
 
@@ -129,6 +140,82 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             return blobUriBuilder.ToUri();
         }
 
+        private Uri GetQueueAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
+        {
+            var queueUribuilder = new QueueUriBuilder(options.QueueAccountUri);
+
+            queueUribuilder.Query = null;
+            queueUribuilder.QueueName = null; // try setting this to null...
+
+            accountName = queueUribuilder.AccountName;
+
+            return queueUribuilder.ToUri();
+        }
+        public async Task InsertMessage(string message, AzureBlobEgressProviderOptions options, CancellationToken token)
+        {
+            try
+            {
+                QueueClient queueClient = await GetQueueClientAsync(options, token);
+
+                if (queueClient.Exists())
+                {
+                    // Send a message to the queue
+                    queueClient.SendMessage(message);
+                }
+
+                Console.WriteLine($"Inserted: {message}");
+            }
+            catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)
+            {
+                throw CreateException(innerException);
+            }
+            catch (RequestFailedException ex)
+            {
+                throw CreateException(ex);
+            }
+        }
+
+        private async Task<QueueClient> GetQueueClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
+        {
+            //string connectionString = "";
+
+            QueueServiceClient serviceClient;
+            if (!string.IsNullOrWhiteSpace(options.SharedAccessSignature))
+            {
+                var serviceUriBuilder = new UriBuilder(options.AccountUri)
+                {
+                    Query = options.SharedAccessSignature
+                };
+
+                serviceClient = new QueueServiceClient(serviceUriBuilder.Uri);
+            }
+            else if (!string.IsNullOrEmpty(options.AccountKey))
+            {
+                // Remove Query in case SAS token was specified
+                Uri accountUri = GetQueueAccountUri(options, out string accountName);
+
+                StorageSharedKeyCredential credential = new StorageSharedKeyCredential(
+                    accountName,
+                    options.AccountKey);
+
+                serviceClient = new QueueServiceClient(accountUri, credential);
+
+                //connectionString = $"DefaultEndpointsProtocol=https;AccountName={accountName};AccountKey={options.AccountKey}";
+            }
+            else
+            {
+                throw CreateException(Strings.ErrorMessage_EgressMissingSasOrKey);
+            }
+
+            QueueClient queueClient = serviceClient.GetQueueClient(options.QueueName);
+
+            //QueueClient queueClient = new QueueClient(connectionString, options.QueueName);
+
+            await queueClient.CreateIfNotExistsAsync(cancellationToken: token);
+
+            return queueClient;
+        }
+
         private async Task<BlobContainerClient> GetBlobContainerClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
         {
             BlobServiceClient serviceClient;
@@ -158,6 +245,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
 
             BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(options.ContainerName);
+
             await containerClient.CreateIfNotExistsAsync(cancellationToken: token);
 
             return containerClient;
