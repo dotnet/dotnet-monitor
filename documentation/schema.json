@@ -952,6 +952,21 @@
           ],
           "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
           "format": "int32"
+        },
+        "QueueName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the container to which the blob will be egressed. If egressing to the root container, use the \"$root\" sentinel value."
+        },
+        "QueueAccountUri": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The URI of the Azure queue account.",
+          "format": "uri"
         }
       }
     },

@@ -144,14 +144,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
         private Uri GetQueueAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
         {
-            var queueUribuilder = new QueueUriBuilder(options.QueueAccountUri);
+            var queueUriBuilder = new QueueUriBuilder(options.QueueAccountUri);
 
-            queueUribuilder.Query = null;
-            queueUribuilder.QueueName = null;
+            queueUriBuilder.Query = null;
+            queueUriBuilder.QueueName = null;
 
-            accountName = queueUribuilder.AccountName;
+            accountName = queueUriBuilder.AccountName;
 
-            return queueUribuilder.ToUri();
+            return queueUriBuilder.ToUri();
         }
 
         public async Task EgressMessageToQueue(string artifactName, AzureBlobEgressProviderOptions options, CancellationToken token)
