@@ -33,6 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
             AddCollectionRuleSchemas(context);
             AddConsoleLoggerFormatterSubSchemas(context);
+            AddDiagnosticPortSchema(context, schema);
 
             //TODO Figure out a better way to add object defaults
             schema.Definitions[nameof(EgressOptions)].Properties[nameof(EgressOptions.AzureBlobStorage)].Default = JsonSchema.CreateAnySchema();
@@ -59,6 +60,12 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             //Normalize newlines embedded into json
             schemaPayload = schemaPayload.Replace(@"\r\n", @"\n", StringComparison.Ordinal);
             return schemaPayload;
+        }
+
+        private static void AddDiagnosticPortSchema(GenerationContext context, JsonSchema schema)
+        {
+            JsonSchema stringSchema = new JsonSchema() { Type = JsonObjectType.String };
+            schema.Properties[nameof(RootOptions.DiagnosticPort)].OneOf.Add(stringSchema);
         }
 
         private static void AddConsoleLoggerFormatterSubSchemas(GenerationContext context)
