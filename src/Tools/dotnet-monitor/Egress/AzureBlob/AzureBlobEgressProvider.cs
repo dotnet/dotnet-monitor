@@ -90,20 +90,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     BufferSize = BlobStorageBufferSize,
                 };
                 using (Stream blobStream = await blobClient.OpenWriteAsync(overwrite: true, options: bloboptions, cancellationToken: token))
+                using (AutoFlushStream flushStream = new AutoFlushStream(blobStream, BlobStorageBufferSize))
                 {
-                    using (AutoFlushStream flushStream = new AutoFlushStream(blobStream, BlobStorageBufferSize))
-                    {
-                        //Azure's stream from OpenWriteAsync will do the following
-                        //1. Write the data to a local buffer
-                        //2. Once that buffer is full, stage the data remotely (this data is not considered valid yet)
-                        //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
-                        //the stream.
-                        // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
-                        Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
-                        await action(flushStream, token);
+                    //Azure's stream from OpenWriteAsync will do the following
+                    //1. Write the data to a local buffer
+                    //2. Once that buffer is full, stage the data remotely (this data is not considered valid yet)
+                    //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
+                    //the stream.
+                    // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
+                    Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
+                    await action(flushStream, token);
 
-                        await flushStream.FlushAsync(token);
-                    }
+                    await flushStream.FlushAsync(token);
                 }
 
                 // Write blob headers
@@ -155,6 +153,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             return queueUribuilder.ToUri();
         }
+
         public async Task EgressMessageToQueue(string artifactName, AzureBlobEgressProviderOptions options, CancellationToken token)
         {
             try
