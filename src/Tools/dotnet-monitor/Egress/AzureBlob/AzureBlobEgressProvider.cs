@@ -239,7 +239,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
 
             BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(options.ContainerName);
-
             await containerClient.CreateIfNotExistsAsync(cancellationToken: token);
 
             return containerClient;

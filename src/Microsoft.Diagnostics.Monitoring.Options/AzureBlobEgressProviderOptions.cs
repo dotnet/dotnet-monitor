@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName))]
         public string QueueName { get; set; }
 
         [Display(
