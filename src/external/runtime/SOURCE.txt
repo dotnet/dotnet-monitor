@@ -1,0 +1,15 @@
+Source: https://github.com/dotnet/runtime
+SHA-1: 59e643b9932122a12e71ceb360a9ae3bb9420dec
+
+Contents:
+src/coreclr/inc/*
+src/coreclr/minipal/*
+src/coreclr/pal/*
+src/coreclr/palrt/*
+!src/coreclr/palrt/tests/*
+!src/coreclr/palrt/tools/*
+src/coreclr/CMakeLists.txt
+src/coreclr/clrdefinitions.cmake
+src/coreclr/clrfeatures.cmake
+src/coreclr/components.cmake
+src/native/minipal/*

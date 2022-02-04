@@ -1,0 +1,5 @@
+Source: https://github.com/dotnet/runtime
+SHA-1: 59e643b9932122a12e71ceb360a9ae3bb9420dec
+
+Contents:
+eng/native/*
