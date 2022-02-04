@@ -11,6 +11,9 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
@@ -49,6 +52,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private static readonly Dictionary<string, string> UserSettingsContent = new(StringComparer.Ordinal)
         {
             { WebHostDefaults.ServerUrlsKey, nameof(ConfigurationLevel.UserSettings) }
+        };
+
+        // This needs to be updated and kept in order for any future configuration sections
+        private static readonly List<string> OrderedConfigurationKeys = new()
+        {
+            "urls",
+            "Kestrel",
+            "GlobalCounter",
+            "CollectionRules",
+            "CorsConfiguration",
+            "DiagnosticPort",
+            "Metrics",
+            "Storage",
+            "DefaultProcess",
+            "Logging",
+            "Authentication",
+            "Egress"
         };
 
         private readonly ITestOutputHelper _outputHelper;
@@ -145,6 +165,193 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 Assert.Equal(Enum.GetName(level), configuredUrls);
             }
+        }
+
+        /// <summary>
+        /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
+        /// assemble properly when combined.
+        /// </summary>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void FullConfigurationTest(bool redact)
+        {
+            using TemporaryDirectory contentRootDirectory = new(_outputHelper);
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                ContentRootDirectory = contentRootDirectory.FullName,
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
+
+            // This is the settings.json file in the user profile directory.
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructUserSettingsJson());
+
+            // Create the initial host builder.
+            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
+
+            // Override the environment configurations to use predefined values so that the test host
+            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
+            // in-memory collection source.
+            builder.ReplaceAspnetEnvironment();
+            builder.ReplaceDotnetEnvironment();
+            builder.ReplaceMonitorEnvironment();
+
+            // Build the host and get the configuration.
+            IHost host = builder.Build();
+            IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
+
+            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact);
+
+            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact)));
+        }
+
+        /// <summary>
+        /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(GetConnectionModeTestArguments))]
+        public void ConnectionModeTest(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
+        {
+            TemporaryDirectory contentRootDirectory = new(_outputHelper);
+            TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                ContentRootDirectory = contentRootDirectory.FullName,
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
+
+            // Create the initial host builder.
+            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
+
+            // Override the environment configurations to use predefined values so that the test host
+            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
+            // in-memory collection source.
+            builder.ReplaceAspnetEnvironment();
+            builder.ReplaceDotnetEnvironment();
+            builder.ReplaceMonitorEnvironment(diagnosticPortEnvironmentVariables);
+
+            // Build the host and get the configuration
+            IHost host = builder.Build();
+            IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
+
+            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact: false);
+
+            string expectedDiagnosticPortConfig = File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DiagnosticPortConfigurations", fileName));
+
+            Assert.Contains(CleanWhitespace(expectedDiagnosticPortConfig), CleanWhitespace(generatedConfig));
+        }
+
+        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent=false)
+        {
+            Stream stream = new MemoryStream();
+
+            using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
+            jsonWriter.Write(configuration, full: !redact, skipNotPresent: skipNotPresent);
+            jsonWriter.Dispose();
+
+            stream.Position = 0;
+
+            using (var streamReader = new StreamReader(stream))
+            {
+                string configString = streamReader.ReadToEnd();
+
+                _outputHelper.WriteLine(configString);
+
+                return configString;
+            }
+        }
+
+        private string CleanWhitespace(string rawText)
+        {
+            return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
+        }
+
+        private string ConstructUserSettingsJson()
+        {
+            string[] fileNames = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations"));
+
+            IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
+
+            foreach (var fileName in fileNames)
+            {
+                IDictionary<string, JsonElement> deserializedFile = JsonSerializer.Deserialize<IDictionary<string, JsonElement>>(File.ReadAllText(fileName));
+
+                foreach ((string key, JsonElement element) in deserializedFile)
+                {
+                    combinedFiles.Add(key, element);
+                }
+            }
+
+            string generatedUserSettings = JsonSerializer.Serialize(combinedFiles);
+
+            return generatedUserSettings;
+        }
+
+        private string ConstructExpectedOutput(bool redact)
+        {
+            Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact);
+
+            using var stream = new MemoryStream();
+            using var writer = new Utf8JsonWriter(stream);
+
+            writer.WriteStartObject();
+
+            foreach (var key in OrderedConfigurationKeys)
+            {
+                writer.WritePropertyName(key);
+
+                if (categoryMapping.TryGetValue(key, out string fileName))
+                {
+                    string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ExpectedConfigurations", fileName);
+
+                    writer.WriteRawValue(File.ReadAllText(expectedPath));
+                }
+                else
+                {
+                    writer.WriteStringValue(Strings.Placeholder_NotPresent);
+                }
+            }
+
+            writer.WriteEndObject();
+            writer.Flush();
+
+            return Encoding.UTF8.GetString(stream.ToArray());
+        }
+
+        private Dictionary<string, string> GetConfigurationFileNames(bool redact)
+        {
+            return new Dictionary<string, string>()
+            {
+                { "GlobalCounter", "GlobalCounter.json" },
+                { "Metrics", "Metrics.json" },
+                { "Egress", redact ? "EgressRedacted.json" : "EgressFull.json" },
+                { "Storage", "Storage.json" },
+                { "urls", "URLs.json" },
+                { "Logging", "Logging.json" },
+                { "DefaultProcess", "DefaultProcess.json" },
+                { "DiagnosticPort", "DiagnosticPort.json" },
+                { "CollectionRules", "CollectionRules.json" },
+                { "Authentication", redact ? "AuthenticationRedacted.json" : "AuthenticationFull.json" }
+            };
+        }
+
+        public static IEnumerable<object[]> GetConnectionModeTestArguments()
+        {
+            yield return new object[] { "SimplifiedListen.txt", DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables };
+            yield return new object[] { "FullListen.txt", DiagnosticPortTestsConstants.FullListen_EnvironmentVariables };
+            yield return new object[] { "Connect.txt", DiagnosticPortTestsConstants.Connect_EnvironmentVariables };
+            yield return new object[] { "SimplifiedListen.txt", DiagnosticPortTestsConstants.AllListen_EnvironmentVariables };
         }
 
         /// This is the order of configuration sources where a name with a lower

@@ -1,0 +1,32 @@
+{
+  "CollectionRules": {
+    "LargeGCHeap": {
+      "Trigger": {
+        "Type": "EventCounter",
+        "Settings": {
+          "ProviderName": "System.Runtime",
+          "CounterName": "gc-heap-size",
+          "GreaterThan": 10
+        }
+      },
+      "Actions": [
+        {
+          "Type": "CollectGCDump",
+          "Settings": {
+            "Egress": "artifacts"
+          }
+        }
+      ],
+      "Filters": [
+        {
+          "Key": "ProcessName",
+          "Value": "FirstWebApp"
+        }
+      ],
+      "Limits": {
+        "ActionCount": 2,
+        "ActionCountSlidingWindowDuration": "1:00:00"
+      }
+    }
+  }
+}
