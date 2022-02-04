@@ -8,7 +8,8 @@ stages:
   - job: PrepareReleaseJob
     displayName: Prepare release with Darc
     pool: 
-      vmImage: windows-latest
+      name: NetCore1ESPool-Internal
+      demands: ImageOverride -equals build.windows.10.amd64.vs2017
     variables:
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
       - group: DotNet-Diagnostics-Storage
