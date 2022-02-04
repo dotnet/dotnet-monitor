@@ -51,13 +51,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 // Write blob content, headers, and metadata
                 await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), artifactSettings.Metadata, cancellationToken: token);
 
+                string blobUriString = GetBlobUri(blobClient);
+                Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
+
                 if (!string.IsNullOrEmpty(options.QueueName))
                 {
                     await EgressMessageToQueue(artifactSettings.Name, options, token);
                 }
-
-                string blobUriString = GetBlobUri(blobClient);
-                Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
 
                 return blobUriString;
             }
@@ -91,11 +91,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 };
                 using (Stream blobStream = await blobClient.OpenWriteAsync(overwrite: true, options: bloboptions, cancellationToken: token))
                 {
-                    if (!string.IsNullOrEmpty(options.QueueName))
-                    {
-                        await EgressMessageToQueue(artifactSettings.Name, options, token);
-                    }
-
                     using (AutoFlushStream flushStream = new AutoFlushStream(blobStream, BlobStorageBufferSize))
                     {
                         //Azure's stream from OpenWriteAsync will do the following
@@ -119,6 +114,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
+
+                if (!string.IsNullOrEmpty(options.QueueName))
+                {
+                    await EgressMessageToQueue(artifactSettings.Name, options, token);
+                }
 
                 return blobUriString;
             }
