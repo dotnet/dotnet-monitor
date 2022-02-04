@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     Authentication = opts.Authentication,
                     AuthorizationHeader = $"{AuthConstants.ApiKeySchema} {newJwt.Token}" // This is the actual format of the HTTP header and should not be localized
                 };
-                outputBldr.AppendLine(JsonSerializer.Serialize(result, result.GetType(), new JsonSerializerOptions() { WriteIndented = true, IncludeFields = true }));
+                outputBldr.AppendLine(JsonSerializer.Serialize(result, result.GetType(), new JsonSerializerOptions() { WriteIndented = true }));
             }
             else
             {
