@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -202,28 +203,72 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             //If we do not traverse the child sections, the caller is responsible for creating the value
             if (includeChildSections && children.Any())
             {
-                using (new JsonObjectContext(_writer))
+                bool isSequentialIndices = CheckForSequentialIndices(children);
+
+                bool parentIsCR = section.Key.Equals(ConfigurationKeys.CollectionRules);
+
+                if (isSequentialIndices && !parentIsCR)
                 {
+                    _writer.WriteStartArray();
+
                     foreach (IConfigurationSection child in children)
                     {
-                        ProcessSection(child, includeChildSections, redact);
+                        if (child.GetChildren().Any())
+                        {
+                            ProcessChildren(child, includeChildSections, redact);
+                        }
+                        else
+                        {
+                            WriteValue(child.Value, redact);
+                        }
                     }
+
+                    _writer.WriteEndArray();
                 }
-            }
-            else
-            {
-                if (!children.Any())
+                else
                 {
-                    if (redact)
-                    {
-                        _writer.WriteStringValue(Strings.Placeholder_Redacted);
-                    }
-                    else
-                    {
-                        _writer.WriteStringValue(section.Value);
-                    }
+                    ProcessChildren(section, includeChildSections, redact);
                 }
             }
+            else if (!children.Any())
+            {
+                WriteValue(section.Value, redact);
+            }
+        }
+
+        private void WriteValue(string value, bool redact)
+        {
+            string valueToWrite = redact ? Strings.Placeholder_Redacted : value;
+
+            _writer.WriteStringValue(valueToWrite);
+        }
+
+        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact)
+        {
+            using (new JsonObjectContext(_writer))
+            {
+                foreach (IConfigurationSection child in section.GetChildren())
+                {
+                    ProcessSection(child, includeChildSections, redact);
+                }
+            }
+        }
+
+        private bool CheckForSequentialIndices(IEnumerable<IConfigurationSection> children)
+        {
+            int indexValue = 0;
+
+            foreach (IConfigurationSection child in children)
+            {
+                if (!child.Key.Equals(indexValue.ToString(CultureInfo.InvariantCulture)))
+                {
+                    return false;
+                }
+
+                indexValue++;
+            }
+
+            return true;
         }
 
         public void Dispose()
@@ -247,5 +292,4 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
     }
-
 }
