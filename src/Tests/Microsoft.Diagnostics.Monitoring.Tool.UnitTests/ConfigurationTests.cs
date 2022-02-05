@@ -85,8 +85,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// </summary>
         [Theory]
         [InlineData(ConfigurationLevel.None)]
-        [InlineData(ConfigurationLevel.DotnetEnvironment)]
         [InlineData(ConfigurationLevel.HostBuilderSettingsUrl)]
+        [InlineData(ConfigurationLevel.DotnetEnvironment)]
         [InlineData(ConfigurationLevel.AspnetEnvironment)]
         [InlineData(ConfigurationLevel.AppSettings)]
         [InlineData(ConfigurationLevel.UserSettings)]
@@ -159,14 +159,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // for the level of configuration of the test.
             if (level == ConfigurationLevel.None)
             {
-                Assert.Null(configuredUrls);
-            }
-            else if (level == ConfigurationLevel.DotnetEnvironment)
-            {
-                // Not sure this was the intent that setting DOTNET_Urls via environment yields no
-                // configured URLS, however, this does not happen because the --urls command line
-                // parameter always supercedes this environment variable (again, not sure this was
-                // intended either).
                 Assert.Null(configuredUrls);
             }
             else
@@ -311,8 +303,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public enum ConfigurationLevel
         {
             None,
-            DotnetEnvironment,
             HostBuilderSettingsUrl,
+            DotnetEnvironment,
             AspnetEnvironment,
             AppSettings,
             UserSettings,
