@@ -142,9 +142,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
                 }
 
-                services.Configure<DiagnosticPortOptions>(context.Configuration.GetSection(ConfigurationKeys.DiagnosticPort));
-                services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
-                services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
+                services.ConfigureDiagnosticPort(context.Configuration);
+
                 services.AddSingleton<OperationTrackerService>();
 
                 services.ConfigureGlobalCounter(context.Configuration);

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,9 +24,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<RootOptions> setup,
             Func<IHost, Task> hostCallback,
             Action<IServiceCollection> servicesCallback = null,
-            Action<ILoggingBuilder> loggingCallback = null)
+            Action<ILoggingBuilder> loggingCallback = null,
+            IDictionary<string, string> overrideSource = null)
         {
-            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource);
 
             try
             {
@@ -42,9 +44,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<RootOptions> setup,
             Action<IHost> hostCallback,
             Action<IServiceCollection> servicesCallback = null,
-            Action<ILoggingBuilder> loggingCallback = null)
+            Action<ILoggingBuilder> loggingCallback = null,
+            IDictionary<string, string> overrideSource = null)
         {
-            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource);
 
             try
             {
@@ -60,7 +63,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ITestOutputHelper outputHelper,
             Action<RootOptions> setup,
             Action<IServiceCollection> servicesCallback,
-            Action<ILoggingBuilder> loggingCallback = null)
+            Action<ILoggingBuilder> loggingCallback = null,
+            IDictionary<string, string> overrideSource = null)
         {
             return new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
@@ -79,6 +83,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     builder.AddInMemoryCollection(configurationValues);
 
                     builder.ConfigureStorageDefaults();
+
+                    if (null != overrideSource)
+                    {
+                        builder.AddInMemoryCollection(overrideSource);
+                    }
                 })
                 .ConfigureLogging( loggingBuilder =>
                 {
@@ -94,6 +103,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();
+
+                    services.ConfigureDiagnosticPort(context.Configuration);
 
                     services.AddSingleton<IDumpService, DumpService>();
                     services.ConfigureStorage(context.Configuration);
