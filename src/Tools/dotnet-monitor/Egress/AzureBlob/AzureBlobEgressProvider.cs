@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,7 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
 
-                if (!string.IsNullOrEmpty(options.QueueName))
+                if (CheckQueueEgressOptions(options))
                 {
                     await EgressMessageToQueue(artifactSettings.Name, options, token);
                 }
@@ -113,7 +115,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
 
-                if (!string.IsNullOrEmpty(options.QueueName))
+                if (CheckQueueEgressOptions(options))
                 {
                     await EgressMessageToQueue(artifactSettings.Name, options, token);
                 }
@@ -128,6 +130,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             {
                 throw CreateException(ex);
             }
+        }
+
+        private bool CheckQueueEgressOptions(AzureBlobEgressProviderOptions options)
+        {
+            bool queueNameSet = !string.IsNullOrEmpty(options.QueueName);
+            bool queueAccountUriSet = null != options.QueueAccountUri;
+
+            if ((queueNameSet && !queueAccountUriSet) || (!queueNameSet && queueAccountUriSet))
+            {
+                Logger.LogWarning(Strings.Message_QueueOptionsPartiallySet);
+            }
+
+            return queueNameSet && queueAccountUriSet;
         }
 
         private Uri GetBlobAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
@@ -162,7 +177,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 if (queueClient.Exists())
                 {
-                    queueClient.SendMessage(string.Format(CultureInfo.CurrentCulture, Strings.Message_AzureQueueEgress, artifactName));
+                    string queueMessage = ConstructQueueMessage(artifactName, options);
+                    queueClient.SendMessage(queueMessage);
                 }
             }
             catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)
@@ -173,6 +189,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             {
                 throw CreateException(ex);
             }
+        }
+
+        private string ConstructQueueMessage(string artifactName, AzureBlobEgressProviderOptions options)
+        {
+            using var stream = new MemoryStream();
+            using var writer = new Utf8JsonWriter(stream);
+
+            writer.WriteStartObject();
+
+            writer.WriteString("artifact", artifactName);
+            writer.WriteString("uri", options.AccountUri.ToString());
+
+            writer.WriteEndObject();
+            writer.Flush();
+
+            return Encoding.UTF8.GetString(stream.ToArray());
         }
 
         private async Task<QueueClient> GetQueueClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
