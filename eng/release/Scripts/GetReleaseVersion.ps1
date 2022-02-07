@@ -3,6 +3,7 @@ Param(
     [Parameter(Mandatory=$true)][string] $BarId,
     [Parameter(Mandatory=$true)][string] $MaestroToken,
     [Parameter(Mandatory=$false)][string] $MaestroApiEndPoint = 'https://maestro-prod.westus2.cloudapp.azure.com',
+    [Parameter(Mandatory=$false)][string] $MaestroApiVersion = '2020-02-20',
     [Parameter(Mandatory=$false)][string] $TaskVariableName = $null,
     [Parameter(Mandatory=$false)][switch] $IncludeV
 )
@@ -11,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
 $releaseData = Invoke-RestMethod `
-    -Uri "$MaestroApiEndPoint/api/assets?buildId=$BarId&name=dotnet-monitor&api-version=2020-02-20" `
+    -Uri "$MaestroApiEndPoint/api/assets?buildId=$BarId&name=dotnet-monitor&api-version=$MaestroApiVersion" `
     -Method 'GET' `
     -Headers @{ 'accept' = 'application/json'; 'Authorization' = "Bearer $MaestroToken" }
 

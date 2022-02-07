@@ -15,7 +15,7 @@ $tagsUri = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_
 $buildData = Invoke-RestMethod `
     -Uri $tagsUri `
     -Method 'GET' `
-    -Headers @{ 'accept' = 'application/json'; 'Authorization' = 'Bearer ' + $env:System_AccessToken }
+    -Headers @{ 'accept' = 'application/json'; 'Authorization' = "Bearer ${env:System_AccessToken}" }
 
 Write-Verbose 'BuildData:'
 $buildDataJson = $buildData | ConvertTo-Json
