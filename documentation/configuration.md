@@ -377,6 +377,8 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | sharedAccessSignature | string | The shared access signature (SAS) used to access the azure blob storage account.|
 | accountKeyName | string | Name of the property in the Properties section that will contain the account key.|
 | sharedAccessSignatureName | string | Name of the property in the Properties section that will contain the SAS token.|
+| queueName | string | The name of the queue to which a message will be dispatched upon writing to a blob.|
+| queueAccountUri | string | The URI of the Azure queue account.|
 
 ### Example azureBlobStorage provider
 
@@ -389,6 +391,28 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
                 "containerName": "dotnet-monitor",
                 "blobPrefix": "artifacts",
                 "accountKeyName": "MonitorBlobAccountKey"
+            }
+        },
+        "Properties": {
+            "MonitorBlobAccountKey": "accountKey"
+        }
+    }
+}
+```
+
+### Example azureBlobStorage provider with queue
+
+```json
+{
+    "Egress": {
+        "AzureBlobStorage": {
+            "monitorBlob": {
+                "accountUri": "https://exampleaccount.blob.core.windows.net",
+                "containerName": "dotnet-monitor",
+                "blobPrefix": "artifacts",
+                "accountKeyName": "MonitorBlobAccountKey",
+                "queueAccountUri": "https://exampleaccount.queue.core.windows.net",
+                "queueName": "dotnet-monitor-queue"
             }
         },
         "Properties": {
