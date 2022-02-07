@@ -113,22 +113,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        public void WriteProviders(IConfiguration configuration)
-        {
-            var configurationProviders = ((IConfigurationRoot)configuration).Providers.Reverse();
-
-            StringBuilder providersOutput = new StringBuilder();
-
-            providersOutput.AppendLine(Strings.Message_ShowSources);
-
-            foreach (var provider in configurationProviders)
-            {
-                providersOutput.AppendLine(" - " + provider.ToString());
-            }
-
-            _writer.WriteCommentValue(providersOutput.ToString());
-        }
-
         private void ProcessEgressSection(IConfiguration egress, bool skipNotPresent, bool showSources=false)
         {
             IList<string> processedSectionPaths = new List<string>();
@@ -242,26 +226,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         {
                             WriteValue(child.Value, redact);
 
-                            if (showSources)
+                            string comment = GetConfigurationProvider(section, showSources);
+
+                            if (comment.Length > 0)
                             {
-                                var configurationProviders = ((IConfigurationRoot)_configuration).Providers.Reverse();
-
-                                StringBuilder comment = new StringBuilder();
-
-                                foreach (var provider in configurationProviders)
-                                {
-                                    provider.TryGet(section.Path, out string value);
-
-                                    if (!string.IsNullOrEmpty(value))
-                                    {
-                                        comment.Append(provider.ToString());
-                                    }
-                                }
-
-                                if (comment.Length > 0)
-                                {
-                                    _writer.WriteCommentValue(comment.ToString());
-                                }
+                                _writer.WriteCommentValue(comment);
                             }
                         }
                     }
@@ -276,29 +245,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             else if (!canWriteChildren)
             {
                 WriteValue(section.Value, redact);
+                string comment = GetConfigurationProvider(section, showSources);
 
-                if (showSources)
+                if (comment.Length > 0)
                 {
-                    var configurationProviders = ((IConfigurationRoot)_configuration).Providers.Reverse();
-
-                    StringBuilder comment = new StringBuilder();
-
-                    foreach (var provider in configurationProviders)
-                    {
-                        provider.TryGet(section.Path, out string value);
-
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            comment.Append(provider.ToString());
-                        }
-                    }
-
-                    if (comment.Length > 0)
-                    {
-                        _writer.WriteCommentValue(comment.ToString());
-                    }
+                    _writer.WriteCommentValue(comment);
                 }
             }
+        }
+
+        private string GetConfigurationProvider(IConfigurationSection section, bool showSources)
+        {
+            if (showSources)
+            {
+                var configurationProviders = ((IConfigurationRoot)_configuration).Providers.Reverse();
+
+                StringBuilder comment = new StringBuilder();
+
+                foreach (var provider in configurationProviders)
+                {
+                    provider.TryGet(section.Path, out string value);
+
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        comment.Append(provider.ToString());
+                        break;
+                    }
+                }
+
+                return comment.ToString();
+            }
+
+            return "";
         }
 
         private bool CanWriteChildren(IConfigurationSection section, IEnumerable<IConfigurationSection> children)
