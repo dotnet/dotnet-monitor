@@ -199,11 +199,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private void ProcessSection(IConfigurationSection section, bool includeChildSections = true, bool redact = false, bool showSources = false)
         {
-            _writer.WritePropertyName(section.Key);
-
             IEnumerable<IConfigurationSection> children = section.GetChildren();
 
             bool canWriteChildren = CanWriteChildren(section, children);
+
+            if (!canWriteChildren)
+            {
+                string comment = GetConfigurationProvider(section, showSources);
+
+                if (comment.Length > 0)
+                {
+                    _writer.WriteCommentValue(comment);
+                }
+            }
+
+            _writer.WritePropertyName(section.Key);
 
             //If we do not traverse the child sections, the caller is responsible for creating the value
             if (includeChildSections && canWriteChildren)
@@ -226,7 +236,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         {
                             WriteValue(child.Value, redact);
 
-                            string comment = GetConfigurationProvider(section, showSources);
+                            string comment = GetConfigurationProvider(child, showSources);
 
                             if (comment.Length > 0)
                             {
@@ -245,12 +255,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             else if (!canWriteChildren)
             {
                 WriteValue(section.Value, redact);
-                string comment = GetConfigurationProvider(section, showSources);
-
-                if (comment.Length > 0)
-                {
-                    _writer.WriteCommentValue(comment);
-                }
             }
         }
 
