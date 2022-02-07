@@ -43,4 +43,4 @@ if ($TaskVariableName) {
         -Value $barId
 }
 
-Write-Ouptut $barId
+Write-Output $barId
