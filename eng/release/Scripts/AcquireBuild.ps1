@@ -58,6 +58,7 @@ try {
         --azdev-pat $AzdoToken `
         --bar-uri $MaestroApiEndPoint `
         --password $MaestroToken `
+        --separated `
         --verbose
 
     if ($LastExitCode -ne 0) {
