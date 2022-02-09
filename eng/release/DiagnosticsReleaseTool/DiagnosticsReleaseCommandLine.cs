@@ -27,11 +27,11 @@ namespace DiagnosticsReleaseTool.CommandLine
                 name: "prepare-release",
                 description: "Given a darc drop, generates validated manifests and layouts to initiate a tool release.")
             {
-                CommandHandler.Create<Config, bool, CancellationToken>(DiagnosticsReleaseRunner.PrepareRelease),
+                CommandHandler.Create<Config, bool, bool, CancellationToken>(DiagnosticsReleaseRunner.PrepareRelease),
                 // Inputs
                 InputDropPathOption(), ToolManifestPathOption(), ReleaseNameOption(),
                 // Toggles
-                ToolManifestVerificationOption(), DiagnosticLoggingOption(),
+                ToolManifestVerificationOption(), DiagnosticLoggingOption(), DryRunOption(),
                 // Outputs
                 StagingPathOption(), AzureStorageAccountNameOption(), AzureStorageAccountKeyOption(), AzureStorageContainerNameOption(), AzureStorageSasExpirationOption()
             };
@@ -40,6 +40,12 @@ namespace DiagnosticsReleaseTool.CommandLine
             new Option<bool>(
                 aliases: new[] { "-v", "--verbose" },
                 description: "Enables diagnostic logging",
+                getDefaultValue: () => false);
+
+        private static Option<bool> DryRunOption() =>
+            new Option<bool>(
+                aliases: new[] { "--dry-run" },
+                description: "Stages files and generates manifest, but does not publish.",
                 getDefaultValue: () => false);
 
         private static Option ToolManifestPathOption() =>
