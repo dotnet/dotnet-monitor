@@ -96,5 +96,10 @@ namespace DiagnosticsReleaseTool.Util
                 return new DirectoryInfo(matchingProducts.First().GetProperty("fileshare").GetString());
             }
         }
+
+        internal static bool IsNuGetPackage(FileInfo file)
+        {
+            return file.Extension == ".nupkg" && file.Directory.Name == "packages";
+        }
     }
 }
