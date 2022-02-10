@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             bool queueNameSet = !string.IsNullOrEmpty(options.QueueName);
             bool queueAccountUriSet = null != options.QueueAccountUri;
 
-            if ((queueNameSet && !queueAccountUriSet) || (!queueNameSet && queueAccountUriSet))
+            if (queueNameSet ^ queueAccountUriSet)
             {
                 Logger.LogWarning(Strings.Message_QueueOptionsPartiallySet);
             }
@@ -169,7 +169,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             return queueUriBuilder.ToUri();
         }
 
-        public async Task EgressMessageToQueue(string artifactName, AzureBlobEgressProviderOptions options, CancellationToken token)
+        private async Task EgressMessageToQueue(string artifactName, AzureBlobEgressProviderOptions options, CancellationToken token)
         {
             try
             {
@@ -180,14 +180,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     string queueMessage = ConstructQueueMessage(artifactName, options);
                     queueClient.SendMessage(queueMessage);
                 }
+                else
+                {
+                    Logger.LogWarning(string.Format(CultureInfo.CurrentCulture, Strings.Message_QueueDoesNotExist, options.QueueName));
+                }
             }
             catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)
             {
-                throw CreateException(innerException);
+                Logger.LogWarning(string.Format(CultureInfo.CurrentCulture, Strings.Message_WritingMessageToQueueFailed, options.QueueName));
             }
-            catch (RequestFailedException ex)
+            catch (RequestFailedException)
             {
-                throw CreateException(ex);
+                Logger.LogWarning(string.Format(CultureInfo.CurrentCulture, Strings.Message_WritingMessageToQueueFailed, options.QueueName));
             }
         }
 
@@ -199,7 +203,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             writer.WriteStartObject();
 
             writer.WriteString("artifact", artifactName);
-            writer.WriteString("uri", options.AccountUri.ToString());
+            writer.WriteString("uri", options.AccountUri.GetLeftPart(UriPartial.Path));
 
             writer.WriteEndObject();
             writer.Flush();
@@ -237,7 +241,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             QueueClient queueClient = serviceClient.GetQueueClient(options.QueueName);
 
-            await queueClient.CreateIfNotExistsAsync(cancellationToken: token);
+            if (!queueClient.Exists())
+            {
+                await queueClient.CreateIfNotExistsAsync(cancellationToken: token);
+            }
 
             return queueClient;
         }

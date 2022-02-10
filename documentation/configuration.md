@@ -422,6 +422,15 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 }
 ```
 
+#### azureBlobStorage Queue Message Format
+
+```json
+{
+    "artifact": "artifact-name",
+    "uri": "https://exampleaccount.blob.core.windows.net"
+}
+```
+
 ### Filesystem egress provider
 
 | Name | Type | Description |

@@ -997,6 +997,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the queueName and queueAccountUri fields are set correctly..
+        /// </summary>
+        internal static string Message_QueueDoesNotExist {
+            get {
+                return ResourceManager.GetString("Message_QueueDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Queue message egress requires queueName and queueAccountUri to be set.
         /// </summary>
         internal static string Message_QueueOptionsPartiallySet {
@@ -1015,6 +1024,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to send message to the queue {0}..
+        /// </summary>
+        internal static string Message_WritingMessageToQueueFailed {
+            get {
+                return ResourceManager.GetString("Message_WritingMessageToQueueFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to :NOT PRESENT:.
         /// </summary>
         internal static string Placeholder_NotPresent {
@@ -1029,6 +1047,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string Placeholder_Redacted {
             get {
                 return ResourceManager.GetString("Placeholder_Redacted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
     }
