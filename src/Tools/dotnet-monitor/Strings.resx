@@ -637,7 +637,4 @@
     <value>:REDACTED:</value>
     <comment>Gets a string similar to ":REDACTED:".</comment>
   </data>
-  <data name="String1" xml:space="preserve">
-    <value />
-  </data>
 </root>
