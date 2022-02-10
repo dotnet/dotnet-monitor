@@ -2,7 +2,7 @@ trigger: none
 pr: none
 
 parameters:
-- name: IsTest
+- name: IsTestRun
   type: boolean
   default: true
 - name: IsDryRun
@@ -12,7 +12,14 @@ parameters:
 variables:
 - name: _TeamName
   value: DotNetCore
+  readonly: true
 - group: Release-Pipeline
+- name: IsDryRun
+  value: ${{ parameters.IsDryRun }}
+  readonly: true
+- name: IsTestRun
+  value: ${{ parameters.IsTestRun }}
+  readonly: true
 
 resources:
   pipelines:
@@ -33,7 +40,8 @@ stages:
     # Allow for differentiation of runs of this pipeline
     # when running it with the same build repeatedly.
     - name: RunRevision
-      value: $[counter(variables['resources.pipeline.Build.runID'],1)]
+      value: $[counter(format('{0}|{1}|{2}', variables['resources.pipeline.Build.runID'], variables['IsDryRun'], variables['IsTestRun']), 1)]
+      readonly: true
 
     workspace:
       clean: all
@@ -69,7 +77,16 @@ stages:
           -MaestroToken $(MaestroAccessToken)
           -TaskVariableName 'BuildVersion'
 
-    - powershell: Write-Host "##vso[build.updatebuildnumber]$(ReleaseVersion) ($(BuildVersion)) (R$(RunRevision))"
+    - powershell: |
+        $buildName = "${env:ReleaseVersion} [${env:BuildVersion}]"
+        if ($env:IsDryRun -eq 'true') {
+          $buildName += "[Dry]"
+        }
+        if ($env:IsTestRun -eq 'true') {
+          $buildName += "[Test]"
+        }
+        $buildName += "[Run ${env:RunRevision}]"
+        Write-Host "##vso[build.updatebuildnumber]$buildName"
       displayName: Set Name
 
 - stage: Publish
@@ -84,13 +101,13 @@ stages:
   - deployment: PublishToStorageAccounts
     displayName: Publish to Storage Accounts
 
-    ${{ if eq(parameters.IsTest, 'true') }}:
+    ${{ if eq(parameters.IsTestRun, 'true') }}:
       environment: Diagnostics-Monitor-Storage-Test
     ${{ else }}:
       environment: Diagnostics-Monitor-Storage-DotNetCli
 
     variables:
-    - ${{ if eq(parameters.IsTest, 'true') }}:
+    - ${{ if eq(parameters.IsTestRun, 'true') }}:
       - group: DotNet-Diagnostics-Storage-Test
     - group: DotNet-DotNetStage-Storage
 
@@ -143,7 +160,7 @@ stages:
               Write-Host "##vso[task.setvariable variable=ChecksumsAccountName]$env:CHECKSUMS_ACCOUNT_NAME"
               Write-Host "##vso[task.setvariable variable=ChecksumsAccountKey;issecret=true]$env:CHECKSUMS_ACCOUNT_KEY"
             displayName: Set Storage Accounts
-            ${{ if eq(parameters.IsTest, 'true') }}:
+            ${{ if eq(parameters.IsTestRun, 'true') }}:
               env:
                 # Variables provided by DotNet-Diagnostics-Storage-Test group
                 DESTINATION_ACCOUNT_NAME: $(dotnet-monitor-test-storage-accountname)
