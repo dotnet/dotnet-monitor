@@ -241,7 +241,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             QueueClient queueClient = serviceClient.GetQueueClient(options.QueueName);
 
-            if (!queueClient.Exists())
+            // This is done for instances where a SAS token may not have permission to create queues,
+            // but is allowed to write a message out to one that already exists
+            if (!await queueClient.ExistsAsync())
             {
                 await queueClient.CreateIfNotExistsAsync(cancellationToken: token);
             }
