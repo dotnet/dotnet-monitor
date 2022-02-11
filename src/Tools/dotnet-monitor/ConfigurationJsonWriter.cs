@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _writer = new Utf8JsonWriter(outputStream, options);
         }
 
-        public void Write(IConfiguration configuration, bool full, bool skipNotPresent, bool showSources=false)
+        public void Write(IConfiguration configuration, bool full, bool skipNotPresent, bool showSources = false)
         {
             _configuration = configuration;
             //Note that we avoid IConfigurationRoot.GetDebugView because it shows everything
@@ -113,7 +113,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private void ProcessEgressSection(IConfiguration egress, bool skipNotPresent, bool showSources=false)
+        private void ProcessEgressSection(IConfiguration egress, bool skipNotPresent, bool showSources = false)
         {
             IList<string> processedSectionPaths = new List<string>();
 
@@ -179,7 +179,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private IConfigurationSection ProcessChildSection(IConfiguration parentSection, string key, bool skipNotPresent, bool includeChildSections = true, bool redact = false, bool showSources=false)
+        private IConfigurationSection ProcessChildSection(IConfiguration parentSection, string key, bool skipNotPresent, bool includeChildSections = true, bool redact = false, bool showSources = false)
         {
             IConfigurationSection section = parentSection.GetSection(key);
             if (!section.Exists())
@@ -230,6 +230,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                             if (comment.Length > 0)
                             {
+                                // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
+                                // that prevents comments from being directly after commas
                                 _writer.WriteCommentValue(comment);
                             }
                         }
@@ -250,6 +252,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 if (comment.Length > 0)
                 {
+                    // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
+                    // that prevents comments from being directly after commas
                     _writer.WriteCommentValue(comment);
                 }
             }
@@ -261,7 +265,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 var configurationProviders = ((IConfigurationRoot)_configuration).Providers.Reverse();
 
-                StringBuilder comment = new StringBuilder();
+                string comment = string.Empty;
 
                 foreach (var provider in configurationProviders)
                 {
@@ -269,15 +273,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     if (!string.IsNullOrEmpty(value))
                     {
-                        comment.Append(provider.ToString());
+                        comment = provider.ToString();
                         break;
                     }
                 }
 
-                return comment.ToString();
+                return comment;
             }
 
-            return "";
+            return string.Empty;
         }
 
         private bool CanWriteChildren(IConfigurationSection section, IEnumerable<IConfigurationSection> children)
