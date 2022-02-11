@@ -45,14 +45,14 @@ function Generate-Sas-Token{
     )
 
     $context = New-AzStorageContext `
-        -StorageAccountName $StorageAccountName
+        -StorageAccountName $StorageAccountName `
         -StorageAccountKey $AccountKey
 
     return New-AzStorageContainerSASToken `
-        -Container $ContainerName
-        -Context $context
-        -Permission $Permissions
-        -StartTime (Get-Date).AddMinutes(-15.0)
+        -Container $ContainerName `
+        -Context $context `
+        -Permission $Permissions `
+        -StartTime (Get-Date).AddMinutes(-15.0) `
         -ExpiryTime (Get-Date).AddHours(1.0)
 }
 
