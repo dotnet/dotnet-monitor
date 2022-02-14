@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public static readonly Dictionary<string, string> DiagnosticPort_EnvironmentVariables = new(StringComparer.Ordinal)
         {
             { ConnectionMode, nameof(DiagnosticPortConnectionMode.Listen) },
-            { EndpointName, FullDiagnosticPort }
+            { EndpointName, "\\\\.\\pipe\\dotnet-monitor-pipe" }
         };
 
         public static readonly Dictionary<string, string> GlobalCounter_EnvironmentVariables = new(StringComparer.Ordinal)

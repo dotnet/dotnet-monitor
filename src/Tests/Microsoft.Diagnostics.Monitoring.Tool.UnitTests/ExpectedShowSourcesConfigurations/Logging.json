@@ -1,9 +1,9 @@
 {
-  "CaptureScopes": "True",
+  "CaptureScopes": "True" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
   "Console": {
     "FormatterOptions": {
-      "ColorBehavior": "Default"
+      "ColorBehavior": "Default" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     },
-    "LogToStandardErrorThreshold": "Error"
+    "LogToStandardErrorThreshold": "Error" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
   }
 }

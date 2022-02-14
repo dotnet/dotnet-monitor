@@ -1,6 +1,6 @@
 {
   "MonitorApiKey": {
-    "Subject": "ae5473b6-8dad-498d-b915-ffffffffffff",
-    "PublicKey": ":REDACTED:"
+    "Subject": "ae5473b6-8dad-498d-b915-ffffffffffff" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+    "PublicKey": ":REDACTED:" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
   }
 }
