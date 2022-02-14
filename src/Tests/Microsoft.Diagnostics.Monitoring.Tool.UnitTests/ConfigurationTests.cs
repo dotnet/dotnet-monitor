@@ -190,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructUserSettingsJson());
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("SampleConfigurations"));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -210,6 +210,68 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact)));
         }
+
+
+
+        /// <summary>
+        /// This is a full configuration test that lists the configuration provider source for each piece of config.
+        /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
+        /// assemble properly when combined.
+        /// </summary>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void FullConfigurationWithSourcesTest(bool redact)
+        {
+            using TemporaryDirectory contentRootDirectory = new(_outputHelper);
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                ContentRootDirectory = contentRootDirectory.FullName,
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
+
+            // This is the settings.json file in the user profile directory.
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("UserSettingsConfigurations"));
+
+            // This is the appsettings.json file that is normally next to the entrypoint assembly.
+            // The location of the appsettings.json is determined by the content root in configuration.
+            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson("AppSettingsConfigurations"));
+
+            // This is the settings.json file in the shared configuration directory that is visible
+            // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
+            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("SharedSettingsConfigurations"));
+
+            // This is a key-per-file file in the shared configuration directory. This configuration
+            // is typically used when mounting secrets from a Docker volume.
+            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, WebHostDefaults.ServerUrlsKey), nameof(ConfigurationLevel.SharedKeyPerFile));
+
+            // Create the initial host builder.
+            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
+
+            // Override the environment configurations to use predefined values so that the test host
+            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
+            // in-memory collection source.
+            builder.ReplaceAspnetEnvironment(ShowSourcesTestsConstants.DefaultProcess_EnvironmentVariables);
+            builder.ReplaceDotnetEnvironment(ShowSourcesTestsConstants.DiagnosticPort_EnvironmentVariables);
+            builder.ReplaceMonitorEnvironment(ShowSourcesTestsConstants.GlobalCounter_EnvironmentVariables);
+
+            // Build the host and get the configuration.
+            IHost host = builder.Build();
+            IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
+
+            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact);
+
+            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact, showSources: true)));
+        }
+
+
+
 
         /// <summary>
         /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
@@ -252,12 +314,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Contains(CleanWhitespace(expectedDiagnosticPortConfig), CleanWhitespace(generatedConfig));
         }
 
-        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent=false)
+        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent=false, bool showSources = false)
         {
             Stream stream = new MemoryStream();
 
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
-            jsonWriter.Write(configuration, full: !redact, skipNotPresent: skipNotPresent);
+            jsonWriter.Write(configuration, full: !redact, skipNotPresent: skipNotPresent, showSources: showSources);
             jsonWriter.Dispose();
 
             stream.Position = 0;
@@ -277,9 +339,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
-        private string ConstructUserSettingsJson()
+        private string ConstructSettingsJson(string configDirectoryLocation)
         {
-            string[] fileNames = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations"));
+            string[] fileNames = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), configDirectoryLocation));
 
             IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
 
@@ -298,7 +360,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return generatedUserSettings;
         }
 
-        private string ConstructExpectedOutput(bool redact)
+        private string ConstructExpectedOutput(bool redact, bool showSources = false)
         {
             Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact);
 
@@ -307,13 +369,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             writer.WriteStartObject();
 
+            string directoryNameLocation = showSources ? "ExpectedShowSourcesConfigurations" : "ExpectedConfigurations";
+
             foreach (var key in OrderedConfigurationKeys)
             {
                 writer.WritePropertyName(key);
 
                 if (categoryMapping.TryGetValue(key, out string fileName))
                 {
-                    string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ExpectedConfigurations", fileName);
+                    string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), directoryNameLocation, fileName);
 
                     writer.WriteRawValue(File.ReadAllText(expectedPath));
                 }
