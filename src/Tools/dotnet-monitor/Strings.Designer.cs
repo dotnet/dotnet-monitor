@@ -1049,7 +1049,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
                 return ResourceManager.GetString("Message_WritingMessageToQueueFailed", resourceCulture);
             }
         }
-                
+        
         /// <summary>
         ///   Looks up a localized string similar to :NOT PRESENT:.
         /// </summary>
