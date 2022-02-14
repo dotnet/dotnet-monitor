@@ -1,0 +1,200 @@
+trigger: none
+pr: none
+
+parameters:
+- name: IsTestRun
+  type: boolean
+  default: true
+- name: IsDryRun
+  type: boolean
+  default: true
+
+variables:
+- name: _TeamName
+  value: DotNetCore
+  readonly: true
+- group: Release-Pipeline
+- name: IsDryRun
+  value: ${{ parameters.IsDryRun }}
+  readonly: true
+- name: IsTestRun
+  value: ${{ parameters.IsTestRun }}
+  readonly: true
+
+resources:
+  pipelines:
+  - pipeline: Build
+    source: dotnet-dotnet-monitor
+
+stages:
+- stage: Validation
+
+  pool:
+    name: NetCore1ESPool-Internal
+    demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
+
+  jobs:
+  - job: Validate
+
+    variables:
+    # Allow for differentiation of runs of this pipeline
+    # when running it with the same build repeatedly.
+    - name: RunRevision
+      value: $[counter(format('{0}|{1}|{2}', variables['resources.pipeline.Build.runID'], variables['IsDryRun'], variables['IsTestRun']), 1)]
+      readonly: true
+
+    workspace:
+      clean: all
+
+    steps:
+    - download: none
+
+    - task: PowerShell@2
+      displayName: Get BAR ID
+      inputs:
+        filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBarId.ps1
+        arguments: >-
+          -BuildId $(resources.pipeline.Build.runID)
+          -TaskVariableName 'BarId'
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+    - task: PowerShell@2
+      displayName: Get Release Version
+      inputs:
+        filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
+        arguments: >-
+          -BarId $(BarId)
+          -MaestroToken $(MaestroAccessToken)
+          -TaskVariableName 'ReleaseVersion'
+    
+    - task: PowerShell@2
+      displayName: Get Build Version
+      inputs:
+        filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+        arguments: >-
+          -BarId $(BarId)
+          -MaestroToken $(MaestroAccessToken)
+          -TaskVariableName 'BuildVersion'
+
+    - powershell: |
+        $buildName = "${env:ReleaseVersion} [${env:BuildVersion}]"
+        if ($env:IsDryRun -eq 'true') {
+          $buildName += "[Dry]"
+        }
+        if ($env:IsTestRun -eq 'true') {
+          $buildName += "[Test]"
+        }
+        $buildName += "[Run ${env:RunRevision}]"
+        Write-Host "##vso[build.updatebuildnumber]$buildName"
+      displayName: Set Name
+
+- stage: Publish
+  dependsOn:
+  - Validation
+
+  pool:
+    name: NetCore1ESPool-Internal
+    demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
+
+  jobs:
+  - deployment: PublishToStorageAccounts
+    displayName: Publish to Storage Accounts
+
+    ${{ if eq(parameters.IsTestRun, 'true') }}:
+      environment: Diagnostics-Monitor-Storage-Test
+    ${{ else }}:
+      environment: Diagnostics-Monitor-Storage-DotNetCli
+
+    variables:
+    - ${{ if eq(parameters.IsTestRun, 'true') }}:
+      - group: DotNet-Diagnostics-Storage-Test
+    - group: DotNet-DotNetStage-Storage
+
+    workspace:
+      clean: all
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - download: none
+
+          - task: PowerShell@2
+            displayName: Install AzCopy
+            inputs:
+              filePath: $(Build.SourcesDirectory)/eng/release/Scripts/InstallAzCopy.ps1
+              arguments: >-
+                -ToolsDirectory $(Agent.ToolsDirectory)
+                -TaskVariableName 'AzCopyPath'
+
+          - task: PowerShell@2
+            displayName: Get BAR ID
+            inputs:
+              filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBarId.ps1
+              arguments: >-
+                -BuildId $(resources.pipeline.Build.runID)
+                -TaskVariableName 'BarId'
+            env:
+              SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+          - task: PowerShell@2
+            displayName: Get Release Version
+            inputs:
+              filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
+              arguments: >-
+                -BarId $(BarId)
+                -MaestroToken $(MaestroAccessToken)
+                -TaskVariableName 'ReleaseVersion'
+
+          - powershell: Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+            displayName: Install NuGet PowerShell Package Provider
+
+          - powershell: Install-Module Az.Storage -Force -Scope CurrentUser -AllowClobber -Verbose
+            displayName: Install Az.Storage Module
+
+          - powershell: |
+              Write-Host "##vso[task.setvariable variable=DestinationAccountName]$env:DESTINATION_ACCOUNT_NAME"
+              Write-Host "##vso[task.setvariable variable=DestinationAccountKey;issecret=true]$env:DESTINATION_ACCOUNT_KEY"
+              Write-Host "##vso[task.setvariable variable=ChecksumsAccountName]$env:CHECKSUMS_ACCOUNT_NAME"
+              Write-Host "##vso[task.setvariable variable=ChecksumsAccountKey;issecret=true]$env:CHECKSUMS_ACCOUNT_KEY"
+            displayName: Set Storage Accounts
+            ${{ if eq(parameters.IsTestRun, 'true') }}:
+              env:
+                # Variables provided by DotNet-Diagnostics-Storage-Test group
+                DESTINATION_ACCOUNT_NAME: $(dotnet-monitor-test-storage-accountname)
+                DESTINATION_ACCOUNT_KEY: $(dotnet-monitor-test-storage-accountkey)
+                CHECKSUMS_ACCOUNT_NAME: $(dotnet-monitor-checksums-test-storage-accountname)
+                CHECKSUMS_ACCOUNT_KEY: $(dotnet-monitor-checksums-test-storage-accountkey)
+            ${{ else }}:
+              env:
+                # Variables provided by Release-Pipeline group
+                DESTINATION_ACCOUNT_NAME: dotnetcli
+                DESTINATION_ACCOUNT_KEY: $(dotnetcli-storage-key)
+                CHECKSUMS_ACCOUNT_NAME: dotnetclichecksums
+                CHECKSUMS_ACCOUNT_KEY: $(dotnetclichecksums-storage-key)
+
+          - task: PowerShell@2
+            displayName: Publish Assets
+            inputs:
+              filePath: $(Build.SourcesDirectory)/eng/release/Scripts/PublishToBlobAccounts.ps1
+              arguments: >-
+                -AzCopyPath $(AzCopyPath)
+                -BuildNumber $(resources.pipeline.Build.runName)
+                -ReleaseVersion $(ReleaseVersion)
+                -DotnetStageAccountKey $(dotnetstage-storage-key)
+                -DestinationAccountName $(DestinationAccountName)
+                -DestinationAccountKey $(DestinationAccountKey)
+                -ChecksumsAccountName $(ChecksumsAccountName)
+                -ChecksumsAccountKey $(ChecksumsAccountKey)
+                -WhatIf:${{ format('${0}', parameters.IsDryRun) }}
+          
+          - task: PublishBuildArtifacts@1
+            displayName: Publish Logs
+            inputs:
+              PathtoPublish: '$(USERPROFILE)\.azcopy'
+              PublishLocation: Container
+              ArtifactName: AzCopyLogs
+            continueOnError: true
+            condition: succeededOrFailed()

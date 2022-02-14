@@ -37,15 +37,16 @@ Settings in Text format:
 Subject: ae5473b6-8dad-498d-b915-ffffffffffff
 Public Key: eyffffffffffffFsRGF0YSI6e30sIkNydiI6IlAtMzg0IiwiS2V5T3BzIjpbXSwiS3R5IjoiRUMiLCJYIjoiTnhIRnhVZ19QM1dhVUZWVzk0U3dUY3FzVk5zNlFLYjZxc3AzNzVTRmJfQ3QyZHdpN0RWRl8tUTVheERtYlJuWSIsIlg1YyI6W10sIlkiOiJmMXBDdmNoUkVpTWEtc1h6SlZQaS02YmViMHdrZmxfdUZBN0Vka2dwcjF5N251Wmk2cy1NcHl5RzhKdVFSNWZOIiwiS2V5U2l6ZSI6Mzg0LCJIYXNQcml2YXRlS2V5IjpmYWxzZSwiQ3J5cHRvUHJvdmlkZXJGYWN0b3J5Ijp7IkNyeXB0b1Byb3ZpZGVyQ2FjaGUiOnt9LCJDYWNoZVNpZ25hdHVyZVByb3ZpZGVycyI6dHJ1ZSwiU2lnbmF0dXJlUHJvdmlkZXJPYmplY3RQb29sQ2FjaGffffffffffff19
 ```
->**Note:** While all values provided in this document are the correct length and format, the raw values have been edited to prevent this public example being used as a dotnet-monitor configuration.
+>**Note:** The actual values provided in this document will never work as valid configuration. All values provided in this document are the correct length and format, but the raw values have been edited to prevent this public example being used to configure authentication for a dotnet-monitor installation.
 
 The `generatekey` command supports 1 parameter `--output`/`-o` to specify the configuration format. By default, `dotnet monitor generatekey` will use the `--output json` format. Currently, the values in the list below are supported values for `--output`.
 
-- `Json` output format will provide a json blob in the correct format to merge with an `appsettings.json` file to specify configuration via json file.
+- `Json` output format will provide a json blob in the correct format to merge with a `settings.json` file that configures `dotnet-monitor`. See [Configuration Sources](./configuration.md#configuration-sources) for where to find or create a `settings.json` file.
 - `Text` output format write the individual parameters in an easily human-readable format.
 - `Cmd` output format in environment variables for a `cmd.exe` prompt.
 - `PowerShell` output format in environment variables for a `powershell` or `pwsh` prompt.
 - `Shell` output format in environment variables for a `bash` shell or another linux shell prompt.
+- `MachineJson` output a single json blob designed to be easy to parse by other tools. The entire STDOUT from `dotnet-monitor` will be a parsable json object. 
 
 ### Configuring dotnet-monitor to use an API Key
 

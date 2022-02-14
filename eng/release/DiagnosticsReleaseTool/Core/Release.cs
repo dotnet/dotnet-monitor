@@ -224,14 +224,6 @@ namespace ReleaseTool.Core
 
                     if (layoutResult.Status == LayoutResultStatus.FileHandled)
                     {
-                        if (isProcessed)
-                        {
-                            // TODO: Might be worth to relax this limitation. It just needs to turn the
-                            //      source -> fileData relationship to something like source -> List<FileData>).
-                            _logger.LogError("[{buildFilePath}, {worker}] File {file} is getting handled by several workers.", file.FullName, worker.GetType().FullName, file);
-                            return -1;
-                        }
-
                         isProcessed = true;
 
                         (FileMapping fileMap, FileMetadata fileMetadata)[] layoutResultArray = layoutResult.LayoutDataEnumerable.ToArray();
@@ -261,6 +253,9 @@ namespace ReleaseTool.Core
                             _logger.LogTrace("[{buildFilePath}, {worker}, {layoutInd}: {srcPath} -> {dstPath}, {fileMetadata}] adding layout to release data.", file.FullName, worker.GetType().FullName, i, srcPath, dstPath, fileMetadata);
                             _filesToRelease.Add(new FileReleaseData(fileMap, fileMetadata));
                         }
+
+                        // Skip remaining layout workers
+                        break;
                     }
                 }
 

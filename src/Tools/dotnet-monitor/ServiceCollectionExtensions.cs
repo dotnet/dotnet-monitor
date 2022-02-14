@@ -185,6 +185,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
+        public static IServiceCollection ConfigureDiagnosticPort(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<DiagnosticPortOptions>(configuration.GetSection(ConfigurationKeys.DiagnosticPort));
+            services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
+            services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
+
+            return services;
+        }
+
         private static IServiceCollection RegisterProvider<TOptions, TProvider>(this IServiceCollection services, string name)
             where TProvider : class, IEgressProvider<TOptions>
             where TOptions : class

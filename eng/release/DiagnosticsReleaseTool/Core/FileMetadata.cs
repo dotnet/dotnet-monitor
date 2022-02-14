@@ -7,6 +7,7 @@ namespace ReleaseTool.Core
         Blob,
         Nuget,
         SymbolPackage,
+        Checksum,
         Unknown
     }
 
@@ -66,6 +67,7 @@ namespace ReleaseTool.Core
             FileClass.Blob => "BlobAssets",
             FileClass.Nuget => "NugetAssets",
             FileClass.SymbolPackage => "SymbolNugetAssets",
+            FileClass.Checksum => "ChecksumAssets",
             FileClass.Unknown => "UnknownAssets",
             _ => "UnknownAssets"
         };
