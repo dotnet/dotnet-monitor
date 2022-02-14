@@ -11,28 +11,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     internal class ShowSourcesTestsConstants
     {
-        public const string SimplifiedDiagnosticPort = "SimplifiedDiagnosticPort";
-        public const string FullDiagnosticPort = "FullDiagnosticPort";
+        public const string IntervalSecondsValue = "2";
+        public const string ProcessIDValue = "12345";
+        public const string DiagnosticPortValue = "\\\\.\\pipe\\dotnet-monitor-pipe";
+
         public const string DiagnosticPort = nameof(RootOptions.DiagnosticPort);
         public const string EndpointName = $"{nameof(RootOptions.DiagnosticPort)}:{nameof(DiagnosticPortOptions.EndpointName)}";
         public const string ConnectionMode = $"{nameof(RootOptions.DiagnosticPort)}:{nameof(DiagnosticPortOptions.ConnectionMode)}";
+        public const string IntervalSeconds = $"{nameof(RootOptions.GlobalCounter)}:{nameof(GlobalCounterOptions.IntervalSeconds)}";
+        public const string FiltersKey = $"{nameof(RootOptions.DefaultProcess)}:{nameof(ProcessFilterOptions.Filters)}:0:{nameof(ProcessFilterDescriptor.Key)}";
+        public const string FiltersValue = $"{nameof(RootOptions.DefaultProcess)}:{nameof(ProcessFilterOptions.Filters)}:0:{nameof(ProcessFilterDescriptor.Value)}";
 
-   
         public static readonly Dictionary<string, string> DefaultProcess_EnvironmentVariables = new(StringComparer.Ordinal)
         {
-            { "DefaultProcess:Filters:0:Key", "ProcessID" },
-            { "DefaultProcess:Filters:0:Value", "12345" }
+            { FiltersKey, nameof(ProcessKey.ProcessId) },
+            { FiltersValue, ProcessIDValue }
         };
 
         public static readonly Dictionary<string, string> DiagnosticPort_EnvironmentVariables = new(StringComparer.Ordinal)
         {
             { ConnectionMode, nameof(DiagnosticPortConnectionMode.Listen) },
-            { EndpointName, "\\\\.\\pipe\\dotnet-monitor-pipe" }
+            { EndpointName, DiagnosticPortValue }
         };
 
         public static readonly Dictionary<string, string> GlobalCounter_EnvironmentVariables = new(StringComparer.Ordinal)
         {
-            { "GlobalCounter:IntervalSeconds", "2" },
+            { IntervalSeconds, IntervalSecondsValue },
         };
     }
 }

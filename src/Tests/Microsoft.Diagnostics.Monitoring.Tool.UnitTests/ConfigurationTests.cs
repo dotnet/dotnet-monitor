@@ -211,8 +211,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact)));
         }
 
-
-
         /// <summary>
         /// This is a full configuration test that lists the configuration provider source for each piece of config.
         /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
@@ -265,9 +263,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact, showSources: true)));
         }
-
-
-
 
         /// <summary>
         /// Tests that the connection mode is set correctly for various configurations of the diagnostic port
