@@ -1,4 +1,4 @@
 {
-  "ConnectionMode": "Listen",
-  "EndpointName": "\\\\.\\pipe\\dotnet-monitor-pipe"
+  "ConnectionMode": "Listen" /*Microsoft.Extensions.Configuration.ChainedConfigurationProvider*/,
+  "EndpointName": "\\\\.\\pipe\\dotnet-monitor-pipe" /*Microsoft.Extensions.Configuration.ChainedConfigurationProvider*/
 }

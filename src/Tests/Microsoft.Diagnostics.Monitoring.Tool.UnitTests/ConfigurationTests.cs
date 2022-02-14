@@ -247,10 +247,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
             File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("SharedSettingsConfigurations"));
 
-            // This is a key-per-file file in the shared configuration directory. This configuration
-            // is typically used when mounting secrets from a Docker volume.
-            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, WebHostDefaults.ServerUrlsKey), nameof(ConfigurationLevel.SharedKeyPerFile));
-
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
 
@@ -265,7 +261,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
-            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact);
+            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact, showSources: true);
 
             Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact, showSources: true)));
         }
@@ -365,6 +361,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact);
 
             using var stream = new MemoryStream();
+
+            var options = new JsonReaderOptions
+            {
+                CommentHandling = JsonCommentHandling.Allow
+            };
+
             using var writer = new Utf8JsonWriter(stream);
 
             writer.WriteStartObject();
@@ -379,7 +381,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string expectedPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), directoryNameLocation, fileName);
 
-                    writer.WriteRawValue(File.ReadAllText(expectedPath));
+                    writer.WriteRawValue(File.ReadAllText(expectedPath), skipInputValidation: true);
                 }
                 else
                 {

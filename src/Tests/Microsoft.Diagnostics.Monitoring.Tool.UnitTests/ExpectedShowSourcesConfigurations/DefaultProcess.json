@@ -1,8 +1,8 @@
 {
   "Filters": [
     {
-      "Key": "ProcessID",
-      "Value": "12345"
+      "Key": "ProcessID" /*Microsoft.Extensions.Configuration.ChainedConfigurationProvider*/,
+      "Value": "12345" /*Microsoft.Extensions.Configuration.ChainedConfigurationProvider*/
     }
   ]
 }
