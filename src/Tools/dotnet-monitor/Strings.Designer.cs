@@ -493,6 +493,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show loaded configuration providers from high to low priority.
+        /// </summary>
+        internal static string HelpDescription_OptionShowSources {
+            get {
+                return ResourceManager.GetString("HelpDescription_OptionShowSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generates a new MonitorApiKey for each launch of the process..
         /// </summary>
         internal static string HelpDescription_OptionTempApiKey {
@@ -1024,6 +1033,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configuration Providers (High to Low Priority):.
+        /// </summary>
+        internal static string Message_ShowSources {
+            get {
+                return ResourceManager.GetString("Message_ShowSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to send message to the queue {0}..
         /// </summary>
         internal static string Message_WritingMessageToQueueFailed {
@@ -1031,7 +1049,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
                 return ResourceManager.GetString("Message_WritingMessageToQueueFailed", resourceCulture);
             }
         }
-        
+                
         /// <summary>
         ///   Looks up a localized string similar to :NOT PRESENT:.
         /// </summary>

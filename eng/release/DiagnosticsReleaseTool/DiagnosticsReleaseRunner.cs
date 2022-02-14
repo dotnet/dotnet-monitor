@@ -8,7 +8,6 @@ using ReleaseTool.Core;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace DiagnosticsReleaseTool.Impl
 {
@@ -16,7 +15,7 @@ namespace DiagnosticsReleaseTool.Impl
     {
         internal const string ManifestName = "publishManifest.json";
 
-        internal async static Task<int> PrepareRelease(Config releaseConfig, bool verbose, CancellationToken ct)
+        internal async static Task<int> PrepareRelease(Config releaseConfig, bool verbose, bool dryRun, CancellationToken ct)
         {
             // TODO: This will throw if invalid drop path is given.
             var darcLayoutHelper = new DarcHelpers(releaseConfig.DropPath);
@@ -26,11 +25,12 @@ namespace DiagnosticsReleaseTool.Impl
             var layoutWorkerList = new List<ILayoutWorker>
             {
                 // TODO: We may want to inject a logger.
-                new NugetLayoutWorker(stagingPath: releaseConfig.StagingDirectory.FullName),
+                new NugetLayoutWorker(stagingPath: releaseConfig.StagingDirectory.FullName, DarcHelpers.IsNuGetPackage),
                 new SymbolPackageLayoutWorker(stagingPath: releaseConfig.StagingDirectory.FullName),
-                new SkipLayoutWorker(
-                    shouldHandleFileFunc: DiagnosticsRepoHelpers.IsDockerUtilityFile
-                )
+                new ChecksumLayoutWorker(stagingPath: releaseConfig.StagingDirectory.FullName),
+                new SkipLayoutWorker(shouldHandleFileFunc: DiagnosticsRepoHelpers.IsDockerUtilityFile),
+                // This should always be last since it will accept any file
+                new BlobLayoutWorker(stagingPath: releaseConfig.StagingDirectory.FullName)
             };
 
             var verifierList = new List<IReleaseVerifier> { };
@@ -46,7 +46,9 @@ namespace DiagnosticsReleaseTool.Impl
             DirectoryInfo basePublishDirectory = darcLayoutHelper.GetShippingDirectoryForSingleProjectVariants(DiagnosticsRepoHelpers.ProductNames);
             string publishManifestPath = Path.Combine(releaseConfig.StagingDirectory.FullName, ManifestName);
 
-            IPublisher releasePublisher = new AzureBlobBublisher(releaseConfig.AccountName, releaseConfig.AccountKey, releaseConfig.ContainerName, releaseConfig.ReleaseName, releaseConfig.SasValidDays, logger);
+            IPublisher releasePublisher = dryRun ?
+                new SkipPublisher() :
+                new AzureBlobBublisher(releaseConfig.AccountName, releaseConfig.AccountKey, releaseConfig.ContainerName, releaseConfig.ReleaseName, releaseConfig.SasValidDays, logger);
             IManifestGenerator manifestGenerator = new DiagnosticsManifestGenerator(releaseMetadata, releaseConfig.ToolManifest, logger);
 
             using var diagnosticsRelease = new Release(

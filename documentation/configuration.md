@@ -188,6 +188,12 @@ The output of the command should resemble the following JSON object:
 }
 ```
 
+To view the loaded configuration providers, run the following command:
+
+```cmd
+dotnet monitor config show --show-sources
+```
+
 ## Diagnostic Port Configuration
 
 `dotnet monitor` communicates via .NET processes through their diagnostic port. In the default configuration, .NET processes listen on a platform native transport (named pipes on Windows/Unix-domain sockets on \*nix) in a well-known location.
@@ -195,6 +201,12 @@ The output of the command should resemble the following JSON object:
 ### Connection Mode
 
 It is possible to change this behavior and have .NET processes connect to `dotnet monitor`. This allow you to monitor a process from start and collect traces for events such as assembly load events that primarily occur at process startup and weren't possible to collect previously.
+
+```json
+  "DiagnosticPort": "\\\\.\\pipe\\dotnet-monitor-pipe"
+```
+
+Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded format. In the event of conflicting configuration, the simplified format will take priority over the expanded format.
 
 ```json
   "DiagnosticPort": {
