@@ -47,7 +47,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // Handler
                     CommandHandler.Create(ConfigShowCommandHandler.Invoke),
                     SharedOptions(),
-                    ConfigLevel()
+                    ConfigLevel(),
+                    ShowSources()
                 }
             };
 
@@ -129,6 +130,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 description: Strings.HelpDescription_OptionLevel)
             {
                 Argument = new Argument<ConfigDisplayLevel>(name: "level", getDefaultValue: () => ConfigDisplayLevel.Redacted)
+            };
+
+        private static Option ShowSources() =>
+            new Option(
+                alias: "--show-sources",
+                description: Strings.HelpDescription_OptionShowSources)
+            {
+                Argument = new Argument<bool>(name: "showSources", getDefaultValue: () => false)
             };
 
         public static Task<int> Main(string[] args)
