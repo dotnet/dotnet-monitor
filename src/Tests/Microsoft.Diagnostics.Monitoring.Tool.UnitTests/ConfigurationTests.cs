@@ -190,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("SampleConfigurations"));
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson());
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -235,15 +235,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("UserSettingsConfigurations"));
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(new() { "Authentication.json", "CollectionRules.json", "Egress.json"}));
 
             // This is the appsettings.json file that is normally next to the entrypoint assembly.
             // The location of the appsettings.json is determined by the content root in configuration.
-            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson("AppSettingsConfigurations"));
+            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson(new() { "Storage.json", "URLs.json" }));
 
             // This is the settings.json file in the shared configuration directory that is visible
             // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
-            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("SharedSettingsConfigurations"));
+            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson(new() { "Logging.json", "Metrics.json" }));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -330,19 +330,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
-        private string ConstructSettingsJson(string configDirectoryLocation)
+        private string ConstructSettingsJson(List<string> permittedFileNames = null)
         {
-            string[] fileNames = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), configDirectoryLocation));
+            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations"));
 
             IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
 
-            foreach (var fileName in fileNames)
+            foreach (var filePath in filePaths)
             {
-                IDictionary<string, JsonElement> deserializedFile = JsonSerializer.Deserialize<IDictionary<string, JsonElement>>(File.ReadAllText(fileName));
-
-                foreach ((string key, JsonElement element) in deserializedFile)
+                if (null == permittedFileNames || !permittedFileNames.Any() || permittedFileNames.Contains(Path.GetFileName(filePath)))
                 {
-                    combinedFiles.Add(key, element);
+                    IDictionary<string, JsonElement> deserializedFile = JsonSerializer.Deserialize<IDictionary<string, JsonElement>>(File.ReadAllText(filePath));
+
+                    foreach ((string key, JsonElement element) in deserializedFile)
+                    {
+                        combinedFiles.Add(key, element);
+                    }
                 }
             }
 
@@ -356,11 +359,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact);
 
             using var stream = new MemoryStream();
-
-            var options = new JsonReaderOptions
-            {
-                CommentHandling = JsonCommentHandling.Allow
-            };
 
             using var writer = new Utf8JsonWriter(stream);
 

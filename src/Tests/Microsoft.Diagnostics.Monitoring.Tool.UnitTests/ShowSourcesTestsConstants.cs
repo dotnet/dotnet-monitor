@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     internal class ShowSourcesTestsConstants
     {
         public const string IntervalSecondsValue = "2";
-        public const string ProcessIDValue = "12345";
+        public const string ProcessIdValue = "12345";
         public const string DiagnosticPortValue = "\\\\.\\pipe\\dotnet-monitor-pipe";
 
         public const string DiagnosticPort = nameof(RootOptions.DiagnosticPort);
@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public static readonly Dictionary<string, string> DefaultProcess_EnvironmentVariables = new(StringComparer.Ordinal)
         {
             { FiltersKey, nameof(ProcessKey.ProcessId) },
-            { FiltersValue, ProcessIDValue }
+            { FiltersValue, ProcessIdValue }
         };
 
         public static readonly Dictionary<string, string> DiagnosticPort_EnvironmentVariables = new(StringComparer.Ordinal)
