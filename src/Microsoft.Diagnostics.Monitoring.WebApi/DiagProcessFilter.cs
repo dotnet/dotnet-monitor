@@ -74,6 +74,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static DiagProcessFilterEntry TransformDescriptor(ProcessFilterDescriptor processFilterDescriptor)
         {
+            if (!string.IsNullOrEmpty(processFilterDescriptor.ProcessId))
+            {
+                return new DiagProcessFilterEntry { Criteria = DiagProcessFilterCriteria.ProcessId, MatchType = DiagProcessFilterMatchType.Exact, Value = processFilterDescriptor.ProcessId };
+            }
+            else if (!string.IsNullOrEmpty(processFilterDescriptor.ProcessName))
+            {
+                return new DiagProcessFilterEntry
+                {
+                    Criteria = DiagProcessFilterCriteria.ProcessName,
+                    MatchType = (processFilterDescriptor.MatchType == ProcessFilterType.Exact) ? DiagProcessFilterMatchType.Exact : DiagProcessFilterMatchType.Contains,
+                    Value = processFilterDescriptor.ProcessName
+                };
+            }
+            else if (!string.IsNullOrEmpty(processFilterDescriptor.ProcessName))
+            {
+                return new DiagProcessFilterEntry
+                {
+                    Criteria = DiagProcessFilterCriteria.CommandLine,
+                    MatchType = (processFilterDescriptor.MatchType == ProcessFilterType.Exact) ? DiagProcessFilterMatchType.Exact : DiagProcessFilterMatchType.Contains,
+                    Value = processFilterDescriptor.CommandLine
+                };
+            }
+
             switch (processFilterDescriptor.Key)
             {
                 case ProcessFilterKey.ProcessId:

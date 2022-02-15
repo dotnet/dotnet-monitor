@@ -64,5 +64,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_MatchType))]
         [DefaultValue(ProcessFilterType.Exact)]
         public ProcessFilterType MatchType { get; set; } = ProcessFilterType.Exact;
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_ProcessName))]
+        public string ProcessName { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_ProcessId))]
+        public string ProcessId { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine))]
+        public string CommandLine { get; set; }
+
     }
 }
