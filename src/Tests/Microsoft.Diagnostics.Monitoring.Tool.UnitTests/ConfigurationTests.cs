@@ -234,12 +234,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 UserConfigDirectory = userConfigDir.FullName
             };
 
+            settings.Urls = new[] { "https://localhost:44444" }; // This corresponds to the value in SampleConfigurations/URLs.json
+
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(new() { "Authentication.json", "CollectionRules.json", "Egress.json"}));
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(new() { "Egress.json", "CollectionRules.json"}));
 
             // This is the appsettings.json file that is normally next to the entrypoint assembly.
             // The location of the appsettings.json is determined by the content root in configuration.
-            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson(new() { "Storage.json", "URLs.json" }));
+            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson(new() { "Storage.json", "Authentication.json" } ));
 
             // This is the settings.json file in the shared configuration directory that is visible
             // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
@@ -358,13 +360,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact);
 
-            using var stream = new MemoryStream();
+            string directoryNameLocation = showSources ? "ExpectedShowSourcesConfigurations" : "ExpectedConfigurations";
 
+            using var stream = new MemoryStream();
             using var writer = new Utf8JsonWriter(stream);
 
             writer.WriteStartObject();
-
-            string directoryNameLocation = showSources ? "ExpectedShowSourcesConfigurations" : "ExpectedConfigurations";
 
             foreach (var key in OrderedConfigurationKeys)
             {

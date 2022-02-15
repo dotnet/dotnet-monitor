@@ -1,1 +1,1 @@
-"https://localhost:44444"/*JsonConfigurationProvider for 'appsettings.json' (Optional)*/
+"https://localhost:44444"/*Microsoft.Extensions.Configuration.ChainedConfigurationProvider*/
