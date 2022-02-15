@@ -51,18 +51,6 @@
     <None Update="ExpectedShowSourcesConfigurations\URLs.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="UserSettingsConfigurations\Authentication.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="UserSettingsConfigurations\CollectionRules.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="SharedSettingsConfigurations\Logging.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="SharedSettingsConfigurations\Metrics.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="ExpectedConfigurations\AuthenticationFull.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -108,12 +96,6 @@
     <None Update="DiagnosticPortConfigurations\SimplifiedListen.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="AppSettingsConfigurations\Storage.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="AppSettingsConfigurations\URLs.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="SampleConfigurations\Authentication.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -142,9 +124,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SampleConfigurations\URLs.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="UserSettingsConfigurations\Egress.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
