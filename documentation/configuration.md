@@ -436,7 +436,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 #### azureBlobStorage Queue Message Format
 
-The Queue Message's payload will be the name of the artifact that is being egressed to blob storage. This is designed to be easily integrated into an Azure Function that triggers whenever a new message is added to the queue, providing you with the contents of the artifact as a stream. See [Azure Blob storage input binding for Azure Functions]https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-input?tabs=csharp#connections) for an example.
+The Queue Message's payload will be the name of the artifact that is being egressed to blob storage. This is designed to be easily integrated into an Azure Function that triggers whenever a new message is added to the queue, providing you with the contents of the artifact as a stream. See [Azure Blob storage input binding for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-input?tabs=csharp#connections) for an example.
 
 ### Filesystem egress provider
 
