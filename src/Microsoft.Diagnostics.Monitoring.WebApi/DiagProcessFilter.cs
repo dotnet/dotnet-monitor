@@ -74,11 +74,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static DiagProcessFilterEntry TransformDescriptor(ProcessFilterDescriptor processFilterDescriptor)
         {
-            if (!string.IsNullOrEmpty(processFilterDescriptor.ProcessId))
+            if (!string.IsNullOrEmpty(processFilterDescriptor.ProcessId) || processFilterDescriptor.Key == ProcessFilterKey.ProcessId)
             {
                 return new DiagProcessFilterEntry { Criteria = DiagProcessFilterCriteria.ProcessId, MatchType = DiagProcessFilterMatchType.Exact, Value = processFilterDescriptor.ProcessId };
             }
-            else if (!string.IsNullOrEmpty(processFilterDescriptor.ProcessName))
+            else if (!string.IsNullOrEmpty(processFilterDescriptor.ProcessName) || processFilterDescriptor.Key == ProcessFilterKey.ProcessName)
             {
                 return new DiagProcessFilterEntry
                 {
@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     Value = processFilterDescriptor.ProcessName
                 };
             }
-            else if (!string.IsNullOrEmpty(processFilterDescriptor.ProcessName))
+            else if (!string.IsNullOrEmpty(processFilterDescriptor.CommandLine) || processFilterDescriptor.Key == ProcessFilterKey.CommandLine)
             {
                 return new DiagProcessFilterEntry
                 {
@@ -96,33 +96,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     Value = processFilterDescriptor.CommandLine
                 };
             }
-
-            switch (processFilterDescriptor.Key)
+            else
             {
-                case ProcessFilterKey.ProcessId:
-                    return new DiagProcessFilterEntry { Criteria = DiagProcessFilterCriteria.ProcessId, MatchType = DiagProcessFilterMatchType.Exact, Value = processFilterDescriptor.Value };
-                case ProcessFilterKey.ProcessName:
-                    return new DiagProcessFilterEntry
-                    {
-                        Criteria = DiagProcessFilterCriteria.ProcessName,
-                        MatchType = (processFilterDescriptor.MatchType == ProcessFilterType.Exact) ? DiagProcessFilterMatchType.Exact : DiagProcessFilterMatchType.Contains,
-                        Value = processFilterDescriptor.Value
-                    };
-                case ProcessFilterKey.CommandLine:
-                    return new DiagProcessFilterEntry
-                    {
-                        Criteria = DiagProcessFilterCriteria.CommandLine,
-                        MatchType = (processFilterDescriptor.MatchType == ProcessFilterType.Exact) ? DiagProcessFilterMatchType.Exact : DiagProcessFilterMatchType.Contains,
-                        Value = processFilterDescriptor.Value
-                    };
-                default:
-                    throw new ArgumentException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            Strings.ErrorMessage_UnexpectedType,
-                            nameof(ProcessFilterDescriptor),
-                            processFilterDescriptor.Key),
-                        nameof(processFilterDescriptor));
+                throw new ArgumentException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Strings.ErrorMessage_UnexpectedType,
+                        nameof(ProcessFilterDescriptor),
+                        processFilterDescriptor.Key),
+                    nameof(processFilterDescriptor));
             }
         }
     }
