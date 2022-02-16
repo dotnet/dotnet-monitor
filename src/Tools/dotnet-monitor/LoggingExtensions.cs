@@ -301,6 +301,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_GetEnvironmentVariable);
 
+        private static readonly Action<ILogger, Exception> _monitorApiKeyNotConfigured =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.MonitorApiKeyNotConfigured.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ApiKeyNotConfigured);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -543,6 +549,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void GettingEnvironmentVariable(this ILogger logger, string variableName, int processId)
         {
             _getEnvironmentVariable(logger, variableName, processId, null);
+        }
+
+        public static void MonitorApiKeyNotConfigured(this ILogger logger)
+        {
+            _monitorApiKeyNotConfigured(logger, null);
         }
     }
 }

@@ -49,7 +49,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private void CheckMonitorApiKeyOptions(MonitorApiKeyConfiguration options)
         {
-            // lets only print out messages if the user passed something into the API Key configuration
             if (options.Configured)
             {
                 if (null != options.ValidationErrors && options.ValidationErrors.Any())
@@ -60,6 +59,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     _logger.ApiKeyAuthenticationOptionsValidated();
                 }
+            }
+            else
+            {
+                _logger.MonitorApiKeyNotConfigured();
             }
         }
     }
