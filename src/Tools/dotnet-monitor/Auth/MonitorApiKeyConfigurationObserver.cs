@@ -49,14 +49,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private void CheckMonitorApiKeyOptions(MonitorApiKeyConfiguration options)
         {
-            // ValidationErrors will be null if API key authentication is not enabled.
-            if (null != options.ValidationErrors && options.ValidationErrors.Any())
+            // lets only print out messages if the user passed something into the API Key configuration
+            if (options.Configured)
             {
-                _logger.ApiKeyValidationFailures(options.ValidationErrors);
-            }
-            else
-            {
-                _logger.ApiKeyAuthenticationOptionsValidated();
+                if (null != options.ValidationErrors && options.ValidationErrors.Any())
+                {
+                    _logger.ApiKeyValidationFailures(options.ValidationErrors);
+                }
+                else
+                {
+                    _logger.ApiKeyAuthenticationOptionsValidated();
+                }
             }
         }
     }
