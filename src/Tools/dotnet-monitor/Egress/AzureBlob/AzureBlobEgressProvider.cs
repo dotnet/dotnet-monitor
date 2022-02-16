@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 if (CheckQueueEgressOptions(options))
                 {
-                    await EgressMessageToQueue(blobUriString, options, token);
+                    await EgressMessageToQueue(artifactSettings.Name, options, token);
                 }
 
                 return blobUriString;
@@ -169,7 +169,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             return queueUriBuilder.ToUri();
         }
 
-        private async Task EgressMessageToQueue(string blobUriString, AzureBlobEgressProviderOptions options, CancellationToken token)
+        private async Task EgressMessageToQueue(string artifactName, AzureBlobEgressProviderOptions options, CancellationToken token)
         {
             try
             {
@@ -177,7 +177,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 if (queueClient.Exists())
                 {
-                    queueClient.SendMessage(blobUriString);
+                    queueClient.SendMessage(artifactName);
                 }
                 else
                 {
@@ -196,6 +196,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
         private async Task<QueueClient> GetQueueClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
         {
+            QueueClientOptions clientOptions = new()
+            {
+                MessageEncoding = QueueMessageEncoding.Base64
+            };
+
             QueueServiceClient serviceClient;
             if (!string.IsNullOrWhiteSpace(options.SharedAccessSignature))
             {
@@ -204,7 +209,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     Query = options.SharedAccessSignature
                 };
 
-                serviceClient = new QueueServiceClient(serviceUriBuilder.Uri);
+                serviceClient = new QueueServiceClient(serviceUriBuilder.Uri, clientOptions);
             }
             else if (!string.IsNullOrEmpty(options.AccountKey))
             {
@@ -215,7 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     accountName,
                     options.AccountKey);
 
-                serviceClient = new QueueServiceClient(accountUri, credential);
+                serviceClient = new QueueServiceClient(accountUri, credential, clientOptions);
             }
             else
             {
