@@ -547,7 +547,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to API key authentication is not configured. See {0}.
+        ///   Looks up a localized string similar to API key authentication is not configured. See {0} for more details..
         /// </summary>
         internal static string LogFormatString_ApiKeyNotConfigured {
             get {
