@@ -380,6 +380,13 @@
 1 Format Parameter:
 1. apiAuthenticationConfigKey: The string key of ApiAuthentication object in configuration.</comment>
   </data>
+  <data name="LogFormatString_ApiKeyNotConfigured" xml:space="preserve">
+    <value>API key authentication is not configured. See {0} for more details.</value>
+    <comment>Gets the format string that is printed in the 56:MonitorApiKeyNotConfigured event.
+
+1 formattable parameter
+0. Culture LCID of the documentation link</comment>
+  </data>
   <data name="LogFormatString_ApiKeyOptionsChanged" xml:space="preserve">
     <value>The {configName} have changed, new values: Subject={subject}, PublicKey={publicKey}</value>
     <comment>Gets the format string that is printed in the 21:ApiKeyValidationFailure event.
