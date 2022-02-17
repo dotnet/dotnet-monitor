@@ -8,6 +8,7 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -301,6 +302,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_GetEnvironmentVariable);
 
+        private static readonly Action<ILogger, string, Exception> _monitorApiKeyNotConfigured =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.MonitorApiKeyNotConfigured.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ApiKeyNotConfigured);
+
         private static readonly Action<ILogger, string, Exception> _experienceSurvey =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.ExperienceSurvey.EventId(),
@@ -551,9 +558,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _getEnvironmentVariable(logger, variableName, processId, null);
         }
 
+        public static void MonitorApiKeyNotConfigured(this ILogger logger)
+        {
+            const long myFwLinkId = 2187444;
+            string fwLink = GetFwLinkWithCurrentLcidUri(myFwLinkId);
+            _monitorApiKeyNotConfigured(logger, fwLink, null);
+        }
+
         public static void ExperienceSurvey(this ILogger logger)
         {
             _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
+        }
+
+        private static string GetFwLinkWithCurrentLcidUri(long fwlinkId)
+        {
+            return string.Format(
+                CultureInfo.InvariantCulture,
+                @"https://go.microsoft.com/fwlink/?linkid={0}&clcid=0x{1:x}",
+                fwlinkId,
+                CultureInfo.CurrentUICulture.LCID);
         }
     }
 }

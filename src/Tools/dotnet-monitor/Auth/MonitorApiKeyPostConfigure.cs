@@ -36,6 +36,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             IList<ValidationResult> errors = new List<ValidationResult>();
 
+            // If nothing is set, lets not attach an error and instead pass along the blank config
+            if (sourceOptions.Subject == null && sourceOptions.PublicKey == null)
+            {
+                options.Configured = false;
+                options.Subject = null;
+                options.PublicKey = null;
+                return;
+            }
+
+            // Some options are configured (but may not be valid)
+            options.Configured = true;
+
             Validator.TryValidateObject(
                 sourceOptions,
                 new ValidationContext(sourceOptions, null, null),
