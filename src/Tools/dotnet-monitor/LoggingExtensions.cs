@@ -8,6 +8,7 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -301,8 +302,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_GetEnvironmentVariable);
 
-        private static readonly Action<ILogger, Exception> _monitorApiKeyNotConfigured =
-            LoggerMessage.Define(
+        private static readonly Action<ILogger, int, Exception> _monitorApiKeyNotConfigured =
+            LoggerMessage.Define<int>(
                 eventId: LoggingEventIds.MonitorApiKeyNotConfigured.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ApiKeyNotConfigured);
@@ -553,7 +554,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static void MonitorApiKeyNotConfigured(this ILogger logger)
         {
-            _monitorApiKeyNotConfigured(logger, null);
+            _monitorApiKeyNotConfigured(logger, CultureInfo.CurrentCulture.LCID, null);
         }
     }
 }

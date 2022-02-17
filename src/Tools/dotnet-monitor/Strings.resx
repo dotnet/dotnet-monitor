@@ -381,10 +381,11 @@
 1. apiAuthenticationConfigKey: The string key of ApiAuthentication object in configuration.</comment>
   </data>
   <data name="LogFormatString_ApiKeyNotConfigured" xml:space="preserve">
-    <value>API key authentication not configured. See https://aka.ms/dotnet-monitor-apikeydoc</value>
+    <value>API key authentication not configured. See https://go.microsoft.com/fwlink/?linkid=2187444&amp;clcid=0x{0:X3}</value>
     <comment>Gets the format string that is printed in the 56:MonitorApiKeyNotConfigured event.
 
-0 formattable parameters</comment>
+1 formattable parameter
+0. Culture LCID of the documentation link</comment>
   </data>
   <data name="LogFormatString_ApiKeyOptionsChanged" xml:space="preserve">
     <value>The {configName} have changed, new values: Subject={subject}, PublicKey={publicKey}</value>
