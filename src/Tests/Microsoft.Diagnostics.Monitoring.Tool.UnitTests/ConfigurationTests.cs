@@ -241,15 +241,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             settings.Urls = new[] { "https://localhost:44444" }; // This corresponds to the value in SampleConfigurations/URLs.json
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(new string[] { "Egress.json", "CollectionRules.json"}));
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("Egress.json", "CollectionRules.json"));
 
             // This is the appsettings.json file that is normally next to the entrypoint assembly.
             // The location of the appsettings.json is determined by the content root in configuration.
-            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson(new string[] { "Storage.json", "Authentication.json" } ));
+            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson("Storage.json", "Authentication.json"));
 
             // This is the settings.json file in the shared configuration directory that is visible
             // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
-            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson(new string[] { "Logging.json", "Metrics.json" }));
+            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("Logging.json", "Metrics.json"));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -336,7 +336,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
-        private string ConstructSettingsJson(string[] permittedFileNames = null)
+        private string ConstructSettingsJson(params string[] permittedFileNames)
         {
             string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations"));
 
@@ -344,7 +344,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             foreach (var filePath in filePaths)
             {
-                if (null == permittedFileNames || !permittedFileNames.Any() || permittedFileNames.Contains(Path.GetFileName(filePath)))
+                if (!permittedFileNames.Any() || permittedFileNames.Contains(Path.GetFileName(filePath)))
                 {
                     IDictionary<string, JsonElement> deserializedFile = JsonSerializer.Deserialize<IDictionary<string, JsonElement>>(File.ReadAllText(filePath));
 
