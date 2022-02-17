@@ -45,18 +45,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public List<ProcessFilterDescriptor> Filters { get; set; } = new List<ProcessFilterDescriptor>(0);
     }
 
-    public sealed class ProcessFilterDescriptor
+    public sealed partial class ProcessFilterDescriptor
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_Key))]
-        [Required]
-        public ProcessFilterKey Key { get;set; }
+        public ProcessFilterKey Key { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_Value))]
-        [Required]
         public string Value { get; set; }
 
         [Display(
@@ -80,5 +78,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine))]
         public string CommandLine { get; set; }
 
+    }
+
+    partial class ProcessFilterDescriptor : IValidatableObject
+    {
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        {
+            List<ValidationResult> results = new();
+
+            if (string.IsNullOrEmpty(CommandLine) && string.IsNullOrEmpty(ProcessId) && string.IsNullOrEmpty(ProcessName))
+            {
+                if (string.IsNullOrEmpty(Value))
+                {
+                    results.Add(new ValidationResult(
+                        string.Format(
+                            "RANDOM TESTING MESSAGE (FOR NOW)")));
+                }
+            }
+
+            return results;
+        }
     }
 }
