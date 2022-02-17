@@ -45,7 +45,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             {
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
-                BlobClient blobClient = containerClient.GetBlobClient(GetBlobName(options, artifactSettings));
+                string blobName = GetBlobName(options, artifactSettings);
+
+                BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
                 Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
                 using var stream = await action(token);
@@ -58,7 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 if (CheckQueueEgressOptions(options))
                 {
-                    await EgressMessageToQueue(artifactSettings.Name, options, token);
+                    await EgressMessageToQueue(blobName, options, token);
                 }
 
                 return blobUriString;
@@ -83,7 +85,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             {
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
-                BlockBlobClient blobClient = containerClient.GetBlockBlobClient(GetBlobName(options, artifactSettings));
+                string blobName = GetBlobName(options, artifactSettings);
+
+                BlockBlobClient blobClient = containerClient.GetBlockBlobClient(blobName);
 
                 // Write blob content
 
@@ -117,7 +121,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 if (CheckQueueEgressOptions(options))
                 {
-                    await EgressMessageToQueue(artifactSettings.Name, options, token);
+                    await EgressMessageToQueue(blobName, options, token);
                 }
 
                 return blobUriString;
@@ -169,7 +173,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             return queueUriBuilder.ToUri();
         }
 
-        private async Task EgressMessageToQueue(string artifactName, AzureBlobEgressProviderOptions options, CancellationToken token)
+        private async Task EgressMessageToQueue(string blobName, AzureBlobEgressProviderOptions options, CancellationToken token)
         {
             try
             {
@@ -177,7 +181,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 if (queueClient.Exists())
                 {
-                    queueClient.SendMessage(artifactName);
+                    queueClient.SendMessage(blobName);
                 }
                 else
                 {
