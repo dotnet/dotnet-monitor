@@ -554,7 +554,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static void MonitorApiKeyNotConfigured(this ILogger logger)
         {
-            _monitorApiKeyNotConfigured(logger, CultureInfo.CurrentCulture.LCID, null);
+            _monitorApiKeyNotConfigured(logger, CultureInfo.CurrentUICulture.LCID, null);
         }
     }
 }
