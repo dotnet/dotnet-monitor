@@ -143,7 +143,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             if (queueNameSet ^ queueAccountUriSet)
             {
-                Logger.LogWarning(Strings.Message_QueueOptionsPartiallySet);
+                Logger.QueueOptionsPartiallySet();
             }
 
             return queueNameSet && queueAccountUriSet;
@@ -181,30 +181,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 if (queueClient.Exists())
                 {
-                    queueClient.SendMessage(blobName);
+                    queueClient.SendMessage(Convert.ToBase64String(Encoding.UTF8.GetBytes(blobName)));
                 }
                 else
                 {
-                    Logger.LogWarning(string.Format(CultureInfo.CurrentCulture, Strings.Message_QueueDoesNotExist, options.QueueName));
+                    Logger.QueueDoesNotExist(options.QueueName);
                 }
             }
             catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)
             {
-                Logger.LogWarning(string.Format(CultureInfo.CurrentCulture, Strings.Message_WritingMessageToQueueFailed, options.QueueName));
+                Logger.WritingMessageToQueueFailed(options.QueueName, ex.GetBaseException());
             }
-            catch (RequestFailedException)
+            catch (RequestFailedException ex)
             {
-                Logger.LogWarning(string.Format(CultureInfo.CurrentCulture, Strings.Message_WritingMessageToQueueFailed, options.QueueName));
+                Logger.WritingMessageToQueueFailed(options.QueueName, ex);
             }
         }
 
         private async Task<QueueClient> GetQueueClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
         {
-            QueueClientOptions clientOptions = new()
-            {
-                MessageEncoding = QueueMessageEncoding.Base64
-            };
-
             QueueServiceClient serviceClient;
             if (!string.IsNullOrWhiteSpace(options.SharedAccessSignature))
             {
@@ -213,7 +208,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     Query = options.SharedAccessSignature
                 };
 
-                serviceClient = new QueueServiceClient(serviceUriBuilder.Uri, clientOptions);
+                serviceClient = new QueueServiceClient(serviceUriBuilder.Uri);
             }
             else if (!string.IsNullOrEmpty(options.AccountKey))
             {
@@ -224,7 +219,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     accountName,
                     options.AccountKey);
 
-                serviceClient = new QueueServiceClient(accountUri, credential, clientOptions);
+                serviceClient = new QueueServiceClient(accountUri, credential);
             }
             else
             {

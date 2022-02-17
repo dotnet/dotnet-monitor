@@ -301,6 +301,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_GetEnvironmentVariable);
 
+        private static readonly Action<ILogger, string, Exception> _queueDoesNotExist =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.QueueDoesNotExist.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_QueueDoesNotExist);
+
+        private static readonly Action<ILogger, Exception> _queueOptionsPartiallySet =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.QueueOptionsPartiallySet.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_QueueOptionsPartiallySet);
+
+        private static readonly Action<ILogger, string, Exception> _writingMessageToQueueFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.WritingMessageToQueueFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_WritingMessageToQueueFailed);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -543,6 +561,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void GettingEnvironmentVariable(this ILogger logger, string variableName, int processId)
         {
             _getEnvironmentVariable(logger, variableName, processId, null);
+        }
+
+        public static void QueueDoesNotExist(this ILogger logger, string queueName)
+        {
+            _queueDoesNotExist(logger, queueName, null);
+        }
+
+        public static void QueueOptionsPartiallySet(this ILogger logger)
+        {
+            _queueOptionsPartiallySet(logger, null);
+        }
+
+        public static void WritingMessageToQueueFailed(this ILogger logger, string queueName, Exception ex)
+        {
+            _writingMessageToQueueFailed(logger, queueName, ex);
         }
     }
 }
