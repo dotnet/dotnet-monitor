@@ -381,7 +381,7 @@
 1. apiAuthenticationConfigKey: The string key of ApiAuthentication object in configuration.</comment>
   </data>
   <data name="LogFormatString_ApiKeyNotConfigured" xml:space="preserve">
-    <value>API key authentication not configured. See https://go.microsoft.com/fwlink/?linkid=2187444&amp;clcid=0x{0:X3}</value>
+    <value>API key authentication is not configured. See {0}</value>
     <comment>Gets the format string that is printed in the 56:MonitorApiKeyNotConfigured event.
 
 1 formattable parameter

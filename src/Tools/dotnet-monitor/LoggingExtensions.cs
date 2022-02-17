@@ -302,8 +302,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_GetEnvironmentVariable);
 
-        private static readonly Action<ILogger, int, Exception> _monitorApiKeyNotConfigured =
-            LoggerMessage.Define<int>(
+        private static readonly Action<ILogger, string, Exception> _monitorApiKeyNotConfigured =
+            LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.MonitorApiKeyNotConfigured.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ApiKeyNotConfigured);
@@ -554,7 +554,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static void MonitorApiKeyNotConfigured(this ILogger logger)
         {
-            _monitorApiKeyNotConfigured(logger, CultureInfo.CurrentUICulture.LCID, null);
+            const long myFwLinkId = 2187444;
+            string fwLink = GetFwLinkWithCurrentLcidUri(myFwLinkId);
+            _monitorApiKeyNotConfigured(logger, fwLink, null);
+        }
+
+        private static string GetFwLinkWithCurrentLcidUri(long fwlinkId)
+        {
+            return string.Format(
+                CultureInfo.InvariantCulture,
+                @"https://go.microsoft.com/fwlink/?linkid={0}&clcid=0x{1:x}",
+                fwlinkId,
+                CultureInfo.CurrentUICulture.LCID);
         }
     }
 }
