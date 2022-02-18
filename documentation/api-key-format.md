@@ -37,14 +37,14 @@ When using the `generatekey` command, the `sub` field will be a randomly-generat
 ```
 
 ### Signature
-JSON web tokens may be cryptographically signed; `dotnet monitor` requires all tokens to be signed and supports `RSA PKCS1` and `ECDSA` signed tokens, these are tokens with `RS*` and `ES*` as `alg` values. `dotnet monitor` needs the public key portion of this cryptographic material in order to validate the token. See the [Providing a Public Key](#providing-a-public-key) section for information on how to encode a key.
+JSON web tokens may be cryptographically signed; `dotnet monitor` **requires all** tokens to be signed and supports `RSA PKCS1 v1.5` and `ECDSA` signed tokens, these are tokens with `RS*` and `ES*` as `alg` values. `dotnet monitor` needs the public key portion of this cryptographic material in order to validate the token. See the [Providing a Public Key](#providing-a-public-key) section for information on how to encode a key.
 
 ## Providing a Public Key
 
 The public key is provided to `dotnet monitor` as a JSON Web Key or JWK, as defined by [RFC 7517: JSON Web Key (JWK)](https://www.rfc-editor.org/rfc/rfc7517.html). This key must be serialized as JSON and then Base64 URL encoded into a single string.
 
 `dotnet monitor` imposes the following constraints on JWKs:
-- The key should **not** have private key data. The key is only used for signature verification, and thus private key parameters are not needed. A warning message will be shown if the private key data is included.
+- The key **should not** have private key data. The key is only used for signature verification, and thus private key parameters are not needed. A warning message will be shown if the private key data is included.
 - The `kty` (or [Key Type](https://www.rfc-editor.org/rfc/rfc7517.html#section-4.1)) must be `RSA` for a RSA public key or `EC` for an elliptic-curve public key.
 
 The key used for the token in this example is:
