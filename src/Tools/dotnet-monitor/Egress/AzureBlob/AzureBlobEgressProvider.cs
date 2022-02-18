@@ -188,11 +188,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     Logger.QueueDoesNotExist(options.QueueName);
                 }
             }
-            catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)
-            {
-                Logger.WritingMessageToQueueFailed(options.QueueName, ex.GetBaseException());
-            }
-            catch (RequestFailedException ex)
+            catch (Exception ex)
             {
                 Logger.WritingMessageToQueueFailed(options.QueueName, ex);
             }
