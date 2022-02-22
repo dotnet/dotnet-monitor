@@ -1,6 +1,6 @@
 # Configuring API Key Authentication
 
-The API Key you use to secure `dotnet monitor` is a secret Json Web Token (JWT), cryptographically signed by a public/private key algorithm. You can **[Recommended]** use the integrated command to generate a key  or you can generate the key yourself following the [format documented here](./api-key-format.md). This guide will use the integrated command.
+The API Key you use to secure `dotnet monitor` is a secret Json Web Token (JWT), cryptographically signed by a public/private key algorithm. You can **[Recommended]** use the integrated command to generate a key or you can generate the key yourself following the [format, documented here](./api-key-format.md). This guide will use the integrated command.
 
 ## 1. Using the integrated `generatekey` command
 
@@ -11,6 +11,8 @@ Run the command:
 ```
 
 The output from this command will display the API key (a bearer JWT token) formatted as an `Authorization` header along with its corresponding configuration for `dotnet monitor`. You will need to store the `Subject` and `PublicKey` in the configuration for `dotnet monitor` and use the `Authorization` header value when making requests to the `dotnet monitor` HTTPS endpoint.
+
+>**Note:** The `Authorization` header value is the string `Bearer` (representing the type) + the JWT, separated by a space. In some applications (like Postman) have you fill in the `Authorization` header type in a separate field from the JWT.
 
 ```yaml
 Generated ApiKey for dotnet-monitor; use the following header for authorization:
@@ -124,7 +126,7 @@ When using API Key authentication, you must fill in the `Authorization` header i
 
 A valid authorization header value will look like this:
 
-```http
+```text
 Bearer eyJhbGciOiJFUffffffffffffCI6IkpXVCJ9.eyJhdWQiOiJodffffffffffffGh1Yi5jb20vZG90bmV0L2RvdG5ldC1tb25pdG9yIiwiaXNzIjoiaHR0cHM6Ly9naXRodWIuY29tL2RvdG5ldC9kb3RuZXQtbW9uaXRvci9nZW5lcmF0ZWtleStNb25pdG9yQXBpS2V5Iiwic3ViIjoiYWU1NDczYjYtOGRhZC00OThkLWI5MTUtNTNiOWM2ODQwMDBlIn0.RZffffffffffff_yIyApvFKcxFpDJ65HJZek1_dt7jCTCMEEEffffffffffffR08OyhZZHs46PopwAsf_6fdTLKB1UGvLr95volwEwIFnHjdvMfTJ9ffffffffffffAU
 ```
 
