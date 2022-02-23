@@ -1099,6 +1099,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A value is required for the process filter..
+        /// </summary>
+        public static string ErrorMessage_FilterValueMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FilterValueMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field or the {1} field is required..
         /// </summary>
         public static string ErrorMessage_TwoFieldsMissing {

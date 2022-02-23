@@ -583,4 +583,8 @@
     <value>Performs a match based on the name of a process on the system.</value>
     <comment>The description provided for the ProcessName parameter on ProcessFilterDescriptor.</comment>
   </data>
+  <data name="ErrorMessage_FilterValueMissing" xml:space="preserve">
+    <value>A value is required for the process filter.</value>
+    <comment>Gets the format string for rejecting validation due to no value being provided for a process filter.</comment>
+  </data>
 </root>
