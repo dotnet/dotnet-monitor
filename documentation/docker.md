@@ -8,14 +8,17 @@ In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is
 
 | Version | Platform | Architecture | Link |
 |---|---|---|---|
-| 6.0 (Current) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/6.0/alpine/amd64/Dockerfile |
+| 7.0 (Preview) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/7.0/alpine/amd64/Dockerfile |
+| 6.1 (Current, Latest) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/6.1/alpine/amd64/Dockerfile |
+| 6.0 | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/6.0/alpine/amd64/Dockerfile |
 
 ### Nightly Dockerfiles
 
 | Version | Platform | Architecture | Link |
 |---|---|---|---|
-| 7.0 (Preview) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/alpine/amd64/Dockerfile |
-| 6.0 (Current) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.0/alpine/amd64/Dockerfile |
+| 7.0 (Preview, Latest) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/alpine/amd64/Dockerfile |
+| 6.1 (Current) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.1/alpine/amd64/Dockerfile |
+| 6.0 | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.0/alpine/amd64/Dockerfile |
 
 ## Image Repositories
 
