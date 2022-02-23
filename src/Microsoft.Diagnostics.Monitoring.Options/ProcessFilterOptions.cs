@@ -77,7 +77,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine))]
         public string CommandLine { get; set; }
-
     }
 
     partial class ProcessFilterDescriptor : IValidatableObject
@@ -86,10 +85,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             List<ValidationResult> results = new();
 
-            // TODO: Make sure this behavior is what we want (i.e. do we want to enforce that a value is there, or is an empty string accepted?)
-            if (string.IsNullOrEmpty(CommandLine) && string.IsNullOrEmpty(ProcessId) && string.IsNullOrEmpty(ProcessName))
+            if (string.IsNullOrWhiteSpace(CommandLine) && string.IsNullOrWhiteSpace(ProcessId) && string.IsNullOrWhiteSpace(ProcessName))
             {
-                if (string.IsNullOrEmpty(Value))
+                if (string.IsNullOrWhiteSpace(Value))
                 {
                     results.Add(new ValidationResult(
                         string.Format(OptionsDisplayStrings.ErrorMessage_FilterValueMissing)));
