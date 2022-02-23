@@ -86,13 +86,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             List<ValidationResult> results = new();
 
+            // TODO: Make sure this behavior is what we want (i.e. do we want to enforce that a value is there, or is an empty string accepted?)
             if (string.IsNullOrEmpty(CommandLine) && string.IsNullOrEmpty(ProcessId) && string.IsNullOrEmpty(ProcessName))
             {
                 if (string.IsNullOrEmpty(Value))
                 {
                     results.Add(new ValidationResult(
-                        string.Format(
-                            "RANDOM TESTING MESSAGE (FOR NOW)")));
+                        string.Format(OptionsDisplayStrings.ErrorMessage_FilterValueMissing)));
                 }
             }
 
