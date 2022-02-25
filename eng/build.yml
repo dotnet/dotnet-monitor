@@ -12,6 +12,16 @@ parameters:
   dependsOn: ''
   # Flag to determine if files should be signed and published
   signAndPublishArtifacts: false
+  # TFMs for which test results are uploaded
+  testResultTfms:
+  - key: netcoreapp3.1
+    value: Core 3.1
+  - key: net5.0
+    value: .NET 5
+  - key: net6.0
+    value: .NET 6
+  - key: net7.0
+    value: .NET 7
 
 jobs:
 - template: /eng/common/templates/job/job.yml
@@ -146,47 +156,20 @@ jobs:
       condition: succeeded()
 
     # # Publish test results to Azure Pipelines
-    - task: PublishTestResults@2
-      displayName: Publish Test Results (Core 3.1)
-      inputs:
-        testResultsFormat: VSTest
-        testResultsFiles: '**/*Tests*netcoreapp3.1*.trx'
-        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
-        failTaskOnFailedTests: true
-        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} Core 3.1'
-        publishRunAttachments: true
-        mergeTestResults: true
-        buildConfiguration: ${{ parameters.name }}
-      continueOnError: true
-      condition: succeededOrFailed()
-    
-    - task: PublishTestResults@2
-      displayName: Publish Test Results (NET 5.0)
-      inputs:
-        testResultsFormat: VSTest
-        testResultsFiles: '**/*Tests*net5.0*.trx' 
-        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
-        failTaskOnFailedTests: true
-        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} NET 5.0'
-        publishRunAttachments: true
-        mergeTestResults: true
-        buildConfiguration: ${{ parameters.name }}
-      continueOnError: true
-      condition: succeededOrFailed()
-    
-    - task: PublishTestResults@2
-      displayName: Publish Test Results (NET 6.0)
-      inputs:
-        testResultsFormat: VSTest
-        testResultsFiles: '**/*Tests*net6.0*.trx' 
-        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
-        failTaskOnFailedTests: true
-        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} NET 6.0'
-        publishRunAttachments: true
-        mergeTestResults: true
-        buildConfiguration: ${{ parameters.name }}
-      continueOnError: true
-      condition: succeededOrFailed()
+    - ${{ each testResultTfm in parameters.testResultTfms }}:
+      - task: PublishTestResults@2
+        displayName: Publish Test Results (${{ testResultTfm.value }})
+        inputs:
+          testResultsFormat: VSTest
+          testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
+          searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
+          failTaskOnFailedTests: true
+          testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} ${{ testResultTfm.value }}'
+          publishRunAttachments: true
+          mergeTestResults: true
+          buildConfiguration: ${{ parameters.name }}
+        continueOnError: true
+        condition: succeededOrFailed()
 
     - ${{ if ne(variables['System.TeamProject'], 'public') }}:
       - task: PublishBuildArtifacts@1
