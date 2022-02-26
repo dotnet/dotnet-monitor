@@ -323,6 +323,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the default Egress Provider to be used when no other egress provider is specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_EgressProvider {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_EgressProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the default sliding window duration to be used when no other sliding window duration is specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The number of times the action list may be executed before being throttled..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount {

@@ -35,6 +35,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter);
         }
 
+        public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<CollectionRuleDefaultOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);
+        }
+
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics);
@@ -87,6 +92,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
             services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
 
+            services.ConfigureCollectionRuleDefaults();
+
             services.AddSingleton<EventPipeTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<EventCounterTriggerSettings>, Monitoring.EventPipe.Triggers.EventCounter.EventCounterTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<AspNetRequestDurationTriggerSettings>, Monitoring.EventPipe.Triggers.AspNet.AspNetRequestDurationTriggerFactory>();
@@ -110,6 +117,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<CollectionRuleService>();
             services.AddHostedServiceForwarder<CollectionRuleService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
+
+            return services;
+        }
+
+        public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services)
+        {
+            // Is there a way to do this where we just can have one call for everything that inherits from the EgressProviders interface?
+            services.AddSingleton<IValidateOptions<CollectDumpOptions>, EgressValidateOptions<CollectDumpOptions>>();
+            services.AddSingleton<IValidateOptions<CollectGCDumpOptions>, EgressValidateOptions<CollectGCDumpOptions>>();
+            services.AddSingleton<IValidateOptions<CollectLogsOptions>, EgressValidateOptions<CollectLogsOptions>>();
+            services.AddSingleton<IValidateOptions<CollectTraceOptions>, EgressValidateOptions<CollectTraceOptions>>();
 
             return services;
         }

@@ -587,4 +587,12 @@
     <value>A value is required for the process filter.</value>
     <comment>Gets the format string for rejecting validation due to no value being provided for a process filter.</comment>
   </data>
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_EgressProvider" xml:space="preserve">
+    <value>The name of the default Egress Provider to be used when no other egress provider is specified.</value>
+    <comment>The description provided for the EgressProvider parameter on GlobalDefaultOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration" xml:space="preserve">
+    <value>The name of the default sliding window duration to be used when no other sliding window duration is specified.</value>
+    <comment>The description provided for the SlidingWindowDuration parameter on GlobalDefaultOptions.</comment>
+  </data>
 </root>
