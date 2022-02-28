@@ -1,0 +1,6 @@
+LIBRARY TestProfiler
+
+EXPORTS
+    DllCanUnloadNow         PRIVATE
+    DllGetClassObject       PRIVATE
+    DllMain                 PRIVATE
