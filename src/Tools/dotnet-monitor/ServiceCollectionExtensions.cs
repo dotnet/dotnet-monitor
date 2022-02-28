@@ -13,6 +13,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
@@ -25,6 +26,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -123,7 +126,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services)
         {
-            // Is there a way to do this where we just can have one call for everything that inherits from the EgressProviders interface?
             services.AddSingleton<IValidateOptions<CollectDumpOptions>, EgressValidateOptions<CollectDumpOptions>>();
             services.AddSingleton<IValidateOptions<CollectGCDumpOptions>, EgressValidateOptions<CollectGCDumpOptions>>();
             services.AddSingleton<IValidateOptions<CollectLogsOptions>, EgressValidateOptions<CollectLogsOptions>>();
