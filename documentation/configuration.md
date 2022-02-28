@@ -411,18 +411,18 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 ### Azure blob storage egress provider
 
-| Name | Type | Description |
-|---|---|---|
-| accountUri | string | The URI of the Azure blob storage account.|
-| containerName | string | The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.|
-| blobPrefix | string | Optional path prefix for the artifacts to egress.|
-| copyBufferSize | string | The buffer size to use when copying data from the original artifact to the blob stream.|
-| accountKey | string | The account key used to access the Azure blob storage account.|
-| sharedAccessSignature | string | The shared access signature (SAS) used to access the azure blob storage account.|
-| accountKeyName | string | Name of the property in the Properties section that will contain the account key.|
-| sharedAccessSignatureName | string | Name of the property in the Properties section that will contain the SAS token.|
-| queueName | string | The name of the queue to which a message will be dispatched upon writing to a blob.|
-| queueAccountUri | string | The URI of the Azure queue account.|
+| Name | Type | Required | Description |
+|---|---|---|---|
+| accountUri | string | true | The URI of the Azure blob storage account.|
+| containerName | string | true | The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.|
+| blobPrefix | string | false | Optional path prefix for the artifacts to egress.|
+| copyBufferSize | string | false | The buffer size to use when copying data from the original artifact to the blob stream.|
+| accountKey | string | true | The account key used to access the Azure blob storage account.|
+| sharedAccessSignature | string | false | The shared access signature (SAS) used to access the azure blob storage account.|
+| accountKeyName | string | true | Name of the property in the Properties section that will contain the account key.|
+| sharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the SAS token.|
+| queueName | string | false | The name of the queue to which a message will be dispatched upon writing to a blob.|
+| queueAccountUri | string | false | The URI of the Azure queue account.|
 
 ### Example azureBlobStorage provider
 
