@@ -129,6 +129,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IValidateOptions<CollectLogsOptions>, EgressValidateOptions<CollectLogsOptions>>();
             services.AddSingleton<IValidateOptions<CollectTraceOptions>, EgressValidateOptions<CollectTraceOptions>>();
 
+            services.AddSingleton<IValidateOptions<AspNetRequestCountOptions>, SlidingWindowDurationValidateOptions<AspNetRequestCountOptions>>();
+            services.AddSingleton<IValidateOptions<AspNetRequestDurationOptions>, SlidingWindowDurationValidateOptions<AspNetRequestDurationOptions>>();
+            services.AddSingleton<IValidateOptions<AspNetResponseStatusOptions>, SlidingWindowDurationValidateOptions<AspNetResponseStatusOptions>>();
+            services.AddSingleton<IValidateOptions<EventCounterOptions>, SlidingWindowDurationValidateOptions<EventCounterOptions>>();
+
             return services;
         }
 

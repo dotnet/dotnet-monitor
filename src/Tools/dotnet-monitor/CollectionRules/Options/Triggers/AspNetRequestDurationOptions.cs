@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -13,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// Options for the AspNetRequestDuration trigger.
     /// </summary>
     internal sealed class AspNetRequestDurationOptions :
-        IAspNetActionPathFilters
+        IAspNetActionPathFilters, SlidingWindowDurations
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -31,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetRequestDurationOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]
-        [DefaultValue(AspNetRequestDurationOptionsDefaults.SlidingWindowDuration)]
+        //[DefaultValue(AspNetRequestDurationOptionsDefaults.SlidingWindowDuration)]
         public TimeSpan? SlidingWindowDuration { get; set; }
 
         // CONSIDER: Currently described that paths have to exactly match one item in the list.
