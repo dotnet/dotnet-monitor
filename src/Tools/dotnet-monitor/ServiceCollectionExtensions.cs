@@ -136,6 +136,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IValidateOptions<AspNetResponseStatusOptions>, SlidingWindowDurationValidateOptions<AspNetResponseStatusOptions>>();
             services.AddSingleton<IValidateOptions<EventCounterOptions>, SlidingWindowDurationValidateOptions<EventCounterOptions>>();
 
+            services.AddSingleton<IValidateOptions<AspNetRequestCountOptions>, RequestCountsValidateOptions<AspNetRequestCountOptions>>();
+            services.AddSingleton<IValidateOptions<AspNetRequestDurationOptions>, RequestCountsValidateOptions<AspNetRequestDurationOptions>>();
+
             return services;
         }
 

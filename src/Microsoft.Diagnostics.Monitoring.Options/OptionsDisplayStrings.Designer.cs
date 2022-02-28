@@ -323,11 +323,48 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The number of times the action list may be executed before being throttled..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCountSlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCountSlidingWindow" +
+                        "Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the default Egress Provider to be used when no other egress provider is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_EgressProvider {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_EgressProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold of the number of requests that start within the sliding window of time..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_RuleDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_RuleDuration", resourceCulture);
             }
         }
         

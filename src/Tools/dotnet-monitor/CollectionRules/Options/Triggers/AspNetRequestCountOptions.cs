@@ -14,13 +14,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// Options for the AspNetRequestCount trigger.
     /// </summary>
     internal sealed class AspNetRequestCountOptions :
-        IAspNetActionPathFilters, SlidingWindowDurations
+        IAspNetActionPathFilters, SlidingWindowDurations, RequestCounts
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetRequestCountOptions_RequestCount))]
-        [Required]
-        public int RequestCount { get; set; }
+        public int? RequestCount { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

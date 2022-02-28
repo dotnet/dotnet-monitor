@@ -221,17 +221,17 @@
     <value>The type of action to execute.</value>
     <comment>The description provided for the Type parameter on CollectionRuleActionOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount" xml:space="preserve">
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCount" xml:space="preserve">
     <value>The number of times the action list may be executed before being throttled.</value>
-    <comment>The description provided for the ActionCount parameter on CollectionRuleLimitsOptions.</comment>
+    <comment>The description provided for the ActionCount parameter on CollectionRuleDefaultOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCountSlidingWindowDuration" xml:space="preserve">
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCountSlidingWindowDuration" xml:space="preserve">
     <value>The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.</value>
-    <comment>The description provided for the ActionCountSlidingWindowDuration parameter on CollectionRuleLimitsOptions.</comment>
+    <comment>The description provided for the ActionCountSlidingWindowDuration parameter on CollectionRuleDefaultOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_RuleDuration" xml:space="preserve">
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_RuleDuration" xml:space="preserve">
     <value>The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.</value>
-    <comment>The description provided for the RuleDuration parameter on CollectionRuleLimitsOptions.</comment>
+    <comment>The description provided for the RuleDuration parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleOptions_Actions" xml:space="preserve">
     <value>The list of actions to be executed when the trigger raises its notification.</value>
@@ -594,5 +594,21 @@
   <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration" xml:space="preserve">
     <value>The name of the default sliding window duration to be used when no other sliding window duration is specified.</value>
     <comment>The description provided for the SlidingWindowDuration parameter on GlobalDefaultOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount" xml:space="preserve">
+    <value>The threshold of the number of requests that start within the sliding window of time.</value>
+    <comment>The description provided for the RequestCount parameter on CollectionRuleDefaultOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount" xml:space="preserve">
+    <value>The number of times the action list may be executed before being throttled.</value>
+    <comment>The description provided for the ActionCount parameter on CollectionRuleLimitsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCountSlidingWindowDuration" xml:space="preserve">
+    <value>The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.</value>
+    <comment>The description provided for the ActionCountSlidingWindowDuration parameter on CollectionRuleLimitsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_RuleDuration" xml:space="preserve">
+    <value>The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.</value>
+    <comment>The description provided for the RuleDuration parameter on CollectionRuleLimitsOptions.</comment>
   </data>
 </root>
