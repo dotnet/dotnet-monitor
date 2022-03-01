@@ -15,6 +15,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
 
         public int? ResponseCount { get; set; }
 
+
+        // Might yank this for simplicity
         [MinLength(1)]
         [RegularExpressions(StatusCodesRegex)]
         public string[] StatusCodes { get; set; }

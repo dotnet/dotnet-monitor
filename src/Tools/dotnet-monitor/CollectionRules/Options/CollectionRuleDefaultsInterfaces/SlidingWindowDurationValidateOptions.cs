@@ -32,7 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 options.SlidingWindowDuration = collectionRuleDefaultOptions.CurrentValue.SlidingWindowDuration;
 
-                // Might also need to check against 00:00:00 here...?
                 if (null == options.SlidingWindowDuration)
                 {
                     options.SlidingWindowDuration = TimeSpan.Parse(TriggerOptionsConstants.SlidingWindowDuration_Default);

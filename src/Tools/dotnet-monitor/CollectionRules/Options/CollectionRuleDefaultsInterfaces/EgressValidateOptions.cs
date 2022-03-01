@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (string.IsNullOrEmpty(options.Egress))
             {
-                options.Egress = collectionRuleDefaultOptions.CurrentValue.EgressProvider;
+                options.Egress = collectionRuleDefaultOptions.CurrentValue.Egress;
 
                 if (string.IsNullOrEmpty(options.Egress))
                 {

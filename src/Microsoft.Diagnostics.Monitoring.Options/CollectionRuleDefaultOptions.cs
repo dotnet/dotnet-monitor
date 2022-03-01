@@ -12,8 +12,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultOptions_EgressProvider))]
-        public string EgressProvider { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultOptions_Egress))]
+        public string Egress { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

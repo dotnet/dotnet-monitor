@@ -344,9 +344,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         /// <summary>
         ///   Looks up a localized string similar to The name of the default Egress Provider to be used when no other egress provider is specified..
         /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_EgressProvider {
+        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_Egress {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_EgressProvider", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_Egress", resourceCulture);
             }
         }
         

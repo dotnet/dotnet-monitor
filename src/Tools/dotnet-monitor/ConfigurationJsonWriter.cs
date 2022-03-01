@@ -3,9 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,15 +30,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly Utf8JsonWriter _writer;
         private IConfiguration _configuration;
+        private IServiceProvider _serviceProvider;
+
         public ConfigurationJsonWriter(Stream outputStream)
         {
             JsonWriterOptions options = new() { Indented = true };
             _writer = new Utf8JsonWriter(outputStream, options);
         }
 
-        public void Write(IConfiguration configuration, bool full, bool skipNotPresent, bool showSources = false)
+        public void Write(IConfiguration configuration, bool full, bool skipNotPresent, bool showSources = false, IServiceProvider serviceProvider = null)
         {
             _configuration = configuration;
+            _serviceProvider = serviceProvider;
             //Note that we avoid IConfigurationRoot.GetDebugView because it shows everything
             //CONSIDER Should we show this in json, since it cannot represent complete configuration?
             //CONSIDER Should we convert number based names to arrays?
@@ -66,6 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
 
                 //No sensitive information
+                ProcessChildSection(configuration, ConfigurationKeys.CollectionRuleDefaults, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.GlobalCounter, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.CollectionRules, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.CorsConfiguration, skipNotPresent, includeChildSections: true, showSources: showSources);
@@ -181,6 +192,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private IConfigurationSection ProcessChildSection(IConfiguration parentSection, string key, bool skipNotPresent, bool includeChildSections = true, bool redact = false, bool showSources = false)
         {
+            bool loadCRDefaults = false;
+            if (key.Equals(ConfigurationKeys.CollectionRules))
+            {
+                // Need to handle the collection rule defaults
+                loadCRDefaults = true;
+            }
+
             IConfigurationSection section = parentSection.GetSection(key);
             if (!section.Exists())
             {
@@ -192,13 +210,75 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return null;
             }
 
-            ProcessSection(section, includeChildSections, redact, showSources: showSources);
+            ProcessSection(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults);
 
             return section;
         }
 
-        private void ProcessSection(IConfigurationSection section, bool includeChildSections = true, bool redact = false, bool showSources = false)
+        private void ProcessSection(IConfigurationSection section, bool includeChildSections = true, bool redact = false, bool showSources = false, bool loadCRDefaults = false, Type optionsType = null)
         {
+            var fakedChildren = new List<(string, string)>();
+
+            bool mockSettingsSection = false;
+
+            Type createdOptionsType = null;
+
+            if (loadCRDefaults && section.Key.Equals(ConfigurationKeys.CollectionRules))
+            {
+                // Need to add some intelligence for what fields we're looking at
+            }
+
+            if (loadCRDefaults && section.Key.Equals(nameof(CollectionRuleOptions.Trigger)))
+            {
+                string triggerTypeName = section.GetSection("Type").Value;
+
+                var triggerOperations = _serviceProvider.GetService<ICollectionRuleTriggerOperations>();
+
+                triggerOperations.TryCreateOptions(triggerTypeName, out object triggerSettings);
+
+                createdOptionsType = triggerSettings.GetType();
+
+                if (!section.GetSection("Settings").Exists())
+                {
+                    mockSettingsSection = true;
+
+                    var settingsPropsNames = createdOptionsType.GetProperties().Select(x => x.Name);
+
+                    var crdProps = typeof(CollectionRuleDefaultOptions).GetProperties();
+
+                    foreach (var crdProp in crdProps)
+                    {
+                        if (settingsPropsNames.Contains(crdProp.Name))
+                        {
+                            IConfigurationSection tempSection = section;
+
+                            string valToUse = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{crdProp.Name}").Value;
+
+                            fakedChildren.Add((crdProp.Name, valToUse));
+                        }
+                    }
+                }
+            }
+
+            if (loadCRDefaults && section.Key.Equals("Settings"))
+            {
+                var settingsPropsNames = optionsType.GetProperties().Select(x => x.Name);
+
+                var crdProps = typeof(CollectionRuleDefaultOptions).GetProperties();
+
+                foreach (var crdProp in crdProps)
+                {
+                    if (settingsPropsNames.Contains(crdProp.Name))
+                    {
+                        IConfigurationSection tempSection = section;
+
+                        string valToUse = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{crdProp.Name}").Value;
+
+                        fakedChildren.Add((crdProp.Name, valToUse));
+                    }
+                }
+            }
+
             _writer.WritePropertyName(section.Key);
 
             IEnumerable<IConfigurationSection> children = section.GetChildren();
@@ -220,7 +300,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         if (child.GetChildren().Any())
                         {
-                            ProcessChildren(child, includeChildSections, redact,  showSources: showSources);
+                            bool parentIsActions = section.Key.Equals("Actions");
+                            ProcessChildren(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, optionsType: createdOptionsType, parentIsActions: parentIsActions);
                         }
                         else
                         {
@@ -241,7 +322,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 else
                 {
-                    ProcessChildren(section, includeChildSections, redact, showSources: showSources);
+                    ProcessChildren(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, fakedChildren, optionsType: createdOptionsType, mockSettingsSection: mockSettingsSection);
                 }
             }
             else if (!canWriteChildren)
@@ -301,13 +382,81 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _writer.WriteStringValue(valueToWrite);
         }
 
-        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact, bool showSources)
+        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact, bool showSources, bool loadCRDefaults, List<(string, string)> fakedChildren = null, Type optionsType = null, bool parentIsActions = false, bool mockSettingsSection = false)
         {
             using (new JsonObjectContext(_writer))
             {
+                if (loadCRDefaults && parentIsActions)
+                {
+                    string actionTypeName = section.GetSection("Type").Value;
+
+                    var actionOperations = _serviceProvider.GetService<ICollectionRuleActionOperations>();
+
+                    actionOperations.TryCreateOptions(actionTypeName, out object actionSettings);
+
+                    optionsType = actionSettings.GetType();
+
+                    if (!section.GetSection("Settings").Exists())
+                    {
+                        mockSettingsSection = true;
+
+                        fakedChildren = new();
+
+                        var settingsPropsNames = optionsType.GetProperties().Select(x => x.Name);
+
+                        var crdProps = typeof(CollectionRuleDefaultOptions).GetProperties();
+
+                        foreach (var crdProp in crdProps)
+                        {
+                            if (settingsPropsNames.Contains(crdProp.Name))
+                            {
+                                IConfigurationSection tempSection = section;
+
+                                string valToUse = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{crdProp.Name}").Value;
+
+                                fakedChildren.Add((crdProp.Name, valToUse));
+                            }
+                        }
+                    }
+                }
+
+                var childKeys = new List<string>();
+
                 foreach (IConfigurationSection child in section.GetChildren())
                 {
-                    ProcessSection(child, includeChildSections, redact, showSources: showSources);
+                    childKeys.Add(child.Key);
+                    ProcessSection(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, optionsType: optionsType);
+                }
+
+                if (null != fakedChildren)
+                {
+                    if (mockSettingsSection)
+                    {
+                        _writer.WritePropertyName("Settings");
+
+                        using (new JsonObjectContext(_writer))
+                        {
+                            foreach (var fakedChild in fakedChildren)
+                            {
+                                if (!childKeys.Contains(fakedChild.Item1))
+                                {
+                                    _writer.WritePropertyName(fakedChild.Item1);
+                                    _writer.WriteStringValue(fakedChild.Item2);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var fakedChild in fakedChildren)
+                        {
+                            if (!childKeys.Contains(fakedChild.Item1))
+                            {
+                                _writer.WritePropertyName(fakedChild.Item1);
+                                _writer.WriteStringValue(fakedChild.Item2);
+                            }
+                        }
+                    }
                 }
             }
         }

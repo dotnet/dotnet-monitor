@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
+    // This file can likely be relocated as the validation file for AspNetResponseStatusOptions -> can then get rid of the singleton for it and the interface
     internal sealed class ResponseCountsValidateOptions<TOptions> :
         IValidateOptions<TOptions>
         where TOptions : class, ResponseCounts

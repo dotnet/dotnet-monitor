@@ -587,13 +587,13 @@
     <value>A value is required for the process filter.</value>
     <comment>Gets the format string for rejecting validation due to no value being provided for a process filter.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_EgressProvider" xml:space="preserve">
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_Egress" xml:space="preserve">
     <value>The name of the default Egress Provider to be used when no other egress provider is specified.</value>
-    <comment>The description provided for the EgressProvider parameter on GlobalDefaultOptions.</comment>
+    <comment>The description provided for the Egress parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration" xml:space="preserve">
     <value>The name of the default sliding window duration to be used when no other sliding window duration is specified.</value>
-    <comment>The description provided for the SlidingWindowDuration parameter on GlobalDefaultOptions.</comment>
+    <comment>The description provided for the SlidingWindowDuration parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount" xml:space="preserve">
     <value>The threshold of the number of requests that start within the sliding window of time.</value>
