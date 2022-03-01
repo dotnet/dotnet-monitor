@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
+    // CONSIDER do we need to do the validation here? Should the annotations be stripped?
     internal class CollectionRuleDefaultOptions
     {
         [Display(
@@ -45,7 +46,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_ResponseCount))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount))]
         public int? ResponseCount { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultOptions_StatusCodes))]
+        //[MinLength(1)]
+        //[RegularExpressions(StatusCodesRegex)]
+        public string[] StatusCodes { get; set; }
     }
 }

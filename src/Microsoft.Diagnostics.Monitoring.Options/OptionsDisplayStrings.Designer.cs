@@ -360,6 +360,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The threshold number of responses with matching status codes..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_RuleDuration {
@@ -374,6 +383,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. &quot;400-499&quot;)..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_StatusCodes {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_StatusCodes", resourceCulture);
             }
         }
         

@@ -41,6 +41,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
             }
 
+            // Do we care if it's an empty array -> does that mean we accept all status codes?
+            if (null == options.StatusCodes)
+            {
+                options.StatusCodes = collectionRuleDefaultOptions.CurrentValue.StatusCodes;
+
+                if (null == options.StatusCodes)
+                {
+                    // Need to push this to a string resource
+                    failures.Add("No default status codes and no status codes given by user");
+                    // FAIL if no default and nothing set by user
+                    return ValidateOptionsResult.Fail(failures);
+                }
+            }
+
             return ValidateOptionsResult.Success;
         }
     }
