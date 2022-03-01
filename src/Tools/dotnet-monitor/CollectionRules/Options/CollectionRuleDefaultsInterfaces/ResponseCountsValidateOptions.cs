@@ -11,13 +11,13 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class RequestCountsValidateOptions<TOptions> :
+    internal sealed class ResponseCountsValidateOptions<TOptions> :
         IValidateOptions<TOptions>
-        where TOptions : class, RequestCounts
+        where TOptions : class, ResponseCounts
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public RequestCountsValidateOptions(IServiceProvider serviceProvider)
+        public ResponseCountsValidateOptions(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -28,14 +28,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             IList<string> failures = new List<string>();
 
-            if (null == options.RequestCount)
+            if (null == options.ResponseCount)
             {
-                options.RequestCount = collectionRuleDefaultOptions.CurrentValue.RequestCount;
+                options.ResponseCount = collectionRuleDefaultOptions.CurrentValue.ResponseCount;
 
-                if (null == options.RequestCount)
+                if (null == options.ResponseCount)
                 {
                     // Need to push this to a string resource
-                    failures.Add("No default request count and no request count given by user");
+                    failures.Add("No default response count and no response count given by user");
                     // FAIL if no default and nothing set by user
                     return ValidateOptionsResult.Fail(failures);
                 }

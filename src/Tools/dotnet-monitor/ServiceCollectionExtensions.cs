@@ -139,6 +139,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IValidateOptions<AspNetRequestCountOptions>, RequestCountsValidateOptions<AspNetRequestCountOptions>>();
             services.AddSingleton<IValidateOptions<AspNetRequestDurationOptions>, RequestCountsValidateOptions<AspNetRequestDurationOptions>>();
 
+            services.AddSingleton<IValidateOptions<AspNetResponseStatusOptions>, ResponseCountsValidateOptions<AspNetResponseStatusOptions>>();
+
             return services;
         }
 
@@ -173,7 +175,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory, TOptions>>();
             services.AddSingleton<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerProvider<TFactory, TOptions>>(
                 sp => new CollectionRuleTriggerProvider<TFactory, TOptions>(triggerName));
-            // NOTE: When opening colletion rule triggers for extensibility, this should not be added for all registered triggers.
+            // NOTE: When opening collection rule triggers for extensibility, this should not be added for all registered triggers.
             // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
             return services;
