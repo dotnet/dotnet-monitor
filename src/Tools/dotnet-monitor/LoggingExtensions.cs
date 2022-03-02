@@ -308,14 +308,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ApiKeyNotConfigured);
 
-        private static readonly Action<ILogger, string, Exception> _queueDoesNotExist =
-            LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, string, string, string, Exception> _queueDoesNotExist =
+            LoggerMessage.Define<string, string, string>(
                 eventId: LoggingEventIds.QueueDoesNotExist.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_QueueDoesNotExist);
 
-        private static readonly Action<ILogger, Exception> _queueOptionsPartiallySet =
-            LoggerMessage.Define(
+        private static readonly Action<ILogger, string, string, Exception> _queueOptionsPartiallySet =
+            LoggerMessage.Define<string, string>(
                 eventId: LoggingEventIds.QueueOptionsPartiallySet.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_QueueOptionsPartiallySet);
@@ -586,14 +586,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 CultureInfo.CurrentUICulture.LCID);
         }
 
-        public static void QueueDoesNotExist(this ILogger logger, string queueName)
+        public static void QueueDoesNotExist(this ILogger logger, string queueName, string queueNameField, string queueAccountUriField)
         {
-            _queueDoesNotExist(logger, queueName, null);
+            _queueDoesNotExist(logger, queueName, queueNameField, queueAccountUriField, null);
         }
 
-        public static void QueueOptionsPartiallySet(this ILogger logger)
+        public static void QueueOptionsPartiallySet(this ILogger logger, string queueNameField, string queueAccountUriField)
         {
-            _queueOptionsPartiallySet(logger, null);
+            _queueOptionsPartiallySet(logger, queueNameField, queueAccountUriField, null);
         }
 
         public static void WritingMessageToQueueFailed(this ILogger logger, string queueName, Exception ex)

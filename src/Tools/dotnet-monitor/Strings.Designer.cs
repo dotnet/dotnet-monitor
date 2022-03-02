@@ -952,7 +952,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the queueName and queueAccountUri fields are set correctly..
+        ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
         /// </summary>
         internal static string LogFormatString_QueueDoesNotExist {
             get {
@@ -961,7 +961,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Queue message egress requires queueName and queueAccountUri to be set.
+        ///   Looks up a localized string similar to Queue message egress requires {queueName} and {queueAccountUri} to be set.
         /// </summary>
         internal static string LogFormatString_QueueOptionsPartiallySet {
             get {
