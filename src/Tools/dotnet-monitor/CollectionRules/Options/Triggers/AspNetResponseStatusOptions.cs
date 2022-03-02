@@ -24,6 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes))]
         [MinLength(1)]
         [RegularExpressions(StatusCodesRegex)]
+        [Required]
         public string[] StatusCodes { get; set; }
 
         [Display(

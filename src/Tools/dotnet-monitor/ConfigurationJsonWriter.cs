@@ -215,17 +215,50 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return section;
         }
 
-        private void ProcessSection(IConfigurationSection section, bool includeChildSections = true, bool redact = false, bool showSources = false, bool loadCRDefaults = false, Type optionsType = null)
+        private void ProcessSection(IConfigurationSection section, bool includeChildSections = true, bool redact = false, bool showSources = false, bool loadCRDefaults = false, Type optionsType = null, bool isCollectionRule = false)
         {
             var fakedChildren = new List<(string, string)>();
 
             bool mockSettingsSection = false;
+
+            bool mockLimitsSection = false;
+
+            bool localIsCollectionRule = false;
 
             Type createdOptionsType = null;
 
             if (loadCRDefaults && section.Key.Equals(ConfigurationKeys.CollectionRules))
             {
                 // Need to add some intelligence for what fields we're looking at
+                localIsCollectionRule = true;
+            }
+
+            if (isCollectionRule)
+            {
+                // We're guaranteed to have a Trigger and Actions section, but not a Limits/Filters one. If we have defaults for those, we have to mock it
+
+                if (!section.GetSection("Limits").Exists())
+                {
+                    var limitsPropsNames = typeof(CollectionRuleLimitsOptions).GetProperties().Select(x => x.Name);
+
+                    var crdProps = typeof(CollectionRuleDefaultOptions).GetProperties();
+
+                    foreach (var crdProp in crdProps)
+                    {
+                        if (limitsPropsNames.Contains(crdProp.Name))
+                        {
+                            mockLimitsSection = true;
+
+                            string valToUse = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{crdProp.Name}").Value;
+
+                            if (!string.IsNullOrEmpty(valToUse))
+                            {
+                                fakedChildren.Add((crdProp.Name, valToUse));
+                            }
+                        }
+                    }
+                }
+
             }
 
             if (loadCRDefaults && section.Key.Equals(nameof(CollectionRuleOptions.Trigger)))
@@ -250,11 +283,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         if (settingsPropsNames.Contains(crdProp.Name))
                         {
-                            IConfigurationSection tempSection = section;
-
                             string valToUse = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{crdProp.Name}").Value;
 
-                            fakedChildren.Add((crdProp.Name, valToUse));
+                            if (!string.IsNullOrEmpty(valToUse))
+                            {
+                                fakedChildren.Add((crdProp.Name, valToUse));
+                            }
                         }
                     }
                 }
@@ -270,8 +304,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     if (settingsPropsNames.Contains(crdProp.Name))
                     {
-                        IConfigurationSection tempSection = section;
-
                         string valToUse = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{crdProp.Name}").Value;
 
                         fakedChildren.Add((crdProp.Name, valToUse));
@@ -301,7 +333,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         if (child.GetChildren().Any())
                         {
                             bool parentIsActions = section.Key.Equals("Actions");
-                            ProcessChildren(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, optionsType: createdOptionsType, parentIsActions: parentIsActions);
+                            ProcessChildren(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, optionsType: createdOptionsType, parentIsActions: parentIsActions, isCollectionRule: localIsCollectionRule, mockLimitsSection: mockLimitsSection);
                         }
                         else
                         {
@@ -322,7 +354,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 else
                 {
-                    ProcessChildren(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, fakedChildren, optionsType: createdOptionsType, mockSettingsSection: mockSettingsSection);
+                    ProcessChildren(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, fakedChildren, optionsType: createdOptionsType, mockSettingsSection: mockSettingsSection, isCollectionRule: localIsCollectionRule, mockLimitsSection: mockLimitsSection);
                 }
             }
             else if (!canWriteChildren)
@@ -382,7 +414,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _writer.WriteStringValue(valueToWrite);
         }
 
-        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact, bool showSources, bool loadCRDefaults, List<(string, string)> fakedChildren = null, Type optionsType = null, bool parentIsActions = false, bool mockSettingsSection = false)
+        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact, bool showSources, bool loadCRDefaults, List<(string, string)> fakedChildren = null, Type optionsType = null, bool parentIsActions = false, bool mockSettingsSection = false, bool isCollectionRule = false, bool mockLimitsSection = false)
         {
             using (new JsonObjectContext(_writer))
             {
@@ -425,7 +457,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 foreach (IConfigurationSection child in section.GetChildren())
                 {
                     childKeys.Add(child.Key);
-                    ProcessSection(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, optionsType: optionsType);
+                    ProcessSection(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, optionsType: optionsType, isCollectionRule: isCollectionRule);
                 }
 
                 if (null != fakedChildren)
@@ -433,6 +465,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     if (mockSettingsSection)
                     {
                         _writer.WritePropertyName("Settings");
+
+                        using (new JsonObjectContext(_writer))
+                        {
+                            foreach (var fakedChild in fakedChildren)
+                            {
+                                if (!childKeys.Contains(fakedChild.Item1))
+                                {
+                                    _writer.WritePropertyName(fakedChild.Item1);
+                                    _writer.WriteStringValue(fakedChild.Item2);
+                                }
+                            }
+                        }
+                    }
+                    else if (mockLimitsSection)
+                    {
+                        _writer.WritePropertyName("Limits");
 
                         using (new JsonObjectContext(_writer))
                         {
