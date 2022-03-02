@@ -247,12 +247,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         if (limitsPropsNames.Contains(crdProp.Name))
                         {
-                            mockLimitsSection = true;
-
                             string valToUse = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{crdProp.Name}").Value;
 
                             if (!string.IsNullOrEmpty(valToUse))
                             {
+                                mockLimitsSection = true;
+
                                 fakedChildren.Add((crdProp.Name, valToUse));
                             }
                         }
@@ -273,8 +273,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 if (!section.GetSection("Settings").Exists())
                 {
-                    mockSettingsSection = true;
-
                     var settingsPropsNames = createdOptionsType.GetProperties().Select(x => x.Name);
 
                     var crdProps = typeof(CollectionRuleDefaultOptions).GetProperties();
@@ -287,6 +285,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                             if (!string.IsNullOrEmpty(valToUse))
                             {
+                                mockSettingsSection = true;
+
                                 fakedChildren.Add((crdProp.Name, valToUse));
                             }
                         }
