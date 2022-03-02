@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -586,14 +587,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 CultureInfo.CurrentUICulture.LCID);
         }
 
-        public static void QueueDoesNotExist(this ILogger logger, string queueName, string queueNameField, string queueAccountUriField)
+        public static void QueueDoesNotExist(this ILogger logger, string queueName)
         {
-            _queueDoesNotExist(logger, queueName, queueNameField, queueAccountUriField, null);
+            _queueDoesNotExist(logger, queueName, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
         }
 
-        public static void QueueOptionsPartiallySet(this ILogger logger, string queueNameField, string queueAccountUriField)
+        public static void QueueOptionsPartiallySet(this ILogger logger)
         {
-            _queueOptionsPartiallySet(logger, queueNameField, queueAccountUriField, null);
+            _queueOptionsPartiallySet(logger, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
         }
 
         public static void WritingMessageToQueueFailed(this ILogger logger, string queueName, Exception ex)

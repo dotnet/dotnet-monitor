@@ -143,7 +143,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             if (queueNameSet ^ queueAccountUriSet)
             {
-                Logger.QueueOptionsPartiallySet(nameof(options.QueueName), nameof(options.QueueAccountUri));
+                Logger.QueueOptionsPartiallySet();
             }
 
             return queueNameSet && queueAccountUriSet;
@@ -185,7 +185,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 }
                 else
                 {
-                    Logger.QueueDoesNotExist(options.QueueName, nameof(options.QueueName), nameof(options.QueueAccountUri));
+                    Logger.QueueDoesNotExist(options.QueueName);
                 }
             }
             catch (Exception ex)
