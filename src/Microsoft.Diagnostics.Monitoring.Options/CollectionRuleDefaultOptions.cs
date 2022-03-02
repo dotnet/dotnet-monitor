@@ -48,12 +48,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount))]
         public int? ResponseCount { get; set; }
-
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultOptions_StatusCodes))]
-        //[MinLength(1)]
-        //[RegularExpressions(StatusCodesRegex)]
-        public string[] StatusCodes { get; set; }
     }
 }

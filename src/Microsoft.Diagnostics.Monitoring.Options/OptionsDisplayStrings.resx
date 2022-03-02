@@ -603,10 +603,6 @@
     <value>The threshold number of responses with matching status codes.</value>
     <comment>The description provided for the ResponseCount parameter on CollectionRuleDefaultOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_StatusCodes" xml:space="preserve">
-    <value>The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. "400-499").</value>
-    <comment>The description provided for the StatusCodes parameter on CollectionRuleDefaultOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount" xml:space="preserve">
     <value>The number of times the action list may be executed before being throttled.</value>
     <comment>The description provided for the ActionCount parameter on CollectionRuleLimitsOptions.</comment>

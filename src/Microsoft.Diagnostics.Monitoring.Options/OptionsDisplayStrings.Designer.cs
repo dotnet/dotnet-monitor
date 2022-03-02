@@ -387,15 +387,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. &quot;400-499&quot;)..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_StatusCodes {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_StatusCodes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The number of times the action list may be executed before being throttled..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount {
