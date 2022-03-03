@@ -24,9 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 
                 if (null == ResponseCount)
                 {
-                    // Need to push this to a string resource
-                    // FAIL if no default and nothing set by user
-                    results.Add(new ValidationResult("No default response count and no response count given by user"));
+                    results.Add(new ValidationResult(Strings.ErrorMessage_NoDefaultResponseCount));
                 }
             }
 

@@ -13,6 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
     partial class CollectionRuleLimitsOptions : IValidatableObject
     {
+        // Should this be pushed out into a configureoptions or postconfigureoptions?
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             List<ValidationResult> results = new(); // Not being used since not actually validating; just setting defaults

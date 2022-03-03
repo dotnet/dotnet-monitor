@@ -34,9 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 if (null == options.RequestCount)
                 {
-                    // Need to push this to a string resource
-                    failures.Add("No default request count and no request count given by user");
-                    // FAIL if no default and nothing set by user
+                    failures.Add(Strings.ErrorMessage_NoDefaultRequestCount);
                     return ValidateOptionsResult.Fail(failures);
                 }
             }

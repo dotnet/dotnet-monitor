@@ -34,9 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 if (string.IsNullOrEmpty(options.Egress))
                 {
-                    // Need to push this to a string resource
-                    failures.Add("No default egress provider and no egress provider given by user");
-                    // FAIL if no default and nothing set by user
+                    failures.Add(Strings.ErrorMessage_NoDefaultEgressProvider);
                     return ValidateOptionsResult.Fail(failures);
                 }
             }

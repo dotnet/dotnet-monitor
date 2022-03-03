@@ -126,16 +126,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services)
         {
+            // These should be validate
             services.AddSingleton<IValidateOptions<CollectDumpOptions>, EgressValidateOptions<CollectDumpOptions>>();
             services.AddSingleton<IValidateOptions<CollectGCDumpOptions>, EgressValidateOptions<CollectGCDumpOptions>>();
             services.AddSingleton<IValidateOptions<CollectLogsOptions>, EgressValidateOptions<CollectLogsOptions>>();
             services.AddSingleton<IValidateOptions<CollectTraceOptions>, EgressValidateOptions<CollectTraceOptions>>();
 
+            // These should potentially be configureoptions or postconfigureoptions
             services.AddSingleton<IValidateOptions<AspNetRequestCountOptions>, SlidingWindowDurationValidateOptions<AspNetRequestCountOptions>>();
             services.AddSingleton<IValidateOptions<AspNetRequestDurationOptions>, SlidingWindowDurationValidateOptions<AspNetRequestDurationOptions>>();
             services.AddSingleton<IValidateOptions<AspNetResponseStatusOptions>, SlidingWindowDurationValidateOptions<AspNetResponseStatusOptions>>();
             services.AddSingleton<IValidateOptions<EventCounterOptions>, SlidingWindowDurationValidateOptions<EventCounterOptions>>();
 
+            // These should be validate
             services.AddSingleton<IValidateOptions<AspNetRequestCountOptions>, RequestCountsValidateOptions<AspNetRequestCountOptions>>();
             services.AddSingleton<IValidateOptions<AspNetRequestDurationOptions>, RequestCountsValidateOptions<AspNetRequestDurationOptions>>();
 
