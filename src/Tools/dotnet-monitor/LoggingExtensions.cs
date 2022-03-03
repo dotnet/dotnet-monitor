@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -308,6 +309,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ApiKeyNotConfigured);
 
+        private static readonly Action<ILogger, string, string, string, Exception> _queueDoesNotExist =
+            LoggerMessage.Define<string, string, string>(
+                eventId: LoggingEventIds.QueueDoesNotExist.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_QueueDoesNotExist);
+
+        private static readonly Action<ILogger, string, string, Exception> _queueOptionsPartiallySet =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.QueueOptionsPartiallySet.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_QueueOptionsPartiallySet);
+
+        private static readonly Action<ILogger, string, Exception> _writingMessageToQueueFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.WritingMessageToQueueFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_WritingMessageToQueueFailed);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -566,6 +585,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 @"https://go.microsoft.com/fwlink/?linkid={0}&clcid=0x{1:x}",
                 fwlinkId,
                 CultureInfo.CurrentUICulture.LCID);
+        }
+
+        public static void QueueDoesNotExist(this ILogger logger, string queueName)
+        {
+            _queueDoesNotExist(logger, queueName, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
+        }
+
+        public static void QueueOptionsPartiallySet(this ILogger logger)
+        {
+            _queueOptionsPartiallySet(logger, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
+        }
+
+        public static void WritingMessageToQueueFailed(this ILogger logger, string queueName, Exception ex)
+        {
+            _writingMessageToQueueFailed(logger, queueName, ex);
         }
     }
 }

@@ -55,5 +55,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize))]
         public int? CopyBufferSize { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName))]
+        public string QueueName { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri))]
+        public Uri QueueAccountUri { get; set; }
     }
 }

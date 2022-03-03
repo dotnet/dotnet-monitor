@@ -8,6 +8,8 @@
       "BlobPrefix": "artifacts",
       "ContainerName": "dotnet-monitor",
       "CopyBufferSize": ":NOT PRESENT:",
+      "QueueName": ":NOT PRESENT:",
+      "QueueAccountUri": ":NOT PRESENT:",
       "SharedAccessSignature": ":NOT PRESENT:",
       "AccountKey": ":NOT PRESENT:",
       "SharedAccessSignatureName": ":NOT PRESENT:",
