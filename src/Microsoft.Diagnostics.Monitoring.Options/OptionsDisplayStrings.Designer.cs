@@ -241,6 +241,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The URI of the Azure queue account..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the queue to which a message will be dispatched upon writing to a blob..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The shared access signature (SAS) used to access the azure blob storage account..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature {

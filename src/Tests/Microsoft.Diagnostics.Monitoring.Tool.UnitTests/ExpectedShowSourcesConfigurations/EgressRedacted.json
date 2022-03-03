@@ -8,6 +8,8 @@
       "BlobPrefix": "artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
       "ContainerName": "dotnet-monitor" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
       "CopyBufferSize": ":NOT PRESENT:",
+      "QueueName": ":NOT PRESENT:",
+      "QueueAccountUri": ":NOT PRESENT:",
       "SharedAccessSignature": ":NOT PRESENT:",
       "AccountKey": ":NOT PRESENT:",
       "SharedAccessSignatureName": ":NOT PRESENT:",
