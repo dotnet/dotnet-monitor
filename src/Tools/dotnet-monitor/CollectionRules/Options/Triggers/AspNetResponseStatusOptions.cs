@@ -13,8 +13,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// <summary>
     /// Options for the AspNetResponseStatus trigger.
     /// </summary>
-    internal sealed class AspNetResponseStatusOptions :
-        IAspNetActionPathFilters, SlidingWindowDurations, ResponseCounts
+    internal sealed partial class AspNetResponseStatusOptions :
+        IAspNetActionPathFilters, SlidingWindowDurations
     {
         private const string StatusCodeRegex = "[1-5][0-9]{2}";
         private const string StatusCodesRegex = StatusCodeRegex + "(-" + StatusCodeRegex + ")?";

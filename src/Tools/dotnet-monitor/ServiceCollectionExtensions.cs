@@ -139,8 +139,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IValidateOptions<AspNetRequestCountOptions>, RequestCountsValidateOptions<AspNetRequestCountOptions>>();
             services.AddSingleton<IValidateOptions<AspNetRequestDurationOptions>, RequestCountsValidateOptions<AspNetRequestDurationOptions>>();
 
-            services.AddSingleton<IValidateOptions<AspNetResponseStatusOptions>, ResponseCountsValidateOptions<AspNetResponseStatusOptions>>();
-
             return services;
         }
 
