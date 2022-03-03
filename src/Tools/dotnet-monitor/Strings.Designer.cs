@@ -268,6 +268,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Value must be between 1 and 254, or -1 (to obtain the maximum number allowed by system resources)..
+        /// </summary>
+        internal static string ErrorMessage_MaxConnections {
+            get {
+                return ResourceManager.GetString("ErrorMessage_MaxConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The environment block does not contain the &apos;{0}&apos; variable..
         /// </summary>
         internal static string ErrorMessage_NoEnvironmentVariable {
