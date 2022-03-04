@@ -1,0 +1,15 @@
+{
+  "Enabled": "True" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+  "Endpoints": "http://localhost:52325" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+  "IncludeDefaultProviders": "True" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+  "MetricCount": "10" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+  "Providers": [
+    {
+      "CounterNames": [
+        "connections-per-second" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+        "total-connections" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      ],
+      "ProviderName": "Microsoft-AspNetCore-Server-Kestrel" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    }
+  ]
+}

@@ -571,4 +571,28 @@
     <value>The name of the environment variable to get.</value>
     <comment>The description provided for the Name parameter on GetEnvironmentVariableOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri" xml:space="preserve">
+    <value>The URI of the Azure queue account.</value>
+    <comment>The description provided for the QueueAccountUri parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName" xml:space="preserve">
+    <value>The name of the queue to which a message will be dispatched upon writing to a blob.</value>
+    <comment>The description provided for the QueueName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine" xml:space="preserve">
+    <value>Performs a match based on the contents of the command passed to launch the process on the system; this typically includes the executable path and arguments to the process.</value>
+    <comment>The description provided for the CommandLine parameter on ProcessFilterDescriptor.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_ProcessId" xml:space="preserve">
+    <value>Performs a match based on the numerical ID of a process on the system.</value>
+    <comment>The description provided for the ProcessId parameter on ProcessFilterDescriptor.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_ProcessName" xml:space="preserve">
+    <value>Performs a match based on the name of a process on the system.</value>
+    <comment>The description provided for the ProcessName parameter on ProcessFilterDescriptor.</comment>
+  </data>
+  <data name="ErrorMessage_FilterValueMissing" xml:space="preserve">
+    <value>A value is required for the process filter.</value>
+    <comment>Gets the format string for rejecting validation due to no value being provided for a process filter.</comment>
+  </data>
 </root>

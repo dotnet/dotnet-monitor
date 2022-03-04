@@ -66,6 +66,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         LoadingProfiler = 53,
         SetEnvironmentVariable = 54,
         GetEnvironmentVariable = 55,
+        MonitorApiKeyNotConfigured = 56,
+        QueueDoesNotExist = 57,
+        QueueOptionsPartiallySet = 58,
+        WritingMessageToQueueFailed = 59
     }
 
     internal static class LoggingEventIdsExtensions

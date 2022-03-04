@@ -70,7 +70,7 @@ spec:
       secretName: apikey
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/monitor:6.0
+    image: mcr.microsoft.com/dotnet/monitor:6
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -97,7 +97,7 @@ spec:
       name: my-configmap
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/monitor:6.0
+    image: mcr.microsoft.com/dotnet/monitor:6
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -117,7 +117,7 @@ spec:
             name: my-configmap
   containers:
   - name: dotnetmonitoragent
-    image: mcr.microsoft.com/dotnet/monitor:6.0
+    image: mcr.microsoft.com/dotnet/monitor:6
     volumeMounts:
       - name: config
         mountPath: /etc/dotnet-monitor
@@ -188,6 +188,12 @@ The output of the command should resemble the following JSON object:
 }
 ```
 
+To view the loaded configuration providers, run the following command:
+
+```cmd
+dotnet monitor config show --show-sources
+```
+
 ## Diagnostic Port Configuration
 
 `dotnet monitor` communicates via .NET processes through their diagnostic port. In the default configuration, .NET processes listen on a platform native transport (named pipes on Windows/Unix-domain sockets on \*nix) in a well-known location.
@@ -243,13 +249,22 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 
 ## Default Process Configuration
 
-Default process configuration is used to determine which process is used for metrics and in situations where the process is not specified in the query to retrieve an artifact. A process must match all the specified filters.
+Default process configuration is used to determine which process is used for metrics and in situations where the process is not specified in the query to retrieve an artifact. A process must match all the specified filters. If a `Key` is not specified, the default is `ProcessId`.
 
 | Name | Type | Description |
 |---|---|---|
 | Key | string | Specifies which criteria to match on the process. Can be `ProcessId`, `ProcessName`, `CommandLine`. |
 | Value | string | The value to match against the process. |
 | MatchType | string | The type of match to perform. Can be `Exact` or `Contains` for sub-string matching. Both are case-insensitive.|
+
+
+Optionally, a shorthand format allows you to omit the `Key` and `Value` terms and specify your Key/Value pair as a single line.
+
+| Name | Type | Description |
+|---|---|---|
+| ProcessId | string | Specifies that the corresponding value is the expected `ProcessId`. |
+| ProcessName | string | Specifies that the corresponding value is the expected `ProcessName`. |
+| CommandLine | string | Specifies that the corresponding value is the expected `CommandLine`.|
 
 ### Examples
 
@@ -266,6 +281,18 @@ Match the iisexpress process by name
 }
 ```
 
+Match the iisexpress process by name (Shorthand)
+
+```json
+{
+  "DefaultProcess": {
+    "Filters": [{
+      "ProcessName": "iisexpress"
+    }]
+  },
+}
+```
+
 Match pid 1
 ```json
 {
@@ -273,6 +300,17 @@ Match pid 1
     "Filters": [{
       "Key": "ProcessId",
       "Value": "1"
+    }]
+  },
+}
+```
+
+Match pid 1 (Shorthand)
+```json
+{
+  "DefaultProcess": {
+    "Filters": [{
+      "ProcessId": "1"
     }]
   },
 }
@@ -373,16 +411,18 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 ### Azure blob storage egress provider
 
-| Name | Type | Description |
-|---|---|---|
-| accountUri | string | The URI of the Azure blob storage account.|
-| containerName | string | The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.|
-| blobPrefix | string | Optional path prefix for the artifacts to egress.|
-| copyBufferSize | string | The buffer size to use when copying data from the original artifact to the blob stream.|
-| accountKey | string | The account key used to access the Azure blob storage account.|
-| sharedAccessSignature | string | The shared access signature (SAS) used to access the azure blob storage account.|
-| accountKeyName | string | Name of the property in the Properties section that will contain the account key.|
-| sharedAccessSignatureName | string | Name of the property in the Properties section that will contain the SAS token.|
+| Name | Type | Required | Description |
+|---|---|---|---|
+| accountUri | string | true | The URI of the Azure blob storage account.|
+| containerName | string | true | The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.|
+| blobPrefix | string | false | Optional path prefix for the artifacts to egress.|
+| copyBufferSize | string | false | The buffer size to use when copying data from the original artifact to the blob stream.|
+| accountKey | string | false | The account key used to access the Azure blob storage account; must be specified if `accountKeyName` is not specified.|
+| sharedAccessSignature | string | false | The shared access signature (SAS) used to access the azure blob storage account; if using SAS, must be specified if `sharedAccessSignatureName` is not specified.|
+| accountKeyName | string | false | Name of the property in the Properties section that will contain the account key; must be specified if `accountKey` is not specified.|
+| sharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the SAS token; if using SAS, must be specified if `sharedAccessSignature` is not specified.|
+| queueName | string | false | The name of the queue to which a message will be dispatched upon writing to a blob.|
+| queueAccountUri | string | false | The URI of the Azure queue account.|
 
 ### Example azureBlobStorage provider
 
@@ -403,6 +443,32 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
     }
 }
 ```
+
+### Example azureBlobStorage provider with queue
+
+```json
+{
+    "Egress": {
+        "AzureBlobStorage": {
+            "monitorBlob": {
+                "accountUri": "https://exampleaccount.blob.core.windows.net",
+                "containerName": "dotnet-monitor",
+                "blobPrefix": "artifacts",
+                "accountKeyName": "MonitorBlobAccountKey",
+                "queueAccountUri": "https://exampleaccount.queue.core.windows.net",
+                "queueName": "dotnet-monitor-queue"
+            }
+        },
+        "Properties": {
+            "MonitorBlobAccountKey": "accountKey"
+        }
+    }
+}
+```
+
+#### azureBlobStorage Queue Message Format
+
+The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`; using the above example with an artifact named `mydump.dmp`, this would be `artifacts/mydump.dmp`) that is being egressed to blob storage. This is designed to be easily integrated into an Azure Function that triggers whenever a new message is added to the queue, providing you with the contents of the artifact as a stream. See [Azure Blob storage input binding for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-input?tabs=csharp#example) for an example.
 
 ### Filesystem egress provider
 
@@ -484,8 +550,7 @@ The following example shows the `Filters` portion of a collection rule that has 
         "Value": "dotnet",
         "MatchType": "Exact"
     },{
-        "Key": "CommandLine",
-        "Value": "myapp.dll",
+        "CommandLine": "myapp.dll",
         "MatchType": "Contains"
     }]
 }
