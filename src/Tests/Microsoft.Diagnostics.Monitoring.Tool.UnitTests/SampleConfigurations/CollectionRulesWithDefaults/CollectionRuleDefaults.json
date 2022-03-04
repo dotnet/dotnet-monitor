@@ -1,0 +1,8 @@
+{
+  "CollectionRuleDefaults": {
+    "Egress": "artifacts",
+    "SlidingWindowDuration": "00:05:00",
+    "RequestCount": "10",
+    "ActionCount": "20"
+  }
+}

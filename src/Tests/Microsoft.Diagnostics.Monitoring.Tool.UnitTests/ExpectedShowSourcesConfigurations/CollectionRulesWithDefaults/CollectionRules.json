@@ -1,0 +1,35 @@
+{
+  "LargeGCHeap": {
+    "Actions": [
+      {
+        "Type": "CollectGCDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+        "Settings": {
+          "Egress": "artifacts" /*Collection Rule Defaults*/
+        }
+      },
+      {
+        "Settings": {
+          "Egress": "monitorBlob" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+        },
+        "Type": "CollectDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      }
+    ],
+    "Filters": [
+      {
+        "Key": "ProcessName" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+        "Value": "FirstWebApp" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      }
+    ],
+    "Limits": {
+      "ActionCountSlidingWindowDuration": "1:00:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "ActionCount": "20" /*Collection Rule Defaults*/
+    },
+    "Trigger": {
+      "Type": "AspNetRequestCount" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "Settings": {
+        "SlidingWindowDuration": "00:05:00" /*Collection Rule Defaults*/,
+        "RequestCount": "10" /*Collection Rule Defaults*/
+      }
+    }
+  }
+}

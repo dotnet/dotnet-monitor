@@ -244,10 +244,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                                 var updatedFlag = !child.GetSection("Settings").Exists() ? IndependentConfigFlags.MockSettings : IndependentConfigFlags.MockValuesNext;
 
-                                configFlag = toMock.Any() ? updatedFlag : configFlag;
+                                configFlag = toMock.Any() ? updatedFlag : IndependentConfigFlags.None;
                             }
 
-                            ProcessChildren(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, configFlag: configFlag);
+                            ProcessChildren(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, configFlag: configFlag, toMock: toMock);
                         }
                         else
                         {
@@ -316,7 +316,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             toMock = typeToUse != null ? GetMockedChildren(typeToUse) : toMock;
 
-            configFlag = toMock.Any() ? updatedFlag : configFlag;
+            configFlag = toMock.Any() ? updatedFlag : IndependentConfigFlags.None;
 
             return toMock;
         }
@@ -367,10 +367,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             using (new JsonObjectContext(_writer))
             {
+                IndependentConfigFlags flagToUse = configFlag;
+
                 bool shouldMock = null != toMock;
-                if (configFlag == IndependentConfigFlags.MockValuesNext)
+                if (flagToUse == IndependentConfigFlags.MockValuesNext)
                 {
                     shouldMock = false;
+                    flagToUse = IndependentConfigFlags.None;
+                }
+
+                if (configFlag != IndependentConfigFlags.IsCollectionRule)
+                {
                     configFlag = IndependentConfigFlags.None;
                 }
 
@@ -383,33 +390,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 if (shouldMock)
                 {
-                    if (configFlag == IndependentConfigFlags.MockSettings)
+                    if (flagToUse == IndependentConfigFlags.MockSettings)
                     {
-                        MockSection(toMock, childKeys, "Settings");
+                        MockSection(toMock, childKeys, "Settings", showSources);
                     }
-                    else if (configFlag == IndependentConfigFlags.MockLimits)
+                    else if (flagToUse == IndependentConfigFlags.MockLimits)
                     {
-                        MockSection(toMock, childKeys, "Limits");
+                        MockSection(toMock, childKeys, "Limits", showSources);
                     }
                     else
                     {
-                        MockChildren(toMock, childKeys);
+                        MockChildren(toMock, childKeys, showSources);
                     }
                 }
             }
         }
 
-        private void MockSection(List<(string, string)> toMock, List<string> childKeys, string propertyName)
+        private void MockSection(List<(string, string)> toMock, List<string> childKeys, string propertyName, bool showSources)
         {
             _writer.WritePropertyName(propertyName);
 
             using (new JsonObjectContext(_writer))
             {
-                MockChildren(toMock, childKeys);
+                MockChildren(toMock, childKeys, showSources);
             }
         }
 
-        private void MockChildren(List<(string, string)> mockedChildren, List<string> childKeys)
+        private void MockChildren(List<(string, string)> mockedChildren, List<string> childKeys, bool showSources)
         {
             foreach (var mockedChild in mockedChildren)
             {
@@ -417,6 +424,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     _writer.WritePropertyName(mockedChild.Item1);
                     _writer.WriteStringValue(mockedChild.Item2);
+
+                    if (showSources)
+                    {
+                        // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
+                        // that prevents comments from being directly after commas
+                        _writer.WriteCommentValue("Collection Rule Defaults");
+                    }
                 }
             }
         }

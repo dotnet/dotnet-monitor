@@ -30,7 +30,6 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptionsDefaults.cs" Link="Options\CollectionRules\CollectionRuleActionOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\EgressProviders.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\EgressProviders" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\RequestCounts.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\RequestCounts" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\ResponseCounts.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\ResponseCounts" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\SlidingWindowDurations.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\SlidingWindowDurations" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptions.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptionsDefaults.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptionsDefaults.cs" />

@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -59,6 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             "urls",
             "Kestrel",
+            "CollectionRuleDefaults",
             "GlobalCounter",
             "CollectionRules",
             "CorsConfiguration",
@@ -176,9 +179,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// assemble properly when combined.
         /// </summary>
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void FullConfigurationTest(bool redact)
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        [InlineData(true, true)]
+        [InlineData(false, true)]
+        public async Task FullConfigurationTest(bool redact, bool useCollectionRuleDefaults)
         {
             using TemporaryDirectory contentRootDirectory = new(_outputHelper);
             using TemporaryDirectory sharedConfigDir = new(_outputHelper);
@@ -194,7 +199,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson());
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(useCollectionRuleDefaults));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -210,9 +215,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
-            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact);
+            string generatedConfig = await WriteAndRetrieveConfiguration(rootConfiguration, redact);
 
-            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact, ExpectedConfigurationsDirectory)));
+            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact, ExpectedConfigurationsDirectory, useCollectionRuleDefaults)));
         }
 
         /// <summary>
@@ -221,9 +226,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// assemble properly when combined.
         /// </summary>
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void FullConfigurationWithSourcesTest(bool redact)
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        [InlineData(true, true)]
+        [InlineData(false, true)]
+        public async Task FullConfigurationWithSourcesTest(bool redact, bool useCollectionRuleDefaults)
         {
             using TemporaryDirectory contentRootDirectory = new(_outputHelper);
             using TemporaryDirectory sharedConfigDir = new(_outputHelper);
@@ -241,15 +248,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             settings.Urls = new[] { "https://localhost:44444" }; // This corresponds to the value in SampleConfigurations/URLs.json
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("Egress.json", "CollectionRules.json"));
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(useCollectionRuleDefaults, "Egress.json", "CollectionRules.json", "CollectionRuleDefaults.json"));
 
             // This is the appsettings.json file that is normally next to the entrypoint assembly.
             // The location of the appsettings.json is determined by the content root in configuration.
-            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson("Storage.json", "Authentication.json"));
+            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson(useCollectionRuleDefaults, "Storage.json", "Authentication.json"));
 
             // This is the settings.json file in the shared configuration directory that is visible
             // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
-            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("Logging.json", "Metrics.json"));
+            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson(useCollectionRuleDefaults, "Logging.json", "Metrics.json"));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -265,9 +272,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
-            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact, showSources: true);
+            string generatedConfig = await WriteAndRetrieveConfiguration(rootConfiguration, redact, showSources: true);
 
-            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact, ExpectedShowSourcesConfigurationsDirectory)));
+            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact, ExpectedShowSourcesConfigurationsDirectory, useCollectionRuleDefaults)));
         }
 
         /// <summary>
@@ -275,7 +282,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// </summary>
         [Theory]
         [MemberData(nameof(GetConnectionModeTestArguments))]
-        public void ConnectionModeTest(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
+        public async Task ConnectionModeTest(string fileName, IDictionary<string, string> diagnosticPortEnvironmentVariables)
         {
             TemporaryDirectory contentRootDirectory = new(_outputHelper);
             TemporaryDirectory sharedConfigDir = new(_outputHelper);
@@ -304,31 +311,41 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IHost host = builder.Build();
             IConfiguration rootConfiguration = host.Services.GetRequiredService<IConfiguration>();
 
-            string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact: false);
+            string generatedConfig = await WriteAndRetrieveConfiguration(rootConfiguration, redact: false);
 
             string expectedDiagnosticPortConfig = File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DiagnosticPortConfigurations", fileName));
 
             Assert.Contains(CleanWhitespace(expectedDiagnosticPortConfig), CleanWhitespace(generatedConfig));
         }
 
-        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent=false, bool showSources = false)
+        private async Task<string> WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent=false, bool showSources = false)
         {
-            Stream stream = new MemoryStream();
+            string toReturn = "";
 
-            using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
-            jsonWriter.Write(configuration, full: !redact, skipNotPresent: skipNotPresent, showSources: showSources);
-            jsonWriter.Dispose();
-
-            stream.Position = 0;
-
-            using (var streamReader = new StreamReader(stream))
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                string configString = streamReader.ReadToEnd();
 
-                _outputHelper.WriteLine(configString);
+            }, host =>
+            {
+                Stream stream = new MemoryStream();
 
-                return configString;
-            }
+                using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
+                jsonWriter.Write(configuration, full: !redact, skipNotPresent: skipNotPresent, showSources: showSources, serviceProvider: host.Services);
+                jsonWriter.Dispose();
+
+                stream.Position = 0;
+
+                using (var streamReader = new StreamReader(stream))
+                {
+                    string configString = streamReader.ReadToEnd();
+
+                    _outputHelper.WriteLine(configString);
+
+                    toReturn = configString;
+                }
+            });
+
+            return toReturn;
         }
 
         private string CleanWhitespace(string rawText)
@@ -336,9 +353,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
-        private string ConstructSettingsJson(params string[] permittedFileNames)
+        private string ConstructSettingsJson(bool useCollectionRuleDefaults, params string[] permittedFileNames)
         {
-            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations"));
+            // Push Sample Defaults to a constant
+            List<string> filePaths = new(Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations")));
+
+            if (useCollectionRuleDefaults)
+            {
+                filePaths.AddRange(Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations", "CollectionRulesWithDefaults")));
+            }
+            else
+            {
+                filePaths.AddRange(Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations", "CollectionRules")));
+            }
 
             IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
 
@@ -360,9 +387,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return generatedUserSettings;
         }
 
-        private string ConstructExpectedOutput(bool redact, string directoryNameLocation)
+        private string ConstructExpectedOutput(bool redact, string directoryNameLocation, bool useCollectionRuleDefaults)
         {
-            Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact);
+            Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact, useCollectionRuleDefaults);
 
             using var stream = new MemoryStream();
             using var writer = new Utf8JsonWriter(stream);
@@ -391,9 +418,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return Encoding.UTF8.GetString(stream.ToArray());
         }
 
-        private Dictionary<string, string> GetConfigurationFileNames(bool redact)
+        private Dictionary<string, string> GetConfigurationFileNames(bool redact, bool useCollectionRuleDefaults)
         {
-            return new Dictionary<string, string>()
+            Dictionary<string, string> configurationFileNames = new Dictionary<string, string>()
             {
                 { "GlobalCounter", "GlobalCounter.json" },
                 { "Metrics", "Metrics.json" },
@@ -403,9 +430,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 { "Logging", "Logging.json" },
                 { "DefaultProcess", "DefaultProcess.json" },
                 { "DiagnosticPort", "DiagnosticPort.json" },
-                { "CollectionRules", "CollectionRules.json" },
                 { "Authentication", redact ? "AuthenticationRedacted.json" : "AuthenticationFull.json" }
             };
+
+            if (useCollectionRuleDefaults)
+            {
+                configurationFileNames.Add("CollectionRuleDefaults", Path.Combine("CollectionRulesWithDefaults", "CollectionRuleDefaults.json"));
+                configurationFileNames.Add("CollectionRules", Path.Combine("CollectionRulesWithDefaults", "CollectionRules.json"));
+            }
+            else
+            {
+                configurationFileNames.Add("CollectionRules", Path.Combine("CollectionRules", "CollectionRules.json"));
+            }
+
+            return configurationFileNames;
         }
 
         public static IEnumerable<object[]> GetConnectionModeTestArguments()

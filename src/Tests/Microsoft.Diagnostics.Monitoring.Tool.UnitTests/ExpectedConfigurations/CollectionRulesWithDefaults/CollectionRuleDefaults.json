@@ -1,0 +1,6 @@
+{
+  "ActionCount": "20",
+  "Egress": "artifacts",
+  "RequestCount": "10",
+  "SlidingWindowDuration": "00:05:00"
+}

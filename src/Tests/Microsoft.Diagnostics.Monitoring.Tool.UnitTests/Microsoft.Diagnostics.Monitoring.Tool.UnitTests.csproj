@@ -15,13 +15,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ExpectedConfigurations\CollectionRulesWithDefaults\CollectionRuleDefaults.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ExpectedConfigurations\CollectionRulesWithDefaults\CollectionRules.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ExpectedShowSourcesConfigurations\AuthenticationFull.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ExpectedShowSourcesConfigurations\AuthenticationRedacted.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ExpectedShowSourcesConfigurations\CollectionRules.json">
+    <None Update="ExpectedShowSourcesConfigurations\CollectionRulesWithDefaults\CollectionRules.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ExpectedShowSourcesConfigurations\CollectionRulesWithDefaults\CollectionRuleDefaults.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ExpectedShowSourcesConfigurations\CollectionRules\CollectionRules.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ExpectedShowSourcesConfigurations\DefaultProcess.json">
@@ -57,7 +69,7 @@
     <None Update="ExpectedConfigurations\AuthenticationRedacted.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ExpectedConfigurations\CollectionRules.json">
+    <None Update="ExpectedConfigurations\CollectionRules\CollectionRules.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ExpectedConfigurations\DefaultProcess.json">
@@ -96,10 +108,16 @@
     <None Update="DiagnosticPortConfigurations\SimplifiedListen.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="SampleConfigurations\CollectionRulesWithDefaults\CollectionRuleDefaults.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="SampleConfigurations\Authentication.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleConfigurations\CollectionRules.json">
+    <None Update="SampleConfigurations\CollectionRulesWithDefaults\CollectionRules.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleConfigurations\CollectionRules\CollectionRules.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SampleConfigurations\DefaultProcess.json">

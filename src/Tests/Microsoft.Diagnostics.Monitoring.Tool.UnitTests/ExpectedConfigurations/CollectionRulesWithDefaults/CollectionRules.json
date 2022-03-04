@@ -1,0 +1,35 @@
+{
+  "LargeGCHeap": {
+    "Actions": [
+      {
+        "Type": "CollectGCDump",
+        "Settings": {
+          "Egress": "artifacts"
+        }
+      },
+      {
+        "Settings": {
+          "Egress": "monitorBlob"
+        },
+        "Type": "CollectDump"
+      }
+    ],
+    "Filters": [
+      {
+        "Key": "ProcessName",
+        "Value": "FirstWebApp"
+      }
+    ],
+    "Limits": {
+      "ActionCountSlidingWindowDuration": "1:00:00",
+      "ActionCount": "20"
+    },
+    "Trigger": {
+      "Type": "AspNetRequestCount",
+      "Settings": {
+        "SlidingWindowDuration": "00:05:00",
+        "RequestCount": "10"
+      }
+    }
+  }
+}
