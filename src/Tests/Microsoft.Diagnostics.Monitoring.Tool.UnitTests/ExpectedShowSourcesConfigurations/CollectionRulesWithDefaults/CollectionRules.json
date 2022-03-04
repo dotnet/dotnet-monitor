@@ -1,5 +1,5 @@
 {
-  "LargeGCHeap": {
+  "Rule1": {
     "Actions": [
       {
         "Type": "CollectGCDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
@@ -21,8 +21,9 @@
       }
     ],
     "Limits": {
+      "ActionCount": "3" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
       "ActionCountSlidingWindowDuration": "1:00:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-      "ActionCount": "20" /*Collection Rule Defaults*/
+      "RuleDuration": "00:00:05" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     },
     "Trigger": {
       "Type": "AspNetRequestCount" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
@@ -30,6 +31,36 @@
         "SlidingWindowDuration": "00:05:00" /*Collection Rule Defaults*/,
         "RequestCount": "10" /*Collection Rule Defaults*/
       }
+    }
+  },
+  "Rule2": {
+    "Actions": [
+      {
+        "Settings": {
+          "Type": "Mini" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+          "Egress": "artifacts" /*Collection Rule Defaults*/
+        },
+        "Type": "CollectDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      }
+    ],
+    "Filters": [
+      {
+        "Key": "ProcessName" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+        "Value": "FirstWebApp" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      }
+    ],
+    "Trigger": {
+      "Settings": {
+        "StatusCodes": [ "400-409" /*JsonConfigurationProvider for 'settings.json' (Optional)*/ ],
+        "SlidingWindowDuration": "00:05:00" /*Collection Rule Defaults*/,
+        "ResponseCount": "1" /*Collection Rule Defaults*/
+      },
+      "Type": "AspNetResponseStatus" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    },
+    "Limits": {
+      "ActionCount": "20" /*Collection Rule Defaults*/,
+      "ActionCountSlidingWindowDuration": "00:00:01" /*Collection Rule Defaults*/,
+      "RuleDuration": "11:11:11" /*Collection Rule Defaults*/
     }
   }
 }

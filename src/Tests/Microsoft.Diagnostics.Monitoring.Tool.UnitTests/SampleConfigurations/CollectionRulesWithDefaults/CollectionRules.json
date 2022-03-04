@@ -1,6 +1,6 @@
 {
   "CollectionRules": {
-    "LargeGCHeap": {
+    "Rule1": {
       "Trigger": {
         "Type": "AspNetRequestCount"
       },
@@ -22,8 +22,32 @@
         }
       ],
       "Limits": {
-        "ActionCountSlidingWindowDuration": "1:00:00"
+        "ActionCountSlidingWindowDuration": "1:00:00",
+        "ActionCount": 3,
+        "RuleDuration": "00:00:05"
       }
+    },
+    "Rule2": {
+      "Trigger": {
+        "Type": "AspNetResponseStatus",
+        "Settings": {
+          "StatusCodes": ["400-409"]
+        }
+      },
+      "Actions": [
+        {
+          "Type": "CollectDump",
+          "Settings": {
+            "Type": "Mini"
+          }
+        }
+      ],
+      "Filters": [
+        {
+          "Key": "ProcessName",
+          "Value": "FirstWebApp"
+        }
+      ]
     }
   }
 }

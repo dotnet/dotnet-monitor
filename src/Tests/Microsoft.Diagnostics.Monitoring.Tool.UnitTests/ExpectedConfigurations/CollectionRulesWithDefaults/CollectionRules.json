@@ -1,5 +1,5 @@
 {
-  "LargeGCHeap": {
+  "Rule1": {
     "Actions": [
       {
         "Type": "CollectGCDump",
@@ -21,8 +21,9 @@
       }
     ],
     "Limits": {
+      "ActionCount": "3",
       "ActionCountSlidingWindowDuration": "1:00:00",
-      "ActionCount": "20"
+      "RuleDuration": "00:00:05"
     },
     "Trigger": {
       "Type": "AspNetRequestCount",
@@ -30,6 +31,36 @@
         "SlidingWindowDuration": "00:05:00",
         "RequestCount": "10"
       }
+    }
+  },
+  "Rule2": {
+    "Actions": [
+      {
+        "Settings": {
+          "Type": "Mini",
+          "Egress": "artifacts"
+        },
+        "Type": "CollectDump"
+      }
+    ],
+    "Filters": [
+      {
+        "Key": "ProcessName",
+        "Value": "FirstWebApp"
+      }
+    ],
+    "Trigger": {
+      "Settings": {
+        "StatusCodes": [ "400-409" ],
+        "SlidingWindowDuration": "00:05:00",
+        "ResponseCount": "1"
+      },
+      "Type": "AspNetResponseStatus"
+    },
+    "Limits": {
+      "ActionCount": "20",
+      "ActionCountSlidingWindowDuration": "00:00:01",
+      "RuleDuration": "11:11:11"
     }
   }
 }
