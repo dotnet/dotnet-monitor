@@ -1,0 +1,26 @@
+{
+  "Properties": {
+    "MonitorBlobAccountKey": ":REDACTED:" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+  },
+  "AzureBlobStorage": {
+    "monitorBlob": {
+      "AccountUri": "https://exampleaccount.blob.core.windows.net" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "BlobPrefix": "artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "ContainerName": "dotnet-monitor" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "CopyBufferSize": ":NOT PRESENT:",
+      "QueueName": ":NOT PRESENT:",
+      "QueueAccountUri": ":NOT PRESENT:",
+      "SharedAccessSignature": ":NOT PRESENT:",
+      "AccountKey": ":NOT PRESENT:",
+      "SharedAccessSignatureName": ":NOT PRESENT:",
+      "AccountKeyName": "MonitorBlobAccountKey" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    }
+  },
+  "FileSystem": {
+    "artifacts": {
+      "DirectoryPath": " /artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "IntermediateDirectoryPath": ":NOT PRESENT:",
+      "CopyBufferSize": ":NOT PRESENT:"
+    }
+  }
+}

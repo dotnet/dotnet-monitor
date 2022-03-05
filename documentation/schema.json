@@ -449,10 +449,6 @@
     "ProcessFilterDescriptor": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Key",
-        "Value"
-      ],
       "properties": {
         "Key": {
           "description": "The criteria used to compare against the target process.",
@@ -463,9 +459,11 @@
           ]
         },
         "Value": {
-          "type": "string",
-          "description": "The value of the criteria used to compare against the target process.",
-          "minLength": 1
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The value of the criteria used to compare against the target process."
         },
         "MatchType": {
           "description": "Type of match to use against the process criteria.",
@@ -475,6 +473,27 @@
               "$ref": "#/definitions/ProcessFilterType"
             }
           ]
+        },
+        "ProcessName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Performs a match based on the name of a process on the system."
+        },
+        "ProcessId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Performs a match based on the numerical ID of a process on the system."
+        },
+        "CommandLine": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Performs a match based on the contents of the command passed to launch the process on the system; this typically includes the executable path and arguments to the process."
         }
       }
     },
@@ -952,6 +971,21 @@
           ],
           "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
           "format": "int32"
+        },
+        "QueueName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the queue to which a message will be dispatched upon writing to a blob."
+        },
+        "QueueAccountUri": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The URI of the Azure queue account.",
+          "format": "uri"
         }
       }
     },

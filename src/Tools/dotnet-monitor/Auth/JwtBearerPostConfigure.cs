@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public void PostConfigure(string name, JwtBearerOptions options)
         {
             MonitorApiKeyConfiguration configSnapshot = _apiKeyConfig.CurrentValue;
-            if (configSnapshot.ValidationErrors.Any())
+            if (!configSnapshot.Configured || configSnapshot.ValidationErrors.Any())
             {
                 options.SecurityTokenValidators.Add(new RejectAllSecurityValidator());
                 return;

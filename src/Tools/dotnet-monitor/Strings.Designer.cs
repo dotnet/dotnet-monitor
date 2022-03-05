@@ -493,6 +493,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show loaded configuration providers from high to low priority.
+        /// </summary>
+        internal static string HelpDescription_OptionShowSources {
+            get {
+                return ResourceManager.GetString("HelpDescription_OptionShowSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generates a new MonitorApiKey for each launch of the process..
         /// </summary>
         internal static string HelpDescription_OptionTempApiKey {
@@ -534,6 +543,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_ApiKeyAuthenticationOptionsValidated {
             get {
                 return ResourceManager.GetString("LogFormatString_ApiKeyAuthenticationOptionsValidated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to API key authentication is not configured. See {0} for more details..
+        /// </summary>
+        internal static string LogFormatString_ApiKeyNotConfigured {
+            get {
+                return ResourceManager.GetString("LogFormatString_ApiKeyNotConfigured", resourceCulture);
             }
         }
         
@@ -934,6 +952,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
+        /// </summary>
+        internal static string LogFormatString_QueueDoesNotExist {
+            get {
+                return ResourceManager.GetString("LogFormatString_QueueDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queue message egress requires {queueName} and {queueAccountUri} to be set.
+        /// </summary>
+        internal static string LogFormatString_QueueOptionsPartiallySet {
+            get {
+                return ResourceManager.GetString("LogFormatString_QueueOptionsPartiallySet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes).
         /// </summary>
         internal static string LogFormatString_RunningElevated {
@@ -957,6 +993,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_UnableToListenToAddress {
             get {
                 return ResourceManager.GetString("LogFormatString_UnableToListenToAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to send message to the queue {0}..
+        /// </summary>
+        internal static string LogFormatString_WritingMessageToQueueFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_WritingMessageToQueueFailed", resourceCulture);
             }
         }
         
@@ -1002,6 +1047,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string Message_SettingsDump {
             get {
                 return ResourceManager.GetString("Message_SettingsDump", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configuration Providers (High to Low Priority):.
+        /// </summary>
+        internal static string Message_ShowSources {
+            get {
+                return ResourceManager.GetString("Message_ShowSources", resourceCulture);
             }
         }
         
