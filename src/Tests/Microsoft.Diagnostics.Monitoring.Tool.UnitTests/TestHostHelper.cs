@@ -100,6 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.AddSingleton<ITestOutputHelper>(outputHelper);
                     services.AddSingleton(RealSystemClock.Instance);
                     services.ConfigureGlobalCounter(context.Configuration);
+                    services.ConfigureCollectionRuleDefaults(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();

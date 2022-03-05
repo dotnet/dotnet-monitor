@@ -1,5 +1,5 @@
 {
-  "ActionCount": "20" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+  "ActionCount": "20"/*JsonConfigurationProvider for 'settings.json' (Optional)*/,
   "ActionCountSlidingWindowDuration": "00:00:01" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
   "Egress": "artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
   "RequestCount": "10" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,

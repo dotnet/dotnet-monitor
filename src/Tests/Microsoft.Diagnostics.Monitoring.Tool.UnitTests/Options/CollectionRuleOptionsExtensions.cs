@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress, DumpType? type = null)
+        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress = null, DumpType? type = null)
         {
             return options.AddAction(
                 KnownCollectionRuleActions.CollectDump,

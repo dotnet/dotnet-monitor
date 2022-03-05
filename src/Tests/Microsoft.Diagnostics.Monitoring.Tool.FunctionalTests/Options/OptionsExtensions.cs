@@ -43,6 +43,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleDefaultOptions CreateCollectionRuleDefaults(this RootOptions rootOptions)
+        {
+            CollectionRuleDefaultOptions options = new();
+            rootOptions.CollectionRuleDefaults = options;
+            return options;
+        }
+
+        public static CollectionRuleDefaultOptions SetEgress(this CollectionRuleDefaultOptions options, string egressProvider)
+        {
+            options.Egress = egressProvider;
+
+            return options;
+        }
+
         public static RootOptions SetDumpTempFolder(this RootOptions options, string directoryPath)
         {
             if (null == options.Storage)
