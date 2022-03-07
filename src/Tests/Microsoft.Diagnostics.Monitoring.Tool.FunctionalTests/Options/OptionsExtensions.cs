@@ -57,6 +57,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleDefaultOptions SetRequestCount(this CollectionRuleDefaultOptions options, int requestCount)
+        {
+            options.RequestCount = requestCount;
+
+            return options;
+        }
+
+        public static CollectionRuleDefaultOptions SetResponseCount(this CollectionRuleDefaultOptions options, int responseCount)
+        {
+            options.ResponseCount = responseCount;
+
+            return options;
+        }
+
         public static RootOptions SetDumpTempFolder(this RootOptions options, string directoryPath)
         {
             if (null == options.Storage)
