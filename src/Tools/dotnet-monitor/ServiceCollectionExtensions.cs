@@ -39,7 +39,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics)
                 .AddSingleton<IValidateOptions<MetricsOptions>, DataAnnotationValidateOptions<MetricsOptions>>();
-
         }
 
         public static IServiceCollection ConfigureMonitorApiKeyOptions(this IServiceCollection services, IConfiguration configuration)

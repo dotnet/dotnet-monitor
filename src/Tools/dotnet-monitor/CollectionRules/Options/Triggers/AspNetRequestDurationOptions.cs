@@ -15,6 +15,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     internal sealed class AspNetRequestDurationOptions :
         IAspNetActionPathFilters
     {
+        public const string RequestDuration_MaxValue = "01:00:00";
+        public const string RequestDuration_MinValue = "00:00:00";
+
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetRequestDurationOptions_RequestCount))]
@@ -26,6 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetRequestDurationOptions_RequestDuration))]
         [DefaultValue(AspNetRequestDurationOptionsDefaults.RequestDuration)]
+        [Range(typeof(TimeSpan), RequestDuration_MinValue, RequestDuration_MaxValue)]
         public TimeSpan? RequestDuration { get; set; }
 
         [Display(
