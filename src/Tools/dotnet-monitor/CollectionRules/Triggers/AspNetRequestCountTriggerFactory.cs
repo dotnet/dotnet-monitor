@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             {
                 ExcludePaths = options.ExcludePaths,
                 IncludePaths = options.IncludePaths,
-                RequestCount = options.RequestCount,
+                RequestCount = options.RequestCount.Value,
                 SlidingWindowDuration = options.SlidingWindowDuration ?? TimeSpan.Parse(AspNetRequestCountOptionsDefaults.SlidingWindowDuration, CultureInfo.InvariantCulture),
             };
 
