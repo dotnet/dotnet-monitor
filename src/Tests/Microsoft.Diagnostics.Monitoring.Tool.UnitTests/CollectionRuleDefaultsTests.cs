@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public async Task DefaultRequestCount_Success()
+        public async Task DefaultRequestCount_RequestCount_Success()
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -117,7 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public async Task DefaultRequestCount_Failure()
+        public async Task DefaultRequestCount_RequestCount_Failure()
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -138,7 +138,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public async Task DefaultRequestCount_Override()
+        public async Task DefaultRequestCount_RequestCount_Override()
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -158,6 +158,75 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, host =>
             {
                 AspNetRequestCountOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName);
+
+                Assert.Equal(TriggerTestsConstants.ExpectedRequestCount, options.RequestCount);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultRequestCount_RequestDuration_Success()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetRequestCount(TriggerTestsConstants.ExpectedRequestCount);
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetTrigger("AspNetRequestDuration"); // Can we push this out to reading from a field?
+            }, host =>
+            {
+                AspNetRequestDurationOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestDurationOptions>(host, DefaultRuleName);
+
+                Assert.Equal(TriggerTestsConstants.ExpectedRequestCount, options.RequestCount);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultRequestCount_RequestDuration_Failure()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetTrigger("AspNetRequestDuration"); // Omit Request Count and don't set a default
+            }, host =>
+            {
+                OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
+                        () => TriggerTestsHelper.GetTriggerOptions<AspNetRequestDurationOptions>(host, DefaultRuleName));
+
+                Assert.Equal(string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultRequestCount), invalidOptionsException.Message);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultRequestCount_RequestDuration_Override()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetRequestCount(TriggerTestsConstants.UnknownRequestCount);
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                AspNetRequestDurationOptions options = new AspNetRequestDurationOptions();
+                options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetTrigger("AspNetRequestDuration")
+                    .Trigger.Settings = options;
+            }, host =>
+            {
+                AspNetRequestDurationOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestDurationOptions>(host, DefaultRuleName);
 
                 Assert.Equal(TriggerTestsConstants.ExpectedRequestCount, options.RequestCount);
             });
@@ -240,6 +309,59 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 AspNetResponseStatusOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetResponseStatusOptions>(host, DefaultRuleName);
 
                 Assert.Equal(TriggerTestsConstants.ExpectedResponseCount, options.ResponseCount);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultSlidingWindowDuration_Success()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetSlidingWindowDuration(TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration));
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                AspNetRequestCountOptions options = new AspNetRequestCountOptions();
+                options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetTrigger("AspNetRequestCount")
+                    .Trigger.Settings = options;
+            }, host =>
+            {
+                AspNetRequestCountOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName);
+
+                Assert.Equal(TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration), options.SlidingWindowDuration);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultSlidingWindowDuration_Override()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetSlidingWindowDuration(TimeSpan.Parse(TriggerTestsConstants.UnknownSlidingWindowDuration));
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                AspNetRequestCountOptions options = new AspNetRequestCountOptions();
+                options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+                options.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetTrigger("AspNetRequestCount")
+                    .Trigger.Settings = options;
+            }, host =>
+            {
+                AspNetRequestCountOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName);
+
+                Assert.Equal(TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration), options.SlidingWindowDuration);
             });
         }
     }

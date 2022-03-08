@@ -13,5 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         public const int ExpectedResponseCount = 2;
         public const int UnknownResponseCount = 20;
+
+        public const string ExpectedSlidingWindowDuration = "00:00:03";
+        public const string UnknownSlidingWindowDuration = "00:00:30";
     }
 }
