@@ -12,8 +12,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         public const string SlidingWindowDuration_Default = "00:01:00"; // 1 minute
         public const string SlidingWindowDuration_MaxValue = "1.00:00:00"; // 1 day
         public const string SlidingWindowDuration_MinValue = "00:00:01"; // 1 second
-
-        public const string RequestDuration_MaxValue = "01:00:00"; // 1 hour
-        public const string RequestDuration_MinValue = "00:00:01"; // 0 seconds
     }
 }

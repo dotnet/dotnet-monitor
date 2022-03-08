@@ -318,8 +318,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
-        /*
-        // WON'T WORK UNTIL WIKTOR'S CHANGE GETS MERGED IN
         [Fact]
         public Task CollectionRuleOptions_AspNetRequestCountTrigger_RangePropertyValidation()
         {
@@ -342,7 +340,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestCountOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
-        }*/
+        }
 
         [Fact]
         public Task CollectionRuleOptions_AspNetRequestDurationTrigger_MinimumOptions()
@@ -416,8 +414,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
-        /*
-        // WON'T WORK UNTIL WIKTOR'S CHANGE GETS MERGED IN
         [Fact]
         public Task CollectionRuleOptions_AspNetRequestDurationTrigger_RangePropertyValidation()
         {
@@ -438,12 +434,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     Assert.Equal(3, failures.Length);
                     VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString()); // Do we want these as constants...?
-                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestDurationOptions.SlidingWindowDuration),
-                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestDurationOptions.RequestDuration),
+                        AspNetRequestDurationOptions.RequestDuration_MinValue, AspNetRequestDurationOptions.RequestDuration_MaxValue);
                     VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetRequestDurationOptions.SlidingWindowDuration),
-                        TriggerOptionsConstants.RequestDuration_MinValue, TriggerOptionsConstants.RequestDuration_MaxValue); // Follow up with Wiktor about this
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
-        }*/
+        }
 
         [Fact]
         public Task CollectionRuleOptions_AspNetResponseStatusTrigger_MinimumOptions()
@@ -521,11 +517,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
-        /*
-        // WON'T WORK UNTIL WIKTOR'S CHANGE GETS MERGED IN
         [Fact]
         public Task CollectionRuleOptions_AspNetResponseStatusTrigger_RangePropertyValidation()
         {
+            string[] ExpectedStatusCodes = { "400", "500" };
+
             return ValidateFailure(
                 rootOptions =>
                 {
@@ -534,6 +530,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         {
                             options.ResponseCount = -1;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                            options.StatusCodes = ExpectedStatusCodes;
                         });
                 },
                 ex =>
@@ -545,7 +542,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetResponseStatusOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
-        }*/
+        }
 
         [Fact]
         public Task CollectionRuleOptions_CollectDumpAction_RoundTrip()
