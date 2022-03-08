@@ -931,3 +931,69 @@ The following example shows the `Limits` portion of a collection rule that has t
     }
 }
 ```
+
+## Collection Rule Defaults
+
+Collection rule defaults are specified in configuration as a named item under the `CollectionRuleDefaults` property at the root of the configuration. Defaults can be used to limit the verbosity of configuration, allowing frequently used values for collection rules to be assigned as defaults. The following are the currently supported collection rule defaults:
+
+| Name | Type | Applies To |
+|---|---|---|
+| `Egress` | string | [CollectDump](#collectdump-action), [CollectGCDump](#collectgcdump-action), [CollectTrace](#collecttrace-action), [CollectLogs](#collectlogs-action) |
+| `SlidingWindowDuration` | TimeSpan? | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger), [AspNetResponseStatus](#aspnetresponsestatus-trigger), [EventCounter](#eventcounter-trigger) |
+| `RequestCount` | int | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger) |
+| `ResponseCount` | int | [AspNetResponseStatus](#aspnetresponsestatus-trigger) |
+| `ActionCount` | int | [Limits](#limits) |
+| `ActionCountSlidingWindowDuration` | TimeSpan? | [Limits](#limits) |
+| `RuleDuration` | TimeSpan? | [Limits](#limits) |
+
+### Example
+
+The following example includes a default egress provider that corresponds to the `FileSystem` egress provider named `artifacts`. The first action, `CollectDump`, is able to omit the `Settings` section, using the default egress provider. The second action, `CollectGCDump`, is using an egress provider other than the default, and specifies that it will instead egress to an `AzureBlobStorage` provider named `monitorBlob`.
+
+```json
+{
+  "Egress": {
+    "AzureBlobStorage": {
+      "monitorBlob": {
+        "accountUri": "https://exampleaccount.blob.core.windows.net",
+        "containerName": "dotnet-monitor",
+        "blobPrefix": "artifacts",
+        "accountKeyName": "MonitorBlobAccountKey"
+      }
+    },
+    "Properties": {
+      "MonitorBlobAccountKey": "accountKey"
+    },
+    "FileSystem": {
+      "artifacts": {
+        "directoryPath": "/artifacts",
+        "intermediateDirectoryPath": "/intermediateArtifacts"
+      }
+    }
+  },
+  "CollectionRuleDefaults": {
+    "Egress": "artifacts"
+  },
+  "CollectionRules": {
+    "HighRequestCount": {
+      "Trigger": {
+        "Type": "AspNetRequestCount",
+        "Settings": {
+          "RequestCount": 10
+        }
+      },
+      "Actions": [
+        {
+          "Type": "CollectDump"
+        },
+        {
+          "Type": "CollectGCDump",
+          "Settings": {
+            "Egress": "monitorBlob"
+          }
+        }
+      ]
+    }
+  }
+}
+```
