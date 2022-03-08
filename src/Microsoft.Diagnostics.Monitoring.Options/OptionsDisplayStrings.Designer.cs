@@ -1172,6 +1172,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An egress provider must be specified if there is no default egress provider..
+        /// </summary>
+        public static string ErrorMessage_NoDefaultEgressProvider {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoDefaultEgressProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A request count must be specified if there is no default request count..
+        /// </summary>
+        public static string ErrorMessage_NoDefaultRequestCount {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoDefaultRequestCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A request count must be specified if there is no default response count..
+        /// </summary>
+        public static string ErrorMessage_NoDefaultResponseCount {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoDefaultResponseCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field or the {1} field is required..
         /// </summary>
         public static string ErrorMessage_TwoFieldsMissing {

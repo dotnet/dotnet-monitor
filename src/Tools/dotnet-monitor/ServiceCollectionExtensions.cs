@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IPostConfigureOptions<MonitorApiKeyConfiguration>, MonitorApiKeyPostConfigure>();
             // Notifies that MonitorApiKeyConfiguration is changed when MonitorApiKeyOptions is changed.
             services.AddSingleton<IOptionsChangeTokenSource<MonitorApiKeyConfiguration>, MonitorApiKeyChangeTokenSource>();
-            
+
             return services;
         }
 
@@ -95,8 +95,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
             services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
 
-            services.ConfigureCollectionRuleDefaults();
-
             services.AddSingleton<EventPipeTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<EventCounterTriggerSettings>, Monitoring.EventPipe.Triggers.EventCounter.EventCounterTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<AspNetRequestDurationTriggerSettings>, Monitoring.EventPipe.Triggers.AspNet.AspNetRequestDurationTriggerFactory>();
@@ -121,26 +119,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddHostedServiceForwarder<CollectionRuleService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 
+            services.ConfigureCollectionRuleDefaults();
+
             return services;
         }
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services)
         {
-            // These should be validate
-            services.AddSingleton<IValidateOptions<CollectDumpOptions>, EgressValidateOptions<CollectDumpOptions>>();
-            services.AddSingleton<IValidateOptions<CollectGCDumpOptions>, EgressValidateOptions<CollectGCDumpOptions>>();
-            services.AddSingleton<IValidateOptions<CollectLogsOptions>, EgressValidateOptions<CollectLogsOptions>>();
-            services.AddSingleton<IValidateOptions<CollectTraceOptions>, EgressValidateOptions<CollectTraceOptions>>();
+            // Should we make the PostConfigure methods reusable, or roll them all up into one that then handles all of these operations?
 
-            // These should potentially be configureoptions or postconfigureoptions
-            services.AddSingleton<IValidateOptions<AspNetRequestCountOptions>, SlidingWindowDurationValidateOptions<AspNetRequestCountOptions>>();
-            services.AddSingleton<IValidateOptions<AspNetRequestDurationOptions>, SlidingWindowDurationValidateOptions<AspNetRequestDurationOptions>>();
-            services.AddSingleton<IValidateOptions<AspNetResponseStatusOptions>, SlidingWindowDurationValidateOptions<AspNetResponseStatusOptions>>();
-            services.AddSingleton<IValidateOptions<EventCounterOptions>, SlidingWindowDurationValidateOptions<EventCounterOptions>>();
-
-            // These should be validate
-            services.AddSingleton<IValidateOptions<AspNetRequestCountOptions>, RequestCountsValidateOptions<AspNetRequestCountOptions>>();
-            services.AddSingleton<IValidateOptions<AspNetRequestDurationOptions>, RequestCountsValidateOptions<AspNetRequestDurationOptions>>();
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, EgressPostConfigure>(); // since we don't run validate, just prints the normal required message -> not the one saying to add a default or a single use one
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, SlidingWindowDurationPostConfigure>();
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, RequestCountsPostConfigure>();
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, ResponseCountsPostConfigure>();
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, LimitsPostConfigure>();
 
             return services;
         }
@@ -179,6 +171,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // NOTE: When opening collection rule triggers for extensibility, this should not be added for all registered triggers.
             // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+
             return services;
         }
 

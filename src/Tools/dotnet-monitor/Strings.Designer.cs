@@ -268,33 +268,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An egress provider must be specified if there is no default egress provider..
-        /// </summary>
-        internal static string ErrorMessage_NoDefaultEgressProvider {
-            get {
-                return ResourceManager.GetString("ErrorMessage_NoDefaultEgressProvider", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A request count must be specified if there is no default request count..
-        /// </summary>
-        internal static string ErrorMessage_NoDefaultRequestCount {
-            get {
-                return ResourceManager.GetString("ErrorMessage_NoDefaultRequestCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A request count must be specified if there is no default response count..
-        /// </summary>
-        internal static string ErrorMessage_NoDefaultResponseCount {
-            get {
-                return ResourceManager.GetString("ErrorMessage_NoDefaultResponseCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The environment block does not contain the &apos;{0}&apos; variable..
         /// </summary>
         internal static string ErrorMessage_NoEnvironmentVariable {

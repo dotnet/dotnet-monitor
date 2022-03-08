@@ -41,12 +41,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 }
             }
 
-            // Always want to evaluate this (even if null) for the defaults
-            Limits = (null == Limits) ? new CollectionRuleLimitsOptions() : Limits;
-            ValidationContext limitsContext = new(Limits, validationContext, validationContext.Items);
-            limitsContext.MemberName = nameof(Trigger);
-            Validator.TryValidateObject(Limits, limitsContext, results);
-
             return results;
         }
     }

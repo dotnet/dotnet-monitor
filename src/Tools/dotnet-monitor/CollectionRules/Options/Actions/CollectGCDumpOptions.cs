@@ -18,6 +18,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectGCDumpOptions_Egress))]
+        [Required(
+            ErrorMessageResourceType = typeof(OptionsDisplayStrings),
+            ErrorMessageResourceName = nameof(OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider))]
+#if !UNITTEST && !SCHEMAGEN
+        [ValidateEgressProvider]
+#endif
         public string Egress { get; set; }
     }
 }

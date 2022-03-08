@@ -232,18 +232,6 @@
 1. value: The value of the string that could not be parsed.
 2. errorMessage: Additional error message text.</comment>
   </data>
-  <data name="ErrorMessage_NoDefaultEgressProvider" xml:space="preserve">
-    <value>An egress provider must be specified if there is no default egress provider.</value>
-    <comment>Gets the format string for egress provider failure when there isn't one specified and no default exists. </comment>
-  </data>
-  <data name="ErrorMessage_NoDefaultRequestCount" xml:space="preserve">
-    <value>A request count must be specified if there is no default request count.</value>
-    <comment>Gets the format string for request count failure when there isn't one specified and no default exists. </comment>
-  </data>
-  <data name="ErrorMessage_NoDefaultResponseCount" xml:space="preserve">
-    <value>A request count must be specified if there is no default response count.</value>
-    <comment>Gets the format string for response count failure when there isn't one specified and no default exists. </comment>
-  </data>
   <data name="ErrorMessage_NoEnvironmentVariable" xml:space="preserve">
     <value>The environment block does not contain the '{0}' variable.</value>
     <comment>Gets the format string for an error when the given environment variable does not exist.

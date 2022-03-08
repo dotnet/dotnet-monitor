@@ -615,4 +615,16 @@
     <value>The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.</value>
     <comment>The description provided for the RuleDuration parameter on CollectionRuleLimitsOptions.</comment>
   </data>
+  <data name="ErrorMessage_NoDefaultEgressProvider" xml:space="preserve">
+    <value>An egress provider must be specified if there is no default egress provider.</value>
+    <comment>Gets the format string for egress provider failure when there isn't one specified and no default exists. </comment>
+  </data>
+  <data name="ErrorMessage_NoDefaultRequestCount" xml:space="preserve">
+    <value>A request count must be specified if there is no default request count.</value>
+    <comment>Gets the format string for request count failure when there isn't one specified and no default exists. </comment>
+  </data>
+  <data name="ErrorMessage_NoDefaultResponseCount" xml:space="preserve">
+    <value>A request count must be specified if there is no default response count.</value>
+    <comment>Gets the format string for response count failure when there isn't one specified and no default exists. </comment>
+  </data>
 </root>

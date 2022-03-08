@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Extensions.Options;
@@ -67,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
                         () => ActionTestsHelper.GetActionOptions<OptionsValidationException>(host, DefaultRuleName));
 
-                Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_NoDefaultEgressProvider), invalidOptionsException.Message);
+                Assert.Equal(string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider), invalidOptionsException.Message);
             });
         }
 
@@ -102,6 +103,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.CreateCollectionRuleDefaults().SetRequestCount(TriggerTestsConstants.ExpectedRequestCount);
 
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
                     .SetTrigger("AspNetRequestCount"); // Can we push this out to reading from a field?
@@ -130,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
                         () => TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName));
 
-                Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_NoDefaultRequestCount), invalidOptionsException.Message);
+                Assert.Equal(string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultRequestCount), invalidOptionsException.Message);
             });
         }
 
@@ -142,6 +145,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRuleDefaults().SetRequestCount(TriggerTestsConstants.UnknownRequestCount);
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 AspNetRequestCountOptions options = new AspNetRequestCountOptions();
                 options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
@@ -167,6 +172,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.CreateCollectionRuleDefaults().SetResponseCount(TriggerTestsConstants.ExpectedResponseCount);
 
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
                 AspNetResponseStatusOptions options = new AspNetResponseStatusOptions(); // Omit setting the Response Count
                 options.StatusCodes = TriggerTestsConstants.ExpectedStatusCodes;
 
@@ -191,6 +198,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
                 AspNetResponseStatusOptions options = new AspNetResponseStatusOptions();
                 options.StatusCodes = TriggerTestsConstants.ExpectedStatusCodes;
 
@@ -203,7 +212,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
                         () => TriggerTestsHelper.GetTriggerOptions<AspNetResponseStatusOptions>(host, DefaultRuleName));
 
-                Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_NoDefaultResponseCount), invalidOptionsException.Message);
+                Assert.Equal(string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultResponseCount), invalidOptionsException.Message);
             });
         }
 
@@ -215,6 +224,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRuleDefaults().SetResponseCount(TriggerTestsConstants.UnknownResponseCount);
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 AspNetResponseStatusOptions options = new AspNetResponseStatusOptions();
                 options.ResponseCount = TriggerTestsConstants.ExpectedResponseCount;
