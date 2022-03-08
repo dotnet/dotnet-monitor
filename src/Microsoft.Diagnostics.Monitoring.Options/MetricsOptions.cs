@@ -31,6 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_MetricCount))]
         [DefaultValue(MetricsOptionsDefaults.MetricCount)]
+        [Range(1, int.MaxValue)]
         public int? MetricCount { get; set; }
 
         [Display(

@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount))]
         [DefaultValue(CollectionRuleLimitsOptionsDefaults.ActionCount)]
+        [Range(1, int.MaxValue)]
         public int? ActionCount { get; set; }
 
         [Display(
