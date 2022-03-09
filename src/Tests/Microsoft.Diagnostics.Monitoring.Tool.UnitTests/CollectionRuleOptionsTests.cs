@@ -23,7 +23,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    // NOTE: I BROKE SOME OF THESE WITH MOVING VALIDATION -> TALK TO JUSTIN ABOUT HOW WE WANT TO RESOLVE.
     public sealed class CollectionRuleOptionsTests
     {
         private const string DefaultRuleName = "TestRule";

@@ -19,17 +19,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     public sealed class CollectionRuleDefaultsTests
     {
         private const string DefaultRuleName = nameof(CollectionRuleDefaultsTests);
-        private const string UnknownEgressName = "UnknownEgress";
 
         private ITestOutputHelper _outputHelper;
-        private readonly EndpointUtilities _endpointUtilities;
 
         public CollectionRuleDefaultsTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
-            _endpointUtilities = new(_outputHelper);
         }
 
+        // Do we want to test this for every type of action? Technically, a regression could happen for something other
+        // than CollectDump, and we wouldn't detect it with the current test.
         [Fact]
         public async Task DefaultEgress_Success()
         {
@@ -37,7 +36,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetEgress(ActionTestsConstants.ExpectedEgressProvider);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.Egress = ActionTestsConstants.ExpectedEgressProvider;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -80,7 +82,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetEgress(UnknownEgressName);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.Egress = ActionTestsConstants.UnknownEgressProvider;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -102,7 +107,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetRequestCount(TriggerTestsConstants.ExpectedRequestCount);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -145,7 +153,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetRequestCount(TriggerTestsConstants.UnknownRequestCount);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.RequestCount = TriggerTestsConstants.UnknownRequestCount;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -171,7 +182,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetRequestCount(TriggerTestsConstants.ExpectedRequestCount);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -214,7 +228,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetRequestCount(TriggerTestsConstants.UnknownRequestCount);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.RequestCount = TriggerTestsConstants.UnknownRequestCount;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -240,7 +257,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetResponseCount(TriggerTestsConstants.ExpectedResponseCount);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.ResponseCount = TriggerTestsConstants.ExpectedResponseCount;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -268,8 +288,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
-                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
-
                 AspNetResponseStatusOptions options = new AspNetResponseStatusOptions();
                 options.StatusCodes = TriggerTestsConstants.ExpectedStatusCodes;
 
@@ -293,7 +311,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetResponseCount(TriggerTestsConstants.UnknownResponseCount);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.ResponseCount = TriggerTestsConstants.UnknownResponseCount;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -313,6 +334,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
+        // Do we want to test this for every type of trigger? Technically, a regression could happen for something other
+        // than AspNetRequestCount, and we wouldn't detect it with the current test.
         [Fact]
         public async Task DefaultSlidingWindowDuration_Success()
         {
@@ -320,7 +343,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetSlidingWindowDuration(TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration));
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration);
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -346,7 +372,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetSlidingWindowDuration(TimeSpan.Parse(TriggerTestsConstants.UnknownSlidingWindowDuration));
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.UnknownSlidingWindowDuration);
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -373,7 +402,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetActionCount(LimitsTestsConstants.ExpectedActionCount);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.ActionCount = LimitsTestsConstants.ExpectedActionCount;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -395,7 +427,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetActionCount(LimitsTestsConstants.UnknownActionCount);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.ActionCount = LimitsTestsConstants.UnknownActionCount;
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -416,11 +451,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
-            const int expectedActionCount = 4;
-
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetActionCount(expectedActionCount);
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedActionCountSlidingWindowDuration);
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -431,7 +467,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
 
-                Assert.Equal(expectedActionCount, options.ActionCount);
+                Assert.Equal(TimeSpan.Parse(LimitsTestsConstants.ExpectedActionCountSlidingWindowDuration), options.ActionCountSlidingWindowDuration);
             });
         }
 
@@ -442,7 +478,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetActionCountSlidingWindowDuration(TimeSpan.Parse(LimitsTestsConstants.UnknownActionCountSlidingWindowDuration));
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.UnknownActionCountSlidingWindowDuration);
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -466,7 +505,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetRuleDuration(TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration));
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration);
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
@@ -488,7 +530,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults().SetRuleDuration(TimeSpan.Parse(LimitsTestsConstants.UnknownRuleDuration));
+                rootOptions.CreateCollectionRuleDefaults(options =>
+                {
+                    options.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.UnknownRuleDuration);
+                });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 

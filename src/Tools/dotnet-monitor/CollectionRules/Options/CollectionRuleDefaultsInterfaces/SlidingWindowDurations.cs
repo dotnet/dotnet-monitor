@@ -8,7 +8,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
 {
     internal interface SlidingWindowDurations
     {
-        /*[Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]*/
         public TimeSpan? SlidingWindowDuration { get; set; }
     }
 }

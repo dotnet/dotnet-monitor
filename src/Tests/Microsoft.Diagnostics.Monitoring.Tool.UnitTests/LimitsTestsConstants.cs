@@ -8,8 +8,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     internal class LimitsTestsConstants
     {
-        public static readonly string[] ExpectedStatusCodes = { "400", "500" };
-
         public const int ExpectedActionCount = 4;
         public const int UnknownActionCount = 40;
 

@@ -11,11 +11,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
     internal sealed class EgressPostConfigure :
         IPostConfigureOptions<CollectionRuleOptions>
     {
-        private readonly IOptionsMonitor<CollectionRuleDefaultOptions> _defaultOptions;
+        private readonly IOptionsMonitor<CollectionRuleDefaultsOptions> _defaultOptions;
         private readonly ICollectionRuleActionOperations _actionOperations;
 
         public EgressPostConfigure(
-            IOptionsMonitor<CollectionRuleDefaultOptions> defaultOptions,
+            IOptionsMonitor<CollectionRuleDefaultsOptions> defaultOptions,
             ICollectionRuleActionOperations actionOperations
             )
         {

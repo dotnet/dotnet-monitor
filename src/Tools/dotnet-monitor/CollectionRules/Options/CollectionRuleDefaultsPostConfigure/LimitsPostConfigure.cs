@@ -10,9 +10,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
     internal sealed class LimitsPostConfigure :
         IPostConfigureOptions<CollectionRuleOptions>
     {
-        private readonly IOptionsMonitor<CollectionRuleDefaultOptions> _defaultOptions;
+        private readonly IOptionsMonitor<CollectionRuleDefaultsOptions> _defaultOptions;
 
-        public LimitsPostConfigure(IOptionsMonitor<CollectionRuleDefaultOptions> defaultOptions)
+        public LimitsPostConfigure(IOptionsMonitor<CollectionRuleDefaultsOptions> defaultOptions)
         {
             _defaultOptions = defaultOptions;
         }
@@ -27,24 +27,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
                 {
                     options.Limits = new CollectionRuleLimitsOptions();
                 }
+                else
+                {
+                    return;
+                }
             }
 
-            if (null != options.Limits)
+            if (null == options.Limits.ActionCount)
             {
-                if (null == options.Limits.ActionCount)
-                {
-                    options.Limits.ActionCount = _defaultOptions.CurrentValue.ActionCount ?? CollectionRuleLimitsOptionsDefaults.ActionCount;
-                }
+                options.Limits.ActionCount = _defaultOptions.CurrentValue.ActionCount ?? CollectionRuleLimitsOptionsDefaults.ActionCount;
+            }
 
-                if (null == options.Limits.ActionCountSlidingWindowDuration)
-                {
-                    options.Limits.ActionCountSlidingWindowDuration = _defaultOptions.CurrentValue.ActionCountSlidingWindowDuration;
-                }
+            if (null == options.Limits.ActionCountSlidingWindowDuration)
+            {
+                options.Limits.ActionCountSlidingWindowDuration = _defaultOptions.CurrentValue.ActionCountSlidingWindowDuration;
+            }
 
-                if (null == options.Limits.RuleDuration)
-                {
-                    options.Limits.RuleDuration = _defaultOptions.CurrentValue.RuleDuration;
-                }
+            if (null == options.Limits.RuleDuration)
+            {
+                options.Limits.RuleDuration = _defaultOptions.CurrentValue.RuleDuration;
             }
         }
     }

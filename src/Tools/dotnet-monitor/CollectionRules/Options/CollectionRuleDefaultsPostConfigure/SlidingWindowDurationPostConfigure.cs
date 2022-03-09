@@ -13,11 +13,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
     internal sealed class SlidingWindowDurationPostConfigure :
         IPostConfigureOptions<CollectionRuleOptions>
     {
-        private readonly IOptionsMonitor<CollectionRuleDefaultOptions> _defaultOptions;
+        private readonly IOptionsMonitor<CollectionRuleDefaultsOptions> _defaultOptions;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         public SlidingWindowDurationPostConfigure(
-            IOptionsMonitor<CollectionRuleDefaultOptions> defaultOptions,
+            IOptionsMonitor<CollectionRuleDefaultsOptions> defaultOptions,
             ICollectionRuleTriggerOperations triggerOperations
             )
         {

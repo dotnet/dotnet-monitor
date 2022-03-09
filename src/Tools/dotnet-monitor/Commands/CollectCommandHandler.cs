@@ -151,8 +151,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
                 services.ConfigureCollectionRuleDefaults(context.Configuration);
 
-                services.Configure<AspNetRequestCountOptions>(context.Configuration.GetSection(ConfigurationKeys.CollectionRules));
-
                 services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                 services.AddSingleton<ServerEndpointInfoSource>();
                 services.AddHostedServiceForwarder<ServerEndpointInfoSource>();

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -13,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     /// <summary>
     /// Options for limiting the execution of a collection rule.
     /// </summary>
-    internal sealed partial class CollectionRuleLimitsOptions
+    internal sealed class CollectionRuleLimitsOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// <summary>
     /// Options for the AspNetResponseStatus trigger.
     /// </summary>
-    internal sealed partial class AspNetResponseStatusOptions :
+    internal sealed class AspNetResponseStatusOptions :
         IAspNetActionPathFilters, SlidingWindowDurations
     {
         private const string StatusCodeRegex = "[1-5][0-9]{2}";
@@ -22,9 +22,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes))]
+        [Required]
         [MinLength(1)]
         [RegularExpressions(StatusCodesRegex)]
-        [Required]
         public string[] StatusCodes { get; set; }
 
         [Display(

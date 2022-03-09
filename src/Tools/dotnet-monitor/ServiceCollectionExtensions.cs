@@ -25,9 +25,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using System;
-using System.Linq;
-using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -40,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<CollectionRuleDefaultOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);
+            return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);
         }
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
@@ -126,9 +123,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services)
         {
-            // Should we make the PostConfigure methods reusable, or roll them all up into one that then handles all of these operations?
-
-            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, EgressPostConfigure>(); // since we don't run validate, just prints the normal required message -> not the one saying to add a default or a single use one
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, EgressPostConfigure>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, SlidingWindowDurationPostConfigure>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, RequestCountsPostConfigure>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, ResponseCountsPostConfigure>();

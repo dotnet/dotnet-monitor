@@ -1190,7 +1190,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A request count must be specified if there is no default response count..
+        ///   Looks up a localized string similar to A response count must be specified if there is no default response count..
         /// </summary>
         public static string ErrorMessage_NoDefaultResponseCount {
             get {

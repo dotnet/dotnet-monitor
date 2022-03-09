@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -77,6 +76,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const string ExpectedShowSourcesConfigurationsDirectory = "ExpectedShowSourcesConfigurations";
 
         private const string ExpectedConfigurationsDirectory = "ExpectedConfigurations";
+
+        private const string SampleConfigurationsDirectory = "SampleConfigurations";
+
+        private const string CollectionRulesDirectory = "CollectionRules";
+
+        private const string CollectionRulesWithDefaultsDirectory = "CollectionRulesWithDefaults";
+
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -320,12 +326,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private async Task<string> WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent=false, bool showSources = false)
         {
-            string toReturn = "";
+            string configurationString = "";
 
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
-            {
-
-            }, host =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, null, host =>
             {
                 Stream stream = new MemoryStream();
 
@@ -337,15 +340,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 using (var streamReader = new StreamReader(stream))
                 {
-                    string configString = streamReader.ReadToEnd();
+                    configurationString = streamReader.ReadToEnd();
 
-                    _outputHelper.WriteLine(configString);
-
-                    toReturn = configString;
+                    _outputHelper.WriteLine(configurationString);
                 }
             });
 
-            return toReturn;
+            return configurationString;
         }
 
         private string CleanWhitespace(string rawText)
@@ -355,17 +356,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private string ConstructSettingsJson(bool useCollectionRuleDefaults, params string[] permittedFileNames)
         {
-            // Push Sample Defaults to a constant
-            List<string> filePaths = new(Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations")));
+            string sampleConfigurationsPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SampleConfigurationsDirectory);
 
-            if (useCollectionRuleDefaults)
-            {
-                filePaths.AddRange(Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations", "CollectionRulesWithDefaults")));
-            }
-            else
-            {
-                filePaths.AddRange(Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations", "CollectionRules")));
-            }
+            List<string> filePaths = new(Directory.GetFiles(sampleConfigurationsPath));
+
+            string collectionRulesDirectory = useCollectionRuleDefaults ? CollectionRulesWithDefaultsDirectory : CollectionRulesDirectory;
+
+            filePaths.AddRange(Directory.GetFiles(Path.Combine(sampleConfigurationsPath, collectionRulesDirectory)));
 
             IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
 
@@ -435,12 +432,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             if (useCollectionRuleDefaults)
             {
-                configurationFileNames.Add("CollectionRuleDefaults", Path.Combine("CollectionRulesWithDefaults", "CollectionRuleDefaults.json"));
-                configurationFileNames.Add("CollectionRules", Path.Combine("CollectionRulesWithDefaults", "CollectionRules.json"));
+                configurationFileNames.Add("CollectionRuleDefaults", Path.Combine(CollectionRulesWithDefaultsDirectory, "CollectionRuleDefaults.json"));
+                configurationFileNames.Add("CollectionRules", Path.Combine(CollectionRulesWithDefaultsDirectory, "CollectionRules.json"));
             }
             else
             {
-                configurationFileNames.Add("CollectionRules", Path.Combine("CollectionRules", "CollectionRules.json"));
+                configurationFileNames.Add("CollectionRules", Path.Combine(CollectionRulesDirectory, "CollectionRules.json"));
             }
 
             return configurationFileNames;

@@ -3,11 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
@@ -18,7 +15,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -441,7 +437,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             var settingsPropsNames = optionsType.GetProperties().Select(x => x.Name);
 
-            var crdProps = typeof(CollectionRuleDefaultOptions).GetProperties();
+            var crdProps = typeof(CollectionRuleDefaultsOptions).GetProperties();
 
             foreach (var crdProp in crdProps)
             {

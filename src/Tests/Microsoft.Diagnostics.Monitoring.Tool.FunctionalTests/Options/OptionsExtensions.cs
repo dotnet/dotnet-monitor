@@ -43,58 +43,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleDefaultOptions CreateCollectionRuleDefaults(this RootOptions rootOptions)
-        {
-            CollectionRuleDefaultOptions options = new();
-            rootOptions.CollectionRuleDefaults = options;
-            return options;
-        }
-
-        public static CollectionRuleDefaultOptions SetEgress(this CollectionRuleDefaultOptions options, string egressProvider)
-        {
-            options.Egress = egressProvider;
-
-            return options;
-        }
-
-        public static CollectionRuleDefaultOptions SetRequestCount(this CollectionRuleDefaultOptions options, int requestCount)
-        {
-            options.RequestCount = requestCount;
-
-            return options;
-        }
-
-        public static CollectionRuleDefaultOptions SetResponseCount(this CollectionRuleDefaultOptions options, int responseCount)
-        {
-            options.ResponseCount = responseCount;
-
-            return options;
-        }
-
-        public static CollectionRuleDefaultOptions SetSlidingWindowDuration(this CollectionRuleDefaultOptions options, TimeSpan slidingWindowDuration)
-        {
-            options.SlidingWindowDuration = slidingWindowDuration;
-
-            return options;
-        }
-        public static CollectionRuleDefaultOptions SetActionCount(this CollectionRuleDefaultOptions options, int actionCount)
-        {
-            options.ActionCount = actionCount;
-
-            return options;
-        }
-        public static CollectionRuleDefaultOptions SetActionCountSlidingWindowDuration(this CollectionRuleDefaultOptions options, TimeSpan actionCountSlidingWindowDuration)
-        {
-            options.ActionCountSlidingWindowDuration = actionCountSlidingWindowDuration;
-
-            return options;
-        }
-        public static CollectionRuleDefaultOptions SetRuleDuration(this CollectionRuleDefaultOptions options, TimeSpan ruleDuration)
-        {
-            options.RuleDuration = ruleDuration;
-
-            return options;
-        }
         public static RootOptions SetDumpTempFolder(this RootOptions options, string directoryPath)
         {
             if (null == options.Storage)
