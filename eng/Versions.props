@@ -47,8 +47,8 @@
     <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.3.22157.8</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.3.22157.8</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22154.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22154.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22158.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22158.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0-preview.3.22158.1</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-preview.3.22158.1</VSRedistCommonNetCoreSharedFrameworkx6470Version>
