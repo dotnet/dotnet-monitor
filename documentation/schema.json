@@ -116,6 +116,17 @@
           "$ref": "#/definitions/ProcessFilterOptions"
         }
       ]
+    },
+    "CollectionRuleDefaults": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/CollectionRuleDefaultsOptions"
+        }
+      ]
     }
   },
   "definitions": {
@@ -552,9 +563,6 @@
       },
       "oneOf": [
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "AspNetRequestCount"
@@ -565,9 +573,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "AspNetRequestDuration"
@@ -578,9 +583,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "AspNetResponseStatus"
@@ -591,9 +593,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "EventCounter"
@@ -659,9 +658,6 @@
       },
       "oneOf": [
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "CollectDump"
@@ -672,9 +668,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "CollectGCDump"
@@ -685,9 +678,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "CollectLogs"
@@ -698,9 +688,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "CollectTrace"
@@ -711,9 +698,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "Execute"
@@ -724,9 +708,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "LoadProfiler"
@@ -737,9 +718,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "SetEnvironmentVariable"
@@ -750,9 +728,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "GetEnvironmentVariable"
@@ -1125,6 +1100,73 @@
         }
       }
     },
+    "CollectionRuleDefaultsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the default Egress Provider to be used when no other egress provider is specified."
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the default sliding window duration to be used when no other sliding window duration is specified.",
+          "format": "time-span"
+        },
+        "ActionCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The number of times the action list may be executed before being throttled.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "ActionCountSlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.",
+          "format": "time-span"
+        },
+        "RuleDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.",
+          "format": "time-span"
+        },
+        "RequestCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The threshold of the number of requests that start within the sliding window of time.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "ResponseCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The threshold number of responses with matching status codes.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        }
+      }
+    },
     "CollectionRuleActionType": {
       "type": "string",
       "enum": [
@@ -1141,9 +1183,6 @@
     "CollectDumpOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Egress"
-      ],
       "properties": {
         "Type": {
           "description": "The type of dump to collect from the target process.",
@@ -1183,9 +1222,6 @@
     "CollectGCDumpOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Egress"
-      ],
       "properties": {
         "Egress": {
           "type": "string",
@@ -1197,9 +1233,6 @@
     "CollectLogsOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Egress"
-      ],
       "properties": {
         "DefaultLevel": {
           "description": "The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value.",
@@ -1283,9 +1316,6 @@
     "CollectTraceOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Egress"
-      ],
       "properties": {
         "Profile": {
           "description": "Use a predefined set of event providers and settings to capture in the trace. More than one profile may be specified at the same time. Either Profile or Providers must be specified, but not both.",
@@ -1508,9 +1538,6 @@
     "AspNetRequestCountOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "RequestCount"
-      ],
       "properties": {
         "RequestCount": {
           "type": "integer",
@@ -1525,8 +1552,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of requests are counted.",
-          "format": "time-span",
-          "default": "00:01:00"
+          "format": "time-span"
         },
         "IncludePaths": {
           "type": [
@@ -1553,9 +1579,6 @@
     "AspNetRequestDurationOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "RequestCount"
-      ],
       "properties": {
         "RequestCount": {
           "type": "integer",
@@ -1579,8 +1602,7 @@
             "string"
           ],
           "description": "The sliding time window in which the the number of slow requests are counted.",
-          "format": "time-span",
-          "default": "00:01:00"
+          "format": "time-span"
         },
         "IncludePaths": {
           "type": [
@@ -1608,8 +1630,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "StatusCodes",
-        "ResponseCount"
+        "StatusCodes"
       ],
       "properties": {
         "StatusCodes": {
@@ -1634,8 +1655,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of responses with matching status codes must occur.",
-          "format": "time-span",
-          "default": "00:01:00"
+          "format": "time-span"
         },
         "IncludePaths": {
           "type": [
@@ -1699,8 +1719,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
-          "default": "00:01:00"
+          "format": "time-span"
         }
       }
     },
