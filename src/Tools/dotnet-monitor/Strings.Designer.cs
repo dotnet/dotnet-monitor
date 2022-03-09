@@ -322,6 +322,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The field {0} must match the regular expression &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_RegularExpressionDoesNotMatch {
+            get {
+                return ResourceManager.GetString("ErrorMessage_RegularExpressionDoesNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The configuration parameter {0} must be contain a jwk that is valid for use with dotnet-monitor. The provided Json Web Key must be have a key-type of EC or RSA and must-not have private key information because this this key is only used for signature verification..
         /// </summary>
         internal static string ErrorMessage_RejectedJwk {

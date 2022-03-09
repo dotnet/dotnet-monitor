@@ -520,7 +520,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_AspNetResponseStatusTrigger_RangePropertyValidation()
         {
-            string[] ExpectedStatusCodes = { "400", "500" };
+            string[] ExpectedStatusCodes = { "600" };
 
             return ValidateFailure(
                 rootOptions =>
@@ -537,9 +537,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
 
-                    Assert.Equal(2, failures.Length);
-                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
-                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetResponseStatusOptions.SlidingWindowDuration),
+                    Assert.Equal(3, failures.Length);
+                    VerifyRegexMessage(failures, 0, nameof(AspNetResponseStatusOptions.StatusCodes), AspNetResponseStatusOptions.StatusCodesRegex);
+                    VerifyRangeMessage<int>(failures, 1, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetResponseStatusOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -1362,6 +1363,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Strings.ErrorMessage_TwoFieldsMissing,
                 fieldName1,
                 fieldName2);
+
+            Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyRegexMessage(string[] failures, int index, string fieldName, string regex)
+        {
+            string message = string.Format(
+                CultureInfo.InvariantCulture,
+                Strings.ErrorMessage_RegularExpressionDoesNotMatch,
+                fieldName,
+                regex);
 
             Assert.Equal(message, failures[index]);
         }
