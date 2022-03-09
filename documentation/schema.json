@@ -583,6 +583,9 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
           "properties": {
             "Type": {
               "const": "AspNetResponseStatus"
@@ -593,6 +596,9 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
           "properties": {
             "Type": {
               "const": "EventCounter"
@@ -688,6 +694,9 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
           "properties": {
             "Type": {
               "const": "CollectTrace"
@@ -698,6 +707,9 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
           "properties": {
             "Type": {
               "const": "Execute"
@@ -708,6 +720,9 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
           "properties": {
             "Type": {
               "const": "LoadProfiler"
@@ -718,6 +733,9 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
           "properties": {
             "Type": {
               "const": "SetEnvironmentVariable"
@@ -728,6 +746,9 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
           "properties": {
             "Type": {
               "const": "GetEnvironmentVariable"

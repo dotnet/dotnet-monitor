@@ -151,7 +151,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         private static void AddCollectionRuleActionSchema<TOptions>(GenerationContext context, JsonSchema actionTypeSchema, string actionType)
         {
             JsonSchema subSchema = new JsonSchema();
-            //subSchema.RequiredProperties.Add(nameof(CollectionRuleActionOptions.Settings));
 
             JsonSchemaProperty settingsProperty = AddDiscriminatedSubSchema(
                 context.Schema.Definitions[nameof(CollectionRuleActionOptions)],
@@ -165,6 +164,12 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             foreach (var propName in typeof(CollectionRuleDefaultsOptions).GetProperties().Select(x => x.Name))
             {
                 settingsProperty.Reference.RequiredProperties.Remove(propName);
+            }
+
+            // Have to special case for Traces since Profile/Providers aren't listed as required, but one of them must be included
+            if (settingsProperty.Reference.RequiredProperties.Count > 0 || typeof(TOptions) == typeof(CollectTraceOptions))
+            {
+                subSchema.RequiredProperties.Add(nameof(CollectionRuleTriggerOptions.Settings));
             }
 
             actionTypeSchema.Enumeration.Add(actionType);
@@ -186,7 +191,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         private static void AddCollectionRuleTriggerSchema<TOptions>(GenerationContext context, JsonSchema triggerTypeSchema, string triggerType)
         {
             JsonSchema subSchema = new JsonSchema();
-            //subSchema.RequiredProperties.Add(nameof(CollectionRuleTriggerOptions.Settings));
 
             JsonSchemaProperty settingsProperty = AddDiscriminatedSubSchema(
                 context.Schema.Definitions[nameof(CollectionRuleTriggerOptions)],
@@ -200,6 +204,11 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             foreach (var propName in typeof(CollectionRuleDefaultsOptions).GetProperties().Select(x => x.Name))
             {
                 settingsProperty.Reference.RequiredProperties.Remove(propName);
+            }
+
+            if (settingsProperty.Reference.RequiredProperties.Count > 0)
+            {
+                subSchema.RequiredProperties.Add(nameof(CollectionRuleTriggerOptions.Settings));
             }
 
             triggerTypeSchema.Enumeration.Add(triggerType);
