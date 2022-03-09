@@ -30,9 +30,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_ResponseCount))]
+
         [Required(
             ErrorMessageResourceType = typeof(OptionsDisplayStrings),
             ErrorMessageResourceName = nameof(OptionsDisplayStrings.ErrorMessage_NoDefaultResponseCount))]
+        [Range(1, int.MaxValue)]
         public int? ResponseCount { get; set; }
 
         [Display(

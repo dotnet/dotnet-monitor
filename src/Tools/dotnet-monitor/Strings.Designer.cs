@@ -268,6 +268,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Value must be between 1 and 254, or -1 (to obtain the maximum number allowed by system resources)..
+        /// </summary>
+        internal static string ErrorMessage_MaxConnections {
+            get {
+                return ResourceManager.GetString("ErrorMessage_MaxConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The environment block does not contain the &apos;{0}&apos; variable..
         /// </summary>
         internal static string ErrorMessage_NoEnvironmentVariable {
@@ -952,6 +961,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
+        /// </summary>
+        internal static string LogFormatString_QueueDoesNotExist {
+            get {
+                return ResourceManager.GetString("LogFormatString_QueueDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queue message egress requires {queueName} and {queueAccountUri} to be set.
+        /// </summary>
+        internal static string LogFormatString_QueueOptionsPartiallySet {
+            get {
+                return ResourceManager.GetString("LogFormatString_QueueOptionsPartiallySet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes).
         /// </summary>
         internal static string LogFormatString_RunningElevated {
@@ -975,6 +1002,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_UnableToListenToAddress {
             get {
                 return ResourceManager.GetString("LogFormatString_UnableToListenToAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to send message to the queue {0}..
+        /// </summary>
+        internal static string LogFormatString_WritingMessageToQueueFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_WritingMessageToQueueFailed", resourceCulture);
             }
         }
         
