@@ -336,7 +336,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(2, failures.Length);
-                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString()); // Do we want these as constants...?
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString());
                     VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestCountOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
@@ -358,8 +358,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 ruleOptions =>
                 {
-                    AspNetRequestDurationOptions requestCountOptions = ruleOptions.VerifyAspNetRequestDurationTrigger();
-                    Assert.Equal(ExpectedRequestCount, requestCountOptions.RequestCount);
+                    AspNetRequestDurationOptions requestDurationOptions = ruleOptions.VerifyAspNetRequestDurationTrigger();
+                    Assert.Equal(ExpectedRequestCount, requestDurationOptions.RequestCount);
                 });
         }
 
@@ -433,7 +433,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(3, failures.Length);
-                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString()); // Do we want these as constants...?
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString());
                     VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestDurationOptions.RequestDuration),
                         AspNetRequestDurationOptions.RequestDuration_MinValue, AspNetRequestDurationOptions.RequestDuration_MaxValue);
                     VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetRequestDurationOptions.SlidingWindowDuration),
@@ -538,7 +538,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(2, failures.Length);
-                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString()); // Do we want these as constants...?
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
                     VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetResponseStatusOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
