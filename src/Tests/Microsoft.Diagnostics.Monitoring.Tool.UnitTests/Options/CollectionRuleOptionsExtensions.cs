@@ -253,6 +253,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleOptions SetLimits(this CollectionRuleOptions options, Action<CollectionRuleLimitsOptions> callback = null)
+        {
+            CollectionRuleLimitsOptions limitsOptions = new();
+
+            callback?.Invoke(limitsOptions);
+
+            options.Limits = limitsOptions;
+
+            return options;
+        }
+
         public static EventCounterOptions VerifyEventCounterTrigger(this CollectionRuleOptions ruleOptions)
         {
             ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.EventCounter);

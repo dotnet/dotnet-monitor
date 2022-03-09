@@ -19,6 +19,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
 
         public void PostConfigure(string name, CollectionRuleOptions options)
         {
+            if (null == options.Limits)
+            {
+                if (_defaultOptions.CurrentValue.ActionCount.HasValue
+                    || _defaultOptions.CurrentValue.ActionCountSlidingWindowDuration.HasValue
+                    || _defaultOptions.CurrentValue.RuleDuration.HasValue)
+                {
+                    options.Limits = new CollectionRuleLimitsOptions();
+                }
+            }
+
             if (null != options.Limits)
             {
                 if (null == options.Limits.ActionCount)

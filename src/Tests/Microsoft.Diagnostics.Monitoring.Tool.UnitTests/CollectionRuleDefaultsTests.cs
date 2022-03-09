@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Extensions.Options;
@@ -362,6 +363,145 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 AspNetRequestCountOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName);
 
                 Assert.Equal(TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration), options.SlidingWindowDuration);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultActionCount_Success()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetActionCount(LimitsTestsConstants.ExpectedActionCount);
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetStartupTrigger();
+            }, host =>
+            {
+                CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
+
+                Assert.Equal(LimitsTestsConstants.ExpectedActionCount, options.ActionCount);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultActionCount_Override()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetActionCount(LimitsTestsConstants.UnknownActionCount);
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetStartupTrigger()
+                    .SetLimits()
+                    .Limits.ActionCount = LimitsTestsConstants.ExpectedActionCount;
+            }, host =>
+            {
+                CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
+
+                Assert.Equal(LimitsTestsConstants.ExpectedActionCount, options.ActionCount);
+            });
+        }
+        [Fact]
+        public async Task DefaultActionCountSlidingWindowDuration_Success()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            const int expectedActionCount = 4;
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetActionCount(expectedActionCount);
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetStartupTrigger();
+            }, host =>
+            {
+                CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
+
+                Assert.Equal(expectedActionCount, options.ActionCount);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultActionCountSlidingWindowDuration_Override()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetActionCountSlidingWindowDuration(TimeSpan.Parse(LimitsTestsConstants.UnknownActionCountSlidingWindowDuration));
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetStartupTrigger()
+                    .SetLimits()
+                    .Limits.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedActionCountSlidingWindowDuration);
+            }, host =>
+            {
+                CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
+
+                Assert.Equal(TimeSpan.Parse(LimitsTestsConstants.ExpectedActionCountSlidingWindowDuration), options.ActionCountSlidingWindowDuration);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultRuleDuration_Success()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetRuleDuration(TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration));
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetStartupTrigger();
+            }, host =>
+            {
+                CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
+
+                Assert.Equal(TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration), options.RuleDuration);
+            });
+        }
+
+        [Fact]
+        public async Task DefaultRuleDuration_Override()
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.CreateCollectionRuleDefaults().SetRuleDuration(TimeSpan.Parse(LimitsTestsConstants.UnknownRuleDuration));
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .SetStartupTrigger()
+                    .SetLimits()
+                    .Limits.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration);
+            }, host =>
+            {
+                CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
+
+                Assert.Equal(TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration), options.RuleDuration);
             });
         }
     }
