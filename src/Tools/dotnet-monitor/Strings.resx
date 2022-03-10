@@ -268,13 +268,6 @@
 2. minBytes: The minimum number of bytes acceptable
 3. maxBytes: The maximum number of bytes acceptable</comment>
   </data>
-  <data name="ErrorMessage_RegularExpressionDoesNotMatch" xml:space="preserve">
-    <value>The field {0} must match the regular expression '{1}'.</value>
-    <comment>Gets the format string for rejecting validation due to the field not matching the expected regular expression.
-2 Format Parameters:
-0. fieldName: The name of the field that does not match the regular expression
-1. regex: The regular expression that needs to be matched</comment>
-  </data>
   <data name="ErrorMessage_RejectedJwk" xml:space="preserve">
     <value>The configuration parameter {0} must be contain a jwk that is valid for use with dotnet-monitor. The provided Json Web Key must be have a key-type of EC or RSA and must-not have private key information because this this key is only used for signature verification.</value>
     <comment>Gets the format string for rejecting a config param because it is not a jwk type that is accepted.

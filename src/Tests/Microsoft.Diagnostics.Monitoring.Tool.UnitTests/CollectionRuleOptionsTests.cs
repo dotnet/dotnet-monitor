@@ -314,7 +314,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(AspNetRequestCountOptions.RequestCount));
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
                 });
         }
 
@@ -410,7 +410,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(AspNetRequestDurationOptions.RequestCount));
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
                 });
         }
 
@@ -513,7 +513,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     Assert.Equal(2, failures.Length);
                     VerifyRequiredMessage(failures, 0, nameof(AspNetResponseStatusOptions.StatusCodes));
-                    VerifyRequiredMessage(failures, 1, nameof(AspNetResponseStatusOptions.ResponseCount));
+                    VerifyRangeMessage<int>(failures, 1, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
                 });
         }
 
@@ -538,7 +538,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(3, failures.Length);
-                    VerifyRegexMessage(failures, 0, nameof(AspNetResponseStatusOptions.StatusCodes), AspNetResponseStatusOptions.StatusCodesRegex);
+                    VerifyStatusCodesRegexMessage(failures, 0, nameof(AspNetResponseStatusOptions.StatusCodes));
                     VerifyRangeMessage<int>(failures, 1, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
                     VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetResponseStatusOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
@@ -1367,13 +1367,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(message, failures[index]);
         }
 
-        private static void VerifyRegexMessage(string[] failures, int index, string fieldName, string regex)
+        private static void VerifyStatusCodesRegexMessage(string[] failures, int index, string fieldName)
         {
             string message = string.Format(
                 CultureInfo.InvariantCulture,
-                Strings.ErrorMessage_RegularExpressionDoesNotMatch,
-                fieldName,
-                regex);
+                WebApi.OptionsDisplayStrings.ErrorMessage_StatusCodesRegularExpressionDoesNotMatch,
+                fieldName);
 
             Assert.Equal(message, failures[index]);
         }

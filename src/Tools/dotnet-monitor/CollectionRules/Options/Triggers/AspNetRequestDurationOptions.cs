@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetRequestDurationOptions_RequestCount))]
         [Required]
         [Range(1, int.MaxValue)]
-        public int? RequestCount { get; set; }
+        public int RequestCount { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
