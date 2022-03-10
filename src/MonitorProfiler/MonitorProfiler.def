@@ -1,4 +1,4 @@
-LIBRARY TestProfiler
+LIBRARY MonitorProfiler
 
 EXPORTS
     DllCanUnloadNow         PRIVATE
