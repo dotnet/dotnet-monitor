@@ -17,10 +17,11 @@ set(SOURCES
     ProfilerBase.cpp
     )
 
-add_library(MonitorProfiler SHARED ${SOURCES})
+# Build library and split symbols
+add_library_clr(MonitorProfiler SHARED ${SOURCES})
 
-install(TARGETS MonitorProfiler)
-
-if(CLR_CMAKE_HOST_WIN32)
-    install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION bin OPTIONAL)
-endif(CLR_CMAKE_HOST_WIN32)
+# Install library
+install(TARGETS MonitorProfiler DESTINATION .)
+# Install symbols
+get_symbol_file_name(MonitorProfiler SymbolFileName)
+install(FILES ${SymbolFileName} DESTINATION . OPTIONAL)
