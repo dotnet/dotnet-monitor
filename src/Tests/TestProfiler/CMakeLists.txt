@@ -17,10 +17,11 @@ set(SOURCES
     ProfilerBase.cpp
     )
 
-add_library(TestProfiler SHARED ${SOURCES})
+# Build library and split symbols
+add_library_clr(TestProfiler SHARED ${SOURCES})
 
-install(TARGETS TestProfiler)
-
-if(CLR_CMAKE_HOST_WIN32)
-    install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION bin OPTIONAL)
-endif(CLR_CMAKE_HOST_WIN32)
+# Install library
+install(TARGETS TestProfiler DESTINATION .)
+# Install symbols
+get_symbol_file_name(TestProfiler SymbolFileName)
+install(FILES ${SymbolFileName} DESTINATION . OPTIONAL)
