@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _outputHelper = outputHelper;
         }
 
-        // Do we want to test this for every type of action? Technically, a regression could happen for something other
+        // QUESTION: Do we want to test this for every type of action? Technically, a regression could happen for something other
         // than CollectDump, and we wouldn't detect it with the current test.
         [Fact]
         public async Task DefaultEgress_Success()
@@ -334,7 +334,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        // Do we want to test this for every type of trigger? Technically, a regression could happen for something other
+        // QUESTION: Do we want to test this for every type of trigger? Technically, a regression could happen for something other
         // than AspNetRequestCount, and we wouldn't detect it with the current test.
         [Fact]
         public async Task DefaultSlidingWindowDuration_Success()

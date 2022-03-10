@@ -62,5 +62,29 @@
       "ActionCountSlidingWindowDuration": "00:00:01",
       "RuleDuration": "11:11:11"
     }
+  },
+  "Rule3": {
+    "Actions": [
+      {
+        "Settings": {
+          "Duration": "00:01:00",
+          "Profile": "Cpu",
+          "Egress": "artifacts"
+        },
+        "Type": "CollectTrace"
+      }
+    ],
+    "Limits": {
+      "ActionCountSlidingWindowDuration": "5:00:00",
+      "ActionCount": "20",
+      "RuleDuration": "11:11:11"
+    },
+    "Trigger": {
+      "Settings": {
+        "RequestCount": "123",
+        "SlidingWindowDuration": "00:00:02"
+      },
+      "Type": "AspNetRequestDuration"
+    }
   }
 }

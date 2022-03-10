@@ -31,7 +31,7 @@
       "Trigger": {
         "Type": "AspNetResponseStatus",
         "Settings": {
-          "StatusCodes": ["400-409"]
+          "StatusCodes": [ "400-409" ]
         }
       },
       "Actions": [
@@ -48,6 +48,27 @@
           "Value": "FirstWebApp"
         }
       ]
+    },
+    "Rule3": {
+      "Trigger": {
+        "Type": "AspNetRequestDuration",
+        "Settings": {
+          "RequestCount": "123",
+          "SlidingWindowDuration": "00:00:02"
+        }
+      },
+      "Actions": [
+        {
+          "Type": "CollectTrace",
+          "Settings": {
+            "Profile": "Cpu",
+            "Duration": "00:01:00"
+          }
+        }
+      ],
+      "Limits": {
+        "ActionCountSlidingWindowDuration": "5:00:00"
+      }
     }
   }
 }

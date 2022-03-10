@@ -193,7 +193,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private IConfigurationSection ProcessChildSection(IConfiguration parentSection, string key, bool skipNotPresent, bool includeChildSections = true, bool redact = false, bool showSources = false)
         {
-            bool loadCRDefaults = key.Equals(ConfigurationKeys.CollectionRules);
+            bool loadCRDefaults = key.Equals(ConfigurationKeys.CollectionRules) && _serviceProvider != null;
 
             IConfigurationSection section = parentSection.GetSection(key);
             if (!section.Exists())
@@ -370,19 +370,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             using (new JsonObjectContext(_writer))
             {
-                IndependentConfigFlags flagToUse = configFlag;
+                IndependentConfigFlags mockingFlag = configFlag;
 
-                bool shouldMock = null != toMock;
-                if (flagToUse == IndependentConfigFlags.MockValuesNext)
-                {
-                    shouldMock = false;
-                    flagToUse = IndependentConfigFlags.None;
-                }
+                bool shouldMock = (null != toMock && toMock.Any()) && mockingFlag != IndependentConfigFlags.MockValuesNext;
 
-                if (configFlag != IndependentConfigFlags.IsCollectionRule)
-                {
-                    configFlag = IndependentConfigFlags.None;
-                }
+                configFlag = (configFlag != IndependentConfigFlags.IsCollectionRule) ? IndependentConfigFlags.None : configFlag;
 
                 foreach (IConfigurationSection child in section.GetChildren())
                 {
@@ -393,11 +385,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 if (shouldMock)
                 {
-                    if (flagToUse == IndependentConfigFlags.MockSettings)
+                    if (mockingFlag == IndependentConfigFlags.MockSettings)
                     {
                         MockSection(toMock, childKeys, SettingsSection, showSources);
                     }
-                    else if (flagToUse == IndependentConfigFlags.MockLimits)
+                    else if (mockingFlag == IndependentConfigFlags.MockLimits)
                     {
                         MockSection(toMock, childKeys, LimitsSection, showSources);
                     }
@@ -425,6 +417,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 if (!childKeys.Contains(mockedChild.Key))
                 {
+                    // Currently only handling values - this will need to be upgraded for array-style collection rule defaults
                     _writer.WritePropertyName(mockedChild.Key);
                     _writer.WriteStringValue(mockedChild.Value);
 
