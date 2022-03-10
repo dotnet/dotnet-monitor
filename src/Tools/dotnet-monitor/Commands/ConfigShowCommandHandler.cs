@@ -25,33 +25,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         {
             IAuthConfiguration authConfiguration = HostBuilderHelper.CreateAuthConfiguration(noAuth, tempApiKey);
             HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authConfiguration);
-            IHost host = HostBuilderHelper.CreateHostBuilder(settings).ConfigureServices().Build();
+            IHost host = HostBuilderHelper.CreateHostBuilder(settings).ConfigureCollectionRuleServices().Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
 
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
             jsonWriter.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false, showSources: showSources, host.Services);
         }
 
-        private static IHostBuilder ConfigureServices(this IHostBuilder builder)
+        private static IHostBuilder ConfigureCollectionRuleServices(this IHostBuilder builder)
         {
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
-                //TODO Many of these service additions should be done through extension methods
-                services.AddSingleton(RealSystemClock.Instance);
-
-                services.ConfigureDiagnosticPort(context.Configuration);
-
-                services.ConfigureGlobalCounter(context.Configuration);
-
                 services.ConfigureCollectionRuleDefaults(context.Configuration);
-
-                services.AddSingleton<ServerEndpointInfoSource>();
-                services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
-                services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();
-                services.ConfigureEgress();
-                services.ConfigureMetrics(context.Configuration);
-                services.ConfigureStorage(context.Configuration);
-                services.ConfigureDefaultProcess(context.Configuration);
                 services.ConfigureCollectionRules();
             });
         }

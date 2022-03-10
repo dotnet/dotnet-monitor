@@ -83,7 +83,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private const string CollectionRulesWithDefaultsDirectory = "CollectionRulesWithDefaults";
 
-
         private readonly ITestOutputHelper _outputHelper;
 
         public ConfigurationTests(ITestOutputHelper outputHelper)
@@ -328,7 +327,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             string configurationString = "";
 
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, null, host =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => { }, host =>
             {
                 Stream stream = new MemoryStream();
 
