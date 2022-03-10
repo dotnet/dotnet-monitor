@@ -11,8 +11,12 @@ parameters:
   timeoutInMinutes: 180
   # Depends on 
   dependsOn: ''
-  # Flag to determine if files should be signed and published
-  signAndPublishArtifacts: false
+  # Sub path under 'artifacts' folder from which files are published to artifacts location
+  publishArtifactsSubPath: ''
+  # Sub path under artifacts location to which artifact files are publish
+  publishArtifactsTargetSubPath: ''
+  # Allow disabling test runs
+  runTests: true
   # TFMs for which test results are uploaded
   testResultTfms:
   - key: netcoreapp3.1
@@ -36,9 +40,6 @@ jobs:
       publish:
         logs:
           name: Logs_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
-        ${{ if and(ne(variables['System.TeamProject'], 'public'), eq(parameters.signAndPublishArtifacts, 'true')) }}:
-          artifacts:
-            name: Artifacts_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
 
     pool:
       # Public Linux Build Pool
@@ -84,15 +85,16 @@ jobs:
     - _BuildConfig: ${{ parameters.configuration }}
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
-    - _SignType: test
+    - _TestArgs: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
-    - _InternalSignArgs: ''
-    - _InternalPublishArgs: ''
 
     # Component Governance does not work on Musl
     - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       - skipComponentGovernanceDetection: true
+    
+    - ${{ if eq(parameters.runTests, true) }}:
+      - _TestArgs: '-test'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -139,49 +141,50 @@ jobs:
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
-        -test
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
+        $(_TestArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
       displayName: Build and Test
-      condition: succeeded()
-    
-    # Native build does not support signing. Move pack, sign, and publish
-    # to non-build step after build and tests have completed. This will not
-    # restore prerequisites nor rebuild the binaries.
-    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), eq(parameters.signAndPublishArtifacts, 'true')) }}:
-      - script: >-
-          $(Build.SourcesDirectory)/eng/cipacksignpublish$(scriptExt)
-          $(_InternalInstallArgs)
-          $(_InternalBuildArgs)
-          /p:DotNetSignType=real
-          /p:DotNetPublishUsingPipelines=true
-        displayName: Pack, Sign, and Publish
-        condition: succeeded()
+
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), ne(parameters.publishArtifactsSubPath, '')) }}:
+      - task: CopyFiles@2
+        displayName: Gather Artifacts
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/${{ parameters.publishArtifactsSubPath }}'
+          Contents: '**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/${{ coalesce(parameters.publishArtifactsTargetSubPath, parameters.publishArtifactsSubPath) }}'
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Artifacts
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+          artifactName: Build_${{ parameters.configuration }}
 
     # Publish test results to Azure Pipelines
-    - ${{ each testResultTfm in parameters.testResultTfms }}:
-      - task: PublishTestResults@2
-        displayName: Publish Test Results (${{ testResultTfm.value }})
-        inputs:
-          testResultsFormat: VSTest
-          testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
-          searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
-          failTaskOnFailedTests: true
-          testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} ${{ testResultTfm.value }}'
-          publishRunAttachments: true
-          mergeTestResults: true
-          buildConfiguration: ${{ parameters.name }}
-        continueOnError: true
-        condition: succeededOrFailed()
+    - ${{ if eq(parameters.runTests, true) }}:
+      - ${{ each testResultTfm in parameters.testResultTfms }}:
+        - task: PublishTestResults@2
+          displayName: Publish Test Results (${{ testResultTfm.value }})
+          inputs:
+            testResultsFormat: VSTest
+            testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
+            searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
+            failTaskOnFailedTests: true
+            testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} ${{ testResultTfm.value }}'
+            publishRunAttachments: true
+            mergeTestResults: true
+            buildConfiguration: ${{ parameters.name }}
+          continueOnError: true
+          condition: succeededOrFailed()
 
-    - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Test Result Files
-        inputs:
-          PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
-          PublishLocation: Container
-          ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
-        continueOnError: true
-        condition: succeededOrFailed()
+      - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Test Result Files
+          inputs:
+            PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+            PublishLocation: Container
+            ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
+          continueOnError: true
+          condition: succeededOrFailed()
