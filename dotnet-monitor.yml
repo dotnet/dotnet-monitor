@@ -9,6 +9,12 @@ pr:
     - internal/release/*
     - feature/*
 
+parameters:
+- name: RunTests
+  displayName: 'Run Tests'
+  type: boolean
+  default: true
+
 variables:
 - name: _TeamName
   value: DotNetCore
@@ -19,20 +25,24 @@ variables:
 
 stages:
 - stage: Build
+  displayName: Build and Test
   jobs:
+  # Build and test binaries
   - template: /eng/build.yml
     parameters:
       name: Windows_x64_Debug
       displayName: Windows x64 Debug
       osGroup: Windows
       configuration: Debug
+      runTests: ${{ parameters.RunTests }}
   - template: /eng/build.yml
     parameters:
       name: Windows_x64_Release
       displayName: Windows x64 Release
       osGroup: Windows
       configuration: Release
-      signAndPublishArtifacts: true
+      publishArtifactsSubPath: bin
+      runTests: ${{ parameters.RunTests }}
   - template: /eng/build.yml
     parameters:
       name: Windows_x86_Release
@@ -40,61 +50,101 @@ stages:
       osGroup: Windows
       configuration: Release
       architecture: x86
+      publishArtifactsSubPath: bin/Windows_NT.x86.Release
+      runTests: ${{ parameters.RunTests }}
   - template: /eng/build.yml
     parameters:
       name: CentOS_x64_Debug
       displayName: CentOS x64 Debug
       osGroup: Linux
       configuration: Debug
+      runTests: ${{ parameters.RunTests }}
   - template: /eng/build.yml
     parameters:
       name: CentOS_x64_Release
       displayName: CentOS x64 Release
       osGroup: Linux
       configuration: Release
+      publishArtifactsSubPath: bin/Linux.x64.Release
+      runTests: ${{ parameters.RunTests }}
   - template: /eng/build.yml
     parameters:
       name: Alpine_x64_Debug
       displayName: Alpine x64 Debug
       osGroup: Linux_Musl
       configuration: Debug
+      runTests: ${{ parameters.RunTests }}
   - template: /eng/build.yml
     parameters:
       name: Alpine_x64_Release
       displayName: Alpine x64 Release
       osGroup: Linux_Musl
       configuration: Release
+      publishArtifactsSubPath: bin/Linux.x64.Release
+      publishArtifactsTargetSubPath: bin/Linux-musl.x64.Release
+      runTests: ${{ parameters.RunTests }}
   - template: /eng/build.yml
     parameters:
       name: MacOS_x64_Debug
       displayName: MacOS x64 Debug
       osGroup: MacOS
       configuration: Debug
+      runTests: ${{ parameters.RunTests }}
   - template: /eng/build.yml
     parameters:
       name: MacOS_x64_Release
       displayName: MacOS x64 Release
       osGroup: MacOS
       configuration: Release
-  # This registers the build with BAR.
+      publishArtifactsSubPath: bin/OSX.x64.Release
+      runTests: ${{ parameters.RunTests }}
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+    # Pack, sign, and publish
+    - template: /eng/common/templates/job/job.yml
+      parameters:
+        name: Pack_Sign
+        displayName: Pack and Sign
+        dependsOn:
+        - Windows_x64_Release
+        - Windows_x86_Release
+        - CentOS_x64_Release
+        - Alpine_x64_Release
+        - MacOS_x64_Release
+        pool:
+          name: NetCore1ESPool-Internal
+          demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
+        enablePublishUsingPipelines: true
+        enableMicrobuild: true
+        artifacts:
+          download:
+            name: Build_Release
+          publish:
+            artifacts:
+              name: Artifacts_Pack_Sign
+            logs:
+              name: Logs_Pack_Sign
+            manifests: true
+        variables:
+        - _BuildConfig: Release
+        - _SignType: real
+        steps:
+        - script: >-
+            $(Build.SourcesDirectory)/eng/cipacksignpublish.cmd
+            /p:TeamName=$(_TeamName)
+            /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+            /p:DotNetSignType=real
+            /p:DotNetPublishUsingPipelines=true
+          displayName: Pack, Sign, and Publish
+    # Register with BAR
     - template: /eng/common/templates/job/publish-build-assets.yml
       parameters:
         configuration: Release
         dependsOn:
-        - Windows_x64_Debug
-        - Windows_x64_Release
-        - Windows_x86_Release
-        - CentOS_x64_Debug
-        - CentOS_x64_Release
-        - Alpine_x64_Debug
-        - Alpine_x64_Release
-        - MacOS_x64_Debug
-        - MacOS_x64_Release
+        - Pack_Sign
         publishUsingPipelines: true
         pool:
           name: NetCore1ESPool-Internal
-          demands: ImageOverride -equals build.windows.10.amd64.vs2017
+          demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
 # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - template: /eng/common/templates/post-build/post-build.yml
