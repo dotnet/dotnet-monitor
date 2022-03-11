@@ -1126,6 +1126,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The field {0} must be a status code or status code range between 1xx and 5xx. E.g. 200, 400-500..
+        /// </summary>
+        public static string ErrorMessage_StatusCodesRegularExpressionDoesNotMatch {
+            get {
+                return ResourceManager.GetString("ErrorMessage_StatusCodesRegularExpressionDoesNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field or the {1} field is required..
         /// </summary>
         public static string ErrorMessage_TwoFieldsMissing {

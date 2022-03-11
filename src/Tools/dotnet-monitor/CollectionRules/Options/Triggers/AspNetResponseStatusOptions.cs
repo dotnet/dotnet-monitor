@@ -23,7 +23,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes))]
         [Required]
         [MinLength(1)]
-        [RegularExpressions(StatusCodesRegex)]
+        [RegularExpressions(StatusCodesRegex,
+            ErrorMessageResourceType = typeof(OptionsDisplayStrings),
+            ErrorMessageResourceName = nameof(OptionsDisplayStrings.ErrorMessage_StatusCodesRegularExpressionDoesNotMatch))]
         public string[] StatusCodes { get; set; }
 
         [Display(

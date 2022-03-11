@@ -236,6 +236,48 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 });
         }
 
+        public static CollectionRuleOptions SetAspNetRequestCountTrigger(this CollectionRuleOptions options, Action<AspNetRequestCountOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.AspNetRequestCount,
+                triggerOptions =>
+                {
+                    AspNetRequestCountOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
+        public static CollectionRuleOptions SetAspNetRequestDurationTrigger(this CollectionRuleOptions options, Action<AspNetRequestDurationOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.AspNetRequestDuration,
+                triggerOptions =>
+                {
+                    AspNetRequestDurationOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
+        public static CollectionRuleOptions SetAspNetResponseStatusTrigger(this CollectionRuleOptions options, Action<AspNetResponseStatusOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.AspNetResponseStatus,
+                triggerOptions =>
+                {
+                    AspNetResponseStatusOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
         public static CollectionRuleOptions SetStartupTrigger(this CollectionRuleOptions options)
         {
             return SetTrigger(options, KnownCollectionRuleTriggers.Startup);
@@ -257,6 +299,24 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         {
             ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.EventCounter);
             return Assert.IsType<EventCounterOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static AspNetRequestCountOptions VerifyAspNetRequestCountTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.AspNetRequestCount);
+            return Assert.IsType<AspNetRequestCountOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static AspNetRequestDurationOptions VerifyAspNetRequestDurationTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.AspNetRequestDuration);
+            return Assert.IsType<AspNetRequestDurationOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static AspNetResponseStatusOptions VerifyAspNetResponseStatusTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.AspNetResponseStatus);
+            return Assert.IsType<AspNetResponseStatusOptions>(ruleOptions.Trigger.Settings);
         }
 
         public static void VerifyStartupTrigger(this CollectionRuleOptions ruleOptions)
