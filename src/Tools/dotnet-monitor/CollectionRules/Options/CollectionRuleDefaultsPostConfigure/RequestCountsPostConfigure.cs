@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
 
                 if (null != triggerSettings && typeof(RequestCounts).IsAssignableFrom(triggerSettings.GetType()))
                 {
-                    if (null == ((RequestCounts)options.Trigger.Settings).RequestCount)
+                    if (0 == ((RequestCounts)options.Trigger.Settings).RequestCount)
                     {
                         ((RequestCounts)options.Trigger.Settings).RequestCount = _defaultOptions.CurrentValue.RequestCount;
                     }

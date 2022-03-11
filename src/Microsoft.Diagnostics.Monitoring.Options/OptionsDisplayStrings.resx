@@ -635,4 +635,10 @@
     <value>A response count must be specified if there is no default response count.</value>
     <comment>Gets the format string for response count failure when there isn't one specified and no default exists. </comment>
   </data>
+  <data name="ErrorMessage_StatusCodesRegularExpressionDoesNotMatch" xml:space="preserve">
+    <value>The field {0} must be a status code or status code range between 1xx and 5xx. E.g. 200, 400-500.</value>
+    <comment>Gets the format string for rejecting validation due to the field not matching the expected regular expression.
+1 Format Parameter:
+0. fieldName: The name of the field that does not match the regular expression</comment>
+  </data>
 </root>

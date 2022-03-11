@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             ErrorMessageResourceType = typeof(OptionsDisplayStrings),
             ErrorMessageResourceName = nameof(OptionsDisplayStrings.ErrorMessage_NoDefaultRequestCount))]
         [Range(1, int.MaxValue)]
-        public int? RequestCount { get; set; }
+        public int RequestCount { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

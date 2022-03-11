@@ -1167,20 +1167,14 @@
           "format": "time-span"
         },
         "RequestCount": {
-          "type": [
-            "integer",
-            "null"
-          ],
+          "type": "integer",
           "description": "The threshold of the number of requests that start within the sliding window of time.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 1.0
         },
         "ResponseCount": {
-          "type": [
-            "integer",
-            "null"
-          ],
+          "type": "integer",
           "description": "The threshold number of responses with matching status codes.",
           "format": "int32",
           "maximum": 2147483647.0,

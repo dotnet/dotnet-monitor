@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
 
                 if (null != triggerSettings && triggerSettings.GetType() == typeof(AspNetResponseStatusOptions))
                 {
-                    if (null == ((AspNetResponseStatusOptions)options.Trigger.Settings).ResponseCount)
+                    if (0 == ((AspNetResponseStatusOptions)options.Trigger.Settings).ResponseCount)
                     {
                         ((AspNetResponseStatusOptions)options.Trigger.Settings).ResponseCount = _defaultOptions.CurrentValue.ResponseCount;
                     }

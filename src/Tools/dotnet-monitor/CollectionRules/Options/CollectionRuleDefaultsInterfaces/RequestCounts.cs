@@ -6,6 +6,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
 {
     internal interface RequestCounts
     {
-        public int? RequestCount { get; set; }
+        public int RequestCount { get; set; }
     }
 }

@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             {
                 ExcludePaths = options.ExcludePaths,
                 IncludePaths = options.IncludePaths,
-                RequestCount = options.ResponseCount.GetValueOrDefault(),
+                RequestCount = options.ResponseCount,
                 StatusCodes = options.StatusCodes.Select(ParseRange).ToArray(),
                 SlidingWindowDuration = options.SlidingWindowDuration ?? TimeSpan.Parse(AspNetResponseStatusOptionsDefaults.SlidingWindowDuration, CultureInfo.InvariantCulture),
             };

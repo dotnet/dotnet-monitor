@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Extensions.Options;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -116,7 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetRequestCount"); // Can we push this out to reading from a field?
+                    .SetAspNetRequestCountTrigger();
             }, host =>
             {
                 AspNetRequestCountOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName);
@@ -136,13 +137,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetRequestCount"); // Omit Request Count and don't set a default
+                    .SetAspNetRequestCountTrigger();
             }, host =>
             {
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
                         () => TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName));
 
-                Assert.Equal(string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultRequestCount), invalidOptionsException.Message);
+                VerifyRangeMessage<int>(invalidOptionsException, nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString());
             });
         }
 
@@ -160,13 +161,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
-                AspNetRequestCountOptions options = new AspNetRequestCountOptions();
-                options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
-
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetRequestCount")
-                    .Trigger.Settings = options;
+                    .SetAspNetRequestCountTrigger(options =>
+                    {
+                        options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+                    });
             }, host =>
             {
                 AspNetRequestCountOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName);
@@ -191,7 +191,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetRequestDuration"); // Can we push this out to reading from a field?
+                    .SetAspNetRequestDurationTrigger();
             }, host =>
             {
                 AspNetRequestDurationOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestDurationOptions>(host, DefaultRuleName);
@@ -211,13 +211,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetRequestDuration"); // Omit Request Count and don't set a default
+                    .SetAspNetRequestDurationTrigger();
             }, host =>
             {
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
                         () => TriggerTestsHelper.GetTriggerOptions<AspNetRequestDurationOptions>(host, DefaultRuleName));
 
-                Assert.Equal(string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultRequestCount), invalidOptionsException.Message);
+                VerifyRangeMessage<int>(invalidOptionsException, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString());
             });
         }
 
@@ -235,13 +235,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
-                AspNetRequestDurationOptions options = new AspNetRequestDurationOptions();
-                options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
-
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetRequestDuration")
-                    .Trigger.Settings = options;
+                    .SetAspNetRequestDurationTrigger(options =>
+                    {
+                        options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+                    });
             }, host =>
             {
                 AspNetRequestDurationOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestDurationOptions>(host, DefaultRuleName);
@@ -269,8 +268,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetResponseStatus")
-                    .Trigger.Settings = options; // Can we push this out to reading from a field?
+                    .SetAspNetResponseStatusTrigger(options =>
+                    {
+                        options.StatusCodes = TriggerTestsConstants.ExpectedStatusCodes;
+                    });
             }, host =>
             {
                 AspNetResponseStatusOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetResponseStatusOptions>(host, DefaultRuleName);
@@ -288,19 +289,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
-                AspNetResponseStatusOptions options = new AspNetResponseStatusOptions();
-                options.StatusCodes = TriggerTestsConstants.ExpectedStatusCodes;
-
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetResponseStatus")
-                    .Trigger.Settings = options; // Omit Response Count and don't set a default
+                    .SetAspNetResponseStatusTrigger(options =>
+                    {
+                        options.StatusCodes = TriggerTestsConstants.ExpectedStatusCodes;
+                    });
             }, host =>
             {
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
                         () => TriggerTestsHelper.GetTriggerOptions<AspNetResponseStatusOptions>(host, DefaultRuleName));
 
-                Assert.Equal(string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultResponseCount), invalidOptionsException.Message);
+                VerifyRangeMessage<int>(invalidOptionsException, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
             });
         }
 
@@ -318,14 +318,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
-                AspNetResponseStatusOptions options = new AspNetResponseStatusOptions();
-                options.ResponseCount = TriggerTestsConstants.ExpectedResponseCount;
-                options.StatusCodes = TriggerTestsConstants.ExpectedStatusCodes;
-
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetResponseStatus")
-                    .Trigger.Settings = options;
+                    .SetAspNetResponseStatusTrigger(options =>
+                    {
+                        options.ResponseCount = TriggerTestsConstants.ExpectedResponseCount;
+                        options.StatusCodes = TriggerTestsConstants.ExpectedStatusCodes;
+                    });
             }, host =>
             {
                 AspNetResponseStatusOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetResponseStatusOptions>(host, DefaultRuleName);
@@ -350,13 +349,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
-                AspNetRequestCountOptions options = new AspNetRequestCountOptions();
-                options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
-
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetRequestCount")
-                    .Trigger.Settings = options;
+                    .SetAspNetRequestCountTrigger(options =>
+                    {
+                        options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+                    });
             }, host =>
             {
                 AspNetRequestCountOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName);
@@ -379,14 +377,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
-                AspNetRequestCountOptions options = new AspNetRequestCountOptions();
-                options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
-                options.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration);
-
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetTrigger("AspNetRequestCount")
-                    .Trigger.Settings = options;
+                    .SetAspNetRequestCountTrigger(options =>
+                    {
+                        options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+                        options.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration);
+                    });
             }, host =>
             {
                 AspNetRequestCountOptions options = TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName);
@@ -437,8 +434,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
                     .SetStartupTrigger()
-                    .SetLimits()
-                    .Limits.ActionCount = LimitsTestsConstants.ExpectedActionCount;
+                    .SetLimits(options =>
+                    {
+                        options.ActionCount = LimitsTestsConstants.ExpectedActionCount;
+                    });
             }, host =>
             {
                 CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
@@ -488,8 +487,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
                     .SetStartupTrigger()
-                    .SetLimits()
-                    .Limits.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedActionCountSlidingWindowDuration);
+                    .SetLimits(options =>
+                    {
+                        options.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedActionCountSlidingWindowDuration);
+                    });
             }, host =>
             {
                 CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
@@ -540,14 +541,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
                     .SetStartupTrigger()
-                    .SetLimits()
-                    .Limits.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration);
+                    .SetLimits(options =>
+                    {
+                        options.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration);
+                    });
             }, host =>
             {
                 CollectionRuleLimitsOptions options = LimitsTestsHelper.GetLimitsOptions(host, DefaultRuleName);
 
                 Assert.Equal(TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration), options.RuleDuration);
             });
+        }
+
+        private static void VerifyRangeMessage<T>(Exception ex, string fieldName, string min, string max)
+        {
+            string message = (new RangeAttribute(typeof(T), min, max)).FormatErrorMessage(fieldName);
+
+            Assert.Equal(message, ex.Message);
         }
     }
 }

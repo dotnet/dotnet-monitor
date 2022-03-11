@@ -1206,13 +1206,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
                 return ResourceManager.GetString("ErrorMessage_NoDefaultRequestCount", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A response count must be specified if there is no default response count..
         /// </summary>
-        public static string ErrorMessage_NoDefaultResponseCount {
-            get {
+        public static string ErrorMessage_NoDefaultResponseCount
+        {
+            get
+            {
                 return ResourceManager.GetString("ErrorMessage_NoDefaultResponseCount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The field {0} must be a status code or status code range between 1xx and 5xx. E.g. 200, 400-500..
+        /// </summary>
+        public static string ErrorMessage_StatusCodesRegularExpressionDoesNotMatch {
+            get {
+                return ResourceManager.GetString("ErrorMessage_StatusCodesRegularExpressionDoesNotMatch", resourceCulture);
             }
         }
         
