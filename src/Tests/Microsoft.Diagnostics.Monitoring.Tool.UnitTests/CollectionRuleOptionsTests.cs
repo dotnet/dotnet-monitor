@@ -3,23 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Tracing;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics.Tracing;
-using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -246,6 +246,302 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
                     VerifyFieldLessThanOtherFieldMessage(failures, 0, nameof(EventCounterOptions.GreaterThan), nameof(EventCounterOptions.LessThan));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetRequestCountTrigger_MinimumOptions()
+        {
+            const int ExpectedRequestCount = 10;
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetRequestCountTrigger(options =>
+                        {
+                            options.RequestCount = ExpectedRequestCount;
+                        });
+                },
+                ruleOptions =>
+                {
+                    AspNetRequestCountOptions requestCountOptions = ruleOptions.VerifyAspNetRequestCountTrigger();
+                    Assert.Equal(ExpectedRequestCount, requestCountOptions.RequestCount);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetRequestCountTrigger_RoundTrip()
+        {
+            const int ExpectedRequestCount = 10;
+            TimeSpan ExpectedSlidingWindowDuration = TimeSpan.FromSeconds(45);
+            string[] ExpectedIncludePaths = { "IncludePath1", "IncludePath2" };
+            string[] ExpectedExcludePaths = { "ExcludePath1", "ExcludePath2" };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetRequestCountTrigger(options =>
+                        {
+                            options.RequestCount = ExpectedRequestCount;
+                            options.SlidingWindowDuration = ExpectedSlidingWindowDuration;
+                            options.IncludePaths = ExpectedIncludePaths;
+                            options.ExcludePaths = ExpectedExcludePaths;
+                        });
+                },
+                ruleOptions =>
+                {
+                    AspNetRequestCountOptions requestCountOptions = ruleOptions.VerifyAspNetRequestCountTrigger();
+                    Assert.Equal(ExpectedRequestCount, requestCountOptions.RequestCount);
+                    Assert.Equal(ExpectedSlidingWindowDuration, requestCountOptions.SlidingWindowDuration);
+                    Assert.Equal(ExpectedIncludePaths, requestCountOptions.IncludePaths);
+                    Assert.Equal(ExpectedExcludePaths, requestCountOptions.ExcludePaths);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetRequestCountTrigger_RequiredPropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetRequestCountTrigger();
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Single(failures);
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetRequestCountTrigger_RangePropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetRequestCountTrigger(options =>
+                        {
+                            options.RequestCount = -1;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Equal(2, failures.Length);
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestCountOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetRequestDurationTrigger_MinimumOptions()
+        {
+            const int ExpectedRequestCount = 10;
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetRequestDurationTrigger(options =>
+                        {
+                            options.RequestCount = ExpectedRequestCount;
+                        });
+                },
+                ruleOptions =>
+                {
+                    AspNetRequestDurationOptions requestDurationOptions = ruleOptions.VerifyAspNetRequestDurationTrigger();
+                    Assert.Equal(ExpectedRequestCount, requestDurationOptions.RequestCount);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetRequestDurationTrigger_RoundTrip()
+        {
+            const int ExpectedRequestCount = 10;
+            TimeSpan ExpectedSlidingWindowDuration = TimeSpan.FromSeconds(45);
+            TimeSpan ExpectedRequestDuration = TimeSpan.FromSeconds(60);
+            string[] ExpectedIncludePaths = { "IncludePath1", "IncludePath2" };
+            string[] ExpectedExcludePaths = { "ExcludePath1", "ExcludePath2" };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetRequestDurationTrigger(options =>
+                        {
+                            options.RequestCount = ExpectedRequestCount;
+                            options.SlidingWindowDuration = ExpectedSlidingWindowDuration;
+                            options.IncludePaths = ExpectedIncludePaths;
+                            options.ExcludePaths = ExpectedExcludePaths;
+                            options.RequestDuration = ExpectedRequestDuration;
+                        });
+                },
+                ruleOptions =>
+                {
+                    AspNetRequestDurationOptions requestDurationOptions = ruleOptions.VerifyAspNetRequestDurationTrigger();
+                    Assert.Equal(ExpectedRequestCount, requestDurationOptions.RequestCount);
+                    Assert.Equal(ExpectedSlidingWindowDuration, requestDurationOptions.SlidingWindowDuration);
+                    Assert.Equal(ExpectedIncludePaths, requestDurationOptions.IncludePaths);
+                    Assert.Equal(ExpectedExcludePaths, requestDurationOptions.ExcludePaths);
+                    Assert.Equal(ExpectedRequestDuration, requestDurationOptions.RequestDuration);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetRequestDurationTrigger_RequiredPropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetRequestDurationTrigger();
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Single(failures);
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetRequestDurationTrigger_RangePropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetRequestDurationTrigger(options =>
+                        {
+                            options.RequestCount = -1;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                            options.RequestDuration = TimeSpan.FromSeconds(-1);
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Equal(3, failures.Length);
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestDurationOptions.RequestDuration),
+                        AspNetRequestDurationOptions.RequestDuration_MinValue, AspNetRequestDurationOptions.RequestDuration_MaxValue);
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetRequestDurationOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetResponseStatusTrigger_MinimumOptions()
+        {
+            const int ExpectedResponseCount = 10;
+            string[] ExpectedStatusCodes = { "400", "500" };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetResponseStatusTrigger(options =>
+                        {
+                            options.ResponseCount = ExpectedResponseCount;
+                            options.StatusCodes = ExpectedStatusCodes;
+                        });
+                },
+                ruleOptions =>
+                {
+                    AspNetResponseStatusOptions responseStatusOptions = ruleOptions.VerifyAspNetResponseStatusTrigger();
+                    Assert.Equal(ExpectedResponseCount, responseStatusOptions.ResponseCount);
+                    Assert.Equal(ExpectedStatusCodes, responseStatusOptions.StatusCodes);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetResponseStatusTrigger_RoundTrip()
+        {
+            const int ExpectedResponseCount = 10;
+            TimeSpan ExpectedSlidingWindowDuration = TimeSpan.FromSeconds(45);
+            string[] ExpectedIncludePaths = { "IncludePath1", "IncludePath2" };
+            string[] ExpectedExcludePaths = { "ExcludePath1", "ExcludePath2" };
+            string[] ExpectedStatusCodes = { "400", "500" };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetResponseStatusTrigger(options =>
+                        {
+                            options.ResponseCount = ExpectedResponseCount;
+                            options.SlidingWindowDuration = ExpectedSlidingWindowDuration;
+                            options.IncludePaths = ExpectedIncludePaths;
+                            options.ExcludePaths = ExpectedExcludePaths;
+                            options.StatusCodes = ExpectedStatusCodes;
+                        });
+                },
+                ruleOptions =>
+                {
+                    AspNetResponseStatusOptions responseStatusOptions = ruleOptions.VerifyAspNetResponseStatusTrigger();
+                    Assert.Equal(ExpectedResponseCount, responseStatusOptions.ResponseCount);
+                    Assert.Equal(ExpectedSlidingWindowDuration, responseStatusOptions.SlidingWindowDuration);
+                    Assert.Equal(ExpectedIncludePaths, responseStatusOptions.IncludePaths);
+                    Assert.Equal(ExpectedExcludePaths, responseStatusOptions.ExcludePaths);
+                    Assert.Equal(ExpectedStatusCodes, responseStatusOptions.StatusCodes);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetResponseStatusTrigger_RequiredPropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetResponseStatusTrigger();
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Equal(2, failures.Length);
+                    VerifyRequiredMessage(failures, 0, nameof(AspNetResponseStatusOptions.StatusCodes));
+                    VerifyRangeMessage<int>(failures, 1, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_AspNetResponseStatusTrigger_RangePropertyValidation()
+        {
+            string[] ExpectedStatusCodes = { "600" };
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetResponseStatusTrigger(options =>
+                        {
+                            options.ResponseCount = -1;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                            options.StatusCodes = ExpectedStatusCodes;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Equal(3, failures.Length);
+                    VerifyStatusCodesRegexMessage(failures, 0, nameof(AspNetResponseStatusOptions.StatusCodes));
+                    VerifyRangeMessage<int>(failures, 1, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetResponseStatusOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
 
@@ -1067,6 +1363,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Strings.ErrorMessage_TwoFieldsMissing,
                 fieldName1,
                 fieldName2);
+
+            Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyStatusCodesRegexMessage(string[] failures, int index, string fieldName)
+        {
+            string message = string.Format(
+                CultureInfo.InvariantCulture,
+                WebApi.OptionsDisplayStrings.ErrorMessage_StatusCodesRegularExpressionDoesNotMatch,
+                fieldName);
 
             Assert.Equal(message, failures[index]);
         }

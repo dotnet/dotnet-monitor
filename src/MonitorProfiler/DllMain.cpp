@@ -16,7 +16,8 @@ STDMETHODIMP_(BOOL) DLLEXPORT DllMain(HMODULE hModule, DWORD ul_reason_for_call,
     return TRUE;
 }
 
-STDAPI DLLEXPORT DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv)
+_Check_return_
+STDAPI DLLEXPORT DllGetClassObject(_In_ REFCLSID rclsid, _In_ REFIID riid, _Outptr_ LPVOID* ppv)
 {
     ExpectedPtr(ppv);
 
@@ -28,7 +29,8 @@ STDAPI DLLEXPORT DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv)
     return pFactory->QueryInterface(riid, ppv);
 }
 
-STDAPI DLLEXPORT DllCanUnloadNow()
+__control_entrypoint(DllExport)
+STDAPI DLLEXPORT DllCanUnloadNow(void)
 {
     return S_OK;
 }
