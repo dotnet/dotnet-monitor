@@ -4,6 +4,6 @@
 
 #pragma once
 
-#ifndef IfNullPointer
-#define IfNullPointer(EXPR) do { if (nullptr == (EXPR)) { return E_POINTER; } } while (0)
+#ifndef ExpectedPtr
+#define ExpectedPtr(ptr) { if (nullptr == ptr) return E_POINTER; }
 #endif

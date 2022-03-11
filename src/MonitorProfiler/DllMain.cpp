@@ -18,7 +18,7 @@ STDMETHODIMP_(BOOL) DLLEXPORT DllMain(HMODULE hModule, DWORD ul_reason_for_call,
 
 STDAPI DLLEXPORT DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv)
 {
-    IfNullPointer(ppv);
+    ExpectedPtr(ppv);
 
     *ppv = nullptr;
 

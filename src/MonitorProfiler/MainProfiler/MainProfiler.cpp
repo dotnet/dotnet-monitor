@@ -67,7 +67,7 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
 STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
 {
-    IfNullPointer(pbNotificationOnly);
+    ExpectedPtr(pbNotificationOnly);
 
     *pbNotificationOnly = TRUE;
 

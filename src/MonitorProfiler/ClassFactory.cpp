@@ -18,7 +18,7 @@ STDMETHODIMP ClassFactory::CreateInstance(
     REFIID riid,
     void **ppvObject)
 {
-    IfNullPointer(ppvObject);
+    ExpectedPtr(ppvObject);
 
     *ppvObject = nullptr;
 
