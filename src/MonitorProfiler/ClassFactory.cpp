@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 #include "ClassFactory.h"
-#include "EnvProfiler/EnvProfiler.h"
+#include "corhlpr.h"
+#include "macros.h"
+#include "MainProfiler/MainProfiler.h"
 #include "ProfilerBase.h"
 
 ClassFactory::ClassFactory(REFCLSID guidClsid) :
@@ -16,25 +18,20 @@ STDMETHODIMP ClassFactory::CreateInstance(
     REFIID riid,
     void **ppvObject)
 {
-    if (nullptr == ppvObject)
-    {
-        return E_POINTER;
-    }
+    ExpectedPtr(ppvObject);
+
+    *ppvObject = nullptr;
 
     if (nullptr != pUnkOuter)
     {
-        *ppvObject = nullptr;
         return CLASS_E_NOAGGREGATION;
     }
 
     ComPtr<ProfilerBase> pProfiler;
-    if (m_guidClsid == EnvProfiler::GetClsid())
+    if (m_guidClsid == MainProfiler::GetClsid())
     {
-        pProfiler = new EnvProfiler();
-        if (nullptr == pProfiler)
-        {
-            return E_OUTOFMEMORY;
-        }
+        pProfiler = new MainProfiler();
+        IfNullRet(pProfiler);
     }
     else
     {

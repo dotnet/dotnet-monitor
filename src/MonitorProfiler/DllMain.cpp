@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 #include "ClassFactory.h"
+#include "corhlpr.h"
+#include "macros.h"
 #include "guids.h"
 
 #ifndef DLLEXPORT
@@ -16,18 +18,14 @@ STDMETHODIMP_(BOOL) DLLEXPORT DllMain(HMODULE hModule, DWORD ul_reason_for_call,
 
 STDAPI DLLEXPORT DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv)
 {
-    if (nullptr == ppv)
-    {
-        return E_POINTER;
-    }
+    ExpectedPtr(ppv);
 
-    ComPtr<ClassFactory> pfactory(new ClassFactory(rclsid));
-    if (nullptr == pfactory)
-    {
-        return E_OUTOFMEMORY;
-    }
+    *ppv = nullptr;
 
-    return pfactory->QueryInterface(riid, ppv);
+    ComPtr<ClassFactory> pFactory(new ClassFactory(rclsid));
+    IfNullRet(pFactory);
+
+    return pFactory->QueryInterface(riid, ppv);
 }
 
 STDAPI DLLEXPORT DllCanUnloadNow()

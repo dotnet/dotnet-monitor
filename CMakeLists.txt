@@ -28,7 +28,7 @@ if(CLR_CMAKE_HOST_UNIX)
 endif(CLR_CMAKE_HOST_UNIX)
 
 set(PROFILER_SOURCES
-    ../../external/runtime/src/coreclr/pal/prebuilt/idl/corprof_i.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/external/runtime/src/coreclr/pal/prebuilt/idl/corprof_i.cpp
     )
 
-add_subdirectory(src/Tests/TestProfiler)
+add_subdirectory(src/MonitorProfiler)
