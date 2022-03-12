@@ -5,7 +5,7 @@
 #pragma once
 
 #include "com.h"
-#include "corhlpr.h"
+#include "cor.h"
 #include "corprof.h"
 #include "refcount.h"
 
