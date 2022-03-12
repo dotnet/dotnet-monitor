@@ -50,8 +50,8 @@
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22160.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22160.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
-    <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0-preview.3.22160.15</MicrosoftNETCoreAppRuntimewinx64Version>
-    <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-preview.3.22160.15</VSRedistCommonNetCoreSharedFrameworkx6470Version>
+    <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0-preview.3.22161.10</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-preview.3.22161.10</VSRedistCommonNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.315701</MicrosoftFileFormatsVersion>
   </PropertyGroup>
