@@ -222,6 +222,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleOptions SetHighCPUTrigger(this CollectionRuleOptions options, Action<HighCPUOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.HighCPU,
+                triggerOptions =>
+                {
+                    HighCPUOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
         public static CollectionRuleOptions SetEventCounterTrigger(this CollectionRuleOptions options, Action<EventCounterOptions> callback = null)
         {
             return options.SetTrigger(
@@ -299,6 +313,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         {
             ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.EventCounter);
             return Assert.IsType<EventCounterOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static HighCPUOptions VerifyHighCPUTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.HighCPU);
+            return Assert.IsType<HighCPUOptions>(ruleOptions.Trigger.Settings);
         }
 
         public static AspNetRequestCountOptions VerifyAspNetRequestCountTrigger(this CollectionRuleOptions ruleOptions)

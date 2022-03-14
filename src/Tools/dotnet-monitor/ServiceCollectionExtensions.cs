@@ -86,6 +86,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.HighCPUTriggerFactory, HighCPUOptions>(KnownCollectionRuleTriggers.HighCPU);
             services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
 
             services.AddSingleton<EventPipeTriggerFactory>();

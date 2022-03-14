@@ -249,6 +249,126 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+
+
+
+
+        [Fact]
+        public Task CollectionRuleOptions_HighCPUTrigger_DefaultOptions()
+        {
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventCounterTrigger();
+                },
+                ruleOptions =>
+                {
+                    HighCPUOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
+                    Assert.Equal(HighCPUOptionsDefaults.GreaterThan, highCPUOptions.GreaterThan);
+                    Assert.Equal(TimeSpan.Parse(HighCPUOptionsDefaults.SlidingWindowDuration), highCPUOptions.SlidingWindowDuration);
+                    Assert.Null(highCPUOptions.LessThan);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_HighCPUTrigger_RoundTrip()
+        {
+            const double ExpectedGreaterThan = 0.5;
+            const double ExpectedLessThan = 0.75;
+            TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetHighCPUTrigger(options =>
+                        {
+                            options.GreaterThan = ExpectedGreaterThan;
+                            options.LessThan = ExpectedLessThan;
+                            options.SlidingWindowDuration = ExpectedDuration;
+                        });
+                },
+                ruleOptions =>
+                {
+                    HighCPUOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
+                    Assert.Equal(ExpectedGreaterThan, highCPUOptions.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, highCPUOptions.LessThan);
+                    Assert.Equal(ExpectedDuration, highCPUOptions.SlidingWindowDuration);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_HighCPUTrigger_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventCounterTrigger(options =>
+                        {
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    // Property validation failures will short-circuit the remainder of the validation
+                    // rules, thus only observe 1 error when one might expect 2 (the second being that
+                    // either GreaterThan or LessThan should be specified).
+                    Assert.Single(failures);
+                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(EventCounterOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_HighCPUTrigger_GreaterThanLargerThanLessThan()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetHighCPUTrigger(options =>
+                        {
+                            options.GreaterThan = 0.75;
+                            options.LessThan = 0.5;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFieldLessThanOtherFieldMessage(failures, 0, nameof(EventCounterOptions.GreaterThan), nameof(EventCounterOptions.LessThan));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_HighCPUTrigger_LessThanAssignedGreaterThanUnassigned()
+        {
+            const double ExpectedLessThan = HighCPUOptionsDefaults.GreaterThan / 2;
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetHighCPUTrigger(options =>
+                        {
+                            options.LessThan = ExpectedLessThan;
+                        });
+                },
+                ruleOptions =>
+                {
+                    HighCPUOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
+                    Assert.Null(highCPUOptions.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, highCPUOptions.LessThan);
+                    Assert.Equal(TimeSpan.Parse(HighCPUOptionsDefaults.SlidingWindowDuration), highCPUOptions.SlidingWindowDuration);
+                });
+        }
+
+
+
+
         [Fact]
         public Task CollectionRuleOptions_AspNetRequestCountTrigger_MinimumOptions()
         {
