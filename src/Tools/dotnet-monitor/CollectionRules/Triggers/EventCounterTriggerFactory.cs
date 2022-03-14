@@ -15,7 +15,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
     /// Factory for creating a new EventCounterTrigger trigger.
     /// </summary>
     internal sealed class EventCounterTriggerFactory :
-        ICollectionRuleTriggerFactory<EventCounterOptions>
+        ICollectionRuleTriggerFactory<EventCounterOptions>,
+        ICollectionRuleTriggerFactory<HighCPUOptions>
+
     {
         private readonly EventPipeTriggerFactory _eventPipeTriggerFactory;
         private readonly ITraceEventTriggerFactory<EventCounterTriggerSettings> _traceEventTriggerFactory;
@@ -50,6 +52,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 _traceEventTriggerFactory,
                 settings,
                 callback);
+        }
+
+        /// <inheritdoc/>
+        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, HighCPUOptions options)
+        {
+            // SET THESE TO DEFAULTS (and do this for the options as well) -> should also allow options to override
+            EventCounterOptions eventCounterOptions = new()
+            {
+                ProviderName = "System.Runtime",
+                CounterName = "cpu-usage",
+                GreaterThan = (options.LessThan.HasValue) ? options.GreaterThan : (options.GreaterThan ?? HighCPUOptionsDefaults.GreaterThan), // make sure this works
+                LessThan = options.LessThan,
+                SlidingWindowDuration = options.SlidingWindowDuration
+            };
+
+            return Create(endpointInfo, callback, eventCounterOptions);
         }
     }
 }

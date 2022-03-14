@@ -254,20 +254,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
 
         [Fact]
-        public Task CollectionRuleOptions_HighCPUTrigger_DefaultOptions()
+        public Task CollectionRuleOptions_HighCPUTrigger_MinimumOptions()
         {
             return ValidateSuccess(
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetEventCounterTrigger();
+                        .SetHighCPUTrigger();
                 },
                 ruleOptions =>
                 {
                     HighCPUOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
-                    Assert.Equal(HighCPUOptionsDefaults.GreaterThan, highCPUOptions.GreaterThan);
-                    Assert.Equal(TimeSpan.Parse(HighCPUOptionsDefaults.SlidingWindowDuration), highCPUOptions.SlidingWindowDuration);
-                    Assert.Null(highCPUOptions.LessThan);
                 });
         }
 
@@ -305,7 +302,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetEventCounterTrigger(options =>
+                        .SetHighCPUTrigger(options =>
                         {
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
                         });
@@ -317,7 +314,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // rules, thus only observe 1 error when one might expect 2 (the second being that
                     // either GreaterThan or LessThan should be specified).
                     Assert.Single(failures);
-                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(EventCounterOptions.SlidingWindowDuration),
+                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(HighCPUOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -362,7 +359,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     HighCPUOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
                     Assert.Null(highCPUOptions.GreaterThan);
                     Assert.Equal(ExpectedLessThan, highCPUOptions.LessThan);
-                    Assert.Equal(TimeSpan.Parse(HighCPUOptionsDefaults.SlidingWindowDuration), highCPUOptions.SlidingWindowDuration);
                 });
         }
 

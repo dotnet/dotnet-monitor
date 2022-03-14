@@ -604,6 +604,19 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "HighCPU"
+            },
+            "Settings": {
+              "$ref": "#/definitions/HighCPUOptions"
+            }
+          }
+        },
+        {
           "properties": {
             "Type": {
               "const": "Startup"
@@ -1502,6 +1515,7 @@
         "AspNetRequestDuration",
         "AspNetResponseStatus",
         "EventCounter",
+        "HighCPU",
         "Startup"
       ]
     },
@@ -1684,6 +1698,38 @@
           ],
           "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
           "format": "double"
+        },
+        "LessThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double"
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
+          "format": "time-span",
+          "default": "00:01:00"
+        }
+      }
+    },
+    "HighCPUOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "GreaterThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double",
+          "default": 50
         },
         "LessThan": {
           "type": [
