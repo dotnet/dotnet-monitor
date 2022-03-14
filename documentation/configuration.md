@@ -976,7 +976,7 @@ Collection rule defaults are specified in configuration as a named item under th
 
 ### Example
 
-The following example includes a default egress provider that corresponds to the `FileSystem` egress provider named `artifacts`. The first action, `CollectDump`, is able to omit the `Settings` section, using the default egress provider. The second action, `CollectGCDump`, is using an egress provider other than the default, and specifies that it will instead egress to an `AzureBlobStorage` provider named `monitorBlob`.
+The following example includes a default egress provider that corresponds to the `FileSystem` egress provider named `artifacts`. The first action, `CollectDump`, is able to omit the `Settings` section by using the default egress provider. The second action, `CollectGCDump`, is using an egress provider other than the default, and specifies that it will egress to an `AzureBlobStorage` provider named `monitorBlob`.
 
 ```json
 {

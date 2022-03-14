@@ -263,9 +263,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
-                AspNetResponseStatusOptions options = new AspNetResponseStatusOptions(); // Omit setting the Response Count
-                options.StatusCodes = TriggerTestsConstants.ExpectedStatusCodes;
-
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
                     .SetAspNetResponseStatusTrigger(options =>

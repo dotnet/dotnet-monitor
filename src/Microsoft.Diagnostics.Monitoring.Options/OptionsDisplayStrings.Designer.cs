@@ -341,7 +341,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The number of times the action list may be executed before being throttled..
+        ///   Looks up a localized string similar to The default number of times the action list may be executed before being throttled to be used when no other action count is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCount {
             get {
@@ -350,7 +350,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting..
+        ///   Looks up a localized string similar to The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed; to be used when no other action count sliding window duration is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCountSlidingWindowDuration {
             get {
@@ -369,7 +369,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The threshold of the number of requests that start within the sliding window of time..
+        ///   Looks up a localized string similar to The default threshold of the number of requests that start within the sliding window of time to be used when no other request count is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount {
             get {
@@ -378,7 +378,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The threshold number of responses with matching status codes..
+        ///   Looks up a localized string similar to The default threshold number of responses with matching status codes to be used when no other response count is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount {
             get {
@@ -387,7 +387,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely..
+        ///   Looks up a localized string similar to The default amount of time before the rule will stop monitoring a process after it has been applied to a process to be used when no other rule duration is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_RuleDuration {
             get {
@@ -396,7 +396,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the default sliding window duration to be used when no other sliding window duration is specified..
+        ///   Looks up a localized string similar to The default sliding window duration to be used when no other sliding window duration is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration {
             get {
@@ -1206,18 +1206,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
                 return ResourceManager.GetString("ErrorMessage_NoDefaultRequestCount", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to A response count must be specified if there is no default response count..
         /// </summary>
-        public static string ErrorMessage_NoDefaultResponseCount
-        {
-            get
-            {
+        public static string ErrorMessage_NoDefaultResponseCount {
+            get {
                 return ResourceManager.GetString("ErrorMessage_NoDefaultResponseCount", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to The field {0} must be a status code or status code range between 1xx and 5xx. E.g. 200, 400-500..
         /// </summary>

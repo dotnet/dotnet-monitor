@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces
@@ -21,16 +20,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
         {
             if (null == options.Limits)
             {
-                if (_defaultOptions.CurrentValue.ActionCount.HasValue
-                    || _defaultOptions.CurrentValue.ActionCountSlidingWindowDuration.HasValue
-                    || _defaultOptions.CurrentValue.RuleDuration.HasValue)
-                {
-                    options.Limits = new CollectionRuleLimitsOptions();
-                }
-                else
+                if (!_defaultOptions.CurrentValue.ActionCount.HasValue
+                    && !_defaultOptions.CurrentValue.ActionCountSlidingWindowDuration.HasValue
+                    && !_defaultOptions.CurrentValue.RuleDuration.HasValue)
                 {
                     return;
                 }
+
+                options.Limits = new CollectionRuleLimitsOptions();
             }
 
             if (null == options.Limits.ActionCount)

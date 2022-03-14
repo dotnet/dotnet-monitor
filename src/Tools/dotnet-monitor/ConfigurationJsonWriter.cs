@@ -193,7 +193,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private IConfigurationSection ProcessChildSection(IConfiguration parentSection, string key, bool skipNotPresent, bool includeChildSections = true, bool redact = false, bool showSources = false)
         {
-            bool loadCRDefaults = key.Equals(ConfigurationKeys.CollectionRules) && _serviceProvider != null;
+            bool loadCollectionRuleDefaults = key.Equals(ConfigurationKeys.CollectionRules) && _serviceProvider != null;
 
             IConfigurationSection section = parentSection.GetSection(key);
             if (!section.Exists())
@@ -206,16 +206,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return null;
             }
 
-            ProcessSection(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults);
+            ProcessSection(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCollectionRuleDefaults);
 
             return section;
         }
 
-        private void ProcessSection(IConfigurationSection section, bool includeChildSections = true, bool redact = false, bool showSources = false, bool loadCRDefaults = false, Dictionary<string, string> toMock = null, IndependentConfigFlags configFlag = IndependentConfigFlags.None)
+        private void ProcessSection(IConfigurationSection section, bool includeChildSections = true, bool redact = false, bool showSources = false, bool loadCRDefaults = false, Dictionary<string, string> mockDefaults = null, IndependentConfigFlags configFlag = IndependentConfigFlags.None)
         {
-            if ((null == toMock || !toMock.Any()) && loadCRDefaults)
+            if ((null == mockDefaults || !mockDefaults.Any()) && loadCRDefaults)
             {
-                toMock = CollectionRuleDefaultsSetup(section, ref configFlag);
+                mockDefaults = CollectionRuleDefaultsSetup(section, ref configFlag);
             }
 
             _writer.WritePropertyName(section.Key);
@@ -241,25 +241,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         {
                             if (loadCRDefaults && section.Key.Equals("Actions"))
                             {
-                                toMock = GetMockedChildren(GetActionOptionsType(child));
+                                mockDefaults = GetMockedChildren(GetActionOptionsType(child));
 
-                                configFlag = toMock.Any() ? GetUpdatedSettingsFlag(child) : IndependentConfigFlags.None;
+                                configFlag = mockDefaults.Any() ? GetUpdatedSettingsFlag(child) : IndependentConfigFlags.None;
                             }
 
-                            ProcessChildren(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, configFlag: configFlag, toMock: toMock);
+                            ProcessChildren(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, mockDefaults, configFlag: configFlag);
                         }
                         else
                         {
                             WriteValue(child.Value, redact);
 
-                            string comment = GetConfigurationProvider(child, showSources);
-
-                            if (comment.Length > 0)
-                            {
-                                // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
-                                // that prevents comments from being directly after commas
-                                _writer.WriteCommentValue(comment);
-                            }
+                            WriteComment(GetConfigurationProvider(child, showSources));
                         }
                     }
 
@@ -267,21 +260,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 else
                 {
-                    ProcessChildren(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, toMock, configFlag: configFlag);
+                    ProcessChildren(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, mockDefaults, configFlag: configFlag);
                 }
             }
             else if (!canWriteChildren)
             {
                 WriteValue(section.Value, redact);
 
-                string comment = GetConfigurationProvider(section, showSources);
-
-                if (comment.Length > 0)
-                {
-                    // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
-                    // that prevents comments from being directly after commas
-                    _writer.WriteCommentValue(comment);
-                }
+                WriteComment(GetConfigurationProvider(section, showSources));
             }
         }
 
@@ -309,7 +295,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             else if (section.Key.Equals(ConfigurationKeys.CollectionRules))
             {
                 configFlag = IndependentConfigFlags.IsCollectionRule;
-                return null;
+                return toMock;
             }
 
             toMock = typeToUse != null ? GetMockedChildren(typeToUse) : toMock;
@@ -366,48 +352,58 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _writer.WriteStringValue(valueToWrite);
         }
 
-        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact, bool showSources, bool loadCRDefaults, Dictionary<string, string> toMock = null, IndependentConfigFlags configFlag = IndependentConfigFlags.None)
+        private void WriteComment(string comment)
+        {
+            if (comment.Length > 0)
+            {
+                // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
+                // that prevents comments from being directly after commas
+                _writer.WriteCommentValue(comment);
+            }
+        }
+
+        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact, bool showSources, bool loadCRDefaults, Dictionary<string, string> mockDefaults = null, IndependentConfigFlags configFlag = IndependentConfigFlags.None)
         {
             using (new JsonObjectContext(_writer))
             {
-                IndependentConfigFlags mockingFlag = configFlag;
+                IndependentConfigFlags existingConfigFlag = configFlag;
 
-                bool shouldMock = (null != toMock && toMock.Any()) && mockingFlag != IndependentConfigFlags.MockValuesNext;
+                bool shouldMockDefaults = (null != mockDefaults && mockDefaults.Any()) && existingConfigFlag != IndependentConfigFlags.MockValuesNext;
 
                 configFlag = (configFlag != IndependentConfigFlags.IsCollectionRule) ? IndependentConfigFlags.None : configFlag;
 
                 foreach (IConfigurationSection child in section.GetChildren())
                 {
-                    ProcessSection(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, toMock: shouldMock ? null : toMock, configFlag: configFlag);
+                    ProcessSection(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, mockDefaults: shouldMockDefaults ? null : mockDefaults, configFlag: configFlag);
                 }
 
                 var childKeys = section.GetChildren().Select(x => x.Key).ToList();
 
-                if (shouldMock)
+                if (shouldMockDefaults)
                 {
-                    if (mockingFlag == IndependentConfigFlags.MockSettings)
+                    if (existingConfigFlag == IndependentConfigFlags.MockSettings)
                     {
-                        MockSection(toMock, childKeys, SettingsSection, showSources);
+                        MockSection(mockDefaults, childKeys, SettingsSection, showSources);
                     }
-                    else if (mockingFlag == IndependentConfigFlags.MockLimits)
+                    else if (existingConfigFlag == IndependentConfigFlags.MockLimits)
                     {
-                        MockSection(toMock, childKeys, LimitsSection, showSources);
+                        MockSection(mockDefaults, childKeys, LimitsSection, showSources);
                     }
                     else
                     {
-                        MockChildren(toMock, childKeys, showSources);
+                        MockChildren(mockDefaults, childKeys, showSources);
                     }
                 }
             }
         }
 
-        private void MockSection(Dictionary<string, string> toMock, List<string> childKeys, string propertyName, bool showSources)
+        private void MockSection(Dictionary<string, string> mockDefaults, List<string> childKeys, string propertyName, bool showSources)
         {
             _writer.WritePropertyName(propertyName);
 
             using (new JsonObjectContext(_writer))
             {
-                MockChildren(toMock, childKeys, showSources);
+                MockChildren(mockDefaults, childKeys, showSources);
             }
         }
 
@@ -423,9 +419,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     if (showSources)
                     {
-                        // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
-                        // that prevents comments from being directly after commas
-                        _writer.WriteCommentValue("Collection Rule Defaults");
+                        WriteComment("Collection Rule Defaults");
                     }
                 }
             }
@@ -437,17 +431,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             var settingsPropsNames = optionsType.GetProperties().Select(x => x.Name);
 
-            var crdProps = typeof(CollectionRuleDefaultsOptions).GetProperties();
-
             foreach (var defaultProperty in typeof(CollectionRuleDefaultsOptions).GetProperties())
             {
                 if (settingsPropsNames.Contains(defaultProperty.Name))
                 {
-                    string valToUse = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{defaultProperty.Name}").Value;
+                    string configurationDefaultValue = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{defaultProperty.Name}").Value;
 
-                    if (!string.IsNullOrEmpty(valToUse))
+                    if (!string.IsNullOrEmpty(configurationDefaultValue))
                     {
-                        childrenToMock.Add(defaultProperty.Name, valToUse);
+                        childrenToMock.Add(defaultProperty.Name, configurationDefaultValue);
                     }
                 }
             }

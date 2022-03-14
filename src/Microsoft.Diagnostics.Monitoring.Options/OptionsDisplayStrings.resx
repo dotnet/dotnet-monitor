@@ -222,15 +222,15 @@
     <comment>The description provided for the Type parameter on CollectionRuleActionOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCount" xml:space="preserve">
-    <value>The number of times the action list may be executed before being throttled.</value>
+    <value>The default number of times the action list may be executed before being throttled to be used when no other action count is specified.</value>
     <comment>The description provided for the ActionCount parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCountSlidingWindowDuration" xml:space="preserve">
-    <value>The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.</value>
+    <value>The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed; to be used when no other action count sliding window duration is specified.</value>
     <comment>The description provided for the ActionCountSlidingWindowDuration parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_RuleDuration" xml:space="preserve">
-    <value>The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.</value>
+    <value>The default amount of time before the rule will stop monitoring a process after it has been applied to a process to be used when no other rule duration is specified.</value>
     <comment>The description provided for the RuleDuration parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleOptions_Actions" xml:space="preserve">
@@ -600,15 +600,15 @@
     <comment>The description provided for the Egress parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration" xml:space="preserve">
-    <value>The name of the default sliding window duration to be used when no other sliding window duration is specified.</value>
+    <value>The default sliding window duration to be used when no other sliding window duration is specified.</value>
     <comment>The description provided for the SlidingWindowDuration parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount" xml:space="preserve">
-    <value>The threshold of the number of requests that start within the sliding window of time.</value>
+    <value>The default threshold of the number of requests that start within the sliding window of time to be used when no other request count is specified.</value>
     <comment>The description provided for the RequestCount parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount" xml:space="preserve">
-    <value>The threshold number of responses with matching status codes.</value>
+    <value>The default threshold number of responses with matching status codes to be used when no other response count is specified.</value>
     <comment>The description provided for the ResponseCount parameter on CollectionRuleDefaultOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount" xml:space="preserve">

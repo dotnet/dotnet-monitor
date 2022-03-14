@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Options;
@@ -35,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
                 {
                     if (null == ((SlidingWindowDurations)options.Trigger.Settings).SlidingWindowDuration)
                     {
-                        ((SlidingWindowDurations)options.Trigger.Settings).SlidingWindowDuration = _defaultOptions.CurrentValue.SlidingWindowDuration ?? TimeSpan.Parse(TriggerOptionsConstants.SlidingWindowDuration_Default); // Do we want to set the default here or let it be handled later?
+                        ((SlidingWindowDurations)options.Trigger.Settings).SlidingWindowDuration = _defaultOptions.CurrentValue.SlidingWindowDuration ?? TimeSpan.Parse(TriggerOptionsConstants.SlidingWindowDuration_Default);
                     }
                 }
             }
