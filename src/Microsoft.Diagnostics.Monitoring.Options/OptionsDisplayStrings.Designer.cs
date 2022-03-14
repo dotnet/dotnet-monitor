@@ -341,7 +341,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The default number of times the action list may be executed before being throttled to be used when no other action count is specified..
+        ///   Looks up a localized string similar to The default number of times the action list may be executed before being throttled; to be used when no other action count is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCount {
             get {
@@ -360,7 +360,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the default Egress Provider to be used when no other egress provider is specified..
+        ///   Looks up a localized string similar to The name of the default Egress Provider; to be used when no other egress provider is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_Egress {
             get {
@@ -369,7 +369,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The default threshold of the number of requests that start within the sliding window of time to be used when no other request count is specified..
+        ///   Looks up a localized string similar to The default threshold of the number of requests that start within the sliding window of time; to be used when no other request count is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount {
             get {
@@ -378,7 +378,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The default threshold number of responses with matching status codes to be used when no other response count is specified..
+        ///   Looks up a localized string similar to The default threshold number of responses with matching status codes; to be used when no other response count is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount {
             get {
@@ -387,7 +387,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The default amount of time before the rule will stop monitoring a process after it has been applied to a process to be used when no other rule duration is specified..
+        ///   Looks up a localized string similar to The default amount of time before the rule will stop monitoring a process after it has been applied to a process; to be used when no other rule duration is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_RuleDuration {
             get {
@@ -396,7 +396,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The default sliding window duration to be used when no other sliding window duration is specified..
+        ///   Looks up a localized string similar to The default sliding window duration; to be used when no other sliding window duration is specified..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration {
             get {

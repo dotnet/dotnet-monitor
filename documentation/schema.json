@@ -1130,14 +1130,14 @@
             "null",
             "string"
           ],
-          "description": "The name of the default Egress Provider to be used when no other egress provider is specified."
+          "description": "The name of the default Egress Provider; to be used when no other egress provider is specified."
         },
         "SlidingWindowDuration": {
           "type": [
             "null",
             "string"
           ],
-          "description": "The default sliding window duration to be used when no other sliding window duration is specified.",
+          "description": "The default sliding window duration; to be used when no other sliding window duration is specified.",
           "format": "time-span"
         },
         "ActionCount": {
@@ -1145,7 +1145,7 @@
             "integer",
             "null"
           ],
-          "description": "The default number of times the action list may be executed before being throttled to be used when no other action count is specified.",
+          "description": "The default number of times the action list may be executed before being throttled; to be used when no other action count is specified.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 1.0
@@ -1163,19 +1163,19 @@
             "null",
             "string"
           ],
-          "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process to be used when no other rule duration is specified.",
+          "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process; to be used when no other rule duration is specified.",
           "format": "time-span"
         },
         "RequestCount": {
           "type": "integer",
-          "description": "The default threshold of the number of requests that start within the sliding window of time to be used when no other request count is specified.",
+          "description": "The default threshold of the number of requests that start within the sliding window of time; to be used when no other request count is specified.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 1.0
         },
         "ResponseCount": {
           "type": "integer",
-          "description": "The default threshold number of responses with matching status codes to be used when no other response count is specified.",
+          "description": "The default threshold number of responses with matching status codes; to be used when no other response count is specified.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 1.0

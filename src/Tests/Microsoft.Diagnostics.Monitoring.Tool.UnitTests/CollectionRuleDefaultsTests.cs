@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectDumpAction() // Omit egress provider
+                    .AddCollectDumpAction()
                     .SetStartupTrigger();
             }, host =>
             {
@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectDumpAction() // Omit egress provider
+                    .AddCollectDumpAction()
                     .SetStartupTrigger();
             }, host =>
             {
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider) // Override the default
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
                     .SetStartupTrigger();
             }, host =>
             {

@@ -273,7 +273,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private Dictionary<string, string> CollectionRuleDefaultsSetup(IConfigurationSection section, ref IndependentConfigFlags configFlag)
         {
-            var toMock = new Dictionary<string, string>();
+            var mockDefaults = new Dictionary<string, string>();
 
             Type typeToUse = null;
             IndependentConfigFlags updatedFlag = IndependentConfigFlags.None;
@@ -295,14 +295,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             else if (section.Key.Equals(ConfigurationKeys.CollectionRules))
             {
                 configFlag = IndependentConfigFlags.IsCollectionRule;
-                return toMock;
+                return null;
             }
 
-            toMock = typeToUse != null ? GetMockedChildren(typeToUse) : toMock;
+            mockDefaults = typeToUse != null ? GetMockedChildren(typeToUse) : mockDefaults;
 
-            configFlag = toMock.Any() ? updatedFlag : IndependentConfigFlags.None;
+            configFlag = mockDefaults.Any() ? updatedFlag : IndependentConfigFlags.None;
 
-            return toMock;
+            return mockDefaults;
         }
 
         private IndependentConfigFlags GetUpdatedSettingsFlag(IConfigurationSection section)
