@@ -236,6 +236,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 });
         }
 
+        public static CollectionRuleOptions SetIEventCounterTrigger(this CollectionRuleOptions options, Type triggerType, string triggerName, Action<IEventCounterShortcuts> callback = null)
+        {
+            return options.SetTrigger(
+                triggerName,
+                triggerOptions =>
+                {
+                    var settings = Activator.CreateInstance(triggerType);
+
+                    callback?.Invoke((IEventCounterShortcuts)settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
         public static CollectionRuleOptions SetEventCounterTrigger(this CollectionRuleOptions options, Action<EventCounterOptions> callback = null)
         {
             return options.SetTrigger(
@@ -319,6 +333,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         {
             ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.HighCPU);
             return Assert.IsType<HighCPUOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static IEventCounterShortcuts VerifyIEventCounterTrigger(this CollectionRuleOptions ruleOptions, Type triggerType, string triggerName)
+        {
+            ruleOptions.VerifyTrigger(triggerName);
+
+            Assert.IsType(triggerType, ruleOptions.Trigger.Settings);
+
+            return (IEventCounterShortcuts)ruleOptions.Trigger.Settings;
         }
 
         public static AspNetRequestCountOptions VerifyAspNetRequestCountTrigger(this CollectionRuleOptions ruleOptions)

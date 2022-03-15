@@ -10,20 +10,21 @@ using System.ComponentModel.DataAnnotations;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
     /// <summary>
-    /// Options for the GCHeapSize trigger.
+    /// Options for the ExceptionCount trigger.
     /// </summary>
-    internal sealed partial class GCHeapSizeOptions : IEventCounterShortcuts
+    internal sealed partial class ExceptionCountOptions : IEventCounterShortcuts
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_GreaterThan))]
-        [DefaultValue(GCHeapSizeOptionsDefaults.GreaterThan)]
+        [DefaultValue(ExceptionCountOptionsDefaults.GreaterThan)]
         [Range(0, double.MaxValue)]
         public double? GreaterThan { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_LessThan))]
+
         [Range(0, double.MaxValue)]
         public double? LessThan { get; set; }
 

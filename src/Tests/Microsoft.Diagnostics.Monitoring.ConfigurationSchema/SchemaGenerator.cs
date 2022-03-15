@@ -145,6 +145,8 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             AddCollectionRuleTriggerSchema<AspNetResponseStatusOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.AspNetResponseStatus);
             AddCollectionRuleTriggerSchema<EventCounterOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.EventCounter);
             AddCollectionRuleTriggerSchema<HighCPUOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.HighCPU);
+            AddCollectionRuleTriggerSchema<GCHeapSizeOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.GCHeapSize);
+            AddCollectionRuleTriggerSchema<ExceptionCountOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.ExceptionCount);
             AddCollectionRuleTriggerSchema(context, triggerTypeSchema, KnownCollectionRuleTriggers.Startup);
         }
 

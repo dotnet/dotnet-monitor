@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
@@ -249,27 +250,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+        // Move this somewhere
+        public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
+        {
+            yield return new object[] { typeof(HighCPUOptions), KnownCollectionRuleTriggers.HighCPU };
+            yield return new object[] { typeof(GCHeapSizeOptions), KnownCollectionRuleTriggers.GCHeapSize };
+        }
 
-
-
-
-        [Fact]
-        public Task CollectionRuleOptions_HighCPUTrigger_MinimumOptions()
+        [Theory]
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_MinimumOptions(Type triggerType, string triggerName)
         {
             return ValidateSuccess(
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetHighCPUTrigger();
+                        .SetIEventCounterTrigger(triggerType, triggerName);
                 },
                 ruleOptions =>
                 {
-                    HighCPUOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
+                    ruleOptions.VerifyIEventCounterTrigger(triggerType, triggerName);
                 });
         }
 
-        [Fact]
-        public Task CollectionRuleOptions_HighCPUTrigger_RoundTrip()
+        [Theory]
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_RoundTrip(Type triggerType, string triggerName)
         {
             const double ExpectedGreaterThan = 0.5;
             const double ExpectedLessThan = 0.75;
@@ -279,7 +285,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetHighCPUTrigger(options =>
+                        .SetIEventCounterTrigger(triggerType, triggerName, options =>
                         {
                             options.GreaterThan = ExpectedGreaterThan;
                             options.LessThan = ExpectedLessThan;
@@ -288,10 +294,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 ruleOptions =>
                 {
-                    HighCPUOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
-                    Assert.Equal(ExpectedGreaterThan, highCPUOptions.GreaterThan);
-                    Assert.Equal(ExpectedLessThan, highCPUOptions.LessThan);
-                    Assert.Equal(ExpectedDuration, highCPUOptions.SlidingWindowDuration);
+                    IEventCounterShortcuts options = ruleOptions.VerifyIEventCounterTrigger(triggerType, triggerName);
+                    Assert.Equal(ExpectedGreaterThan, options.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, options.LessThan);
+                    Assert.Equal(ExpectedDuration, options.SlidingWindowDuration);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_GreaterThanLargerThanLessThan(Type triggerType, string triggerName)
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetIEventCounterTrigger(triggerType, triggerName, options =>
+                        {
+                            options.GreaterThan = 0.75;
+                            options.LessThan = 0.5;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFieldLessThanOtherFieldMessage(failures, 0, nameof(IEventCounterShortcuts.GreaterThan), nameof(IEventCounterShortcuts.LessThan));
                 });
         }
 
@@ -305,6 +333,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetHighCPUTrigger(options =>
                         {
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                            options.GreaterThan = -1;
+                            options.LessThan = -1;
                         });
                 },
                 ex =>
@@ -313,30 +343,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // Property validation failures will short-circuit the remainder of the validation
                     // rules, thus only observe 1 error when one might expect 2 (the second being that
                     // either GreaterThan or LessThan should be specified).
-                    Assert.Single(failures);
-                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(HighCPUOptions.SlidingWindowDuration),
+                    Assert.Equal(3, failures.Length);
+                    VerifyRangeMessage<double>(failures, 0, nameof(HighCPUOptions.GreaterThan),
+                        TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
+                    VerifyRangeMessage<double>(failures, 1, nameof(HighCPUOptions.LessThan),
+                        TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(HighCPUOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
-                });
-        }
-
-        [Fact]
-        public Task CollectionRuleOptions_HighCPUTrigger_GreaterThanLargerThanLessThan()
-        {
-            return ValidateFailure(
-                rootOptions =>
-                {
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetHighCPUTrigger(options =>
-                        {
-                            options.GreaterThan = 0.75;
-                            options.LessThan = 0.5;
-                        });
-                },
-                ex =>
-                {
-                    string[] failures = ex.Failures.ToArray();
-                    Assert.Single(failures);
-                    VerifyFieldLessThanOtherFieldMessage(failures, 0, nameof(EventCounterOptions.GreaterThan), nameof(EventCounterOptions.LessThan));
                 });
         }
 

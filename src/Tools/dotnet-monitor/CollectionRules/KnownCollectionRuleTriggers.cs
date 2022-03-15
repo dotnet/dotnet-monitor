@@ -18,5 +18,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Shortcut Triggers
         public const string HighCPU = nameof(HighCPU);
         public const string GCHeapSize = nameof(GCHeapSize);
+        public const string ExceptionCount = nameof(ExceptionCount);
     }
 }

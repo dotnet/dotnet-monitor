@@ -17,7 +17,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
     internal sealed class EventCounterTriggerFactory :
         ICollectionRuleTriggerFactory<EventCounterOptions>,
         ICollectionRuleTriggerFactory<HighCPUOptions>,
-        ICollectionRuleTriggerFactory<GCHeapSizeOptions>
+        ICollectionRuleTriggerFactory<GCHeapSizeOptions>,
+        ICollectionRuleTriggerFactory<ExceptionCountOptions>
     {
         private readonly EventPipeTriggerFactory _eventPipeTriggerFactory;
         private readonly ITraceEventTriggerFactory<EventCounterTriggerSettings> _traceEventTriggerFactory;
@@ -56,7 +57,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 callback);
         }
 
-        /// <inheritdoc/>
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, HighCPUOptions options)
         {
             return Create(endpointInfo, callback, options, SystemRuntime, "cpu-usage", greaterThanDefault: HighCPUOptionsDefaults.GreaterThan);
@@ -67,7 +67,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             return Create(endpointInfo, callback, options, SystemRuntime, "gc-heap-size", greaterThanDefault:GCHeapSizeOptionsDefaults.GreaterThan);
         }
 
-        private ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, IEventCounterShortcuts options, string providerName, string counterName, double? greaterThanDefault = null, double? lessThanDefault = null, string slidingWindowDurationDefault = null)
+        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, ExceptionCountOptions options)
+        {
+            return Create(endpointInfo, callback, options, SystemRuntime, "exception-count", greaterThanDefault: ExceptionCountOptionsDefaults.GreaterThan);
+        }
+
+        private ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, IEventCounterShortcuts options, string providerName, string counterName, double? greaterThanDefault = null, double? lessThanDefault = null, TimeSpan? slidingWindowDurationDefault = null)
         {
             return Create(endpointInfo, callback, new EventCounterOptions()
             {
@@ -75,7 +80,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 CounterName = counterName,
                 GreaterThan = options.LessThan.HasValue ? options.GreaterThan : (options.GreaterThan ?? greaterThanDefault), // make sure this works
                 LessThan = options.GreaterThan.HasValue ? options.LessThan : (options.LessThan ?? lessThanDefault),
-                SlidingWindowDuration = options.SlidingWindowDuration ?? TimeSpan.Parse(slidingWindowDurationDefault) // If we have an intuition for having a higher/lower SWD
+                SlidingWindowDuration = options.SlidingWindowDuration ?? slidingWindowDurationDefault // If we have an intuition for having a higher/lower SWD
             });
         }
     }

@@ -617,6 +617,32 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "GCHeapSize"
+            },
+            "Settings": {
+              "$ref": "#/definitions/GCHeapSizeOptions"
+            }
+          }
+        },
+        {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "ExceptionCount"
+            },
+            "Settings": {
+              "$ref": "#/definitions/ExceptionCountOptions"
+            }
+          }
+        },
+        {
           "properties": {
             "Type": {
               "const": "Startup"
@@ -1516,6 +1542,8 @@
         "AspNetResponseStatus",
         "EventCounter",
         "HighCPU",
+        "GCHeapSize",
+        "ExceptionCount",
         "Startup"
       ]
     },
@@ -1729,7 +1757,9 @@
           ],
           "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
           "format": "double",
-          "default": 50
+          "default": 50.0,
+          "maximum": 100.0,
+          "minimum": 0.0
         },
         "LessThan": {
           "type": [
@@ -1737,7 +1767,77 @@
             "number"
           ],
           "description": "The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
-          "format": "double"
+          "format": "double",
+          "maximum": 100.0,
+          "minimum": 0.0
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
+          "format": "time-span",
+          "default": "00:01:00"
+        }
+      }
+    },
+    "GCHeapSizeOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "GreaterThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double",
+          "default": 10.0,
+          "minimum": 0.0
+        },
+        "LessThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double",
+          "minimum": 0.0
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
+          "format": "time-span",
+          "default": "00:01:00"
+        }
+      }
+    },
+    "ExceptionCountOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "GreaterThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double",
+          "default": 50.0,
+          "minimum": 0.0
+        },
+        "LessThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double",
+          "minimum": 0.0
         },
         "SlidingWindowDuration": {
           "type": [
