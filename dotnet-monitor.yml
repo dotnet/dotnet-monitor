@@ -85,7 +85,7 @@ stages:
           - MacOSRelease
           publishUsingPipelines: true
           pool:
-            name: NetCore1ESPool-Internal
+            name: NetCore1ESPool-Svc-Internal
             demands: ImageOverride -equals build.windows.10.amd64.vs2017
   # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:

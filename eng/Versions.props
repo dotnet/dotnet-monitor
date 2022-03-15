@@ -1,8 +1,8 @@
 <Project>
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
-    <VersionPrefix>6.1.0</VersionPrefix>
-    <PreReleaseVersionLabel>rtm</PreReleaseVersionLabel>
+    <VersionPrefix>6.1.1</VersionPrefix>
+    <PreReleaseVersionLabel>servicing</PreReleaseVersionLabel>
     <DotNetFinalVersionKind>release</DotNetFinalVersionKind>
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
     <!--
