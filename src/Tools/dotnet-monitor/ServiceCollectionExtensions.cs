@@ -86,7 +86,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, HighCPUOptions>(KnownCollectionRuleTriggers.HighCPU);
+
+            RegisterEventCounterShortcuts(services);
+
             services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
 
             services.AddSingleton<EventPipeTriggerFactory>();
@@ -112,6 +114,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<CollectionRuleService>();
             services.AddHostedServiceForwarder<CollectionRuleService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
+
+            return services;
+        }
+
+        public static IServiceCollection RegisterEventCounterShortcuts(this IServiceCollection services)
+        {
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, HighCPUOptions>(KnownCollectionRuleTriggers.HighCPU);
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions>(KnownCollectionRuleTriggers.GCHeapSize);
 
             return services;
         }

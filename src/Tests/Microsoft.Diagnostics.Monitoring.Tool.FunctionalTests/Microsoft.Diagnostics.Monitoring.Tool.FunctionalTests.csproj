@@ -44,8 +44,9 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetResponseStatusOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\AspNetResponseStatusOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterOptionsDefaults.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\HighCPUOptions.cs" Link="Options\CollectionRules\Triggers\HighCPUOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\HighCPUOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\HighCPUOptionsDefaults.cs" />    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\IAspNetActionPathFilters.cs" Link="Options\CollectionRules\Triggers\IAspNetActionPathFilters.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\HighCPUOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\HighCPUOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\HighCPUOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\HighCPUOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\IEventCounterShortcuts.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\IEventCounterShortcuts.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\TriggerOptionsConstants.cs" Link="Options\CollectionRules\Triggers\TriggerOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CommonOptionsExtensions.cs" Link="Options\CommonOptionsExtensions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="LoggingEventIds.cs" />

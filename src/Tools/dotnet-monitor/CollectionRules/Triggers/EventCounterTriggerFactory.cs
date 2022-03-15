@@ -16,12 +16,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
     /// </summary>
     internal sealed class EventCounterTriggerFactory :
         ICollectionRuleTriggerFactory<EventCounterOptions>,
-        ICollectionRuleTriggerFactory<HighCPUOptions>
-
+        ICollectionRuleTriggerFactory<HighCPUOptions>,
+        ICollectionRuleTriggerFactory<GCHeapSizeOptions>
     {
         private readonly EventPipeTriggerFactory _eventPipeTriggerFactory;
         private readonly ITraceEventTriggerFactory<EventCounterTriggerSettings> _traceEventTriggerFactory;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
+
+        private const string SystemRuntime = "System.Runtime";
 
         public EventCounterTriggerFactory(
             IOptionsMonitor<GlobalCounterOptions> counterOptions,
@@ -57,17 +59,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// <inheritdoc/>
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, HighCPUOptions options)
         {
-            // SET THESE TO DEFAULTS (and do this for the options as well) -> should also allow options to override
-            EventCounterOptions eventCounterOptions = new()
-            {
-                ProviderName = "System.Runtime",
-                CounterName = "cpu-usage",
-                GreaterThan = (options.LessThan.HasValue) ? options.GreaterThan : (options.GreaterThan ?? HighCPUOptionsDefaults.GreaterThan), // make sure this works
-                LessThan = options.LessThan,
-                SlidingWindowDuration = options.SlidingWindowDuration
-            };
+            return Create(endpointInfo, callback, options, SystemRuntime, "cpu-usage", greaterThanDefault: HighCPUOptionsDefaults.GreaterThan);
+        }
 
-            return Create(endpointInfo, callback, eventCounterOptions);
+        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, GCHeapSizeOptions options)
+        {
+            return Create(endpointInfo, callback, options, SystemRuntime, "gc-heap-size", greaterThanDefault:GCHeapSizeOptionsDefaults.GreaterThan);
+        }
+
+        private ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, IEventCounterShortcuts options, string providerName, string counterName, double? greaterThanDefault = null, double? lessThanDefault = null, string slidingWindowDurationDefault = null)
+        {
+            return Create(endpointInfo, callback, new EventCounterOptions()
+            {
+                ProviderName = providerName,
+                CounterName = counterName,
+                GreaterThan = options.LessThan.HasValue ? options.GreaterThan : (options.GreaterThan ?? greaterThanDefault), // make sure this works
+                LessThan = options.GreaterThan.HasValue ? options.LessThan : (options.LessThan ?? lessThanDefault),
+                SlidingWindowDuration = options.SlidingWindowDuration ?? TimeSpan.Parse(slidingWindowDurationDefault) // If we have an intuition for having a higher/lower SWD
+            });
         }
     }
 }

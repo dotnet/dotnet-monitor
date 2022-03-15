@@ -6,7 +6,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
     internal static class HighCPUOptionsDefaults
     {
-        public const string SlidingWindowDuration = TriggerOptionsConstants.SlidingWindowDuration_Default;
         public const double GreaterThan = 50.0; // Arbitrary
     }
 }
