@@ -74,4 +74,36 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <PropertyGroup>
+    <GatherCustomPackageFilesDependsOn>GatherNativeFiles</GatherCustomPackageFilesDependsOn>
+  </PropertyGroup>
+
+  <Target Name="GatherNativeFiles">
+    <ItemGroup>
+      <PackageTargetFramework Include="$(TargetFrameworks)" />
+    </ItemGroup>
+    <ItemGroup>
+      <!-- Create profiler library items for each target framework and native platform pairing. -->
+      <MonitorProfilerLibraryFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(LibraryExtension)')">
+        <TargetFramework>%(PackageTargetFramework.Identity)</TargetFramework>
+      </MonitorProfilerLibraryFile>
+    </ItemGroup>
+    <ItemGroup>
+      <!-- Create profiler symbols items for each target framework and native platform pairing. -->
+      <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')">
+        <TargetFramework>%(PackageTargetFramework.Identity)</TargetFramework>
+      </MonitorProfilerSymbolsFile>
+    </ItemGroup>
+    <ItemGroup>
+      <!-- Pack the profiler library under the 'profiler\<rid>' folder for each target framework.  -->
+      <CustomPackageFile Include="@(MonitorProfilerLibraryFile->Exists())">
+        <PackagePath>tools\%(TargetFramework)\any\profiler\%(TargetRid)</PackagePath>
+      </CustomPackageFile>
+      <!-- Pack the profiler symbols under the 'profiler\<rid>' folder for each target framework.  -->
+      <CustomPackageFile Include="@(MonitorProfilerSymbolsFile->Exists())">
+        <PackagePath>tools\%(TargetFramework)\any\profiler\%(TargetRid)</PackagePath>
+      </CustomPackageFile>
+    </ItemGroup>
+  </Target>
+
 </Project>
