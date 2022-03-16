@@ -527,6 +527,9 @@
   <data name="LogFormatString_EndpointTimeout" xml:space="preserve">
     <value>Unexpected timeout from process {processId}. Process will no longer be monitored.</value>
   </data>
+  <data name="LogFormatString_ExperienceSurvey" xml:space="preserve">
+    <value>Tell us about your experience with dotnet monitor: {link}</value>
+  </data>
   <data name="LogFormatString_GetEnvironmentVariable" xml:space="preserve">
     <value>Getting the environment variable {variableName} from process {processId}.</value>
     <comment>Gets the format string that is printed in the 55:GetEnvironmentVariable event.
@@ -596,6 +599,9 @@
     <comment>Gets the format string that is printed in the 15:UnableToListenToAddress event.
 1 Format Parameter:
 1. url: The URL that could not have a listener attached to it</comment>
+  </data>
+  <data name="Message_ExperienceSurvey" xml:space="preserve">
+    <value>Tell us about your experience with dotnet monitor: {0}</value>
   </data>
   <data name="Message_GenerateApiKey" xml:space="preserve">
     <value>Generated ApiKey for dotnet-monitor; use the following header for authorization:</value>
