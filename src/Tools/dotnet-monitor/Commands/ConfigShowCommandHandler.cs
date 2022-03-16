@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
+using System.Text;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
@@ -17,7 +19,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         // to get the same configuration without telling them to drop specific command line arguments.
         public static void Invoke(string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, ConfigDisplayLevel level)
         {
-            Write(Console.OpenStandardOutput(), urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, level);
+            Stream stream = Console.OpenStandardOutput();
+
+            using StreamWriter writer = new(stream, EncodingCache.UTF8NoBOMNoThrow, 1024, leaveOpen: true);
+            writer.WriteLine(ExperienceSurvey.ExperienceSurveyMessage);
+            writer.WriteLine();
+            writer.Flush();
+
+            Write(stream, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, level);
         }
 
         public static void Write(Stream stream, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, ConfigDisplayLevel level)
