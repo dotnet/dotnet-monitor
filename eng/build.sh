@@ -29,6 +29,7 @@ __SkipConfigure=0
 __SkipGenerateVersion=0
 __TargetOS=Linux
 __Test=0
+__TestGroup=All
 __UnprocessedBuildArgs=
 
 usage_list+=("-skipmanaged: do not build managed components.")
@@ -83,6 +84,11 @@ handle_arguments() {
 
         test|-test)
             __Test=1
+            ;;
+
+        testgroup|-testgroup)
+            __TestGroup=$2
+            __ShiftArgs=1
             ;;
 
         -warnaserror|-nodereuse)
@@ -243,6 +249,7 @@ if [[ "$__Test" == 1 ]]; then
         --configuration "$__BuildType" \
         /bl:"$__LogsDir"/Test.binlog \
         /p:BuildArch="$__BuildArch" \
+        /p:TestGroup="$__TestGroup" \
         $__CommonMSBuildArgs
 
       if [ $? != 0 ]; then

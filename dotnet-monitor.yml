@@ -9,11 +9,25 @@ pr:
     - internal/release/*
     - feature/*
 
+schedules:
+- cron: 0 12 * * 6
+  displayName: Weekly Full Test Run
+  branches:
+    include:
+    - main
+  always: true
+
 parameters:
-- name: RunTests
-  displayName: 'Run Tests'
-  type: boolean
-  default: true
+- name: TestGroup
+  displayName: 'Test Group'
+  type: string
+  default: Default
+  values:
+  - Default
+  - All
+  - None
+  - CI
+  - PR
 
 variables:
 - name: _TeamName
@@ -34,7 +48,7 @@ stages:
       displayName: Windows x64 Debug
       osGroup: Windows
       configuration: Debug
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
       name: Windows_x64_Release
@@ -42,7 +56,7 @@ stages:
       osGroup: Windows
       configuration: Release
       publishArtifactsSubPath: bin
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
       name: Windows_x86_Release
@@ -51,7 +65,7 @@ stages:
       configuration: Release
       architecture: x86
       publishArtifactsSubPath: bin/Windows_NT.x86.Release
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
       parameters:
@@ -68,7 +82,7 @@ stages:
       displayName: Linux x64 Debug
       osGroup: Linux
       configuration: Debug
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
       name: Linux_x64_Release
@@ -76,7 +90,7 @@ stages:
       osGroup: Linux
       configuration: Release
       publishArtifactsSubPath: bin/Linux.x64.Release
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
       parameters:
@@ -93,7 +107,7 @@ stages:
       displayName: Linux Musl x64 Debug
       osGroup: Linux_Musl
       configuration: Debug
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
       name: Linux_Musl_x64_Release
@@ -102,7 +116,7 @@ stages:
       configuration: Release
       publishArtifactsSubPath: bin/Linux.x64.Release
       publishArtifactsTargetSubPath: bin/Linux-musl.x64.Release
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
       parameters:
@@ -120,7 +134,7 @@ stages:
       displayName: MacOS x64 Debug
       osGroup: MacOS
       configuration: Debug
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
       name: MacOS_x64_Release
@@ -128,7 +142,7 @@ stages:
       osGroup: MacOS
       configuration: Release
       publishArtifactsSubPath: bin/OSX.x64.Release
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
       parameters:
