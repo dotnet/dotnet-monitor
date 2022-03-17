@@ -327,6 +327,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_WritingMessageToQueueFailed);
 
+        private static readonly Action<ILogger, string, Exception> _experienceSurvey =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExperienceSurvey.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExperienceSurvey);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -600,6 +606,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void WritingMessageToQueueFailed(this ILogger logger, string queueName, Exception ex)
         {
             _writingMessageToQueueFailed(logger, queueName, ex);
+        }
+
+        public static void ExperienceSurvey(this ILogger logger)
+        {
+            _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
         }
     }
 }
