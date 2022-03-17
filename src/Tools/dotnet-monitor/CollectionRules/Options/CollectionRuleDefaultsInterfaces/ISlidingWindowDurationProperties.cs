@@ -6,7 +6,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces
 {
-    internal interface SlidingWindowDurations
+    internal interface ISlidingWindowDurationProperties
     {
         public TimeSpan? SlidingWindowDuration { get; set; }
     }

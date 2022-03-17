@@ -117,13 +117,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddHostedServiceForwarder<CollectionRuleService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 
-            services.ConfigureCollectionRuleDefaults();
-
-            return services;
-        }
-
-        public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services)
-        {
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, EgressPostConfigure>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, SlidingWindowDurationPostConfigure>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, RequestCountsPostConfigure>();

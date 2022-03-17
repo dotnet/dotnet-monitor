@@ -44,12 +44,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount))]
         [Range(1, int.MaxValue)]
-        public int RequestCount { get; set; }
+        public int? RequestCount { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount))]
         [Range(1, int.MaxValue)]
-        public int ResponseCount { get; set; }
+        public int? ResponseCount { get; set; }
     }
 }

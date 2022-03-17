@@ -14,6 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
     {
         private readonly IOptionsMonitor<CollectionRuleDefaultsOptions> _defaultOptions;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
+        private static readonly TimeSpan SlidingWindowDurationDefault = TimeSpan.Parse(TriggerOptionsConstants.SlidingWindowDuration_Default);
 
         public SlidingWindowDurationPostConfigure(
             IOptionsMonitor<CollectionRuleDefaultsOptions> defaultOptions,
@@ -30,11 +31,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
             {
                 _triggerOperations.TryCreateOptions(options.Trigger.Type, out object triggerSettings);
 
-                if (null != triggerSettings && typeof(SlidingWindowDurations).IsAssignableFrom(triggerSettings.GetType()))
+                if (null != triggerSettings && typeof(ISlidingWindowDurationProperties).IsAssignableFrom(triggerSettings.GetType()))
                 {
-                    if (null == ((SlidingWindowDurations)options.Trigger.Settings).SlidingWindowDuration)
+                    if (null == ((ISlidingWindowDurationProperties)options.Trigger.Settings).SlidingWindowDuration)
                     {
-                        ((SlidingWindowDurations)options.Trigger.Settings).SlidingWindowDuration = _defaultOptions.CurrentValue.SlidingWindowDuration ?? TimeSpan.Parse(TriggerOptionsConstants.SlidingWindowDuration_Default);
+                        ((ISlidingWindowDurationProperties)options.Trigger.Settings).SlidingWindowDuration = _defaultOptions.CurrentValue.SlidingWindowDuration ?? SlidingWindowDurationDefault;
                     }
                 }
             }

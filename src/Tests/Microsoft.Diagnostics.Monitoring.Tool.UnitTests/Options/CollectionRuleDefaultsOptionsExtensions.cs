@@ -10,14 +10,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
     internal static partial class CollectionRuleDefaultsOptionsExtensions
     {
-        public static CollectionRuleDefaultsOptions CreateCollectionRuleDefaults(this RootOptions rootOptions, Action<CollectionRuleDefaultsOptions> callback = null)
+        public static RootOptions AddCollectionRuleDefaults(this RootOptions rootOptions, Action<CollectionRuleDefaultsOptions> callback = null)
         {
             CollectionRuleDefaultsOptions settings = new();
 
             callback?.Invoke(settings);
 
             rootOptions.CollectionRuleDefaults = settings;
-            return settings;
+            return rootOptions;
         }
     }
 }

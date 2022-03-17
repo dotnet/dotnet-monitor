@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.Egress = ActionTestsConstants.ExpectedEgressProvider;
                 });
@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.Egress = ActionTestsConstants.UnknownEgressProvider;
                 });
@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
                 });
@@ -154,7 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.RequestCount = TriggerTestsConstants.UnknownRequestCount;
                 });
@@ -182,7 +182,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
                 });
@@ -228,7 +228,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.RequestCount = TriggerTestsConstants.UnknownRequestCount;
                 });
@@ -256,7 +256,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.ResponseCount = TriggerTestsConstants.ExpectedResponseCount;
                 });
@@ -308,7 +308,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.ResponseCount = TriggerTestsConstants.UnknownResponseCount;
                 });
@@ -339,7 +339,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration);
                 });
@@ -367,7 +367,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.UnknownSlidingWindowDuration);
                 });
@@ -396,7 +396,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.ActionCount = LimitsTestsConstants.ExpectedActionCount;
                 });
@@ -421,7 +421,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.ActionCount = LimitsTestsConstants.UnknownActionCount;
                 });
@@ -449,7 +449,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedActionCountSlidingWindowDuration);
                 });
@@ -474,7 +474,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.UnknownActionCountSlidingWindowDuration);
                 });
@@ -503,7 +503,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration);
                 });
@@ -528,7 +528,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.CreateCollectionRuleDefaults(options =>
+                rootOptions.AddCollectionRuleDefaults(options =>
                 {
                     options.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.UnknownRuleDuration);
                 });

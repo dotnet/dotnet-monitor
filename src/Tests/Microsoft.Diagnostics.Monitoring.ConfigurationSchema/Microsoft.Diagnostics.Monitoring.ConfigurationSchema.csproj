@@ -28,9 +28,9 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\SetEnvironmentVariableOptions.cs" Link="Options\CollectionRules\Actions\SetEnvironmentVariableOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptions.cs" Link="Options\CollectionRules\CollectionRuleActionOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptionsDefaults.cs" Link="Options\CollectionRules\CollectionRuleActionOptionsDefaults.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\EgressProviders.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\EgressProviders" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\RequestCounts.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\RequestCounts" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\SlidingWindowDurations.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\SlidingWindowDurations" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\IEgressProviderProperties.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\IEgressProviderProperties" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\IRequestCountProperties.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\IRequestCountProperties" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\ISlidingWindowDurationProperties.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\ISlidingWindowDurationProperties" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsOptions.cs" Link="Options\CollectionRules\CollectionRuleDefaultsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptions.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptionsDefaults.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptionsDefaults.cs" />

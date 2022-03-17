@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces
 {
-    internal interface EgressProviders
+    internal interface IEgressProviderProperties
     {
         public string Egress { get; set; }
     }

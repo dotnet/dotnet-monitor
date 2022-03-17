@@ -28,11 +28,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
             {
                 _triggerOperations.TryCreateOptions(options.Trigger.Type, out object triggerSettings);
 
-                if (null != triggerSettings && typeof(RequestCounts).IsAssignableFrom(triggerSettings.GetType()))
+                if (null != triggerSettings && typeof(IRequestCountProperties).IsAssignableFrom(triggerSettings.GetType()))
                 {
-                    if (0 == ((RequestCounts)options.Trigger.Settings).RequestCount)
+                    if (0 == ((IRequestCountProperties)options.Trigger.Settings).RequestCount && _defaultOptions.CurrentValue.RequestCount.HasValue)
                     {
-                        ((RequestCounts)options.Trigger.Settings).RequestCount = _defaultOptions.CurrentValue.RequestCount;
+                        ((IRequestCountProperties)options.Trigger.Settings).RequestCount = _defaultOptions.CurrentValue.RequestCount.Value;
                     }
                 }
             }

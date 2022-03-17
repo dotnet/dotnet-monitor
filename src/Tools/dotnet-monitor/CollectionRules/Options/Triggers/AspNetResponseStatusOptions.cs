@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// Options for the AspNetResponseStatus trigger.
     /// </summary>
     internal sealed class AspNetResponseStatusOptions :
-        IAspNetActionPathFilters, SlidingWindowDurations
+        IAspNetActionPathFilters, ISlidingWindowDurationProperties
     {
         private const string StatusCodeRegex = "[1-5][0-9]{2}";
         private const string StatusCodesRegex = StatusCodeRegex + "(-" + StatusCodeRegex + ")?";

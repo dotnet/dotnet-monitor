@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the CollectDump action.
     /// </summary>
     [DebuggerDisplay("CollectDump")]
-    internal sealed partial class CollectDumpOptions : EgressProviders
+    internal sealed partial class CollectDumpOptions : IEgressProviderProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

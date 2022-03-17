@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// Options for the AspNetRequestDuration trigger.
     /// </summary>
     internal sealed class AspNetRequestDurationOptions :
-        IAspNetActionPathFilters, SlidingWindowDurations, RequestCounts
+        IAspNetActionPathFilters, ISlidingWindowDurationProperties, IRequestCountProperties
     {
         public const string RequestDuration_MaxValue = "01:00:00";
         public const string RequestDuration_MinValue = "00:00:00";

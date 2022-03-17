@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces
 {
-    internal interface RequestCounts
+    internal interface IRequestCountProperties
     {
         public int RequestCount { get; set; }
     }

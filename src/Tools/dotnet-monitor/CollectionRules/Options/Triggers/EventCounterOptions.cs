@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// <summary>
     /// Options for the EventCounter trigger.
     /// </summary>
-    internal sealed partial class EventCounterOptions : SlidingWindowDurations
+    internal sealed partial class EventCounterOptions : ISlidingWindowDurationProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

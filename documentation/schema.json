@@ -694,9 +694,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "CollectTrace"
@@ -1167,14 +1164,20 @@
           "format": "time-span"
         },
         "RequestCount": {
-          "type": "integer",
+          "type": [
+            "integer",
+            "null"
+          ],
           "description": "The default threshold of the number of requests that start within the sliding window of time; to be used when no other request count is specified.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 1.0
         },
         "ResponseCount": {
-          "type": "integer",
+          "type": [
+            "integer",
+            "null"
+          ],
           "description": "The default threshold number of responses with matching status codes; to be used when no other response count is specified.",
           "format": "int32",
           "maximum": 2147483647.0,

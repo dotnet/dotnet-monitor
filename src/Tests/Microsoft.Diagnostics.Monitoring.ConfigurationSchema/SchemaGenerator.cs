@@ -167,8 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 settingsProperty.Reference.RequiredProperties.Remove(propName);
             }
 
-            // Have to special case for Traces since Profile/Providers aren't listed as required, but one of them must be included
-            if (settingsProperty.Reference.RequiredProperties.Count > 0 || typeof(TOptions) == typeof(CollectTraceOptions))
+            if (settingsProperty.Reference.RequiredProperties.Count > 0)
             {
                 subSchema.RequiredProperties.Add(nameof(CollectionRuleActionOptions.Settings));
             }

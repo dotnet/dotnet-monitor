@@ -28,11 +28,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
             {
                 _actionOperations.TryCreateOptions(action.Type, out object actionSettings);
 
-                if (null != actionSettings && typeof(EgressProviders).IsAssignableFrom(actionSettings.GetType()))
+                if (null != actionSettings && typeof(IEgressProviderProperties).IsAssignableFrom(actionSettings.GetType()))
                 {
-                    if (string.IsNullOrEmpty(((EgressProviders)action.Settings).Egress))
+                    if (string.IsNullOrEmpty(((IEgressProviderProperties)action.Settings).Egress))
                     {
-                        ((EgressProviders)action.Settings).Egress = _defaultOptions.CurrentValue.Egress;
+                        ((IEgressProviderProperties)action.Settings).Egress = _defaultOptions.CurrentValue.Egress;
                     }
                 }
             }
