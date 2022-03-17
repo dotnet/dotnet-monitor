@@ -11,14 +11,14 @@ using System.ComponentModel.DataAnnotations;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
     /// <summary>
-    /// Options for the ExceptionCount trigger.
+    /// Options for the ThreadpoolQueueLength trigger.
     /// </summary>
-    internal sealed partial class ExceptionCountOptions : IEventCounterShortcuts
+    internal sealed partial class ThreadpoolQueueLengthOptions : IEventCounterShortcuts
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_GreaterThan))]
-        [DefaultValue(ExceptionCountOptionsDefaults.GreaterThan)]
+        [DefaultValue(ThreadpoolQueueLengthOptionsDefaults.GreaterThan)]
         [Range(0, double.MaxValue)]
         public double? GreaterThan { get; set; }
 

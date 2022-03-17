@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         ICollectionRuleTriggerFactory<EventCounterOptions>,
         ICollectionRuleTriggerFactory<HighCPUOptions>,
         ICollectionRuleTriggerFactory<GCHeapSizeOptions>,
-        ICollectionRuleTriggerFactory<ExceptionCountOptions>
+        ICollectionRuleTriggerFactory<ThreadpoolQueueLengthOptions>
     {
         private readonly EventPipeTriggerFactory _eventPipeTriggerFactory;
         private readonly ITraceEventTriggerFactory<EventCounterTriggerSettings> _traceEventTriggerFactory;
@@ -67,9 +67,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             return Create(endpointInfo, callback, options, SystemRuntime, "gc-heap-size", greaterThanDefault:GCHeapSizeOptionsDefaults.GreaterThan);
         }
 
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, ExceptionCountOptions options)
+        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, ThreadpoolQueueLengthOptions options)
         {
-            return Create(endpointInfo, callback, options, SystemRuntime, "exception-count", greaterThanDefault: ExceptionCountOptionsDefaults.GreaterThan);
+            return Create(endpointInfo, callback, options, SystemRuntime, "threadpool-queue-length", greaterThanDefault: ThreadpoolQueueLengthOptionsDefaults.GreaterThan);
         }
 
         private ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, IEventCounterShortcuts options, string providerName, string counterName, double? greaterThanDefault = null, double? lessThanDefault = null, TimeSpan? slidingWindowDurationDefault = null)

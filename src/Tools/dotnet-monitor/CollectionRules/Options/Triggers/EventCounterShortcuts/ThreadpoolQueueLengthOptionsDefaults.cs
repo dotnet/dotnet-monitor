@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
-    internal static class ExceptionCountOptionsDefaults
+    internal static class ThreadpoolQueueLengthOptionsDefaults
     {
         public const double GreaterThan = 50.0; // Arbitrary
     }
