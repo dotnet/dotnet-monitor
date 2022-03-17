@@ -21,17 +21,4 @@
     <NativeArtifactDirectories Include="$(ArtifactsBinDir)Windows_NT.x64.$(Configuration)" TargetRid="win-x64" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
     <NativeArtifactDirectories Include="$(ArtifactsBinDir)Windows_NT.x86.$(Configuration)" TargetRid="win-x86" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
   </ItemGroup>
-  <PropertyGroup>
-    <GenerateNuspecDependsOn>$(GenerateNuspecDependsOn);GatherCustomPackageFiles</GenerateNuspecDependsOn>
-    <GatherCustomPackageFilesDependsOn>$(GatherCustomPackageFilesDependsOn)</GatherCustomPackageFilesDependsOn>
-  </PropertyGroup>
-  <!--
-    These items are added into the nupkg at the path sepcified by the PackagePath item metadata.
-  -->
-  <ItemDefinitionGroup>
-    <CustomPackageFile>
-      <Visible>false</Visible>
-      <Pack>true</Pack>
-    </CustomPackageFile>
-  </ItemDefinitionGroup>
 </Project>

@@ -58,34 +58,27 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <GatherCustomPackageFilesDependsOn>GatherNativeFiles</GatherCustomPackageFilesDependsOn>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherNativeFilesForTfm</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
-  <Target Name="GatherNativeFiles">
+  <Target Name="GatherNativeFilesForTfm">
     <ItemGroup>
-      <PackageTargetFramework Include="$(TargetFrameworks)" />
-    </ItemGroup>
-    <ItemGroup>
-      <!-- Create profiler library items for each target framework and native platform pairing. -->
+      <!-- Create profiler library items for all of the native platforms. -->
       <MonitorProfilerLibraryFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(LibraryExtension)')">
-        <TargetFramework>%(PackageTargetFramework.Identity)</TargetFramework>
+        <PackagePath>tools/$(TargetFramework)/any/profiler/%(TargetRid)</PackagePath>
       </MonitorProfilerLibraryFile>
     </ItemGroup>
     <ItemGroup>
-      <!-- Create profiler symbols items for each target framework and native platform pairing. -->
+      <!-- Create profiler symbols items for all of the native platforms. -->
       <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')">
-        <TargetFramework>%(PackageTargetFramework.Identity)</TargetFramework>
+        <PackagePath>tools/$(TargetFramework)/any/profiler/%(TargetRid)</PackagePath>
       </MonitorProfilerSymbolsFile>
     </ItemGroup>
     <ItemGroup>
-      <!-- Pack the profiler library under the 'profiler\<rid>' folder for each target framework.  -->
-      <CustomPackageFile Include="@(MonitorProfilerLibraryFile->Exists())">
-        <PackagePath>tools\%(TargetFramework)\any\profiler\%(TargetRid)</PackagePath>
-      </CustomPackageFile>
-      <!-- Pack the profiler symbols under the 'profiler\<rid>' folder for each target framework.  -->
-      <CustomPackageFile Include="@(MonitorProfilerSymbolsFile->Exists())">
-        <PackagePath>tools\%(TargetFramework)\any\profiler\%(TargetRid)</PackagePath>
-      </CustomPackageFile>
+      <!-- Pack the profiler library for each platform if it exists. -->
+      <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile->Exists())" />
+      <!-- Pack the profiler symbols for each platform if it exists. -->
+      <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile->Exists())" />
     </ItemGroup>
   </Target>
 
