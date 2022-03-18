@@ -146,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             AddCollectionRuleTriggerSchema<EventCounterOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.EventCounter);
             AddCollectionRuleTriggerSchema<HighCPUOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.HighCPU);
             AddCollectionRuleTriggerSchema<GCHeapSizeOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.GCHeapSize);
-            AddCollectionRuleTriggerSchema<ExceptionCountOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.ExceptionCount);
+            AddCollectionRuleTriggerSchema<ThreadpoolQueueLengthOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.ThreadpoolQueueLength);
             AddCollectionRuleTriggerSchema(context, triggerTypeSchema, KnownCollectionRuleTriggers.Startup);
         }
 

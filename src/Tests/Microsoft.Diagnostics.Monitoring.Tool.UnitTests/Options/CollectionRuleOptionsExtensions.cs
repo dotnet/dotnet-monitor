@@ -236,6 +236,34 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 });
         }
 
+        public static CollectionRuleOptions SetThreadpoolQueueLengthTrigger(this CollectionRuleOptions options, Action<ThreadpoolQueueLengthOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.ThreadpoolQueueLength,
+                triggerOptions =>
+                {
+                    ThreadpoolQueueLengthOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
+        public static CollectionRuleOptions SetGCHeapSizeTrigger(this CollectionRuleOptions options, Action<GCHeapSizeOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.GCHeapSize,
+                triggerOptions =>
+                {
+                    GCHeapSizeOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
         public static CollectionRuleOptions SetIEventCounterTrigger(this CollectionRuleOptions options, Type triggerType, string triggerName, Action<IEventCounterShortcuts> callback = null)
         {
             return options.SetTrigger(

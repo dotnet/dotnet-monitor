@@ -34,11 +34,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 callback);
         }
 
-        private sealed class EventPipeTrigger<TSettings> :
+        internal sealed class EventPipeTrigger<TSettings> :
             ICollectionRuleTrigger,
             IAsyncDisposable
         {
-            private readonly EventPipeTriggerPipeline<TSettings> _pipeline;
+            internal readonly EventPipeTriggerPipeline<TSettings> _pipeline;
 
             public EventPipeTrigger(
                 IEndpointInfo endpointInfo,
