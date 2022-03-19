@@ -75,7 +75,7 @@ stages:
         configuration: Release
         architecture: arm64
         publishArtifactsSubPath: bin/Windows_NT.arm64.Release
-        runTests: false
+        testGroup: None
   - template: /eng/build.yml
     parameters:
       name: Linux_x64_Debug
@@ -100,7 +100,7 @@ stages:
         configuration: Release
         architecture: arm64
         publishArtifactsSubPath: bin/Linux.arm64.Release
-        runTests: false
+        testGroup: None
   - template: /eng/build.yml
     parameters:
       name: Linux_Musl_x64_Debug
@@ -127,7 +127,7 @@ stages:
         architecture: arm64
         publishArtifactsSubPath: bin/Linux.arm64.Release
         publishArtifactsTargetSubPath: bin/Linux-musl.arm64.Release
-        runTests: false
+        testGroup: None
   - template: /eng/build.yml
     parameters:
       name: MacOS_x64_Debug
@@ -152,7 +152,7 @@ stages:
         configuration: Release
         architecture: arm64
         publishArtifactsSubPath: bin/OSX.arm64.Release
-        runTests: false
+        testGroup: None
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
     # Pack, sign, and publish
     - template: /eng/common/templates/job/job.yml
