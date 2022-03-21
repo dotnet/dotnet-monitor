@@ -15,8 +15,8 @@ parameters:
   publishArtifactsSubPath: ''
   # Sub path under artifacts location to which artifact files are publish
   publishArtifactsTargetSubPath: ''
-  # Allow disabling test runs
-  runTests: true
+  # Group of tests to be run
+  testGroup: Default
   # TFMs for which test results are uploaded
   testResultTfms:
   - key: netcoreapp3.1
@@ -106,8 +106,17 @@ jobs:
     - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
       - _CrossBuildArgs: '-cross'
 
-    - ${{ if eq(parameters.runTests, true) }}:
-      - _TestArgs: '-test'
+    - ${{ if ne(parameters.testGroup, 'None') }}:
+      # If TestGroup == 'Default', choose the test group based on the type of pipeline run
+      - ${{ if eq(parameters.testGroup, 'Default') }}:
+        - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
+          - _TestArgs: '-test -testgroup CI'
+        - ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+          - _TestArgs: '-test -testgroup PR'
+        - ${{ else }}:
+          - _TestArgs: '-test -testgroup All'
+      - ${{ else }}:
+          - _TestArgs: '-test -testgroup ${{ parameters.testGroup }}'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -180,7 +189,7 @@ jobs:
           artifactName: Build_${{ parameters.configuration }}
 
     # Publish test results to Azure Pipelines
-    - ${{ if eq(parameters.runTests, true) }}:
+    - ${{ if ne(parameters.testGroup, 'None') }}:
       - ${{ each testResultTfm in parameters.testResultTfms }}:
         - task: PublishTestResults@2
           displayName: Publish Test Results (${{ testResultTfm.value }})
