@@ -10,7 +10,7 @@ pr:
     - feature/*
 
 schedules:
-- cron: 0 12 * * 6
+- cron: 15 11 * * 6
   displayName: Weekly Full Test Run
   branches:
     include:
