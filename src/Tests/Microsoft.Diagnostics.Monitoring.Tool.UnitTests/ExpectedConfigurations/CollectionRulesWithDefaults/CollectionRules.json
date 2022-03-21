@@ -28,8 +28,8 @@
     "Trigger": {
       "Type": "AspNetRequestCount",
       "Settings": {
-        "SlidingWindowDuration": "00:05:00",
-        "RequestCount": "10"
+        "RequestCount": "10",
+        "SlidingWindowDuration": "00:05:00"
       }
     }
   },
@@ -52,8 +52,8 @@
     "Trigger": {
       "Settings": {
         "StatusCodes": [ "400-409" ],
-        "SlidingWindowDuration": "00:05:00",
-        "ResponseCount": "1"
+        "ResponseCount": "1",
+        "SlidingWindowDuration": "00:05:00"
       },
       "Type": "AspNetResponseStatus"
     },

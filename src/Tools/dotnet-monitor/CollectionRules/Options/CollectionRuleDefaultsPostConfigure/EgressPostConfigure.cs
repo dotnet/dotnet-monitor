@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
                 {
                     if (string.IsNullOrEmpty(((IEgressProviderProperties)action.Settings).Egress))
                     {
-                        ((IEgressProviderProperties)action.Settings).Egress = _defaultOptions.CurrentValue.Egress;
+                        ((IEgressProviderProperties)action.Settings).Egress = _defaultOptions.CurrentValue.ActionDefaults.Egress;
                     }
                 }
             }

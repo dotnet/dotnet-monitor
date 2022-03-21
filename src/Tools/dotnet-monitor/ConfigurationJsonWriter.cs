@@ -431,20 +431,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             var settingsPropsNames = optionsType.GetProperties().Select(x => x.Name);
 
-            foreach (var defaultProperty in typeof(CollectionRuleDefaultsOptions).GetProperties())
+            foreach (var defaultPair in GetDefaultsNamesAndValues())
             {
-                if (settingsPropsNames.Contains(defaultProperty.Name))
+                if (settingsPropsNames.Contains(defaultPair.Key))
                 {
-                    string configurationDefaultValue = _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{defaultProperty.Name}").Value;
-
-                    if (!string.IsNullOrEmpty(configurationDefaultValue))
+                    if (!string.IsNullOrEmpty(defaultPair.Value))
                     {
-                        childrenToMock.Add(defaultProperty.Name, configurationDefaultValue);
+                        childrenToMock.Add(defaultPair.Key, defaultPair.Value);
                     }
                 }
             }
 
             return childrenToMock;
+        }
+
+        private Dictionary<string, string> GetDefaultsNamesAndValues()
+        {
+            Dictionary<string, string> defaultNamesAndValues = new();
+
+            foreach (var defaultsProp in typeof(CollectionRuleDefaultsOptions).GetProperties())
+            {
+                var nestedDefaultsProps = defaultsProp.PropertyType.GetProperties();
+
+                foreach (var nestedDefaultsProp in nestedDefaultsProps)
+                {
+                    defaultNamesAndValues.Add(nestedDefaultsProp.Name, _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{defaultsProp.Name}:{nestedDefaultsProp.Name}").Value);
+                }
+            }
+
+            return defaultNamesAndValues;
         }
 
         private Type GetActionOptionsType(IConfigurationSection section)

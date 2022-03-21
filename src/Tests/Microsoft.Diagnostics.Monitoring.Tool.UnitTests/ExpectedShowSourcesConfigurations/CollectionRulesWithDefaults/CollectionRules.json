@@ -28,8 +28,8 @@
     "Trigger": {
       "Type": "AspNetRequestCount" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
       "Settings": {
-        "SlidingWindowDuration": "00:05:00" /*Collection Rule Defaults*/,
-        "RequestCount": "10" /*Collection Rule Defaults*/
+        "RequestCount": "10" /*Collection Rule Defaults*/,
+        "SlidingWindowDuration": "00:05:00" /*Collection Rule Defaults*/
       }
     }
   },
@@ -52,8 +52,8 @@
     "Trigger": {
       "Settings": {
         "StatusCodes": [ "400-409" /*JsonConfigurationProvider for 'settings.json' (Optional)*/ ],
-        "SlidingWindowDuration": "00:05:00" /*Collection Rule Defaults*/,
-        "ResponseCount": "1" /*Collection Rule Defaults*/
+        "ResponseCount": "1" /*Collection Rule Defaults*/,
+        "SlidingWindowDuration": "00:05:00" /*Collection Rule Defaults*/
       },
       "Type": "AspNetResponseStatus" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     },

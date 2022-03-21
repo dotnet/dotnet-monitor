@@ -1122,12 +1122,64 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Egress": {
+        "TriggerDefaults": {
+          "description": "The Collection Rule Defaults that can be applied to triggers.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CollectionRuleTriggerDefaultsOptions"
+            }
+          ]
+        },
+        "ActionDefaults": {
+          "description": "The Collection Rule Defaults that can be applied to actions.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CollectionRuleActionDefaultsOptions"
+            }
+          ]
+        },
+        "LimitsDefaults": {
+          "description": "The Collection Rule Defaults that can be applied to limits.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CollectionRuleLimitsDefaultsOptions"
+            }
+          ]
+        }
+      }
+    },
+    "CollectionRuleTriggerDefaultsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "RequestCount": {
           "type": [
-            "null",
-            "string"
+            "integer",
+            "null"
           ],
-          "description": "The name of the default Egress Provider; to be used when no other egress provider is specified."
+          "description": "The default threshold of the number of requests that start within the sliding window of time; to be used when no other request count is specified.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "ResponseCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The default threshold number of responses with matching status codes; to be used when no other response count is specified.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         },
         "SlidingWindowDuration": {
           "type": [
@@ -1136,7 +1188,26 @@
           ],
           "description": "The default sliding window duration; to be used when no other sliding window duration is specified.",
           "format": "time-span"
-        },
+        }
+      }
+    },
+    "CollectionRuleActionDefaultsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the default Egress Provider; to be used when no other egress provider is specified."
+        }
+      }
+    },
+    "CollectionRuleLimitsDefaultsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
         "ActionCount": {
           "type": [
             "integer",
@@ -1162,26 +1233,6 @@
           ],
           "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process; to be used when no other rule duration is specified.",
           "format": "time-span"
-        },
-        "RequestCount": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "The default threshold of the number of requests that start within the sliding window of time; to be used when no other request count is specified.",
-          "format": "int32",
-          "maximum": 2147483647.0,
-          "minimum": 1.0
-        },
-        "ResponseCount": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "The default threshold number of responses with matching status codes; to be used when no other response count is specified.",
-          "format": "int32",
-          "maximum": 2147483647.0,
-          "minimum": 1.0
         }
       }
     },

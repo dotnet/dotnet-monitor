@@ -305,6 +305,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the default Egress Provider; to be used when no other egress provider is specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleActionDefaultsOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionDefaultsOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name used to refer to the action..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleActionOptions_Name {
@@ -341,66 +350,57 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to actions..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_ActionDefaults {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_ActionDefaults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to limits..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_LimitsDefaults {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_LimitsDefaults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to triggers..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_TriggerDefaults {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_TriggerDefaults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default number of times the action list may be executed before being throttled; to be used when no other action count is specified..
         /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCount {
+        public static string DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCount {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCount", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCount", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed; to be used when no other action count sliding window duration is specified..
         /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCountSlidingWindowDuration {
+        public static string DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCountSlidingWindowDuration {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_ActionCountSlidingWindow" +
-                        "Duration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the default Egress Provider; to be used when no other egress provider is specified..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_Egress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The default threshold of the number of requests that start within the sliding window of time; to be used when no other request count is specified..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_RequestCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The default threshold number of responses with matching status codes; to be used when no other response count is specified..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_ResponseCount", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCountSlidin" +
+                        "gWindowDuration", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The default amount of time before the rule will stop monitoring a process after it has been applied to a process; to be used when no other rule duration is specified..
         /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_RuleDuration {
+        public static string DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_RuleDuration {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_RuleDuration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The default sliding window duration; to be used when no other sliding window duration is specified..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultOptions_SlidingWindowDuration", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_RuleDuration", resourceCulture);
             }
         }
         
@@ -465,6 +465,34 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectionRuleOptions_Trigger {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleOptions_Trigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default threshold of the number of requests that start within the sliding window of time; to be used when no other request count is specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_RequestCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_RequestCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default threshold number of responses with matching status codes; to be used when no other response count is specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_ResponseCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_ResponseCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default sliding window duration; to be used when no other sliding window duration is specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_SlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_SlidingWindowDur" +
+                        "ation", resourceCulture);
             }
         }
         
