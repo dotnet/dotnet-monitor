@@ -6,6 +6,7 @@
 1. In `/eng/Versions.props`, update `dotnet/diagnostics` dependencies to versions from the corresponding release of the `dotnet/diagnostics` repo.
 1. In `/eng/Version.props`, ensure that `<BlobGroupBuildQuality>` is set appropriately. See the documentation next to this setting for the appropriate values. In release branches, its value should either be `prerelease` or `release`. This setting, in combination with the version settings, determine for which 'channel' the aks.ms links are created.
 1. Complete at least one successful build.
+1. Bump the version number in the `main` branch. [Example Pull Request](https://github.com/dotnet/dotnet-monitor/pull/1560). 
 
 ## Additional steps when creating a new release branch
 
@@ -16,7 +17,7 @@
 `darc add-default-channel --channel ".NET Core Tooling Release" --branch release/8.x --repo https://github.com/dotnet/dotnet-monitor`
 
 - It can be helpful to create test release branches (e.g. release/test/8.x). Note these branches will trigger warnings because they are considered unprotected release branches and should be deleted as soon as possible.
-- If you created a build from a newly created release branch without a channel, you will get the message 'target build already exists on all channels'. To use this build you need to add it to a channel: `darc add-build-to-channel --id 12345 --channel "General Testing"`.
+- If you created a build from a newly created release branch without a channel, you will get the message 'target build already exists on all channels'. To use this build you need to add it to a channel: `darc add-build-to-channel --id <Build BAR ID> --channel "General Testing"`.
 
 ## Build Release Branch
 
@@ -43,7 +44,7 @@ The `dotnet-docker` repository runs an update process each day that detects the 
 The following variables for [dotnet-docker-update-dependencies](https://dev.azure.com/dnceng/internal/_build?definitionId=470) need to be updated for release:
 * `monitorXMinorVersion`: Make sure these are set to the correct values.
 * `monitorXQuality`: Normally this is daily, but should be set to release.
-* `monitorXStableBranding`: Normally this is false, but should be set to true for release builds.
+* `monitorXStableBranding`: Normally this is false, but should be set to true when the package version is stable e.g. `dotnet-monitor.8.0.0.nupkg` (does not have a prerelease label on it such as `-preview.X` or `-rtm.X`.
 * `update-monitor-enabled`: Make sure this is true.
 * `update-dotnet-enabled`: When doing an ad-hoc run, make sure to **disable** this.
 
@@ -70,7 +71,6 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 1. Fix issues for the release in the release branch. Backport fixes to `main` branch and other prior release branches as needed.
 1. Invoke [build](<#Build Release Branch>) pipeline as needed.
 1. After successful build, test changes from [dotnet-tools](https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json) feed. Images from the `nightly` branch of the `dotnet-docker` repository will be recreated the next day after the successful build of the release branch.
-1. Bump the version number in the `main` branch. [Example Pull Request](https://github.com/dotnet/dotnet-monitor/pull/1560). 
 
 ## Release to nuget.org and Add GitHub Release
 
