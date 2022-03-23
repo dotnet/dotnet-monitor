@@ -44,8 +44,8 @@
     <!-- dotnet/arcade references -->
     <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22167.4</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.3.22170.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.3.22170.1</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.4.22172.10</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.4.22172.10</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22166.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22166.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
