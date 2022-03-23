@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
@@ -41,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that all log events are collected if log level set to Trace.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [ConditionalTheory(nameof(IsNotWindowsCI))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 
@@ -87,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that log events with level at or above the specified level are collected.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [ConditionalTheory(nameof(IsNotWindowsCI))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -119,7 +118,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events with a category that doesn't have a specified level are collected
         /// at the log level specified in the request body.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [ConditionalTheory(nameof(IsNotWindowsCI))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -160,7 +159,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the level query parameter.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [ConditionalTheory(nameof(IsNotWindowsCI))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -196,7 +195,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the default log level in the request body.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [ConditionalTheory(nameof(IsNotWindowsCI))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -232,7 +231,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [ConditionalTheory(nameof(IsNotWindowsCI))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -266,7 +265,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [ConditionalTheory(nameof(IsNotWindowsCI))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -305,7 +304,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events are collected for the categories and levels specified by the application
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [ConditionalTheory(nameof(IsNotWindowsCI))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -349,7 +348,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [ConditionalTheory(nameof(IsNotWindowsCI))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -464,14 +463,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await LogsTestUtilities.ValidateLogsEquality(holder.Stream, callback, logFormat, _outputHelper);
         }
 
-        public static bool IsNotWindowsNetCore31
+        public static bool IsNotWindowsCI
         {
             get
             {
                 // Skip logs tests for .NET Core 3.1 on Windows; these tests sporadically
                 // fail frequently causing insertions and builds with unrelated changes to
-                // fail. See https://github.com/dotnet/dotnet-monitor/issues/807 for details.
-                return !TestConditions.IsWindows || !TestConditions.IsNetCore31;
+                // fail.
+                //
+                // See https://github.com/dotnet/dotnet-monitor/issues/807 for details.
+                // See https://github.com/dotnet/dotnet-monitor/issues/1627 for details.
+                return !TestConditions.IsWindows || string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TF_BUILD"));
             }
         }
     }
