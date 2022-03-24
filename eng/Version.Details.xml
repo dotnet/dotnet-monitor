@@ -30,17 +30,17 @@
       <Uri>https://github.com/dotnet/symstore</Uri>
       <Sha>62e68f551154a66027d0e99b3c057f0c7120f600</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="7.0.0-preview.3.22169.7">
+    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="7.0.0-preview.4.22172.7">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>35be54579ed322177845101db4b115b3d768d9c4</Sha>
+      <Sha>c5d40c9e703fd257db1b26ef4fd1399bbae73ab0</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.4.22172.10">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>429c578753386ec0b762632d27de5f6ed68a5365</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.3.22169.7">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.4.22172.7">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>35be54579ed322177845101db4b115b3d768d9c4</Sha>
+      <Sha>c5d40c9e703fd257db1b26ef4fd1399bbae73ab0</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
