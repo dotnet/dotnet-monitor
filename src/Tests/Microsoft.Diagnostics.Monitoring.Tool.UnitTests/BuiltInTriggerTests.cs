@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,10 +26,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const string DefaultRuleName = nameof(BuiltInTriggerTests);
         private readonly TimeSpan SlidingWindowDurationDefault = TimeSpan.Parse(TriggerOptionsConstants.SlidingWindowDuration_Default);
-        private const string SystemRuntime = "System.Runtime";
-        private const string cpuUsageCounter = "cpu-usage";
-        private const string gcHeapSizeCounter = "gc-heap-size";
-        private const string threadpoolQueueLengthCounter = "threadpool-queue-length";
         private readonly TimeSpan CustomSlidingWindowDuration = TimeSpan.Parse("00:00:03");
         private const double CustomLessThan = 20;
 
@@ -44,8 +41,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = SystemRuntime,
-                CounterName = gcHeapSizeCounter,
+                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
+                CounterName = IEventCounterShortcutsConstants.GCHeapSize,
                 GreaterThan = null,
                 LessThan = CustomLessThan,
                 SlidingWindowDuration = CustomSlidingWindowDuration
@@ -63,8 +60,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = SystemRuntime,
-                CounterName = threadpoolQueueLengthCounter,
+                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
+                CounterName = IEventCounterShortcutsConstants.ThreadpoolQueueLength,
                 GreaterThan = null,
                 LessThan = CustomLessThan,
                 SlidingWindowDuration = CustomSlidingWindowDuration
@@ -82,8 +79,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = SystemRuntime,
-                CounterName = cpuUsageCounter,
+                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
+                CounterName = IEventCounterShortcutsConstants.CpuUsage,
                 GreaterThan = null,
                 LessThan = CustomLessThan,
                 SlidingWindowDuration = CustomSlidingWindowDuration
@@ -101,8 +98,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = SystemRuntime,
-                CounterName = gcHeapSizeCounter,
+                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
+                CounterName = IEventCounterShortcutsConstants.GCHeapSize,
                 GreaterThan = GCHeapSizeOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = SlidingWindowDurationDefault
@@ -116,8 +113,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = SystemRuntime,
-                CounterName = threadpoolQueueLengthCounter,
+                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
+                CounterName = IEventCounterShortcutsConstants.ThreadpoolQueueLength,
                 GreaterThan = ThreadpoolQueueLengthOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = SlidingWindowDurationDefault
@@ -131,8 +128,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = SystemRuntime,
-                CounterName = cpuUsageCounter,
+                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
+                CounterName = IEventCounterShortcutsConstants.CpuUsage,
                 GreaterThan = HighCPUOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = SlidingWindowDurationDefault
@@ -161,7 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 EventPipeTrigger<EventCounterTriggerSettings> trigger = (EventPipeTrigger<EventCounterTriggerSettings>)factory.Create(new EndpointInfo(), null, options);
 
-                // We have to crack open EventPipeTrigger from private to internal (and _pipeline as well) to get this to work -> is that acceptable purely for the purposes of testing coverage with the built-in defaults?
+                // We have to open EventPipeTrigger from private to internal (and _pipeline as well) to get this to work -> is that acceptable?
                 EventCounterTriggerSettings triggerSettings = trigger._pipeline.Settings.TriggerSettings;
 
                 Assert.Equal(expectedSettings.CounterName, triggerSettings.CounterName);

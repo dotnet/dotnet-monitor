@@ -2,12 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts
 {
     /// <summary>
     /// Options for the EventCounter trigger.

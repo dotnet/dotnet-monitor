@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 // NOTE: We can potentially have better Descriptions specific to each of these triggers
-namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts
 {
     /// <summary>
     /// Options for the HighCPU trigger.

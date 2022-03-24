@@ -4,8 +4,11 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts
 {
-    internal static class ThreadpoolQueueLengthOptionsDefaults
+    internal static class IEventCounterShortcutsConstants
     {
-        public const double GreaterThan = 200; // Arbitrary
+        internal const string CpuUsage = "cpu-usage";
+        internal const string GCHeapSize = "gc-heap-size";
+        internal const string ThreadpoolQueueLength = "threadpool-queue-length";
+        internal const string SystemRuntime = "System.Runtime";
     }
 }

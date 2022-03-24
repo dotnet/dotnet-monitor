@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts
 {
     partial interface IEventCounterShortcuts : IValidatableObject
     {

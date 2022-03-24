@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Extensions.Options;
 using System;
 
@@ -23,8 +24,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         private readonly EventPipeTriggerFactory _eventPipeTriggerFactory;
         private readonly ITraceEventTriggerFactory<EventCounterTriggerSettings> _traceEventTriggerFactory;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
-
-        private const string SystemRuntime = "System.Runtime";
 
         public EventCounterTriggerFactory(
             IOptionsMonitor<GlobalCounterOptions> counterOptions,
@@ -59,28 +58,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, HighCPUOptions options)
         {
-            return Create(endpointInfo, callback, options, SystemRuntime, "cpu-usage", greaterThanDefault: HighCPUOptionsDefaults.GreaterThan);
+            return Create(endpointInfo, callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.CpuUsage, greaterThanDefault: HighCPUOptionsDefaults.GreaterThan);
         }
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, GCHeapSizeOptions options)
         {
-            return Create(endpointInfo, callback, options, SystemRuntime, "gc-heap-size", greaterThanDefault:GCHeapSizeOptionsDefaults.GreaterThan);
+            return Create(endpointInfo, callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.GCHeapSize, greaterThanDefault:GCHeapSizeOptionsDefaults.GreaterThan);
         }
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, ThreadpoolQueueLengthOptions options)
         {
-            return Create(endpointInfo, callback, options, SystemRuntime, "threadpool-queue-length", greaterThanDefault: ThreadpoolQueueLengthOptionsDefaults.GreaterThan);
+            return Create(endpointInfo,callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.ThreadpoolQueueLength, greaterThanDefault: ThreadpoolQueueLengthOptionsDefaults.GreaterThan);
         }
 
-        private ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, IEventCounterShortcuts options, string providerName, string counterName, double? greaterThanDefault = null, double? lessThanDefault = null, TimeSpan? slidingWindowDurationDefault = null)
+        private ICollectionRuleTrigger Create(IEndpointInfo endpointInfo,
+            Action callback,
+            IEventCounterShortcuts options,
+            string providerName,
+            string counterName,
+            double? greaterThanDefault = null,
+            double? lessThanDefault = null,
+            TimeSpan? slidingWindowDurationDefault = null)
         {
             return Create(endpointInfo, callback, new EventCounterOptions()
             {
                 ProviderName = providerName,
                 CounterName = counterName,
-                GreaterThan = options.LessThan.HasValue ? options.GreaterThan : (options.GreaterThan ?? greaterThanDefault), // make sure this works
+                GreaterThan = options.LessThan.HasValue ? options.GreaterThan : (options.GreaterThan ?? greaterThanDefault),
                 LessThan = options.GreaterThan.HasValue ? options.LessThan : (options.LessThan ?? lessThanDefault),
-                SlidingWindowDuration = options.SlidingWindowDuration ?? slidingWindowDurationDefault // If we have an intuition for having a higher/lower SWD
+                SlidingWindowDuration = options.SlidingWindowDuration ?? slidingWindowDurationDefault
             });
         }
     }

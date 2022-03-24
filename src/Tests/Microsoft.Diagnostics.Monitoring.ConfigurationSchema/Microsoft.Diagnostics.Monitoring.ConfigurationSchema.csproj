@@ -47,6 +47,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\HighCPUOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\HighCPUOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\HighCPUOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\HighCPUOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\IEventCounterShortcuts.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\IEventCounterShortcuts.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\IEventCounterShortcutsConstants.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\IEventCounterShortcutsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\IAspNetActionPathFilters.cs" Link="Options\CollectionRules\Actions\IAspNetActionPathFilters.cs" />
