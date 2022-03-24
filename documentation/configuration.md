@@ -672,6 +672,10 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
 }
 ```
 
+#### Built-In Default Triggers
+
+These [trigger shortcuts](collectionrules/TriggerShortcuts.md) simplify configuration for several common `EventCounter` providers.
+
 #### ASP.NET Request Path Wildcards and Globbing
 
 The `IncludePaths` and `ExcludePaths` properties of the ASP.NET triggers allow for wildcards and globbing so that every included or excluded path does not necessarily need to be explicitly specified. For these triggers, a match with an `ExcludePaths` pattern will supercede a match with an `IncludePaths` pattern.
