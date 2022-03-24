@@ -1,8 +1,8 @@
 # Collection Rules
 
-`dotnet monitor` can be [configured](./configuration.md#collection-rule-configuration) to automatically collect diagnostic artifacts based on conditions within the discovered processes.
+`dotnet monitor` can be [configured](./../configuration.md#collection-rule-configuration) to automatically collect diagnostic artifacts based on conditions within the discovered processes.
 
->**NOTE:** Collection rules are only enabled when running dotnet-monitor in `Listen` mode. See [Connection Mode](configuration.md#connection-mode) configuration for details.
+>**NOTE:** Collection rules are only enabled when running dotnet-monitor in `Listen` mode. See [Connection Mode](./../configuration.md#connection-mode) configuration for details.
 
 A collection rule is composed of four key aspects:
 - [Filters](#filters): Describes for which processes the rule is applied. Can filter on aspects such as process name, ID, and command line.
@@ -26,9 +26,9 @@ A rule can describe for which processes that the rule is applied. If a discovere
 
 >**NOTE:** `dotnet monitor` is capable of observing multiple processes simultaneously. The filter mechanism for collection rules allows the user to specify which subset of the observed processes that each individual rule should be applied.
 
-The filter criteria are the same as those used for the [default process](./configuration.md#default-process-configuration) configuration.
+The filter criteria are the same as those used for the [default process](./../configuration.md#default-process-configuration) configuration.
 
-See [Filters](./configuration.md#filters) configuration for details and an example of how to specify the filters.
+See [Filters](./../configuration.md#filters) configuration for details and an example of how to specify the filters.
 
 ## Triggers
 
@@ -39,10 +39,10 @@ The following are the currently available triggers:
 | Name | Type | Description |
 |---|---|---|
 | Startup | Startup | Satisfied immediately when the rule is applied to a process. |
-| [AspNetRequestCount](./configuration.md#aspnetrequestcount-trigger) | Event Pipe | Satisfied when the number of HTTP requests is above the threshold count. |
-| [AspNetRequestDuration](./configuration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests have response times longer than the threshold duration. |
-| [AspNetResponseStatus](./configuration.md#aspnetresponsestatus-trigger) | Event Pipe | Satisfied when the number of HTTP responses that have status codes matching the pattern list is above the specified threshold. |
-| [EventCounter](./configuration.md#eventcounter-trigger) | Event Pipe | Satisfied when the value of a counter falls above, below, or between the described threshold. |
+| [AspNetRequestCount](./../configuration.md#aspnetrequestcount-trigger) | Event Pipe | Satisfied when the number of HTTP requests is above the threshold count. |
+| [AspNetRequestDuration](./../configuration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests have response times longer than the threshold duration. |
+| [AspNetResponseStatus](./../configuration.md#aspnetresponsestatus-trigger) | Event Pipe | Satisfied when the number of HTTP responses that have status codes matching the pattern list is above the specified threshold. |
+| [EventCounter](./../configuration.md#eventcounter-trigger) | Event Pipe | Satisfied when the value of a counter falls above, below, or between the described threshold. |
 
 ## Actions
 
@@ -52,18 +52,18 @@ The following are the currently available actions:
 
 | Name | Description |
 |---|---|
-| [CollectDump](./configuration.md#collectdump-action) | Collects a memory dump of the target process. |
-| [CollectGCDump](./configuration.md#collectgcdump-action) | Collects a gcdump of the target process. |
-| [CollectLogs](./configuration.md#collectlogs-action) | Collects logs from the target process. |
-| [CollectTrace](./configuration.md#collecttrace-action) | Collects an event trace of the target process. |
-| [Execute](./configuration.md#execute-action) | Executes an external executable with command line parameters. |
-| [LoadProfiler](./configuration.md#loadprofiler-action) | Loads an ICorProfilerCallback implementation into the target process. |
-| [SetEnvironmentVariable](./configuration.md#setenvironmentvaraible-action) | Sets an environment variable value in the target process. |
-| [GetEnvironmentVariable](./configuration.md#Getenvironmentvaraible-action) | Gets an environment variable value from the target process. |
+| [CollectDump](./../configuration.md#collectdump-action) | Collects a memory dump of the target process. |
+| [CollectGCDump](./../configuration.md#collectgcdump-action) | Collects a gcdump of the target process. |
+| [CollectLogs](./../configuration.md#collectlogs-action) | Collects logs from the target process. |
+| [CollectTrace](./../configuration.md#collecttrace-action) | Collects an event trace of the target process. |
+| [Execute](./../configuration.md#execute-action) | Executes an external executable with command line parameters. |
+| [LoadProfiler](./../configuration.md#loadprofiler-action) | Loads an ICorProfilerCallback implementation into the target process. |
+| [SetEnvironmentVariable](./../configuration.md#setenvironmentvaraible-action) | Sets an environment variable value in the target process. |
+| [GetEnvironmentVariable](./../configuration.md#Getenvironmentvaraible-action) | Gets an environment variable value from the target process. |
 
 ## Limits
 
-See [Limits](./configuration.md#limits) for details on the configurable limits.
+See [Limits](./../configuration.md#limits) for details on the configurable limits.
 
 ## Advanced Behavior
 
