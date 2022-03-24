@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
-    internal class CollectionRuleService : BackgroundService, IAsyncDisposable
+    internal class CollectionRuleService : BackgroundService, IAsyncDisposable, ICollectionRuleService
     {
         // The number of items that the pending removal channel will hold before forcing
         // the writer to wait for capacity to be available.
@@ -231,6 +231,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 await container.DisposeAsync();
             }
+        }
+
+        public List<string> GetStuff(ProcessKey? processKey)
+        {
+            if (processKey == null)
+            {
+                return null;
+            }
+
+            IReadOnlyCollection<string> ruleNames = _provider.GetCollectionRuleNames();
+
+            var keysToUse = new List<IEndpointInfo>();
+
+            var keys = _containersMap.Keys;
+            foreach (var key in keys)
+            {
+                if (key.ProcessId == processKey.Value.ProcessId)
+                {
+                    keysToUse.Add(key);
+                }
+            }
+
+            List<string> toReturn = new();
+
+            foreach (var keyToUse in keysToUse)
+            {
+                var container = _containersMap[keyToUse];
+            }
+
+
+            return ruleNames.ToList();
+            //return _containersMap.ToString();
         }
     }
 }

@@ -48,6 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IDumpService _dumpService;
         private readonly OperationTrackerService _operationTrackerService;
         private IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
+        private ICollectionRuleService _crService;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -60,6 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
+            _crService = serviceProvider.GetRequiredService<ICollectionRuleService>();
         }
 
         /// <summary>
@@ -510,6 +512,49 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         /// <summary>
+        /// Gets information about the current state of the collection rules.
+        /// </summary>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
+        [HttpGet("collectionrules", Name = nameof(GetCollectionRules))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
+        public ActionResult<Models.CollectionRules> GetCollectionRules(
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null)
+        {
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+
+            var stuff = _crService.GetStuff(processKey);
+
+            var options = _optionsMonitor.Get("LargeGCHeap");
+
+            int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(3333); // need actual default
+
+
+            return this.InvokeService(() =>
+            {
+                Models.CollectionRules collectionRules = new Models.CollectionRules()
+                {
+                    isEnabled = options.IsEnabled,
+                    lifetimeTriggerOccurrences = 4,// Look at
+                    TriggerMaxOccurrences = actionCountLimit,
+                    TriggerOccurrences = 6, // Look at 
+                    State = CollectionRulesState.Collecting
+                };
+
+                _logger.WrittenToHttpStream();
+                return new ActionResult<Models.CollectionRules>(collectionRules);
+            }, _logger);
+        }
+
+
+        /// <summary>
         /// Enable a collection rule by its name.
         /// <param name="collectionRuleName">The name of the collection rule to enable.</param>
         /// </summary>
@@ -521,6 +566,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [Required]
             string collectionRuleName)
         {
+            //var stuff = _crService.GetStuff();
+
+
             // Need to figure out how we play nicely along user config -> if they update via web api, are we manipulating their config? When they change their config, do we disregard the change that happend in the web api?
             // This does successfully update _optionsMonitor...but does it register as a change in configuration? Investigate -> No
             var options = _optionsMonitor.Get(collectionRuleName);

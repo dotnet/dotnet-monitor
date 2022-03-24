@@ -31,6 +31,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Flag used to guard against multiple invocations of _startCallback.
         private bool _invokedStartCallback = false;
 
+        public Queue<DateTime> _executionTimestamps;
+        public List<DateTime> _allExecutionTimestamps = new();
+
+
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
             ICollectionRuleTriggerOperations triggerOperations,
@@ -67,7 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             TimeSpan? actionCountWindowDuration = _context.Options.Limits?.ActionCountSlidingWindowDuration;
             int actionCountLimit = (_context.Options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
-            Queue<DateTime> executionTimestamps = new(actionCountLimit);
+            _executionTimestamps = new(actionCountLimit);
 
             // Start cancellation timer for graceful stop of the collection rule
             // when the rule duration has been specified. Conditionally enable this
@@ -142,12 +146,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     if (actionCountWindowDuration.HasValue)
                     {
                         DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
-                        while (executionTimestamps.Count > 0)
+                        while (_executionTimestamps.Count > 0)
                         {
-                            DateTime executionTimestamp = executionTimestamps.Peek();
+                            DateTime executionTimestamp = _executionTimestamps.Peek();
                             if (executionTimestamp < windowStartTimestamp)
                             {
-                                executionTimestamps.Dequeue();
+                                _executionTimestamps.Dequeue();
                             }
                             else
                             {
@@ -158,9 +162,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     }
 
                     // Check if executing actions has been throttled due to count limit
-                    if (actionCountLimit > executionTimestamps.Count)
+                    if (actionCountLimit > _executionTimestamps.Count)
                     {
-                        executionTimestamps.Enqueue(currentTimestamp);
+                        _executionTimestamps.Enqueue(currentTimestamp);
+                        _allExecutionTimestamps.Add(currentTimestamp);
 
                         bool actionsCompleted = false;
                         try
@@ -182,7 +187,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             // number of times as specified by the limits and the action count
                             // window was not specified. Since the pipeline can no longer execute
                             // actions, the pipeline can complete.
-                            completePipeline = actionCountLimit <= executionTimestamps.Count &&
+                            completePipeline = actionCountLimit <= _executionTimestamps.Count &&
                                 !actionCountWindowDuration.HasValue;
                         }
 

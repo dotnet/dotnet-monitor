@@ -32,6 +32,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ISystemClock _systemClock;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
+        public List<CollectionRulePipeline> pipelines = new();
+
         private long _disposalState;
         private CancellationTokenSource _shutdownTokenSource;
 
@@ -204,6 +206,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     _triggerOperations,
                     context,
                     () => startedSource.TrySetResult(null));
+
+                pipelines.Add(pipeline); // Beware of the using statement here
 
                 await pipeline.RunAsync(linkedSource.Token);
 
