@@ -2,27 +2,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
-using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.Pipelines;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,6 +26,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const string DefaultRuleName = nameof(BuiltInTriggerTests);
         private readonly TimeSpan SlidingWindowDurationDefault = TimeSpan.Parse(TriggerOptionsConstants.SlidingWindowDuration_Default);
         private const string SystemRuntime = "System.Runtime";
+        private const string cpuUsageCounter = "cpu-usage";
+        private const string gcHeapSizeCounter = "gc-heap-size";
+        private const string threadpoolQueueLengthCounter = "threadpool-queue-length";
+        private readonly TimeSpan CustomSlidingWindowDuration = TimeSpan.Parse("00:00:03");
+        private const double CustomLessThan = 20;
 
         private ITestOutputHelper _outputHelper;
 
@@ -46,66 +42,57 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task GCHeapSizeTrigger_CorrectCustomOptions()
         {
-            const double ExpectedLessThan = 20;
-            TimeSpan ExpectedSlidingWindowDuration = TimeSpan.Parse("00:00:03");
-
             EventCounterOptions expectedSettings = new()
             {
                 ProviderName = SystemRuntime,
-                CounterName = "gc-heap-size",
+                CounterName = gcHeapSizeCounter,
                 GreaterThan = null,
-                LessThan = ExpectedLessThan,
-                SlidingWindowDuration = ExpectedSlidingWindowDuration
+                LessThan = CustomLessThan,
+                SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
             await IEventCounterTrigger_CorrectOptions<GCHeapSizeOptions>(KnownCollectionRuleTriggers.GCHeapSize, expectedSettings, options =>
             {
-                options.LessThan = ExpectedLessThan;
-                options.SlidingWindowDuration = ExpectedSlidingWindowDuration;
+                options.LessThan = CustomLessThan;
+                options.SlidingWindowDuration = CustomSlidingWindowDuration;
             });
         }
 
         [Fact]
         public async Task ThreadpoolQueueLengthTrigger_CorrectCustomOptions()
         {
-            const double ExpectedLessThan = 20;
-            TimeSpan ExpectedSlidingWindowDuration = TimeSpan.Parse("00:00:03");
-
             EventCounterOptions expectedSettings = new()
             {
                 ProviderName = SystemRuntime,
-                CounterName = "threadpool-queue-length",
+                CounterName = threadpoolQueueLengthCounter,
                 GreaterThan = null,
-                LessThan = ExpectedLessThan,
-                SlidingWindowDuration = ExpectedSlidingWindowDuration
+                LessThan = CustomLessThan,
+                SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
             await IEventCounterTrigger_CorrectOptions<ThreadpoolQueueLengthOptions>(KnownCollectionRuleTriggers.ThreadpoolQueueLength, expectedSettings, options =>
             {
-                options.LessThan = ExpectedLessThan;
-                options.SlidingWindowDuration = ExpectedSlidingWindowDuration;
+                options.LessThan = CustomLessThan;
+                options.SlidingWindowDuration = CustomSlidingWindowDuration;
             });
         }
 
         [Fact]
         public async Task HighCPUTrigger_CorrectCustomOptions()
         {
-            const double ExpectedLessThan = 20;
-            TimeSpan ExpectedSlidingWindowDuration = TimeSpan.Parse("00:00:03");
-
             EventCounterOptions expectedSettings = new()
             {
                 ProviderName = SystemRuntime,
-                CounterName = "cpu-usage",
+                CounterName = cpuUsageCounter,
                 GreaterThan = null,
-                LessThan = ExpectedLessThan,
-                SlidingWindowDuration = ExpectedSlidingWindowDuration
+                LessThan = CustomLessThan,
+                SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
             await IEventCounterTrigger_CorrectOptions<HighCPUOptions>(KnownCollectionRuleTriggers.HighCPU, expectedSettings, options =>
             {
-                options.LessThan = ExpectedLessThan;
-                options.SlidingWindowDuration = ExpectedSlidingWindowDuration;
+                options.LessThan = CustomLessThan;
+                options.SlidingWindowDuration = CustomSlidingWindowDuration;
             });
         }
 
@@ -115,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             EventCounterOptions expectedSettings = new()
             {
                 ProviderName = SystemRuntime,
-                CounterName = "gc-heap-size",
+                CounterName = gcHeapSizeCounter,
                 GreaterThan = GCHeapSizeOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = SlidingWindowDurationDefault
@@ -130,7 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             EventCounterOptions expectedSettings = new()
             {
                 ProviderName = SystemRuntime,
-                CounterName = "threadpool-queue-length",
+                CounterName = threadpoolQueueLengthCounter,
                 GreaterThan = ThreadpoolQueueLengthOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = SlidingWindowDurationDefault
@@ -145,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             EventCounterOptions expectedSettings = new()
             {
                 ProviderName = SystemRuntime,
-                CounterName = "cpu-usage",
+                CounterName = cpuUsageCounter,
                 GreaterThan = HighCPUOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = SlidingWindowDurationDefault

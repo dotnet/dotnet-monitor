@@ -635,10 +635,10 @@
           ],
           "properties": {
             "Type": {
-              "const": "ExceptionCount"
+              "const": "ThreadpoolQueueLength"
             },
             "Settings": {
-              "$ref": "#/definitions/ExceptionCountOptions"
+              "$ref": "#/definitions/ThreadpoolQueueLengthOptions"
             }
           }
         },
@@ -1543,7 +1543,7 @@
         "EventCounter",
         "HighCPU",
         "GCHeapSize",
-        "ExceptionCount",
+        "ThreadpoolQueueLength",
         "Startup"
       ]
     },
@@ -1816,7 +1816,7 @@
         }
       }
     },
-    "ExceptionCountOptions": {
+    "ThreadpoolQueueLengthOptions": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
