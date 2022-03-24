@@ -47,6 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly EgressOperationStore _operationsStore;
         private readonly IDumpService _dumpService;
         private readonly OperationTrackerService _operationTrackerService;
+        private IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -58,6 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _dumpService = serviceProvider.GetRequiredService<IDumpService>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
+            _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
         }
 
         /// <summary>
@@ -505,6 +507,31 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 _logger.WrittenToHttpStream();
                 return new ActionResult<Models.DotnetMonitorInfo>(dotnetMonitorInfo);
             }, _logger);
+        }
+
+        /// <summary>
+        /// Enable a collection rule by its name.
+        /// <param name="collectionRuleName">The name of the collection rule to enable.</param>
+        /// </summary>
+        [HttpGet("enable", Name = nameof(EnableCollectionRule))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public void EnableCollectionRule(
+            [FromQuery]
+            [Required]
+            string collectionRuleName)
+        {
+            // Need to figure out how we play nicely along user config -> if they update via web api, are we manipulating their config? When they change their config, do we disregard the change that happend in the web api?
+            // This does successfully update _optionsMonitor...but does it register as a change in configuration? Investigate -> No
+            var options = _optionsMonitor.Get(collectionRuleName);
+
+            //Environment.SetEnvironmentVariable("DotnetMonitor_CollectionRules__LargeGCHeap__IsEnabled", "true");
+
+            options.IsEnabled = true;
+            /*
+            CollectionRuleOptions options = _optionsMonitor.Get(collectionRuleName);
+
+            options.IsEnabled = true;*/
         }
 
         private static string GetDotnetMonitorVersion()

@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Auth\AuthConstants.cs" Link="Auth\AuthConstants.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Auth\JwtAlgorithmChecker.cs" Link="Auth\JwtAlgorithmChecker.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleActions.cs" Link="Options\CollectionRules\KnownCollectionRuleActions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleTriggers.cs" Link="Options\CollectionRules\KnownCollectionRuleTriggers.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ActionOptionsConstants.cs" Link="Options\CollectionRules\Actions\ActionOptionsConstants.cs" />

@@ -10,6 +10,10 @@
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DumpType.cs" Link="Models\DumpType.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\EventPipeProvider.cs" Link="Models\EventPipeProvider.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\TraceProfile.cs" Link="Models\TraceProfile.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\CollectionRules\ICollectionRuleOptions.cs" Link="CollectionRules\ICollectionRuleOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\CollectionRules\ICollectionRuleActionOptions.cs" Link="CollectionRules\ICollectionRuleActionOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\CollectionRules\ICollectionRuleLimitsOptions.cs" Link="CollectionRules\ICollectionRuleLimitsOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\CollectionRules\ICollectionRuleTriggerOptions.cs" Link="CollectionRules\ICollectionRuleTriggerOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleActions.cs" Link="Options\CollectionRules\KnownCollectionRuleActions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleTriggers.cs" Link="Options\CollectionRules\KnownCollectionRuleTriggers.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ActionOptionsConstants.cs" Link="Options\CollectionRules\Actions\ActionOptionsConstants.cs" />
