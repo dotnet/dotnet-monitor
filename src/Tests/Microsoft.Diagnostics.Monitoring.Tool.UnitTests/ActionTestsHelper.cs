@@ -77,6 +77,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
+        public static IEnumerable<object[]> GetTfmsAndProfilerPath()
+        {
+            // There isn't a good way to check if the test should be using the x86 or x64 profiler
+            // when running unit tests. Each build job builds one specific architecture but from
+            // a test perspective, it cannot tell which one was built. Additionally, only the x64
+            // runtimes are installed at this time. Most test runs occur on x64, so try that one first.
+            string profilerPath = NativeLibraryHelper.GetMonitorProfilerPath("x64");
+            if (File.Exists(profilerPath))
+            {
+                foreach (TargetFrameworkMoniker tfm in ActionTestsHelper.tfms6PlusToTest)
+                {
+                    yield return new object[] { tfm, profilerPath };
+                }
+            }
+            else
+            {
+                // If the x64 library could not be found, likely built the x86 library (it shouldn't
+                // be arm64 since tests are not run on arm64). Check that x86 was built and pass the
+                // test since the actual test cannot be run without the x86 runtimes.
+                Assert.True(File.Exists(NativeLibraryHelper.GetMonitorProfilerPath("x86")));
+            }
+        }
+
         internal static string ValidateEgressPath(CollectionRuleActionResult result)
         {
             Assert.NotNull(result.OutputValues);
