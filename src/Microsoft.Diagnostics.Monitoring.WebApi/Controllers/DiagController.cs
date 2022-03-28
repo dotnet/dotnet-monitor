@@ -528,7 +528,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
-            var stuff = _crService.GetStuff(processKey);
+            var stuff = _crService.GetCollectionRulesState(processKey);
 
             return this.InvokeService(() =>
             {

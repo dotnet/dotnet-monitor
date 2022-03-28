@@ -234,14 +234,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        public Dictionary<string, Monitoring.WebApi.Models.CollectionRules> GetStuff(ProcessKey? processKey)
+        public Dictionary<string, Monitoring.WebApi.Models.CollectionRules> GetCollectionRulesState(ProcessKey? processKey)
         {
             if (processKey == null)
             {
                 return null;
             }
-
-            IReadOnlyCollection<string> ruleNames = _provider.GetCollectionRuleNames();
 
             var keysToUse = new List<IEndpointInfo>();
 
@@ -270,38 +268,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     int allExecutions = pipeline._allExecutionTimestamps.Count;
 
-                    if (options.Limits.ActionCountSlidingWindowDuration.HasValue) // Need a null check for limits
-                    {
-                        DateTime currentTimestamp = pipeline._context.Clock.UtcNow.UtcDateTime;
+                    DateTime currentTimestamp = pipeline._context.Clock.UtcNow.UtcDateTime;
 
-                        DateTime windowStartTimestamp = currentTimestamp - options.Limits.ActionCountSlidingWindowDuration.Value;
-                        while (pipeline._executionTimestamps.Count > 0)
-                        {
-                            DateTime executionTimestamp = pipeline._executionTimestamps.Peek();
-                            if (executionTimestamp < windowStartTimestamp)
-                            {
-                                pipeline._executionTimestamps.Dequeue();
-                            }
-                            else
-                            {
-                                // Stop clearing out previous executions
-                                break;
-                            }
-                        }
-                    }
+                    // Need a null check for limits
+                    CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps, options.Limits.ActionCountSlidingWindowDuration, currentTimestamp);
 
-                    int currExecutions = pipeline._executionTimestamps.Count; // We need to actively dequeue here -> since this normally only happens when a collection rule is operated on, not passively in the background.
+                    int currExecutions = pipeline._executionTimestamps.Count;
+
                     CollectionRulesState state = CollectionRulesState.Running;
                     if (pipeline.actionIsInFlight)
                     {
-                        state = CollectionRulesState.Collecting; // Need to have ways to check if we're paused/terminated
+                        state = CollectionRulesState.Collecting;
                     }
                     else if (pipeline._isCleanedUp)
                     {
-                        state = CollectionRulesState.Finished; // Make sure this shouldn't be waiting to resume
-                    } else if (options.Limits?.ActionCount <= currExecutions) // need to also use a default check here
+                        state = CollectionRulesState.Finished;
+                    }
+                    else if (options.Limits?.ActionCount <= currExecutions)
                     {
-                        state = CollectionRulesState.WaitingToResume; // Make sure this shouldn't be waiting to resume
+                        state = CollectionRulesState.WaitingToResume;
                     }
 
                     Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()

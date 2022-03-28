@@ -143,24 +143,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     DateTime currentTimestamp = _context.Clock.UtcNow.UtcDateTime;
 
-                    // If rule has an action count window, Remove all execution timestamps that fall outside the window.
-                    if (actionCountWindowDuration.HasValue)
-                    {
-                        DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
-                        while (_executionTimestamps.Count > 0)
-                        {
-                            DateTime executionTimestamp = _executionTimestamps.Peek();
-                            if (executionTimestamp < windowStartTimestamp)
-                            {
-                                _executionTimestamps.Dequeue();
-                            }
-                            else
-                            {
-                                // Stop clearing out previous executions
-                                break;
-                            }
-                        }
-                    }
+                    DequeueOldTimestamps(_executionTimestamps, actionCountWindowDuration, currentTimestamp);
 
                     // Check if executing actions has been throttled due to count limit
                     if (actionCountLimit > _executionTimestamps.Count)
@@ -227,6 +210,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 // This exception is caused by the pipeline duration expiring.
                 // Handle it to allow pipeline to be in completed state.
+            }
+        }
+
+        public static void DequeueOldTimestamps(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
+        {
+            // If rule has an action count window, Remove all execution timestamps that fall outside the window.
+            if (actionCountWindowDuration.HasValue)
+            {
+                DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
+                while (timestamps.Count > 0)
+                {
+                    DateTime executionTimestamp = timestamps.Peek();
+                    if (executionTimestamp < windowStartTimestamp)
+                    {
+                        timestamps.Dequeue();
+                    }
+                    else
+                    {
+                        // Stop clearing out previous executions
+                        break;
+                    }
+                }
             }
         }
 
