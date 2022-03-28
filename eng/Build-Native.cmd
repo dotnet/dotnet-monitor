@@ -111,7 +111,7 @@ echo %NUGET_PACKAGES%
 :: Set the remaining variables based upon the determined build configuration
 set "__RootBinDir=%__ProjectDir%\artifacts"
 set "__BinDir=%__RootBinDir%\bin\%__BuildOS%.%__BuildArch%.%__BuildType%"
-set "__LogDir=%__RootBinDir%\log\%__BuildOS%.%__BuildArch%.%__BuildType%"
+set "__LogDir=%__RootBinDir%\log\%__BuildType%"
 set "__ArtifactsIntermediatesDir=%__RootBinDir%\obj"
 set "__IntermediatesDir=%__ArtifactsIntermediatesDir%\%__BuildOS%.%__BuildArch%.%__BuildType%"
 set "__PackagesBinDir=%__RootBinDir%\packages\%__BuildType%\Shipping"
