@@ -2,14 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
+
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
-    internal static class EgressProviderTypes
+    internal interface IEgressCategoryProvider
     {
-        public const string AzureBlobStorage = nameof(AzureBlobStorage);
-
-        public const string External = nameof(External);
-
-        public const string FileSystem = nameof(FileSystem);
+        /// <summary>
+        /// The configuration section for egress provider.
+        /// </summary>
+        IConfiguration Configuration { get; }
     }
 }

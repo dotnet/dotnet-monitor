@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
@@ -13,8 +14,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal sealed class EgressProviderConfigurationChangeTokenSource<TOptions> :
         ConfigurationChangeTokenSource<TOptions>
     {
-        public EgressProviderConfigurationChangeTokenSource(IEgressProviderConfigurationProvider<TOptions> provider)
-            : base(provider.Configuration)
+        public EgressProviderConfigurationChangeTokenSource(IConfiguration configuration, string providerCategoryName)
+            : base (configuration.GetEgressSection().GetSection(providerCategoryName))
         {
         }
     }

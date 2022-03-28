@@ -14,17 +14,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal sealed class EgressProviderConfigurationProvider<TOptions> :
         IEgressProviderConfigurationProvider<TOptions>
     {
-        public EgressProviderConfigurationProvider(IConfiguration configuration, string providerType)
+        public EgressProviderConfigurationProvider(IConfiguration configuration, string providerCategoryName)
         {
-            ProviderType = providerType;
-            Configuration = configuration.GetEgressSection().GetSection(providerType);
+            ProviderCategory = providerCategoryName;
+            Configuration = configuration.GetEgressSection().GetSection(providerCategoryName);
         }
 
         /// <inheritdoc/>
         public IConfiguration Configuration { get; }
 
         /// <inheritdoc/>
-        public string ProviderType { get; }
+        public string ProviderCategory { get; }
 
         /// <inheritdoc/>
         public Type OptionsType => typeof(TOptions);

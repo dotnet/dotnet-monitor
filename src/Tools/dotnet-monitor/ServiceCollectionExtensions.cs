@@ -23,7 +23,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -174,7 +178,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services.Configure<T>(configuration.GetSection(key));
         }
 
-        public static IServiceCollection ConfigureEgress(this IServiceCollection services)
+        public static IServiceCollection ConfigureEgress(this IServiceCollection services, IConfiguration configuration)
         {
             // Register IEgressService implementation that provides egressing
             // of artifacts for the REST server.
@@ -183,9 +187,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IEgressPropertiesConfigurationProvider, EgressPropertiesConfigurationProvider>();
             services.AddSingleton<IEgressPropertiesProvider, EgressPropertiesProvider>();
 
-            // Register regress providers
-            services.RegisterProvider<AzureBlobEgressProviderOptions, AzureBlobEgressProvider>(EgressProviderTypes.AzureBlobStorage);
-            services.RegisterProvider<FileSystemEgressProviderOptions, FileSystemEgressProvider>(EgressProviderTypes.FileSystem);
+            services.AddSingleton<IEgressCategoryProvider, EgressCategoryProvider>();
+            services.AddSingleton<IConfigureOptions<EgressCategoryOptions>, EgressConfigureNamedOptions>();
+
+            // Register egress providers
+            services.RegisterEgressProvider<AzureBlobEgressProviderOptions, AzureBlobEgressProvider>(EgressProviderTypes.AzureBlobStorage);
+            services.RegisterEgressProvider<FileSystemEgressProviderOptions, FileSystemEgressProvider>(EgressProviderTypes.FileSystem);
+
+            // Register the extensions
+            ExtensionEgressDiscoverer egressDiscoverer = new ExtensionEgressDiscoverer(configuration);
+            foreach (string providerCategoryName in egressDiscoverer)
+            {
+                services.RegisterEgressProvider<ExtensionEgressProviderOptions, ExtensionEgressProvider>(providerCategoryName);
+            }
 
             // Extra registrations for provider specific behavior
             services.AddSingleton<IPostConfigureOptions<AzureBlobEgressProviderOptions>, AzureBlobEgressPostConfigureOptions>();
@@ -202,32 +216,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        private static IServiceCollection RegisterProvider<TOptions, TProvider>(this IServiceCollection services, string name)
+        private static readonly HashSet<Type> RegisteredSingletionOptions = new();
+        private static IServiceCollection RegisterEgressProvider<TOptions, TProvider>(this IServiceCollection services, string providerCategoryName)
             where TProvider : class, IEgressProvider<TOptions>
-            where TOptions : class
+            where TOptions : class, new()
         {
+            // These Singletons are "IEnumerable<T>" services where there are multiple services registered (if TOptions is the same)
             // Add services to provide raw configuration for the options type
-            services.AddSingleton(sp => new EgressProviderConfigurationProvider<TOptions>(sp.GetRequiredService<IConfiguration>(), name));
-            services.AddSingletonForwarder<IEgressProviderConfigurationProvider<TOptions>, EgressProviderConfigurationProvider<TOptions>>();
-            services.AddSingletonForwarder<IEgressProviderConfigurationProvider, EgressProviderConfigurationProvider<TOptions>>();
+            services.AddSingleton<IEgressProviderConfigurationProvider>(sp => new EgressProviderConfigurationProvider<TOptions>(sp.GetRequiredService<IConfiguration>(), providerCategoryName));
+            services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(sp => new EgressProviderConfigurationChangeTokenSource<TOptions>(sp.GetRequiredService<IConfiguration>(), providerCategoryName));
 
-            // Add options services for configuring the options type
-            services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
-            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+            // For these Singletons are true singletons and multiple providers or multple categories using the same provider can use the same instance of these services
+            if (!RegisteredSingletionOptions.Contains(typeof(TOptions)))
+            {
+                RegisteredSingletionOptions.Add(typeof(TOptions));
 
-            // Register change sources for the options type
-            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();
-            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
+                // Add options services for configuring the options type
+                services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
+                services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
 
-            // Add custom options cache to override behavior of default named options
-            services.AddSingleton<IOptionsMonitorCache<TOptions>, DynamicNamedOptionsCache<TOptions>>();
+                // Register change sources for the options type
+                services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();
 
-            // Add egress provider and internal provider wrapper
-            services.AddSingleton<IEgressProvider<TOptions>, TProvider>();
-            services.AddSingleton<IEgressProviderInternal<TOptions>, EgressProviderInternal<TOptions>>();
+                // Add custom options cache to override behavior of default named options
+                services.AddSingleton<IOptionsMonitorCache<TOptions>, DynamicNamedOptionsCache<TOptions>>();
+
+                // Add egress provider and internal provider wrapper
+                services.AddSingleton<IEgressProvider<TOptions>, TProvider>();
+                services.AddSingleton<IEgressProviderInternal<TOptions>, EgressProviderInternal<TOptions>>();
+            }
 
             return services;
-        }
+        }        
 
         private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {

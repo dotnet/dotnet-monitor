@@ -8,7 +8,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Queues;
-using Microsoft.Extensions.Logging;
+using Microsoft.Diagnostics.Monitoring.AzureStorage;
 using System;
 using System.Globalization;
 using System.IO;
@@ -25,19 +25,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
     /// <remarks>
     /// Blobs created through this provider will overwrite existing blobs if they have the same blob name.
     /// </remarks>
-    internal partial class AzureBlobEgressProvider :
-        EgressProvider<AzureBlobEgressProviderOptions>
+    internal partial class AzureBlobEgressProvider 
     {
         private int BlobStorageBufferSize = 4 * 1024 * 1024;
 
-        public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
-            : base(logger)
+        public AzureBlobEgressProvider()
         {
         }
 
-        public override async Task<string> EgressAsync(
-            string providerCategory,
-            string providerName,
+        public async Task<string> EgressAsync(
             AzureBlobEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
@@ -51,14 +47,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
-                Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
                 using var stream = await action(token);
 
                 // Write blob content, headers, and metadata
                 await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), artifactSettings.Metadata, cancellationToken: token);
 
                 string blobUriString = GetBlobUri(blobClient);
-                Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
 
                 if (CheckQueueEgressOptions(options))
                 {
@@ -77,9 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
         }
 
-        public override async Task<string> EgressAsync(
-            string providerCategory,
-            string providerName,
+        public async Task<string> EgressAsync(
             AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
@@ -108,7 +100,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
                     //the stream.
                     // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
-                    Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.AzureBlobStorage);
                     await action(flushStream, token);
 
                     await flushStream.FlushAsync(token);
@@ -121,7 +112,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 await blobClient.SetMetadataAsync(artifactSettings.Metadata, cancellationToken: token);
 
                 string blobUriString = GetBlobUri(blobClient);
-                Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
 
                 if (CheckQueueEgressOptions(options))
                 {
@@ -144,11 +134,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             bool queueNameSet = !string.IsNullOrEmpty(options.QueueName);
             bool queueAccountUriSet = null != options.QueueAccountUri;
-
-            if (queueNameSet ^ queueAccountUriSet)
-            {
-                Logger.QueueOptionsPartiallySet();
-            }
 
             return queueNameSet && queueAccountUriSet;
         }
@@ -187,14 +172,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 {
                     await queueClient.SendMessageAsync(blobName, cancellationToken: token);
                 }
-                else
-                {
-                    Logger.QueueDoesNotExist(options.QueueName);
-                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.WritingMessageToQueueFailed(options.QueueName, ex);
             }
         }
 
@@ -228,7 +208,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
             else
             {
-                throw CreateException(Strings.ErrorMessage_EgressMissingSasOrKey);
+                throw CreateException("foo");
             }
 
             QueueClient queueClient = serviceClient.GetQueueClient(options.QueueName);
@@ -268,7 +248,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
             else
             {
-                throw CreateException(Strings.ErrorMessage_EgressMissingSasOrKey);
+                throw CreateException("foo2");
             }
 
             BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(options.ContainerName);
@@ -321,11 +301,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             if (!string.IsNullOrEmpty(innerMessage))
             {
-                return string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressAzureFailedDetailed, innerMessage);
+                return string.Format(CultureInfo.CurrentCulture, "foo3: {0}", innerMessage);
             }
             else
             {
-                return Strings.ErrorMessage_EgressAzureFailedGeneric;
+                return "foo4";
             }
         }
     }

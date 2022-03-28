@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
+		<RuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</RuntimeIdentifiers>
+		<PackAsToolShimRuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</PackAsToolShimRuntimeIdentifiers>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<RootNamespace>Microsoft.Diagnostics.Monitoring.AzureStorage</RootNamespace>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<AssemblyName>azure-storage</AssemblyName>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
+		<PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
+		<PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\..\Tools\dotnet-monitor\Egress\ExtensionEgress\ExtensionEgressPayload.cs" Link="References\ExtensionEgressPayload.cs" />
+		<Compile Include="..\..\..\Tools\dotnet-monitor\Egress\EgressArtifactSettings.cs" Link="References\EgressArtifactSettings.cs" />
+	</ItemGroup>
+
+</Project>

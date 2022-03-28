@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress
+namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
-    public sealed class EgressArtifactSettings
+    internal sealed class EgressArtifactSettings
     {
         /// <summary>
         /// The content encoding of the blob to be created.

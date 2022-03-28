@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 {
@@ -19,16 +22,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal sealed class EgressProviderConfigureNamedOptions<TOptions> :
         IConfigureNamedOptions<TOptions> where TOptions : class
     {
-        private readonly IEgressProviderConfigurationProvider<TOptions> _provider;
+        private readonly IEnumerable<IEgressProviderConfigurationProvider> _providers;
+        private readonly IEgressService _egressService;
 
-        public EgressProviderConfigureNamedOptions(IEgressProviderConfigurationProvider<TOptions> provider)
+        public EgressProviderConfigureNamedOptions(IEgressService egressService, IEnumerable<IEgressProviderConfigurationProvider> providers)
         {
-            _provider = provider;
+            _egressService = egressService;
+            _providers = providers;
         }
 
         public void Configure(string name, TOptions options)
         {
-            IConfigurationSection section = _provider.Configuration.GetSection(name);
+            string providerCategory = _egressService.GetProviderCategory(name);
+            IEgressProviderConfigurationProvider provider = _providers.First(p => p.ProviderCategory == providerCategory);
+
+            if (!(provider is IEgressProviderConfigurationProvider<TOptions>))
+            {
+                throw new InvalidOperationException();
+            }
+
+            IConfigurationSection section = provider.Configuration.GetSection(name);
             Debug.Assert(section.Exists());
             if (section.Exists())
             {
