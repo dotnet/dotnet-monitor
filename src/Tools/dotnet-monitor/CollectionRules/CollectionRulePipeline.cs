@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // The executor of the action list for the collection rule.
         private readonly ActionListExecutor _actionListExecutor;
 
-        private readonly CollectionRuleContext _context;
+        public readonly CollectionRuleContext _context;
 
         // Task completion source for signalling when the pipeline has finished starting.
         private readonly Action _startCallback;
@@ -33,7 +33,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public Queue<DateTime> _executionTimestamps;
         public List<DateTime> _allExecutionTimestamps = new();
-
 
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,

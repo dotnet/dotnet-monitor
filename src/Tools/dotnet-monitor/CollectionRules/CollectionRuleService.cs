@@ -233,7 +233,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        public List<string> GetStuff(ProcessKey? processKey)
+        public Dictionary<string, Monitoring.WebApi.Models.CollectionRules> GetStuff(ProcessKey? processKey)
         {
             if (processKey == null)
             {
@@ -247,22 +247,52 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             var keys = _containersMap.Keys;
             foreach (var key in keys)
             {
-                if (key.ProcessId == processKey.Value.ProcessId)
+                if (key.ProcessId == processKey.Value.ProcessId) // need to probably check other values as well
                 {
                     keysToUse.Add(key);
                 }
             }
 
-            List<string> toReturn = new();
+            Dictionary<string, Monitoring.WebApi.Models.CollectionRules> toReturn = new();
 
             foreach (var keyToUse in keysToUse)
             {
+                CleanUpCompletedPipelines(keyToUse);
+
                 var container = _containersMap[keyToUse];
+
+                foreach (var pipeline in container.pipelines)
+                {
+                    int allExecutions = pipeline._allExecutionTimestamps.Count;
+                    int currExecutions = pipeline._executionTimestamps.Count;
+                    string ruleName = pipeline._context.Name;
+                    CollectionRuleOptions options = container._optionsMonitor.Get(ruleName);
+
+                    Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
+                    {
+                        isEnabled = options.IsEnabled,
+                        lifetimeTriggerOccurrences = allExecutions,
+                        TriggerMaxOccurrences = (options.Limits?.ActionCount).GetValueOrDefault(3333), // need actual default
+                        TriggerOccurrences = currExecutions,
+                        State = CollectionRulesState.Collecting // Still need to determine this somehow...
+                    };
+
+                    toReturn.Add(ruleName, currCollectionRuleInfo);
+                }
             }
 
+            return toReturn;
+        }
 
-            return ruleNames.ToList();
-            //return _containersMap.ToString();
+        private void CleanUpCompletedPipelines(IEndpointInfo key)
+        {
+            foreach (var pipeline in _containersMap[key].pipelines)
+            {
+                if (pipeline._isCleanedUp)
+                {
+                    _containersMap[key].pipelines.Remove(pipeline);
+                }
+            }
         }
     }
 }

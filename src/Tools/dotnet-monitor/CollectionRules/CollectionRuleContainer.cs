@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ActionListExecutor _actionListExecutor;
         private readonly ILogger<CollectionRuleService> _logger;
         private readonly IProcessInfo _processInfo;
-        private readonly IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
+        public readonly IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
         private readonly List<Task> _runTasks = new();
         private readonly ISystemClock _systemClock;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;

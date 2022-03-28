@@ -29,6 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <summary>
         /// TESTING ONLY
         /// </summary>
-        List<string> GetStuff(ProcessKey? processKey);
+        Dictionary<string, Models.CollectionRules> GetStuff(ProcessKey? processKey);
     }
 }

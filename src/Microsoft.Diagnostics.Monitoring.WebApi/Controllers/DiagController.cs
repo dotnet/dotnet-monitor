@@ -520,7 +520,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet("collectionrules", Name = nameof(GetCollectionRules))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
-        public ActionResult<Models.CollectionRules> GetCollectionRules(
+        public ActionResult<Dictionary<string, Models.CollectionRules>> GetCollectionRules(
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -532,24 +532,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             var stuff = _crService.GetStuff(processKey);
 
-            var options = _optionsMonitor.Get("LargeGCHeap");
-
-            int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(3333); // need actual default
-
-
             return this.InvokeService(() =>
             {
-                Models.CollectionRules collectionRules = new Models.CollectionRules()
-                {
-                    isEnabled = options.IsEnabled,
-                    lifetimeTriggerOccurrences = 4,// Look at
-                    TriggerMaxOccurrences = actionCountLimit,
-                    TriggerOccurrences = 6, // Look at 
-                    State = CollectionRulesState.Collecting
-                };
-
                 _logger.WrittenToHttpStream();
-                return new ActionResult<Models.CollectionRules>(collectionRules);
+                return new ActionResult<Dictionary<string, Models.CollectionRules>>(stuff);
             }, _logger);
         }
 
