@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.ActionDefaults.Egress = ActionTestsConstants.ExpectedEgressProvider;
+                    options.Actions.Egress = ActionTestsConstants.ExpectedEgressProvider;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.ActionDefaults.Egress = ActionTestsConstants.UnknownEgressProvider;
+                    options.Actions.Egress = ActionTestsConstants.UnknownEgressProvider;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -110,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.TriggerDefaults.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+                    options.Triggers.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -156,7 +156,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.TriggerDefaults.RequestCount = TriggerTestsConstants.UnknownRequestCount;
+                    options.Triggers.RequestCount = TriggerTestsConstants.UnknownRequestCount;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -184,7 +184,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.TriggerDefaults.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
+                    options.Triggers.RequestCount = TriggerTestsConstants.ExpectedRequestCount;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -230,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.TriggerDefaults.RequestCount = TriggerTestsConstants.UnknownRequestCount;
+                    options.Triggers.RequestCount = TriggerTestsConstants.UnknownRequestCount;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -258,7 +258,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.TriggerDefaults.ResponseCount = TriggerTestsConstants.ExpectedResponseCount;
+                    options.Triggers.ResponseCount = TriggerTestsConstants.ExpectedResponseCount;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -310,7 +310,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.TriggerDefaults.ResponseCount = TriggerTestsConstants.UnknownResponseCount;
+                    options.Triggers.ResponseCount = TriggerTestsConstants.UnknownResponseCount;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -341,7 +341,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.TriggerDefaults.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration);
+                    options.Triggers.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.ExpectedSlidingWindowDuration);
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -369,7 +369,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.TriggerDefaults.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.UnknownSlidingWindowDuration);
+                    options.Triggers.SlidingWindowDuration = TimeSpan.Parse(TriggerTestsConstants.UnknownSlidingWindowDuration);
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -398,7 +398,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.LimitsDefaults.ActionCount = LimitsTestsConstants.ExpectedActionCount;
+                    options.Limits.ActionCount = LimitsTestsConstants.ExpectedActionCount;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -423,7 +423,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.LimitsDefaults.ActionCount = LimitsTestsConstants.UnknownActionCount;
+                    options.Limits.ActionCount = LimitsTestsConstants.UnknownActionCount;
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -451,7 +451,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.LimitsDefaults.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedActionCountSlidingWindowDuration);
+                    options.Limits.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedActionCountSlidingWindowDuration);
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -476,7 +476,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.LimitsDefaults.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.UnknownActionCountSlidingWindowDuration);
+                    options.Limits.ActionCountSlidingWindowDuration = TimeSpan.Parse(LimitsTestsConstants.UnknownActionCountSlidingWindowDuration);
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -505,7 +505,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.LimitsDefaults.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration);
+                    options.Limits.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.ExpectedRuleDuration);
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -530,7 +530,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.AddCollectionRuleDefaults(options =>
                 {
-                    options.LimitsDefaults.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.UnknownRuleDuration);
+                    options.Limits.RuleDuration = TimeSpan.Parse(LimitsTestsConstants.UnknownRuleDuration);
                 });
 
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);

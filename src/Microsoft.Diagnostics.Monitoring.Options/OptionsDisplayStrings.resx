@@ -641,16 +641,16 @@
 1 Format Parameter:
 0. fieldName: The name of the field that does not match the regular expression</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleDefaultsOptions_ActionDefaults" xml:space="preserve">
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions" xml:space="preserve">
     <value>The Collection Rule Defaults that can be applied to actions.</value>
-    <comment>The description provided for the ActionDefaults parameter on CollectionRuleDefaultsOptions.</comment>
+    <comment>The description provided for the Actions parameter on CollectionRuleDefaultsOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleDefaultsOptions_LimitsDefaults" xml:space="preserve">
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits" xml:space="preserve">
     <value>The Collection Rule Defaults that can be applied to limits.</value>
-    <comment>The description provided for the LimitsDefaults parameter on CollectionRuleDefaultsOptions.</comment>
+    <comment>The description provided for the Limits parameter on CollectionRuleDefaultsOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleDefaultsOptions_TriggerDefaults" xml:space="preserve">
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers" xml:space="preserve">
     <value>The Collection Rule Defaults that can be applied to triggers.</value>
-    <comment>The description provided for the TriggerDefaults parameter on CollectionRuleDefaultsOptions.</comment>
+    <comment>The description provided for the Triggers parameter on CollectionRuleDefaultsOptions.</comment>
   </data>
 </root>

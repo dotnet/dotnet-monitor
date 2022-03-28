@@ -1,14 +1,14 @@
 {
   "CollectionRuleDefaults": {
-    "ActionDefaults": {
+    "Actions": {
       "Egress": "artifacts"
     },
-    "TriggerDefaults": {
+    "Triggers": {
       "SlidingWindowDuration": "00:05:00",
       "RequestCount": "10",
       "ResponseCount": "1"
     },
-    "LimitsDefaults": {
+    "Limits": {
       "ActionCount": "20",
       "ActionCountSlidingWindowDuration": "00:00:01",
       "RuleDuration": "11:11:11"

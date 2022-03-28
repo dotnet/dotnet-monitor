@@ -31,9 +31,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
 
                 if (null != triggerSettings && triggerSettings.GetType() == typeof(AspNetResponseStatusOptions))
                 {
-                    if (0 == ((AspNetResponseStatusOptions)options.Trigger.Settings).ResponseCount && _defaultOptions.CurrentValue.TriggerDefaults.ResponseCount.HasValue)
+                    if (0 == ((AspNetResponseStatusOptions)options.Trigger.Settings).ResponseCount && _defaultOptions.CurrentValue.Triggers.ResponseCount.HasValue)
                     {
-                        ((AspNetResponseStatusOptions)options.Trigger.Settings).ResponseCount = _defaultOptions.CurrentValue.TriggerDefaults.ResponseCount.Value;
+                        ((AspNetResponseStatusOptions)options.Trigger.Settings).ResponseCount = _defaultOptions.CurrentValue.Triggers.ResponseCount.Value;
                     }
                 }
             }

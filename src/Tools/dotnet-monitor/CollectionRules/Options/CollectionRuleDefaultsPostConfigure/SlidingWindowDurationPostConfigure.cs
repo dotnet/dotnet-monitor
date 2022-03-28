@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
                 {
                     if (null == ((ISlidingWindowDurationProperties)options.Trigger.Settings).SlidingWindowDuration)
                     {
-                        ((ISlidingWindowDurationProperties)options.Trigger.Settings).SlidingWindowDuration = _defaultOptions.CurrentValue.TriggerDefaults.SlidingWindowDuration ?? SlidingWindowDurationDefault;
+                        ((ISlidingWindowDurationProperties)options.Trigger.Settings).SlidingWindowDuration = _defaultOptions.CurrentValue.Triggers.SlidingWindowDuration ?? SlidingWindowDurationDefault;
                     }
                 }
             }

@@ -1122,7 +1122,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "TriggerDefaults": {
+        "Triggers": {
           "description": "The Collection Rule Defaults that can be applied to triggers.",
           "oneOf": [
             {
@@ -1133,7 +1133,7 @@
             }
           ]
         },
-        "ActionDefaults": {
+        "Actions": {
           "description": "The Collection Rule Defaults that can be applied to actions.",
           "oneOf": [
             {
@@ -1144,7 +1144,7 @@
             }
           ]
         },
-        "LimitsDefaults": {
+        "Limits": {
           "description": "The Collection Rule Defaults that can be applied to limits.",
           "oneOf": [
             {

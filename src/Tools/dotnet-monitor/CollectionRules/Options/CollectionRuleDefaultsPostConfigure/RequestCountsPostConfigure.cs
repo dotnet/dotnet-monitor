@@ -30,9 +30,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
 
                 if (null != triggerSettings && typeof(IRequestCountProperties).IsAssignableFrom(triggerSettings.GetType()))
                 {
-                    if (0 == ((IRequestCountProperties)options.Trigger.Settings).RequestCount && _defaultOptions.CurrentValue.TriggerDefaults.RequestCount.HasValue)
+                    if (0 == ((IRequestCountProperties)options.Trigger.Settings).RequestCount && _defaultOptions.CurrentValue.Triggers.RequestCount.HasValue)
                     {
-                        ((IRequestCountProperties)options.Trigger.Settings).RequestCount = _defaultOptions.CurrentValue.TriggerDefaults.RequestCount.Value;
+                        ((IRequestCountProperties)options.Trigger.Settings).RequestCount = _defaultOptions.CurrentValue.Triggers.RequestCount.Value;
                     }
                 }
             }

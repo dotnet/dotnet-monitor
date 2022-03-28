@@ -28,8 +28,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private IConfiguration _configuration;
         private IServiceProvider _serviceProvider;
 
-        private const string SettingsSection = "Settings";
-        private const string LimitsSection = "Limits";
+        private const string SettingsSection = nameof(CollectionRuleTriggerOptions.Settings);
+        private const string LimitsSection = nameof(CollectionRuleOptions.Limits);
 
         public ConfigurationJsonWriter(Stream outputStream)
         {
@@ -239,7 +239,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         if (child.GetChildren().Any())
                         {
-                            if (loadCRDefaults && section.Key.Equals("Actions"))
+                            if (loadCRDefaults && section.Key.Equals(nameof(CollectionRuleOptions.Actions)))
                             {
                                 mockDefaults = GetMockedChildren(GetActionOptionsType(child));
 

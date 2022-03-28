@@ -20,9 +20,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
         {
             if (null == options.Limits)
             {
-                if (!_defaultOptions.CurrentValue.LimitsDefaults.ActionCount.HasValue
-                    && !_defaultOptions.CurrentValue.LimitsDefaults.ActionCountSlidingWindowDuration.HasValue
-                    && !_defaultOptions.CurrentValue.LimitsDefaults.RuleDuration.HasValue)
+                if (!_defaultOptions.CurrentValue.Limits.ActionCount.HasValue
+                    && !_defaultOptions.CurrentValue.Limits.ActionCountSlidingWindowDuration.HasValue
+                    && !_defaultOptions.CurrentValue.Limits.RuleDuration.HasValue)
                 {
                     return;
                 }
@@ -32,17 +32,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
 
             if (null == options.Limits.ActionCount)
             {
-                options.Limits.ActionCount = _defaultOptions.CurrentValue.LimitsDefaults.ActionCount ?? CollectionRuleLimitsOptionsDefaults.ActionCount;
+                options.Limits.ActionCount = _defaultOptions.CurrentValue.Limits.ActionCount ?? CollectionRuleLimitsOptionsDefaults.ActionCount;
             }
 
             if (null == options.Limits.ActionCountSlidingWindowDuration)
             {
-                options.Limits.ActionCountSlidingWindowDuration = _defaultOptions.CurrentValue.LimitsDefaults.ActionCountSlidingWindowDuration;
+                options.Limits.ActionCountSlidingWindowDuration = _defaultOptions.CurrentValue.Limits.ActionCountSlidingWindowDuration;
             }
 
             if (null == options.Limits.RuleDuration)
             {
-                options.Limits.RuleDuration = _defaultOptions.CurrentValue.LimitsDefaults.RuleDuration;
+                options.Limits.RuleDuration = _defaultOptions.CurrentValue.Limits.RuleDuration;
             }
         }
     }

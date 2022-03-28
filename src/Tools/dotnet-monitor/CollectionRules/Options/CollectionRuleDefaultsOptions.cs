@@ -11,18 +11,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultsOptions_TriggerDefaults))]
-        public CollectionRuleTriggerDefaultsOptions TriggerDefaults { get; set; } = new();
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers))]
+        public CollectionRuleTriggerDefaultsOptions Triggers { get; set; } = new();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultsOptions_ActionDefaults))]
-        public CollectionRuleActionDefaultsOptions ActionDefaults { get; set; } = new();
-
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions))]
+        public CollectionRuleActionDefaultsOptions Actions { get; set; } = new();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultsOptions_LimitsDefaults))]
-        public CollectionRuleLimitsDefaultsOptions LimitsDefaults { get; set; } = new();
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits))]
+        public CollectionRuleLimitsDefaultsOptions Limits { get; set; } = new();
     }
 }

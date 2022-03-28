@@ -352,27 +352,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         /// <summary>
         ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to actions..
         /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_ActionDefaults {
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_ActionDefaults", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to limits..
         /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_LimitsDefaults {
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_LimitsDefaults", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to triggers..
         /// </summary>
-        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_TriggerDefaults {
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_TriggerDefaults", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers", resourceCulture);
             }
         }
         
