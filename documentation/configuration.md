@@ -966,13 +966,13 @@ Collection rule defaults are specified in configuration as a named item under th
 
 | Name | Section | Type | Applies To |
 |---|---|---|---|
-| `Egress` | `ActionDefaults` | string | [CollectDump](#collectdump-action), [CollectGCDump](#collectgcdump-action), [CollectTrace](#collecttrace-action), [CollectLogs](#collectlogs-action) |
-| `SlidingWindowDuration` | `TriggerDefaults` | TimeSpan? | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger), [AspNetResponseStatus](#aspnetresponsestatus-trigger), [EventCounter](#eventcounter-trigger) |
-| `RequestCount` | `TriggerDefaults` | int | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger) |
-| `ResponseCount` | `TriggerDefaults` | int | [AspNetResponseStatus](#aspnetresponsestatus-trigger) |
-| `ActionCount` | `LimitsDefaults` | int | [Limits](#limits) |
-| `ActionCountSlidingWindowDuration` | `LimitsDefaults` | TimeSpan? | [Limits](#limits) |
-| `RuleDuration` | `LimitsDefaults` | TimeSpan? | [Limits](#limits) |
+| `Egress` | `Actions` | string | [CollectDump](#collectdump-action), [CollectGCDump](#collectgcdump-action), [CollectTrace](#collecttrace-action), [CollectLogs](#collectlogs-action) |
+| `SlidingWindowDuration` | `Triggers` | TimeSpan? | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger), [AspNetResponseStatus](#aspnetresponsestatus-trigger), [EventCounter](#eventcounter-trigger) |
+| `RequestCount` | `Triggers` | int | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger) |
+| `ResponseCount` | `Triggers` | int | [AspNetResponseStatus](#aspnetresponsestatus-trigger) |
+| `ActionCount` | `Limits` | int | [Limits](#limits) |
+| `ActionCountSlidingWindowDuration` | `Limits` | TimeSpan? | [Limits](#limits) |
+| `RuleDuration` | `Limits` | TimeSpan? | [Limits](#limits) |
 
 ### Example
 
@@ -1000,7 +1000,7 @@ The following example includes a default egress provider that corresponds to the
     }
   },
   "CollectionRuleDefaults": {
-    "ActionDefaults": {
+    "Actions": {
       "Egress": "artifacts"    
     }
   },
