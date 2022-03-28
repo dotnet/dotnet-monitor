@@ -34,6 +34,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public Queue<DateTime> _executionTimestamps;
         public List<DateTime> _allExecutionTimestamps = new();
 
+        public bool actionIsInFlight = false; // This is kinda a hack
+
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
             ICollectionRuleTriggerOperations triggerOperations,
@@ -169,6 +171,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         bool actionsCompleted = false;
                         try
                         {
+                            actionIsInFlight = true; // Set this to true right before the action, and then false immediately after
                             // Intentionally not using the linkedToken. Allow the action list to execute gracefully
                             // unless forced by a caller to cancel or stop the running of the pipeline.
                             await _actionListExecutor.ExecuteActions(_context, InvokeStartCallback, token);
@@ -186,6 +189,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             // number of times as specified by the limits and the action count
                             // window was not specified. Since the pipeline can no longer execute
                             // actions, the pipeline can complete.
+
+                            actionIsInFlight = false; // Action will no longer be "in flight" at this point.
+
                             completePipeline = actionCountLimit <= _executionTimestamps.Count &&
                                 !actionCountWindowDuration.HasValue;
                         }

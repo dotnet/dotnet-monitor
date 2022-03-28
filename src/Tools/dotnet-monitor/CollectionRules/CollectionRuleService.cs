@@ -263,10 +263,45 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 foreach (var pipeline in container.pipelines)
                 {
-                    int allExecutions = pipeline._allExecutionTimestamps.Count;
-                    int currExecutions = pipeline._executionTimestamps.Count;
                     string ruleName = pipeline._context.Name;
+
                     CollectionRuleOptions options = container._optionsMonitor.Get(ruleName);
+
+                    int allExecutions = pipeline._allExecutionTimestamps.Count;
+
+                    if (options.Limits.ActionCountSlidingWindowDuration.HasValue) // Need a null check for limits
+                    {
+                        DateTime currentTimestamp = pipeline._context.Clock.UtcNow.UtcDateTime;
+
+                        DateTime windowStartTimestamp = currentTimestamp - options.Limits.ActionCountSlidingWindowDuration.Value;
+                        while (pipeline._executionTimestamps.Count > 0)
+                        {
+                            DateTime executionTimestamp = pipeline._executionTimestamps.Peek();
+                            if (executionTimestamp < windowStartTimestamp)
+                            {
+                                pipeline._executionTimestamps.Dequeue();
+                            }
+                            else
+                            {
+                                // Stop clearing out previous executions
+                                break;
+                            }
+                        }
+                    }
+
+                    int currExecutions = pipeline._executionTimestamps.Count; // We need to actively dequeue here -> since this normally only happens when a collection rule is operated on, not passively in the background.
+                    CollectionRulesState state = CollectionRulesState.Running;
+                    if (pipeline.actionIsInFlight)
+                    {
+                        state = CollectionRulesState.Collecting; // Need to have ways to check if we're paused/terminated
+                    }
+                    else if (pipeline._isCleanedUp)
+                    {
+                        state = CollectionRulesState.Finished; // Make sure this shouldn't be waiting to resume
+                    } else if (options.Limits?.ActionCount <= currExecutions) // need to also use a default check here
+                    {
+                        state = CollectionRulesState.WaitingToResume; // Make sure this shouldn't be waiting to resume
+                    }
 
                     Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
                     {
@@ -274,7 +309,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         lifetimeTriggerOccurrences = allExecutions,
                         TriggerMaxOccurrences = (options.Limits?.ActionCount).GetValueOrDefault(3333), // need actual default
                         TriggerOccurrences = currExecutions,
-                        State = CollectionRulesState.Collecting // Still need to determine this somehow...
+                        State = state
                     };
 
                     toReturn.Add(ruleName, currCollectionRuleInfo);
@@ -286,9 +321,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private void CleanUpCompletedPipelines(IEndpointInfo key)
         {
+            var toRemove = new List<CollectionRulePipeline>();
+
+            var collectionRuleNamesFrequency = new Dictionary<string, int>();
+
             foreach (var pipeline in _containersMap[key].pipelines)
             {
+                if (collectionRuleNamesFrequency.ContainsKey(pipeline._context.Name))
+                {
+                    collectionRuleNamesFrequency[pipeline._context.Name] += 1;
+                }
+                else
+                {
+                    collectionRuleNamesFrequency.Add(pipeline._context.Name, 1);
+                }
+
                 if (pipeline._isCleanedUp)
+                {
+                    toRemove.Add(pipeline);
+                }
+            }
+
+            foreach (var pipeline in toRemove)
+            {
+                // Only remove things that have been removed due to a collection rule change, not due to actual completion
+                if (collectionRuleNamesFrequency[pipeline._context.Name] > 1)
                 {
                     _containersMap[key].pipelines.Remove(pipeline);
                 }
