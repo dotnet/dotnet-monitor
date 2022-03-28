@@ -6,16 +6,23 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
-namespace Microsoft.Diagnostics.Monitoring.WebApi
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
     /// <summary>
     /// Options for describing the type of trigger and the settings to pass to that trigger.
     /// </summary>
-    public class CollectionRuleTriggerOptions
+    [DebuggerDisplay("Trigger: Type = {Type}")]
+    internal sealed partial class CollectionRuleTriggerOptions
     {
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleTriggerOptions_Type))]
         [Required]
         public string Type { get; set; }
 
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleTriggerOptions_Settings))]
         public object Settings { get; internal set; }
     }
 }

@@ -48,4 +48,8 @@
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="CollectionRules\" />
+  </ItemGroup>
 </Project>

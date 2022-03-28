@@ -8,11 +8,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
     public class CollectionRules
     {
+        /*
         /// <summary>
         /// Whether the trigger is currently enabled.
         /// </summary>
         [JsonPropertyName("enabled")]
         public bool isEnabled { get; set; }
+        */
 
         /// <summary>
         /// The number of times the trigger has executed in its lifetime.

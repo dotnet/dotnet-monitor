@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -305,7 +306,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
                     {
-                        isEnabled = options.IsEnabled,
                         lifetimeTriggerOccurrences = allExecutions,
                         TriggerMaxOccurrences = (options.Limits?.ActionCount).GetValueOrDefault(3333), // need actual default
                         TriggerOccurrences = currExecutions,
