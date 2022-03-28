@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts
 {
-    internal static class HighCPUOptionsDefaults
+    internal static class CPUUsageOptionsDefaults
     {
         public const double GreaterThan = 50.0; // Arbitrary
     }

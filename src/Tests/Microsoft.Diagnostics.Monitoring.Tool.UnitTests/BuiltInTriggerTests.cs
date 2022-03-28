@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
-            await IEventCounterTrigger_CorrectOptions<HighCPUOptions>(KnownCollectionRuleTriggers.HighCPU, expectedSettings, options =>
+            await IEventCounterTrigger_CorrectOptions<CPUUsageOptions>(KnownCollectionRuleTriggers.HighCPU, expectedSettings, options =>
             {
                 options.LessThan = CustomLessThan;
                 options.SlidingWindowDuration = CustomSlidingWindowDuration;
@@ -130,12 +130,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
                 CounterName = IEventCounterShortcutsConstants.CpuUsage,
-                GreaterThan = HighCPUOptionsDefaults.GreaterThan,
+                GreaterThan = CPUUsageOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = SlidingWindowDurationDefault
             };
 
-            await IEventCounterTrigger_CorrectOptions<HighCPUOptions>(KnownCollectionRuleTriggers.HighCPU, expectedSettings);
+            await IEventCounterTrigger_CorrectOptions<CPUUsageOptions>(KnownCollectionRuleTriggers.HighCPU, expectedSettings);
         }
 
         private async Task IEventCounterTrigger_CorrectOptions<T>(string triggerName, EventCounterOptions expectedSettings, Action<IEventCounterShortcuts> callback = null)

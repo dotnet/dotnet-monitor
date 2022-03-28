@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -253,7 +254,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         // Move this somewhere
         public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
         {
-            yield return new object[] { typeof(HighCPUOptions), KnownCollectionRuleTriggers.HighCPU };
+            yield return new object[] { typeof(CPUUsageOptions), KnownCollectionRuleTriggers.HighCPU };
             yield return new object[] { typeof(GCHeapSizeOptions), KnownCollectionRuleTriggers.GCHeapSize };
         }
 
@@ -344,11 +345,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // rules, thus only observe 1 error when one might expect 2 (the second being that
                     // either GreaterThan or LessThan should be specified).
                     Assert.Equal(3, failures.Length);
-                    VerifyRangeMessage<double>(failures, 0, nameof(HighCPUOptions.GreaterThan),
+                    VerifyRangeMessage<double>(failures, 0, nameof(CPUUsageOptions.GreaterThan),
                         TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
-                    VerifyRangeMessage<double>(failures, 1, nameof(HighCPUOptions.LessThan),
+                    VerifyRangeMessage<double>(failures, 1, nameof(CPUUsageOptions.LessThan),
                         TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(HighCPUOptions.SlidingWindowDuration),
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(CPUUsageOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -356,7 +357,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_HighCPUTrigger_LessThanAssignedGreaterThanUnassigned()
         {
-            const double ExpectedLessThan = HighCPUOptionsDefaults.GreaterThan / 2;
+            const double ExpectedLessThan = CPUUsageOptionsDefaults.GreaterThan / 2;
 
             return ValidateSuccess(
                 rootOptions =>
@@ -369,7 +370,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 ruleOptions =>
                 {
-                    HighCPUOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
+                    CPUUsageOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
                     Assert.Null(highCPUOptions.GreaterThan);
                     Assert.Equal(ExpectedLessThan, highCPUOptions.LessThan);
                 });

@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
     /// </summary>
     internal sealed class EventCounterTriggerFactory :
         ICollectionRuleTriggerFactory<EventCounterOptions>,
-        ICollectionRuleTriggerFactory<HighCPUOptions>,
+        ICollectionRuleTriggerFactory<CPUUsageOptions>,
         ICollectionRuleTriggerFactory<GCHeapSizeOptions>,
         ICollectionRuleTriggerFactory<ThreadpoolQueueLengthOptions>
     {
@@ -56,9 +56,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 callback);
         }
 
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, HighCPUOptions options)
+        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, CPUUsageOptions options)
         {
-            return Create(endpointInfo, callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.CpuUsage, greaterThanDefault: HighCPUOptionsDefaults.GreaterThan);
+            return Create(endpointInfo, callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.CpuUsage, greaterThanDefault: CPUUsageOptionsDefaults.GreaterThan);
         }
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, GCHeapSizeOptions options)

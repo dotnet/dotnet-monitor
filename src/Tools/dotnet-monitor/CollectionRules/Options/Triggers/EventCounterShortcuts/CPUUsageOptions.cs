@@ -13,12 +13,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
     /// <summary>
     /// Options for the HighCPU trigger.
     /// </summary>
-    internal sealed partial class HighCPUOptions : IEventCounterShortcuts
+    internal sealed partial class CPUUsageOptions : IEventCounterShortcuts
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_GreaterThan))]
-        [DefaultValue(HighCPUOptionsDefaults.GreaterThan)]
+        [DefaultValue(CPUUsageOptionsDefaults.GreaterThan)]
         [Range(0, 100)]
         public double? GreaterThan { get; set; }
 

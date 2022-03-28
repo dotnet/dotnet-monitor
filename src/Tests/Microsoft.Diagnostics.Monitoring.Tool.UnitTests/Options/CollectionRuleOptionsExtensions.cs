@@ -223,13 +223,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleOptions SetHighCPUTrigger(this CollectionRuleOptions options, Action<HighCPUOptions> callback = null)
+        public static CollectionRuleOptions SetHighCPUTrigger(this CollectionRuleOptions options, Action<CPUUsageOptions> callback = null)
         {
             return options.SetTrigger(
                 KnownCollectionRuleTriggers.HighCPU,
                 triggerOptions =>
                 {
-                    HighCPUOptions settings = new();
+                    CPUUsageOptions settings = new();
 
                     callback?.Invoke(settings);
 
@@ -358,10 +358,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return Assert.IsType<EventCounterOptions>(ruleOptions.Trigger.Settings);
         }
 
-        public static HighCPUOptions VerifyHighCPUTrigger(this CollectionRuleOptions ruleOptions)
+        public static CPUUsageOptions VerifyHighCPUTrigger(this CollectionRuleOptions ruleOptions)
         {
             ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.HighCPU);
-            return Assert.IsType<HighCPUOptions>(ruleOptions.Trigger.Settings);
+            return Assert.IsType<CPUUsageOptions>(ruleOptions.Trigger.Settings);
         }
 
         public static IEventCounterShortcuts VerifyIEventCounterTrigger(this CollectionRuleOptions ruleOptions, Type triggerType, string triggerName)
