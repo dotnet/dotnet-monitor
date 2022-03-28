@@ -24,6 +24,8 @@
     <TestTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(TestTargetFrameworks);net7.0</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
     <SchemaTargetFramework>net6.0</SchemaTargetFramework>
+    <!-- Defines for including the next .NET version -->
+    <DefineConstants Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(DefineConstants);INCLUDE_NEXT_DOTNET</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
