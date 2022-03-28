@@ -964,15 +964,15 @@ The following example shows the `Limits` portion of a collection rule that has t
 
 Collection rule defaults are specified in configuration as a named item under the `CollectionRuleDefaults` property at the root of the configuration. Defaults can be used to limit the verbosity of configuration, allowing frequently used values for collection rules to be assigned as defaults. The following are the currently supported collection rule defaults:
 
-| Name | Type | Applies To |
-|---|---|---|
-| `Egress` | string | [CollectDump](#collectdump-action), [CollectGCDump](#collectgcdump-action), [CollectTrace](#collecttrace-action), [CollectLogs](#collectlogs-action) |
-| `SlidingWindowDuration` | TimeSpan? | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger), [AspNetResponseStatus](#aspnetresponsestatus-trigger), [EventCounter](#eventcounter-trigger) |
-| `RequestCount` | int | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger) |
-| `ResponseCount` | int | [AspNetResponseStatus](#aspnetresponsestatus-trigger) |
-| `ActionCount` | int | [Limits](#limits) |
-| `ActionCountSlidingWindowDuration` | TimeSpan? | [Limits](#limits) |
-| `RuleDuration` | TimeSpan? | [Limits](#limits) |
+| Name | Section | Type | Applies To |
+|---|---|---|---|
+| `Egress` | `ActionDefaults` | string | [CollectDump](#collectdump-action), [CollectGCDump](#collectgcdump-action), [CollectTrace](#collecttrace-action), [CollectLogs](#collectlogs-action) |
+| `SlidingWindowDuration` | `TriggerDefaults` | TimeSpan? | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger), [AspNetResponseStatus](#aspnetresponsestatus-trigger), [EventCounter](#eventcounter-trigger) |
+| `RequestCount` | `TriggerDefaults` | int | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger) |
+| `ResponseCount` | `TriggerDefaults` | int | [AspNetResponseStatus](#aspnetresponsestatus-trigger) |
+| `ActionCount` | `LimitsDefaults` | int | [Limits](#limits) |
+| `ActionCountSlidingWindowDuration` | `LimitsDefaults` | TimeSpan? | [Limits](#limits) |
+| `RuleDuration` | `LimitsDefaults` | TimeSpan? | [Limits](#limits) |
 
 ### Example
 
@@ -1000,7 +1000,9 @@ The following example includes a default egress provider that corresponds to the
     }
   },
   "CollectionRuleDefaults": {
-    "Egress": "artifacts"
+    "ActionDefaults": {
+      "Egress": "artifacts"    
+    }
   },
   "CollectionRules": {
     "HighRequestCount": {
