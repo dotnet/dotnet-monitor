@@ -25,9 +25,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             IEndpointInfo endpointInfo,
             CancellationToken token);
 
-        /// <summary>
-        /// TESTING ONLY
-        /// </summary>
-        Dictionary<string, Models.CollectionRules> GetCollectionRulesState(IEndpointInfo endpointInfo);
+        public Dictionary<string, Models.CollectionRules> GetCollectionRulesState(IEndpointInfo endpointInfo);
     }
 }

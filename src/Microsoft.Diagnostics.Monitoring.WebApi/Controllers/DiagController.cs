@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly EgressOperationStore _operationsStore;
         private readonly IDumpService _dumpService;
         private readonly OperationTrackerService _operationTrackerService;
-        private ICollectionRuleService _crService;
+        private readonly ICollectionRuleService _collectionRuleService;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _dumpService = serviceProvider.GetRequiredService<IDumpService>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
-            _crService = serviceProvider.GetRequiredService<ICollectionRuleService>();
+            _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
         }
 
         /// <summary>
@@ -530,7 +530,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess<Dictionary<string, Models.CollectionRules>>(processInfo =>
             {
-                return _crService.GetCollectionRulesState(processInfo.EndpointInfo);
+                return _collectionRuleService.GetCollectionRulesState(processInfo.EndpointInfo);
             },
             processKey);
         }

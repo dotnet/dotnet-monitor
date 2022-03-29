@@ -6,8 +6,10 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -246,32 +248,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 foreach (var pipeline in _containersMap[key].pipelines)
                 {
-                    try
+                    string ruleName = pipeline._context.Name;
+
+                    CollectionRuleOptions options = pipeline._context.Options; // Will fail if just changed name of rule
+
+                    CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps,
+                        options.Limits?.ActionCountSlidingWindowDuration,
+                        pipeline._context.Clock.UtcNow.UtcDateTime);
+
+                    int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
+
+                    Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
                     {
-                        string ruleName = pipeline._context.Name;
+                        LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
+                        SlidingWindowMaximumOccurrences = actionCountLimit,
+                        SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
+                        State = GetCollectionRulesState(pipeline, actionCountLimit)
+                    };
 
-                        CollectionRuleOptions options = _containersMap[key]._optionsMonitor.Get(ruleName);
-
-                        CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps,
-                            options.Limits?.ActionCountSlidingWindowDuration,
-                            pipeline._context.Clock.UtcNow.UtcDateTime);
-
-                        int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
-
-                        Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
-                        {
-                            LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
-                            SlidingWindowMaximumOccurrences = actionCountLimit,
-                            SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
-                            State = GetCollectionRulesState(pipeline, actionCountLimit)
-                        };
-
-                        collectionRulesState.Add(ruleName, currCollectionRuleInfo);
-                    }
-                    catch(Exception)
-                    {
-                        // Currently being used to swallow exceptions that result from a rule name no longer existing (thus erroring for _optionsMonitor.Get)
-                    }
+                    collectionRulesState.Add(ruleName, currCollectionRuleInfo);
                 }
             }
 
@@ -302,9 +297,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             foreach (var pipeline in _containersMap[key].pipelines)
             {
-                collectionRuleNamesFrequency.TryGetValue(pipeline._context.Name, out int nameCount);
-
-                collectionRuleNamesFrequency[pipeline._context.Name] = nameCount + 1;
+                collectionRuleNamesFrequency[pipeline._context.Name] = collectionRuleNamesFrequency.GetValueOrDefault(pipeline._context.Name) + 1;
             }
 
             _containersMap[key].pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline._isCleanedUp);
