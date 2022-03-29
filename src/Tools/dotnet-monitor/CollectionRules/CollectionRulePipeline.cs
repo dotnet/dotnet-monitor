@@ -31,10 +31,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Flag used to guard against multiple invocations of _startCallback.
         private bool _invokedStartCallback = false;
 
-        public Queue<DateTime> _executionTimestamps;
-        public List<DateTime> _allExecutionTimestamps = new();
-
-        public bool actionIsInFlight = false; // This is kinda a hack
+        // Exposed for showing Collection Rule State
+        internal Queue<DateTime> _executionTimestamps;
+        internal List<DateTime> _allExecutionTimestamps = new();
+        internal bool _actionInFlight = false;
 
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
@@ -154,7 +154,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         bool actionsCompleted = false;
                         try
                         {
-                            actionIsInFlight = true; // Set this to true right before the action, and then false immediately after
+                            _actionInFlight = true;
+                            
                             // Intentionally not using the linkedToken. Allow the action list to execute gracefully
                             // unless forced by a caller to cancel or stop the running of the pipeline.
                             await _actionListExecutor.ExecuteActions(_context, InvokeStartCallback, token);
@@ -173,7 +174,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             // window was not specified. Since the pipeline can no longer execute
                             // actions, the pipeline can complete.
 
-                            actionIsInFlight = false; // Action will no longer be "in flight" at this point.
+                            _actionInFlight = false;
 
                             completePipeline = actionCountLimit <= _executionTimestamps.Count &&
                                 !actionCountWindowDuration.HasValue;

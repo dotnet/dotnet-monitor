@@ -246,32 +246,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 foreach (var pipeline in _containersMap[key].pipelines)
                 {
-                    string ruleName = pipeline._context.Name;
-
-                    CollectionRuleOptions options = _containersMap[key]._optionsMonitor.Get(ruleName);
-
-                    int actionCount = (options.Limits != null && options.Limits.ActionCount != null) ? options.Limits.ActionCount.Value : CollectionRuleLimitsOptionsDefaults.ActionCount;
-
-                    int allExecutions = pipeline._allExecutionTimestamps.Count;
-
-                    DateTime currentTimestamp = pipeline._context.Clock.UtcNow.UtcDateTime;
-
-                    TimeSpan? actionCountSWD = options.Limits != null ? options.Limits.ActionCountSlidingWindowDuration : null;
-                    CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps, actionCountSWD, currentTimestamp);
-
-                    int currExecutions = pipeline._executionTimestamps.Count;
-
-                    CollectionRulesState state = GetCollectionRulesState(pipeline, actionCount);
-
-                    Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
+                    try
                     {
-                        LifetimeOccurrences = allExecutions,
-                        SlidingWindowMaximumOccurrences = actionCount,
-                        SlidingWindowOccurrences = currExecutions,
-                        State = state
-                    };
+                        string ruleName = pipeline._context.Name;
 
-                    collectionRulesState.Add(ruleName, currCollectionRuleInfo);
+                        CollectionRuleOptions options = _containersMap[key]._optionsMonitor.Get(ruleName);
+
+                        CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps,
+                            options.Limits?.ActionCountSlidingWindowDuration,
+                            pipeline._context.Clock.UtcNow.UtcDateTime);
+
+                        int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
+
+                        Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
+                        {
+                            LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
+                            SlidingWindowMaximumOccurrences = actionCountLimit,
+                            SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
+                            State = GetCollectionRulesState(pipeline, actionCountLimit)
+                        };
+
+                        collectionRulesState.Add(ruleName, currCollectionRuleInfo);
+                    }
+                    catch(Exception)
+                    {
+                        // Currently being used to swallow exceptions that result from a rule name no longer existing (thus erroring for _optionsMonitor.Get)
+                    }
                 }
             }
 
@@ -280,7 +280,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private CollectionRulesState GetCollectionRulesState(CollectionRulePipeline pipeline, int actionCount)
         {
-            if (pipeline.actionIsInFlight)
+            if (pipeline._actionInFlight)
             {
                 return CollectionRulesState.Collecting;
             }
