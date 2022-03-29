@@ -28,6 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <summary>
         /// TESTING ONLY
         /// </summary>
-        Dictionary<string, Models.CollectionRules> GetCollectionRulesState(ProcessKey? processKey);
+        Dictionary<string, Models.CollectionRules> GetCollectionRulesState(IEndpointInfo endpointInfo);
     }
 }

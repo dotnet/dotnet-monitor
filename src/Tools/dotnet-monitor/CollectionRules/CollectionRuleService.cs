@@ -234,107 +234,80 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        public Dictionary<string, Monitoring.WebApi.Models.CollectionRules> GetCollectionRulesState(ProcessKey? processKey)
+        public Dictionary<string, Monitoring.WebApi.Models.CollectionRules> GetCollectionRulesState(IEndpointInfo endpointInfo)
         {
-            if (processKey == null)
+            var matchingContainerKeys = _containersMap.Keys.Where(x => x == endpointInfo);
+
+            Dictionary<string, Monitoring.WebApi.Models.CollectionRules> collectionRulesState = new();
+
+            foreach (var key in matchingContainerKeys)
             {
-                return null;
-            }
+                CleanUpCompletedPipelines(key);
 
-            var keysToUse = new List<IEndpointInfo>();
-
-            var keys = _containersMap.Keys;
-            foreach (var key in keys)
-            {
-                if (key.ProcessId == processKey.Value.ProcessId) // need to probably check other values as well
-                {
-                    keysToUse.Add(key);
-                }
-            }
-
-            Dictionary<string, Monitoring.WebApi.Models.CollectionRules> toReturn = new();
-
-            foreach (var keyToUse in keysToUse)
-            {
-                CleanUpCompletedPipelines(keyToUse);
-
-                var container = _containersMap[keyToUse];
-
-                foreach (var pipeline in container.pipelines)
+                foreach (var pipeline in _containersMap[key].pipelines)
                 {
                     string ruleName = pipeline._context.Name;
 
-                    CollectionRuleOptions options = container._optionsMonitor.Get(ruleName);
+                    CollectionRuleOptions options = _containersMap[key]._optionsMonitor.Get(ruleName);
+
+                    int actionCount = (options.Limits != null && options.Limits.ActionCount != null) ? options.Limits.ActionCount.Value : CollectionRuleLimitsOptionsDefaults.ActionCount;
 
                     int allExecutions = pipeline._allExecutionTimestamps.Count;
 
                     DateTime currentTimestamp = pipeline._context.Clock.UtcNow.UtcDateTime;
 
-                    // Need a null check for limits
-                    CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps, options.Limits.ActionCountSlidingWindowDuration, currentTimestamp);
+                    TimeSpan? actionCountSWD = options.Limits != null ? options.Limits.ActionCountSlidingWindowDuration : null;
+                    CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps, actionCountSWD, currentTimestamp);
 
                     int currExecutions = pipeline._executionTimestamps.Count;
 
-                    CollectionRulesState state = CollectionRulesState.Running;
-                    if (pipeline.actionIsInFlight)
-                    {
-                        state = CollectionRulesState.Collecting;
-                    }
-                    else if (pipeline._isCleanedUp)
-                    {
-                        state = CollectionRulesState.Finished;
-                    }
-                    else if (options.Limits?.ActionCount <= currExecutions)
-                    {
-                        state = CollectionRulesState.WaitingToResume;
-                    }
+                    CollectionRulesState state = GetCollectionRulesState(pipeline, actionCount);
 
                     Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
                     {
-                        lifetimeTriggerOccurrences = allExecutions,
-                        TriggerMaxOccurrences = (options.Limits?.ActionCount).GetValueOrDefault(3333), // need actual default
-                        TriggerOccurrences = currExecutions,
+                        LifetimeOccurrences = allExecutions,
+                        SlidingWindowMaximumOccurrences = actionCount,
+                        SlidingWindowOccurrences = currExecutions,
                         State = state
                     };
 
-                    toReturn.Add(ruleName, currCollectionRuleInfo);
+                    collectionRulesState.Add(ruleName, currCollectionRuleInfo);
                 }
             }
 
-            return toReturn;
+            return collectionRulesState;
+        }
+
+        private CollectionRulesState GetCollectionRulesState(CollectionRulePipeline pipeline, int actionCount)
+        {
+            if (pipeline.actionIsInFlight)
+            {
+                return CollectionRulesState.Collecting;
+            }
+            else if (pipeline._isCleanedUp)
+            {
+                return CollectionRulesState.Finished;
+            }
+            else if (actionCount <= pipeline._executionTimestamps.Count)
+            {
+                return CollectionRulesState.WaitingToResume;
+            }
+
+            return CollectionRulesState.Running;
         }
 
         private void CleanUpCompletedPipelines(IEndpointInfo key)
         {
-            var toRemove = new List<CollectionRulePipeline>();
-
             var collectionRuleNamesFrequency = new Dictionary<string, int>();
 
             foreach (var pipeline in _containersMap[key].pipelines)
             {
-                if (collectionRuleNamesFrequency.ContainsKey(pipeline._context.Name))
-                {
-                    collectionRuleNamesFrequency[pipeline._context.Name] += 1;
-                }
-                else
-                {
-                    collectionRuleNamesFrequency.Add(pipeline._context.Name, 1);
-                }
+                collectionRuleNamesFrequency.TryGetValue(pipeline._context.Name, out int nameCount);
 
-                if (pipeline._isCleanedUp)
-                {
-                    toRemove.Add(pipeline);
-                }
+                collectionRuleNamesFrequency[pipeline._context.Name] = nameCount + 1;
             }
 
-            foreach (var pipeline in toRemove)
-            {
-                // Only remove things that have been removed due to a collection rule change, not due to actual completion
-                if (collectionRuleNamesFrequency[pipeline._context.Name] > 1)
-                {
-                    _containersMap[key].pipelines.Remove(pipeline);
-                }
-            }
+            _containersMap[key].pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline._isCleanedUp);
         }
     }
 }

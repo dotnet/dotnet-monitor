@@ -518,7 +518,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet("collectionrules", Name = nameof(GetCollectionRules))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
-        public ActionResult<Dictionary<string, Models.CollectionRules>> GetCollectionRules(
+        public Task<ActionResult<Dictionary<string, Models.CollectionRules>>> GetCollectionRules(
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -528,13 +528,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
-            var stuff = _crService.GetCollectionRulesState(processKey);
+            return InvokeForProcess<Dictionary<string, Models.CollectionRules>>(processInfo =>
+            {
+                var collectionRuleState = _crService.GetCollectionRulesState(processInfo.EndpointInfo);
+
+                return collectionRuleState;
+            },
+            processKey);
+
+            //IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, HttpContext.RequestAborted);
+            /*
+            var collectionRuleState = _crService.GetCollectionRulesState(processKey);
 
             return this.InvokeService(() =>
             {
                 _logger.WrittenToHttpStream();
-                return new ActionResult<Dictionary<string, Models.CollectionRules>>(stuff);
-            }, _logger);
+                return new ActionResult<Dictionary<string, Models.CollectionRules>>(collectionRuleState);
+            }, _logger);*/
         }
 
         private static string GetDotnetMonitorVersion()

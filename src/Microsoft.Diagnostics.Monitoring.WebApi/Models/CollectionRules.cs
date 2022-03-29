@@ -17,28 +17,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         */
 
         /// <summary>
-        /// The number of times the trigger has executed in its lifetime.
+        /// The number of times the trigger has executed for a process in its lifetime.
         /// </summary>
-        [JsonPropertyName("lifetimeTriggerOccurrences")]
-        public int lifetimeTriggerOccurrences { get; set; }
+        [JsonPropertyName("lifetimeOccurrences")]
+        public int LifetimeOccurrences { get; set; }
 
         /// <summary>
-        /// The number of times the trigger has executed in the current sliding window duration (as defined by Limits).
+        /// The number of times the trigger has executed for a process in the current sliding window duration (as defined by Limits).
         /// </summary>
-        [JsonPropertyName("triggerOccurrences")]
-        public int TriggerOccurrences { get; set; }
+        [JsonPropertyName("slidingWindowOccurrences")]
+        public int SlidingWindowOccurrences { get; set; }
 
         /// <summary>
-        /// The number of times the trigger can execute before being limited -> ActionCount.
+        /// The number of times the trigger can execute for a process before being limited -> (as defined by Limits).
         /// </summary>
-        [JsonPropertyName("triggerMaxOccurrences")]
-        public int TriggerMaxOccurrences { get; set; }
+        [JsonPropertyName("slidingWindowMaximumOccurrences")]
+        public int SlidingWindowMaximumOccurrences { get; set; }
 
         /// <summary>
         /// Indicates what state the collection rule is in for the process.
         /// </summary>
         [JsonPropertyName("state")]
         public CollectionRulesState State { get; set; }
-
     }
 }
