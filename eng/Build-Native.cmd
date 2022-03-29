@@ -186,7 +186,7 @@ if /i %__BuildCrossArch% EQU 1 (
 
     echo Generating Version Header
     set "__VersionHeaderFile=%__CrossCompIntermediatesDir%\_version.h"
-    powershell -NoProfile -ExecutionPolicy ByPass -NoLogo -File "%__ProjectDir%\eng\common\msbuild.ps1" /clp:nosummary %__ArcadeScriptArgs% "%__ProjectDir%\eng\empty.csproj" /t:GenerateNativeVersionFile /restore /p:NativeVersionFile=%__VersionHeaderFile% /bl:%__GenerateVersionLog% %__CommonBuildArgs%
+    powershell -NoProfile -ExecutionPolicy ByPass -NoLogo -File "%__ProjectDir%\eng\common\msbuild.ps1" /clp:nosummary %__ArcadeScriptArgs% "%__ProjectDir%\eng\empty.csproj" /t:GenerateNativeVersionFile /restore /p:NativeVersionFile=!__VersionHeaderFile! /bl:%__GenerateVersionLog% %__CommonBuildArgs%
     if not !errorlevel! == 0 (
         echo Generate Version Header FAILED
         goto ExitWithError
@@ -260,7 +260,7 @@ if %__Build% EQU 1 (
 
     echo Generating Version Header
     set "__VersionHeaderFile=%__IntermediatesDir%\_version.h"
-    powershell -NoProfile -ExecutionPolicy ByPass -NoLogo -File "%__ProjectDir%\eng\common\msbuild.ps1" /clp:nosummary %__ArcadeScriptArgs% "%__ProjectDir%\eng\empty.csproj" /t:GenerateNativeVersionFile /restore /p:NativeVersionFile=%__VersionHeaderFile% /bl:%__GenerateVersionLog% %__CommonBuildArgs%
+    powershell -NoProfile -ExecutionPolicy ByPass -NoLogo -File "%__ProjectDir%\eng\common\msbuild.ps1" /clp:nosummary %__ArcadeScriptArgs% "%__ProjectDir%\eng\empty.csproj" /t:GenerateNativeVersionFile /restore /p:NativeVersionFile=!__VersionHeaderFile! /bl:%__GenerateVersionLog% %__CommonBuildArgs%
     if not !errorlevel! == 0 (
         echo Generate Version Header FAILED
         goto ExitWithError
