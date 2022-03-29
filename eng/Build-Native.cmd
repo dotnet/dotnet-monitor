@@ -134,7 +134,6 @@ if %__CI% EQU 1 (
 
 :: Version header arguments
 set "__GenerateVersionLog=%__LogDir%\GenNativeVersion_%__BuildOS%.%__BuildArch%.%__BuildType%.binlog"
-set "__VersionHeaderFile=%__IntermediatesDir%\_version.h"
 
 if not exist "%__BinDir%"           md "%__BinDir%"
 if not exist "%__IntermediatesDir%" md "%__IntermediatesDir%"
@@ -186,6 +185,7 @@ if /i %__BuildCrossArch% EQU 1 (
     if not exist "%__CrossCompIntermediatesDir%" md "%__CrossCompIntermediatesDir%"
 
     echo Generating Version Header
+    set "__VersionHeaderFile=%__CrossCompIntermediatesDir%\_version.h"
     powershell -NoProfile -ExecutionPolicy ByPass -NoLogo -File "%__ProjectDir%\eng\common\msbuild.ps1" /clp:nosummary %__ArcadeScriptArgs% "%__ProjectDir%\eng\empty.csproj" /t:GenerateNativeVersionFile /restore /p:NativeVersionFile=%__VersionHeaderFile% /bl:%__GenerateVersionLog% %__CommonBuildArgs%
     if not !errorlevel! == 0 (
         echo Generate Version Header FAILED
@@ -259,6 +259,7 @@ if %__Build% EQU 1 (
     )
 
     echo Generating Version Header
+    set "__VersionHeaderFile=%__IntermediatesDir%\_version.h"
     powershell -NoProfile -ExecutionPolicy ByPass -NoLogo -File "%__ProjectDir%\eng\common\msbuild.ps1" /clp:nosummary %__ArcadeScriptArgs% "%__ProjectDir%\eng\empty.csproj" /t:GenerateNativeVersionFile /restore /p:NativeVersionFile=%__VersionHeaderFile% /bl:%__GenerateVersionLog% %__CommonBuildArgs%
     if not !errorlevel! == 0 (
         echo Generate Version Header FAILED
