@@ -530,21 +530,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess<Dictionary<string, Models.CollectionRules>>(processInfo =>
             {
-                var collectionRuleState = _crService.GetCollectionRulesState(processInfo.EndpointInfo);
-
-                return collectionRuleState;
+                return _crService.GetCollectionRulesState(processInfo.EndpointInfo);
             },
             processKey);
-
-            //IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, HttpContext.RequestAborted);
-            /*
-            var collectionRuleState = _crService.GetCollectionRulesState(processKey);
-
-            return this.InvokeService(() =>
-            {
-                _logger.WrittenToHttpStream();
-                return new ActionResult<Dictionary<string, Models.CollectionRules>>(collectionRuleState);
-            }, _logger);*/
         }
 
         private static string GetDotnetMonitorVersion()
