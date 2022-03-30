@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AssemblyName>.NET Monitor</AssemblyName>
+    <AssemblyName>dotnet-monitor</AssemblyName>
   </PropertyGroup>
 
   <Import Project="versioning.targets" />
