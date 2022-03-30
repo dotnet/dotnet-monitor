@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces
@@ -11,28 +10,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
         IPostConfigureOptions<CollectionRuleOptions>
     {
         private readonly IOptionsMonitor<CollectionRuleDefaultsOptions> _defaultOptions;
-        private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         public RequestCountsPostConfigure(
-            IOptionsMonitor<CollectionRuleDefaultsOptions> defaultOptions,
-            ICollectionRuleTriggerOperations triggerOperations
+            IOptionsMonitor<CollectionRuleDefaultsOptions> defaultOptions
             )
         {
             _defaultOptions = defaultOptions;
-            _triggerOperations = triggerOperations;
         }
 
         public void PostConfigure(string name, CollectionRuleOptions options)
         {
             if (null != options.Trigger)
             {
-                _triggerOperations.TryCreateOptions(options.Trigger.Type, out object triggerSettings);
-
-                if (null != triggerSettings && typeof(IRequestCountProperties).IsAssignableFrom(triggerSettings.GetType()))
+                if (null != options.Trigger.Settings && options.Trigger.Settings is IRequestCountProperties requestCountProperties)
                 {
-                    if (0 == ((IRequestCountProperties)options.Trigger.Settings).RequestCount && _defaultOptions.CurrentValue.Triggers.RequestCount.HasValue)
+                    if (0 == requestCountProperties.RequestCount && _defaultOptions.CurrentValue.Triggers.RequestCount.HasValue)
                     {
-                        ((IRequestCountProperties)options.Trigger.Settings).RequestCount = _defaultOptions.CurrentValue.Triggers.RequestCount.Value;
+                        requestCountProperties.RequestCount = _defaultOptions.CurrentValue.Triggers.RequestCount.Value;
                     }
                 }
             }

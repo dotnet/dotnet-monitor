@@ -11,28 +11,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Collection
         IPostConfigureOptions<CollectionRuleOptions>
     {
         private readonly IOptionsMonitor<CollectionRuleDefaultsOptions> _defaultOptions;
-        private readonly ICollectionRuleActionOperations _actionOperations;
 
         public EgressPostConfigure(
-            IOptionsMonitor<CollectionRuleDefaultsOptions> defaultOptions,
-            ICollectionRuleActionOperations actionOperations
+            IOptionsMonitor<CollectionRuleDefaultsOptions> defaultOptions
             )
         {
             _defaultOptions = defaultOptions;
-            _actionOperations = actionOperations;
         }
 
         public void PostConfigure(string name, CollectionRuleOptions options)
         {
             foreach (var action in options.Actions)
             {
-                _actionOperations.TryCreateOptions(action.Type, out object actionSettings);
-
-                if (null != actionSettings && typeof(IEgressProviderProperties).IsAssignableFrom(actionSettings.GetType()))
+                if (null != action.Settings && action.Settings is IEgressProviderProperties egressProviderProperties)
                 {
-                    if (string.IsNullOrEmpty(((IEgressProviderProperties)action.Settings).Egress))
+                    if (string.IsNullOrEmpty(egressProviderProperties.Egress))
                     {
-                        ((IEgressProviderProperties)action.Settings).Egress = _defaultOptions.CurrentValue.Actions.Egress;
+                        egressProviderProperties.Egress = _defaultOptions.CurrentValue.Actions.Egress;
                     }
                 }
             }
