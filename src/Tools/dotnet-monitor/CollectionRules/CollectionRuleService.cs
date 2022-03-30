@@ -260,12 +260,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
                     {
-                        LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
-                        ActionCount = actionCountLimit,
-                        SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
                         State = GetCollectionRulesState(pipeline, actionCountLimit),
-                        ActionCountSlidingWindowDuration = actionCountSWDLimit,
-                        SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, actionCountSWDLimit, actionCountLimit, currentTimestamp)
+                        StateReason = "Test",
+                        LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
+                        ActionCountLimit = actionCountLimit,
+                        SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
+                        ActionCountSlidingWindowDurationLimit = actionCountSWDLimit,
+                        SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, actionCountSWDLimit, actionCountLimit, currentTimestamp),
+                        RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline._pipelineStartTime, options.Limits?.RuleDuration, currentTimestamp)
                     };
 
                     collectionRulesState.Add(pipeline._context.Name, currCollectionRuleInfo);
@@ -283,19 +285,41 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 {
                     DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
 
-                    TimeSpan countdown =  (timestamps.Peek() - windowStartTimestamp);
-                    return TimeSpan.FromSeconds((long)countdown.TotalSeconds); // Intentionally lose millisecond precision
+                    TimeSpan countdown =  timestamps.Peek() - windowStartTimestamp;
+                    return GetTruncatedTimeSpan(countdown);
                 }
             }
 
             return null;
         }
 
+        private static TimeSpan? GetRuleFinishedCountdown(DateTime pipelineStartTime, TimeSpan? ruleDuration, DateTime currentTimestamp)
+        {
+            if (ruleDuration.HasValue)
+            {
+                TimeSpan countdown = ruleDuration.Value - (currentTimestamp - pipelineStartTime);
+
+                if (countdown < TimeSpan.Zero)
+                {
+                    return null;
+                }
+
+                return GetTruncatedTimeSpan(countdown);
+            }
+
+            return null;
+        }
+
+        private static TimeSpan GetTruncatedTimeSpan(TimeSpan original)
+        {
+            return TimeSpan.FromSeconds((long)original.TotalSeconds); // Intentionally lose millisecond precision
+        }
+
         private CollectionRulesState GetCollectionRulesState(CollectionRulePipeline pipeline, int actionCount)
         {
             if (pipeline._actionInFlight)
             {
-                return CollectionRulesState.Collecting;
+                return CollectionRulesState.ActionExecuting;
             }
             else if (pipeline._isCleanedUp)
             {
@@ -303,7 +327,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
             else if (actionCount <= pipeline._executionTimestamps.Count)
             {
-                return CollectionRulesState.WaitingToResume;
+                return CollectionRulesState.Throttled;
             }
 
             return CollectionRulesState.Running;

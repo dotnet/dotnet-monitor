@@ -18,6 +18,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         */
 
         /// <summary>
+        /// Indicates what state the collection rule is in for the process.
+        /// </summary>
+        [JsonPropertyName("state")]
+        public CollectionRulesState State { get; set; }
+
+        /// <summary>
+        /// Human-readable explanation for the current state of the collection rule.
+        /// </summary>
+        [JsonPropertyName("stateReason")]
+        public string StateReason { get; set; }
+
+        /// <summary>
         /// The number of times the trigger has executed for a process in its lifetime.
         /// </summary>
         [JsonPropertyName("lifetimeOccurrences")]
@@ -30,17 +42,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public int SlidingWindowOccurrences { get; set; }
 
         /// <summary>
-        /// Think about the naming...
         /// The number of times the trigger can execute for a process before being limited -> (as defined by Limits).
         /// </summary>
-        [JsonPropertyName("actionCount")]
-        public int ActionCount { get; set; }
+        [JsonPropertyName("actionCountLimit")]
+        public int ActionCountLimit { get; set; }
 
         /// <summary>
         /// The sliding window duration in which the ActionCount is the maximum number of occurrences -> (as defined by Limits).
         /// </summary>
-        [JsonPropertyName("actionCountSlidingWindowDuration")]
-        public TimeSpan? ActionCountSlidingWindowDuration { get; set; }
+        [JsonPropertyName("actionCountSlidingWindowDurationLimit")]
+        public TimeSpan? ActionCountSlidingWindowDurationLimit { get; set; }
 
         /// <summary>
         /// The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCount
@@ -49,9 +60,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public TimeSpan? SlidingWindowDurationCountdown { get; set; }
 
         /// <summary>
-        /// Indicates what state the collection rule is in for the process.
+        /// The amount of time that needs to pass before the rule is finished
         /// </summary>
-        [JsonPropertyName("state")]
-        public CollectionRulesState State { get; set; }
+        [JsonPropertyName("ruleFinishedCountdown")]
+        public TimeSpan? RuleFinishedCountdown { get; set; }
     }
 }

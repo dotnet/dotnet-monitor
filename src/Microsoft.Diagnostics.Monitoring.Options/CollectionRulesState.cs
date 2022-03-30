@@ -8,8 +8,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public enum CollectionRulesState
     {
         Running, // Collection Rule is waiting for triggering condition to be met
-        Collecting, // Trigger has been triggered -> actions are being executed
-        WaitingToResume, // ActionCount has been hit within the ActionCountSlidingWindowDuration -> waiting to resume
+        ActionExecuting, // Trigger has been triggered -> actions are being executed
+        Throttled, // ActionCount has been hit within the ActionCountSlidingWindowDuration -> waiting to resume
         Finished // Collection Rule is done executing permanently -> exceeded RuleDuration
     }
 }

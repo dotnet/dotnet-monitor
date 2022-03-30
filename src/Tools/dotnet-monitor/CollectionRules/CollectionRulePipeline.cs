@@ -35,6 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         internal Queue<DateTime> _executionTimestamps;
         internal List<DateTime> _allExecutionTimestamps = new();
         internal bool _actionInFlight = false;
+        internal DateTime _pipelineStartTime;
 
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
@@ -74,6 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             int actionCountLimit = (_context.Options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
             _executionTimestamps = new(actionCountLimit);
             _allExecutionTimestamps = new();
+            _pipelineStartTime = _context.Clock.UtcNow.UtcDateTime;
 
             // Start cancellation timer for graceful stop of the collection rule
             // when the rule duration has been specified. Conditionally enable this
