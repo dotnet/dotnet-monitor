@@ -252,18 +252,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     CollectionRuleOptions options = pipeline._context.Options; // Will fail if just changed name of rule
 
+                    DateTime currentTimestamp = pipeline._context.Clock.UtcNow.UtcDateTime;
+
+                    TimeSpan? actionCountSWDLimit = options.Limits?.ActionCountSlidingWindowDuration;
+
                     CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps,
-                        options.Limits?.ActionCountSlidingWindowDuration,
-                        pipeline._context.Clock.UtcNow.UtcDateTime);
+                        actionCountSWDLimit,
+                        currentTimestamp);
 
                     int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
+
+                    TimeSpan? slidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, actionCountSWDLimit, actionCountLimit, currentTimestamp);
 
                     Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
                     {
                         LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
-                        SlidingWindowMaximumOccurrences = actionCountLimit,
+                        ActionCount = actionCountLimit,
                         SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
-                        State = GetCollectionRulesState(pipeline, actionCountLimit)
+                        State = GetCollectionRulesState(pipeline, actionCountLimit),
+                        ActionCountSlidingWindowDuration = actionCountSWDLimit,
+                        SlidingWindowDurationCountdown = slidingWindowDurationCountdown
                     };
 
                     collectionRulesState.Add(ruleName, currCollectionRuleInfo);
@@ -271,6 +279,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
 
             return collectionRulesState;
+        }
+
+        private static TimeSpan? GetSWDCountdown(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, int actionCount, DateTime currentTimestamp)
+        {
+            if (actionCountWindowDuration.HasValue)
+            {
+                if (timestamps.Count >= actionCount)
+                {
+                    DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
+
+                    TimeSpan countdown =  (timestamps.Peek() - windowStartTimestamp);
+                    return TimeSpan.FromSeconds((long)countdown.TotalSeconds); // Intentionally lose millisecond precision
+                }
+            }
+
+            return null;
         }
 
         private CollectionRulesState GetCollectionRulesState(CollectionRulePipeline pipeline, int actionCount)
