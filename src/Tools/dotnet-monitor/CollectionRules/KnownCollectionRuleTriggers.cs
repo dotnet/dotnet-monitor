@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public const string EventCounter = nameof(EventCounter);
 
         // Shortcut Triggers
-        public const string HighCPU = nameof(HighCPU);
+        public const string CPUUsage = nameof(CPUUsage);
         public const string GCHeapSize = nameof(GCHeapSize);
         public const string ThreadpoolQueueLength = nameof(ThreadpoolQueueLength);
     }

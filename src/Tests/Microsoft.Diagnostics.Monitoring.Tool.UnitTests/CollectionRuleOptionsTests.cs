@@ -254,7 +254,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         // Move this somewhere
         public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
         {
-            yield return new object[] { typeof(CPUUsageOptions), KnownCollectionRuleTriggers.HighCPU };
+            yield return new object[] { typeof(CPUUsageOptions), KnownCollectionRuleTriggers.CPUUsage };
             yield return new object[] { typeof(GCHeapSizeOptions), KnownCollectionRuleTriggers.GCHeapSize };
         }
 
@@ -325,13 +325,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public Task CollectionRuleOptions_HighCPUTrigger_PropertyValidation()
+        public Task CollectionRuleOptions_CPUUsageTrigger_PropertyValidation()
         {
             return ValidateFailure(
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetHighCPUTrigger(options =>
+                        .SetCPUUsageTrigger(options =>
                         {
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
                             options.GreaterThan = -1;
@@ -355,7 +355,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public Task CollectionRuleOptions_HighCPUTrigger_LessThanAssignedGreaterThanUnassigned()
+        public Task CollectionRuleOptions_CPUUsageTrigger_LessThanAssignedGreaterThanUnassigned()
         {
             const double ExpectedLessThan = CPUUsageOptionsDefaults.GreaterThan / 2;
 
@@ -363,16 +363,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetHighCPUTrigger(options =>
+                        .SetCPUUsageTrigger(options =>
                         {
                             options.LessThan = ExpectedLessThan;
                         });
                 },
                 ruleOptions =>
                 {
-                    CPUUsageOptions highCPUOptions = ruleOptions.VerifyHighCPUTrigger();
-                    Assert.Null(highCPUOptions.GreaterThan);
-                    Assert.Equal(ExpectedLessThan, highCPUOptions.LessThan);
+                    CPUUsageOptions cpuUsageOptions = ruleOptions.VerifyCPUUsageTrigger();
+                    Assert.Null(cpuUsageOptions.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, cpuUsageOptions.LessThan);
                 });
         }
 

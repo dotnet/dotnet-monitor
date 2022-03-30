@@ -42,10 +42,10 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetResponseStatusOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\AspNetResponseStatusOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\CPUUsageOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\CPUUsageOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\CPUUsageOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\CPUUsageOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\GCHeapSizeOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\GCHeapSizeOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\GCHeapSizeOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\GCHeapSizeOptionsDefaults.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\HighCPUOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\HighCPUOptions.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\HighCPUOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\HighCPUOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\IEventCounterShortcuts.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\IEventCounterShortcuts.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\IEventCounterShortcutsConstants.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\IEventCounterShortcutsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptions.cs" />

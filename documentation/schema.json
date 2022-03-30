@@ -609,10 +609,10 @@
           ],
           "properties": {
             "Type": {
-              "const": "HighCPU"
+              "const": "CPUUsage"
             },
             "Settings": {
-              "$ref": "#/definitions/HighCPUOptions"
+              "$ref": "#/definitions/CPUUsageOptions"
             }
           }
         },
@@ -1541,7 +1541,7 @@
         "AspNetRequestDuration",
         "AspNetResponseStatus",
         "EventCounter",
-        "HighCPU",
+        "CPUUsage",
         "GCHeapSize",
         "ThreadpoolQueueLength",
         "Startup"
@@ -1746,7 +1746,7 @@
         }
       }
     },
-    "HighCPUOptions": {
+    "CPUUsageOptions": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -1827,7 +1827,7 @@
           ],
           "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
           "format": "double",
-          "default": 50.0,
+          "default": 200.0,
           "minimum": 0.0
         },
         "LessThan": {
