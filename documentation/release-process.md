@@ -83,9 +83,15 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 
 The remainder of the release will automatically push NuGet packages to nuget.org, [tag](https://github.com/dotnet/dotnet-monitor/tags) the commit from the build with the release version, and add a new [GitHub release](https://github.com/dotnet/dotnet-monitor/releases).
 
+## Release to Storage Accounts
+
+1. Approximately 3 days before Docker image release, execute a dry-run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will validate that the nupkg files can be published to the `dotnetcli` storage account and checksums can be published to the `dotnetclichecksums` storage account.
+1. The day before Docker image release, execute run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (uncheck `IsDryRun`; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will publish the nupkg files to the `dotnetcli` storage account and the checksums to the `dotnetclichecksums` storage account.
+
 ## Release Docker Images
 
 1. Contact `dotnet-docker` team with final version that should be released. This version should be latest version in the `nightly` branch.
+1. Docker image build from main branch requires assets to be published to `dotnetcli` and `dotnetclichecksums` storage accounts. See [Release to Storage Accounts](#Release-to-Storage-Accounts).
 1. The `dotnet-docker` team will merge from `nightly` branch to `main` branch and wait for `dotnet-monitor` team approval. Typically, these changes are completed the day before the release date.
 1. The `dotnet-docker` team will start the build ahead of the release and wait for the all-clear from `dotnet-monitor` team before publishing the images.
 
