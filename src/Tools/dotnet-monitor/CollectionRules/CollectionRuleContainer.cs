@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ActionListExecutor _actionListExecutor;
         private readonly ILogger<CollectionRuleService> _logger;
         private readonly IProcessInfo _processInfo;
-        public readonly IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
+        private readonly IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
         private readonly List<Task> _runTasks = new();
         private readonly ISystemClock _systemClock;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
@@ -207,7 +207,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     context,
                     () => startedSource.TrySetResult(null));
 
-                pipelines.Add(pipeline); // Beware of the using statement here
+                pipelines.Add(pipeline);
 
                 await pipeline.RunAsync(linkedSource.Token);
 

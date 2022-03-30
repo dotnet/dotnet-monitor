@@ -20,11 +20,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // The executor of the action list for the collection rule.
         private readonly ActionListExecutor _actionListExecutor;
 
-        public readonly CollectionRuleContext _context;
+        internal readonly CollectionRuleContext _context;
 
         // Task completion source for signalling when the pipeline has finished starting.
         private readonly Action _startCallback;
-        
+
         // Operations for getting trigger information.
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
@@ -73,6 +73,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             TimeSpan? actionCountWindowDuration = _context.Options.Limits?.ActionCountSlidingWindowDuration;
             int actionCountLimit = (_context.Options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
             _executionTimestamps = new(actionCountLimit);
+            _allExecutionTimestamps = new();
 
             // Start cancellation timer for graceful stop of the collection rule
             // when the rule duration has been specified. Conditionally enable this

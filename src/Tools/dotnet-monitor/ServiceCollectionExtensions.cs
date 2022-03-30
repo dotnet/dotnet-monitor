@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IPostConfigureOptions<MonitorApiKeyConfiguration>, MonitorApiKeyPostConfigure>();
             // Notifies that MonitorApiKeyConfiguration is changed when MonitorApiKeyOptions is changed.
             services.AddSingleton<IOptionsChangeTokenSource<MonitorApiKeyConfiguration>, MonitorApiKeyChangeTokenSource>();
-            
+
             return services;
         }
 
@@ -109,9 +109,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             services.AddSingleton<ActionListExecutor>();
             services.AddSingleton<ICollectionRuleService, CollectionRuleService>();
-            //services.AddSingleton<CollectionRuleService>();
-            //services.AddHostedServiceForwarder<CollectionRuleService>();
-            services.AddHostedService<CollectionRuleService>(sp => (CollectionRuleService)sp.GetRequiredService<ICollectionRuleService>());
+            services.AddHostedService(sp => (CollectionRuleService)sp.GetRequiredService<ICollectionRuleService>());
 
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 

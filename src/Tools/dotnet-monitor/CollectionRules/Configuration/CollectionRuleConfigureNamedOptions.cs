@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
@@ -53,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         private void BindActionSettings(IConfigurationSection ruleSection, CollectionRuleOptions ruleOptions, int actionIndex)
         {
-            CollectionRuleActionOptions actionOptions = (CollectionRuleActionOptions)ruleOptions.Actions[actionIndex];
+            CollectionRuleActionOptions actionOptions = ruleOptions.Actions[actionIndex];
 
             if (null != actionOptions &&
                 _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
@@ -71,7 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         private void BindTriggerSettings(IConfigurationSection ruleSection, CollectionRuleOptions ruleOptions)
         {
-            CollectionRuleTriggerOptions triggerOptions = (CollectionRuleTriggerOptions)ruleOptions.Trigger;
+            CollectionRuleTriggerOptions triggerOptions = ruleOptions.Trigger;
 
             if (null != triggerOptions &&
                 _triggerOperations.TryCreateOptions(triggerOptions.Type, out object triggerSettings))
