@@ -786,6 +786,67 @@
         }
       }
     },
+    "/collectionrules": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Gets information about the current state of the collection rules.",
+        "operationId": "GetCollectionRules",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DotnetMonitorInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/livemetrics": {
       "get": {
         "tags": [

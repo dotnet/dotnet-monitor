@@ -6,10 +6,8 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -248,9 +246,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 foreach (var pipeline in _containersMap[key].pipelines)
                 {
-                    string ruleName = pipeline._context.Name;
-
-                    CollectionRuleOptions options = pipeline._context.Options; // Will fail if just changed name of rule
+                    CollectionRuleOptions options = pipeline._context.Options;
 
                     DateTime currentTimestamp = pipeline._context.Clock.UtcNow.UtcDateTime;
 
@@ -262,8 +258,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
 
-                    TimeSpan? slidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, actionCountSWDLimit, actionCountLimit, currentTimestamp);
-
                     Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
                     {
                         LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
@@ -271,10 +265,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
                         State = GetCollectionRulesState(pipeline, actionCountLimit),
                         ActionCountSlidingWindowDuration = actionCountSWDLimit,
-                        SlidingWindowDurationCountdown = slidingWindowDurationCountdown
+                        SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, actionCountSWDLimit, actionCountLimit, currentTimestamp)
                     };
 
-                    collectionRulesState.Add(ruleName, currCollectionRuleInfo);
+                    collectionRulesState.Add(pipeline._context.Name, currCollectionRuleInfo);
                 }
             }
 
