@@ -3,13 +3,14 @@ cmake_minimum_required(VERSION 3.14)
 project(MonitorProfiler)
 
 if(CLR_CMAKE_HOST_WIN32)
-    set(PLATFORM_SOURCES
+    set(SOURCES
+        ${SOURCES}
         MonitorProfiler.def
         )
 endif(CLR_CMAKE_HOST_WIN32)
 
 set(SOURCES
-    ${PLATFORM_SOURCES}
+    ${SOURCES}
     ${PROFILER_SOURCES}
     MainProfiler/MainProfiler.cpp
     ClassFactory.cpp
