@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that all log events are collected if log level set to Trace.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsCI))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 
@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that log events with level at or above the specified level are collected.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsCI))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -118,7 +118,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events with a category that doesn't have a specified level are collected
         /// at the log level specified in the request body.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsCI))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -159,7 +159,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the level query parameter.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsCI))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -195,7 +195,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that LogLevel.None is not supported as the default log level in the request body.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsCI))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -231,7 +231,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsCI))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -265,7 +265,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsCI))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -304,7 +304,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events are collected for the categories and levels specified by the application
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsCI))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -348,7 +348,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsCI))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -397,6 +397,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat logFormat)
         {
+            return Retry(() => ValidateLogsAsyncCore(mode, logLevel, callback, logFormat));
+        }
+
+        private Task ValidateLogsAsyncCore(
+            DiagnosticPortConnectionMode mode,
+            LogLevel? logLevel,
+            Func<ChannelReader<LogEntry>, Task> callback,
+            LogFormat logFormat)
+        {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -415,6 +424,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         private Task ValidateLogsAsync(
+            DiagnosticPortConnectionMode mode,
+            LogsConfiguration configuration,
+            Func<ChannelReader<LogEntry>, Task> callback,
+            LogFormat logFormat)
+        {
+            return Retry(() => ValidateLogsAsyncCore(mode, configuration, callback, logFormat));
+        }
+
+        private Task ValidateLogsAsyncCore(
             DiagnosticPortConnectionMode mode,
             LogsConfiguration configuration,
             Func<ChannelReader<LogEntry>, Task> callback,
@@ -463,17 +481,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await LogsTestUtilities.ValidateLogsEquality(holder.Stream, callback, logFormat, _outputHelper);
         }
 
-        public static bool IsNotWindowsCI
+        private async Task Retry(Func<Task> func, int attemptCount = 5)
         {
-            get
+            int attemptIteration = 0;
+            while (true)
             {
-                // Skip logs tests for .NET Core 3.1 on Windows; these tests sporadically
-                // fail frequently causing insertions and builds with unrelated changes to
-                // fail.
-                //
-                // See https://github.com/dotnet/dotnet-monitor/issues/807 for details.
-                // See https://github.com/dotnet/dotnet-monitor/issues/1627 for details.
-                return !TestConditions.IsWindows || string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TF_BUILD"));
+                attemptIteration++;
+                _outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
+                try
+                {
+                    await func();
+
+                    break;
+                }
+                catch (ChannelClosedException) when (attemptIteration < attemptCount)
+                {
+                    // Test expected more log items than what was provided. This might be a timing issue where
+                    // the /logs HTTP route is invoked before the test app writes the log messages; another possible
+                    // cause is the log messages are buffered and not sent to dotnet-monitor until after the logs
+                    // session is complete. Retry the test when this condition is detected.
+                }
             }
         }
     }

@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -34,7 +35,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         [Theory]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndDumpTypes), MemberType = typeof(ActionTestsHelper))]
-        public async Task CollectDumpAction_Success(TargetFrameworkMoniker tfm, DumpType? dumpType)
+        public Task CollectDumpAction_Success(TargetFrameworkMoniker tfm, DumpType dumpType)
+        {
+            return Retry(dumpType, () => CollectDumpAction_SuccessCore(tfm, dumpType));
+        }
+
+        private async Task CollectDumpAction_SuccessCore(TargetFrameworkMoniker tfm, DumpType dumpType)
         {
             // MacOS dumps inconsistently segfault the runtime on .NET 5: https://github.com/dotnet/dotnet-monitor/issues/174
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && tfm == TargetFrameworkMoniker.Net50)
@@ -83,6 +89,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
             });
+        }
+
+        private async Task Retry(DumpType type, Func<Task> func, int attemptCount = 3)
+        {
+            int attemptIteration = 0;
+            while (true)
+            {
+                attemptIteration++;
+                _outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
+                try
+                {
+                    await func();
+
+                    break;
+                }
+                catch (TaskCanceledException) when (attemptIteration < attemptCount && IsMacOSFullDump())
+                {
+                    // Full dumps on MacOS sometimes take a very long time (longer than 100 seconds, the default
+                    // HttpClient timeout). Retry the test when this condition is detected.
+                }
+            }
+
+            bool IsMacOSFullDump() =>
+                RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
+                type == DumpType.Full;
         }
     }
 }
