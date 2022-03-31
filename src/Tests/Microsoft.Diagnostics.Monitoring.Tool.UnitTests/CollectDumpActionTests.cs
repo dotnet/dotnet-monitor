@@ -93,6 +93,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private async Task Retry(DumpType type, Func<Task> func, int attemptCount = 3)
         {
+            bool isMacOSFullDump =
+                RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
+                type == DumpType.Full;
+
             int attemptIteration = 0;
             while (true)
             {
@@ -104,16 +108,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     break;
                 }
-                catch (TaskCanceledException) when (attemptIteration < attemptCount && IsMacOSFullDump())
+                catch (TaskCanceledException) when (attemptIteration < attemptCount && isMacOSFullDump)
                 {
                     // Full dumps on MacOS sometimes take a very long time (longer than 100 seconds, the default
                     // HttpClient timeout). Retry the test when this condition is detected.
                 }
             }
-
-            bool IsMacOSFullDump() =>
-                RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
-                type == DumpType.Full;
         }
     }
 }
