@@ -10,7 +10,7 @@ using System.IO;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
-    internal static class ConfigShowCommandHandler
+    internal sealed class ConfigShowCommandHandler
     {
         // Although the "noHttpEgress" parameter is unused, it keeps the entire command parameter set a superset
         // of the "collect" command so that users can take the same arguments from "collect" and use it on "config show"
@@ -24,20 +24,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         {
             IAuthConfiguration authConfiguration = HostBuilderHelper.CreateAuthConfiguration(noAuth, tempApiKey);
             HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authConfiguration);
-            IHost host = HostBuilderHelper.CreateHostBuilder(settings).ConfigureCollectionRuleServices().Build();
+            IHost host = HostBuilderHelper.CreateHostBuilder(settings).Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
-
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
-            jsonWriter.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false, showSources: showSources, host.Services);
-        }
-
-        private static IHostBuilder ConfigureCollectionRuleServices(this IHostBuilder builder)
-        {
-            return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
-            {
-                services.ConfigureCollectionRuleDefaults(context.Configuration);
-                services.ConfigureCollectionRules();
-            });
+            jsonWriter.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false, showSources: showSources);
         }
     }
 }

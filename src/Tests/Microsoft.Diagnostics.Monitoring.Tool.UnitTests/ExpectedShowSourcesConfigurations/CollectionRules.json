@@ -2,10 +2,7 @@
   "Rule1": {
     "Actions": [
       {
-        "Type": "CollectGCDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-        "Settings": {
-          "Egress": "artifacts" /*Collection Rule Defaults*/
-        }
+        "Type": "CollectGCDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
       },
       {
         "Settings": {
@@ -26,19 +23,14 @@
       "RuleDuration": "00:00:05" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     },
     "Trigger": {
-      "Type": "AspNetRequestCount" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-      "Settings": {
-        "RequestCount": "10" /*Collection Rule Defaults*/,
-        "SlidingWindowDuration": "00:05:00" /*Collection Rule Defaults*/
-      }
+      "Type": "AspNetRequestCount" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     }
   },
   "Rule2": {
     "Actions": [
       {
         "Settings": {
-          "Type": "Mini" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-          "Egress": "artifacts" /*Collection Rule Defaults*/
+          "Type": "Mini" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
         },
         "Type": "CollectDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
       }
@@ -51,16 +43,9 @@
     ],
     "Trigger": {
       "Settings": {
-        "StatusCodes": [ "400-409" /*JsonConfigurationProvider for 'settings.json' (Optional)*/ ],
-        "ResponseCount": "1" /*Collection Rule Defaults*/,
-        "SlidingWindowDuration": "00:05:00" /*Collection Rule Defaults*/
+        "StatusCodes": [ "400-409" /*JsonConfigurationProvider for 'settings.json' (Optional)*/ ]
       },
       "Type": "AspNetResponseStatus" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
-    },
-    "Limits": {
-      "ActionCount": "20" /*Collection Rule Defaults*/,
-      "ActionCountSlidingWindowDuration": "00:00:01" /*Collection Rule Defaults*/,
-      "RuleDuration": "11:11:11" /*Collection Rule Defaults*/
     }
   },
   "Rule3": {
@@ -68,16 +53,13 @@
       {
         "Settings": {
           "Duration": "00:01:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-          "Profile": "Cpu" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-          "Egress": "artifacts" /*Collection Rule Defaults*/
+          "Profile": "Cpu" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
         },
         "Type": "CollectTrace" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
       }
     ],
     "Limits": {
-      "ActionCountSlidingWindowDuration": "5:00:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-      "ActionCount": "20" /*Collection Rule Defaults*/,
-      "RuleDuration": "11:11:11" /*Collection Rule Defaults*/
+      "ActionCountSlidingWindowDuration": "5:00:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     },
     "Trigger": {
       "Settings": {

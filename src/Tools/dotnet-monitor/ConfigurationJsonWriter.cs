@@ -3,13 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,21 +22,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly Utf8JsonWriter _writer;
         private IConfiguration _configuration;
-        private IServiceProvider _serviceProvider;
-
-        private const string SettingsSection = nameof(CollectionRuleTriggerOptions.Settings);
-        private const string LimitsSection = nameof(CollectionRuleOptions.Limits);
-
         public ConfigurationJsonWriter(Stream outputStream)
         {
             JsonWriterOptions options = new() { Indented = true };
             _writer = new Utf8JsonWriter(outputStream, options);
         }
 
-        public void Write(IConfiguration configuration, bool full, bool skipNotPresent, bool showSources = false, IServiceProvider serviceProvider = null)
+        public void Write(IConfiguration configuration, bool full, bool skipNotPresent, bool showSources = false)
         {
             _configuration = configuration;
-            _serviceProvider = serviceProvider;
             //Note that we avoid IConfigurationRoot.GetDebugView because it shows everything
             //CONSIDER Should we show this in json, since it cannot represent complete configuration?
             //CONSIDER Should we convert number based names to arrays?
@@ -193,8 +183,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private IConfigurationSection ProcessChildSection(IConfiguration parentSection, string key, bool skipNotPresent, bool includeChildSections = true, bool redact = false, bool showSources = false)
         {
-            bool loadCollectionRuleDefaults = key.Equals(ConfigurationKeys.CollectionRules) && _serviceProvider != null;
-
             IConfigurationSection section = parentSection.GetSection(key);
             if (!section.Exists())
             {
@@ -206,18 +194,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return null;
             }
 
-            ProcessSection(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCollectionRuleDefaults);
+            ProcessSection(section, includeChildSections, redact, showSources: showSources);
 
             return section;
         }
 
-        private void ProcessSection(IConfigurationSection section, bool includeChildSections = true, bool redact = false, bool showSources = false, bool loadCRDefaults = false, Dictionary<string, string> mockDefaults = null, IndependentConfigFlags configFlag = IndependentConfigFlags.None)
+        private void ProcessSection(IConfigurationSection section, bool includeChildSections = true, bool redact = false, bool showSources = false)
         {
-            if ((null == mockDefaults || !mockDefaults.Any()) && loadCRDefaults)
-            {
-                mockDefaults = CollectionRuleDefaultsSetup(section, ref configFlag);
-            }
-
             _writer.WritePropertyName(section.Key);
 
             IEnumerable<IConfigurationSection> children = section.GetChildren();
@@ -239,20 +222,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         if (child.GetChildren().Any())
                         {
-                            if (loadCRDefaults && section.Key.Equals(nameof(CollectionRuleOptions.Actions)))
-                            {
-                                mockDefaults = GetMockedChildren(GetActionOptionsType(child));
-
-                                configFlag = mockDefaults.Any() ? GetUpdatedSettingsFlag(child) : IndependentConfigFlags.None;
-                            }
-
-                            ProcessChildren(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, mockDefaults, configFlag: configFlag);
+                            ProcessChildren(child, includeChildSections, redact, showSources: showSources);
                         }
                         else
                         {
                             WriteValue(child.Value, redact);
 
-                            WriteComment(GetConfigurationProvider(child, showSources));
+                            string comment = GetConfigurationProvider(child, showSources);
+
+                            if (comment.Length > 0)
+                            {
+                                // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
+                                // that prevents comments from being directly after commas
+                                _writer.WriteCommentValue(comment);
+                            }
                         }
                     }
 
@@ -260,54 +243,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 else
                 {
-                    ProcessChildren(section, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, mockDefaults, configFlag: configFlag);
+                    ProcessChildren(section, includeChildSections, redact, showSources: showSources);
                 }
             }
             else if (!canWriteChildren)
             {
                 WriteValue(section.Value, redact);
 
-                WriteComment(GetConfigurationProvider(section, showSources));
+                string comment = GetConfigurationProvider(section, showSources);
+
+                if (comment.Length > 0)
+                {
+                    // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
+                    // that prevents comments from being directly after commas
+                    _writer.WriteCommentValue(comment);
+                }
             }
-        }
-
-        private Dictionary<string, string> CollectionRuleDefaultsSetup(IConfigurationSection section, ref IndependentConfigFlags configFlag)
-        {
-            var mockDefaults = new Dictionary<string, string>();
-
-            Type typeToUse = null;
-            IndependentConfigFlags updatedFlag = IndependentConfigFlags.None;
-
-            if (configFlag == IndependentConfigFlags.IsCollectionRule && !section.GetSection(LimitsSection).Exists())
-            {
-                typeToUse = typeof(CollectionRuleLimitsOptions);
-                updatedFlag = IndependentConfigFlags.MockLimits;
-            }
-            else if (section.Key.Equals(nameof(CollectionRuleOptions.Trigger)))
-            {
-                typeToUse = GetTriggerOptionsType(section);
-                updatedFlag = GetUpdatedSettingsFlag(section);
-            }
-            else if (section.Key.Equals(nameof(CollectionRuleOptions.Limits)))
-            {
-                typeToUse = typeof(CollectionRuleLimitsOptions);
-            }
-            else if (section.Key.Equals(ConfigurationKeys.CollectionRules))
-            {
-                configFlag = IndependentConfigFlags.IsCollectionRule;
-                return null;
-            }
-
-            mockDefaults = typeToUse != null ? GetMockedChildren(typeToUse) : mockDefaults;
-
-            configFlag = mockDefaults.Any() ? updatedFlag : IndependentConfigFlags.None;
-
-            return mockDefaults;
-        }
-
-        private IndependentConfigFlags GetUpdatedSettingsFlag(IConfigurationSection section)
-        {
-            return !section.GetSection(SettingsSection).Exists() ? IndependentConfigFlags.MockSettings : IndependentConfigFlags.MockValuesNext;
         }
 
         private string GetConfigurationProvider(IConfigurationSection section, bool showSources)
@@ -352,136 +303,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _writer.WriteStringValue(valueToWrite);
         }
 
-        private void WriteComment(string comment)
-        {
-            if (comment.Length > 0)
-            {
-                // TODO: Comments are currently written after Key/Value pairs due to a limitation in System.Text.Json
-                // that prevents comments from being directly after commas
-                _writer.WriteCommentValue(comment);
-            }
-        }
-
-        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact, bool showSources, bool loadCRDefaults, Dictionary<string, string> mockDefaults = null, IndependentConfigFlags configFlag = IndependentConfigFlags.None)
+        private void ProcessChildren(IConfigurationSection section, bool includeChildSections, bool redact, bool showSources)
         {
             using (new JsonObjectContext(_writer))
             {
-                IndependentConfigFlags existingConfigFlag = configFlag;
-
-                bool shouldMockDefaults = (null != mockDefaults && mockDefaults.Any()) && existingConfigFlag != IndependentConfigFlags.MockValuesNext;
-
-                configFlag = (configFlag != IndependentConfigFlags.IsCollectionRule) ? IndependentConfigFlags.None : configFlag;
-
                 foreach (IConfigurationSection child in section.GetChildren())
                 {
-                    ProcessSection(child, includeChildSections, redact, showSources: showSources, loadCRDefaults: loadCRDefaults, mockDefaults: shouldMockDefaults ? null : mockDefaults, configFlag: configFlag);
-                }
-
-                var childKeys = section.GetChildren().Select(x => x.Key).ToList();
-
-                if (shouldMockDefaults)
-                {
-                    if (existingConfigFlag == IndependentConfigFlags.MockSettings)
-                    {
-                        MockSection(mockDefaults, childKeys, SettingsSection, showSources);
-                    }
-                    else if (existingConfigFlag == IndependentConfigFlags.MockLimits)
-                    {
-                        MockSection(mockDefaults, childKeys, LimitsSection, showSources);
-                    }
-                    else
-                    {
-                        MockChildren(mockDefaults, childKeys, showSources);
-                    }
+                    ProcessSection(child, includeChildSections, redact, showSources: showSources);
                 }
             }
-        }
-
-        private void MockSection(Dictionary<string, string> mockDefaults, List<string> childKeys, string propertyName, bool showSources)
-        {
-            _writer.WritePropertyName(propertyName);
-
-            using (new JsonObjectContext(_writer))
-            {
-                MockChildren(mockDefaults, childKeys, showSources);
-            }
-        }
-
-        private void MockChildren(Dictionary<string, string> mockedChildren, List<string> childKeys, bool showSources)
-        {
-            foreach (var mockedChild in mockedChildren)
-            {
-                if (!childKeys.Contains(mockedChild.Key))
-                {
-                    // Currently only handling values - this will need to be upgraded for array-style collection rule defaults
-                    _writer.WritePropertyName(mockedChild.Key);
-                    _writer.WriteStringValue(mockedChild.Value);
-
-                    if (showSources)
-                    {
-                        WriteComment("Collection Rule Defaults");
-                    }
-                }
-            }
-        }
-
-        private Dictionary<string, string> GetMockedChildren(Type optionsType)
-        {
-            var childrenToMock = new Dictionary<string, string>();
-
-            var settingsPropsNames = optionsType.GetProperties().Select(x => x.Name);
-
-            foreach (var defaultPair in GetDefaultsNamesAndValues())
-            {
-                if (settingsPropsNames.Contains(defaultPair.Key))
-                {
-                    if (!string.IsNullOrEmpty(defaultPair.Value))
-                    {
-                        childrenToMock.Add(defaultPair.Key, defaultPair.Value);
-                    }
-                }
-            }
-
-            return childrenToMock;
-        }
-
-        private Dictionary<string, string> GetDefaultsNamesAndValues()
-        {
-            Dictionary<string, string> defaultNamesAndValues = new();
-
-            foreach (var defaultsProp in typeof(CollectionRuleDefaultsOptions).GetProperties())
-            {
-                var nestedDefaultsProps = defaultsProp.PropertyType.GetProperties();
-
-                foreach (var nestedDefaultsProp in nestedDefaultsProps)
-                {
-                    defaultNamesAndValues.Add(nestedDefaultsProp.Name, _configuration.GetSection($"{ConfigurationKeys.CollectionRuleDefaults}:{defaultsProp.Name}:{nestedDefaultsProp.Name}").Value);
-                }
-            }
-
-            return defaultNamesAndValues;
-        }
-
-        private Type GetActionOptionsType(IConfigurationSection section)
-        {
-            string actionTypeName = section.GetSection("Type").Value;
-
-            var actionOperations = _serviceProvider.GetService<ICollectionRuleActionOperations>();
-
-            actionOperations.TryCreateOptions(actionTypeName, out object actionSettings);
-
-            return actionSettings.GetType();
-        }
-
-        private Type GetTriggerOptionsType(IConfigurationSection section)
-        {
-            string triggerTypeName = section.GetSection("Type").Value;
-
-            var triggerOperations = _serviceProvider.GetService<ICollectionRuleTriggerOperations>();
-
-            triggerOperations.TryCreateOptions(triggerTypeName, out object triggerSettings);
-
-            return triggerSettings.GetType();
         }
 
         private bool CheckForSequentialIndices(IEnumerable<IConfigurationSection> children)
@@ -520,16 +350,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 Writer.WriteEndObject();
             }
-        }
-
-        // None of these fields can occur simultaneously; to minimize optional parameters, we pass one parameter that can hold one of these values
-        public enum IndependentConfigFlags
-        {
-            None,
-            MockSettings,
-            MockLimits,
-            MockValuesNext,
-            IsCollectionRule
         }
     }
 }
