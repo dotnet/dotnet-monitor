@@ -14,17 +14,17 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="7.0.0-preview.4.22178.14" CoherentParentDependency="Microsoft.NETCore.App.Runtime.win-x64">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="6.0.0-rtm.21518.18" CoherentParentDependency="Microsoft.NETCore.App.Runtime.win-x64">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>08b9ded29ae8696fbbd1b5ae2f66b16739da4bef</Sha>
+      <Sha>230b3e1bc9c7fcf2faf414f5e844e011ff23e2f9</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22179.1">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22181.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>1527dc867ccb652def4c0f57fbd2ebbed3a94019</Sha>
+      <Sha>e0b311bcd81fc9e27bcf7715dcda62fa38dfa49a</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.22179.1">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.22181.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>1527dc867ccb652def4c0f57fbd2ebbed3a94019</Sha>
+      <Sha>e0b311bcd81fc9e27bcf7715dcda62fa38dfa49a</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.317802">
       <Uri>https://github.com/dotnet/symstore</Uri>
@@ -34,9 +34,9 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>bd43f55230d533af326e727366f61cfd3ed0e050</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.4.22178.14" CoherentParentDependency="Microsoft.NETCore.App.Runtime.win-x64">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0" Version="7.0.0-alpha.1.21514.17" CoherentParentDependency="Microsoft.NETCore.App.Runtime.win-x64">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>08b9ded29ae8696fbbd1b5ae2f66b16739da4bef</Sha>
+      <Sha>0e5df998b53ca9f366244ce2cf91ee8a1e4077ba</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.4.22178.1">
       <Uri>https://github.com/dotnet/runtime</Uri>
