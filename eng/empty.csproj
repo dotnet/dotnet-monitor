@@ -18,7 +18,7 @@
        - eng/Build-Native.cmd on Windows
 
        It is used to generate native file versioning resources. Here, it is also
-       used to provide produce version information in a header file.
+       used to provide product version information in a header file.
   -->
   <Target Name="GenerateRuntimeVersionFile"
           DependsOnTargets="GenerateNativeVersionFile">
