@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -90,26 +91,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
-        public static IEnumerable<object[]> GetTfmsAndProfilerPath()
+        public static IEnumerable<object[]> GetTfmsAchitectureProfilerPath()
         {
             // There isn't a good way to check if the test should be using the x86 or x64 profiler
             // when running unit tests. Each build job builds one specific architecture but from
-            // a test perspective, it cannot tell which one was built. Additionally, only the x64
-            // runtimes are installed at this time. Most test runs occur on x64, so try that one first.
-            string profilerPath = NativeLibraryHelper.GetMonitorProfilerPath("x64");
-            if (File.Exists(profilerPath))
+            // a test perspective, it cannot tell which one was built. Gather all of the profilers
+            // for every architecture so long as they exist.
+            List<object[]> arguments = new();
+            AddTestCases(arguments, Architecture.X64);
+            AddTestCases(arguments, Architecture.X86);
+            AddTestCases(arguments, Architecture.Arm64);
+            return arguments;
+
+            static void AddTestCases(List<object[]> arguments, Architecture architecture)
             {
-                foreach (TargetFrameworkMoniker tfm in ActionTestsHelper.tfms6PlusToTest)
+                string profilerPath = NativeLibraryHelper.GetMonitorProfilerPath(architecture);
+                if (File.Exists(profilerPath))
                 {
-                    yield return new object[] { tfm, profilerPath };
+                    foreach (TargetFrameworkMoniker tfm in ActionTestsHelper.tfms6PlusToTest)
+                    {
+                        arguments.Add(new object[] { tfm, architecture, profilerPath });
+                    }
                 }
-            }
-            else
-            {
-                // If the x64 library could not be found, likely built the x86 library (it shouldn't
-                // be arm64 since tests are not run on arm64). Check that x86 was built and pass the
-                // test since the actual test cannot be run without the x86 runtimes.
-                Assert.True(File.Exists(NativeLibraryHelper.GetMonitorProfilerPath("x86")));
             }
         }
 

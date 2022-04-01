@@ -20,28 +20,29 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public static readonly Guid MonitorProfilerClsid = new Guid("6A494330-5848-4A23-9D87-0E57BBF6DE79");
 
-        public static string GetMonitorProfilerPath(string architecture) =>
+        public static string GetMonitorProfilerPath(Architecture architecture) =>
             GetSharedLibraryPath(architecture, "MonitorProfiler");
 
-        private static string GetSharedLibraryPath(string architecture, string rootName)
+        private static string GetSharedLibraryPath(Architecture architecture, string rootName)
         {
             string artifactsBinPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "..", ".."));
             return Path.Combine(artifactsBinPath, GetNativeBinDirectoryName(architecture), GetSharedLibraryName(rootName));
         }
 
-        private static string GetNativeBinDirectoryName(string architecture)
+        private static string GetNativeBinDirectoryName(Architecture architecture)
         {
+            string architectureString = GetArchitectureFolderName(architecture);
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return $"Windows_NT.{architecture}.{ConfigurationName}";
+                return $"Windows_NT.{architectureString}.{ConfigurationName}";
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return $"Linux.{architecture}.{ConfigurationName}";
+                return $"Linux.{architectureString}.{ConfigurationName}";
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                return $"OSX.{architecture}.{ConfigurationName}";
+                return $"OSX.{architectureString}.{ConfigurationName}";
             }
             throw new PlatformNotSupportedException();
         }
@@ -61,6 +62,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 return $"lib{rootName}.dylib";
             }
             throw new PlatformNotSupportedException();
+        }
+
+        private static string GetArchitectureFolderName(Architecture architecture)
+        {
+            return architecture.ToString("G").ToLowerInvariant();
         }
     }
 }

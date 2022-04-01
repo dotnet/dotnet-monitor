@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -24,6 +25,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const string DefaultRuleName = "ProfilerTestRule";
 
+        // This environment variable name is embedded into the profiler and set at profiler initialization.
+        // The value is determined BEFORE native build by the generation of the product version into the
+        // _productversion.h header file.
         private const string ProductVersionEnvVarName = "DOTNETMONITOR_ProductVersion";
 
         private readonly ITestOutputHelper _outputHelper;
@@ -39,9 +43,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Tests the LoadProfiler action using the monitor profiler.
         /// </summary>
         [Theory]
-        [MemberData(nameof(ActionTestsHelper.GetTfmsAndProfilerPath), MemberType = typeof(ActionTestsHelper))]
-        public async Task LoadProfilerAsStartupProfilerTest(TargetFrameworkMoniker tfm, string profilerPath)
+        [MemberData(nameof(ActionTestsHelper.GetTfmsAchitectureProfilerPath), MemberType = typeof(ActionTestsHelper))]
+        public async Task LoadProfilerAsStartupProfilerTest(TargetFrameworkMoniker tfm, Architecture architecture, string profilerPath)
         {
+            if (Architecture.X86 == architecture)
+            {
+                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
+                return;
+            }
+
             string profilerFileName = Path.GetFileName(profilerPath);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
@@ -63,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 await runner.ExecuteAsync(async () =>
                 {
-                    // At this point, the profiler has alreay been initialized and managed code is already running.
+                    // At this point, the profiler has already been initialized and managed code is already running.
                     // Use any of the initialization state of the profiler to validate that it is loaded.
                     string productVersion = await runner.GetEnvironmentVariable(ProductVersionEnvVarName, CommonTestTimeouts.EnvVarsTimeout);
 
