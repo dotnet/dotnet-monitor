@@ -31,6 +31,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Flag used to guard against multiple invocations of _startCallback.
         private bool _invokedStartCallback = false;
 
+        internal CollectionRuleCleanupExplanation _cleanupExplanation;
+
         // Exposed for showing Collection Rule State
         internal Queue<DateTime> _executionTimestamps;
         internal List<DateTime> _allExecutionTimestamps = new();
@@ -259,6 +261,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 _startCallback?.Invoke();
                 _invokedStartCallback = true;
             }
+        }
+
+        protected override async Task OnCleanup()
+        {
+            TimeSpan? ruleDuration = _context.Options.Limits?.RuleDuration;
+
+            if (ruleDuration.HasValue && _context.Clock.UtcNow.UtcDateTime - (_pipelineStartTime + ruleDuration.Value) > TimeSpan.Zero)
+            {
+                _cleanupExplanation = CollectionRuleCleanupExplanation.RuleDurationExceeded;
+            }
+            else
+            {
+                _cleanupExplanation = CollectionRuleCleanupExplanation.ConfigurationChanged;
+            }
+
+            await base.OnCleanup();
         }
     }
 }

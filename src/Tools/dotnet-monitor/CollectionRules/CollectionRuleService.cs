@@ -258,16 +258,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
 
+                    var stateAndReason = GetCollectionRulesState(pipeline, actionCountLimit);
+
                     Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
                     {
-                        State = GetCollectionRulesState(pipeline, actionCountLimit),
-                        StateReason = "Test",
+                        State = stateAndReason.Item1,
+                        StateReason = stateAndReason.Item2,
                         LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
                         ActionCountLimit = actionCountLimit,
                         SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
                         ActionCountSlidingWindowDurationLimit = actionCountSWDLimit,
-                        SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, actionCountSWDLimit, actionCountLimit, currentTimestamp),
-                        RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline._pipelineStartTime, options.Limits?.RuleDuration, currentTimestamp)
+                        SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, actionCountSWDLimit, actionCountLimit, currentTimestamp, pipeline._isCleanedUp),
+                        RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline._pipelineStartTime, options.Limits?.RuleDuration, currentTimestamp, pipeline._isCleanedUp)
                     };
 
                     collectionRulesState.Add(pipeline._context.Name, currCollectionRuleInfo);
@@ -277,8 +279,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return collectionRulesState;
         }
 
-        private static TimeSpan? GetSWDCountdown(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, int actionCount, DateTime currentTimestamp)
+        private static TimeSpan? GetSWDCountdown(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, int actionCount, DateTime currentTimestamp, bool pipelineCompleted)
         {
+            if (pipelineCompleted)
+            {
+                return null;
+            }
+
             if (actionCountWindowDuration.HasValue)
             {
                 if (timestamps.Count >= actionCount)
@@ -293,8 +300,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return null;
         }
 
-        private static TimeSpan? GetRuleFinishedCountdown(DateTime pipelineStartTime, TimeSpan? ruleDuration, DateTime currentTimestamp)
+        private static TimeSpan? GetRuleFinishedCountdown(DateTime pipelineStartTime, TimeSpan? ruleDuration, DateTime currentTimestamp, bool pipelineCompleted)
         {
+            if (pipelineCompleted)
+            {
+                return null;
+            }
+
             if (ruleDuration.HasValue)
             {
                 TimeSpan countdown = ruleDuration.Value - (currentTimestamp - pipelineStartTime);
@@ -315,22 +327,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return TimeSpan.FromSeconds((long)original.TotalSeconds); // Intentionally lose millisecond precision
         }
 
-        private CollectionRulesState GetCollectionRulesState(CollectionRulePipeline pipeline, int actionCount)
+        private Tuple<CollectionRulesState, string> GetCollectionRulesState(CollectionRulePipeline pipeline, int actionCount)
         {
             if (pipeline._actionInFlight)
             {
-                return CollectionRulesState.ActionExecuting;
+                return new Tuple<CollectionRulesState, string>(CollectionRulesState.ActionExecuting, CollectionRulesStateReasons.ExecutingActions);
             }
             else if (pipeline._isCleanedUp)
             {
-                return CollectionRulesState.Finished;
+                if (pipeline._cleanupExplanation == CollectionRuleCleanupExplanation.ConfigurationChanged)
+                {
+                    return new Tuple<CollectionRulesState, string>(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_ConfigurationChanged);
+                }
+                else if (pipeline._cleanupExplanation == CollectionRuleCleanupExplanation.RuleDurationExceeded)
+                {
+                    return new Tuple<CollectionRulesState, string>(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_RuleDuration);
+                }
+
+                return new Tuple<CollectionRulesState, string>(CollectionRulesState.Finished, String.Empty);
             }
             else if (actionCount <= pipeline._executionTimestamps.Count)
             {
-                return CollectionRulesState.Throttled;
+                return new Tuple<CollectionRulesState, string>(CollectionRulesState.Throttled, CollectionRulesStateReasons.Throttled);
             }
 
-            return CollectionRulesState.Running;
+            return new Tuple<CollectionRulesState, string>(CollectionRulesState.Running, CollectionRulesStateReasons.Running);
         }
 
         private void CleanUpCompletedPipelines(IEndpointInfo key)
