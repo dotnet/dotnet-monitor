@@ -26,7 +26,7 @@ dotnet tool update -g dotnet-monitor
 You can pull the latest image using the following command:
 
 ```cmd
-docker pull mcr.microsoft.com/dotnet/monitor:6.0
+docker pull mcr.microsoft.com/dotnet/monitor
 ```
 
 ### Working with CI builds
