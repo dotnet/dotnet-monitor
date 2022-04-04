@@ -1,6 +1,4 @@
 Today we are releasing the next official preview of the `dotnet monitor` tool. This release includes:
 
-- Allow for pushing a message to a queue when writing to Azure egress (#163)
-- Allow for simplified process filter configuration (#636)
-- Allow `config show` command to list configuration sources (#277)
-
+- Add experience survey link (#1601)
+- Docker: Add CBL-Mariner 2.0 amd64 image

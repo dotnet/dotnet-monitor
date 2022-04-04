@@ -268,6 +268,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Value must be between 1 and 254, or -1 (to obtain the maximum number allowed by system resources)..
+        /// </summary>
+        internal static string ErrorMessage_MaxConnections {
+            get {
+                return ResourceManager.GetString("ErrorMessage_MaxConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The environment block does not contain the &apos;{0}&apos; variable..
         /// </summary>
         internal static string ErrorMessage_NoEnvironmentVariable {
@@ -862,6 +871,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tell us about your experience with dotnet monitor: {link}.
+        /// </summary>
+        internal static string LogFormatString_ExperienceSurvey {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExperienceSurvey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting the environment variable {variableName} from process {processId}..
         /// </summary>
         internal static string LogFormatString_GetEnvironmentVariable {
@@ -1002,6 +1020,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_WritingMessageToQueueFailed {
             get {
                 return ResourceManager.GetString("LogFormatString_WritingMessageToQueueFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tell us about your experience with dotnet monitor: {0}.
+        /// </summary>
+        internal static string Message_ExperienceSurvey {
+            get {
+                return ResourceManager.GetString("Message_ExperienceSurvey", resourceCulture);
             }
         }
         

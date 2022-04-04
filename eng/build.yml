@@ -4,14 +4,19 @@ parameters:
   displayName: ''
   osGroup: Windows
   configuration: Release
+  architecture: x64
   # Additional variables
   variables: {}
   # Optional: Job timeout
   timeoutInMinutes: 180
   # Depends on 
   dependsOn: ''
-  # Flag to determine if files should be signed and published
-  signAndPublishArtifacts: false
+  # Sub path under 'artifacts' folder from which files are published to artifacts location
+  publishArtifactsSubPath: ''
+  # Sub path under artifacts location to which artifact files are publish
+  publishArtifactsTargetSubPath: ''
+  # Group of tests to be run
+  testGroup: Default
   # TFMs for which test results are uploaded
   testResultTfms:
   - key: netcoreapp3.1
@@ -36,10 +41,7 @@ jobs:
     artifacts:
       publish:
         logs:
-          name: Logs_${{ parameters.osGroup }}_${{ parameters.configuration }}
-        ${{ if and(ne(variables['System.TeamProject'], 'public'), eq(parameters.signAndPublishArtifacts, 'true')) }}:
-          artifacts:
-            name: Artifacts_${{ parameters.osGroup }}_${{ parameters.configuration }}
+          name: Logs_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
 
     pool:
       # Public Linux Build Pool
@@ -68,10 +70,17 @@ jobs:
           demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-20210714125435-9b5bbc2
+      ${{ if eq(parameters.architecture, 'arm64') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-20220312201346-b2c2436
+      ${{ else }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-20220107135107-9b5bbc2
 
     ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode-20211214164112-c401c85
+      ${{ if eq(parameters.architecture, 'arm64') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine-20220312201346-538077f
+      ${{ else }}:
+        # CMake + Clang is broken on Alpine 3.14 prereqs image
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode-20211214164113-c401c85
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
@@ -84,31 +93,41 @@ jobs:
     - _BuildConfig: ${{ parameters.configuration }}
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
-    - _SignType: test
+    - _CrossBuildArgs: ''
+    - _TestArgs: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
-    - _InternalSignArgs: ''
-    - _InternalPublishArgs: ''
 
     # Component Governance does not work on Musl
     - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       - skipComponentGovernanceDetection: true
+    
+    # Cross build for arm64 non-Windows builds
+    - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
+      - _CrossBuildArgs: '-cross'
+
+    - ${{ if ne(parameters.testGroup, 'None') }}:
+      # If TestGroup == 'Default', choose the test group based on the type of pipeline run
+      - ${{ if eq(parameters.testGroup, 'Default') }}:
+        - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
+          - _TestArgs: '-test -testgroup CI'
+        - ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+          - _TestArgs: '-test -testgroup PR'
+        - ${{ else }}:
+          - _TestArgs: '-test -testgroup All'
+      - ${{ else }}:
+          - _TestArgs: '-test -testgroup ${{ parameters.testGroup }}'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
       - _InternalInstallArgs: >-
-          /p:DotNetRuntimeSourceFeed=https://dotnetclimsrc.blob.core.windows.net/dotnet
-          /p:DotNetRuntimeSourceFeedKey=$(dotnetclimsrc-read-sas-token-base64)
+          -RuntimeSourceFeed https://dotnetclimsrc.blob.core.windows.net/dotnet
+          -RuntimeSourceFeedKey $(dotnetclimsrc-read-sas-token-base64)
 
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - _InternalBuildArgs: >-
-          -pack
           /p:TeamName=$(_TeamName)
           /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
-      - ${{ if eq(parameters.signAndPublishArtifacts, 'true') }}:
-        - _SignType: real
-        - _InternalSignArgs: -sign /p:DotNetSignType=$(_SignType)
-        - _InternalPublishArgs: -publish /p:DotNetPublishUsingPipelines=true
 
     # Only enable publishing in non-public, non PR scenarios.
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
@@ -143,40 +162,55 @@ jobs:
             Token: $(dn-bot-dnceng-artifact-feeds-rw)
 
     - script: >-
-        $(Build.SourcesDirectory)/build$(scriptExt)
-        -ci
-        -test
+        $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
         -configuration ${{ parameters.configuration }}
-        -prepareMachine
+        -architecture ${{ parameters.architecture }}
+        $(_CrossBuildArgs)
+        $(_TestArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
-        $(_InternalSignArgs)
-        $(_InternalPublishArgs)
       displayName: Build and Test
-      condition: succeeded()
+      ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
+        env:
+          ROOTFS_DIR: '/crossrootfs/arm64'
 
-    # # Publish test results to Azure Pipelines
-    - ${{ each testResultTfm in parameters.testResultTfms }}:
-      - task: PublishTestResults@2
-        displayName: Publish Test Results (${{ testResultTfm.value }})
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), ne(parameters.publishArtifactsSubPath, '')) }}:
+      - task: CopyFiles@2
+        displayName: Gather Artifacts
         inputs:
-          testResultsFormat: VSTest
-          testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
-          searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
-          failTaskOnFailedTests: true
-          testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} ${{ testResultTfm.value }}'
-          publishRunAttachments: true
-          mergeTestResults: true
-          buildConfiguration: ${{ parameters.name }}
-        continueOnError: true
-        condition: succeededOrFailed()
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/${{ parameters.publishArtifactsSubPath }}'
+          Contents: '**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/${{ coalesce(parameters.publishArtifactsTargetSubPath, parameters.publishArtifactsSubPath) }}'
 
-    - ${{ if ne(variables['System.TeamProject'], 'public') }}:
       - task: PublishBuildArtifacts@1
-        displayName: Publish Test Result Files
+        displayName: Publish Artifacts
         inputs:
-          PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
-          PublishLocation: Container
-          ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.configuration }}
-        continueOnError: true
-        condition: succeededOrFailed()
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+          artifactName: Build_${{ parameters.configuration }}
+
+    # Publish test results to Azure Pipelines
+    - ${{ if ne(parameters.testGroup, 'None') }}:
+      - ${{ each testResultTfm in parameters.testResultTfms }}:
+        - task: PublishTestResults@2
+          displayName: Publish Test Results (${{ testResultTfm.value }})
+          inputs:
+            testResultsFormat: VSTest
+            testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
+            searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
+            failTaskOnFailedTests: true
+            testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} ${{ testResultTfm.value }}'
+            publishRunAttachments: true
+            mergeTestResults: true
+            buildConfiguration: ${{ parameters.name }}
+          continueOnError: true
+          condition: succeededOrFailed()
+
+      - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Test Result Files
+          inputs:
+            PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+            PublishLocation: Container
+            ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
+          continueOnError: true
+          condition: succeededOrFailed()

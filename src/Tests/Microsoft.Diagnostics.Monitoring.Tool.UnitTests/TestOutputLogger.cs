@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
@@ -53,7 +54,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            _outputHelper.WriteLine($"[Logger:{_categoryName}][Id:{eventId.Id}] {formatter(state, exception)}");
+            WriteLine(formatter(state, exception));
+            if (null != exception)
+            {
+                WriteLine($"Exception: {exception.GetType().Name}");
+                WriteLine($"Message: {exception.Message}");
+                WriteLine("Start Stack");
+                StringReader reader = new(exception.StackTrace);
+                string line = null;
+                while (null != (line = reader.ReadLine()))
+                {
+                    WriteLine(line);
+                }
+                WriteLine("End Stack");
+            }
+
+            void WriteLine(string text)
+            {
+                _outputHelper.WriteLine($"[Logger:{_categoryName}][Id:{eventId.Id}] {text}");
+            }
         }
     }
 }

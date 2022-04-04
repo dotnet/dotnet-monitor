@@ -775,7 +775,9 @@
           ],
           "description": "The number of times the action list may be executed before being throttled.",
           "format": "int32",
-          "default": 5
+          "default": 5,
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         },
         "ActionCountSlidingWindowDuration": {
           "type": [
@@ -1014,7 +1016,9 @@
             "null"
           ],
           "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
-          "format": "int32"
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         }
       }
     },
@@ -1044,7 +1048,9 @@
           ],
           "description": "Amount of data points to store per metric.",
           "format": "int32",
-          "default": 3
+          "default": 3,
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         },
         "IncludeDefaultProviders": {
           "type": [
@@ -1509,7 +1515,9 @@
         "RequestCount": {
           "type": "integer",
           "description": "The threshold of the number of requests that start within the sliding window of time.",
-          "format": "int32"
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         },
         "SlidingWindowDuration": {
           "type": [
@@ -1552,7 +1560,9 @@
         "RequestCount": {
           "type": "integer",
           "description": "The threshold of the number of slow requests that start within the sliding window of time.",
-          "format": "int32"
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         },
         "RequestDuration": {
           "type": [
@@ -1614,7 +1624,9 @@
         "ResponseCount": {
           "type": "integer",
           "description": "The threshold number of responses with matching status codes.",
-          "format": "int32"
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         },
         "SlidingWindowDuration": {
           "type": [
