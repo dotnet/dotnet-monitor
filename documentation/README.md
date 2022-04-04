@@ -8,7 +8,7 @@ When running a dotnet application, differences in diverse local and production e
 
 - [Releases](./releases.md)
 - [Setup](./setup.md)
-- [Getting Started](#)
+- Getting Started
     - [Running on a local machine](./localmachine.md)
     - [Running in Docker](./docker.md)
     - [Running in Kubernetes](./kubernetes.md)
