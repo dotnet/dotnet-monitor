@@ -11,4 +11,4 @@
 
 | Version  | Latest Version | Release Date | Runtime Frameworks |
 |---|---|---|---|
-| 7.0 | [7.0.0 Preview 1](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releaseNotes/releaseNotes.v7.0.0-preview.1.22109.7.md) | February 17, 2022 | .NET 6 (with major roll forward)<br/>.NET 7 |
+| 7.0 | [7.0.0 Preview 2](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releaseNotes/releaseNotes.v7.0.0-preview.2.22154.3.md) | March 15th, 2022 | .NET 6 (with major roll forward)<br/>.NET 7 |

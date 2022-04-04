@@ -21,8 +21,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     internal static class ActionTestsHelper
     {
-        public static TargetFrameworkMoniker[] tfmsToTest = new TargetFrameworkMoniker[] { TargetFrameworkMoniker.Net50, TargetFrameworkMoniker.Net60 };
-        public static TargetFrameworkMoniker[] tfms6PlusToTest = new TargetFrameworkMoniker[] { TargetFrameworkMoniker.Net60 };
+        public static TargetFrameworkMoniker[] tfmsToTest = new TargetFrameworkMoniker[]
+        {
+            TargetFrameworkMoniker.Net50,
+            TargetFrameworkMoniker.Net60,
+#if INCLUDE_NEXT_DOTNET
+            TargetFrameworkMoniker.Net70
+#endif
+        };
+        public static TargetFrameworkMoniker[] tfms6PlusToTest = new TargetFrameworkMoniker[]
+        {
+            TargetFrameworkMoniker.Net60,
+#if INCLUDE_NEXT_DOTNET
+            TargetFrameworkMoniker.Net70
+#endif
+        };
 
         public static IEnumerable<object[]> GetTfms()
         {

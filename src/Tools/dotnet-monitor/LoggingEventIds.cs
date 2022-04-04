@@ -69,7 +69,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         MonitorApiKeyNotConfigured = 56,
         QueueDoesNotExist = 57,
         QueueOptionsPartiallySet = 58,
-        WritingMessageToQueueFailed = 59
+        WritingMessageToQueueFailed = 59,
+        ExperienceSurvey = 60
     }
 
     internal static class LoggingEventIdsExtensions

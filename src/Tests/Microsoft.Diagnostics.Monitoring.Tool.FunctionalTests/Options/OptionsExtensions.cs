@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                     RSA rsa = RSA.Create(GetRsaKeyLengthFromName(algorithmName));
                     RsaSecurityKey rsaSecKey = new RsaSecurityKey(rsa);
                     signingCreds = new SigningCredentials(rsaSecKey, algorithmName);
-                    RSA pubRsa = RSA.Create(rsa.ExportParameters(false));
+                    RSA pubRsa = RSA.Create(rsa.ExportParameters(false)); // lgtm[cs/weak-asymmetric-algorithm] Intentional testing rejection of weak algorithm
                     RsaSecurityKey pubRsaSecKey = new RsaSecurityKey(pubRsa);
                     exportableJwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(pubRsaSecKey);
                     privateKey = rsaSecKey;
