@@ -40,7 +40,7 @@ The following are the currently available triggers:
 |---|---|---|
 | Startup | Startup | Satisfied immediately when the rule is applied to a process. |
 | [AspNetRequestCount](./configuration.md#aspnetrequestcount-trigger) | Event Pipe | Satisfied when the number of HTTP requests is above the threshold count. |
-| [AspNetRequestDuration](./configuration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests have response times longer than the threshold duration. |
+| [AspNetRequestDuration](./configuration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests that have response times longer than the threshold duration is above the threshold count. |
 | [AspNetResponseStatus](./configuration.md#aspnetresponsestatus-trigger) | Event Pipe | Satisfied when the number of HTTP responses that have status codes matching the pattern list is above the specified threshold. |
 | [EventCounter](./configuration.md#eventcounter-trigger) | Event Pipe | Satisfied when the value of a counter falls above, below, or between the described threshold. |
 
@@ -58,8 +58,8 @@ The following are the currently available actions:
 | [CollectTrace](./configuration.md#collecttrace-action) | Collects an event trace of the target process. |
 | [Execute](./configuration.md#execute-action) | Executes an external executable with command line parameters. |
 | [LoadProfiler](./configuration.md#loadprofiler-action) | Loads an ICorProfilerCallback implementation into the target process. |
-| [SetEnvironmentVariable](./configuration.md#setenvironmentvaraible-action) | Sets an environment variable value in the target process. |
-| [GetEnvironmentVariable](./configuration.md#Getenvironmentvaraible-action) | Gets an environment variable value from the target process. |
+| [SetEnvironmentVariable](./configuration.md#setenvironmentvariable-action) | Sets an environment variable value in the target process. |
+| [GetEnvironmentVariable](./configuration.md#getenvironmentvariable-action) | Gets an environment variable value from the target process. |
 
 ## Limits
 
@@ -75,7 +75,7 @@ Actions may reference the outputs of other actions that have started before them
 
 where `<ActionName>` is the name of the action from which to get an output value and `<OutputName>` is the name of an output from that action.
 
-For example, if action `A` has an output named `EgressPath`, and action `B` has a settings property named `Arguments`, then action `B` can reference the `EgressPath` from within the `Arguments` property setting:
+For example, if action `A` has an output named `Egress`, and action `B` has a settings property named `Arguments`, then action `B` can reference the `Egress` from within the `Arguments` property setting:
 
 ```json
 {
@@ -91,7 +91,7 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
         "Type": "Execute",
         "Settings": {
             "Path": "path-to-dotnet",
-            "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
+            "Arguments": "MyApp.dll $(Actions.A.Egress)"
         }
     }]
 }
