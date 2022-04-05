@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Tests the LoadProfiler action using the monitor profiler.
         /// </summary>
         [Theory]
-        [MemberData(nameof(ActionTestsHelper.GetTfmsAchitectureProfilerPath), MemberType = typeof(ActionTestsHelper))]
+        [MemberData(nameof(ActionTestsHelper.GetTfmArchitectureProfilerPath), MemberType = typeof(ActionTestsHelper))]
         public async Task LoadProfilerAsStartupProfilerTest(TargetFrameworkMoniker tfm, Architecture architecture, string profilerPath)
         {
             if (Architecture.X86 == architecture)
