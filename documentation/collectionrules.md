@@ -75,7 +75,7 @@ Actions may reference the outputs of other actions that have started before them
 
 where `<ActionName>` is the name of the action from which to get an output value and `<OutputName>` is the name of an output from that action.
 
-For example, if action `A` has an output named `Egress`, and action `B` has a settings property named `Arguments`, then action `B` can reference the `Egress` from within the `Arguments` property setting:
+For example, if action `A` has an output named `EgressPath`, and action `B` has a settings property named `Arguments`, then action `B` can reference the `EgressPath` from within the `Arguments` property setting:
 
 ```json
 {
@@ -91,7 +91,7 @@ For example, if action `A` has an output named `Egress`, and action `B` has a se
         "Type": "Execute",
         "Settings": {
             "Path": "path-to-dotnet",
-            "Arguments": "MyApp.dll $(Actions.A.Egress)"
+            "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
         }
     }]
 }
