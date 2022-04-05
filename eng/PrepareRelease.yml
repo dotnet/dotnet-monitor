@@ -19,14 +19,18 @@ stages:
       - group: DotNet-Diagnostics-Storage
       - group: DotNet-DotNetStage-Storage
       - group: Release-Pipeline
-      - name: BARBuildId
-        value: $[ stageDependencies.publish_using_darc.setupMaestroVars.outputs['setReleaseVars.BARBuildId'] ]
     steps:
     - task: UseDotNet@2
       displayName: 'Use .NET Core runtime 3.1.x'
       inputs:
         packageType: runtime
         version: 3.1.x
+        installationPath: '$(Build.Repository.LocalPath)\.dotnet'
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core runtime 6.x'
+      inputs:
+        packageType: runtime
+        version: 6.x
         installationPath: '$(Build.Repository.LocalPath)\.dotnet'
     - ${{ if not(and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')))) }}:
       - script: '$(Build.SourcesDirectory)\dotnet.cmd build $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release /bl'
@@ -38,6 +42,7 @@ stages:
           publishLocation: 'pipeline'
           artifact: 'DiagnosticsReleaseToolBin'
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
+      - template: /eng/common/templates/post-build/setup-maestro-vars.yml
       - task: PowerShell@2
         displayName: 'DARC Gather build'
         inputs:
