@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -97,7 +98,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     scope);
 
                 ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-
+                if (null != result.Exception)
+                {
+                    throw new CollectionRuleActionException(result.Exception);
+                }
                 string traceFilePath = result.Result.Value;
 
                 return new CollectionRuleActionResult()

@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private static readonly ExecutionResult<T> _empty = new ExecutionResult<T>();
 
+        public Exception Exception { get; private set; }
         public T Result { get; private set; }
         public ProblemDetails ProblemDetails { get; private set; }
 
@@ -25,17 +26,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static ExecutionResult<T> Succeeded(T result) => new ExecutionResult<T> { Result = result };
 
-        public static ExecutionResult<T> Failed(ProblemDetails problemDetails) =>
-            new ExecutionResult<T> { ProblemDetails = problemDetails };
+        public static ExecutionResult<T> Failed(Exception exception) =>
+            new ExecutionResult<T> { Exception = exception, ProblemDetails = exception.ToProblemDetails((int)HttpStatusCode.BadRequest) };
 
         public static ExecutionResult<T> Empty() => _empty;
     }
 
     internal static class ExecutionHelper
     {
-        private static ExecutionResult<T> ExceptionToResult<T>(Exception ex) =>
-            ExecutionResult<T>.Failed(ex.ToProblemDetails((int)HttpStatusCode.BadRequest));
-
         public static async Task<ExecutionResult<T>> InvokeAsync<T>(Func<CancellationToken, Task<ExecutionResult<T>>> action, ILogger logger,
             CancellationToken token)
         {
@@ -49,35 +47,35 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             catch (ArgumentException ex) when (LogError(logger, ex))
             {
-                return ExceptionToResult<T>(ex);
+                return ExecutionResult<T>.Failed(ex);
             }
             catch (DiagnosticsClientException ex) when (LogError(logger, ex))
             {
-                return ExceptionToResult<T>(ex);
+                return ExecutionResult<T>.Failed(ex);
             }
             catch (InvalidOperationException ex) when (LogError(logger, ex))
             {
-                return ExceptionToResult<T>(ex);
+                return ExecutionResult<T>.Failed(ex);
             }
             catch (OperationCanceledException ex) when (token.IsCancellationRequested && LogInformation(logger, ex))
             {
-                return ExceptionToResult<T>(ex);
+                return ExecutionResult<T>.Failed(ex);
             }
             catch (OperationCanceledException ex) when (LogError(logger, ex))
             {
-                return ExceptionToResult<T>(ex);
+                return ExecutionResult<T>.Failed(ex);
             }
             catch (MonitoringException ex) when (LogError(logger, ex))
             {
-                return ExceptionToResult<T>(ex);
+                return ExecutionResult<T>.Failed(ex);
             }
             catch (ValidationException ex) when (LogError(logger, ex))
             {
-                return ExceptionToResult<T>(ex);
+                return ExecutionResult<T>.Failed(ex);
             }
             catch (UnauthorizedAccessException ex) when (LogError(logger, ex))
             {
-                return ExceptionToResult<T>(ex);
+                return ExecutionResult<T>.Failed(ex);
             }
         }
 
