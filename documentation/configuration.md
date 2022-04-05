@@ -103,7 +103,7 @@ spec:
         mountPath: /etc/dotnet-monitor
 ```
 
-If using multiple configuration maps, secrets, or some combination of both, you need to use a [projected volume](https://kubernetes.io/docs/concepts/storage/volumes/#projected) to map serveral volume sources into a single directory
+If using multiple configuration maps, secrets, or some combination of both, you need to use a [projected volume](https://kubernetes.io/docs/concepts/storage/volumes/#projected) to map several volume sources into a single directory
 
 ```yaml 
 spec:
@@ -475,7 +475,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 | Name | Type | Description |
 |---|---|---|
 | directoryPath | string | The directory path to which the stream data will be egressed.|
-| intermediateDirectoryPath | string | The directory path to which the stream data will initially be written, if specified; the file will then be moved/renamed to the directory specified in 'directoryPath'.|
+| intermediateDirectoryPath | string | The directory path to which the stream data will initially be written; if specified, the file will then be moved/renamed to the directory specified in 'directoryPath'.|
 
 ### Example fileSystem provider
 
@@ -594,7 +594,7 @@ A trigger that has its condition satisfied when the number of HTTP requests have
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
 | `RequestCount` | int | true | The threshold of the number of slow requests that start within the sliding window of time. | | | |
-| `RequestDuration` | Timespan? | false | The threshold of the amount of time in which a request is considered to be slow. | `"00:00:05"` (5 seconds) | | |
+| `RequestDuration` | Timespan? | false | The threshold of the amount of time in which a request is considered to be slow. | `"00:00:05"` (5 seconds) | `"00:00:00"` (zero seconds) | `"01:00:00"` (1 hour) |
 | `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the the number of slow requests are counted. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
 | `IncludePaths` | string[] | false | The list of request path patterns to monitor. If not specified, all request paths are considered. If specified, only request paths matching one of the patterns in this list will be considered. Request paths matching a pattern in the `ExcludePaths` list will be ignored. | `null` | | |
 | `ExcludePaths` | string[] | false | The list of request path patterns to ignore. Request paths matching a pattern in this list will be ignored. | `null` | | |
@@ -841,7 +841,7 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
 
 #### `LoadProfiler` Action
 
-An action that loads an ICorProfilerCallback implementation into a target process as a startup profiler. This action must be used in a collection rule with a `Startup` trigger.
+An action that loads an [ICorProfilerCallback](https://docs.microsoft.com/en-us/dotnet/framework/unmanaged-api/profiling/icorprofilercallback-interface) implementation into a target process as a startup profiler. This action must be used in a collection rule with a `Startup` trigger.
 
 ##### Properties
 
@@ -893,7 +893,7 @@ Usage that sets a parameter to the profiler you loaded. In this case, your profi
 
 #### `GetEnvironmentVariable` Action
 
-An action that gets an environment varaible from the target process. Its value is set as the `Value` action output.
+An action that gets an environment variable from the target process. Its value is set as the `Value` action output.
 
 ##### Properties
 
