@@ -11,10 +11,8 @@ parameters:
   timeoutInMinutes: 180
   # Depends on 
   dependsOn: ''
-  # Sub path under 'artifacts' folder from which files are published to artifacts location
-  publishArtifactsSubPath: ''
-  # Sub path under artifacts location to which artifact files are publish
-  publishArtifactsTargetSubPath: ''
+  # Sub paths under 'artifacts' folder from which files are published to artifacts location
+  publishArtifactsSubPaths: []
   # Group of tests to be run
   testGroup: Default
   # TFMs for which test results are uploaded
@@ -172,13 +170,14 @@ jobs:
         env:
           ROOTFS_DIR: '/crossrootfs/arm64'
 
-    - ${{ if and(ne(variables['System.TeamProject'], 'public'), ne(parameters.publishArtifactsSubPath, '')) }}:
-      - task: CopyFiles@2
-        displayName: Gather Artifacts
-        inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/artifacts/${{ parameters.publishArtifactsSubPath }}'
-          Contents: '**'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/${{ coalesce(parameters.publishArtifactsTargetSubPath, parameters.publishArtifactsSubPath) }}'
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), gt(length(parameters.publishArtifactsSubPaths), 0)) }}:
+      - ${{ each subPath in parameters.publishArtifactsSubPaths }}:
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (${{ subPath.source }})
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/${{ subPath.source }}'
+            Contents: '**'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/${{ coalesce(subPath.target, subPath.source) }}'
 
       - task: PublishBuildArtifacts@1
         displayName: Publish Artifacts
