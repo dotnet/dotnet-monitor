@@ -458,21 +458,33 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
 
 In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it also binds to metric urls that only expose the `/metrics` endpoint. Unlike the other endpoints, the metrics urls do not require authentication. Unless you enable collection of custom providers that may contain sensitive business logic, it is generally considered safe to expose metrics endpoints. 
 
-Metrics urls can be configured via the command line:
+<details>
+  <summary>Command Line</summary>
 
-```cmd
-dotnet monitor collect --metricUrls http://*:52325/
-```
+  ```cmd
+  dotnet monitor collect --metricUrls http://*:52325/
+  ```
+</details>
 
-Or configured via a configuration file:
+<details>
+  <summary>JSON</summary>
 
-```json
-{
-  "Metrics": {
-    "Endpoints": "http://localhost:52325"
+  ```json
+  {
+    "Metrics": {
+      "Endpoints": "http://localhost:52325"
+    }
   }
-}
-```
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_Metrics__Endpoints="http://localhost:52325"
+  ```
+</details>
 
 ### Customize collection interval and counts
 
