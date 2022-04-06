@@ -543,7 +543,7 @@ Additional metrics providers and counter names to return from this route can be 
   
   ```bash
   export DotnetMonitor_Metrics__Providers__0__ProviderName="Microsoft-AspNetCore-Server-Kestrel"
-  export DotnetMonitor_Metrics__Providers__0__CounterNames__0="connections-per-seconds"
+  export DotnetMonitor_Metrics__Providers__0__CounterNames__0="connections-per-second"
   export DotnetMonitor_Metrics__Providers__0__CounterNames__1="total-connections"
   ```
 </details>
