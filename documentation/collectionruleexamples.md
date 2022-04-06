@@ -5,30 +5,49 @@ The following examples provide sample scenarios for using a collection rule. The
 ## Collect Trace - Startup (`Startup` Trigger)
 
 ### JSON
+<details>
+  <summary>Expand for code sample</summary>
 
-```json
-{
-  "AssemblyLoadTraceOnStartup": {
-    "Trigger": {
-      "Type": "Startup"
-    },
-    "Actions": [
-      {
-        "Type": "CollectTrace",
-        "Settings": {
-          "Providers": [{
-              "Name": "Microsoft-Windows-DotNETRuntime",
-              "EventLevel": "Informational",
-              "Keywords": "0x8"
-          }],
-          "Duration": "00:00:15",
-          "Egress": "artifacts"
+  ```json
+  {
+    "AssemblyLoadTraceOnStartup": {
+      "Trigger": {
+        "Type": "Startup"
+      },
+      "Actions": [
+        {
+          "Type": "CollectTrace",
+          "Settings": {
+            "Providers": [{
+                "Name": "Microsoft-Windows-DotNETRuntime",
+                "EventLevel": "Informational",
+                "Keywords": "0x8"
+            }],
+            "Duration": "00:00:15",
+            "Egress": "artifacts"
+          }
         }
-      }
-    ]
+      ]
+    }
   }
-}
+  ```
+</details>
+
+### Environment Variables
+
+<details>
+  <summary>Expand for code sample</summary>
+  
+```bash
+export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type="Startup"
+export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Type="CollectTrace"
+export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name="Microsoft-Windows-DotNETRuntime"
+export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel="Informational"
+export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords="0x8"
+export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration="00:00:15"
+export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress="artifacts"
 ```
+</details>
 
 ### Explanation
 
