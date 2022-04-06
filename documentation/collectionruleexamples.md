@@ -38,15 +38,15 @@ The following examples provide sample scenarios for using a collection rule. The
 <details>
   <summary>Expand for code sample</summary>
   
-```bash
-export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type="Startup"
-export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Type="CollectTrace"
-export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name="Microsoft-Windows-DotNETRuntime"
-export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel="Informational"
-export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords="0x8"
-export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration="00:00:15"
-export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress="artifacts"
-```
+  ```bash
+  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type="Startup"
+  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type="CollectTrace"
+  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name="Microsoft-Windows-DotNETRuntime"
+  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel="Informational"
+  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords="0x8"
+  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration="00:00:15"
+  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress="artifacts"
+  ```
 </details>
 
 ### Explanation
@@ -56,6 +56,8 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 ## Collect GCDump - Heap Size (`EventCounter` Trigger)
 
 ### JSON
+<details>
+  <summary>Expand for code sample</summary>
 
 ```json
 {
@@ -79,6 +81,21 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
   }
 }
 ```
+</details>
+
+### Environment Variables
+<details>
+  <summary>Expand for code sample</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type="EventCounter"
+  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__ProviderName="System.Runtime"
+  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__CounterName="gc-heap-size"
+  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__GreaterThan="10"
+  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Type="CollectGCDump"
+  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Settings__Egress="artifacts"
+  ```
+</details>
 
 ### Explanation
 
@@ -87,6 +104,8 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 ## Collect Trace - High CPU Usage (`EventCounter` Trigger)
 
 ### JSON
+<details>
+  <summary>Expand for code sample</summary>
 
 ```json
 {
@@ -118,6 +137,26 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
   }
 }
 ```
+  
+</details>
+
+### Environment Variables
+<details>
+  <summary>Expand for code sample</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type="EventCounter"
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__ProviderName="System.Runtime"
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__CounterName="cpu-usage"
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__GreaterThan="60"
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__SlidingWindowDuration="00:00:10"
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Type="CollectTrace"
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Profile="Cpu"
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Egress="artifacts"
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Key="ProcessName"
+  export DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Value="MyProcessName"
+  ```
+</details>
 
 ### Explanation
 
@@ -126,6 +165,8 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
 ## Collect Dump - 4xx Response Status (`AspNetResponseStatus` Trigger)
 
 ### JSON
+<details>
+  <summary>Expand for code sample</summary>
 
 ```json
 {
@@ -155,6 +196,25 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
   }
 }
 ```
+  
+</details>
+  
+### Environment Variables
+<details>
+  <summary>Expand for code sample</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type="AspNetResponseStatus"
+  export DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount="5"
+  export DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__StatusCodes__0="400-499"
+  export DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Type="CollectDump"
+  export DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Egress="artifacts"
+  export DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Type="Full"
+  export DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCount="3"
+  export DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCountSlidingWindowDuration="00:30:00"
+  ```
+  
+</details>
 
 ### Explanation
 
@@ -163,6 +223,8 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 ## Collect Logs - High Number of Requests (`AspNetRequestCount` Trigger)
 
 ### JSON
+<details>
+  <summary>Expand for code sample</summary>
 
 ```json
 {
@@ -198,6 +260,28 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
   }
 }
 ```
+  
+</details>
+
+### Environment Variables
+<details>
+  <summary>Expand for code sample</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key="ProcessId"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Value="12345"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__MatchType="Exact"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Type="AspNetRequestCount"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__RequestCount="10"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__SlidingWindowDuration="00:01:00"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Type="CollectLogs"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Egress="artifacts"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__DefaultLevel="Error"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__UseAppFilters="false"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Duration="00:01:00"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Limits__RuleDuration="01:00:00"
+  ```
+</details>
 
 ### Explanation
 
@@ -206,6 +290,8 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
 ## Collect Trace - Too Many Long Requests (`AspNetRequestDuration` Trigger)
 
 ### JSON
+<details>
+  <summary>Expand for code sample</summary>
 
 ```json
 {
@@ -232,6 +318,26 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
   }
 }
 ```
+  
+</details>
+
+### Environment Variables
+<details>
+  <summary>Expand for code sample</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type="AspNetRequestDuration"
+  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount="5"
+  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestDuration="00:00:08"
+  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__SlidingWindowDuration="00:02:00"
+  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__IncludePaths__0="/api/**/*"
+  export DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Type="CollectTrace"
+  export DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Profile="Http"
+  export DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Egress="artifacts"
+  export DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Duration="00:01:00"
+  ```
+  
+</details>
 
 ### Explanation
 
@@ -240,6 +346,8 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 ## Collect Dump And Execute - Collect Dump and Open In Visual Studio
 
 ### JSON
+<details>
+  <summary>Expand for code sample</summary>
 
 ```json
 {
@@ -274,6 +382,28 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
   }
 }
 ```
+  
+</details>
+
+### Environment Variables
+<details>
+  <summary>Expand for code sample</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type="AspNetResponseStatus"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__ResponseCount="3"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__StatusCodes__0="400"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Name="MyDump"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Type="CollectDump"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Egress="artifacts"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Type="Mini"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__WaitForCompletion="true"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Type="Execute"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Path="C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe"
+  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Arguments="\"$(Actions.MyDump.EgressPath)\""
+  ```
+  
+</details>
 
 ### Explanation
 
