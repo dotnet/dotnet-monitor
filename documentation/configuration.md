@@ -202,18 +202,47 @@ dotnet monitor config show --show-sources
 
 It is possible to change this behavior and have .NET processes connect to `dotnet monitor`. This allow you to monitor a process from start and collect traces for events such as assembly load events that primarily occur at process startup and weren't possible to collect previously.
 
-```json
-  "DiagnosticPort": "\\\\.\\pipe\\dotnet-monitor-pipe"
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "DiagnosticPort": "\\\\.\\pipe\\dotnet-monitor-pipe"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_DiagnosticPort="\\\\.\\pipe\\dotnet-monitor-pipe"
+  ```
+</details>
 
 Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded format. In the event of conflicting configuration, the simplified format will take priority over the expanded format.
 
-```json
-  "DiagnosticPort": {
-    "ConnectionMode": "Listen",
-    "EndpointName": "\\\\.\\pipe\\dotnet-monitor-pipe"
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "DiagnosticPort": {
+      "ConnectionMode": "Listen",
+      "EndpointName": "\\\\.\\pipe\\dotnet-monitor-pipe"
+    }
   }
-```
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_DiagnosticPort__ConnectionMode="Listen"
+  export DotnetMonitor_DiagnosticPort__EndpointName="\\\\.\\pipe\\dotnet-monitor-pipe"
+  ```
+</details>
 
 When `dotnet monitor` is in `Listen` mode, you have to configure .NET processes to connect to `dotnet monitor`. You can do so by specifying the appropriate environment variable on your .NET process
 
@@ -225,11 +254,25 @@ $env:DOTNET_DiagnosticPorts="dotnet-monitor-pipe,suspend"
 
 When operating in `Listen` mode, you can also specify the maximum number of incoming connections for `dotnet monitor` to accept via the following configuration:
 
-```json
-  "DiagnosticPort": {
-    "MaxConnections": "10"
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "DiagnosticPort": {
+      "MaxConnections": "10"
+    }
   }
-```
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_DiagnosticPort__MaxConnections="10"
+  ```
+</details>
 
 ## Kestrel Configuration
 
@@ -239,13 +282,25 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 
 Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't streamed back from the target process to `dotnet monitor`. Instead, they are written directly to disk by the runtime. After successful collection of a process dump, `dotnet monitor` will read the process dump directly from disk. In the default configuration, the directory that the runtime writes its process dump to is the temp directory (`%TMP%` on Windows, `/tmp` on \*nix). It is possible to change to the ephemeral directory that these dump files get written to via the following configuration:
 
-```json
-{
-  "Storage": {
-    "DumpTempFolder": "/ephemeral-directory/"
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Storage": {
+      "DumpTempFolder": "/ephemeral-directory/"
+    }
   }
-}
-```
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_Storage__DumpTempFolder="/ephemeral-directory/"
+  ```
+</details>
 
 ## Default Process Configuration
 
@@ -268,53 +323,105 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 ### Examples
 
-Match the iisexpress process by name
+#### Match the iisexpress process by name
 
-```json
-{
-  "DefaultProcess": {
-    "Filters": [{
-      "Key": "ProcessName",
-      "Value": "iisexpress"
-    }]
-  },
-}
-```
+<details>
+  <summary>JSON</summary>
 
-Match the iisexpress process by name (Shorthand)
+  ```json
+  {
+    "DefaultProcess": {
+      "Filters": [{
+        "Key": "ProcessName",
+        "Value": "iisexpress"
+      }]
+    },
+  }
+  ```
+</details>
 
-```json
-{
-  "DefaultProcess": {
-    "Filters": [{
-      "ProcessName": "iisexpress"
-    }]
-  },
-}
-```
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_DefaultProcess__Filters__0__Key="ProcessName"
+  export DotnetMonitor_DefaultProcess__Filters__0__Value="iisexpress"
+  ```
+</details>
 
-Match pid 1
-```json
-{
-  "DefaultProcess": {
-    "Filters": [{
-      "Key": "ProcessId",
-      "Value": "1"
-    }]
-  },
-}
-```
+#### Match the iisexpress process by name (Shorthand)
 
-Match pid 1 (Shorthand)
-```json
-{
-  "DefaultProcess": {
-    "Filters": [{
-      "ProcessId": "1"
-    }]
-  },
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "DefaultProcess": {
+      "Filters": [{
+        "ProcessName": "iisexpress"
+      }]
+    },
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_DefaultProcess__Filters__0__ProcessName="iisexpress"
+  ```
+</details>
+
+#### Match pid 1
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "DefaultProcess": {
+      "Filters": [{
+        "Key": "ProcessId",
+        "Value": "1"
+      }]
+    },
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_DefaultProcess__Filters__0__Key="ProcessId"
+  export DotnetMonitor_DefaultProcess__Filters__0__Value="1"
+  ```
+</details>
+
+#### Match pid 1 (Shorthand)
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "DefaultProcess": {
+      "Filters": [{
+        "ProcessId": "1"
+      }]
+    },
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_DefaultProcess__Filters__0__ProcessId="1"
+  ```
+</details>
 
 ## Cross-Origin Resource Sharing (CORS) Configuration
 
@@ -327,13 +434,25 @@ Match pid 1 (Shorthand)
 Due to limitations in event counters, `dotnet monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
 Prometheus metrics, livemetrics, triggers, traces, and trigger actions that collect traces. The default interval is 5 seconds, but can be changed in configuration.
 
-```json
-{
-    "GlobalCounter": {
-      "IntervalSeconds": 10
-    }
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "GlobalCounter": {
+        "IntervalSeconds": 10
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_GlobalCounter__IntervalSeconds="10"
+  ```
+</details>
 
 ### Metrics Urls
 
@@ -361,13 +480,25 @@ In the default configuration, `dotnet monitor` requests that the connected runti
 
 You can customize the number of data points stored per metric via the following configuration:
 
-```json
-{
-  "Metrics": {
-    "MetricCount": 3
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Metrics": {
+      "MetricCount": 3
+    }
   }
-}
-```
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_Metrics__MetricCount="3"
+  ```
+</details>
 
 See [Global Counter Interval](#Global-Counter-Interval) to change the metrics frequency.
 
@@ -375,21 +506,35 @@ See [Global Counter Interval](#Global-Counter-Interval) to change the metrics fr
 
 Additional metrics providers and counter names to return from this route can be specified via configuration. 
 
-```json
-{
-  "Metrics": {
-    "Providers": [
-      {
-        "ProviderName": "Microsoft-AspNetCore-Server-Kestrel",
-        "CounterNames": [
-          "connections-per-second",
-          "total-connections"
-        ]
-      }
-    ]
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Metrics": {
+      "Providers": [
+        {
+          "ProviderName": "Microsoft-AspNetCore-Server-Kestrel",
+          "CounterNames": [
+            "connections-per-second",
+            "total-connections"
+          ]
+        }
+      ]
+    }
   }
-}
-```
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_Metrics__Providers__0__ProviderName="Microsoft-AspNetCore-Server-Kestrel"
+  export DotnetMonitor_Metrics__Providers__0__CounterNames__0="connections-per-seconds"
+  export DotnetMonitor_Metrics__Providers__0__CounterNames__1="total-connections"
+  ```
+</details>
 
 > **Warning:** In the default configuration, custom metrics will be exposed along with all other metrics on an unauthenticated endpoint. If your metrics contains sensitive information, we recommend disabling the [metrics urls](#metrics-urls) and consuming metrics from the authenticated endpoint (`--urls`) instead.
 
@@ -399,13 +544,25 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
 
 In addition to enabling custom providers, `dotnet monitor` also allows you to disable collection of the default providers. You can do so via the following configuration:
 
-```json
-{
-  "Metrics": {
-    "IncludeDefaultProviders": false
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Metrics": {
+      "IncludeDefaultProviders": false
+    }
   }
-}
-```
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_Metrics__IncludeDefaultProviders="false"
+  ```
+</details>
 
 ## Egress Configuration
 
@@ -426,45 +583,79 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 ### Example azureBlobStorage provider
 
-```json
-{
-    "Egress": {
-        "AzureBlobStorage": {
-            "monitorBlob": {
-                "accountUri": "https://exampleaccount.blob.core.windows.net",
-                "containerName": "dotnet-monitor",
-                "blobPrefix": "artifacts",
-                "accountKeyName": "MonitorBlobAccountKey"
-            }
-        },
-        "Properties": {
-            "MonitorBlobAccountKey": "accountKey"
-        }
-    }
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "Egress": {
+          "AzureBlobStorage": {
+              "monitorBlob": {
+                  "accountUri": "https://exampleaccount.blob.core.windows.net",
+                  "containerName": "dotnet-monitor",
+                  "blobPrefix": "artifacts",
+                  "accountKeyName": "MonitorBlobAccountKey"
+              }
+          },
+          "Properties": {
+              "MonitorBlobAccountKey": "accountKey"
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri="https://exampleaccount.blob.core.windows.net"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName="dotnet-monitor"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__blobPrefix="artifacts"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountKeyName="MonitorBlobAccountKey"
+  export DotnetMonitor_Egress__Properties__MonitorBlobAccountKey="accountKey"
+  ```
+</details>
 
 ### Example azureBlobStorage provider with queue
 
-```json
-{
-    "Egress": {
-        "AzureBlobStorage": {
-            "monitorBlob": {
-                "accountUri": "https://exampleaccount.blob.core.windows.net",
-                "containerName": "dotnet-monitor",
-                "blobPrefix": "artifacts",
-                "accountKeyName": "MonitorBlobAccountKey",
-                "queueAccountUri": "https://exampleaccount.queue.core.windows.net",
-                "queueName": "dotnet-monitor-queue"
-            }
-        },
-        "Properties": {
-            "MonitorBlobAccountKey": "accountKey"
-        }
-    }
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "Egress": {
+          "AzureBlobStorage": {
+              "monitorBlob": {
+                  "accountUri": "https://exampleaccount.blob.core.windows.net",
+                  "containerName": "dotnet-monitor",
+                  "blobPrefix": "artifacts",
+                  "accountKeyName": "MonitorBlobAccountKey",
+                  "queueAccountUri": "https://exampleaccount.queue.core.windows.net",
+                  "queueName": "dotnet-monitor-queue"
+              }
+          },
+          "Properties": {
+              "MonitorBlobAccountKey": "accountKey"
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri="https://exampleaccount.blob.core.windows.net"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName="dotnet-monitor"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__blobPrefix="artifacts"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountKeyName="MonitorBlobAccountKey"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__queueAccountUri="https://exampleaccount.queue.core.windows.net"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__queueName="dotnet-monitor-queue"
+  export DotnetMonitor_Egress__Properties__MonitorBlobAccountKey="accountKey"
+  ```
+</details>
 
 #### azureBlobStorage Queue Message Format
 
@@ -479,18 +670,31 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 
 ### Example fileSystem provider
 
-```json
-{
-    "Egress": {
-        "FileSystem": {
-            "monitorFile": {
-                "directoryPath": "/artifacts",
-                "intermediateDirectoryPath": "/intermediateArtifacts"
-            }
-        }
-    }
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "Egress": {
+          "FileSystem": {
+              "monitorFile": {
+                  "directoryPath": "/artifacts",
+                  "intermediateDirectoryPath": "/intermediateArtifacts"
+              }
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_Egress__FileSystem__monitorFile__directoryPath="/artifacts"
+  export DotnetMonitor_Egress__FileSystem__monitorFile__intermediateDirectoryPath="/intermediateArtifacts"
+  ```
+</details>
 
 ## Collection Rule Configuration
 
@@ -500,40 +704,65 @@ Collection rules are specified in configuration as a named item under the `Colle
 
 The following is a collection rule that collects a 1 minute CPU trace and egresses it to a provider named "TmpDir" after it has detected high CPU usage for 10 seconds. The rule only applies to processes named "dotnet" and only collects at most 2 traces per 1 hour sliding time window.
 
-```json
-{
-    "CollectionRules": {
-        "HighCpuRule": {
-            "Filters": [{
-                "Key": "ProcessName",
-                "Value": "dotnet",
-                "MatchType": "Exact"
-            }],
-            "Trigger": {
-                "Type": "EventCounter",
-                "Settings": {
-                    "ProviderName": "System.Runtime",
-                    "CounterName": "cpu-usage",
-                    "GreaterThan": 70,
-                    "SlidingWindowDuration": "00:00:10"
-                }
-            },
-            "Actions": [{
-                "Type": "CollectTrace",
-                "Settings": {
-                    "Profile": "Cpu",
-                    "Duration": "00:01:00",
-                    "Egress": "TmpDir"
-                }
-            }],
-            "Limits": {
-                "ActionCount": 2,
-                "ActionCountSlidingWindowDuration": "1:00:00"
-            }
-        }
-    }
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "CollectionRules": {
+          "HighCpuRule": {
+              "Filters": [{
+                  "Key": "ProcessName",
+                  "Value": "dotnet",
+                  "MatchType": "Exact"
+              }],
+              "Trigger": {
+                  "Type": "EventCounter",
+                  "Settings": {
+                      "ProviderName": "System.Runtime",
+                      "CounterName": "cpu-usage",
+                      "GreaterThan": 70,
+                      "SlidingWindowDuration": "00:00:10"
+                  }
+              },
+              "Actions": [{
+                  "Type": "CollectTrace",
+                  "Settings": {
+                      "Profile": "Cpu",
+                      "Duration": "00:01:00",
+                      "Egress": "TmpDir"
+                  }
+              }],
+              "Limits": {
+                  "ActionCount": 2,
+                  "ActionCountSlidingWindowDuration": "1:00:00"
+              }
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__Key="ProcessName"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__Value="dotnet"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__MatchType="Exact"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Type="EventCounter"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Settings__ProviderName="System.Runtime"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Settings__CounterName="cpu-usage"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Settings__GreaterThan="70"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Settings__SlidingWindowDuration="00:00:10"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Type="CollectTrace"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Settings__Profile="Cpu"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Settings__Duration="00:01:00"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Settings__Egress="TmpDir"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Limits__ActionCount="00:00:15"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Limits__ActionCountSlidingWindowDuration"="1:00:00"
+  ```
+</details>
 
 ### Filters
 
