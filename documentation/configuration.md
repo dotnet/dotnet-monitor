@@ -771,7 +771,7 @@ The following is a collection rule that collects a 1 minute CPU trace and egress
   export DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Settings__Profile="Cpu"
   export DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Settings__Duration="00:01:00"
   export DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Settings__Egress="TmpDir"
-  export DotnetMonitor_CollectionRules__HighCpuRule__Limits__ActionCount="00:00:15"
+  export DotnetMonitor_CollectionRules__HighCpuRule__Limits__ActionCount="2"
   export DotnetMonitor_CollectionRules__HighCpuRule__Limits__ActionCountSlidingWindowDuration"="1:00:00"
   ```
 </details>
