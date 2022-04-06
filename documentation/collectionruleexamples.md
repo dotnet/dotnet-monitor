@@ -4,9 +4,8 @@ The following examples provide sample scenarios for using a collection rule. The
 
 ## Collect Trace - Startup (`Startup` Trigger)
 
-### JSON
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>JSON</summary>
 
   ```json
   {
@@ -33,10 +32,8 @@ The following examples provide sample scenarios for using a collection rule. The
   ```
 </details>
 
-### Environment Variables
-
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>Environment Variables</summary>
   
   ```bash
   export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type="Startup"
@@ -55,9 +52,8 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 
 ## Collect GCDump - Heap Size (`EventCounter` Trigger)
 
-### JSON
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>JSON</summary>
 
 ```json
 {
@@ -83,9 +79,8 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 ```
 </details>
 
-### Environment Variables
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>Environment Variables</summary>
   
   ```bash
   export DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type="EventCounter"
@@ -103,9 +98,8 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 
 ## Collect Trace - High CPU Usage (`EventCounter` Trigger)
 
-### JSON
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>JSON</summary>
 
 ```json
 {
@@ -140,9 +134,8 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
   
 </details>
 
-### Environment Variables
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>Environment Variables</summary>
   
   ```bash
   export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type="EventCounter"
@@ -164,9 +157,8 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
 
 ## Collect Dump - 4xx Response Status (`AspNetResponseStatus` Trigger)
 
-### JSON
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>JSON</summary>
 
 ```json
 {
@@ -199,9 +191,8 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
   
 </details>
   
-### Environment Variables
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>Environment Variables</summary>
   
   ```bash
   export DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type="AspNetResponseStatus"
@@ -222,9 +213,8 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 
 ## Collect Logs - High Number of Requests (`AspNetRequestCount` Trigger)
 
-### JSON
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>JSON</summary>
 
 ```json
 {
@@ -263,9 +253,8 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
   
 </details>
 
-### Environment Variables
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>Environment Variables</summary>
   
   ```bash
   export DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key="ProcessId"
@@ -289,9 +278,8 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
     
 ## Collect Trace - Too Many Long Requests (`AspNetRequestDuration` Trigger)
 
-### JSON
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>JSON</summary>
 
 ```json
 {
@@ -321,9 +309,8 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
   
 </details>
 
-### Environment Variables
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>Environment Variables</summary>
   
   ```bash
   export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type="AspNetRequestDuration"
@@ -345,9 +332,8 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 
 ## Collect Dump And Execute - Collect Dump and Open In Visual Studio
 
-### JSON
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>JSON</summary>
 
 ```json
 {
@@ -385,9 +371,8 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
   
 </details>
 
-### Environment Variables
 <details>
-  <summary>Expand for code sample</summary>
+  <summary>Environment Variables</summary>
   
   ```bash
   export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type="AspNetResponseStatus"
