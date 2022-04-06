@@ -772,18 +772,34 @@ Each collection rule can specify a set of process filters to select which proces
 
 The following example shows the `Filters` portion of a collection rule that has the rule only apply to processes named "dotnet" and whose command line contains "myapp.dll".
 
-```json
-{
-    "Filters": [{
-        "Key": "ProcessName",
-        "Value": "dotnet",
-        "MatchType": "Exact"
-    },{
-        "CommandLine": "myapp.dll",
-        "MatchType": "Contains"
-    }]
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "Filters": [{
+          "Key": "ProcessName",
+          "Value": "dotnet",
+          "MatchType": "Exact"
+      },{
+          "CommandLine": "myapp.dll",
+          "MatchType": "Contains"
+      }]
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Filters__0__Key="ProcessName"
+  export DotnetMonitor_CollectionRules__RuleName__Filters__0__Value="dotnet"
+  export DotnetMonitor_CollectionRules__RuleName__Filters__0__MatchType="Exact"
+  export DotnetMonitor_CollectionRules__RuleName__Filters__1__CommandLine="myapp.dll"
+  export DotnetMonitor_CollectionRules__RuleName__Filters__1__MatchType="Contains"
+  ```
+</details>
 
 ### Triggers
 
@@ -806,13 +822,28 @@ The `IncludePaths` and `ExcludePaths` support [wildcards and globbing](#aspnet-r
 
 Usage that is satisfied when request count is higher than 500 requests during a 1 minute period for all paths under the `/api` route:
 
-```json
-{
-  "RequestCount": 500,
-  "SlidingWindowDuration": "00:01:00",
-  "IncludePaths": [ "/api/**/*" ]
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "RequestCount": 500,
+    "SlidingWindowDuration": "00:01:00",
+    "IncludePaths": [ "/api/**/*" ]
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="AspNetRequestCount"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount="500"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration="00:01:00"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__IncludePaths__0="/api/**/*"
+  ```
+</details>
 
 #### `AspNetRequestDuration` Trigger
 
@@ -834,14 +865,30 @@ The `IncludePaths` and `ExcludePaths` support [wildcards and globbing](#aspnet-r
 
 Usage that is satisfied when 10 requests take longer than 3 seconds during a 1 minute period for all paths under the `/api` route:
 
-```json
-{
-  "RequestCount": 10,
-  "RequestDuration": "00:00:03",
-  "SlidingWindowDuration": "00:01:00",
-  "IncludePaths": [ "/api/**/*" ]
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "RequestCount": 10,
+    "RequestDuration": "00:00:03",
+    "SlidingWindowDuration": "00:01:00",
+    "IncludePaths": [ "/api/**/*" ]
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="AspNetRequestDuration"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount="10"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestDuration="00:00:03"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration="00:01:00"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__IncludePaths__0="/api/**/*"
+  ```
+</details>
 
 #### `AspNetResponseStatus` Trigger
 
@@ -863,14 +910,30 @@ The `IncludePaths` and `ExcludePaths` support [wildcards and globbing](#aspnet-r
 
 Usage that is satisfied when 10 requests respond with a 5XX status code during a 1 minute period for all paths under the `/api` route:
 
-```json
-{
-  "StatusCodes": [ "500-599" ],
-  "RequestCount": 10,
-  "SlidingWindowDuration": "00:01:00",
-  "IncludePaths": [ "/api/**/*" ]
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "StatusCodes": [ "500-599" ],
+    "RequestCount": 10,
+    "SlidingWindowDuration": "00:01:00",
+    "IncludePaths": [ "/api/**/*" ]
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="AspNetResponseStatus"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__StatusCodes__0="500-599"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount="10"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration="00:01:00"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__IncludePaths__0="/api/**/*"
+  ```
+</details>
 
 #### `EventCounter` Trigger
 
@@ -892,14 +955,30 @@ See [Well-known Counters in .NET](https://docs.microsoft.com/en-us/dotnet/core/d
 
 Usage that is satisfied when the CPU usage of the application is higher than 70% for a 10 second window.
 
-```json
-{
-  "ProviderName": "System.Runtime",
-  "CounterName": "cpu-usage",
-  "GreaterThan": 70,
-  "SlidingWindowDuration": "00:00:10"
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "ProviderName": "System.Runtime",
+    "CounterName": "cpu-usage",
+    "GreaterThan": 70,
+    "SlidingWindowDuration": "00:00:10"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="EventCounter"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName="System.Runtime"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName="cpu-usage"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan="70"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration="00:00:10"
+  ```
+</details>
 
 #### ASP.NET Request Path Wildcards and Globbing
 
@@ -941,12 +1020,26 @@ An action that collects a dump of the process that the collection rule is target
 
 Usage that collects a full dump and egresses it to a provider named "AzureBlobDumps".
 
-```json
-{
-  "Type": "Full",
-  "Egress": "AzureBlobDumps"
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Type": "Full",
+    "Egress": "AzureBlobDumps"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectDump"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Type="Full"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="AzureBlobDumps"
+  ```
+</details>
 
 #### `CollectGCDump` Action
 
@@ -968,11 +1061,24 @@ An action that collects a gcdump of the process that the collection rule is targ
 
 Usage that collects a gcdump and egresses it to a provider named "AzureBlobGCDumps".
 
-```json
-{
-  "Egress": "AzureBlobGCDumps"
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Egress": "AzureBlobGCDumps"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectGCDump"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="AzureBlobGCDumps"
+  ```
+</details>
 
 #### `CollectTrace` Action
 
@@ -999,12 +1105,26 @@ An action that collects a trace of the process that the collection rule is targe
 
 Usage that collects a CPU trace for 30 seconds and egresses it to a provider named "TmpDir".
 
-```json
-{
-  "Profile": "Cpu",
-  "Egress": "TmpDir"
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Profile": "Cpu",
+    "Egress": "TmpDir"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectTrace"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile="Cpu"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="TmpDir"
+  ```
+</details>
 
 #### `CollectLogs` Action
 
@@ -1031,13 +1151,28 @@ An action that collects logs for the process that the collection rule is targeti
 
 Usage that collects logs at the Information level for 30 seconds and egresses it to a provider named "TmpDir".
 
-```json
-{
-  "DefaultLevel": "Information",
-  "UseAppFilters": false,
-  "Egress": "TmpDir"
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "DefaultLevel": "Information",
+    "UseAppFilters": false,
+    "Egress": "TmpDir"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectLogs"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__DefaultLevel="Information"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__UseAppFilters="false"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="TmpDir"
+  ```
+</details>
 
 #### `Execute` Action
 
@@ -1061,12 +1196,26 @@ An action that executes an executable found in the file system. Non-zero exit co
 
 Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
 
-```json
-{
-  "Path": "C:\\Program Files\\dotnet\\dotnet.exe",
-  "Arguments": "C:\\Program Files\\MyApp\\myapp.dll"
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Path": "C:\\Program Files\\dotnet\\dotnet.exe",
+    "Arguments": "C:\\Program Files\\MyApp\\myapp.dll"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="Execute"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path="C:\\Program Files\\dotnet\\dotnet.exe"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Arguments="C:\\Program Files\\MyApp\\myapp.dll"
+  ```
+</details>
 
 #### `LoadProfiler` Action
 
@@ -1087,12 +1236,26 @@ No outputs
 
 Usage that loads one of the sample profilers from [`dotnet/runtime`: src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp](https://github.com/dotnet/runtime/blob/9ddd58a58d14a7bec5ed6eb777c6703c48aca15d/src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp).
 
-```json
-{
-  "Path": "Profilers\\Profiler.dll",
-  "Clsid": "55b9554d-6115-45a2-be1e-c80f7fa35369"
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Path": "Profilers\\Profiler.dll",
+    "Clsid": "55b9554d-6115-45a2-be1e-c80f7fa35369"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="LoadProfiler"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path="Profilers\\Profiler.dll"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Clsid="55b9554d-6115-45a2-be1e-c80f7fa35369"
+  ```
+</details>
 
 #### `SetEnvironmentVariable` Action
 
@@ -1113,12 +1276,26 @@ No outputs
 
 Usage that sets a parameter to the profiler you loaded. In this case, your profiler might be looking for an account key defined in `MyProfiler_AccountId` which is used to communicate to some outside system.
 
-```json
-{
-  "Name": "MyProfiler_AccountId",
-  "Value": "8fb138d2c44e4aea8545cc2df541ed4c"
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Name": "MyProfiler_AccountId",
+    "Value": "8fb138d2c44e4aea8545cc2df541ed4c"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="SetEnvironmentVariable"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Name="MyProfiler_AccountId"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Value="8fb138d2c44e4aea8545cc2df541ed4c"
+  ```
+</details>
 
 #### `GetEnvironmentVariable` Action
 
@@ -1142,29 +1319,51 @@ Usage that gets a token your app has access to and uses it to send a trace.
 
 ***Note:*** the example below is of an entire action list to provide context, only the second json entry represents the `GetEnvironmentVariable` Action.
 
-```json
-[{
-    "Name": "A",
-    "Type": "CollectTrace",
-    "Settings": {
-        "Profile": "Cpu",
-        "Egress": "AzureBlob"
-    }
-},{
-    "Name": "GetEnvAction",
-    "Type": "GetEnvironmentVariable",
-    "Settings": {
-       "Name": "Azure_SASToken",
-    }
-},{
-    "Name": "B",
-    "Type": "Execute",
-    "Settings": {
-        "Path": "azcopy",
-        "Arguments": "$(Actions.A.EgressPath) https://Contoso.blob.core.windows.net/MyTraces/AwesomeAppTrace.nettrace?$(Actions.GetEnvAction.Value)"
-    }
-}]
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  [{
+      "Name": "A",
+      "Type": "CollectTrace",
+      "Settings": {
+          "Profile": "Cpu",
+          "Egress": "AzureBlob"
+      }
+  },{
+      "Name": "GetEnvAction",
+      "Type": "GetEnvironmentVariable",
+      "Settings": {
+         "Name": "Azure_SASToken",
+      }
+  },{
+      "Name": "B",
+      "Type": "Execute",
+      "Settings": {
+          "Path": "azcopy",
+          "Arguments": "$(Actions.A.EgressPath) https://Contoso.blob.core.windows.net/MyTraces/AwesomeAppTrace.nettrace?$(Actions.GetEnvAction.Value)"
+      }
+  }]
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Name="A"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectTrace"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile="Cpu"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="AzureBlob"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Name="GetEnvAction"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Type="GetEnvironmentVariable"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Name="Azure_SASToken"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__2__Name="B"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__2__Type="Execute"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__2__Settings__Path="azcopy"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__2__Settings__Arguments="$(Actions.A.EgressPath) https://Contoso.blob.core.windows.net/MyTraces/AwesomeAppTrace.nettrace?$(Actions.GetEnvAction.Value)"
+  ```
+</details>
 
 ### Limits
 
@@ -1180,11 +1379,24 @@ Collection rules have limits that constrain the lifetime of the rule and how oft
 
 The following example shows the `Limits` portion of a collection rule that has the rule only allow its actions to run 3 times within a 1 hour sliding time window.
 
-```json
-{
-    "Limits": {
-        "ActionCount": 3,
-        "ActionCountSlidingWindowDuration": "01:00:00"
-    }
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "Limits": {
+          "ActionCount": 3,
+          "ActionCountSlidingWindowDuration": "01:00:00"
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Limits__ActionCount="3"
+  export DotnetMonitor_CollectionRules__RuleName__Limits__ActionCountSlidingWindowDuration="01:00:00"
+  ```
+</details>
