@@ -77,25 +77,44 @@ where `<ActionName>` is the name of the action from which to get an output value
 
 For example, if action `A` has an output named `EgressPath`, and action `B` has a settings property named `Arguments`, then action `B` can reference the `EgressPath` from within the `Arguments` property setting:
 
-```json
-{
-    "Actions": [{
-        "Name": "A",
-        "Type": "CollectTrace",
-        "Settings": {
-            "Profile": "Cpu",
-            "Egress": "AzureBlob"
-        }
-    },{
-        "Name": "B",
-        "Type": "Execute",
-        "Settings": {
-            "Path": "path-to-dotnet",
-            "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
-        }
-    }]
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+    {
+        "Actions": [{
+            "Name": "A",
+            "Type": "CollectTrace",
+            "Settings": {
+                "Profile": "Cpu",
+                "Egress": "AzureBlob"
+            }
+        },{
+            "Name": "B",
+            "Type": "Execute",
+            "Settings": {
+                "Path": "path-to-dotnet",
+                "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
+            }
+        }]
+    }
+    ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Name="A"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectTrace"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile="Cpu"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="AzureBlob"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Name="B"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Type="Execute"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Path="path-to-dotnet"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Arguments="MyApp.dll $(Actions.A.EgressPath)"
+  ```
+</details>
 
 At this time, only the `Arguments` property of the `Execute` action may use an action output dependency.
 
