@@ -81,24 +81,24 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
   <summary>JSON</summary>
 
   ```json
-    {
-        "Actions": [{
-            "Name": "A",
-            "Type": "CollectTrace",
-            "Settings": {
-                "Profile": "Cpu",
-                "Egress": "AzureBlob"
-            }
-        },{
-            "Name": "B",
-            "Type": "Execute",
-            "Settings": {
-                "Path": "path-to-dotnet",
-                "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
-            }
-        }]
-    }
-    ```
+  {
+      "Actions": [{
+          "Name": "A",
+          "Type": "CollectTrace",
+          "Settings": {
+              "Profile": "Cpu",
+              "Egress": "AzureBlob"
+          }
+      },{
+          "Name": "B",
+          "Type": "Execute",
+          "Settings": {
+              "Path": "path-to-dotnet",
+              "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
+          }
+      }]
+  }
+  ```
 </details>
 
 <details>
