@@ -850,7 +850,6 @@ Usage that is satisfied when request count is higher than 500 requests during a 
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="AspNetRequestCount"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount="500"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration="00:01:00"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__IncludePaths__0="/api/**/*"
@@ -894,7 +893,6 @@ Usage that is satisfied when 10 requests take longer than 3 seconds during a 1 m
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="AspNetRequestDuration"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount="10"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestDuration="00:00:03"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration="00:01:00"
@@ -939,7 +937,6 @@ Usage that is satisfied when 10 requests respond with a 5XX status code during a
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="AspNetResponseStatus"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__StatusCodes__0="500-599"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount="10"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration="00:01:00"
@@ -984,7 +981,6 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="EventCounter"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName="System.Runtime"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName="cpu-usage"
   export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan="70"
@@ -1047,7 +1043,6 @@ Usage that collects a full dump and egresses it to a provider named "AzureBlobDu
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectDump"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Type="Full"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="AzureBlobDumps"
   ```
@@ -1087,7 +1082,6 @@ Usage that collects a gcdump and egresses it to a provider named "AzureBlobGCDum
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectGCDump"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="AzureBlobGCDumps"
   ```
 </details>
@@ -1132,7 +1126,6 @@ Usage that collects a CPU trace for 30 seconds and egresses it to a provider nam
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectTrace"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile="Cpu"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="TmpDir"
   ```
@@ -1179,7 +1172,6 @@ Usage that collects logs at the Information level for 30 seconds and egresses it
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectLogs"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__DefaultLevel="Information"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__UseAppFilters="false"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="TmpDir"
@@ -1223,7 +1215,6 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="Execute"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path="C:\\Program Files\\dotnet\\dotnet.exe"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Arguments="C:\\Program Files\\MyApp\\myapp.dll"
   ```
@@ -1263,7 +1254,6 @@ Usage that loads one of the sample profilers from [`dotnet/runtime`: src/tests/p
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="LoadProfiler"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path="Profilers\\Profiler.dll"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Clsid="55b9554d-6115-45a2-be1e-c80f7fa35369"
   ```
@@ -1303,7 +1293,6 @@ Usage that sets a parameter to the profiler you loaded. In this case, your profi
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="SetEnvironmentVariable"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Name="MyProfiler_AccountId"
   export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Value="8fb138d2c44e4aea8545cc2df541ed4c"
   ```
