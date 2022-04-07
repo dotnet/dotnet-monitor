@@ -946,6 +946,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Performs a match based on the contents of the command passed to launch the process on the system; this typically includes the executable path and arguments to the process..
+        /// </summary>
+        public static string DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The criteria used to compare against the target process..
         /// </summary>
         public static string DisplayAttributeDescription_ProcessFilterDescriptor_Key {
@@ -960,6 +969,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_ProcessFilterDescriptor_MatchType {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_ProcessFilterDescriptor_MatchType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performs a match based on the numerical ID of a process on the system..
+        /// </summary>
+        public static string DisplayAttributeDescription_ProcessFilterDescriptor_ProcessId {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ProcessFilterDescriptor_ProcessId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performs a match based on the name of a process on the system..
+        /// </summary>
+        public static string DisplayAttributeDescription_ProcessFilterDescriptor_ProcessName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ProcessFilterDescriptor_ProcessName", resourceCulture);
             }
         }
         
@@ -1068,6 +1095,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_StorageOptions_DumpTempFolder {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_DumpTempFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A value is required for the process filter..
+        /// </summary>
+        public static string ErrorMessage_FilterValueMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FilterValueMissing", resourceCulture);
             }
         }
         

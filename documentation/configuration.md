@@ -236,13 +236,22 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 
 ## Default Process Configuration
 
-Default process configuration is used to determine which process is used for metrics and in situations where the process is not specified in the query to retrieve an artifact. A process must match all the specified filters.
+Default process configuration is used to determine which process is used for metrics and in situations where the process is not specified in the query to retrieve an artifact. A process must match all the specified filters. If a `Key` is not specified, the default is `ProcessId`.
 
 | Name | Type | Description |
 |---|---|---|
 | Key | string | Specifies which criteria to match on the process. Can be `ProcessId`, `ProcessName`, `CommandLine`. |
 | Value | string | The value to match against the process. |
 | MatchType | string | The type of match to perform. Can be `Exact` or `Contains` for sub-string matching. Both are case-insensitive.|
+
+
+Optionally, a shorthand format allows you to omit the `Key` and `Value` terms and specify your Key/Value pair as a single line.
+
+| Name | Type | Description |
+|---|---|---|
+| ProcessId | string | Specifies that the corresponding value is the expected `ProcessId`. |
+| ProcessName | string | Specifies that the corresponding value is the expected `ProcessName`. |
+| CommandLine | string | Specifies that the corresponding value is the expected `CommandLine`.|
 
 ### Examples
 
@@ -259,6 +268,18 @@ Match the iisexpress process by name
 }
 ```
 
+Match the iisexpress process by name (Shorthand)
+
+```json
+{
+  "DefaultProcess": {
+    "Filters": [{
+      "ProcessName": "iisexpress"
+    }]
+  },
+}
+```
+
 Match pid 1
 ```json
 {
@@ -266,6 +287,17 @@ Match pid 1
     "Filters": [{
       "Key": "ProcessId",
       "Value": "1",
+    }]
+  },
+}
+```
+
+Match pid 1 (Shorthand)
+```json
+{
+  "DefaultProcess": {
+    "Filters": [{
+      "ProcessId": "1"
     }]
   },
 }
@@ -476,8 +508,7 @@ The following example shows the `Filters` portion of a collection rule that has 
         "Value": "dotnet",
         "MatchType": "Exact"
     },{
-        "Key": "CommandLine",
-        "Value": "myapp.dll",
+        "CommandLine": "myapp.dll",
         "MatchType": "Contains"
     }]
 }
