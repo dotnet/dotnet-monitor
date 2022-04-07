@@ -355,6 +355,10 @@
     <value>Turn off HTTP response egress</value>
     <comment>Gets the string to display in help that explains what the '--no-http-egress' option does.</comment>
   </data>
+  <data name="HelpDescription_OptionShowSources" xml:space="preserve">
+    <value>Show loaded configuration providers from high to low priority</value>
+    <comment>Gets the string to display in help that explains what the '--show-sources' option does.</comment>
+  </data>
   <data name="HelpDescription_OptionTempApiKey" xml:space="preserve">
     <value>Generates a new MonitorApiKey for each launch of the process.</value>
     <comment>Gets the string to display in help that explains what the '--temp-apikey' option does.</comment>
@@ -622,6 +626,10 @@
   <data name="Message_SettingsDump" xml:space="preserve">
     <value>Settings in {0} format:</value>
     <comment>Gets a header string for the configuration output of GenerateApiKeyCommand.</comment>
+  </data>
+  <data name="Message_ShowSources" xml:space="preserve">
+    <value>Configuration Providers (High to Low Priority):</value>
+    <comment>Gets the string for displaying the configuration providers with the --show-sources flag.</comment>
   </data>
   <data name="Placeholder_NotPresent" xml:space="preserve">
     <value>:NOT PRESENT:</value>

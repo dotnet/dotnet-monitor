@@ -175,6 +175,12 @@ The output of the command should resemble the following JSON object:
 }
 ```
 
+To view the loaded configuration providers, run the following command:
+
+```cmd
+dotnet monitor config show --show-sources
+```
+
 ## Diagnostic Port Configuration
 
 `dotnet monitor` communicates via .NET processes through their diagnostic port. In the default configuration, .NET processes listen on a platform native transport (named pipes on Windows/Unix-domain sockets on \*nix) in a well-known location.

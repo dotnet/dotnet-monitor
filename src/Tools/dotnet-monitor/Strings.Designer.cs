@@ -493,6 +493,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show loaded configuration providers from high to low priority.
+        /// </summary>
+        internal static string HelpDescription_OptionShowSources {
+            get {
+                return ResourceManager.GetString("HelpDescription_OptionShowSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generates a new MonitorApiKey for each launch of the process..
         /// </summary>
         internal static string HelpDescription_OptionTempApiKey {
@@ -1020,6 +1029,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string Message_SettingsDump {
             get {
                 return ResourceManager.GetString("Message_SettingsDump", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configuration Providers (High to Low Priority):.
+        /// </summary>
+        internal static string Message_ShowSources {
+            get {
+                return ResourceManager.GetString("Message_ShowSources", resourceCulture);
             }
         }
         
