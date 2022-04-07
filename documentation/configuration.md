@@ -462,7 +462,7 @@ In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it 
   <summary>Command Line</summary>
 
   ```cmd
-  dotnet monitor collect --metricUrls http://*:52325/
+  dotnet monitor collect --metricUrls http://*:52325
   ```
 </details>
 
