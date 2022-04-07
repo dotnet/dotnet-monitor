@@ -8,8 +8,10 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -34,7 +36,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         [Theory]
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
-        public async Task CollectGCDumpAction_Success(TargetFrameworkMoniker tfm)
+        public Task CollectGCDumpAction_Success(TargetFrameworkMoniker tfm)
+        {
+            return Retry(() => CollectGCDumpAction_SuccessCore(tfm));
+        }
+
+        private async Task CollectGCDumpAction_SuccessCore(TargetFrameworkMoniker tfm)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -91,6 +98,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string headerText = enc8.GetString(buffer, 4, knownHeaderText.Length);
 
             Assert.Equal(knownHeaderText, headerText);
+        }
+
+        private async Task Retry(Func<Task> func, int attemptCount = 3)
+        {
+            int attemptIteration = 0;
+            while (true)
+            {
+                attemptIteration++;
+                _outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
+                try
+                {
+                    await func();
+
+                    break;
+                }
+                catch (CollectionRuleActionException ex) when (attemptIteration < attemptCount && ex.InnerException is InvalidOperationException)
+                {
+                    // GC dumps can fail to be produced from the runtime because the pipeline doesn't get the expected
+                    // start, data, and stop events. The pipeline will throw an InvalidOperationException, which is
+                    // wrapped in a CollectionRuleActionException by the action. Allow retries when this occurs.
+                }
+            }
         }
     }
 }
