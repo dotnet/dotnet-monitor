@@ -55,28 +55,28 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 <details>
   <summary>JSON</summary>
 
-```json
-{
-  "LargeGCHeapSize": {
-    "Trigger": {
-      "Type": "EventCounter",
-      "Settings": {
-        "ProviderName": "System.Runtime",
-        "CounterName": "gc-heap-size",
-        "GreaterThan": 10
-      }
-    },
-    "Actions": [
-      {
-        "Type": "CollectGCDump",
+  ```json
+  {
+    "LargeGCHeapSize": {
+      "Trigger": {
+        "Type": "EventCounter",
         "Settings": {
-          "Egress": "artifacts"
+          "ProviderName": "System.Runtime",
+          "CounterName": "gc-heap-size",
+          "GreaterThan": 10
         }
-      }
-    ]
+      },
+      "Actions": [
+        {
+          "Type": "CollectGCDump",
+          "Settings": {
+            "Egress": "artifacts"
+          }
+        }
+      ]
+    }
   }
-}
-```
+  ```
 </details>
 
 <details>
@@ -101,37 +101,36 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 <details>
   <summary>JSON</summary>
 
-```json
-{
-  "HighCpuUsage": {
-    "Trigger": {
-      "Type": "EventCounter",
-      "Settings": {
-        "ProviderName": "System.Runtime",
-        "CounterName": "cpu-usage",
-        "GreaterThan": 60,
-        "SlidingWindowDuration": "00:00:10"
-      }
-    },
-    "Actions": [
-      {
-        "Type": "CollectTrace",
+  ```json
+  {
+    "HighCpuUsage": {
+      "Trigger": {
+        "Type": "EventCounter",
         "Settings": {
-          "Profile": "Cpu",
-          "Egress": "artifacts"
+          "ProviderName": "System.Runtime",
+          "CounterName": "cpu-usage",
+          "GreaterThan": 60,
+          "SlidingWindowDuration": "00:00:10"
         }
-      }
-    ],
-    "Filters": [
-      {
-        "Key": "ProcessName",
-        "Value": "MyProcessName"
-      }
-    ]
+      },
+      "Actions": [
+        {
+          "Type": "CollectTrace",
+          "Settings": {
+            "Profile": "Cpu",
+            "Egress": "artifacts"
+          }
+        }
+      ],
+      "Filters": [
+        {
+          "Key": "ProcessName",
+          "Value": "MyProcessName"
+        }
+      ]
+    }
   }
-}
-```
-  
+  ```  
 </details>
 
 <details>
@@ -160,35 +159,34 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
 <details>
   <summary>JSON</summary>
 
-```json
-{
-  "BadResponseStatus": {
-    "Trigger": {
-      "Type": "AspNetResponseStatus",
-      "Settings": {
-        "ResponseCount": 5,
-        "StatusCodes": [
-          "400-499"
-        ]
-      }
-    },
-    "Actions": [
-      {
-        "Type": "CollectDump",
+  ```json
+  {
+    "BadResponseStatus": {
+      "Trigger": {
+        "Type": "AspNetResponseStatus",
         "Settings": {
-          "Egress": "artifacts",
-          "Type": "Full"
+          "ResponseCount": 5,
+          "StatusCodes": [
+            "400-499"
+          ]
         }
+      },
+      "Actions": [
+        {
+          "Type": "CollectDump",
+          "Settings": {
+            "Egress": "artifacts",
+            "Type": "Full"
+          }
+        }
+      ],
+      "Limits": {
+        "ActionCount": 3,
+        "ActionCountSlidingWindowDuration": "00:30:00"
       }
-    ],
-    "Limits": {
-      "ActionCount": 3,
-      "ActionCountSlidingWindowDuration": "00:30:00"
     }
   }
-}
-```
-  
+  ```
 </details>
   
 <details>
@@ -216,41 +214,40 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 <details>
   <summary>JSON</summary>
 
-```json
-{
-  "HighRequestCount": {
-    "Filters": [
-      {
-        "Key": "ProcessId",
-        "Value": "12345",
-        "MatchType": "Exact"
-      }
-    ],
-    "Trigger": {
-      "Type": "AspNetRequestCount",
-      "Settings": {
-        "RequestCount": 10,
-        "SlidingWindowDuration": "00:01:00"
-      }
-    },
-    "Actions": [
-      {
-        "Type": "CollectLogs",
-        "Settings": {
-          "Egress": "artifacts",
-          "DefaultLevel": "Error",
-          "UseAppFilters": false,
-          "Duration": "00:01:00"
+  ```json
+  {
+    "HighRequestCount": {
+      "Filters": [
+        {
+          "Key": "ProcessId",
+          "Value": "12345",
+          "MatchType": "Exact"
         }
+      ],
+      "Trigger": {
+        "Type": "AspNetRequestCount",
+        "Settings": {
+          "RequestCount": 10,
+          "SlidingWindowDuration": "00:01:00"
+        }
+      },
+      "Actions": [
+        {
+          "Type": "CollectLogs",
+          "Settings": {
+            "Egress": "artifacts",
+            "DefaultLevel": "Error",
+            "UseAppFilters": false,
+            "Duration": "00:01:00"
+          }
+        }
+      ],
+      "Limits": {
+        "RuleDuration": "01:00:00"
       }
-    ],
-    "Limits": {
-      "RuleDuration": "01:00:00"
     }
   }
-}
-```
-  
+  ```
 </details>
 
 <details>
@@ -281,32 +278,31 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
 <details>
   <summary>JSON</summary>
 
-```json
-{
-  "LongRequestDuration": {
-    "Trigger": {
-      "Type": "AspNetRequestDuration",
-      "Settings": {
-        "RequestCount": 5,
-        "RequestDuration": "00:00:08",
-        "SlidingWindowDuration": "00:02:00",
-        "IncludePaths": [ "/api/**/*" ]
-      }
-    },
-    "Actions": [
-      {
-        "Type": "CollectTrace",
+  ```json
+  {
+    "LongRequestDuration": {
+      "Trigger": {
+        "Type": "AspNetRequestDuration",
         "Settings": {
-          "Profile": "Http",
-          "Egress": "artifacts",
-          "Duration": "00:01:00"
+          "RequestCount": 5,
+          "RequestDuration": "00:00:08",
+          "SlidingWindowDuration": "00:02:00",
+          "IncludePaths": [ "/api/**/*" ]
         }
-      }
-    ]
+      },
+      "Actions": [
+        {
+          "Type": "CollectTrace",
+          "Settings": {
+            "Profile": "Http",
+            "Egress": "artifacts",
+            "Duration": "00:01:00"
+          }
+        }
+      ]
+    }
   }
-}
-```
-  
+  ```  
 </details>
 
 <details>
@@ -335,40 +331,39 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 <details>
   <summary>JSON</summary>
 
-```json
-{
-  "CollectDumpAndExecute": {
-    "Trigger": {
-      "Type": "AspNetResponseStatus",
-      "Settings": {
-        "ResponseCount": 3,
-        "StatusCodes": [
-          "400"
-        ]
-      }
-    },
-    "Actions": [
-      {
-        "Name": "MyDump",
-        "Type": "CollectDump",
+  ```json
+  {
+    "CollectDumpAndExecute": {
+      "Trigger": {
+        "Type": "AspNetResponseStatus",
         "Settings": {
-          "Egress": "artifacts",
-          "Type": "Mini"
-        },
-        "WaitForCompletion": true
-      },
-      {
-        "Type": "Execute",
-        "Settings": {
-          "Path": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe",
-          "Arguments": "\"$(Actions.MyDump.EgressPath)\""
+          "ResponseCount": 3,
+          "StatusCodes": [
+            "400"
+          ]
         }
-      }
-    ]
+      },
+      "Actions": [
+        {
+          "Name": "MyDump",
+          "Type": "CollectDump",
+          "Settings": {
+            "Egress": "artifacts",
+            "Type": "Mini"
+          },
+          "WaitForCompletion": true
+        },
+        {
+          "Type": "Execute",
+          "Settings": {
+            "Path": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe",
+            "Arguments": "\"$(Actions.MyDump.EgressPath)\""
+          }
+        }
+      ]
+    }
   }
-}
-```
-  
+  ```
 </details>
 
 <details>
