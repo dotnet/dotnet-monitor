@@ -482,7 +482,7 @@ In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it 
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_Metrics__Endpoints="http://localhost:52325"
+  export DotnetMonitor_Metrics__Endpoints="http://*:52325"
   ```
 </details>
 
