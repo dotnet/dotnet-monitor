@@ -472,7 +472,7 @@ In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it 
   ```json
   {
     "Metrics": {
-      "Endpoints": "http://localhost:52325"
+      "Endpoints": "http://*:52325"
     }
   }
   ```
