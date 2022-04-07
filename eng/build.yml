@@ -20,8 +20,6 @@ parameters:
     value: .NET 5
   - key: net6.0
     value: .NET 6
-  - key: net7.0
-    value: .NET 7
 
 jobs:
 - template: /eng/common/templates/job/job.yml
