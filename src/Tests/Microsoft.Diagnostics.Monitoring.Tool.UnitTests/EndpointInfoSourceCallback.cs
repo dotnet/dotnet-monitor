@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal sealed class EndpointInfoSourceCallback : IEndpointInfoSourceCallbacks
+    internal class EndpointInfoSourceCallback : IEndpointInfoSourceCallbacks
     {
         private const string AddOperationName = "Add";
         private const string RemoveOperationName = "Remove";
@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 timeout);
         }
 
-        public Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken token)
+        public virtual Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken token)
         {
             return Task.CompletedTask;
         }
