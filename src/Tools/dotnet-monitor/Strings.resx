@@ -232,6 +232,9 @@
 1. value: The value of the string that could not be parsed.
 2. errorMessage: Additional error message text.</comment>
   </data>
+  <data name="ErrorMessage_MaxConnections" xml:space="preserve">
+    <value>Value must be between 1 and 254, or -1 (to obtain the maximum number allowed by system resources).</value>
+  </data>
   <data name="ErrorMessage_NoEnvironmentVariable" xml:space="preserve">
     <value>The environment block does not contain the '{0}' variable.</value>
     <comment>Gets the format string for an error when the given environment variable does not exist.

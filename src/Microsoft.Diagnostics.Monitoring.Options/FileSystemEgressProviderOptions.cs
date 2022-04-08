@@ -27,6 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize))]
+        [Range(1, int.MaxValue)]
         public int? CopyBufferSize { get; set; }
     }
 }
