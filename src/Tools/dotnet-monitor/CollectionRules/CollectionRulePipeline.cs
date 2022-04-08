@@ -36,8 +36,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Exposed for showing Collection Rule State
         internal Queue<DateTime> _executionTimestamps;
         internal List<DateTime> _allExecutionTimestamps = new();
-        internal bool _actionInFlight = false;
         internal DateTime _pipelineStartTime;
+
+        CollectionRulesStateUpdater stateHolder = new();
 
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
@@ -148,10 +149,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     DateTime currentTimestamp = _context.Clock.UtcNow.UtcDateTime;
 
+                    // Think about how we can roll this together with the following check - so that the function can dequeue and update our state
                     DequeueOldTimestamps(_executionTimestamps, actionCountWindowDuration, currentTimestamp);
 
                     // Check if executing actions has been throttled due to count limit
-                    if (actionCountLimit > _executionTimestamps.Count)
+                    if (!ActionCountReached(actionCountLimit, _executionTimestamps.Count))
                     {
                         _executionTimestamps.Enqueue(currentTimestamp);
                         _allExecutionTimestamps.Add(currentTimestamp);
@@ -159,8 +161,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         bool actionsCompleted = false;
                         try
                         {
-                            _actionInFlight = true;
-                            
+                            stateHolder.BeginActionExecution();
+
                             // Intentionally not using the linkedToken. Allow the action list to execute gracefully
                             // unless forced by a caller to cancel or stop the running of the pipeline.
                             await _actionListExecutor.ExecuteActions(_context, InvokeStartCallback, token);
@@ -174,19 +176,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         }
                         finally
                         {
+                            if (!actionsCompleted)
+                            {
+                                stateHolder.ActionExecutionFailed();
+                            }
+
                             // The collection rule has executed the action list the maximum
                             // number of times as specified by the limits and the action count
                             // window was not specified. Since the pipeline can no longer execute
                             // actions, the pipeline can complete.
-
-                            _actionInFlight = false;
-
                             completePipeline = actionCountLimit <= _executionTimestamps.Count &&
                                 !actionCountWindowDuration.HasValue;
                         }
 
                         if (actionsCompleted)
                         {
+                            stateHolder.ActionExecutionSucceeded();
+
                             _context.Logger.CollectionRuleActionsCompleted(_context.Name);
                         }
                     }
@@ -209,6 +215,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         // Complete the pipeline since the action list is only executed once
                         // for collection rules with startup triggers.
                         completePipeline = true;
+
+                        stateHolder.StartupTriggerCompleted();
                     }
                 }
             }
@@ -216,6 +224,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 // This exception is caused by the pipeline duration expiring.
                 // Handle it to allow pipeline to be in completed state.
+                stateHolder.RuleDurationReached();
+            }
+        }
+
+        internal bool ActionCountReached(int actionCountLimit, int currExecutions)
+        {
+            if (actionCountLimit > currExecutions)
+            {
+                stateHolder.EndThrottled();
+                return false;
+            }
+            else
+            {
+                stateHolder.BeginThrottled();
+                return true;
             }
         }
 
