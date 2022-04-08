@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -44,6 +45,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.WithHeap)]
 #endif
         public Task DumpTest(DiagnosticPortConnectionMode mode, DumpType type)
+        {
+            return Retry(type, () => DumpTestCore(mode, type));
+        }
+
+        private Task DumpTestCore(DiagnosticPortConnectionMode mode, DumpType type)
         {
 #if !NET6_0_OR_GREATER
             // Capturing non-full dumps via diagnostic command works inconsistently
@@ -96,6 +102,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     runner.ConfigurationFromEnvironment.SetDumpTempFolder(dumpTempFolder);
                 });
+        }
+
+        private async Task Retry(DumpType type, Func<Task> func, int attemptCount = 3)
+        {
+            bool isMacOSFullDump =
+                RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
+                type == DumpType.Full;
+
+            int attemptIteration = 0;
+            while (true)
+            {
+                attemptIteration++;
+                _outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
+                try
+                {
+                    await func();
+
+                    break;
+                }
+                catch (TaskCanceledException) when (attemptIteration < attemptCount && isMacOSFullDump)
+                {
+                    // Full dumps on MacOS sometimes take a very long time (longer than 100 seconds, the default
+                    // HttpClient timeout). Retry the test when this condition is detected.
+                }
+            }
         }
     }
 }
