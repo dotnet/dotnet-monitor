@@ -13,7 +13,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
@@ -117,11 +116,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddHostedServiceForwarder<CollectionRuleService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 
-            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, EgressPostConfigure>();
-            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, SlidingWindowDurationPostConfigure>();
-            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, RequestCountsPostConfigure>();
-            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, ResponseCountsPostConfigure>();
-            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, LimitsPostConfigure>();
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, DefaultCollectionRulePostConfigureOptions>();
 
             return services;
         }

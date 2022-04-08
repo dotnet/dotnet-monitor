@@ -12,16 +12,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers))]
-        public CollectionRuleTriggerDefaultsOptions Triggers { get; set; } = new();
+        public CollectionRuleTriggerDefaultsOptions Triggers { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions))]
-        public CollectionRuleActionDefaultsOptions Actions { get; set; } = new();
+        public CollectionRuleActionDefaultsOptions Actions { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits))]
-        public CollectionRuleLimitsDefaultsOptions Limits { get; set; } = new();
+        public CollectionRuleLimitsDefaultsOptions Limits { get; set; }
     }
 }

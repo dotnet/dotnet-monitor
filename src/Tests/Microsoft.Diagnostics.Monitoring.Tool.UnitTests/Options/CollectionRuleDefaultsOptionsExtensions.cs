@@ -19,5 +19,45 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             rootOptions.CollectionRuleDefaults = settings;
             return rootOptions;
         }
+
+        public static CollectionRuleDefaultsOptions SetLimitsDefaults(this CollectionRuleDefaultsOptions options, int? count = null, TimeSpan? slidingWindowDuration = null, TimeSpan? ruleDuration = null)
+        {
+            if (null == options.Limits)
+            {
+                options.Limits = new CollectionRuleLimitsDefaultsOptions();
+            }
+
+            options.Limits.ActionCount = count;
+            options.Limits.ActionCountSlidingWindowDuration = slidingWindowDuration;
+            options.Limits.RuleDuration = ruleDuration;
+
+            return options;
+        }
+
+        public static CollectionRuleDefaultsOptions SetTriggerDefaults(this CollectionRuleDefaultsOptions options, int? requestCount = null, int? responseCount = null, string slidingWindowDuration = null)
+        {
+            if (null == options.Triggers)
+            {
+                options.Triggers = new CollectionRuleTriggerDefaultsOptions();
+            }
+
+            options.Triggers.RequestCount = requestCount;
+            options.Triggers.ResponseCount = responseCount;
+            options.Triggers.SlidingWindowDuration = slidingWindowDuration != null ? TimeSpan.Parse(slidingWindowDuration) : null;
+
+            return options;
+        }
+
+        public static CollectionRuleDefaultsOptions SetActionDefaults(this CollectionRuleDefaultsOptions options, string egress = null)
+        {
+            if (null == options.Actions)
+            {
+                options.Actions = new CollectionRuleActionDefaultsOptions();
+            }
+
+            options.Actions.Egress = egress;
+
+            return options;
+        }
     }
 }

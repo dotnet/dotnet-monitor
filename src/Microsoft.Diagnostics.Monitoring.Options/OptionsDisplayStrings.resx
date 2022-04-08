@@ -222,15 +222,15 @@
     <comment>The description provided for the Type parameter on CollectionRuleActionOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCount" xml:space="preserve">
-    <value>The default number of times the action list may be executed before being throttled; to be used when no other action count is specified.</value>
+    <value>The default number of times the action list may be executed before being throttled.</value>
     <comment>The description provided for the ActionCount parameter on CollectionRuleLimitsDefaultsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCountSlidingWindowDuration" xml:space="preserve">
-    <value>The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed; to be used when no other action count sliding window duration is specified.</value>
+    <value>The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed.</value>
     <comment>The description provided for the ActionCountSlidingWindowDuration parameter on CollectionRuleLimitsDefaultsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_RuleDuration" xml:space="preserve">
-    <value>The default amount of time before the rule will stop monitoring a process after it has been applied to a process; to be used when no other rule duration is specified.</value>
+    <value>The default amount of time before the rule will stop monitoring a process after it has been applied to a process.</value>
     <comment>The description provided for the RuleDuration parameter on CollectionRuleLimitsDefaultsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleOptions_Actions" xml:space="preserve">
@@ -596,19 +596,19 @@
     <comment>Gets the format string for rejecting validation due to no value being provided for a process filter.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleActionDefaultsOptions_Egress" xml:space="preserve">
-    <value>The name of the default Egress Provider; to be used when no other egress provider is specified.</value>
+    <value>The name of the default Egress Provider.</value>
     <comment>The description provided for the Egress parameter on CollectionRuleActionDefaultsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_SlidingWindowDuration" xml:space="preserve">
-    <value>The default sliding window duration; to be used when no other sliding window duration is specified.</value>
+    <value>The default sliding window duration.</value>
     <comment>The description provided for the SlidingWindowDuration parameter on CollectionRuleTriggerDefaultsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_RequestCount" xml:space="preserve">
-    <value>The default threshold of the number of requests that start within the sliding window of time; to be used when no other request count is specified.</value>
+    <value>The default threshold of the number of requests that start within the sliding window of time.</value>
     <comment>The description provided for the RequestCount parameter on CollectionRuleTriggerDefaultsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_ResponseCount" xml:space="preserve">
-    <value>The default threshold number of responses with matching status codes; to be used when no other response count is specified.</value>
+    <value>The default threshold number of responses with matching status codes.</value>
     <comment>The description provided for the ResponseCount parameter on CollectionRuleTriggerDefaultsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount" xml:space="preserve">
