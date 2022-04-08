@@ -1420,52 +1420,76 @@ Collection rule defaults are specified in configuration as a named item under th
 
 The following example includes a default egress provider that corresponds to the `FileSystem` egress provider named `artifacts`. The first action, `CollectDump`, is able to omit the `Settings` section by using the default egress provider. The second action, `CollectGCDump`, is using an egress provider other than the default, and specifies that it will egress to an `AzureBlobStorage` provider named `monitorBlob`.
 
-```json
-{
-  "Egress": {
-    "AzureBlobStorage": {
-      "monitorBlob": {
-        "accountUri": "https://exampleaccount.blob.core.windows.net",
-        "containerName": "dotnet-monitor",
-        "blobPrefix": "artifacts",
-        "accountKeyName": "MonitorBlobAccountKey"
-      }
-    },
-    "Properties": {
-      "MonitorBlobAccountKey": "accountKey"
-    },
-    "FileSystem": {
-      "artifacts": {
-        "directoryPath": "/artifacts",
-        "intermediateDirectoryPath": "/intermediateArtifacts"
-      }
-    }
-  },
-  "CollectionRuleDefaults": {
-    "Actions": {
-      "Egress": "artifacts"    
-    }
-  },
-  "CollectionRules": {
-    "HighRequestCount": {
-      "Trigger": {
-        "Type": "AspNetRequestCount",
-        "Settings": {
-          "RequestCount": 10
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Egress": {
+      "AzureBlobStorage": {
+        "monitorBlob": {
+          "accountUri": "https://exampleaccount.blob.core.windows.net",
+          "containerName": "dotnet-monitor",
+          "blobPrefix": "artifacts",
+          "accountKeyName": "MonitorBlobAccountKey"
         }
       },
-      "Actions": [
-        {
-          "Type": "CollectDump"
-        },
-        {
-          "Type": "CollectGCDump",
-          "Settings": {
-            "Egress": "monitorBlob"
-          }
+      "Properties": {
+        "MonitorBlobAccountKey": "accountKey"
+      },
+      "FileSystem": {
+        "artifacts": {
+          "directoryPath": "/artifacts",
+          "intermediateDirectoryPath": "/intermediateArtifacts"
         }
-      ]
+      }
+    },
+    "CollectionRuleDefaults": {
+      "Actions": {
+        "Egress": "artifacts"    
+      }
+    },
+    "CollectionRules": {
+      "HighRequestCount": {
+        "Trigger": {
+          "Type": "AspNetRequestCount",
+          "Settings": {
+            "RequestCount": 10
+          }
+        },
+        "Actions": [
+          {
+            "Type": "CollectDump"
+          },
+          {
+            "Type": "CollectGCDump",
+            "Settings": {
+              "Egress": "monitorBlob"
+            }
+          }
+        ]
+      }
     }
   }
-}
-```
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri="https://exampleaccount.blob.core.windows.net"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName="dotnet-monitor"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__blobPrefix="artifacts"
+  export DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountKeyName="MonitorBlobAccountKey"
+  export DotnetMonitor_Egress__Properties__MonitorBlobAccountKey="accountKey"
+  export DotnetMonitor_Egress__FileSystem__artifacts__directoryPath="/artifacts"
+  export DotnetMonitor_Egress__FileSystem__artifacts__intermediateDirectoryPath="/intermediateArtifacts"
+  export DotnetMonitor_CollectionRuleDefaults__Actions__Egress="artifacts"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Type="AspNetRequestCount"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__RequestCount="10"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Type="CollectDump"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__1__Type="CollectGCDump"
+  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__1__Settings__Egress="monitorBlob"
+  ```
+</details>
