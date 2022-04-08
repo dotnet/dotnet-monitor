@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             return Version.Parse(versionString);
         }
 
-        private static readonly TargetFrameworkMoniker CurrentTargetFrameworkMoniker =
+        public const TargetFrameworkMoniker CurrentTargetFrameworkMoniker =
 #if NET6_0
             TargetFrameworkMoniker.Net60;
 #elif NET5_0
