@@ -68,11 +68,17 @@ jobs:
           demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-20210714125435-9b5bbc2
+      ${{ if eq(parameters.architecture, 'arm64') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-20220312201346-b2c2436
+      ${{ else }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-20220107135107-9b5bbc2
 
-    # CMake + Clang is broken on Alpine 3.14 prereqs image
     ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode-20210910135845-c401c85
+      ${{ if eq(parameters.architecture, 'arm64') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine-20220312201346-538077f
+      ${{ else }}:
+        # CMake + Clang is broken on Alpine 3.14 prereqs image
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode-20211214164113-c401c85
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
@@ -85,6 +91,7 @@ jobs:
     - _BuildConfig: ${{ parameters.configuration }}
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
+    - _CrossBuildArgs: ''
     - _TestArgs: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
@@ -93,6 +100,10 @@ jobs:
     - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       - skipComponentGovernanceDetection: true
     
+    # Cross build for arm64 non-Windows builds
+    - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
+      - _CrossBuildArgs: '-cross'
+
     - ${{ if eq(parameters.runTests, true) }}:
       - _TestArgs: '-test'
 
@@ -143,10 +154,14 @@ jobs:
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
+        $(_CrossBuildArgs)
         $(_TestArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
       displayName: Build and Test
+      ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
+        env:
+          ROOTFS_DIR: '/crossrootfs/arm64'
 
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), ne(parameters.publishArtifactsSubPath, '')) }}:
       - task: CopyFiles@2
