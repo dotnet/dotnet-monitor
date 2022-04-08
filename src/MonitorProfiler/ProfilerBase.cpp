@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #include "ProfilerBase.h"
+#include "corhlpr.h"
 
 ProfilerBase::ProfilerBase() :
     m_pCorProfilerInfo(nullptr)

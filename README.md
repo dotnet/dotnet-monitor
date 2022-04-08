@@ -6,6 +6,10 @@ This repository contains the source code for dotnet-monitor, a diagnostic tool f
 
 See [Releases](documentation/releases.md) for the release history.
 
+## Docs
+
+[Docs](documentation/README.md) - Learn how to install, configure, and use dotnet-monitor.
+
 ## Building the Repository
 
 See [building instructions](documentation/building.md) in our documentation directory.

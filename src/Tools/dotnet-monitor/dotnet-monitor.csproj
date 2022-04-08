@@ -57,4 +57,30 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherNativeFilesForTfm</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <!-- Don't include profiler files in official builds until productized. -->
+  <Target Name="GatherNativeFilesForTfm" Condition="'$(ContinuousIntegrationBuild)' != 'true'">
+    <ItemGroup>
+      <!-- Create profiler library items for all of the native platforms. -->
+      <MonitorProfilerLibraryFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(LibraryExtension)')">
+        <PackagePath>tools/$(TargetFramework)/any/profiler/%(TargetRid)</PackagePath>
+      </MonitorProfilerLibraryFile>
+    </ItemGroup>
+    <ItemGroup>
+      <!-- Create profiler symbols items for all of the native platforms. -->
+      <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')">
+        <PackagePath>tools/$(TargetFramework)/any/profiler/%(TargetRid)</PackagePath>
+      </MonitorProfilerSymbolsFile>
+    </ItemGroup>
+    <ItemGroup>
+      <!-- Pack the profiler library for each platform if it exists. -->
+      <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile->Exists())" />
+      <!-- Pack the profiler symbols for each platform if it exists. -->
+      <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile->Exists())" />
+    </ItemGroup>
+  </Target>
+
 </Project>

@@ -10,6 +10,7 @@ include_directories(
     src/inc
     )
 
+include_directories(${PROJECT_BINARY_DIR})
 if(CLR_CMAKE_HOST_UNIX)
     include_directories(
         src/external/runtime/src/coreclr/pal/inc/rt
@@ -28,7 +29,20 @@ if(CLR_CMAKE_HOST_UNIX)
 endif(CLR_CMAKE_HOST_UNIX)
 
 set(PROFILER_SOURCES
-    ../../external/runtime/src/coreclr/pal/prebuilt/idl/corprof_i.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/external/runtime/src/coreclr/pal/prebuilt/idl/corprof_i.cpp
     )
 
-add_subdirectory(src/Tests/TestProfiler)
+# Add version files
+if(CLR_CMAKE_HOST_WIN32)
+    set(SOURCES
+        ${SOURCES}
+        ${PROJECT_BINARY_DIR}/NativeVersion.rc
+        )
+else(CLR_CMAKE_HOST_WIN32)
+    set(SOURCES
+        ${SOURCES}
+        ${PROJECT_BINARY_DIR}/version.c
+        )
+endif(CLR_CMAKE_HOST_WIN32)
+
+add_subdirectory(src/MonitorProfiler)

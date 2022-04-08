@@ -6,12 +6,13 @@
 
 #include "../ProfilerBase.h"
 
-class EnvProfiler :
+class MainProfiler :
     public ProfilerBase
 {
 public:
     static GUID GetClsid();
 
     STDMETHOD(Initialize)(IUnknown* pICorProfilerInfoUnk) override;
+    STDMETHOD(LoadAsNotficationOnly)(BOOL *pbNotificationOnly) override;
 };
 

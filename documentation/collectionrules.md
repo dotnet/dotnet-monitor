@@ -40,7 +40,7 @@ The following are the currently available triggers:
 |---|---|---|
 | Startup | Startup | Satisfied immediately when the rule is applied to a process. |
 | [AspNetRequestCount](./configuration.md#aspnetrequestcount-trigger) | Event Pipe | Satisfied when the number of HTTP requests is above the threshold count. |
-| [AspNetRequestDuration](./configuration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests have response times longer than the threshold duration. |
+| [AspNetRequestDuration](./configuration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests that have response times longer than the threshold duration is above the threshold count. |
 | [AspNetResponseStatus](./configuration.md#aspnetresponsestatus-trigger) | Event Pipe | Satisfied when the number of HTTP responses that have status codes matching the pattern list is above the specified threshold. |
 | [EventCounter](./configuration.md#eventcounter-trigger) | Event Pipe | Satisfied when the value of a counter falls above, below, or between the described threshold. |
 
@@ -58,8 +58,8 @@ The following are the currently available actions:
 | [CollectTrace](./configuration.md#collecttrace-action) | Collects an event trace of the target process. |
 | [Execute](./configuration.md#execute-action) | Executes an external executable with command line parameters. |
 | [LoadProfiler](./configuration.md#loadprofiler-action) | Loads an ICorProfilerCallback implementation into the target process. |
-| [SetEnvironmentVariable](./configuration.md#setenvironmentvaraible-action) | Sets an environment variable value in the target process. |
-| [GetEnvironmentVariable](./configuration.md#Getenvironmentvaraible-action) | Gets an environment variable value from the target process. |
+| [SetEnvironmentVariable](./configuration.md#setenvironmentvariable-action) | Sets an environment variable value in the target process. |
+| [GetEnvironmentVariable](./configuration.md#getenvironmentvariable-action) | Gets an environment variable value from the target process. |
 
 ## Limits
 
@@ -77,25 +77,44 @@ where `<ActionName>` is the name of the action from which to get an output value
 
 For example, if action `A` has an output named `EgressPath`, and action `B` has a settings property named `Arguments`, then action `B` can reference the `EgressPath` from within the `Arguments` property setting:
 
-```json
-{
-    "Actions": [{
-        "Name": "A",
-        "Type": "CollectTrace",
-        "Settings": {
-            "Profile": "Cpu",
-            "Egress": "AzureBlob"
-        }
-    },{
-        "Name": "B",
-        "Type": "Execute",
-        "Settings": {
-            "Path": "path-to-dotnet",
-            "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
-        }
-    }]
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "Actions": [{
+          "Name": "A",
+          "Type": "CollectTrace",
+          "Settings": {
+              "Profile": "Cpu",
+              "Egress": "AzureBlob"
+          }
+      },{
+          "Name": "B",
+          "Type": "Execute",
+          "Settings": {
+              "Path": "path-to-dotnet",
+              "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
+          }
+      }]
+  }
+  ```
+</details>
+
+<details>
+  <summary>Environment Variables</summary>
+  
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Name="A"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectTrace"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile="Cpu"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="AzureBlob"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Name="B"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Type="Execute"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Path="path-to-dotnet"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Arguments="MyApp.dll $(Actions.A.EgressPath)"
+  ```
+</details>
 
 At this time, only the `Arguments` property of the `Execute` action may use an action output dependency.
 

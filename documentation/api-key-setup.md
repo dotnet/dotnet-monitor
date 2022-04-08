@@ -12,7 +12,7 @@ Run the command:
 
 The output from this command will display the API key (a bearer JWT token) formatted as an `Authorization` header along with its corresponding configuration for `dotnet monitor`. You will need to store the `Subject` and `PublicKey` in the configuration for `dotnet monitor` and use the `Authorization` header value when making requests to the `dotnet monitor` HTTPS endpoint.
 
->**Note:** The `Authorization` header value is the string `Bearer` (representing the type) + the JWT, separated by a space. In some applications (like Postman) have you fill in the `Authorization` header type in a separate field from the JWT.
+>**Note:** The `Authorization` header value is the string `Bearer` (representing the type) + the JWT, separated by a space. In some applications (like Postman), you fill in the `Authorization` header type in a separate field from the JWT.
 
 ```yaml
 Generated ApiKey for dotnet-monitor; use the following header for authorization:
@@ -35,7 +35,7 @@ Settings in Json format:
 The `generatekey` command supports 1 parameter `--output`/`-o` to specify the configuration format. By default, `dotnet monitor generatekey` will use the `--output json` format. Currently, the values in the list below are supported values for `--output`.
 
 - `Json` output format will provide a json blob in the correct format to merge with a `settings.json` file that configures `dotnet-monitor`. See [Configuration Sources](./configuration.md#configuration-sources) for where to find or create a `settings.json` file.
-- `Text` output format write the individual parameters in an easily human-readable format.
+- `Text` output format writes the individual parameters in an easily human-readable format.
 - `Cmd` output format in environment variables for a `cmd.exe` prompt.
 - `PowerShell` output format in environment variables for a `powershell` or `pwsh` prompt.
 - `Shell` output format in environment variables for a `bash` shell or another linux shell prompt.
@@ -117,7 +117,7 @@ spec:
 
 ```
 
-> **NOTE:** For a complete example of running dotnet-monitor in Kubernetes, see [Running in a Kubernetes Cluster](getting-started.md#running-in-a-kubernetes-cluster) in the Getting Started guide.
+> **NOTE:** For a complete example of running dotnet-monitor in Kubernetes, see [Running in a Kubernetes Cluster](./kubernetes.md) in the Getting Started guide.
 
 ## 3. Using an API Key to access the HTTP API
 
