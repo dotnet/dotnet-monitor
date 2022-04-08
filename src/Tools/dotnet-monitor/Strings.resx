@@ -596,6 +596,21 @@
 1 Format Parameter:
 1. failure: The failure message from validation</comment>
   </data>
+  <data name="LogFormatString_QueueDoesNotExist" xml:space="preserve">
+    <value>The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly.</value>
+    <comment>Gets the format string that is printed in the 57:QueueDoesNotExist event.
+3 Format Parameters:
+1. queueName: The name of the Azure Queue where messages are egressed
+2. nameof(queueName)
+3. nameof(queueAccountUri)</comment>
+  </data>
+  <data name="LogFormatString_QueueOptionsPartiallySet" xml:space="preserve">
+    <value>Queue message egress requires {queueName} and {queueAccountUri} to be set</value>
+    <comment>Gets the format string that is printed in the 58:QueueOptions event.
+2 Format Parameters:
+1. nameof(queueName)
+2. nameof(queueAccountUri)</comment>
+  </data>
   <data name="LogFormatString_RunningElevated" xml:space="preserve">
     <value>The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes)</value>
     <comment>Gets the format string that is printed in the 19:RunningElevated event.
@@ -613,6 +628,12 @@
     <comment>Gets the format string that is printed in the 15:UnableToListenToAddress event.
 1 Format Parameter:
 1. url: The URL that could not have a listener attached to it</comment>
+  </data>
+  <data name="LogFormatString_WritingMessageToQueueFailed" xml:space="preserve">
+    <value>Unable to send message to the queue {0}.</value>
+    <comment>Gets the format string that is printed in the 59:WritingMessageToQueueFailed event.
+1 Format Parameter:
+1. queueName: The name of the Azure Queue where messages are egressed</comment>
   </data>
   <data name="Message_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {0}</value>
