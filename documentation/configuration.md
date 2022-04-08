@@ -398,16 +398,18 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 ### Azure blob storage egress provider
 
-| Name | Type | Description |
-|---|---|---|
-| accountUri | string | The URI of the Azure blob storage account.|
-| containerName | string | The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.|
-| blobPrefix | string | Optional path prefix for the artifacts to egress.|
-| copyBufferSize | string | The buffer size to use when copying data from the original artifact to the blob stream.|
-| accountKey | string | The account key used to access the Azure blob storage account.|
-| sharedAccessSignature | string | The shared access signature (SAS) used to access the azure blob storage account.|
-| accountKeyName | string | Name of the property in the Properties section that will contain the account key.|
-| sharedAccessSignatureName | string | Name of the property in the Properties section that will contain the SAS token.|
+| Name | Type | Required | Description |
+|---|---|---|---|
+| accountUri | string | true | The URI of the Azure blob storage account.|
+| containerName | string | true | The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.|
+| blobPrefix | string | false | Optional path prefix for the artifacts to egress.|
+| copyBufferSize | string | false | The buffer size to use when copying data from the original artifact to the blob stream.|
+| accountKey | string | false | The account key used to access the Azure blob storage account; must be specified if `accountKeyName` is not specified.|
+| sharedAccessSignature | string | false | The shared access signature (SAS) used to access the azure blob storage account; if using SAS, must be specified if `sharedAccessSignatureName` is not specified.|
+| accountKeyName | string | false | Name of the property in the Properties section that will contain the account key; must be specified if `accountKey` is not specified.|
+| sharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the SAS token; if using SAS, must be specified if `sharedAccessSignature` is not specified.|
+| queueName | string | false | The name of the queue to which a message will be dispatched upon writing to a blob.|
+| queueAccountUri | string | false | The URI of the Azure queue account.|
 
 ### Example azureBlobStorage provider
 
@@ -428,6 +430,32 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
     }
 }
 ```
+
+### Example azureBlobStorage provider with queue
+
+```json
+{
+    "Egress": {
+        "AzureBlobStorage": {
+            "monitorBlob": {
+                "accountUri": "https://exampleaccount.blob.core.windows.net",
+                "containerName": "dotnet-monitor",
+                "blobPrefix": "artifacts",
+                "accountKeyName": "MonitorBlobAccountKey",
+                "queueAccountUri": "https://exampleaccount.queue.core.windows.net",
+                "queueName": "dotnet-monitor-queue"
+            }
+        },
+        "Properties": {
+            "MonitorBlobAccountKey": "accountKey"
+        }
+    }
+}
+```
+
+#### azureBlobStorage Queue Message Format
+
+The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`; using the above example with an artifact named `mydump.dmp`, this would be `artifacts/mydump.dmp`) that is being egressed to blob storage. This is designed to be easily integrated into an Azure Function that triggers whenever a new message is added to the queue, providing you with the contents of the artifact as a stream. See [Azure Blob storage input binding for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-input?tabs=csharp#example) for an example.
 
 ### Filesystem egress provider
 
