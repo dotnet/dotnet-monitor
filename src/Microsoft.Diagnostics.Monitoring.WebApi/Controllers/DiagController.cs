@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -487,7 +488,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet("info", Name = nameof(GetInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
-        public ActionResult<Models.DotnetMonitorInfo> GetInfo()
+        public ActionResult<DotnetMonitorInfo> GetInfo()
         {
             return this.InvokeService(() =>
             {
@@ -515,10 +516,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="pid">Process ID used to identify the target process.</param>
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
-        [HttpGet("collectionrules", Name = nameof(GetCollectionRules))]
+        [HttpGet("collectionrules", Name = nameof(GetCollectionRulesDescription))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
-        public Task<ActionResult<Dictionary<string, Models.CollectionRules>>> GetCollectionRules(
+        [ProducesResponseType(typeof(DotnetMonitorInfo), StatusCodes.Status200OK)]
+        public Task<ActionResult<Dictionary<string, CollectionRuleDescription>>> GetCollectionRulesDescription(
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -528,9 +529,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
-            return InvokeForProcess<Dictionary<string, Models.CollectionRules>>(processInfo =>
+            return InvokeForProcess<Dictionary<string, CollectionRuleDescription>>(processInfo =>
             {
-                return _collectionRuleService.GetCollectionRulesState(processInfo.EndpointInfo);
+                return _collectionRuleService.GetCollectionRulesDescriptions(processInfo.EndpointInfo);
             },
             processKey);
         }

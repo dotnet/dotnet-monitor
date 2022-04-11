@@ -11,5 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string Throttled = "This collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration.";
         public const string Finished_ConfigurationChanged = "This collection rule will no longer trigger because it no longer exists.";
         public const string Finished_RuleDuration = "The collection rule will no longer trigger because the RuleDuration limit was reached.";
+        public const string Finished_Startup = "The collection rule will no longer trigger because the Startup trigger only executes once.";
+        public const string Finished_Failure = "The collection rule will no longer trigger because a failure occurred.";
     }
 }

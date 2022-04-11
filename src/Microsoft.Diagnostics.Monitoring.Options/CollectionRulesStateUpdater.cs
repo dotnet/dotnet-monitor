@@ -16,9 +16,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         internal void ActionExecutionSucceeded()
         {
-            CurrState = CollectionRulesStateInternal.ActionSucceeded;
+            CurrState = CollectionRulesStateInternal.Running;
         }
 
+        // Not sure what the use-case is here (if there is one)
         internal void ActionExecutionFailed()
         {
             CurrState = CollectionRulesStateInternal.ActionFailed;
@@ -31,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         internal void EndThrottled()
         {
-
+            CurrState = CollectionRulesStateInternal.Running;
         }
 
         internal void StartupTriggerCompleted()
@@ -42,6 +43,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         internal void RuleDurationReached()
         {
             CurrState = CollectionRulesStateInternal.FinishedViaRuleDuration;
+        }
+
+        internal void ActionCountReached()
+        {
+            CurrState = CollectionRulesStateInternal.FinishedViaActionCount;
+        }
+
+        internal void ConfigurationChanged()
+        {
+            CurrState = CollectionRulesStateInternal.FinishedViaConfigChange;
+        }
+
+        // Not sure what the use-case is here (if there is one)
+        internal void RuleFailure()
+        {
+            CurrState = CollectionRulesStateInternal.FinishedViaFailure;
         }
     }
 }

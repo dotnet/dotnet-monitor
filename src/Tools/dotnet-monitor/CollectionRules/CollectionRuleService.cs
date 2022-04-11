@@ -4,8 +4,10 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tracing.Parsers.IIS_Trace;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -152,6 +154,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     await rulesChangedTaskSource.Task;
                 }
 
+                foreach (var key in _containersMap.Keys)
+                {
+                    foreach (var pipeline in _containersMap[key].pipelines)
+                    {
+                        pipeline.stateHolder.ConfigurationChanged();
+                    }
+                }
+
                 rulesChanged = false;
 
                 _logger.CollectionRuleConfigurationChanged();
@@ -234,127 +244,102 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        public Dictionary<string, Monitoring.WebApi.Models.CollectionRules> GetCollectionRulesState(IEndpointInfo endpointInfo)
+        public Dictionary<string, CollectionRuleDescription> GetCollectionRulesDescriptions(IEndpointInfo endpointInfo)
         {
-            var matchingContainerKeys = _containersMap.Keys.Where(x => x == endpointInfo);
+            Dictionary<string, CollectionRuleDescription> collectionRulesState = new();
 
-            Dictionary<string, Monitoring.WebApi.Models.CollectionRules> collectionRulesState = new();
-
-            foreach (var key in matchingContainerKeys)
+            foreach (var key in _containersMap.Keys.Where(x => x == endpointInfo))
             {
                 CleanUpCompletedPipelines(key);
 
                 foreach (var pipeline in _containersMap[key].pipelines)
                 {
-                    CollectionRuleOptions options = pipeline._context.Options;
-
-                    DateTime currentTimestamp = pipeline._context.Clock.UtcNow.UtcDateTime;
-
-                    TimeSpan? actionCountSWDLimit = options.Limits?.ActionCountSlidingWindowDuration;
-
-                    /*
-                    CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps,
-                        actionCountSWDLimit,
-                        currentTimestamp);
-                    */
-
-                    int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
-
-                    var stateAndReason = GetCollectionRulesState(pipeline, actionCountLimit);
-
-                    Monitoring.WebApi.Models.CollectionRules currCollectionRuleInfo = new Monitoring.WebApi.Models.CollectionRules()
-                    {
-                        State = stateAndReason.Item1,
-                        StateReason = stateAndReason.Item2,
-                        LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
-                        ActionCountLimit = actionCountLimit,
-                        SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
-                        ActionCountSlidingWindowDurationLimit = actionCountSWDLimit,
-                        SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, actionCountSWDLimit, actionCountLimit, currentTimestamp, pipeline._isCleanedUp),
-                        RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline._pipelineStartTime, options.Limits?.RuleDuration, currentTimestamp, pipeline._isCleanedUp)
-                    };
-
-                    collectionRulesState.Add(pipeline._context.Name, currCollectionRuleInfo);
+                    collectionRulesState.Add(pipeline._context.Name, GetCollectionRuleDescription(pipeline));
                 }
             }
 
             return collectionRulesState;
         }
 
-        private static TimeSpan? GetSWDCountdown(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, int actionCount, DateTime currentTimestamp, bool pipelineCompleted)
+        private CollectionRuleDescription GetCollectionRuleDescription(CollectionRulePipeline pipeline)
         {
-            if (pipelineCompleted)
+            CollectionRuleLimitsOptions limitsOptions = pipeline._context.Options.Limits;
+
+            var stateAndReason = GetCollectionRulesState(pipeline);
+
+            var description = new CollectionRuleDescription()
             {
-                return null;
+                State = stateAndReason.Item1,
+                StateReason = stateAndReason.Item2,
+                LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
+                ActionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount),
+                SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
+                ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration,
+            };
+
+            if (!pipeline._isCleanedUp)
+            {
+                DateTime currentTime = pipeline._context.Clock.UtcNow.UtcDateTime;
+                description.SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
+                description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline._pipelineStartTime, limitsOptions?.RuleDuration, currentTime);
             }
 
-            if (actionCountWindowDuration.HasValue)
-            {
-                if (timestamps.Count >= actionCount)
-                {
-                    DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
+            return description;
+        }
 
-                    TimeSpan countdown =  timestamps.Peek() - windowStartTimestamp;
-                    return GetTruncatedTimeSpan(countdown);
-                }
+        private static TimeSpan? GetSWDCountdown(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, int actionCount, DateTime currentTimestamp)
+        {
+            if (actionCountWindowDuration.HasValue && timestamps.Count >= actionCount)
+            {
+                TimeSpan countdown =  timestamps.Peek() - (currentTimestamp - actionCountWindowDuration.Value);
+                return GetTruncatedPositiveTimeSpan(countdown);
             }
 
             return null;
         }
 
-        private static TimeSpan? GetRuleFinishedCountdown(DateTime pipelineStartTime, TimeSpan? ruleDuration, DateTime currentTimestamp, bool pipelineCompleted)
+        private static TimeSpan? GetRuleFinishedCountdown(DateTime pipelineStartTime, TimeSpan? ruleDuration, DateTime currentTimestamp)
         {
-            if (pipelineCompleted)
-            {
-                return null;
-            }
-
             if (ruleDuration.HasValue)
             {
                 TimeSpan countdown = ruleDuration.Value - (currentTimestamp - pipelineStartTime);
-
-                if (countdown < TimeSpan.Zero)
-                {
-                    return null;
-                }
-
-                return GetTruncatedTimeSpan(countdown);
+                return GetTruncatedPositiveTimeSpan(countdown);
             }
 
             return null;
         }
 
-        private static TimeSpan GetTruncatedTimeSpan(TimeSpan original)
+        private static TimeSpan? GetTruncatedPositiveTimeSpan(TimeSpan original)
         {
-            return TimeSpan.FromSeconds((long)original.TotalSeconds); // Intentionally lose millisecond precision
+            return (original > TimeSpan.Zero) ? TimeSpan.FromSeconds((long)original.TotalSeconds) : null; // Intentionally lose millisecond precision
         }
-
-        private Tuple<CollectionRulesState, string> GetCollectionRulesState(CollectionRulePipeline pipeline, int actionCount)
+        
+        
+        private Tuple<CollectionRulesState, string> GetCollectionRulesState(CollectionRulePipeline pipeline)
         {
-            // Should be abstracting away from using the internal state, but doing this temporarily
-            if (pipeline.stateHolder.CurrState == CollectionRulesStateInternal.ActionStarted)
+            // Don't like this approach -> push it down a level deeper to where we keep track of state
+            switch (pipeline.stateHolder.CurrState)
             {
-                return new Tuple<CollectionRulesState, string>(CollectionRulesState.ActionExecuting, CollectionRulesStateReasons.ExecutingActions);
-            }
-            else if (pipeline._isCleanedUp)
-            {
-                if (pipeline._cleanupExplanation == CollectionRuleCleanupExplanation.ConfigurationChanged)
-                {
-                    return new Tuple<CollectionRulesState, string>(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_ConfigurationChanged);
-                }
-                else if (pipeline._cleanupExplanation == CollectionRuleCleanupExplanation.RuleDurationExceeded)
-                {
-                    return new Tuple<CollectionRulesState, string>(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_RuleDuration);
-                }
-
-                return new Tuple<CollectionRulesState, string>(CollectionRulesState.Finished, String.Empty);
-            }
-            else if (actionCount <= pipeline._executionTimestamps.Count)
-            {
-                return new Tuple<CollectionRulesState, string>(CollectionRulesState.Throttled, CollectionRulesStateReasons.Throttled);
+                case CollectionRulesStateInternal.Running:
+                    return new(CollectionRulesState.Running, CollectionRulesStateReasons.Running);
+                case CollectionRulesStateInternal.ActionStarted:
+                    return new(CollectionRulesState.ActionExecuting, CollectionRulesStateReasons.ExecutingActions);
+                case CollectionRulesStateInternal.ActionFailed:
+                    break;
+                case CollectionRulesStateInternal.FinishedViaFailure:
+                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_Failure);
+                case CollectionRulesStateInternal.FinishedViaRuleDuration:
+                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_RuleDuration);
+                case CollectionRulesStateInternal.FinishedViaConfigChange:
+                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_ConfigurationChanged);
+                case CollectionRulesStateInternal.FinishedViaStartup:
+                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_Startup);
+                case CollectionRulesStateInternal.Throttled:
+                    return new(CollectionRulesState.Throttled, CollectionRulesStateReasons.Throttled);
             }
 
-            return new Tuple<CollectionRulesState, string>(CollectionRulesState.Running, CollectionRulesStateReasons.Running);
+            // Need to handle default case better
+            return new(CollectionRulesState.Running, CollectionRulesStateReasons.Running);
         }
 
         private void CleanUpCompletedPipelines(IEndpointInfo key)

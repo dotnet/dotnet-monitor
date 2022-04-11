@@ -149,21 +149,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     DateTime currentTimestamp = _context.Clock.UtcNow.UtcDateTime;
 
-                    // Think about how we can roll this together with the following check - so that the function can dequeue and update our state
-                    //DequeueOldTimestamps(_executionTimestamps, actionCountWindowDuration, currentTimestamp);
-
                     // Check if executing actions has been throttled due to count limit
-                    if (!ActionCountReached(actionCountLimit, _executionTimestamps.Count))
+                    if (stateHolder.CurrState != CollectionRulesStateInternal.Throttled)
                     {
                         _executionTimestamps.Enqueue(currentTimestamp);
                         _allExecutionTimestamps.Add(currentTimestamp);
 
-                        // If this works, integrate it more nicely
                         if (actionCountWindowDuration.HasValue)
                         {
-                            var cts = new CancellationTokenSource(actionCountWindowDuration.Value);
-                            var testToken = cts.Token;
-                            testToken.Register(() => _executionTimestamps.Dequeue());
+                            var dequeueToken = new CancellationTokenSource(actionCountWindowDuration.Value).Token;
+                            dequeueToken.Register(() =>
+                            {
+                                _executionTimestamps.Dequeue();
+                                CheckForThrottling(actionCountLimit, _executionTimestamps.Count);
+                            });
                         }
 
                         bool actionsCompleted = false;
@@ -188,6 +187,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             {
                                 stateHolder.ActionExecutionFailed();
                             }
+                            else
+                            {
+                                stateHolder.ActionExecutionSucceeded();
+
+                                _context.Logger.CollectionRuleActionsCompleted(_context.Name);
+                            }
+
+                            CheckForThrottling(actionCountLimit, _executionTimestamps.Count);
 
                             // The collection rule has executed the action list the maximum
                             // number of times as specified by the limits and the action count
@@ -195,13 +202,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             // actions, the pipeline can complete.
                             completePipeline = actionCountLimit <= _executionTimestamps.Count &&
                                 !actionCountWindowDuration.HasValue;
-                        }
 
-                        if (actionsCompleted)
-                        {
-                            stateHolder.ActionExecutionSucceeded();
-
-                            _context.Logger.CollectionRuleActionsCompleted(_context.Name);
+                            if (completePipeline)
+                            {
+                                stateHolder.ActionCountReached();
+                            }
                         }
                     }
                     else
@@ -236,7 +241,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        internal bool ActionCountReached(int actionCountLimit, int currExecutions)
+        internal bool CheckForThrottling(int actionCountLimit, int currExecutions)
         {
             if (actionCountLimit > currExecutions)
             {
@@ -247,28 +252,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 stateHolder.BeginThrottled();
                 return true;
-            }
-        }
-
-        public static void DequeueOldTimestamps(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
-        {
-            // If rule has an action count window, Remove all execution timestamps that fall outside the window.
-            if (actionCountWindowDuration.HasValue)
-            {
-                DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
-                while (timestamps.Count > 0)
-                {
-                    DateTime executionTimestamp = timestamps.Peek();
-                    if (executionTimestamp < windowStartTimestamp)
-                    {
-                        timestamps.Dequeue();
-                    }
-                    else
-                    {
-                        // Stop clearing out previous executions
-                        break;
-                    }
-                }
             }
         }
 
@@ -300,11 +283,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             if (ruleDuration.HasValue && _context.Clock.UtcNow.UtcDateTime - (_pipelineStartTime + ruleDuration.Value) > TimeSpan.Zero)
             {
-                _cleanupExplanation = CollectionRuleCleanupExplanation.RuleDurationExceeded;
-            }
-            else
-            {
-                _cleanupExplanation = CollectionRuleCleanupExplanation.ConfigurationChanged;
+                stateHolder.RuleDurationReached();
             }
 
             await base.OnCleanup();

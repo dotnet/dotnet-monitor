@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
-    public class CollectionRules
+    public class CollectionRuleDescription
     {
         /*
         /// <summary>

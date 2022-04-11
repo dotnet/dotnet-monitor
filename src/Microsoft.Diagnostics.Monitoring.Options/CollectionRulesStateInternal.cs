@@ -15,6 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         FinishedViaConfigChange,
         FinishedViaRuleDuration,
         FinishedViaStartup,
-        FinishedViaFailure
+        FinishedViaFailure,
+        FinishedViaActionCount
     }
 }

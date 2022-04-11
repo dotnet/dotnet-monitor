@@ -245,6 +245,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
+        /// Capable of getting every combination of process query: PID, UID, and/or Name
+        /// Get /collectionrules?pid={pid}&uid={uid}&name={name}
+        /// </summary>
+        public Task<Dictionary<string, CollectionRuleDescription>> GetCollectionRulesDescriptionAsync(int? pid, Guid? uid, string name, CancellationToken token)
+        {
+            return GetCollectionRulesDescriptionAsync(GetProcessQuery(pid: pid, uid: uid, name: name), token);
+        }
+
+        private async Task<Dictionary<string, CollectionRuleDescription>> GetCollectionRulesDescriptionAsync(string processQuery, CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/collectionRules?" + processQuery);
+            request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
+
+            using HttpResponseMessage response = await SendAndLogAsync(
+                request,
+                HttpCompletionOption.ResponseContentRead,
+                token).ConfigureAwait(false);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(response, ContentTypes.ApplicationJson);
+                    return await ReadContentAsync<Dictionary<string, CollectionRuleDescription>>(response).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// GET /logs?pid={pid}&level={logLevel}&durationSeconds={duration}
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
