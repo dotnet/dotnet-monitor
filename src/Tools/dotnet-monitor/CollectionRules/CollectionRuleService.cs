@@ -252,9 +252,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     TimeSpan? actionCountSWDLimit = options.Limits?.ActionCountSlidingWindowDuration;
 
+                    /*
                     CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps,
                         actionCountSWDLimit,
                         currentTimestamp);
+                    */
 
                     int actionCountLimit = (options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
 
@@ -329,7 +331,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private Tuple<CollectionRulesState, string> GetCollectionRulesState(CollectionRulePipeline pipeline, int actionCount)
         {
-            if (pipeline._actionInFlight)
+            // Should be abstracting away from using the internal state, but doing this temporarily
+            if (pipeline.stateHolder.CurrState == CollectionRulesStateInternal.ActionStarted)
             {
                 return new Tuple<CollectionRulesState, string>(CollectionRulesState.ActionExecuting, CollectionRulesStateReasons.ExecutingActions);
             }

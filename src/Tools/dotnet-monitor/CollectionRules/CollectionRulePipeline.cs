@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         internal List<DateTime> _allExecutionTimestamps = new();
         internal DateTime _pipelineStartTime;
 
-        CollectionRulesStateUpdater stateHolder = new();
+        public CollectionRulesStateUpdater stateHolder = new();
 
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
@@ -150,13 +150,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     DateTime currentTimestamp = _context.Clock.UtcNow.UtcDateTime;
 
                     // Think about how we can roll this together with the following check - so that the function can dequeue and update our state
-                    DequeueOldTimestamps(_executionTimestamps, actionCountWindowDuration, currentTimestamp);
+                    //DequeueOldTimestamps(_executionTimestamps, actionCountWindowDuration, currentTimestamp);
 
                     // Check if executing actions has been throttled due to count limit
                     if (!ActionCountReached(actionCountLimit, _executionTimestamps.Count))
                     {
                         _executionTimestamps.Enqueue(currentTimestamp);
                         _allExecutionTimestamps.Add(currentTimestamp);
+
+                        // If this works, integrate it more nicely
+                        if (actionCountWindowDuration.HasValue)
+                        {
+                            var cts = new CancellationTokenSource(actionCountWindowDuration.Value);
+                            var testToken = cts.Token;
+                            testToken.Register(() => _executionTimestamps.Dequeue());
+                        }
 
                         bool actionsCompleted = false;
                         try

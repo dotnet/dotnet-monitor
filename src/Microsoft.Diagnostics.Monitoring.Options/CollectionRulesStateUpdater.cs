@@ -7,7 +7,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     // Will need an actual name for this...mostly just experimenting for now.
     internal class CollectionRulesStateUpdater
     {
-        internal CollectionRulesStateInternal CurrState { get; private set; }
+        public CollectionRulesStateInternal CurrState { get; private set; }
 
         internal void BeginActionExecution()
         {
