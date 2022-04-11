@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             foreach (var key in actualCollectionRuleDescriptions.Keys)
             {
                 CollectionRuleDescription actualDescription = actualCollectionRuleDescriptions[key];
-                CollectionRuleDescription expectedDescription = actualCollectionRuleDescriptions[key];
+                CollectionRuleDescription expectedDescription = expectedCollectionRuleDescriptions[key];
 
                 Assert.Equal(actualDescription.ActionCountLimit, expectedDescription.ActionCountLimit);
                 Assert.Equal(actualDescription.ActionCountSlidingWindowDurationLimit, expectedDescription.ActionCountSlidingWindowDurationLimit);
@@ -112,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Equal(actualDescription.StateReason, expectedDescription.StateReason);
             }
         }
-        /*
+        
         /// <summary>
         /// Validates that a non-startup rule will complete when it has an action limit specified
         /// without a sliding window duration.
@@ -134,6 +134,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.SpinWait.Name,
                 appValidate: async (runner, client) =>
                 {
+                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions_Before = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_Before = new();
+
+                    expectedDescriptions_Before.Add(DefaultRuleName, new()
+                    {
+                        ActionCountLimit = 1,
+                        LifetimeOccurrences = 0,
+                        SlidingWindowOccurrences = 0,
+                        State = CollectionRulesState.Running,
+                        StateReason = CollectionRulesStateReasons.Running
+                    });
+
+                    ValidateCollectionRuleDescriptions(collectionRuleDescriptions_Before, expectedDescriptions_Before);
+
                     await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StartSpin);
 
                     await ruleCompletedTask;
@@ -142,6 +157,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     Assert.True(File.Exists(ExpectedFilePath));
                     Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
+
+                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions_After = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_After = new();
+
+                    expectedDescriptions_After.Add(DefaultRuleName, new()
+                    {
+                        ActionCountLimit = 1,
+                        LifetimeOccurrences = 1,
+                        SlidingWindowOccurrences = 1,
+                        State = CollectionRulesState.Finished,
+                        StateReason = CollectionRulesStateReasons.Finished_ActionCount
+                    });
+
+                    ValidateCollectionRuleDescriptions(collectionRuleDescriptions_After, expectedDescriptions_After);
                 },
                 configureTool: runner =>
                 {
@@ -161,6 +191,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+        /*
         /// <summary>
         /// Validates that a collection rule with a command line filter can be matched to the
         /// target process.

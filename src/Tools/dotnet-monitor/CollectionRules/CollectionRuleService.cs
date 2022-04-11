@@ -334,6 +334,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_ConfigurationChanged);
                 case CollectionRulesStateInternal.FinishedViaStartup:
                     return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_Startup);
+                case CollectionRulesStateInternal.FinishedViaActionCount:
+                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_ActionCount);
                 case CollectionRulesStateInternal.Throttled:
                     return new(CollectionRulesState.Throttled, CollectionRulesStateReasons.Throttled);
             }

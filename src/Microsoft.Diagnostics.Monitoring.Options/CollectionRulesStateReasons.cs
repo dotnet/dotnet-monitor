@@ -13,5 +13,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string Finished_RuleDuration = "The collection rule will no longer trigger because the RuleDuration limit was reached.";
         public const string Finished_Startup = "The collection rule will no longer trigger because the Startup trigger only executes once.";
         public const string Finished_Failure = "The collection rule will no longer trigger because a failure occurred.";
+        public const string Finished_ActionCount = "The collection rule will no longer trigger because the ActionCount was reached.";
     }
 }
