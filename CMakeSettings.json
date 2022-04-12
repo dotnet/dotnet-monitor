@@ -1,0 +1,162 @@
+﻿{
+  "configurations": [
+    {
+      "name": "Windows_NT.arm64.Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.arm64.Debug\\crossgen",
+      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.arm64.Debug",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_arm64" ],
+      "variables": [
+        {
+          "name": "CLR_CMAKE_HOST_ARCH",
+          "value": "x64",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_CMAKE_TARGET_ARCH",
+          "value": "arm64",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_MANAGED_BINARY_DIR",
+          "value": "${projectDir}\\artifacts\\bin",
+          "type": "FILEPATH"
+        }
+      ]
+    },
+    {
+      "name": "Windows_NT.arm64.Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.arm64.Release\\crossgen",
+      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.arm64.Release",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_arm64" ],
+      "variables": [
+        {
+          "name": "CLR_CMAKE_HOST_ARCH",
+          "value": "x64",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_CMAKE_TARGET_ARCH",
+          "value": "arm64",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_MANAGED_BINARY_DIR",
+          "value": "${projectDir}\\artifacts\\bin",
+          "type": "FILEPATH"
+        }
+      ]
+    },
+    {
+      "name": "Windows_NT.x64.Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64" ],
+      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.x64.Debug",
+      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.x64.Debug",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CLR_CMAKE_HOST_ARCH",
+          "value": "x64",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_MANAGED_BINARY_DIR",
+          "value": "${projectDir}\\artifacts\\bin",
+          "type": "FILEPATH"
+        }
+      ]
+    },
+    {
+      "name": "Windows_NT.x64.Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.x64.Release",
+      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.x64.Release",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64" ],
+      "variables": [
+        {
+          "name": "CLR_CMAKE_HOST_ARCH",
+          "value": "x64",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_MANAGED_BINARY_DIR",
+          "value": "${projectDir}\\artifacts\\bin",
+          "type": "FILEPATH"
+        }
+      ]
+    },
+    {
+      "name": "Windows_NT.x86.Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.x86.Debug",
+      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.x86.Debug",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "CLR_CMAKE_HOST_ARCH",
+          "value": "x86",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_CMAKE_TARGET_ARCH",
+          "value": "x86",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_MANAGED_BINARY_DIR",
+          "value": "${projectDir}\\artifacts\\bin",
+          "type": "FILEPATH"
+        }
+      ]
+    },
+    {
+      "name": "Windows_NT.x86.Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.x86.Release",
+      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.x86.Release",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "CLR_CMAKE_HOST_ARCH",
+          "value": "x86",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_CMAKE_TARGET_ARCH",
+          "value": "x86",
+          "type": "STRING"
+        },
+        {
+          "name": "CLR_MANAGED_BINARY_DIR",
+          "value": "${projectDir}\\artifacts\\bin",
+          "type": "FILEPATH"
+        }
+      ]
+    }
+  ]
+}
