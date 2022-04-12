@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -27,14 +28,14 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    public class CollectionRulePipelineTests
+    public class CollectionRuleDescriptionPipelineTests
     {
         private readonly TimeSpan DefaultPipelineTimeout = TimeSpan.FromSeconds(30);
         private const string TestRuleName = "TestPipelineRule";
 
         private readonly ITestOutputHelper _outputHelper;
 
-        public CollectionRulePipelineTests(ITestOutputHelper outputHelper)
+        public CollectionRuleDescriptionPipelineTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
@@ -106,6 +107,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// Test that the pipeline works with the EventCounter trigger.
         /// </summary>
@@ -152,6 +165,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // This should not complete until the trigger conditions are satisfied for the first time.
                     await actionStartedTask.WithCancellation(cancellationSource.Token);
 
+                    /*
+                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions = new();
+
+                    expectedDescriptions.Add(TestRuleName, new CollectionRuleDescription()
+                    {
+                        LifetimeOccurrences = 1,
+                        SlidingWindowOccurrences = 1,
+                        State = CollectionRulesState.Finished,
+                        StateReason = CollectionRulesStateReasons.Finished_Startup
+                    });
+
+                    ValidateCollectionRuleDescriptions(collectionRuleDescriptions, expectedDescriptions);
+                    */
+
+
+
+
                     VerifyExecutionCount(callbackService, 1);
 
                     await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StopSpin);
@@ -167,6 +199,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.RegisterTestAction(callbackService);
                 });
         }
+
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Test that the CollectionRulePipeline completes to due to rule duration limit.
@@ -254,8 +297,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         completesOnLastExpectedIteration: true,
                         cancellationSource.Token);
 
-                    _outputHelper.WriteLine("CurrState: " + pipeline.stateHolder.CurrState);
-
                     // Pipeline should run to completion due to action count limit without sliding window.
                     await runTask.WithCancellation(cancellationSource.Token);
 
@@ -271,6 +312,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.RegisterTestAction(callbackService);
                 });
         }
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Test that the CollectionRulePipeline thottles actions when action count limit is reached within window.
@@ -322,6 +372,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         completesOnLastExpectedIteration: false,
                         cancellationSource.Token);
 
+                    _outputHelper.WriteLine("CurrState: " + pipeline.stateHolder.CurrState);
+
                     // Action list should have been executed the expected number of times
                     VerifyExecutionCount(callbackService, ExpectedActionExecutionCount);
 
@@ -355,6 +407,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.RegisterTestAction(callbackService);
                 });
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Writes the list of action execution timestamps to the output log.
