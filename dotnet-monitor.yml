@@ -55,7 +55,9 @@ stages:
       displayName: Windows x64 Release
       osGroup: Windows
       configuration: Release
-      publishArtifactsSubPath: bin
+      publishArtifactsSubPaths:
+      - source: 'bin'
+      - source: 'obj'
       testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
@@ -64,7 +66,8 @@ stages:
       osGroup: Windows
       configuration: Release
       architecture: x86
-      publishArtifactsSubPath: bin/Windows_NT.x86.Release
+      publishArtifactsSubPaths:
+      - source: 'bin/Windows_NT.x86.Release'
       testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
@@ -74,7 +77,8 @@ stages:
         osGroup: Windows
         configuration: Release
         architecture: arm64
-        publishArtifactsSubPath: bin/Windows_NT.arm64.Release
+        publishArtifactsSubPaths:
+        - source: 'bin/Windows_NT.arm64.Release'
         testGroup: None
   - template: /eng/build.yml
     parameters:
@@ -89,7 +93,8 @@ stages:
       displayName: Linux x64 Release
       osGroup: Linux
       configuration: Release
-      publishArtifactsSubPath: bin/Linux.x64.Release
+      publishArtifactsSubPaths:
+      - source: 'bin/Linux.x64.Release'
       testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
@@ -99,7 +104,8 @@ stages:
         osGroup: Linux
         configuration: Release
         architecture: arm64
-        publishArtifactsSubPath: bin/Linux.arm64.Release
+        publishArtifactsSubPaths:
+        - source: 'bin/Linux.arm64.Release'
         testGroup: None
   - template: /eng/build.yml
     parameters:
@@ -114,8 +120,9 @@ stages:
       displayName: Linux Musl x64 Release
       osGroup: Linux_Musl
       configuration: Release
-      publishArtifactsSubPath: bin/Linux.x64.Release
-      publishArtifactsTargetSubPath: bin/Linux-musl.x64.Release
+      publishArtifactsSubPaths:
+      - source: 'bin/Linux.x64.Release'
+        target: 'bin/Linux-musl.x64.Release'
       testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
@@ -125,8 +132,9 @@ stages:
         osGroup: Linux_Musl
         configuration: Release
         architecture: arm64
-        publishArtifactsSubPath: bin/Linux.arm64.Release
-        publishArtifactsTargetSubPath: bin/Linux-musl.arm64.Release
+        publishArtifactsSubPaths:
+        - source: 'bin/Linux.arm64.Release'
+          target: 'bin/Linux-musl.arm64.Release'
         testGroup: None
   - template: /eng/build.yml
     parameters:
@@ -141,7 +149,8 @@ stages:
       displayName: MacOS x64 Release
       osGroup: MacOS
       configuration: Release
-      publishArtifactsSubPath: bin/OSX.x64.Release
+      publishArtifactsSubPaths:
+      - source: 'bin/OSX.x64.Release'
       testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
@@ -151,7 +160,8 @@ stages:
         osGroup: MacOS
         configuration: Release
         architecture: arm64
-        publishArtifactsSubPath: bin/OSX.arm64.Release
+        publishArtifactsSubPaths:
+        - source: 'bin/OSX.arm64.Release'
         testGroup: None
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
     # Pack, sign, and publish
