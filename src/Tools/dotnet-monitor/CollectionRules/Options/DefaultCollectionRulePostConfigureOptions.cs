@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         public void ConfigureEgress(CollectionRuleOptions options)
         {
-            var actionDefaults = _defaultOptions.CurrentValue.Actions;
+            CollectionRuleActionDefaultsOptions actionDefaults = _defaultOptions.CurrentValue.Actions;
 
             if (actionDefaults == null)
             {
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         public void ConfigureLimits(CollectionRuleOptions options)
         {
-            var limitsDefaults = _defaultOptions.CurrentValue.Limits;
+            CollectionRuleLimitsDefaultsOptions limitsDefaults = _defaultOptions.CurrentValue.Limits;
 
             if (limitsDefaults == null)
             {
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         public void ConfigureRequestCounts(CollectionRuleOptions options)
         {
-            var triggerDefaults = _defaultOptions.CurrentValue.Triggers;
+            CollectionRuleTriggerDefaultsOptions triggerDefaults = _defaultOptions.CurrentValue.Triggers;
 
             if (triggerDefaults == null)
             {
@@ -112,7 +112,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         public void ConfigureResponseCounts(CollectionRuleOptions options)
         {
-            var triggerDefaults = _defaultOptions.CurrentValue.Triggers;
+            CollectionRuleTriggerDefaultsOptions triggerDefaults = _defaultOptions.CurrentValue.Triggers;
 
             if (triggerDefaults == null)
             {
@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         public void ConfigureSlidingWindowDurations(CollectionRuleOptions options)
         {
-            var triggerDefaults = _defaultOptions.CurrentValue.Triggers;
+            CollectionRuleTriggerDefaultsOptions triggerDefaults = _defaultOptions.CurrentValue.Triggers;
 
             if (triggerDefaults == null)
             {

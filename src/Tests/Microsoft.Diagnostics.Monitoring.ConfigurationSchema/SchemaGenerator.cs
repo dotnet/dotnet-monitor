@@ -203,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
             settingsProperty.Reference = context.AddTypeIfNotExist<TOptions>();
 
-            var propertyNames = GetCollectionRuleDefaultsPropertyNames();
+            IEnumerable<string> propertyNames = GetCollectionRuleDefaultsPropertyNames();
 
             // Don't require properties that have a corresponding collection rule default
             foreach (var propName in propertyNames)
