@@ -9,6 +9,8 @@
 #include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
 #include <memory>
+#include "ThreadDataManager.h"
+#include "ExceptionTracker.h"
 
 class MainProfiler final :
     public ProfilerBase
@@ -16,12 +18,20 @@ class MainProfiler final :
 private:
     std::shared_ptr<IEnvironment> m_pEnvironment;
     std::shared_ptr<ILogger> m_pLogger;
+    std::shared_ptr<ThreadDataManager> m_pThreadDataManager;
+    std::unique_ptr<ExceptionTracker> m_pExceptionTracker;
 
 public:
     static GUID GetClsid();
 
     STDMETHOD(Initialize)(IUnknown* pICorProfilerInfoUnk) override;
     STDMETHOD(Shutdown)() override;
+    STDMETHOD(ThreadCreated)(ThreadID threadId) override;
+    STDMETHOD(ThreadDestroyed)(ThreadID threadId) override;
+    STDMETHOD(ExceptionThrown)(ObjectID thrownObjectId) override;
+    STDMETHOD(ExceptionSearchCatcherFound)(FunctionID functionId) override;
+    STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionId) override;
+    STDMETHOD(MovedReferences2)(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[]) override;
     STDMETHOD(LoadAsNotficationOnly)(BOOL *pbNotificationOnly) override;
 
 private:
@@ -32,3 +42,4 @@ private:
 private:
     std::unique_ptr<CommandServer> _commandServer;
 };
+

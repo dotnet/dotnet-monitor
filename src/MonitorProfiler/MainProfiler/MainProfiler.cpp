@@ -15,8 +15,6 @@ using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
 
-#define LogInformationV(format, ...) LogInformationV_(m_pLogger, format, __VA_ARGS__)
-
 GUID MainProfiler::GetClsid()
 {
     // {6A494330-5848-4A23-9D87-0E57BBF6DE79}
@@ -34,6 +32,11 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
     IfFailRet(InitializeEnvironment());
     IfFailRet(InitializeLogging());
 
+    m_pThreadDataManager = make_shared<ThreadDataManager>(m_pLogger);
+    IfNullRet(m_pThreadDataManager);
+    m_pExceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, m_pThreadDataManager, m_pCorProfilerInfo));
+    IfNullRet(m_pExceptionTracker);
+
     IfFailLogRet(InitializeCommandServer());
 
     // Logging is initialized and can now be used
@@ -43,10 +46,13 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
     // communication channel's GetProcessEnvironment command to get this value.
     IfFailLogRet(EnvironmentHelper::SetProductVersion(m_pEnvironment, m_pLogger));
 
-#ifdef TARGET_WINDOWS
-    DWORD processId = GetCurrentProcessId();
-    LogInformationV(_T("Process Id: %d"), processId);
-#endif
+    DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
+    ThreadDataManager::AddProfilerEventMask(eventsLow);
+    ExceptionTracker::AddProfilerEventMask(eventsLow);
+
+    IfFailRet(m_pCorProfilerInfo->SetEventMask2(
+        eventsLow,
+        COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
 
     return S_OK;
 }
@@ -61,11 +67,75 @@ STDMETHODIMP MainProfiler::Shutdown()
     return ProfilerBase::Shutdown();
 }
 
+STDMETHODIMP MainProfiler::ThreadCreated(ThreadID threadId)
+{
+    HRESULT hr = S_OK;
+
+    IfFailLogRet(m_pThreadDataManager->ThreadCreated(threadId));
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ThreadDestroyed(ThreadID threadId)
+{
+    HRESULT hr = S_OK;
+
+    IfFailLogRet(m_pThreadDataManager->ThreadDestroyed(threadId));
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ExceptionThrown(ObjectID thrownObjectId)
+{
+    HRESULT hr = S_OK;
+
+    ThreadID threadId;
+    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+
+    IfFailLogRet(m_pExceptionTracker->ExceptionThrown(threadId, thrownObjectId));
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ExceptionSearchCatcherFound(FunctionID functionId)
+{
+    HRESULT hr = S_OK;
+
+    ThreadID threadId;
+    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+
+    IfFailLogRet(m_pExceptionTracker->ExceptionSearchCatcherFound(threadId, functionId));
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ExceptionUnwindFunctionEnter(FunctionID functionId)
+{
+    HRESULT hr = S_OK;
+
+    ThreadID threadId;
+    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+
+    IfFailLogRet(m_pExceptionTracker->ExceptionUnwindFunctionEnter(threadId, functionId));
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::MovedReferences2(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[])
+{
+    HRESULT hr = S_OK;
+
+    IfFailLogRet(m_pExceptionTracker->MovedReferences(cMovedObjectIDRanges, oldObjectIDRangeStart, newObjectIDRangeStart, cObjectIDRangeLength));
+
+    return S_OK;
+}
+
 STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
 {
     ExpectedPtr(pbNotificationOnly);
 
-    *pbNotificationOnly = TRUE;
+    // GC callbacks are not supported by notification only profilers
+    //*pbNotificationOnly = TRUE;
 
     return S_OK;
 }

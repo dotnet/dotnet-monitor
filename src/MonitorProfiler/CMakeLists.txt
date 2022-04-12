@@ -17,7 +17,10 @@ set(SOURCES
     Environment/EnvironmentHelper.cpp
     Environment/ProfilerEnvironment.cpp
     Logging/AggregateLogger.cpp
+    MainProfiler/ExceptionTracker.cpp
     MainProfiler/MainProfiler.cpp
+    MainProfiler/ThreadData.cpp
+    MainProfiler/ThreadDataManager.cpp
     ClassFactory.cpp
     DllMain.cpp
     ProfilerBase.cpp
