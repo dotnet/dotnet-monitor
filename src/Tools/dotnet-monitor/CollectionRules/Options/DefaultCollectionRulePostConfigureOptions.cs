@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             ConfigureSlidingWindowDurations(options);
         }
 
-        public void ConfigureEgress(CollectionRuleOptions options)
+        private void ConfigureEgress(CollectionRuleOptions options)
         {
             CollectionRuleActionDefaultsOptions actionDefaults = _defaultOptions.CurrentValue.Actions;
 
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
         }
 
-        public void ConfigureLimits(CollectionRuleOptions options)
+        private void ConfigureLimits(CollectionRuleOptions options)
         {
             CollectionRuleLimitsDefaultsOptions limitsDefaults = _defaultOptions.CurrentValue.Limits;
 
@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
         }
 
-        public void ConfigureRequestCounts(CollectionRuleOptions options)
+        private void ConfigureRequestCounts(CollectionRuleOptions options)
         {
             CollectionRuleTriggerDefaultsOptions triggerDefaults = _defaultOptions.CurrentValue.Triggers;
 
@@ -110,7 +110,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
         }
 
-        public void ConfigureResponseCounts(CollectionRuleOptions options)
+        private void ConfigureResponseCounts(CollectionRuleOptions options)
         {
             CollectionRuleTriggerDefaultsOptions triggerDefaults = _defaultOptions.CurrentValue.Triggers;
 
@@ -131,7 +131,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
         }
 
-        public void ConfigureSlidingWindowDurations(CollectionRuleOptions options)
+        private void ConfigureSlidingWindowDurations(CollectionRuleOptions options)
         {
             CollectionRuleTriggerDefaultsOptions triggerDefaults = _defaultOptions.CurrentValue.Triggers;
 

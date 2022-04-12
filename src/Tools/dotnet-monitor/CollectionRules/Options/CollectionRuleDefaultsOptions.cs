@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
-    internal class CollectionRuleDefaultsOptions
+    internal sealed class CollectionRuleDefaultsOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

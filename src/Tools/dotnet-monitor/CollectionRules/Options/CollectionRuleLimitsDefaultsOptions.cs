@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
-    internal class CollectionRuleLimitsDefaultsOptions
+    internal sealed class CollectionRuleLimitsDefaultsOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
