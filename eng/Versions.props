@@ -55,7 +55,7 @@
     <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0-preview.4.22201.3</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-preview.4.22201.3</VSRedistCommonNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.321001</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.321101</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftNETCoreApp31Version>3.1.22</MicrosoftNETCoreApp31Version>
