@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -66,6 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
 
                 //No sensitive information
+                ProcessChildSection(configuration, ConfigurationKeys.CollectionRuleDefaults, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.GlobalCounter, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.CollectionRules, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.CorsConfiguration, skipNotPresent, includeChildSections: true, showSources: showSources);
@@ -222,7 +222,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         if (child.GetChildren().Any())
                         {
-                            ProcessChildren(child, includeChildSections, redact,  showSources: showSources);
+                            ProcessChildren(child, includeChildSections, redact, showSources: showSources);
                         }
                         else
                         {
