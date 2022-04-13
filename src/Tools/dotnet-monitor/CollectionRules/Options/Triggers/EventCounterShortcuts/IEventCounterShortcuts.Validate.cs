@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
 
             if (LessThan.HasValue && GreaterThan.HasValue && GreaterThan.Value > LessThan.Value)
             {
-                // The GreaterThan must be lower than LessThan if both are specified.
+                // The GreaterThan must be less than or equal to LessThan if both are specified.
                 results.Add(new ValidationResult(
                     string.Format(
                         Strings.ErrorMessage_FieldMustBeLessThanOtherField,

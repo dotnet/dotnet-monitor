@@ -251,13 +251,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
-        // Move this somewhere
-        public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
-        {
-            yield return new object[] { typeof(CPUUsageOptions), KnownCollectionRuleTriggers.CPUUsage };
-            yield return new object[] { typeof(GCHeapSizeOptions), KnownCollectionRuleTriggers.GCHeapSize };
-        }
-
         [Theory]
         [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
         public Task CollectionRuleOptions_IEventCounterTrigger_MinimumOptions(Type triggerType, string triggerName)
@@ -341,15 +334,69 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ex =>
                 {
                     string[] failures = ex.Failures.ToArray();
-                    // Property validation failures will short-circuit the remainder of the validation
-                    // rules, thus only observe 1 error when one might expect 2 (the second being that
-                    // either GreaterThan or LessThan should be specified).
+
                     Assert.Equal(3, failures.Length);
                     VerifyRangeMessage<double>(failures, 0, nameof(CPUUsageOptions.GreaterThan),
                         TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
                     VerifyRangeMessage<double>(failures, 1, nameof(CPUUsageOptions.LessThan),
                         TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
                     VerifyRangeMessage<TimeSpan>(failures, 2, nameof(CPUUsageOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_GCHeapSizeTrigger_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetGCHeapSizeTrigger(options =>
+                        {
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                            options.GreaterThan = -1;
+                            options.LessThan = -1;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Equal(3, failures.Length);
+                    VerifyRangeMessage<double>(failures, 0, nameof(GCHeapSizeOptions.GreaterThan),
+                        "0", double.MaxValue.ToString());
+                    VerifyRangeMessage<double>(failures, 1, nameof(GCHeapSizeOptions.LessThan),
+                        "0", double.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(GCHeapSizeOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_ThreadpoolQueueLengthTrigger_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetThreadpoolQueueLengthTrigger(options =>
+                        {
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                            options.GreaterThan = -1;
+                            options.LessThan = -1;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Equal(3, failures.Length);
+                    VerifyRangeMessage<double>(failures, 0, nameof(ThreadpoolQueueLengthOptions.GreaterThan),
+                        "0", double.MaxValue.ToString());
+                    VerifyRangeMessage<double>(failures, 1, nameof(ThreadpoolQueueLengthOptions.LessThan),
+                        "0", double.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(ThreadpoolQueueLengthOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -376,8 +423,49 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+        [Fact]
+        public Task CollectionRuleOptions_GCHeapSizeTrigger_LessThanAssignedGreaterThanUnassigned()
+        {
+            const double ExpectedLessThan = GCHeapSizeOptionsDefaults.GreaterThan / 2;
 
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetGCHeapSizeTrigger(options =>
+                        {
+                            options.LessThan = ExpectedLessThan;
+                        });
+                },
+                ruleOptions =>
+                {
+                    GCHeapSizeOptions gcHeapSizeOptions = ruleOptions.VerifyGCHeapSizeTrigger();
+                    Assert.Null(gcHeapSizeOptions.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, gcHeapSizeOptions.LessThan);
+                });
+        }
 
+        [Fact]
+        public Task CollectionRuleOptions_ThreadpoolQueueLengthTrigger_LessThanAssignedGreaterThanUnassigned()
+        {
+            const double ExpectedLessThan = ThreadpoolQueueLengthOptionsDefaults.GreaterThan / 2;
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetThreadpoolQueueLengthTrigger(options =>
+                        {
+                            options.LessThan = ExpectedLessThan;
+                        });
+                },
+                ruleOptions =>
+                {
+                    ThreadpoolQueueLengthOptions threadpoolQueueLengthOptions = ruleOptions.VerifyThreadpoolQueueLengthTrigger();
+                    Assert.Null(threadpoolQueueLengthOptions.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, threadpoolQueueLengthOptions.LessThan);
+                });
+        }
 
         [Fact]
         public Task CollectionRuleOptions_AspNetRequestCountTrigger_MinimumOptions()
@@ -1403,6 +1491,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Single(failures);
                     VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions.Name));
                 });
+        }
+
+        public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
+        {
+            yield return new object[] { typeof(CPUUsageOptions), KnownCollectionRuleTriggers.CPUUsage };
+            yield return new object[] { typeof(GCHeapSizeOptions), KnownCollectionRuleTriggers.GCHeapSize };
+            yield return new object[] { typeof(ThreadpoolQueueLengthOptions), KnownCollectionRuleTriggers.ThreadpoolQueueLength };
         }
 
         private Task Validate(

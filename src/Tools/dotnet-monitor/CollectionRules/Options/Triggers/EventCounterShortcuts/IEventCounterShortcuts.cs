@@ -7,7 +7,7 @@ using System;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts
 {
     /// <summary>
-    /// Options for the EventCounter trigger.
+    /// Options for IEventCounterShortcuts triggers.
     /// </summary>
     internal partial interface IEventCounterShortcuts
     {

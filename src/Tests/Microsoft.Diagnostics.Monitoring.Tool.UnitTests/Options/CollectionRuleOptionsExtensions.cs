@@ -364,6 +364,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return Assert.IsType<CPUUsageOptions>(ruleOptions.Trigger.Settings);
         }
 
+        public static GCHeapSizeOptions VerifyGCHeapSizeTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.GCHeapSize);
+            return Assert.IsType<GCHeapSizeOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static ThreadpoolQueueLengthOptions VerifyThreadpoolQueueLengthTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.ThreadpoolQueueLength);
+            return Assert.IsType<ThreadpoolQueueLengthOptions>(ruleOptions.Trigger.Settings);
+        }
+
         public static IEventCounterShortcuts VerifyIEventCounterTrigger(this CollectionRuleOptions ruleOptions, Type triggerType, string triggerName)
         {
             ruleOptions.VerifyTrigger(triggerName);

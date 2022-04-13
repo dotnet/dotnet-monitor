@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts
 {
     /// <summary>
-    /// Options for the HighCPU trigger.
+    /// Options for the CPUUsage trigger.
     /// </summary>
     internal sealed partial class CPUUsageOptions : IEventCounterShortcuts
     {
@@ -33,6 +33,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]
         [DefaultValue(EventCounterOptionsDefaults.SlidingWindowDuration)]
-        public TimeSpan? SlidingWindowDuration { get; set; } // Need to integrate with defaults here
+        public TimeSpan? SlidingWindowDuration { get; set; }
     }
 }
