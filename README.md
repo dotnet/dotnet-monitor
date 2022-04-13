@@ -10,6 +10,10 @@ See [Releases](documentation/releases.md) for the release history.
 
 [Docs](documentation/README.md) - Learn how to install, configure, and use dotnet-monitor.
 
+## Survey
+
+[Survey](https://aka.ms/dotnet-monitor-survey) - Provide anonymous feedback on your experience using dotnet-monitor.
+
 ## Building the Repository
 
 See [building instructions](documentation/building.md) in our documentation directory.
@@ -22,7 +26,8 @@ Also see info about related [Microsoft .NET Core and ASP.NET Core Bug Bounty Pro
 
 ## Useful Links
 
-See [Announcing dotnet-monitor](https://devblogs.microsoft.com/dotnet/announcing-dotnet-monitor-in-net-6/)
+Blog Post: [Announcing dotnet-monitor](https://devblogs.microsoft.com/dotnet/announcing-dotnet-monitor-in-net-6/)
+[Videos and Tutorials]()
 
 ## .NET Foundation
 
