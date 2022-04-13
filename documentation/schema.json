@@ -1834,7 +1834,7 @@
             "null",
             "number"
           ],
-          "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "description": "The threshold level as a percentage that the counter must maintain (or higher) for the specified duration.",
           "format": "double",
           "default": 50.0,
           "maximum": 100.0,
@@ -1845,7 +1845,7 @@
             "null",
             "number"
           ],
-          "description": "The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "description": "The threshold level as a percentage that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.",
           "format": "double",
           "maximum": 100.0,
           "minimum": 0.0
@@ -1870,7 +1870,7 @@
             "null",
             "number"
           ],
-          "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "description": "The threshold level in MBs that the counter must maintain (or higher) for the specified duration.",
           "format": "double",
           "default": 10.0,
           "minimum": 0.0
@@ -1880,7 +1880,7 @@
             "null",
             "number"
           ],
-          "description": "The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "description": "The threshold level in MBs that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.",
           "format": "double",
           "minimum": 0.0
         },
@@ -1904,7 +1904,7 @@
             "null",
             "number"
           ],
-          "description": "The threshold level the counter must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "description": "The threshold level the counter must maintain (or higher) for the specified duration.",
           "format": "double",
           "default": 200.0,
           "minimum": 0.0
@@ -1914,7 +1914,7 @@
             "null",
             "number"
           ],
-          "description": "The threshold level the counter must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "description": "The threshold level the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.",
           "format": "double",
           "minimum": 0.0
         },

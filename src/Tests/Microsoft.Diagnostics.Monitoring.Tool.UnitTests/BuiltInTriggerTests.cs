@@ -151,14 +151,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     .SetIEventCounterTrigger(typeof(T), triggerName, callback);
             }, host =>
             {
-                T options = GetTriggerOptions<T>(host, DefaultRuleName);
+                T options = TriggerTestsHelper.GetTriggerOptions<T>(host, DefaultRuleName);
 
                 ICollectionRuleTriggerFactoryProxy factory;
                 Assert.True(host.Services.GetService<ICollectionRuleTriggerOperations>().TryCreateFactory(triggerName, out factory));
 
                 EventPipeTrigger<EventCounterTriggerSettings> trigger = (EventPipeTrigger<EventCounterTriggerSettings>)factory.Create(new EndpointInfo(), null, options);
 
-                // We have to open EventPipeTrigger from private to internal (and _pipeline as well) to get this to work -> is that acceptable?
+                // We have to open EventPipeTrigger from private to internal (and _pipeline as well) to get this to work -> is there a better way to do this?
                 EventCounterTriggerSettings triggerSettings = trigger._pipeline.Settings.TriggerSettings;
 
                 Assert.Equal(expectedSettings.CounterName, triggerSettings.CounterName);
@@ -167,15 +167,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(expectedSettings.LessThan, triggerSettings.LessThan);
                 Assert.Equal(expectedSettings.SlidingWindowDuration, triggerSettings.SlidingWindowDuration);
             });
-        }
-
-        // This will be removed once CollectionRuleDefaults is merged in
-        internal static T GetTriggerOptions<T>(IHost host, string ruleName)
-        {
-            IOptionsMonitor<CollectionRuleOptions> ruleOptionsMonitor = host.Services.GetService<IOptionsMonitor<CollectionRuleOptions>>();
-            T options = (T)ruleOptionsMonitor.Get(ruleName).Trigger.Settings;
-
-            return options;
         }
     }
 }

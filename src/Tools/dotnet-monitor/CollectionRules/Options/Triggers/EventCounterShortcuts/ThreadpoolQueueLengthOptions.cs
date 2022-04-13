@@ -7,7 +7,6 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-// NOTE: We can potentially have better Descriptions specific to each of these triggers
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts
 {
     /// <summary>
@@ -17,14 +16,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_GreaterThan))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ThreadpoolQueueLengthOptions_GreaterThan))]
         [DefaultValue(ThreadpoolQueueLengthOptionsDefaults.GreaterThan)]
         [Range(0, double.MaxValue)]
         public double? GreaterThan { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_LessThan))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan))]
 
         [Range(0, double.MaxValue)]
         public double? LessThan { get; set; }

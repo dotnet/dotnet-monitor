@@ -401,69 +401,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
-        [Fact]
-        public Task CollectionRuleOptions_CPUUsageTrigger_LessThanAssignedGreaterThanUnassigned()
+        [Theory]
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_LessThanAssignedGreaterThanUnassigned(Type triggerType, string triggerName)
         {
-            const double ExpectedLessThan = CPUUsageOptionsDefaults.GreaterThan / 2;
+            const double ExpectedLessThan = 20;
 
             return ValidateSuccess(
                 rootOptions =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetCPUUsageTrigger(options =>
+                        .SetIEventCounterTrigger(triggerType, triggerName, options =>
                         {
                             options.LessThan = ExpectedLessThan;
                         });
                 },
                 ruleOptions =>
                 {
-                    CPUUsageOptions cpuUsageOptions = ruleOptions.VerifyCPUUsageTrigger();
-                    Assert.Null(cpuUsageOptions.GreaterThan);
-                    Assert.Equal(ExpectedLessThan, cpuUsageOptions.LessThan);
-                });
-        }
-
-        [Fact]
-        public Task CollectionRuleOptions_GCHeapSizeTrigger_LessThanAssignedGreaterThanUnassigned()
-        {
-            const double ExpectedLessThan = GCHeapSizeOptionsDefaults.GreaterThan / 2;
-
-            return ValidateSuccess(
-                rootOptions =>
-                {
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetGCHeapSizeTrigger(options =>
-                        {
-                            options.LessThan = ExpectedLessThan;
-                        });
-                },
-                ruleOptions =>
-                {
-                    GCHeapSizeOptions gcHeapSizeOptions = ruleOptions.VerifyGCHeapSizeTrigger();
-                    Assert.Null(gcHeapSizeOptions.GreaterThan);
-                    Assert.Equal(ExpectedLessThan, gcHeapSizeOptions.LessThan);
-                });
-        }
-
-        [Fact]
-        public Task CollectionRuleOptions_ThreadpoolQueueLengthTrigger_LessThanAssignedGreaterThanUnassigned()
-        {
-            const double ExpectedLessThan = ThreadpoolQueueLengthOptionsDefaults.GreaterThan / 2;
-
-            return ValidateSuccess(
-                rootOptions =>
-                {
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetThreadpoolQueueLengthTrigger(options =>
-                        {
-                            options.LessThan = ExpectedLessThan;
-                        });
-                },
-                ruleOptions =>
-                {
-                    ThreadpoolQueueLengthOptions threadpoolQueueLengthOptions = ruleOptions.VerifyThreadpoolQueueLengthTrigger();
-                    Assert.Null(threadpoolQueueLengthOptions.GreaterThan);
-                    Assert.Equal(ExpectedLessThan, threadpoolQueueLengthOptions.LessThan);
+                    IEventCounterShortcuts options = ruleOptions.VerifyIEventCounterTrigger(triggerType, triggerName);
+                    Assert.Null(options.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, options.LessThan);
                 });
         }
 

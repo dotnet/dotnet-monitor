@@ -95,13 +95,4 @@
     <Folder Include="Options\CollectionRules\Actions\" />
     <Folder Include="Options\CollectionRules\Triggers\" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
-    <PackageReference Include="Microsoft.Diagnostics.Monitoring" Version="$(MicrosoftDiagnosticsMonitoringVersion)" />
-    </ItemGroup>
-
-  <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' != ''">
-    <ProjectReference Include="$(DIAGNOSTICS_REPO_ROOT)\src\Microsoft.Diagnostics.Monitoring\Microsoft.Diagnostics.Monitoring.csproj" />
-  </ItemGroup>
-
 </Project>
