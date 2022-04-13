@@ -9,11 +9,25 @@ pr:
     - internal/release/*
     - feature/*
 
+schedules:
+- cron: 15 11 * * 6
+  displayName: Weekly Full Test Run
+  branches:
+    include:
+    - main
+  always: true
+
 parameters:
-- name: RunTests
-  displayName: 'Run Tests'
-  type: boolean
-  default: true
+- name: TestGroup
+  displayName: 'Test Group'
+  type: string
+  default: Default
+  values:
+  - Default
+  - All
+  - None
+  - CI
+  - PR
 
 variables:
 - name: _TeamName
@@ -34,15 +48,17 @@ stages:
       displayName: Windows x64 Debug
       osGroup: Windows
       configuration: Debug
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
       name: Windows_x64_Release
       displayName: Windows x64 Release
       osGroup: Windows
       configuration: Release
-      publishArtifactsSubPath: bin
-      runTests: ${{ parameters.RunTests }}
+      publishArtifactsSubPaths:
+      - source: 'bin'
+      - source: 'obj'
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
       name: Windows_x86_Release
@@ -50,54 +66,103 @@ stages:
       osGroup: Windows
       configuration: Release
       architecture: x86
-      publishArtifactsSubPath: bin/Windows_NT.x86.Release
-      runTests: ${{ parameters.RunTests }}
+      publishArtifactsSubPaths:
+      - source: 'bin/Windows_NT.x86.Release'
+      testGroup: ${{ parameters.TestGroup }}
+  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+    - template: /eng/build.yml
+      parameters:
+        name: Windows_arm64_Release
+        displayName: Windows arm64 Release
+        osGroup: Windows
+        configuration: Release
+        architecture: arm64
+        publishArtifactsSubPaths:
+        - source: 'bin/Windows_NT.arm64.Release'
+        testGroup: None
   - template: /eng/build.yml
     parameters:
-      name: CentOS_x64_Debug
-      displayName: CentOS x64 Debug
+      name: Linux_x64_Debug
+      displayName: Linux x64 Debug
       osGroup: Linux
       configuration: Debug
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
-      name: CentOS_x64_Release
-      displayName: CentOS x64 Release
+      name: Linux_x64_Release
+      displayName: Linux x64 Release
       osGroup: Linux
       configuration: Release
-      publishArtifactsSubPath: bin/Linux.x64.Release
-      runTests: ${{ parameters.RunTests }}
+      publishArtifactsSubPaths:
+      - source: 'bin/Linux.x64.Release'
+      testGroup: ${{ parameters.TestGroup }}
+  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+    - template: /eng/build.yml
+      parameters:
+        name: Linux_arm64_Release
+        displayName: Linux arm64 Release
+        osGroup: Linux
+        configuration: Release
+        architecture: arm64
+        publishArtifactsSubPaths:
+        - source: 'bin/Linux.arm64.Release'
+        testGroup: None
   - template: /eng/build.yml
     parameters:
-      name: Alpine_x64_Debug
-      displayName: Alpine x64 Debug
+      name: Linux_Musl_x64_Debug
+      displayName: Linux Musl x64 Debug
       osGroup: Linux_Musl
       configuration: Debug
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
-      name: Alpine_x64_Release
-      displayName: Alpine x64 Release
+      name: Linux_Musl_x64_Release
+      displayName: Linux Musl x64 Release
       osGroup: Linux_Musl
       configuration: Release
-      publishArtifactsSubPath: bin/Linux.x64.Release
-      publishArtifactsTargetSubPath: bin/Linux-musl.x64.Release
-      runTests: ${{ parameters.RunTests }}
+      publishArtifactsSubPaths:
+      - source: 'bin/Linux.x64.Release'
+        target: 'bin/Linux-musl.x64.Release'
+      testGroup: ${{ parameters.TestGroup }}
+  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+    - template: /eng/build.yml
+      parameters:
+        name: Linux_Musl_arm64_Release
+        displayName: Linux Musl arm64 Release
+        osGroup: Linux_Musl
+        configuration: Release
+        architecture: arm64
+        publishArtifactsSubPaths:
+        - source: 'bin/Linux.arm64.Release'
+          target: 'bin/Linux-musl.arm64.Release'
+        testGroup: None
   - template: /eng/build.yml
     parameters:
       name: MacOS_x64_Debug
       displayName: MacOS x64 Debug
       osGroup: MacOS
       configuration: Debug
-      runTests: ${{ parameters.RunTests }}
+      testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
       name: MacOS_x64_Release
       displayName: MacOS x64 Release
       osGroup: MacOS
       configuration: Release
-      publishArtifactsSubPath: bin/OSX.x64.Release
-      runTests: ${{ parameters.RunTests }}
+      publishArtifactsSubPaths:
+      - source: 'bin/OSX.x64.Release'
+      testGroup: ${{ parameters.TestGroup }}
+  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+    - template: /eng/build.yml
+      parameters:
+        name: MacOS_arm64_Release
+        displayName: MacOS arm64 Release
+        osGroup: MacOS
+        configuration: Release
+        architecture: arm64
+        publishArtifactsSubPaths:
+        - source: 'bin/OSX.arm64.Release'
+        testGroup: None
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
     # Pack, sign, and publish
     - template: /eng/common/templates/job/job.yml
@@ -107,9 +172,13 @@ stages:
         dependsOn:
         - Windows_x64_Release
         - Windows_x86_Release
-        - CentOS_x64_Release
-        - Alpine_x64_Release
+        - Windows_arm64_Release
+        - Linux_x64_Release
+        - Linux_arm64_Release
+        - Linux_Musl_x64_Release
+        - Linux_Musl_arm64_Release
         - MacOS_x64_Release
+        - MacOS_arm64_Release
         pool:
           name: NetCore1ESPool-Internal
           demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019

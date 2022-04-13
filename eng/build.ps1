@@ -4,6 +4,7 @@ Param(
     [ValidateSet("Debug","Release")][string][Alias('c')] $configuration = "Debug",
     [string][Alias('v')] $verbosity = "minimal",
     [switch][Alias('t')] $test,
+    [string] $testgroup = 'All',
     [switch] $ci,
     [switch] $skipmanaged,
     [switch] $skipnative,
@@ -71,7 +72,8 @@ if ($test) {
           -verbosity $verbosity `
           -ci:$ci `
           /bl:$logdir\Test.binlog `
-          /p:BuildArch=$architecture
+          /p:BuildArch=$architecture `
+          /p:TestGroup=$testgroup
 
         if ($lastExitCode -ne 0) {
             exit $lastExitCode

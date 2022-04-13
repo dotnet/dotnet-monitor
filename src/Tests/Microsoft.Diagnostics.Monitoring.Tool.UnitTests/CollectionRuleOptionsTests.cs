@@ -328,7 +328,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         {
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
                             options.GreaterThan = -1;
-                            options.LessThan = -1;
+                            options.LessThan = 101;
                         });
                 },
                 ex =>
@@ -923,7 +923,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     VerifyEnumDataTypeMessage<LogLevel>(failures, 0, nameof(CollectLogsOptions.DefaultLevel));
                     VerifyRangeMessage<TimeSpan>(failures, 1, nameof(CollectLogsOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
-                    VerifyRequiredMessage(failures, 2, nameof(CollectLogsOptions.Egress));
+                    VerifyRequiredOrDefaultEgressProvider(failures, 2);
                 });
         }
 
@@ -1093,7 +1093,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ActionOptionsConstants.BufferSizeMegabytes_MinValue_String, ActionOptionsConstants.BufferSizeMegabytes_MaxValue_String);
                     VerifyRangeMessage<TimeSpan>(failures, 2, nameof(CollectTraceOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
-                    VerifyRequiredMessage(failures, 3, nameof(CollectTraceOptions.Egress));
+                    VerifyRequiredOrDefaultEgressProvider(failures, 3);
                 });
         }
 
@@ -1558,6 +1558,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string message = (new RequiredAttribute()).FormatErrorMessage(fieldName);
 
             Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyRequiredOrDefaultEgressProvider(string[] failures, int index)
+        {
+            Assert.Equal(WebApi.OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider, failures[index]);
         }
 
         private static void VerifyRequiredGuidMessage(string[] failures, int index, string fieldName)

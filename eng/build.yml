@@ -11,12 +11,10 @@ parameters:
   timeoutInMinutes: 180
   # Depends on 
   dependsOn: ''
-  # Sub path under 'artifacts' folder from which files are published to artifacts location
-  publishArtifactsSubPath: ''
-  # Sub path under artifacts location to which artifact files are publish
-  publishArtifactsTargetSubPath: ''
-  # Allow disabling test runs
-  runTests: true
+  # Sub paths under 'artifacts' folder from which files are published to artifacts location
+  publishArtifactsSubPaths: []
+  # Group of tests to be run
+  testGroup: Default
   # TFMs for which test results are uploaded
   testResultTfms:
   - key: netcoreapp3.1
@@ -70,11 +68,17 @@ jobs:
           demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-20210714125435-9b5bbc2
+      ${{ if eq(parameters.architecture, 'arm64') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-20220312201346-b2c2436
+      ${{ else }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-20220107135107-9b5bbc2
 
-    # CMake + Clang is broken on Alpine 3.14 prereqs image
     ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode-20210910135845-c401c85
+      ${{ if eq(parameters.architecture, 'arm64') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine-20220312201346-538077f
+      ${{ else }}:
+        # CMake + Clang is broken on Alpine 3.14 prereqs image
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode-20211214164113-c401c85
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
@@ -87,6 +91,7 @@ jobs:
     - _BuildConfig: ${{ parameters.configuration }}
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
+    - _CrossBuildArgs: ''
     - _TestArgs: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
@@ -95,8 +100,21 @@ jobs:
     - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       - skipComponentGovernanceDetection: true
     
-    - ${{ if eq(parameters.runTests, true) }}:
-      - _TestArgs: '-test'
+    # Cross build for arm64 non-Windows builds
+    - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
+      - _CrossBuildArgs: '-cross'
+
+    - ${{ if ne(parameters.testGroup, 'None') }}:
+      # If TestGroup == 'Default', choose the test group based on the type of pipeline run
+      - ${{ if eq(parameters.testGroup, 'Default') }}:
+        - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
+          - _TestArgs: '-test -testgroup CI'
+        - ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+          - _TestArgs: '-test -testgroup PR'
+        - ${{ else }}:
+          - _TestArgs: '-test -testgroup All'
+      - ${{ else }}:
+          - _TestArgs: '-test -testgroup ${{ parameters.testGroup }}'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -145,18 +163,23 @@ jobs:
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
+        $(_CrossBuildArgs)
         $(_TestArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
       displayName: Build and Test
+      ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
+        env:
+          ROOTFS_DIR: '/crossrootfs/arm64'
 
-    - ${{ if and(ne(variables['System.TeamProject'], 'public'), ne(parameters.publishArtifactsSubPath, '')) }}:
-      - task: CopyFiles@2
-        displayName: Gather Artifacts
-        inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/artifacts/${{ parameters.publishArtifactsSubPath }}'
-          Contents: '**'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/${{ coalesce(parameters.publishArtifactsTargetSubPath, parameters.publishArtifactsSubPath) }}'
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), gt(length(parameters.publishArtifactsSubPaths), 0)) }}:
+      - ${{ each subPath in parameters.publishArtifactsSubPaths }}:
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (${{ subPath.source }})
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/${{ subPath.source }}'
+            Contents: '**'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/${{ coalesce(subPath.target, subPath.source) }}'
 
       - task: PublishBuildArtifacts@1
         displayName: Publish Artifacts
@@ -165,7 +188,7 @@ jobs:
           artifactName: Build_${{ parameters.configuration }}
 
     # Publish test results to Azure Pipelines
-    - ${{ if eq(parameters.runTests, true) }}:
+    - ${{ if ne(parameters.testGroup, 'None') }}:
       - ${{ each testResultTfm in parameters.testResultTfms }}:
         - task: PublishTestResults@2
           displayName: Publish Test Results (${{ testResultTfm.value }})

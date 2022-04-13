@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#include "corhlpr.h"
 #include "MainProfiler.h"
 #include "macros.h"
+#include "productversion.h"
 #include "tstring.h"
 #include "tostream.h"
 #include <iostream>
@@ -27,40 +29,10 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
         std::cerr << "Failed to initialize profiler." << std::endl;
     }
 
-    std::cout << "Getting variable length." << std::endl;
-
-    ULONG cchLen = 0;
-    if (FAILED(hr = m_pCorProfilerInfo->GetEnvironmentVariable(
-        _T("MainProfiler_TestVariable"),
-        0,
-        &cchLen,
-        nullptr
-        )))
-    {
-        std::cerr << "Unable to get MainProfiler_TestVariable length: " << HRESULTHEX(hr) << std::endl;
-        return hr;
-    }
-
-    std::cout << "Allocating buffer." << std::endl;
-
-    std::unique_ptr<WCHAR> pwszTestVariableValue(new WCHAR[cchLen]);
-
-    std::cout << "Getting variable value." << std::endl;
-
-    if (FAILED(hr = m_pCorProfilerInfo->GetEnvironmentVariable(
-        _T("MainProfiler_TestVariable"),
-        cchLen,
-        &cchLen,
-        pwszTestVariableValue.get()
-        )))
-    {
-        std::cerr << "Unable to get MainProfiler_TestVariable content: " << HRESULTHEX(hr) << std::endl;
-        return hr;
-    }
-
-    tstring tstrTestVariableValue(pwszTestVariableValue.get());
-
-    std::cout << "Value: " << tstrTestVariableValue << std::endl;
+    IfFailRet(m_pCorProfilerInfo->SetEnvironmentVariable(
+        _T("DOTNETMONITOR_ProductVersion"),
+        MonitorProductVersion_TSTR
+        ));
 
     return S_OK;
 }

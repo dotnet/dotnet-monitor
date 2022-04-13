@@ -55,6 +55,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             }
             else
             {
+                outputBldr.AppendLine(ExperienceSurvey.ExperienceSurveyMessage);
+                outputBldr.AppendLine();
                 outputBldr.AppendLine(Strings.Message_GenerateApiKey);
                 outputBldr.AppendLine();
                 outputBldr.AppendLine(string.Format(Strings.Message_GeneratedAuthorizationHeader, HeaderNames.Authorization, AuthConstants.ApiKeySchema, newJwt.Token));

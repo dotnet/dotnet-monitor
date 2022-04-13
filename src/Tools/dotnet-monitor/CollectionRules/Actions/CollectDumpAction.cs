@@ -65,27 +65,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, EndpointInfo);
 
-                try
-                {
-                    EgressOperation egressOperation = new EgressOperation(
-                        token => {
-                            startCompletionSource.TrySetResult(null);
-                            return _dumpService.DumpAsync(EndpointInfo, dumpType, token);
-                        },
-                        egressProvider,
-                        dumpFileName,
-                        EndpointInfo,
-                        ContentTypes.ApplicationOctetStream,
-                        scope);
+                EgressOperation egressOperation = new EgressOperation(
+                    token => {
+                        startCompletionSource.TrySetResult(null);
+                        return _dumpService.DumpAsync(EndpointInfo, dumpType, token);
+                    },
+                    egressProvider,
+                    dumpFileName,
+                    EndpointInfo,
+                    ContentTypes.ApplicationOctetStream,
+                    scope);
 
-                    ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-
-                    dumpFilePath = result.Result.Value;
-                }
-                catch (Exception ex)
+                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
+                if (null != result.Exception)
                 {
-                    throw new CollectionRuleActionException(ex);
+                    throw new CollectionRuleActionException(result.Exception);
                 }
+                dumpFilePath = result.Result.Value;
 
                 return new CollectionRuleActionResult()
                 {

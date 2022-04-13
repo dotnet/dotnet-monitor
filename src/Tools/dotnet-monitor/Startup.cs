@@ -103,6 +103,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             MonitorApiKeyConfigurationObserver optionsObserver,
             ILogger<Startup> logger)
         {
+            logger.ExperienceSurvey();
+
             // These errors are populated before Startup.Configure is called because
             // the KestrelServer class is configured as a prerequisite of
             // GenericWebHostServer being instantiated. The GenericWebHostServer invokes
