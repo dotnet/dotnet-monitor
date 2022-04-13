@@ -1,0 +1,15 @@
+{
+  "Actions": {
+    "Egress": "artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+  },
+  "Limits": {
+    "ActionCount": "20" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+    "ActionCountSlidingWindowDuration": "00:00:01" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+    "RuleDuration": "11:11:11" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+  },
+  "Triggers": {
+    "RequestCount": "10" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+    "ResponseCount": "1" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+    "SlidingWindowDuration": "00:05:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+  }
+}
