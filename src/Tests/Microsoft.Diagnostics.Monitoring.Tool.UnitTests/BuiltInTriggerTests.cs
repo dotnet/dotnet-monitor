@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             EventCounterOptions expectedSettings = new()
             {
                 ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
-                CounterName = IEventCounterShortcutsConstants.CpuUsage,
+                CounterName = IEventCounterShortcutsConstants.CPUUsage,
                 GreaterThan = null,
                 LessThan = CustomLessThan,
                 SlidingWindowDuration = CustomSlidingWindowDuration
@@ -129,7 +129,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             EventCounterOptions expectedSettings = new()
             {
                 ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
-                CounterName = IEventCounterShortcutsConstants.CpuUsage,
+                CounterName = IEventCounterShortcutsConstants.CPUUsage,
                 GreaterThan = CPUUsageOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = SlidingWindowDurationDefault

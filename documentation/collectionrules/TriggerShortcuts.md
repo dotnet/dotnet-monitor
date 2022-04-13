@@ -2,7 +2,7 @@
 
 These triggers simplify configuration for several common trigger use-cases. All of these shortcuts can be expressed as `EventCounter` triggers; however, these shortcuts provide improved defaults, range validation, and a simpler syntax. There are currently three built-in default triggers; additional trigger shortcuts may be added in future versions of `dotnet monitor`.
 
-### `CpuUsage` Trigger Shortcut
+### `CPUUsage` Trigger Shortcut
 
 Execute a trigger when the target application's CPU Usage is continuously greater than or less than a specified value for a set duration of time.
 
@@ -54,7 +54,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 50%
   ```json
   {
     "Trigger": {
-      "Type": "CpuUsage"
+      "Type": "CPUUsage"
     }
   }
   ```
@@ -64,7 +64,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 50%
   <summary>Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="CpuUsage"
+  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="CPUUsage"
   ```
 </details>
 

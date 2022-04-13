@@ -6,7 +6,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
 {
     internal static class IEventCounterShortcutsConstants
     {
-        internal const string CpuUsage = "cpu-usage";
+        internal const string CPUUsage = "cpu-usage";
         internal const string GCHeapSize = "gc-heap-size";
         internal const string ThreadpoolQueueLength = "threadpool-queue-length";
         internal const string SystemRuntime = "System.Runtime";
