@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -12,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
     /// <summary>
     /// Options for the ThreadpoolQueueLength trigger.
     /// </summary>
-    internal sealed partial class ThreadpoolQueueLengthOptions : IEventCounterShortcuts
+    internal sealed partial class ThreadpoolQueueLengthOptions : IEventCounterShortcuts, ISlidingWindowDurationProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
