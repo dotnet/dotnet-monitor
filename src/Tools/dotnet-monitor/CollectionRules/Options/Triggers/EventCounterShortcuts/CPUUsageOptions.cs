@@ -19,13 +19,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CPUUsageOptions_GreaterThan))]
         [DefaultValue(CPUUsageOptionsDefaults.GreaterThan)]
-        [Range(0, 100)]
+        [Range(TriggerOptionsConstants.Percentage_MinValue, TriggerOptionsConstants.Percentage_MaxValue)]
         public double? GreaterThan { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CPUUsageOptions_LessThan))]
-        [Range(0, 100)]
+        [Range(TriggerOptionsConstants.Percentage_MinValue, TriggerOptionsConstants.Percentage_MaxValue)]
         public double? LessThan { get; set; }
 
         [Display(
