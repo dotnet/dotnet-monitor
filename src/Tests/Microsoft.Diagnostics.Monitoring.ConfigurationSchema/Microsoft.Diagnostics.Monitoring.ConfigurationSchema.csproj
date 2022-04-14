@@ -26,12 +26,19 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\GetEnvironmentVariableOptions.cs" Link="Options\CollectionRules\Actions\GetEnvironmentVariableOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\LoadProfilerOptions.cs" Link="Options\CollectionRules\Actions\LoadProfilerOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\SetEnvironmentVariableOptions.cs" Link="Options\CollectionRules\Actions\SetEnvironmentVariableOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionDefaultsOptions.cs" Link="Options\CollectionRules\CollectionRuleActionDefaultsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptions.cs" Link="Options\CollectionRules\CollectionRuleActionOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptionsDefaults.cs" Link="Options\CollectionRules\CollectionRuleActionOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\IEgressProviderProperties.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\IEgressProviderProperties" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\IRequestCountProperties.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\IRequestCountProperties" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsInterfaces\ISlidingWindowDurationProperties.cs" Link="Options\CollectionRules\CollectionRuleDefaultsInterfaces\ISlidingWindowDurationProperties" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleDefaultsOptions.cs" Link="Options\CollectionRules\CollectionRuleDefaultsOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsDefaultsOptions.cs" Link="Options\CollectionRules\CollectionRuleLimitsDefaultsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptions.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptionsDefaults.cs" Link="Options\CollectionRules\CollectionRuleLimitsOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleOptions.cs" Link="Options\CollectionRules\CollectionRuleOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleOptionsConstants.cs" Link="Options\CollectionRules\CollectionRuleOptionsConstants.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleTriggerDefaultsOptions.cs" Link="Options\CollectionRules\CollectionRuleTriggerDefaultsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleTriggerOptions.cs" Link="Options\CollectionRules\CollectionRuleTriggerOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\RegularExpressionsAttribute.cs" Link="Options\RegularExpressionsAttribute.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetRequestCountOptions.cs" Link="Options\CollectionRules\Triggers\AspNetRequestCountOptions.cs" />
@@ -42,7 +49,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetResponseStatusOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\AspNetResponseStatusOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterOptionsDefaults.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\IAspNetActionPathFilters.cs" Link="Options\CollectionRules\Actions\IAspNetActionPathFilters.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\IAspNetActionPathFilters.cs" Link="Options\CollectionRules\Triggers\IAspNetActionPathFilters.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\TriggerOptionsConstants.cs" Link="Options\CollectionRules\Triggers\TriggerOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />
   </ItemGroup>

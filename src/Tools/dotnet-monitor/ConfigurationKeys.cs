@@ -27,5 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string Logging = nameof(Logging);
 
         public const string GlobalCounter = nameof(RootOptions.GlobalCounter);
+
+        public const string CollectionRuleDefaults = nameof(RootOptions.CollectionRuleDefaults);
     }
 }

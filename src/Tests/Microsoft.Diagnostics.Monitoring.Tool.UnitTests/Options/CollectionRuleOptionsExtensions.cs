@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress, DumpType? type = null)
+        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress = null, DumpType? type = null)
         {
             return options.AddAction(
                 KnownCollectionRuleActions.CollectDump,
@@ -291,6 +291,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             callback?.Invoke(triggerOptions);
 
             options.Trigger = triggerOptions;
+
+            return options;
+        }
+
+        public static CollectionRuleOptions SetLimits(this CollectionRuleOptions options, Action<CollectionRuleLimitsOptions> callback = null)
+        {
+            CollectionRuleLimitsOptions limitsOptions = new();
+
+            callback?.Invoke(limitsOptions);
+
+            options.Limits = limitsOptions;
 
             return options;
         }
