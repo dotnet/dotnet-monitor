@@ -33,16 +33,37 @@ The following examples provide sample scenarios for using a collection rule. The
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>ConfigMap</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type="Startup"
-  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type="CollectTrace"
-  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name="Microsoft-Windows-DotNETRuntime"
-  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel="Informational"
-  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords="0x8"
-  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration="00:00:15"
-  export DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress="artifacts"
+  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type: "Startup"
+  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type: "CollectTrace"
+  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name: "Microsoft-Windows-DotNETRuntime"
+  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel: "Informational"
+  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords: "0x8"
+  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration: "00:00:15"
+  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress: "artifacts"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```bash
+  - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type
+    value: "Startup"
+  - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type
+    value: "CollectTrace"
+  - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name
+    value: "Microsoft-Windows-DotNETRuntime"
+  - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel
+    value: "Informational"
+  - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords
+    value: "0x8"
+  - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration
+    value: "00:00:15"
+  - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress
+    value: "artifacts"
   ```
 </details>
 
@@ -80,15 +101,34 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>ConfigMap</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type="EventCounter"
-  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__ProviderName="System.Runtime"
-  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__CounterName="gc-heap-size"
-  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__GreaterThan="10"
-  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Type="CollectGCDump"
-  export DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Settings__Egress="artifacts"
+  DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type: "EventCounter"
+  DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__ProviderName: "System.Runtime"
+  DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__CounterName: "gc-heap-size"
+  DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__GreaterThan: "10"
+  DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Type: "CollectGCDump"
+  DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Settings__Egress: "artifacts"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```bash
+  - name: DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type
+    value: "EventCounter"
+  - name: DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__ProviderName
+    value: "System.Runtime"
+  - name: DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__CounterName
+    value: "gc-heap-size"
+  - name: DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__GreaterThan
+    value: "10"
+  - name: DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Type
+    value: "CollectGCDump"
+  - name: DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Settings__Egress
+    value: "artifacts"
   ```
 </details>
 
@@ -134,19 +174,46 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>ConfigMap</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type="EventCounter"
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__ProviderName="System.Runtime"
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__CounterName="cpu-usage"
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__GreaterThan="60"
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__SlidingWindowDuration="00:00:10"
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Type="CollectTrace"
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Profile="Cpu"
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Egress="artifacts"
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Key="ProcessName"
-  export DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Value="MyProcessName"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type: "EventCounter"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__ProviderName: "System.Runtime"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__CounterName: "cpu-usage"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__GreaterThan: "60"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__SlidingWindowDuration: "00:00:10"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Type: "CollectTrace"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Profile: "Cpu"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Egress: "artifacts"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Key: "ProcessName"
+  DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Value: "MyProcessName"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```bash
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type
+    value: "EventCounter"
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__ProviderName
+    value: "System.Runtime"
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__CounterName
+    value: "cpu-usage"
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__GreaterThan
+    value: "60"
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__SlidingWindowDuration
+    value: "00:00:10"
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Type
+    value: "CollectTrace"
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Profile
+    value: "Cpu"
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Egress
+    value: "artifacts"
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Key
+    value: "ProcessName"
+  - name: DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Value
+    value: "MyProcessName"
   ```
 </details>
 
@@ -188,21 +255,43 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
   }
   ```
 </details>
-  
+
 <details>
-  <summary>Environment Variables</summary>
+  <summary>ConfigMap</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type="AspNetResponseStatus"
-  export DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount="5"
-  export DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__StatusCodes__0="400-499"
-  export DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Type="CollectDump"
-  export DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Egress="artifacts"
-  export DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Type="Full"
-  export DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCount="3"
-  export DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCountSlidingWindowDuration="00:30:00"
+  DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type: "AspNetResponseStatus"
+  DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount: "5"
+  DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__StatusCodes__0: "400-499"
+  DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Type: "CollectDump"
+  DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Egress: "artifacts"
+  DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Type: "Full"
+  DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCount: "3"
+  DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCountSlidingWindowDuration: "00:30:00"
   ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
   
+  ```bash
+  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type
+    value: "AspNetResponseStatus"
+  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount
+    value: "5"
+  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__StatusCodes__0
+    value: "400-499"
+  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Type
+    value: "CollectDump"
+  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Egress
+    value: "artifacts"
+  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Type
+    value: "Full"
+  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCount
+    value: "3"
+  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCountSlidingWindowDuration
+    value: "00:30:00"
+  ```
 </details>
 
 ### Explanation
@@ -251,21 +340,52 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>ConfigMap</summary>
+    
+  ```bash
+  DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key: "ProcessId"
+  DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Value: "12345"
+  DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__MatchType: "Exact"
+  DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Type: "AspNetRequestCount"
+  DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__RequestCount: "10"
+  DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__SlidingWindowDuration: "00:01:00"
+  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Type: "CollectLogs"
+  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Egress: "artifacts"
+  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__DefaultLevel: "Error"
+  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__UseAppFilters: "false"
+  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Duration: "00:01:00"
+  DotnetMonitor_CollectionRules__HighRequestCount__Limits__RuleDuration: "00:01:00"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key="ProcessId"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Value="12345"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__MatchType="Exact"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Type="AspNetRequestCount"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__RequestCount="10"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__SlidingWindowDuration="00:01:00"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Type="CollectLogs"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Egress="artifacts"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__DefaultLevel="Error"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__UseAppFilters="false"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Duration="00:01:00"
-  export DotnetMonitor_CollectionRules__HighRequestCount__Limits__RuleDuration="01:00:00"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key
+    value: "ProcessId"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Value
+    value: "12345"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__MatchType
+    value: "Exact"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Type
+    value: "AspNetRequestCount"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__RequestCount
+    value: "10"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__SlidingWindowDuration
+    value: "00:01:00"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Type
+    value: "CollectLogs"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Egress
+    value: "artifacts"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__DefaultLevel
+    value: "Error"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__UseAppFilters
+    value: "false"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Duration
+    value: "00:01:00"
+  - name: DotnetMonitor_CollectionRules__HighRequestCount__Limits__RuleDuration
+    value: "01:00:00"
   ```
 </details>
 
@@ -306,20 +426,44 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>ConfigMap</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type="AspNetRequestDuration"
-  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount="5"
-  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestDuration="00:00:08"
-  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__SlidingWindowDuration="00:02:00"
-  export DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__IncludePaths__0="/api/**/*"
-  export DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Type="CollectTrace"
-  export DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Profile="Http"
-  export DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Egress="artifacts"
-  export DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Duration="00:01:00"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type: "AspNetRequestDuration"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount: "5"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestDuration: "00:00:08"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__SlidingWindowDuration: "00:02:00"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__IncludePaths__0: "/api/**/*"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Type: "CollectTrace"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Profile: "Http"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Egress: "artifacts"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Duration: "00:01:00"
   ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
   
+  ```bash
+  - name: DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type
+    value: "AspNetRequestDuration"
+  - name: DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount
+    value: "5"
+  - name: DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestDuration
+    value: "00:00:08"
+  - name: DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__SlidingWindowDuration
+    value: "00:02:00"
+  - name: DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__IncludePaths__0
+    value: "/api/**/*"
+  - name: DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Type
+    value: "CollectTrace"
+  - name: DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Profile
+    value: "Http"
+  - name: DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Egress
+    value: "artifacts"
+  - name: DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Duration
+    value: "00:01:00"
+  ```
 </details>
 
 ### Explanation
@@ -367,22 +511,48 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>ConfigMap</summary>
   
   ```bash
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type="AspNetResponseStatus"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__ResponseCount="3"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__StatusCodes__0="400"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Name="MyDump"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Type="CollectDump"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Egress="artifacts"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Type="Mini"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__WaitForCompletion="true"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Type="Execute"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Path="C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe"
-  export DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Arguments="\"$(Actions.MyDump.EgressPath)\""
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type: "AspNetRequestDuration"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount: "5"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestDuration: "00:00:08"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__SlidingWindowDuration: "00:02:00"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__IncludePaths__0: "/api/**/*"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Type: "CollectTrace"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Profile: "Http"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Egress: "artifacts"
+  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Duration: "00:01:00"
   ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
   
+  ```bash
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type
+    value: "AspNetResponseStatus"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__ResponseCount
+    value: "3"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__StatusCodes__0
+    value: "400"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Name
+    value: "MyDump"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Type
+    value: "CollectDump"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Egress
+    value: "artifacts"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Type
+    value: "Mini"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__WaitForCompletion
+    value: "true"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Type
+    value: "Execute"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Path
+    value: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe"
+  - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Arguments
+    value: "\"$(Actions.MyDump.EgressPath)\""
+  ```
 </details>
 
 ### Explanation
