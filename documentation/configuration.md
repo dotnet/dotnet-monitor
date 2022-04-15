@@ -249,7 +249,8 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
   
   ```bash
   DotnetMonitor_DiagnosticPort__ConnectionMode: "Listen"
-  DotnetMonitor_DiagnosticPort__EndpointName: "\\\\.\\pipe\\dotnet-monitor-pipe"  ```
+  DotnetMonitor_DiagnosticPort__EndpointName: "\\\\.\\pipe\\dotnet-monitor-pipe"
+  ```
 </details>
 
 <details>
