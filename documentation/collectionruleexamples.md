@@ -514,15 +514,17 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
   <summary>ConfigMap</summary>
   
   ```bash
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type: "AspNetRequestDuration"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount: "5"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestDuration: "00:00:08"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__SlidingWindowDuration: "00:02:00"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__IncludePaths__0: "/api/**/*"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Type: "CollectTrace"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Profile: "Http"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Egress: "artifacts"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Duration: "00:01:00"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type: "AspNetResponseStatus"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__ResponseCount: "3"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__StatusCodes__0: "400"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Name: "MyDump"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Type: "CollectDump"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Egress: "artifacts"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Type: "Mini"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__WaitForCompletion: "true"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Type: "Execute"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Path: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe"
+  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Arguments: "\"$(Actions.MyDump.EgressPath)\""
   ```
 </details>
 
