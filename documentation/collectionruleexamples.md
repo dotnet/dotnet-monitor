@@ -354,7 +354,7 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
   DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__DefaultLevel: "Error"
   DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__UseAppFilters: "false"
   DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Duration: "00:01:00"
-  DotnetMonitor_CollectionRules__HighRequestCount__Limits__RuleDuration: "00:01:00"
+  DotnetMonitor_CollectionRules__HighRequestCount__Limits__RuleDuration: "01:00:00"
   ```
 </details>
 
