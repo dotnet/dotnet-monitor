@@ -1078,8 +1078,6 @@ Usage that is satisfied when request count is higher than 500 requests during a 
   <summary>ConfigMap</summary>
   
   ```bash
-  DotnetMonitor_CollectionRules__RuleName__Filters__0__Key: "ProcessName"
-  DotnetMonitor_CollectionRules__RuleName__Filters__0__Value: "dotnet"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount: "500"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__IncludePaths__0: "/api/**/*"
