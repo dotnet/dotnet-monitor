@@ -29,5 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string GlobalCounter = nameof(RootOptions.GlobalCounter);
 
         public const string CollectionRuleDefaults = nameof(RootOptions.CollectionRuleDefaults);
+
+        public const string CustomShortcuts = nameof(RootOptions.CustomShortcuts);
     }
 }

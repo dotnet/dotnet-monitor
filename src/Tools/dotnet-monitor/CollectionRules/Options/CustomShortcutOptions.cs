@@ -22,12 +22,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Trigger))]
         [Required]
-        public IDictionary<string, CollectionRuleTriggerOptions> Trigger { get; set; } = new Dictionary<string, CollectionRuleTriggerOptions>();
+        public IDictionary<string, CollectionRuleTriggerOptions> Triggers { get; set; } = new Dictionary<string, CollectionRuleTriggerOptions>();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Actions))]
-        public IDictionary<string, List<CollectionRuleActionOptions>> Actions { get; set; } = new Dictionary<string, List<CollectionRuleActionOptions>>();
+        public IDictionary<string, CollectionRuleActionOptions> Actions { get; set; } = new Dictionary<string, CollectionRuleActionOptions>();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
