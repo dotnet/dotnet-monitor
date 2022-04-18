@@ -46,8 +46,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 {
                     BindActionSettings(ruleSection, options, i);
                 }
-
-                //BindCustomActions(ruleSection, options, name);
             }
         }
 
@@ -73,68 +71,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 actionOptions.Settings = actionSettings;
             }
         }
-
-        private void BindCustomActions(IConfigurationSection ruleSection, CollectionRuleOptions ruleOptions, string name)
-        {
-            // Won't do it this way - will determine how many actions there are and then keep pulling until we hit an action with no value
-            for (int index = 0; index < 100; ++index)
-            {
-                IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Actions)}:{index}");
-                if (section.Exists() && !string.IsNullOrEmpty(section.Value))
-                {
-                    // Translate the value into the corresponding custom shortcut -> should we do this through the config, or more directly from CustomShortcutsOptions -> CollectionRuleOptions
-                    IConfigurationSection customSection = _configuration.GetSection($"{nameof(RootOptions.CustomShortcuts)}:{nameof(CustomShortcutOptions.Actions)}:{section.Value}");
-
-                    IConfigurationSection typeSection = customSection.GetSection("Type");
-                    IConfigurationSection settingsSection = customSection.GetSection("Settings");
-                    IConfigurationSection nameSection = customSection.GetSection("Name");
-                    IConfigurationSection wfcSection = customSection.GetSection("WaitForCompletion");
-
-                    CollectionRuleActionOptions newActionOptions = new();
-
-                    if (null != newActionOptions &&
-                        typeSection.Exists() &&
-                        !string.IsNullOrEmpty(typeSection.Value) &&
-                        _actionOperations.TryCreateOptions(typeSection.Value, out object newActionSettings))
-                    {
-                        newActionOptions.Type = typeSection.Value;
-                        newActionOptions.Name = nameSection.Value;
-                        bool.TryParse(wfcSection.Value, out bool wfcValue); // type conversion could be an issue
-                        newActionOptions.WaitForCompletion = wfcValue;
-
-                        settingsSection.Bind(newActionSettings);
-
-                        newActionOptions.Settings = newActionSettings;
-
-                        ruleOptions.Actions.Add(newActionOptions);
-                    }
-                }
-            }
-        }
-
-        /*
-        private void BindCustomActions2(IConfigurationSection ruleSection, CustomShortcutOptions shortcutOptions, string shortcutName)
-        {
-            List<CollectionRuleActionOptions> actionOptionsList = shortcutOptions.Actions[shortcutName];
-
-            for (int index = 0; index < actionOptionsList.Count; ++index)
-            {
-                CollectionRuleActionOptions actionOptions = actionOptionsList[index];
-
-                if (null != actionOptions &&
-                    _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
-                {
-                    IConfigurationSection settingsSection = ruleSection.GetSection(ConfigurationPath.Combine(
-                        nameof(CollectionRuleOptions.Actions),
-                        index.ToString(CultureInfo.InvariantCulture),
-                        nameof(CollectionRuleActionOptions.Settings)));
-
-                    settingsSection.Bind(actionSettings);
-
-                    actionOptions.Settings = actionSettings;
-                }
-            }
-        }*/
 
         private void BindTriggerSettings(IConfigurationSection ruleSection, CollectionRuleOptions ruleOptions)
         {
