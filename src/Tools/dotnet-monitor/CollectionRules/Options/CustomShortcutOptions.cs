@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Filters))]
-        public IDictionary<string, List<ProcessFilterDescriptor>> Filters { get; } = new Dictionary<string, List<ProcessFilterDescriptor>>();
+        public IDictionary<string, ProcessFilterDescriptor> Filters { get; } = new Dictionary<string, ProcessFilterDescriptor>();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

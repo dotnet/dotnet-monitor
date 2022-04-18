@@ -2,14 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
@@ -39,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             // Action Shortcuts
             foreach (var key in _shortcutOptions.CurrentValue.Actions.Keys)
             {
-                IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CustomShortcuts)}:{nameof(CollectionRuleOptions.Actions)}:{key}");
+                IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CustomShortcuts)}:{nameof(CustomShortcutOptions.Actions)}:{key}");
 
                 if (section.Exists())
                 {
@@ -48,8 +46,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                     BindCustomActions(section, _shortcutOptions.CurrentValue, key);
                 }
             }
-
-            InsertCustomActionsIntoActionList(options, name);
 
             // Trigger Shortcuts
             foreach (var key in _shortcutOptions.CurrentValue.Triggers.Keys)
@@ -62,10 +58,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
                     BindCustomTriggers(section, _shortcutOptions.CurrentValue, key);
                 }
-
             }
 
+            InsertCustomActionsIntoActionList(options, name);
             InsertCustomTriggerIntoTrigger(options, name);
+            InsertCustomFiltersIntoFilterList(options, name);
+            InsertCustomLimitIntoLimit(options, name);
         }
 
         private void InsertCustomActionsIntoActionList(CollectionRuleOptions ruleOptions, string name)
@@ -97,6 +95,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             {
                 CollectionRuleTriggerOptions options = _shortcutOptions.CurrentValue.Triggers[section.Value]; // Need to make sure this is safe for invalid names
                 ruleOptions.Trigger = options;
+            }
+        }
+
+        private void InsertCustomFiltersIntoFilterList(CollectionRuleOptions ruleOptions, string name)
+        {
+            bool boundAllFilters = false;
+            int index = 0;
+
+            while (!boundAllFilters)
+            {
+                IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Filters)}:{index}");
+                if (section.Exists() && !string.IsNullOrEmpty(section.Value))
+                {
+                    ProcessFilterDescriptor options = _shortcutOptions.CurrentValue.Filters[section.Value]; // Need to make sure this is safe for invalid names
+                    ruleOptions.Filters.Add(options);
+                }
+                else
+                {
+                    boundAllFilters = true;
+                }
+
+                ++index;
+            }
+        }
+
+        private void InsertCustomLimitIntoLimit(CollectionRuleOptions ruleOptions, string name)
+        {
+            IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Limits)}");
+            if (section.Exists() && !string.IsNullOrEmpty(section.Value))
+            {
+                CollectionRuleLimitsOptions options = _shortcutOptions.CurrentValue.Limits[section.Value]; // Need to make sure this is safe for invalid names
+                ruleOptions.Limits = options;
             }
         }
 
