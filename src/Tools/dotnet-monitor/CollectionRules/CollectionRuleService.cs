@@ -261,9 +261,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return collectionRulesState;
         }
 
-        private CollectionRuleDescription GetCollectionRuleDescription(CollectionRulePipeline pipeline)
+        internal static CollectionRuleDescription GetCollectionRuleDescription(CollectionRulePipeline pipeline)
         {
             CollectionRuleLimitsOptions limitsOptions = pipeline._context.Options.Limits;
+
+            DateTime currentTime = pipeline._context.Clock.UtcNow.UtcDateTime;
+
+            CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps, limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
+
+            pipeline.CheckForThrottling((limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount), pipeline._executionTimestamps.Count);
 
             var stateAndReason = GetCollectionRulesState(pipeline);
 
@@ -277,9 +283,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration,
             };
 
-            if (!pipeline._isCleanedUp)
+            if (description.State != CollectionRulesState.Finished) // Make sure this works -> previously used isCleanedUp
             {
-                DateTime currentTime = pipeline._context.Clock.UtcNow.UtcDateTime;
                 description.SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
                 description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline._pipelineStartTime, limitsOptions?.RuleDuration, currentTime);
             }
@@ -315,7 +320,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         }
         
         
-        private Tuple<CollectionRulesState, string> GetCollectionRulesState(CollectionRulePipeline pipeline)
+        private static Tuple<CollectionRulesState, string> GetCollectionRulesState(CollectionRulePipeline pipeline)
         {
             // Don't like this approach -> push it down a level deeper to where we keep track of state
             switch (pipeline.stateHolder.CurrState)
@@ -353,7 +358,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 collectionRuleNamesFrequency[pipeline._context.Name] = collectionRuleNamesFrequency.GetValueOrDefault(pipeline._context.Name) + 1;
             }
 
-            _containersMap[key].pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline._isCleanedUp);
+            _containersMap[key].pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline.IsCleanedUp);
         }
     }
 }

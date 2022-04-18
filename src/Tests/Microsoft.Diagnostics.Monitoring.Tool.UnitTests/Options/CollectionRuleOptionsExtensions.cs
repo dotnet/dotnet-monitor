@@ -197,7 +197,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                  });
         }
 
-        public static CollectionRuleOptions SetActionLimits(this CollectionRuleOptions options, int? count = null, TimeSpan? slidingWindowDuration = null)
+        public static CollectionRuleOptions SetActionLimits(this CollectionRuleOptions options, int? count = null, TimeSpan? slidingWindowDuration = null, TimeSpan? ruleDuration = null)
         {
             if (null == options.Limits)
             {
@@ -206,6 +206,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 
             options.Limits.ActionCount = count;
             options.Limits.ActionCountSlidingWindowDuration = slidingWindowDuration;
+            options.Limits.RuleDuration = ruleDuration;
 
             return options;
         }
