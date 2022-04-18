@@ -215,7 +215,7 @@ It is possible to change this behavior and have .NET processes connect to `dotne
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_DiagnosticPort: "\\\\.\\pipe\\dotnet-monitor-pipe"
   ```
 </details>
@@ -223,7 +223,7 @@ It is possible to change this behavior and have .NET processes connect to `dotne
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_DiagnosticPort
     value: "\\\\.\\pipe\\dotnet-monitor-pipe"
   ```
@@ -247,7 +247,7 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_DiagnosticPort__ConnectionMode: "Listen"
   DotnetMonitor_DiagnosticPort__EndpointName: "\\\\.\\pipe\\dotnet-monitor-pipe"
   ```
@@ -256,7 +256,7 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_DiagnosticPort__ConnectionMode
     value: "Listen"
   - name: DotnetMonitor_DiagnosticPort__EndpointName
@@ -289,7 +289,7 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_DiagnosticPort__MaxConnections: "10"
   ```
 </details>
@@ -297,7 +297,7 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_DiagnosticPort__MaxConnections
     value: "10"
   ```
@@ -326,7 +326,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_Storage__DumpTempFolder: "/ephemeral-directory/"
   ```
 </details>
@@ -334,7 +334,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_Storage__DumpTempFolder
     value: "/ephemeral-directory/"
   ```
@@ -381,7 +381,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_DefaultProcess__Filters__0__Key: "ProcessName"
   DotnetMonitor_DefaultProcess__Filters__0__Value: "iisexpress"
   ```
@@ -390,7 +390,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__Key
     value: "ProcessName"
   - name: DotnetMonitor_DefaultProcess__Filters__0__Value
@@ -417,7 +417,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_DefaultProcess__Filters__0__ProcessName: "iisexpress"
   ```
 </details>
@@ -425,7 +425,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__ProcessName
     value: "iisexpress"
   ```
@@ -451,7 +451,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_DefaultProcess__Filters__0__Key: "ProcessId"
   DotnetMonitor_DefaultProcess__Filters__0__Value: "1"
   ```
@@ -460,7 +460,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__Key
     value: "ProcessId"
   - name: DotnetMonitor_DefaultProcess__Filters__0__Value
@@ -487,7 +487,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_DefaultProcess__Filters__0__ProcessId: "1"
   ```
 </details>
@@ -495,7 +495,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__ProcessId
     value: "1"
   ```
@@ -527,7 +527,7 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_GlobalCounter__IntervalSeconds: "10"
   ```
 </details>
@@ -535,7 +535,7 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_GlobalCounter__IntervalSeconds
     value: "10"
   ```
@@ -568,7 +568,7 @@ In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it 
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_Metrics__Endpoints: "http://*:52325"
   ```
 </details>
@@ -576,7 +576,7 @@ In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it 
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_Metrics__Endpoints
     value: "http://*:52325"
   ```
@@ -603,7 +603,7 @@ You can customize the number of data points stored per metric via the following 
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_Metrics__MetricCount: "3"
   ```
 </details>
@@ -611,7 +611,7 @@ You can customize the number of data points stored per metric via the following 
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_Metrics__MetricCount
     value: "3"
   ```
@@ -646,7 +646,7 @@ Additional metrics providers and counter names to return from this route can be 
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_Metrics__Providers__0__ProviderName: "Microsoft-AspNetCore-Server-Kestrel"
   DotnetMonitor_Metrics__Providers__0__CounterNames__0: "connections-per-second"
   DotnetMonitor_Metrics__Providers__0__CounterNames__1: "total-connections"
@@ -656,7 +656,7 @@ Additional metrics providers and counter names to return from this route can be 
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_Metrics__Providers__0__ProviderName
     value: "Microsoft-AspNetCore-Server-Kestrel"
   - name: DotnetMonitor_Metrics__Providers__0__CounterNames__0
@@ -689,7 +689,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_Metrics__IncludeDefaultProviders: "false"
   ```
 </details>
@@ -697,7 +697,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_Metrics__IncludeDefaultProviders
     value: "false"
   ```
@@ -747,7 +747,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
   DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
   DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
@@ -759,7 +759,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri
     value: "https://exampleaccount.blob.core.windows.net"
   - name: DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName
@@ -802,7 +802,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
   DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
   DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
@@ -816,7 +816,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri
     value: "https://exampleaccount.blob.core.windows.net"
   - name: DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName
@@ -867,7 +867,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_Egress__FileSystem__monitorFile__directoryPath: "/artifacts"
   DotnetMonitor_Egress__FileSystem__monitorFile__intermediateDirectoryPath: "/intermediateArtifacts"
   ```
@@ -876,7 +876,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_Egress__FileSystem__monitorFile__directoryPath
     value: "/artifacts"
   - name: DotnetMonitor_Egress__FileSystem__monitorFile__intermediateDirectoryPath
@@ -934,7 +934,7 @@ The following is a collection rule that collects a 1 minute CPU trace and egress
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__Key: "ProcessName"
   DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__Value: "dotnet"
   DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__MatchType: "Exact"
@@ -955,7 +955,7 @@ The following is a collection rule that collects a 1 minute CPU trace and egress
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__Key
     value: "ProcessName"
   - name: DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__Value
@@ -1015,7 +1015,7 @@ The following example shows the `Filters` portion of a collection rule that has 
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Filters__0__Key: "ProcessName"
   DotnetMonitor_CollectionRules__RuleName__Filters__0__Value: "dotnet"
   DotnetMonitor_CollectionRules__RuleName__Filters__0__MatchType: "Exact"
@@ -1027,7 +1027,7 @@ The following example shows the `Filters` portion of a collection rule that has 
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Filters__0__Key
     value: "ProcessName"
   - name: DotnetMonitor_CollectionRules__RuleName__Filters__0__Value
@@ -1077,7 +1077,7 @@ Usage that is satisfied when request count is higher than 500 requests during a 
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount: "500"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__IncludePaths__0: "/api/**/*"
@@ -1087,7 +1087,7 @@ Usage that is satisfied when request count is higher than 500 requests during a 
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount
     value: "500"
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration
@@ -1133,7 +1133,7 @@ Usage that is satisfied when 10 requests take longer than 3 seconds during a 1 m
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount: "10"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestDuration: "00:00:03"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
@@ -1144,7 +1144,7 @@ Usage that is satisfied when 10 requests take longer than 3 seconds during a 1 m
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount
     value: "10"
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestDuration
@@ -1192,7 +1192,7 @@ Usage that is satisfied when 10 requests respond with a 5XX status code during a
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__StatusCodes__0: "500-599"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount: "10"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
@@ -1203,7 +1203,7 @@ Usage that is satisfied when 10 requests respond with a 5XX status code during a
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__StatusCodes__0
     value: "500-599"
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount
@@ -1251,7 +1251,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName: "cpu-usage"
   DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan: "70"
@@ -1262,7 +1262,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName
     value: "System.Runtime"
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName
@@ -1328,7 +1328,7 @@ Usage that collects a full dump and egresses it to a provider named "AzureBlobDu
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Type: "Full"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlobDumps"
   ```
@@ -1337,7 +1337,7 @@ Usage that collects a full dump and egresses it to a provider named "AzureBlobDu
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Type
     value: "Full"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
@@ -1378,7 +1378,7 @@ Usage that collects a gcdump and egresses it to a provider named "AzureBlobGCDum
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlobGCDumps"
   ```
 </details>
@@ -1386,7 +1386,7 @@ Usage that collects a gcdump and egresses it to a provider named "AzureBlobGCDum
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
     value: "AzureBlobGCDumps"
   ```
@@ -1431,7 +1431,7 @@ Usage that collects a CPU trace for 30 seconds and egresses it to a provider nam
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
   ```
@@ -1440,7 +1440,7 @@ Usage that collects a CPU trace for 30 seconds and egresses it to a provider nam
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile
     value: "Cpu"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
@@ -1488,7 +1488,7 @@ Usage that collects logs at the Information level for 30 seconds and egresses it
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__DefaultLevel: "Information"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__UseAppFilters: "false"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
@@ -1498,7 +1498,7 @@ Usage that collects logs at the Information level for 30 seconds and egresses it
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__DefaultLevel
     value: "Information"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__UseAppFilters
@@ -1544,7 +1544,7 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path: "C:\\Program Files\\dotnet\\dotnet.exe"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Arguments: "C:\\Program Files\\MyApp\\myapp.dll"
   ```
@@ -1553,7 +1553,7 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path
     value: "C:\\Program Files\\dotnet\\dotnet.exe"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Arguments
@@ -1594,7 +1594,7 @@ Usage that loads one of the sample profilers from [`dotnet/runtime`: src/tests/p
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path: "Profilers\\Profiler.dll"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Clsid: "55b9554d-6115-45a2-be1e-c80f7fa35369"
   ```
@@ -1603,7 +1603,7 @@ Usage that loads one of the sample profilers from [`dotnet/runtime`: src/tests/p
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path
     value: "Profilers\\Profiler.dll"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Clsid
@@ -1644,7 +1644,7 @@ Usage that sets a parameter to the profiler you loaded. In this case, your profi
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Name: "MyProfiler_AccountId"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Value: "8fb138d2c44e4aea8545cc2df541ed4c"
   ```
@@ -1653,7 +1653,7 @@ Usage that sets a parameter to the profiler you loaded. In this case, your profi
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Name
     value: "MyProfiler_AccountId"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Value
@@ -1714,7 +1714,7 @@ Usage that gets a token your app has access to and uses it to send a trace.
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Name: "A"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Type: "CollectTrace"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
@@ -1732,7 +1732,7 @@ Usage that gets a token your app has access to and uses it to send a trace.
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Name
     value: "A"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Type
@@ -1788,7 +1788,7 @@ The following example shows the `Limits` portion of a collection rule that has t
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Limits__ActionCount: "3"
   DotnetMonitor_CollectionRules__RuleName__Limits__ActionCountSlidingWindowDuration: "01:00:00"
   ```
@@ -1797,7 +1797,7 @@ The following example shows the `Limits` portion of a collection rule that has t
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Limits__ActionCount
     value: "3"
   - name: DotnetMonitor_CollectionRules__RuleName__Limits__ActionCountSlidingWindowDuration
@@ -1881,7 +1881,7 @@ The following example includes a default egress provider that corresponds to the
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
   DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
   DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
@@ -1901,7 +1901,7 @@ The following example includes a default egress provider that corresponds to the
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri
     value: "https://exampleaccount.blob.core.windows.net"
   - name: DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName
