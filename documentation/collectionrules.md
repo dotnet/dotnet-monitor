@@ -104,7 +104,7 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Name: "A"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Type: "CollectTrace"
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
@@ -119,7 +119,7 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Name
     value: "A"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Type
