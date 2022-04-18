@@ -39,6 +39,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);
         }
 
+        public static IServiceCollection ConfigureCustomShortcuts(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<CustomShortcutOptions>(services, configuration, ConfigurationKeys.CustomShortcuts);
+        }
+
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics)
@@ -101,6 +106,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<CollectionRulesConfigurationProvider>();
             services.AddSingleton<ICollectionRuleActionOperations, CollectionRuleActionOperations>();
             services.AddSingleton<ICollectionRuleTriggerOperations, CollectionRuleTriggerOperations>();
+
+            //services.AddSingleton<IConfigureOptions<CustomShortcutOptions>, CustomShortcutsConfigureOptions>();
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, CustomShortcutsConfigureOptions>();
 
             services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
             services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();

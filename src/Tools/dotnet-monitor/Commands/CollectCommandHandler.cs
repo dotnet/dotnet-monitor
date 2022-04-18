@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -149,6 +151,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureGlobalCounter(context.Configuration);
 
                 services.ConfigureCollectionRuleDefaults(context.Configuration);
+
+                services.ConfigureCustomShortcuts(context.Configuration);
 
                 services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                 services.AddSingleton<ServerEndpointInfoSource>();
