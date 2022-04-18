@@ -30,5 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public ProcessFilterOptions DefaultProcess { get; set; }
 
         public CollectionRuleDefaultsOptions CollectionRuleDefaults { get; set; }
+
+        public List<CustomShortcutOptions> CustomShortcuts { get; set; }
     }
 }

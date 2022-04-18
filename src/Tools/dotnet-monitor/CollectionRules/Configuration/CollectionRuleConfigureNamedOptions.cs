@@ -18,15 +18,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         private readonly ICollectionRuleActionOperations _actionOperations;
         private readonly CollectionRulesConfigurationProvider _configurationProvider;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
+        private readonly IConfiguration _configuration;
 
         public CollectionRuleConfigureNamedOptions(
             CollectionRulesConfigurationProvider configurationProvider,
             ICollectionRuleActionOperations actionOperations,
-            ICollectionRuleTriggerOperations triggerOperations)
+            ICollectionRuleTriggerOperations triggerOperations,
+            IConfiguration configuration)
         {
             _actionOperations = actionOperations;
             _configurationProvider = configurationProvider;
             _triggerOperations = triggerOperations;
+            _configuration = configuration;
         }
 
         public void Configure(string name, CollectionRuleOptions options)
@@ -42,6 +45,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 {
                     BindActionSettings(ruleSection, options, i);
                 }
+
+                BindCustomActions(ruleSection, options, name);
             }
         }
 
@@ -65,6 +70,44 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 settingsSection.Bind(actionSettings);
 
                 actionOptions.Settings = actionSettings;
+            }
+        }
+
+        private void BindCustomActions(IConfigurationSection ruleSection, CollectionRuleOptions ruleOptions, string name)
+        {
+            // Won't do it this way - will determine how many actions there are and then keep pulling until we hit an action with no value
+            for (int index = 0; index < 100; ++index)
+            {
+                IConfigurationSection section = _configuration.GetSection($"CollectionRules:{name}:Actions:{index}");
+                if (section.Exists() && !string.IsNullOrEmpty(section.Value))
+                {
+                    // Translate the value into the corresponding custom shortcut -> should we do this through the config, or more directly from CustomShortcutsOptions -> CollectionRuleOptions
+                    IConfigurationSection customSection = _configuration.GetSection($"CustomShortcuts:Actions:{section.Value}");
+
+                    IConfigurationSection typeSection = customSection.GetSection("Type");
+                    IConfigurationSection settingsSection = customSection.GetSection("Settings");
+                    IConfigurationSection nameSection = customSection.GetSection("Name");
+                    IConfigurationSection wfcSection = customSection.GetSection("WaitForCompletion");
+
+                    CollectionRuleActionOptions newActionOptions = new();
+
+                    if (null != newActionOptions &&
+                        typeSection.Exists() &&
+                        !string.IsNullOrEmpty(typeSection.Value) &&
+                        _actionOperations.TryCreateOptions(typeSection.Value, out object newActionSettings))
+                    {
+                        newActionOptions.Type = typeSection.Value;
+                        newActionOptions.Name = nameSection.Value;
+                        bool.TryParse(wfcSection.Value, out bool wfcValue); // type conversion could be an issue
+                        newActionOptions.WaitForCompletion = wfcValue;
+
+                        settingsSection.Bind(newActionSettings);
+
+                        newActionOptions.Settings = newActionSettings;
+
+                        ruleOptions.Actions.Add(newActionOptions);
+                    }
+                }
             }
         }
 
