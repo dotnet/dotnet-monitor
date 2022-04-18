@@ -35,7 +35,7 @@ The following examples provide sample scenarios for using a collection rule. The
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type: "Startup"
   DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type: "CollectTrace"
   DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name: "Microsoft-Windows-DotNETRuntime"
@@ -49,7 +49,7 @@ The following examples provide sample scenarios for using a collection rule. The
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type
     value: "Startup"
   - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type
@@ -103,7 +103,7 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type: "EventCounter"
   DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__ProviderName: "System.Runtime"
   DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__CounterName: "gc-heap-size"
@@ -116,7 +116,7 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type
     value: "EventCounter"
   - name: DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__ProviderName
@@ -176,7 +176,7 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type: "EventCounter"
   DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__ProviderName: "System.Runtime"
   DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__CounterName: "cpu-usage"
@@ -193,7 +193,7 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type
     value: "EventCounter"
   - name: DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__ProviderName
@@ -259,7 +259,7 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type: "AspNetResponseStatus"
   DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount: "5"
   DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__StatusCodes__0: "400-499"
@@ -274,7 +274,7 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type
     value: "AspNetResponseStatus"
   - name: DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount
@@ -342,7 +342,7 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 <details>
   <summary>ConfigMap</summary>
     
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key: "ProcessId"
   DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Value: "12345"
   DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__MatchType: "Exact"
@@ -361,7 +361,7 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key
     value: "ProcessId"
   - name: DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Value
@@ -428,7 +428,7 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type: "AspNetRequestDuration"
   DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount: "5"
   DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestDuration: "00:00:08"
@@ -444,7 +444,7 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type
     value: "AspNetRequestDuration"
   - name: DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount
@@ -513,7 +513,7 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 <details>
   <summary>ConfigMap</summary>
   
-  ```bash
+  ```yaml
   DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type: "AspNetResponseStatus"
   DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__ResponseCount: "3"
   DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__StatusCodes__0: "400"
@@ -531,7 +531,7 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 <details>
   <summary>Kubernetes Environment Variables</summary>
   
-  ```bash
+  ```yaml
   - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type
     value: "AspNetResponseStatus"
   - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__ResponseCount
