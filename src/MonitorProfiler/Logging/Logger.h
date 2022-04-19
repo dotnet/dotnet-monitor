@@ -48,11 +48,11 @@ DECLARE_INTERFACE(ILogger)
         hr = (EXPR); \
         if(FAILED(hr)) { \
             if (nullptr != pLogger) { \
-                IfFailRet(pLogger->Log( \
+                pLogger->Log( \
                     LogLevel::Error, \
                     "IfFailLogRet(" #EXPR ") failed in function %s: 0x%08x", \
                     __func__, \
-                    hr)); \
+                    hr); \
             } \
             return (hr); \
         } \
@@ -64,10 +64,10 @@ DECLARE_INTERFACE(ILogger)
     do { \
         if(nullptr == (EXPR)) { \
             if (nullptr != pLogger) { \
-                IfFailRet(pLogger->Log( \
+                pLogger->Log( \
                     LogLevel::Error, \
                     "IfNullLogRetPtr(" #EXPR ") failed in function %s", \
-                    __func__)); \
+                    __func__); \
             } \
             return E_POINTER; \
         } \

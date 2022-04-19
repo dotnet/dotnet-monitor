@@ -13,6 +13,18 @@
 /// <summary>
 /// Abstraction for getting and setting environment variables from an ICorProfilerInfo instance.
 /// </summary>
+/// <remarks>
+/// On non-Windows platforms, the runtime will cache the initial environment variable block. Managed
+/// caled to Environment::[Get|Set]EnvironmentVariable will only mutate the cache, not the real
+/// environment block. Additionally, diagnostic commands for accessing the environment variables
+/// only mutate and get from the cache, not the real environment block.
+/// 
+/// This cache is accessible by profilers via the ICorProfilerInfo11 methods instead of using the
+/// native platform environment variable methods.
+/// 
+/// This class provides an abstraction over the profiler methods to allow getting access to the current
+/// environment variables as seen by managed code and by diagnostic services.
+/// </remarks>
 class ProfilerEnvironment final :
     public IEnvironment
 {
