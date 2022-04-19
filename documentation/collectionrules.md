@@ -102,7 +102,7 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
   DotnetMonitor_CollectionRules__RuleName__Actions__0__Name: "A"
