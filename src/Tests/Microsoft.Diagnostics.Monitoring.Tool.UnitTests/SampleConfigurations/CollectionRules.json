@@ -69,6 +69,17 @@
       "Limits": {
         "ActionCountSlidingWindowDuration": "5:00:00"
       }
+    },
+    "Rule4": {
+      "Trigger": "TriggerCustomShortcut",
+      "Actions": [
+        "ActionCustomShortcut1",
+        "ActionCustomShortcut2"
+      ],
+      "Limits": "LimitCustomShortcut",
+      "Filters": [
+        "FilterCustomShortcut"
+      ]
     }
   }
 }

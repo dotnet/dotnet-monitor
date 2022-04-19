@@ -45,9 +45,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<IHost> hostCallback,
             Action<IServiceCollection> servicesCallback = null,
             Action<ILoggingBuilder> loggingCallback = null,
-            IDictionary<string, string> overrideSource = null)
+            IDictionary<string, string> overrideSource = null,
+            HostBuilder builder = null)
         {
-            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource, builder: builder);
 
             try
             {
@@ -64,9 +65,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<RootOptions> setup,
             Action<IServiceCollection> servicesCallback,
             Action<ILoggingBuilder> loggingCallback = null,
-            IDictionary<string, string> overrideSource = null)
+            IDictionary<string, string> overrideSource = null,
+            HostBuilder builder = null)
         {
-            return new HostBuilder()
+            if (builder == null)
+            {
+                builder = new HostBuilder();
+            }
+
+            return builder
                 .ConfigureAppConfiguration(builder =>
                 {
                     RootOptions options = new();
@@ -101,6 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.AddSingleton(RealSystemClock.Instance);
                     services.ConfigureGlobalCounter(context.Configuration);
                     services.ConfigureCollectionRuleDefaults(context.Configuration);
+                    services.ConfigureCustomShortcuts(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();

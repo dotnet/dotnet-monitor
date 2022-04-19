@@ -68,5 +68,16 @@
       },
       "Type": "AspNetRequestDuration" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     }
+  },
+  "Rule4": {
+    "Actions": [
+      "ActionCustomShortcut1" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "ActionCustomShortcut2" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    ],
+    "Filters": [
+      "FilterCustomShortcut" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    ],
+    "Limits": "LimitCustomShortcut" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+    "Trigger": "TriggerCustomShortcut" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
   }
 }
