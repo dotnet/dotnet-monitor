@@ -216,7 +216,7 @@ It is possible to change this behavior and have .NET processes connect to `dotne
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_DiagnosticPort: "\\\\.\\pipe\\dotnet-monitor-pipe"
+  DotnetMonitor_DiagnosticPort: "/diag/port.sock"
   ```
 </details>
 
@@ -225,7 +225,7 @@ It is possible to change this behavior and have .NET processes connect to `dotne
   
   ```yaml
   - name: DotnetMonitor_DiagnosticPort
-    value: "\\\\.\\pipe\\dotnet-monitor-pipe"
+    value: "/diag/port.sock"
   ```
 </details>
 
@@ -249,7 +249,7 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
   
   ```yaml
   DotnetMonitor_DiagnosticPort__ConnectionMode: "Listen"
-  DotnetMonitor_DiagnosticPort__EndpointName: "\\\\.\\pipe\\dotnet-monitor-pipe"
+  DotnetMonitor_DiagnosticPort__EndpointName: "/diag/port.sock"
   ```
 </details>
 
@@ -260,7 +260,7 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
   - name: DotnetMonitor_DiagnosticPort__ConnectionMode
     value: "Listen"
   - name: DotnetMonitor_DiagnosticPort__EndpointName
-    value: "\\\\.\\pipe\\dotnet-monitor-pipe"
+    value: "/diag/port.sock"
   ```
 </details>
 
