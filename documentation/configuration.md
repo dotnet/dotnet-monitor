@@ -207,7 +207,7 @@ It is possible to change this behavior and have .NET processes connect to `dotne
 
   ```json
   {
-    "DiagnosticPort": "\\\\.\\pipe\\dotnet-monitor-pipe"
+    "DiagnosticPort": "/diag/port.sock"
   }
   ```
 </details>
@@ -238,7 +238,7 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
   {
     "DiagnosticPort": {
       "ConnectionMode": "Listen",
-      "EndpointName": "\\\\.\\pipe\\dotnet-monitor-pipe"
+      "EndpointName": "/diag/port.sock"
     }
   }
   ```
