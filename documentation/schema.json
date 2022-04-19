@@ -127,6 +127,16 @@
           "$ref": "#/definitions/CollectionRuleDefaultsOptions"
         }
       ]
+    },
+    "CustomShortcuts": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "default": {},
+      "items": {
+        "$ref": "#/definitions/CustomShortcutOptions"
+      }
     }
   },
   "definitions": {
@@ -1263,6 +1273,52 @@
           ],
           "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process.",
           "format": "time-span"
+        }
+      }
+    },
+    "CustomShortcutOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Triggers"
+      ],
+      "properties": {
+        "Filters": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Process filters used to determine to which process(es) the collection rule is applied. All filters must match. If no filters are specified, the rule is applied to all discovered processes.",
+          "additionalProperties": {
+            "$ref": "#/definitions/ProcessFilterDescriptor"
+          }
+        },
+        "Triggers": {
+          "type": "object",
+          "description": "The trigger to use to monitor for a condition in the target process.",
+          "additionalProperties": {
+            "$ref": "#/definitions/CollectionRuleTriggerOptions"
+          }
+        },
+        "Actions": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "The list of actions to be executed when the trigger raises its notification.",
+          "additionalProperties": {
+            "$ref": "#/definitions/CollectionRuleActionOptions"
+          }
+        },
+        "Limits": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "The set of limits to constrain the execution of the rule and its components.",
+          "additionalProperties": {
+            "$ref": "#/definitions/CollectionRuleLimitsOptions"
+          }
         }
       }
     },
