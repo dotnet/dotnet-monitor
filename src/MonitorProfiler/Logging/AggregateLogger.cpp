@@ -13,7 +13,7 @@ STDMETHODIMP AggregateLogger::Add(const shared_ptr<ILogger> pLogger)
     return S_OK;
 }
 
-STDMETHODIMP AggregateLogger::Log(LogLevel level, const string format, va_list args)
+STDMETHODIMP AggregateLogger::Log(LogLevel level, const tstring format, va_list args)
 {
     HRESULT hr = S_OK;
 

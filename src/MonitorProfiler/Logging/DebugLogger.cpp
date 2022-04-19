@@ -5,25 +5,34 @@
 #include "DebugLogger.h"
 #include "LogLevelHelper.h"
 
-using namespace std;
-
-STDMETHODIMP DebugLogger::Log(LogLevel level, const string format, va_list args)
+STDMETHODIMP DebugLogger::Log(LogLevel level, const tstring format, va_list args)
 {
     HRESULT hr = S_OK;
 
-    CHAR szMessage[s_nMaxEntrySize];
-    _vsnprintf_s(szMessage, s_nMaxEntrySize, _TRUNCATE, format.c_str(), args);
+    WCHAR wszMessage[s_nMaxEntrySize];
+    _vsnwprintf_s(
+        wszMessage,
+        s_nMaxEntrySize,
+        _TRUNCATE,
+        format.c_str(),
+        args);
 
-    string strLevel;
-    if (FAILED(LogLevelHelper::GetShortName(level, strLevel)))
+    tstring tstrLevel;
+    if (FAILED(LogLevelHelper::GetShortName(level, tstrLevel)))
     {
-        strLevel.assign("ukwn");
+        tstrLevel.assign(_T("ukwn"));
     }
 
-    CHAR szString[s_nMaxEntrySize];
-    _snprintf_s(szString, s_nMaxEntrySize, _TRUNCATE, "[profiler]%s: %s\r\n", strLevel.c_str(), szMessage);
+    WCHAR wszString[s_nMaxEntrySize];
+    _snwprintf_s(
+        wszString,
+        s_nMaxEntrySize,
+        _TRUNCATE,
+        _T("[profiler]%s: %s\r\n"),
+        tstrLevel.c_str(),
+        wszMessage);
 
-    OutputDebugStringA(szString);
+    OutputDebugStringW(wszString);
 
     return S_OK;
 }

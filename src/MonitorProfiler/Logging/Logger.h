@@ -6,6 +6,7 @@
 
 #include <string>
 #include "corhlpr.h"
+#include "tstring.h"
 
 /// <summary>
 /// Logging severity levels.
@@ -29,9 +30,9 @@ DECLARE_INTERFACE(ILogger)
     /// <summary>
     /// Writes a log message.
     /// </summary>
-    STDMETHOD(Log)(LogLevel level, const std::string format, va_list args) PURE;
+    STDMETHOD(Log)(LogLevel level, const tstring format, va_list args) PURE;
 
-    inline STDMETHODIMP Log(LogLevel level, const std::string format, ...)
+    inline STDMETHODIMP Log(LogLevel level, const tstring format, ...)
     {
         va_list args;
         va_start(args, format);
@@ -50,8 +51,8 @@ DECLARE_INTERFACE(ILogger)
             if (nullptr != pLogger) { \
                 pLogger->Log( \
                     LogLevel::Error, \
-                    "IfFailLogRet(" #EXPR ") failed in function %s: 0x%08x", \
-                    __func__, \
+                    _T("IfFailLogRet(" #EXPR ") failed in function %s: 0x%08x"), \
+                    to_tstring(__func__).c_str(), \
                     hr); \
             } \
             return (hr); \
@@ -66,8 +67,8 @@ DECLARE_INTERFACE(ILogger)
             if (nullptr != pLogger) { \
                 pLogger->Log( \
                     LogLevel::Error, \
-                    "IfNullLogRetPtr(" #EXPR ") failed in function %s", \
-                    __func__); \
+                    _T("IfNullLogRetPtr(" #EXPR ") failed in function %s"), \
+                    to_tstring(__func__).c_str()); \
             } \
             return E_POINTER; \
         } \

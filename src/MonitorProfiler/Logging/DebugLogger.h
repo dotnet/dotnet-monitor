@@ -21,5 +21,5 @@ public:
     // ILogger Members
 
     /// <inheritdoc />
-    STDMETHOD(Log)(LogLevel level, const std::string format, va_list args) override;
+    STDMETHOD(Log)(LogLevel level, const tstring format, va_list args) override;
 };
