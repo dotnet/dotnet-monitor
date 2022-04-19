@@ -33,7 +33,7 @@ The following examples provide sample scenarios for using a collection rule. The
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
   DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type: "Startup"
@@ -101,7 +101,7 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
   DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type: "EventCounter"
@@ -174,7 +174,7 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
   DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type: "EventCounter"
@@ -257,7 +257,7 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
   DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type: "AspNetResponseStatus"
@@ -340,7 +340,7 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
     
   ```yaml
   DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key: "ProcessId"
@@ -426,7 +426,7 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
   DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type: "AspNetRequestDuration"
@@ -511,7 +511,7 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
   DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type: "AspNetResponseStatus"
