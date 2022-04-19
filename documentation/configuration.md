@@ -990,7 +990,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
 
 #### Built-In Default Triggers
 
-These [trigger shortcuts](collectionrules/TriggerShortcuts.md) simplify configuration for several common `EventCounter` providers.
+These [trigger shortcuts](collectionrules/triggershortcuts.md) simplify configuration for several common `EventCounter` providers.
 
 #### ASP.NET Request Path Wildcards and Globbing
 

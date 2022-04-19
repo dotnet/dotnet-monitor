@@ -34,13 +34,28 @@ Execute a trigger when the target application's CPU Usage is continuously greate
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
-  ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="EventCounter"
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName="System.Runtime"
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName="cpu-usage"
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan="50"
+  ```yaml
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "EventCounter"
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName: "cpu-usage"
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan: "50"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Type
+    value: "EventCounter"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName
+    value: "System.Runtime"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName
+    value: "cpu-usage"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan
+    value: "50"
   ```
 </details>
 
@@ -61,10 +76,19 @@ Usage that is satisfied when the CPU usage of the application is higher than 50%
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
-  ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="CPUUsage"
+  ```yaml
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "CPUUsage"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Type
+    value: "CPUUsage"
   ```
 </details>
 
@@ -100,13 +124,28 @@ Execute a trigger when the target application's GC Heap Size is continuously gre
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
-  ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="EventCounter"
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName="System.Runtime"
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName="gc-heap-size"
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan="10"
+  ```yaml
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "EventCounter"
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName: "gc-heap-size"
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan: "10"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Type
+    value: "EventCounter"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName
+    value: "System.Runtime"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName
+    value: "gc-heap-size"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan
+    value: "10"
   ```
 </details>
 
@@ -127,10 +166,19 @@ Usage that is satisfied when the GC Heap Size of the application is greater than
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
-  ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="GCHeapSize"
+  ```yaml
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "GCHeapSize"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Type
+    value: "GCHeapSize"
   ```
 </details>
 
@@ -166,13 +214,28 @@ Execute a trigger when the target application's threadpool queue length is conti
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
-  ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="EventCounter"
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName="System.Runtime"
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName="threadpool-queue-length"
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan="200"
+  ```yaml
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "EventCounter"
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName: "threadpool-queue-length"
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan: "200"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Type
+    value: "EventCounter"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName
+    value: "System.Runtime"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName
+    value: "threadpool-queue-length"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan
+    value: "200"
   ```
 </details>
 
@@ -193,9 +256,18 @@ Usage that is satisfied when the threadpool queue length of the application is h
 </details>
 
 <details>
-  <summary>Environment Variables</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
-  ```bash
-  export DotnetMonitor_CollectionRules__RuleName__Trigger__Type="ThreadpoolQueueLength"
+  ```yaml
+  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "ThreadpoolQueueLength"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Type
+    value: "ThreadpoolQueueLength"
   ```
 </details>
