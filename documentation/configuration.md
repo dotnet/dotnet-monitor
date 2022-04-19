@@ -317,7 +317,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
   ```json
   {
     "Storage": {
-      "DumpTempFolder": "/ephemeral-directory/"
+      "DumpTempFolder": "/diag/dumps/"
     }
   }
   ```
@@ -327,7 +327,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Storage__DumpTempFolder: "/ephemeral-directory/"
+  DotnetMonitor_Storage__DumpTempFolder: "/diag/dumps/"
   ```
 </details>
 
@@ -336,7 +336,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
   
   ```yaml
   - name: DotnetMonitor_Storage__DumpTempFolder
-    value: "/ephemeral-directory/"
+    value: "/diag/dumps/"
   ```
 </details>
 
