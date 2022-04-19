@@ -6,14 +6,14 @@
 
 #include <string>
 
-#if HOST_UNIX
+#if TARGET_UNIX
 
 typedef std::u16string tstring;
 #define _T(str) u##str
 
-#else // HOST_UNIX
+#else // TARGET_UNIX
 
 typedef std::wstring tstring;
 #define _T(str) L##str
 
-#endif // HOST_UNIX
+#endif // TARGET_UNIX
