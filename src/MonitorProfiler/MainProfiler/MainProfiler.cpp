@@ -39,7 +39,7 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
     // communication channel's GetProcessEnvironment command to get this value.
     IfFailLogRet(EnvironmentHelper::SetProductVersion(m_pEnvironment, m_pLogger));
 
-#ifdef WIN32
+#ifdef TARGET_WINDOWS
     DWORD processId = GetCurrentProcessId();
     LogInformationV("Process Id: %d", processId);
 #endif
@@ -66,7 +66,7 @@ STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
 
 HRESULT MainProfiler::InitializeEnvironment()
 {
-    m_pEnvironment.reset(new (nothrow) ProfilerEnvironment(m_pCorProfilerInfo));
+    m_pEnvironment = make_shared<ProfilerEnvironment>(m_pCorProfilerInfo);
     IfNullRet(m_pEnvironment);
 
     return S_OK;
@@ -79,9 +79,9 @@ HRESULT MainProfiler::InitializeLogging()
     IfNullRet(pAggregateLogger);
 
 #ifdef _DEBUG
-#ifdef WIN32
+#ifdef TARGET_WINDOWS
     // Add the debug output logger for when debugging on Windows
-    shared_ptr<DebugLogger> pDebugLogger(new (nothrow) DebugLogger());
+    shared_ptr<DebugLogger> pDebugLogger = make_shared<DebugLogger>();
     IfNullRet(pDebugLogger);
     pAggregateLogger->Add(pDebugLogger);
 #endif
