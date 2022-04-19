@@ -9,13 +9,8 @@
 #include <ostream>
 #include "tstring.h"
 
-std::ostream& operator<<(std::ostream& os, const tstring& str)
+std::ostream& operator<<(std::ostream& os, const tstring& tstr)
 {
-#ifdef TARGET_UNIX
-    std::wstring_convert<std::codecvt_utf8_utf16<WCHAR>, WCHAR> conv;
-#else // TARGET_UNIX
-    std::wstring_convert<std::codecvt_utf8<WCHAR>, WCHAR> conv;
-#endif // TARGET_UNIX
-    os << conv.to_bytes(str);
+    os << to_string(tstr);
     return os;
 }
