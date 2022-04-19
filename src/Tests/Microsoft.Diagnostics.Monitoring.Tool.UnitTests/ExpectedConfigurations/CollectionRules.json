@@ -68,5 +68,16 @@
       },
       "Type": "AspNetRequestDuration"
     }
+  },
+  "Rule4": {
+    "Actions": [
+      "ActionCustomShortcut1",
+      "ActionCustomShortcut2"
+    ],
+    "Filters": [
+      "FilterCustomShortcut"
+    ],
+    "Limits": "LimitCustomShortcut",
+    "Trigger": "TriggerCustomShortcut"
   }
 }
