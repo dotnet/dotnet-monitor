@@ -152,7 +152,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     DequeueOldTimestamps(_executionTimestamps, actionCountWindowDuration, currentTimestamp);
 
                     // Check if executing actions has been throttled due to count limit
-                    if (!CheckForThrottling(actionCountLimit, _executionTimestamps.Count))
+                    if (!CheckForThrottling(actionCountLimit, _executionTimestamps.Count, actionCountWindowDuration))
                     {
                         _executionTimestamps.Enqueue(currentTimestamp);
                         _allExecutionTimestamps.Add(currentTimestamp);
@@ -198,7 +198,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                                 _context.Logger.CollectionRuleActionsCompleted(_context.Name);
                             }
 
-                            CheckForThrottling(actionCountLimit, _executionTimestamps.Count);
+                            CheckForThrottling(actionCountLimit, _executionTimestamps.Count, actionCountWindowDuration);
 
                             // The collection rule has executed the action list the maximum
                             // number of times as specified by the limits and the action count
@@ -268,9 +268,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        internal bool CheckForThrottling(int actionCountLimit, int currExecutions)
+        internal bool CheckForThrottling(int actionCountLimit, int currExecutions, TimeSpan? actionCountSWD)
         {
-            if (actionCountLimit > currExecutions)
+            if (!actionCountSWD.HasValue || actionCountLimit > currExecutions)
             {
                 stateHolder.EndThrottled();
                 return false;

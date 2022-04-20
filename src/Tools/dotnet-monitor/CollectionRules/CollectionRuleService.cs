@@ -269,7 +269,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps, limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
 
-            pipeline.CheckForThrottling((limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount), pipeline._executionTimestamps.Count);
+            pipeline.CheckForThrottling((limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount), pipeline._executionTimestamps.Count, limitsOptions?.ActionCountSlidingWindowDuration);
 
             var stateAndReason = GetCollectionRulesState(pipeline);
 
