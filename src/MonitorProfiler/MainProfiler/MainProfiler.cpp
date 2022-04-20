@@ -41,7 +41,7 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
 #ifdef TARGET_WINDOWS
     DWORD processId = GetCurrentProcessId();
-    LogInformationV("Process Id: %d", processId);
+    LogInformationV(_T("Process Id: %d"), processId);
 #endif
 
     return S_OK;

@@ -16,32 +16,32 @@ public:
     /// <summary>
     /// Gets the short name of the log level.
     /// </summary>
-    static HRESULT GetShortName(LogLevel level, std::string& strName)
+    static HRESULT GetShortName(LogLevel level, tstring& strName)
     {
         // The log levels are intentionally four characters long
         // to allow for easy horizontal alignment.
         switch (level)
         {
         case LogLevel::Critical:
-            strName.assign("crit");
+            strName.assign(_T("crit"));
             return S_OK;
         case LogLevel::Debug:
-            strName.assign("dbug");
+            strName.assign(_T("dbug"));
             return S_OK;
         case LogLevel::Error:
-            strName.assign("fail");
+            strName.assign(_T("fail"));
             return S_OK;
         case LogLevel::Information:
-            strName.assign("info");
+            strName.assign(_T("info"));
             return S_OK;
         case LogLevel::None:
-            strName.assign("none");
+            strName.assign(_T("none"));
             return S_OK;
         case LogLevel::Trace:
-            strName.assign("trce");
+            strName.assign(_T("trce"));
             return S_OK;
         case LogLevel::Warning:
-            strName.assign("warn");
+            strName.assign(_T("warn"));
             return S_OK;
         default:
             return E_FAIL;
