@@ -501,13 +501,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public Task CollectionRuleDescriptionPipeline_ReachedRuleDuration(TargetFrameworkMoniker appTfm)
         {
-            const int ExpectedActionExecutionCount = 3;
-            TimeSpan RuleDuration = TimeSpan.FromMilliseconds(2000);
-            TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
-
-            MockSystemClock clock = new();
             ManualTriggerService triggerService = new();
-            CallbackActionService callbackService = new(_outputHelper, clock);
+            CallbackActionService callbackService = new(_outputHelper);
 
             return ExecuteScenario(
                 appTfm,
@@ -518,33 +513,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     options.CreateCollectionRule(TestRuleName)
                         .SetManualTrigger()
                         .AddAction(CallbackAction.ActionName)
-                        .SetActionLimits(
-                            ruleDuration: RuleDuration,
-                            count: ExpectedActionExecutionCount);
+                        .SetDurationLimit(TimeSpan.FromSeconds(3));
                 },
-                async (runner, pipeline, callbacks) =>
+                async (runner, pipeline, _) =>
                 {
                     using CancellationTokenSource cancellationSource = new(DefaultPipelineTimeout);
 
-                    Task startedTask = callbacks.StartWaitForPipelineStarted();
+                    // Pipeline should run to completion due to rule duration limit.
+                    await pipeline.RunAsync(cancellationSource.Token);
 
-                    // Startup trigger will cause the the pipeline to complete the start phase
-                    // after the action list has been completed.
-                    Task runTask = pipeline.RunAsync(cancellationSource.Token);
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
-                    await startedTask.WithCancellation(cancellationSource.Token);
-
-                    // Pipeline should have completed shortly after finished starting. This should only
-                    // wait for a very short time, if at all.
-                    await runTask.WithCancellation(cancellationSource.Token);
-
-                    clock.Increment(2 * RuleDuration);
+                    // Action list should not have been executed.
+                    VerifyExecutionCount(callbackService, expectedCount: 0);
 
                     CollectionRuleDescription actualDescription = CollectionRuleService.GetCollectionRuleDescription(pipeline);
 
                     CollectionRuleDescription expectedDescription = new()
                     {
-                        ActionCountLimit = ExpectedActionExecutionCount,
+                        ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
                         LifetimeOccurrences = 0,
                         SlidingWindowOccurrences = 0,
                         State = CollectionRulesState.Finished,
@@ -552,14 +539,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     };
 
                     ValidateCollectionRuleDescriptions(actualDescription, expectedDescription);
-
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-
-                    await pipeline.StopAsync(cancellationSource.Token);
                 },
                 services =>
                 {
-                    services.AddSingleton<ISystemClock>(clock);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
                 });

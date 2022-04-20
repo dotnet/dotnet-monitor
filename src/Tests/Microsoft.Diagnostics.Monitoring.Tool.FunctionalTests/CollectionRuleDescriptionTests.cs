@@ -92,26 +92,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private void ValidateCollectionRuleDescriptions(Dictionary<string, CollectionRuleDescription> actualCollectionRuleDescriptions, Dictionary<string, CollectionRuleDescription> expectedCollectionRuleDescriptions)
-        {
-            Assert.Equal(actualCollectionRuleDescriptions.Keys.Count, expectedCollectionRuleDescriptions.Keys.Count);
-
-            foreach (var key in actualCollectionRuleDescriptions.Keys)
-            {
-                CollectionRuleDescription actualDescription = actualCollectionRuleDescriptions[key];
-                CollectionRuleDescription expectedDescription = expectedCollectionRuleDescriptions[key];
-
-                Assert.Equal(actualDescription.ActionCountLimit, expectedDescription.ActionCountLimit);
-                Assert.Equal(actualDescription.ActionCountSlidingWindowDurationLimit, expectedDescription.ActionCountSlidingWindowDurationLimit);
-                Assert.Equal(actualDescription.LifetimeOccurrences, expectedDescription.LifetimeOccurrences);
-                Assert.Equal(actualDescription.RuleFinishedCountdown, expectedDescription.RuleFinishedCountdown);
-                Assert.Equal(actualDescription.SlidingWindowDurationCountdown, expectedDescription.SlidingWindowDurationCountdown);
-                Assert.Equal(actualDescription.SlidingWindowOccurrences, expectedDescription.SlidingWindowOccurrences);
-                Assert.Equal(actualDescription.State, expectedDescription.State);
-                Assert.Equal(actualDescription.StateReason, expectedDescription.StateReason);
-            }
-        }
-        
         /// <summary>
         /// Validates that a non-startup rule will complete when it has an action limit specified
         /// without a sliding window duration.
@@ -188,6 +168,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
+        }
+
+        private void ValidateCollectionRuleDescriptions(Dictionary<string, CollectionRuleDescription> actualCollectionRuleDescriptions, Dictionary<string, CollectionRuleDescription> expectedCollectionRuleDescriptions)
+        {
+            Assert.Equal(actualCollectionRuleDescriptions.Keys.Count, expectedCollectionRuleDescriptions.Keys.Count);
+
+            foreach (var key in actualCollectionRuleDescriptions.Keys)
+            {
+                CollectionRuleDescription actualDescription = actualCollectionRuleDescriptions[key];
+                CollectionRuleDescription expectedDescription = expectedCollectionRuleDescriptions[key];
+
+                Assert.Equal(actualDescription.ActionCountLimit, expectedDescription.ActionCountLimit);
+                Assert.Equal(actualDescription.ActionCountSlidingWindowDurationLimit, expectedDescription.ActionCountSlidingWindowDurationLimit);
+                Assert.Equal(actualDescription.LifetimeOccurrences, expectedDescription.LifetimeOccurrences);
+                Assert.Equal(actualDescription.RuleFinishedCountdown, expectedDescription.RuleFinishedCountdown);
+                Assert.Equal(actualDescription.SlidingWindowDurationCountdown, expectedDescription.SlidingWindowDurationCountdown);
+                Assert.Equal(actualDescription.SlidingWindowOccurrences, expectedDescription.SlidingWindowOccurrences);
+                Assert.Equal(actualDescription.State, expectedDescription.State);
+                Assert.Equal(actualDescription.StateReason, expectedDescription.StateReason);
+            }
         }
 #endif
     }

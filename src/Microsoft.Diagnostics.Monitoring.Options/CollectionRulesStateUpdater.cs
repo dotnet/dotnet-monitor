@@ -32,7 +32,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         internal void EndThrottled()
         {
-            CurrState = CollectionRulesStateInternal.Running;
+            if (CurrState == CollectionRulesStateInternal.Throttled)
+            {
+                CurrState = CollectionRulesStateInternal.Running;
+            }
         }
 
         internal void StartupTriggerCompleted()
