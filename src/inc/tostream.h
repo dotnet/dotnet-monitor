@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <codecvt>
-#include <locale>
 #include <ostream>
 #include "tstring.h"
 
