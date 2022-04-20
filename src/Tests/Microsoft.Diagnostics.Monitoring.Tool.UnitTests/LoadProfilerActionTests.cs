@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         // This environment variable name is embedded into the profiler and set at profiler initialization.
         // The value is determined BEFORE native build by the generation of the product version into the
         // _productversion.h header file.
-        private const string ProductVersionEnvVarName = "DOTNETMONITOR_ProductVersion";
+        private const string ProductVersionEnvVarName = "DotnetMonitorProfiler_ProductVersion";
 
         private readonly ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;

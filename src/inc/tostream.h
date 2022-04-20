@@ -11,11 +11,11 @@
 
 std::ostream& operator<<(std::ostream& os, const tstring& str)
 {
-#ifdef HOST_UNIX
+#ifdef TARGET_UNIX
     std::wstring_convert<std::codecvt_utf8_utf16<WCHAR>, WCHAR> conv;
-#else // HOST_UNIX
+#else // TARGET_UNIX
     std::wstring_convert<std::codecvt_utf8<WCHAR>, WCHAR> conv;
-#endif // HOST_UNIX
+#endif // TARGET_UNIX
     os << conv.to_bytes(str);
     return os;
 }
