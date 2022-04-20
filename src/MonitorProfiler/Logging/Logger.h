@@ -75,29 +75,29 @@ DECLARE_INTERFACE(ILogger)
 
 // Logs a message with arguments at the specified level
 // Checks if logging failed, returns the HRESULT if failed
-#define LogV_(pLogger, level, format, args) \
-    IfFailRet(pLogger->Log(level, format, args))
+#define LogV_(pLogger, level, format, ...) \
+    IfFailRet(pLogger->Log(level, format, __VA_ARGS__))
 
 // Logs a message at the Trace level
-#define LogTraceV_(pLogger, format, args) \
-    LogV_(pLogger, LogLevel::Trace, format, args)
+#define LogTraceV_(pLogger, format, ...) \
+    LogV_(pLogger, LogLevel::Trace, format, __VA_ARGS__)
 
 // Logs a message at the Debug level
-#define LogDebugV_(pLogger, format, args) \
-    LogV_(pLogger, LogLevel::Debug, format, args)
+#define LogDebugV_(pLogger, format, ...) \
+    LogV_(pLogger, LogLevel::Debug, format, __VA_ARGS__)
 
 // Logs a message at the Information level
-#define LogInformationV_(pLogger, format, args) \
-    LogV_(pLogger, LogLevel::Information, format, args)
+#define LogInformationV_(pLogger, format, ...) \
+    LogV_(pLogger, LogLevel::Information, format, __VA_ARGS__)
 
 // Logs a message at the Warning level
-#define LogWarningV_(pLogger, format, args) \
-    LogV_(pLogger, LogLevel::Warning, format, args)
+#define LogWarningV_(pLogger, format, ...) \
+    LogV_(pLogger, LogLevel::Warning, format, __VA_ARGS__)
 
 // Logs a message at the Error level
-#define LogErrorV_(pLogger, format, args) \
-    LogV_(pLogger, LogLevel::Error, format, args)
+#define LogErrorV_(pLogger, format, ...) \
+    LogV_(pLogger, LogLevel::Error, format, __VA_ARGS__)
 
 // Logs a message at the Critical level
-#define LogCriticalV_(pLogger, format, args) \
-    LogV_(pLogger, LogLevel::Critical, format, args)
+#define LogCriticalV_(pLogger, format, ...) \
+    LogV_(pLogger, LogLevel::Critical, format, __VA_ARGS__)
