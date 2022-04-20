@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -17,6 +19,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             T options = (T)ruleOptionsMonitor.Get(ruleName).Trigger.Settings;
 
             return options;
+        }
+
+        internal static Tuple<string, string> GetProviderAndCounterNames(Type triggerType)
+        {
+            if (triggerType == typeof(CPUUsageOptions))
+            {
+                return new Tuple<string, string>(IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.CPUUsage);
+            }
+            else if (triggerType == typeof(GCHeapSizeOptions))
+            {
+                return new Tuple<string, string>(IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.GCHeapSize);
+            }
+            else if (triggerType == typeof(ThreadpoolQueueLengthOptions))
+            {
+                return new Tuple<string, string>(IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.ThreadpoolQueueLength);
+            }
+
+            return new Tuple<string, string>(string.Empty, string.Empty);
         }
     }
 }

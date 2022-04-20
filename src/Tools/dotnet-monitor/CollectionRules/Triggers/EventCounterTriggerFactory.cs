@@ -58,36 +58,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, CPUUsageOptions options)
         {
-            return Create(endpointInfo, callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.CPUUsage, greaterThanDefault: CPUUsageOptionsDefaults.GreaterThan);
+            throw new NotImplementedException();
         }
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, GCHeapSizeOptions options)
         {
-            return Create(endpointInfo, callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.GCHeapSize, greaterThanDefault:GCHeapSizeOptionsDefaults.GreaterThan);
+            throw new NotImplementedException();
         }
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, ThreadpoolQueueLengthOptions options)
         {
-            return Create(endpointInfo,callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.ThreadpoolQueueLength, greaterThanDefault: ThreadpoolQueueLengthOptionsDefaults.GreaterThan);
-        }
-
-        private ICollectionRuleTrigger Create(IEndpointInfo endpointInfo,
-            Action callback,
-            IEventCounterShortcuts options,
-            string providerName,
-            string counterName,
-            double? greaterThanDefault = null,
-            double? lessThanDefault = null,
-            TimeSpan? slidingWindowDurationDefault = null)
-        {
-            return Create(endpointInfo, callback, new EventCounterOptions()
-            {
-                ProviderName = providerName,
-                CounterName = counterName,
-                GreaterThan = options.LessThan.HasValue ? options.GreaterThan : (options.GreaterThan ?? greaterThanDefault),
-                LessThan = options.GreaterThan.HasValue ? options.LessThan : (options.LessThan ?? lessThanDefault),
-                SlidingWindowDuration = options.SlidingWindowDuration ?? slidingWindowDurationDefault
-            });
+            throw new NotImplementedException();
         }
     }
 }
