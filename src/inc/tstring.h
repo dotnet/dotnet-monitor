@@ -7,35 +7,36 @@
 #include <codecvt>
 #include <locale>
 #include <string>
+#if TARGET_WINDOWS
+#include <winnt.h>
+#elif TARGET_UNIX
+#include <pal_mstypes.h>
+#endif
 
 #if TARGET_UNIX
 
 typedef std::u16string tstring;
 #define _T(str) u##str
 
+typedef std::codecvt_utf8_utf16<WCHAR> codecvt_utf8_utf16_wchar;
+
 #else // TARGET_UNIX
 
 typedef std::wstring tstring;
 #define _T(str) L##str
 
+typedef std::codecvt_utf8<WCHAR> codecvt_utf8_utf16_wchar;
+
 #endif // TARGET_UNIX
 
 static std::string to_string(const tstring& str)
 {
-#ifdef TARGET_UNIX
-    std::wstring_convert<std::codecvt_utf8_utf16<WCHAR>, WCHAR> conv;
-#else // TARGET_UNIX
-    std::wstring_convert<std::codecvt_utf8<WCHAR>, WCHAR> conv;
-#endif // TARGET_UNIX
+    std::wstring_convert<codecvt_utf8_utf16_wchar, WCHAR> conv;
     return conv.to_bytes(str);
 }
 
 static tstring to_tstring(const std::string& str)
 {
-#ifdef TARGET_UNIX
-    std::wstring_convert<std::codecvt_utf8_utf16<WCHAR>, WCHAR> conv;
-#else // TARGET_UNIX
-    std::wstring_convert<std::codecvt_utf8<WCHAR>, WCHAR> conv;
-#endif // TARGET_UNIX
+    std::wstring_convert<codecvt_utf8_utf16_wchar, WCHAR> conv;
     return conv.from_bytes(str);
 }
