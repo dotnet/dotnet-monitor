@@ -14,7 +14,7 @@ using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
 
-#define LogInformationV(format, args) LogInformationV_(m_pLogger, format, args)
+#define LogInformationV(format, ...) LogInformationV_(m_pLogger, format, __VA_ARGS__)
 
 GUID MainProfiler::GetClsid()
 {
