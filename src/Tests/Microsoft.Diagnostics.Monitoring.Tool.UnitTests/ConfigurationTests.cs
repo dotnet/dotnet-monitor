@@ -180,13 +180,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
-
-
-
-
         /// <summary>
-        /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
-        /// assemble properly when combined.
+        /// Tests that Custom Shortcuts are correctly translated from JSON to CollectionRuleOptions.
         /// </summary>
         [Fact]
         public async void CustomShortcutsTest()
@@ -223,6 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions options = optionsMonitor.Get("Rule4"); // Rule 4 consists entirely of Custom Shortcuts
 
+                // NOTE: These values are defined in CustomShortcuts.json; changes made there will need to be reflected here.
                 // Trigger Comparison
                 Assert.Equal(KnownCollectionRuleTriggers.AspNetRequestCount, options.Trigger.Type);
                 Assert.Equal(20, ((AspNetRequestCountOptions)options.Trigger.Settings).RequestCount);
