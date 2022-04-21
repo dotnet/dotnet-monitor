@@ -180,75 +180,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
-
-        // IMPROVE THIS TEST SO THAT IT VERIFIES FILTERS/ACTIONS THAT HAVE A MIX OF SHORTCUTS
-
-        /// <summary>
-        /// Tests that Custom Shortcuts are correctly translated from JSON to CollectionRuleOptions.
-        /// </summary>
-        [Fact]
-        public async void CustomShortcutsTest()
-        {
-            using TemporaryDirectory contentRootDirectory = new(_outputHelper);
-            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
-            using TemporaryDirectory userConfigDir = new(_outputHelper);
-
-            // Set up the initial settings used to create the host builder.
-            HostBuilderSettings settings = new()
-            {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
-                ContentRootDirectory = contentRootDirectory.FullName,
-                SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
-            };
-
-            // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson());
-
-            // Create the initial host builder.
-            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
-
-            // Override the environment configurations to use predefined values so that the test host
-            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
-            // in-memory collection source.
-            builder.ReplaceAspnetEnvironment();
-            builder.ReplaceDotnetEnvironment();
-            builder.ReplaceMonitorEnvironment();
-
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => {}, host =>
-            {
-                IOptionsMonitor<CollectionRuleOptions> optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
-
-                CollectionRuleOptions options = optionsMonitor.Get("Rule4"); // Rule 4 consists entirely of Custom Shortcuts
-
-                // NOTE: These values are defined in CustomShortcuts.json; changes made there will need to be reflected here.
-                // Trigger Comparison
-                Assert.Equal(KnownCollectionRuleTriggers.AspNetRequestCount, options.Trigger.Type);
-                Assert.Equal(20, ((AspNetRequestCountOptions)options.Trigger.Settings).RequestCount);
-                Assert.Equal(TimeSpan.Parse("00:01:00"), ((AspNetRequestCountOptions)options.Trigger.Settings).SlidingWindowDuration);
-
-                // Actions Comparison
-                Assert.Equal(2, options.Actions.Count);
-                Assert.Equal(KnownCollectionRuleActions.CollectGCDump, options.Actions[0].Type);
-                Assert.Equal("artifacts", ((CollectGCDumpOptions)options.Actions[0].Settings).Egress);
-                Assert.Equal(KnownCollectionRuleActions.CollectTrace, options.Actions[1].Type);
-                Assert.Equal("monitorBlob", ((CollectTraceOptions)options.Actions[1].Settings).Egress);
-                Assert.Equal(WebApi.Models.TraceProfile.Cpu, ((CollectTraceOptions)options.Actions[1].Settings).Profile);
-
-                // Filters Comparison
-                Assert.Single(options.Filters);
-                Assert.Equal(WebApi.ProcessFilterKey.ProcessName, options.Filters[0].Key);
-                Assert.Equal("FirstWebApp1", options.Filters[0].Value);
-                Assert.Equal(WebApi.ProcessFilterType.Exact, options.Filters[0].MatchType);
-
-                // Limits Comparison
-                Assert.Equal(1, options.Limits.ActionCount);
-                Assert.Equal(TimeSpan.Parse("00:00:30"), options.Limits.ActionCountSlidingWindowDuration);
-                Assert.Equal(TimeSpan.Parse("00:05:00"), options.Limits.RuleDuration);
-
-            }, builder: (HostBuilder)builder);
-        }
-
         /// <summary>
         /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
         /// assemble properly when combined.
@@ -272,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson());
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(SampleConfigurationsDirectory));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -319,15 +250,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             settings.Urls = new[] { "https://localhost:44444" }; // This corresponds to the value in SampleConfigurations/URLs.json
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("Egress.json", "CollectionRules.json", "CollectionRuleDefaults.json", "CustomShortcuts.json"));
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(SampleConfigurationsDirectory, "Egress.json", "CollectionRules.json", "CollectionRuleDefaults.json", "CustomShortcuts.json"));
 
             // This is the appsettings.json file that is normally next to the entrypoint assembly.
             // The location of the appsettings.json is determined by the content root in configuration.
-            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson("Storage.json", "Authentication.json"));
+            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson(SampleConfigurationsDirectory, "Storage.json", "Authentication.json"));
 
             // This is the settings.json file in the shared configuration directory that is visible
             // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
-            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("Logging.json", "Metrics.json"));
+            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson(SampleConfigurationsDirectory, "Logging.json", "Metrics.json"));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -414,9 +345,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
-        private string ConstructSettingsJson(params string[] permittedFileNames)
+        public static string ConstructSettingsJson(string sampleConfigurationsDirectory, params string[] permittedFileNames)
         {
-            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SampleConfigurationsDirectory));
+            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), sampleConfigurationsDirectory));
 
             IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
 

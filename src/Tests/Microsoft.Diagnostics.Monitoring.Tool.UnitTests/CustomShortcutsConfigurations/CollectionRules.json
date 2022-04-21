@@ -1,0 +1,38 @@
+{
+  "CollectionRules": {
+    "ValidRule": {
+      "Trigger": "TriggerCustomShortcut",
+      "Actions": [
+        "ActionCustomShortcut1",
+        {
+          "Type": "CollectGCDump"
+        },
+        "ActionCustomShortcut2",
+        {
+          "Type": "CollectDump",
+          "Settings": {
+            "Egress": "monitorBlob"
+          }
+        }
+      ],
+      "Filters": [
+        {
+          "Key": "ProcessName",
+          "Value": "FirstWebApp"
+        },
+        "FilterCustomShortcut"
+      ],
+      "Limits": "LimitCustomShortcut"
+    },
+    "InvalidRule": {
+      "Trigger": "TriggerCustomShortcutINVALID",
+      "Actions": [
+        "ActionCustomShortcut1",
+        "ActionCustomShortcut2"
+      ],
+      "Filters": [
+        "FilterCustomShortcutINVALID"
+      ]
+    }
+  }
+}
