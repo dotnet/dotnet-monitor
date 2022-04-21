@@ -21,7 +21,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Trigger))]
-        [Required]
         public IDictionary<string, CollectionRuleTriggerOptions> Triggers { get; set; } = new Dictionary<string, CollectionRuleTriggerOptions>();
 
         [Display(

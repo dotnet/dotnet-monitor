@@ -129,14 +129,15 @@
       ]
     },
     "CustomShortcuts": {
-      "type": [
-        "array",
-        "null"
-      ],
       "default": {},
-      "items": {
-        "$ref": "#/definitions/CustomShortcutOptions"
-      }
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/CustomShortcutOptions"
+        }
+      ]
     }
   },
   "definitions": {
@@ -1279,9 +1280,6 @@
     "CustomShortcutOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Triggers"
-      ],
       "properties": {
         "Filters": {
           "type": [
@@ -1294,7 +1292,10 @@
           }
         },
         "Triggers": {
-          "type": "object",
+          "type": [
+            "null",
+            "object"
+          ],
           "description": "The trigger to use to monitor for a condition in the target process.",
           "additionalProperties": {
             "$ref": "#/definitions/CollectionRuleTriggerOptions"
