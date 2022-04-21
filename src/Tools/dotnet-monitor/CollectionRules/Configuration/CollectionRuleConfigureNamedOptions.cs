@@ -19,18 +19,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         private readonly ICollectionRuleActionOperations _actionOperations;
         private readonly CollectionRulesConfigurationProvider _configurationProvider;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
-        private readonly IConfiguration _configuration;
 
         public CollectionRuleConfigureNamedOptions(
             CollectionRulesConfigurationProvider configurationProvider,
             ICollectionRuleActionOperations actionOperations,
-            ICollectionRuleTriggerOperations triggerOperations,
-            IConfiguration configuration)
+            ICollectionRuleTriggerOperations triggerOperations)
         {
             _actionOperations = actionOperations;
             _configurationProvider = configurationProvider;
             _triggerOperations = triggerOperations;
-            _configuration = configuration;
         }
 
         public void Configure(string name, CollectionRuleOptions options)
@@ -62,8 +59,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
             {
                 int index = 0;
-                int hitActions = 0;
-                while (hitActions <= actionIndex)
+
+                while (0 <= actionIndex)
                 {
                     IConfigurationSection actionSection = ruleSection.GetSection(ConfigurationPath.Combine(
                         nameof(CollectionRuleOptions.Actions),
@@ -71,17 +68,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
                     if (actionSection.Exists() && string.IsNullOrEmpty(actionSection.Value))
                     {
-                        hitActions += 1;
+                        actionIndex -= 1;
 
-                        if (hitActions > actionIndex)
+                        if (0 > actionIndex)
                         {
                             IConfigurationSection settingsSection = actionSection.GetSection(
                                 nameof(CollectionRuleActionOptions.Settings));
 
                             settingsSection.Bind(actionSettings);
                             actionOptions.Settings = actionSettings;
-
-                            break;
                         }
                     }
 
