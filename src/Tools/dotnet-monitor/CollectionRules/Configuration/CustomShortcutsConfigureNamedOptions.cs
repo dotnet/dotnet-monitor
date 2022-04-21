@@ -7,7 +7,10 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
@@ -18,18 +21,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         private readonly ICollectionRuleActionOperations _actionOperations;
         private readonly IOptionsMonitor<CustomShortcutOptions> _shortcutOptions;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<CustomShortcutsConfigureOptions> _logger;
 
         public CustomShortcutsConfigureOptions(
             ICollectionRuleTriggerOperations triggerOperations,
             ICollectionRuleActionOperations actionOperations,
             IOptionsMonitor<CustomShortcutOptions> shortcutOptions,
-            IConfiguration configuration
-            )
+            IConfiguration configuration,
+            ILogger<CustomShortcutsConfigureOptions> logger)
         {
             _triggerOperations = triggerOperations;
             _actionOperations = actionOperations;
             _shortcutOptions = shortcutOptions;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public void PostConfigure(string name, CollectionRuleOptions options)
@@ -60,13 +65,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 }
             }
 
-            InsertCustomActionsIntoActionList(options, name);
-            InsertCustomTriggerIntoTrigger(options, name);
-            InsertCustomFiltersIntoFilterList(options, name);
-            InsertCustomLimitIntoLimit(options, name);
+            bool actionInsertion = InsertCustomActionsIntoActionList(options, name);
+            bool triggerInsertion = InsertCustomTriggerIntoTrigger(options, name);
+            bool filterInsertion = InsertCustomFiltersIntoFilterList(options, name);
+            bool limitInsertion = InsertCustomLimitIntoLimit(options, name);
+
+            // If any insertions fail, clear out the options so that the rule will fail Validation
+            if (!(actionInsertion && triggerInsertion && filterInsertion && limitInsertion))
+            {
+                options.Trigger = null;
+                options.Actions.Clear();
+                options.Filters.Clear();
+                options.Limits = null;
+            }
         }
 
-        private void InsertCustomActionsIntoActionList(CollectionRuleOptions ruleOptions, string name)
+        private bool InsertCustomActionsIntoActionList(CollectionRuleOptions ruleOptions, string name)
         {
             bool boundAllActions = false;
             int index = 0;
@@ -76,29 +90,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Actions)}:{index}");
                 if (section.Exists() && !string.IsNullOrEmpty(section.Value))
                 {
-                    CollectionRuleActionOptions options = _shortcutOptions.CurrentValue.Actions[section.Value]; // Need to make sure this is safe for invalid names
-                    ruleOptions.Actions.Add(options);
+                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Actions, section.Value, ruleOptions.Actions))
+                    {
+                        return false;
+                    }
                 }
-                else
+                else if (!section.Exists())
                 {
                     boundAllActions = true;
                 }
 
                 ++index;
             }
+
+            return true;
         }
 
-        private void InsertCustomTriggerIntoTrigger(CollectionRuleOptions ruleOptions, string name)
+        private bool InsertCustomTriggerIntoTrigger(CollectionRuleOptions ruleOptions, string name)
         {
             IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Trigger)}");
             if (section.Exists() && !string.IsNullOrEmpty(section.Value))
             {
+                if (!ValidateCustomShortcutExists(_shortcutOptions.CurrentValue.Triggers, section.Value))
+                {
+                    return false;
+                }
+
                 CollectionRuleTriggerOptions options = _shortcutOptions.CurrentValue.Triggers[section.Value]; // Need to make sure this is safe for invalid names
                 ruleOptions.Trigger = options;
             }
+
+            return true;
         }
 
-        private void InsertCustomFiltersIntoFilterList(CollectionRuleOptions ruleOptions, string name)
+        private bool InsertCustomFiltersIntoFilterList(CollectionRuleOptions ruleOptions, string name)
         {
             bool boundAllFilters = false;
             int index = 0;
@@ -108,26 +133,59 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Filters)}:{index}");
                 if (section.Exists() && !string.IsNullOrEmpty(section.Value))
                 {
-                    ProcessFilterDescriptor options = _shortcutOptions.CurrentValue.Filters[section.Value]; // Need to make sure this is safe for invalid names
-                    ruleOptions.Filters.Add(options);
+                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Filters, section.Value, ruleOptions.Filters))
+                    {
+                        return false;
+                    }
                 }
-                else
+                else if (!section.Exists())
                 {
                     boundAllFilters = true;
                 }
 
                 ++index;
             }
+
+            return true;
         }
 
-        private void InsertCustomLimitIntoLimit(CollectionRuleOptions ruleOptions, string name)
+        private bool InsertCustomLimitIntoLimit(CollectionRuleOptions ruleOptions, string name)
         {
             IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Limits)}");
             if (section.Exists() && !string.IsNullOrEmpty(section.Value))
             {
+                if (!ValidateCustomShortcutExists(_shortcutOptions.CurrentValue.Limits, section.Value))
+                {
+                    return false;
+                }
+
                 CollectionRuleLimitsOptions options = _shortcutOptions.CurrentValue.Limits[section.Value]; // Need to make sure this is safe for invalid names
                 ruleOptions.Limits = options;
             }
+
+            return true;
+        }
+
+        private bool InsertCustomShortcut<T>(IDictionary<string, T> shortcutsOptions, string shortcutKey, List<T> options) where T : class
+        {
+            if (!ValidateCustomShortcutExists(shortcutsOptions, shortcutKey))
+            {
+                return false;
+            }
+
+            options.Add(shortcutsOptions[shortcutKey]);
+            return true;
+        }
+
+        private bool ValidateCustomShortcutExists<T>(IDictionary<string, T> shortcutsOptions, string shortcutKey)
+        {
+            if (shortcutsOptions.ContainsKey(shortcutKey))
+            {
+                return true;
+            }
+
+            _logger.LogError(Strings.ErrorMessage_CustomShortcutNotFound, shortcutKey);
+            return false;
         }
 
         private void BindCustomActions(IConfigurationSection ruleSection, CustomShortcutOptions shortcutOptions, string shortcutName)

@@ -111,7 +111,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<ICollectionRuleActionOperations, CollectionRuleActionOperations>();
             services.AddSingleton<ICollectionRuleTriggerOperations, CollectionRuleTriggerOperations>();
 
-            //services.AddSingleton<IConfigureOptions<CustomShortcutOptions>, CustomShortcutsConfigureOptions>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, CustomShortcutsConfigureOptions>();
 
             services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();

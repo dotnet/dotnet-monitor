@@ -129,6 +129,12 @@
     <value>The '{0}' trigger was not registered correctly.</value>
     <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleTriggerProxy.</comment>
   </data>
+  <data name="ErrorMessage_CustomShortcutNotFound" xml:space="preserve">
+    <value>Could not find a custom shortcut with the name: {0}</value>
+    <comment>Gets the format string for custom shortcut resolution failure.
+1 Format Parameter:
+0. shortcutName: The name of the custom shortcut that could not be found.</comment>
+  </data>
   <data name="ErrorMessage_DiagnosticPortMissingInListenMode" xml:space="preserve">
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>

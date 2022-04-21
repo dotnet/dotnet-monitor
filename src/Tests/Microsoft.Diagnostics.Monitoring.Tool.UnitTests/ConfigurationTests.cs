@@ -180,6 +180,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
+
+        // IMPROVE THIS TEST SO THAT IT VERIFIES FILTERS/ACTIONS THAT HAVE A MIX OF SHORTCUTS
+
         /// <summary>
         /// Tests that Custom Shortcuts are correctly translated from JSON to CollectionRuleOptions.
         /// </summary>
