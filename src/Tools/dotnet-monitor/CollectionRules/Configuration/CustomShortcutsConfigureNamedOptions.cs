@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Actions)}:{index}");
                 if (section.Exists() && !string.IsNullOrEmpty(section.Value))
                 {
-                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Actions, section.Value, ruleOptions.Actions))
+                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Actions, section.Value, ruleOptions.Actions, index))
                     {
                         return false;
                     }
@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Filters)}:{index}");
                 if (section.Exists() && !string.IsNullOrEmpty(section.Value))
                 {
-                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Filters, section.Value, ruleOptions.Filters))
+                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Filters, section.Value, ruleOptions.Filters, index))
                     {
                         return false;
                     }
@@ -166,14 +166,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             return true;
         }
 
-        private bool InsertCustomShortcut<T>(IDictionary<string, T> shortcutsOptions, string shortcutKey, List<T> options) where T : class
+        private bool InsertCustomShortcut<T>(IDictionary<string, T> shortcutsOptions, string shortcutKey, List<T> options, int index) where T : class
         {
             if (!ValidateCustomShortcutExists(shortcutsOptions, shortcutKey))
             {
                 return false;
             }
 
-            options.Add(shortcutsOptions[shortcutKey]);
+            options.Insert(index, shortcutsOptions[shortcutKey]);
             return true;
         }
 

@@ -61,14 +61,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             if (null != actionOptions &&
                 _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
             {
-                IConfigurationSection settingsSection = ruleSection.GetSection(ConfigurationPath.Combine(
-                    nameof(CollectionRuleOptions.Actions),
-                    actionIndex.ToString(CultureInfo.InvariantCulture),
-                    nameof(CollectionRuleActionOptions.Settings)));
+                int index = 0;
+                int hitActions = 0;
+                while (hitActions <= actionIndex)
+                {
+                    IConfigurationSection actionSection = ruleSection.GetSection(ConfigurationPath.Combine(
+                        nameof(CollectionRuleOptions.Actions),
+                        index.ToString(CultureInfo.InvariantCulture)));
 
-                settingsSection.Bind(actionSettings);
+                    if (actionSection.Exists() && string.IsNullOrEmpty(actionSection.Value))
+                    {
+                        hitActions += 1;
 
-                actionOptions.Settings = actionSettings;
+                        if (hitActions > actionIndex)
+                        {
+                            IConfigurationSection settingsSection = actionSection.GetSection(
+                                nameof(CollectionRuleActionOptions.Settings));
+
+                            settingsSection.Bind(actionSettings);
+                            actionOptions.Settings = actionSettings;
+
+                            break;
+                        }
+                    }
+
+                    ++index;
+                }
             }
         }
 

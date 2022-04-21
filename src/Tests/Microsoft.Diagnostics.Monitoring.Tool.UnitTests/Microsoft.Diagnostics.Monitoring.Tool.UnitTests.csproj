@@ -108,6 +108,21 @@
     <None Update="DiagnosticPortConfigurations\SimplifiedListen.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="CustomShortcutsConfigurations\CollectionRuleDefaults.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CustomShortcutsConfigurations\CollectionRules.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CustomShortcutsConfigurations\CustomShortcuts.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CustomShortcutsConfigurations\DiagnosticPort.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CustomShortcutsConfigurations\Egress.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="SampleConfigurations\CustomShortcuts.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

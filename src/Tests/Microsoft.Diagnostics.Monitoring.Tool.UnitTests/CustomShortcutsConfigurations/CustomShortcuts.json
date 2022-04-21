@@ -1,0 +1,42 @@
+{
+  "CustomShortcuts": {
+    "Triggers": {
+      "TriggerCustomShortcut": {
+        "Type": "AspNetRequestCount",
+        "Settings": {
+          "RequestCount": "20",
+          "SlidingWindowDuration": "00:01:00"
+        }
+      }
+    },
+    "Actions": {
+      "ActionCustomShortcut1": {
+        "Type": "CollectGCDump",
+        "Settings": {
+          "Egress": "artifacts"
+        }
+      },
+      "ActionCustomShortcut2": {
+        "Type": "CollectTrace",
+        "Settings": {
+          "Egress": "monitorBlob",
+          "Profile": "Cpu"
+        }
+      }
+    },
+    "Filters": {
+      "FilterCustomShortcut": {
+        "Key": "ProcessName",
+        "Value": "FirstWebApp1",
+        "MatchType": "Exact"
+      }
+    },
+    "Limits": {
+      "LimitCustomShortcut": {
+        "RuleDuration": "00:05:00",
+        "ActionCount": "1",
+        "ActionCountSlidingWindowDuration": "00:00:30"
+      }
+    }
+  }
+}
