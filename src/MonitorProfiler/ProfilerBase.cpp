@@ -4,7 +4,6 @@
 
 #include "ProfilerBase.h"
 #include "corhlpr.h"
-#include "macros.h"
 
 ProfilerBase::ProfilerBase() :
     m_pCorProfilerInfo(nullptr)
@@ -13,8 +12,6 @@ ProfilerBase::ProfilerBase() :
 
 STDMETHODIMP ProfilerBase::Initialize(IUnknown *pICorProfilerInfoUnk)
 {
-    ExpectedPtr(pICorProfilerInfoUnk);
-
     HRESULT hr = S_OK;
 
     IfFailRet(pICorProfilerInfoUnk->QueryInterface(
@@ -26,8 +23,6 @@ STDMETHODIMP ProfilerBase::Initialize(IUnknown *pICorProfilerInfoUnk)
 
 STDMETHODIMP ProfilerBase::Shutdown()
 {
-    m_pCorProfilerInfo.Release();
-
     return S_OK;
 }
 

@@ -5,7 +5,6 @@ project(MonitorProfiler)
 if(CLR_CMAKE_HOST_WIN32)
     set(SOURCES
         ${SOURCES}
-        Logging/DebugLogger.cpp
         MonitorProfiler.def
         )
 endif(CLR_CMAKE_HOST_WIN32)
@@ -13,9 +12,6 @@ endif(CLR_CMAKE_HOST_WIN32)
 set(SOURCES
     ${SOURCES}
     ${PROFILER_SOURCES}
-    Environment/EnvironmentHelper.cpp
-    Environment/ProfilerEnvironment.cpp
-    Logging/AggregateLogger.cpp
     MainProfiler/MainProfiler.cpp
     ClassFactory.cpp
     DllMain.cpp

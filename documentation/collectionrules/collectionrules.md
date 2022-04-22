@@ -102,40 +102,17 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
 </details>
 
 <details>
-  <summary>Kubernetes ConfigMap</summary>
+  <summary>Environment Variables</summary>
   
-  ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Name: "A"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Type: "CollectTrace"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlob"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Name: "B"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Type: "Execute"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Path: "path-to-dotnet"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Arguments: "MyApp.dll $(Actions.A.EgressPath)"
-  ```
-</details>
-
-<details>
-  <summary>Kubernetes Environment Variables</summary>
-  
-  ```yaml
-  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Name
-    value: "A"
-  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Type
-    value: "CollectTrace"
-  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile
-    value: "Cpu"
-  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
-    value: "AzureBlob"
-  - name: DotnetMonitor_CollectionRules__RuleName__Actions__1__Name
-    value: "B"
-  - name: DotnetMonitor_CollectionRules__RuleName__Actions__1__Type
-    value: "Execute"
-  - name: DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Path
-    value: "path-to-dotnet"
-  - name: DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Arguments
-    value: "MyApp.dll $(Actions.A.EgressPath)"
+  ```bash
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Name="A"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Type="CollectTrace"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile="Cpu"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress="AzureBlob"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Name="B"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Type="Execute"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Path="path-to-dotnet"
+  export DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Arguments="MyApp.dll $(Actions.A.EgressPath)"
   ```
 </details>
 

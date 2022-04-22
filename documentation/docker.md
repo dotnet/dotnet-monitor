@@ -9,7 +9,6 @@ In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is
 | Version | Platform | Architecture | Link |
 |---|---|---|---|
 | 7.0 (Preview) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/7.0/alpine/amd64/Dockerfile |
-| 7.0 (Preview) | Linux (Alpine) | arm64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/7.0/alpine/arm64v8/Dockerfile |
 | 6.1 (Current, Latest) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/6.1/alpine/amd64/Dockerfile |
 | 6.0 | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/6.0/alpine/amd64/Dockerfile |
 

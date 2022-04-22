@@ -47,7 +47,11 @@ public:
 
     ~ComPtr()
     {
-        Release();
+        if (nullptr != m_p)
+        {
+            m_p->Release();
+            m_p = nullptr;
+        }
     }
 
     void Attach(T* p)
@@ -64,15 +68,6 @@ public:
         T* p = m_p;
         m_p = nullptr;
         return p;
-    }
-
-    void Release()
-    {
-        if (nullptr != m_p)
-        {
-            m_p->Release();
-            m_p = nullptr;
-        }
     }
 
     T* operator=(T* p) throw()

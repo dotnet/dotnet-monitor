@@ -4,11 +4,18 @@
 
 #pragma once
 
+#include <codecvt>
+#include <locale>
 #include <ostream>
 #include "tstring.h"
 
-std::ostream& operator<<(std::ostream& os, const tstring& tstr)
+std::ostream& operator<<(std::ostream& os, const tstring& str)
 {
-    os << to_string(tstr);
+#ifdef HOST_UNIX
+    std::wstring_convert<std::codecvt_utf8_utf16<WCHAR>, WCHAR> conv;
+#else // HOST_UNIX
+    std::wstring_convert<std::codecvt_utf8<WCHAR>, WCHAR> conv;
+#endif // HOST_UNIX
+    os << conv.to_bytes(str);
     return os;
 }

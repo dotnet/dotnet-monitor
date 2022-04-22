@@ -2,19 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#include "MainProfiler.h"
-#include "../Environment/EnvironmentHelper.h"
-#include "../Environment/ProfilerEnvironment.h"
-#include "../Logging/AggregateLogger.h"
-#include "../Logging/DebugLogger.h"
 #include "corhlpr.h"
+#include "MainProfiler.h"
 #include "macros.h"
+#include "productversion.h"
+#include "tstring.h"
+#include "tostream.h"
+#include <iostream>
+#include <iomanip>
 
-using namespace std;
-
-#define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
-
-#define LogInformationV(format, ...) LogInformationV_(m_pLogger, format, __VA_ARGS__)
+#define HRESULTHEX(x) \
+   "0x" << std::setw(8) << std::setfill('0') << std::hex << x
 
 GUID MainProfiler::GetClsid()
 {
@@ -24,35 +22,19 @@ GUID MainProfiler::GetClsid()
 
 STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 {
-    ExpectedPtr(pICorProfilerInfoUnk);
-
     HRESULT hr = S_OK;
 
-    IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
-    IfFailRet(InitializeEnvironment());
-    IfFailRet(InitializeLogging());
+    if (FAILED(hr = ProfilerBase::Initialize(pICorProfilerInfoUnk)))
+    {
+        std::cerr << "Failed to initialize profiler." << std::endl;
+    }
 
-    // Logging is initialized and can now be used
-
-    // Set product version environment variable to allow discovery of if the profiler
-    // as been applied to a target process. Diagnostic tools must use the diagnostic
-    // communication channel's GetProcessEnvironment command to get this value.
-    IfFailLogRet(EnvironmentHelper::SetProductVersion(m_pEnvironment, m_pLogger));
-
-#ifdef TARGET_WINDOWS
-    DWORD processId = GetCurrentProcessId();
-    LogInformationV(_T("Process Id: %d"), processId);
-#endif
+    IfFailRet(m_pCorProfilerInfo->SetEnvironmentVariable(
+        _T("DOTNETMONITOR_ProductVersion"),
+        MonitorProductVersion_TSTR
+        ));
 
     return S_OK;
-}
-
-STDMETHODIMP MainProfiler::Shutdown()
-{
-    m_pLogger.reset();
-    m_pEnvironment.reset();
-
-    return ProfilerBase::Shutdown();
 }
 
 STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
@@ -60,34 +42,6 @@ STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
     ExpectedPtr(pbNotificationOnly);
 
     *pbNotificationOnly = TRUE;
-
-    return S_OK;
-}
-
-HRESULT MainProfiler::InitializeEnvironment()
-{
-    m_pEnvironment = make_shared<ProfilerEnvironment>(m_pCorProfilerInfo);
-    IfNullRet(m_pEnvironment);
-
-    return S_OK;
-}
-
-HRESULT MainProfiler::InitializeLogging()
-{
-    // Create an aggregate logger to allow for multiple logging implementations
-    unique_ptr<AggregateLogger> pAggregateLogger(new (nothrow) AggregateLogger());
-    IfNullRet(pAggregateLogger);
-
-#ifdef _DEBUG
-#ifdef TARGET_WINDOWS
-    // Add the debug output logger for when debugging on Windows
-    shared_ptr<DebugLogger> pDebugLogger = make_shared<DebugLogger>();
-    IfNullRet(pDebugLogger);
-    pAggregateLogger->Add(pDebugLogger);
-#endif
-#endif
-
-    m_pLogger.reset(pAggregateLogger.release());
 
     return S_OK;
 }
