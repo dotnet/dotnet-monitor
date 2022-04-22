@@ -33,6 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _requestLimitTable.Add(Utilities.ArtifactType_Logs, 3);
             _requestLimitTable.Add(Utilities.ArtifactType_Trace, 3);
             _requestLimitTable.Add(Utilities.ArtifactType_Metrics, 3);
+            _requestLimitTable.Add(Utilities.ArtifactType_Stacks, 3);
 
             _logger = logger;
         }

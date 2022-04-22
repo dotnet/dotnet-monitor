@@ -14,6 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ArtifactType_Logs = "logs";
         public const string ArtifactType_Trace = "trace";
         public const string ArtifactType_Metrics = "livemetrics";
+        public const string ArtifactType_Stacks = "stacks";
 
         public static TimeSpan ConvertSecondsToTimeSpan(int durationSeconds)
         {

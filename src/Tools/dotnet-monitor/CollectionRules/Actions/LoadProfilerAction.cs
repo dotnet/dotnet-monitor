@@ -62,6 +62,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 {
                     DiagnosticsClient client = new DiagnosticsClient(_endpointInfo.Endpoint);
 
+                    await client.SetEnvironmentVariableAsync("DotnetMonitorProfiler_InstanceId", _endpointInfo.RuntimeInstanceCookie.ToString("D"), token);
+
                     _logger.LoadingProfiler(_options.Clsid, _options.Path, _endpointInfo.ProcessId);
                     await client.SetStartupProfilerAsync(_options.Clsid, _options.Path, token);
 

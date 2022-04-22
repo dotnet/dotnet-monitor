@@ -7,6 +7,7 @@
 #include "../ProfilerBase.h"
 #include "../Environment/Environment.h"
 #include "../Logging/Logger.h"
+#include "../Communication/CommandServer.h"
 #include <memory>
 
 class MainProfiler final :
@@ -26,4 +27,8 @@ public:
 private:
     HRESULT InitializeEnvironment();
     HRESULT InitializeLogging();
+    HRESULT InitializeCommandServer();
+    HRESULT MessageCallback(const IpcMessage& message);
+private:
+    std::unique_ptr<CommandServer> _commandServer;
 };

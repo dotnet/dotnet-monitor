@@ -507,6 +507,47 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, _logger);
         }
 
+        [HttpGet("stacks", Name = nameof(CaptureStacks))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJson, ContentTypes.TextPlain)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_Stacks)]
+        [EgressValidation]
+        public async Task<ActionResult> CaptureStacks(
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null,
+            [FromQuery][Range(-1, int.MaxValue)]
+            int durationSeconds = 5,
+            [FromQuery]
+            string egressProvider = null)
+        {
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+
+            return await InvokeForProcess(async processInfo =>
+            {
+                System.Net.Sockets.UnixDomainSocketEndPoint ep =
+                    new System.Net.Sockets.UnixDomainSocketEndPoint(Environment.ExpandEnvironmentVariables($@"%TEMP%\{processInfo.EndpointInfo.RuntimeInstanceCookie:D}.sock"));
+
+                using System.Net.Sockets.Socket s =
+                    new System.Net.Sockets.Socket(System.Net.Sockets.AddressFamily.Unix, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Unspecified);
+
+#if NET6_0_OR_GREATER
+                await s.ConnectAsync(ep);
+                await s.SendAsync(new ReadOnlyMemory<byte>(new byte[6]), System.Net.Sockets.SocketFlags.None, HttpContext.RequestAborted);
+                return Ok();
+#else
+                await Task.CompletedTask;
+                throw new InvalidOperationException("Unsupported for 3.1");
+#endif
+
+            }, processKey, Utilities.ArtifactType_Stacks);
+        }
+
         private static string GetDotnetMonitorVersion()
         {
             var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();

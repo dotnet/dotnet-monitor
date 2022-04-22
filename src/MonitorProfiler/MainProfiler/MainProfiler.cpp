@@ -9,6 +9,8 @@
 #include "../Logging/DebugLogger.h"
 #include "corhlpr.h"
 #include "macros.h"
+#include <experimental/filesystem>
+#include <memory>
 
 using namespace std;
 
@@ -28,9 +30,12 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     HRESULT hr = S_OK;
 
+    //These should always be initialized first
     IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
     IfFailRet(InitializeEnvironment());
     IfFailRet(InitializeLogging());
+
+    IfFailLogRet(InitializeCommandServer());
 
     // Logging is initialized and can now be used
 
@@ -51,6 +56,8 @@ STDMETHODIMP MainProfiler::Shutdown()
 {
     m_pLogger.reset();
     m_pEnvironment.reset();
+    _commandServer->Shutdown();
+    _commandServer.reset();
 
     return ProfilerBase::Shutdown();
 }
@@ -89,5 +96,33 @@ HRESULT MainProfiler::InitializeLogging()
 
     m_pLogger.reset(pAggregateLogger.release());
 
+    return S_OK;
+}
+
+HRESULT MainProfiler::InitializeCommandServer()
+{
+    HRESULT hr = S_OK;
+
+    tstring instanceId;
+    tstring tmpDir = _T("/tmp");
+
+    IfFailRet(m_pEnvironment->GetEnvironmentVariable(_T("DotnetMonitorProfiler_InstanceId"), instanceId));
+
+#if TARGET_WINDOWS
+    IfFailRet(m_pEnvironment->GetEnvironmentVariable(_T("TEMP"), tmpDir));
+#endif
+
+    _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger));
+    std::string socketPath = std::experimental::filesystem::path(tmpDir).append(instanceId).replace_extension(".sock").string();
+    std::remove(socketPath.c_str());
+
+    IfFailRet(_commandServer->Start(socketPath, [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); }));
+
+    return S_OK;
+}
+
+HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
+{
+    m_pLogger->Log(LogLevel::Information, _T("Message received from client: %d %d"), message.MessageType, message.Parameters);
     return S_OK;
 }
