@@ -5,14 +5,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -345,7 +340,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
-        public static string ConstructSettingsJson(string sampleConfigurationsDirectory, params string[] permittedFileNames)
+        internal static string ConstructSettingsJson(string sampleConfigurationsDirectory, params string[] permittedFileNames)
         {
             string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), sampleConfigurationsDirectory));
 

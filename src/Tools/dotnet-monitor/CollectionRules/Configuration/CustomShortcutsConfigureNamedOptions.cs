@@ -63,18 +63,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 }
             }
 
-            bool actionInsertion = InsertCustomActionsIntoActionList(options, name);
-            bool triggerInsertion = InsertCustomTriggerIntoTrigger(options, name);
-            bool filterInsertion = InsertCustomFiltersIntoFilterList(options, name);
-            bool limitInsertion = InsertCustomLimitIntoLimit(options, name);
-
-            // If any insertions fail, clear out the options so that the rule will fail Validation
-            if (!(actionInsertion && triggerInsertion && filterInsertion && limitInsertion))
+            if (_shortcutOptions.CurrentValue != null)
             {
-                options.Trigger = null;
-                options.Actions.Clear();
-                options.Filters.Clear();
-                options.Limits = null;
+                bool actionInsertion = InsertCustomActionsIntoActionList(options, name);
+                bool triggerInsertion = InsertCustomTriggerIntoTrigger(options, name);
+                bool filterInsertion = InsertCustomFiltersIntoFilterList(options, name);
+                bool limitInsertion = InsertCustomLimitIntoLimit(options, name);
+
+                // If any insertions fail, clear out the options so that the rule will fail Validation
+                if (!(actionInsertion && triggerInsertion && filterInsertion && limitInsertion))
+                {
+                    options.Trigger = null;
+                    options.Actions.Clear();
+                    options.Filters.Clear();
+                    options.Limits = null;
+                }
             }
         }
 
@@ -114,7 +117,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                     return false;
                 }
 
-                CollectionRuleTriggerOptions options = _shortcutOptions.CurrentValue.Triggers[section.Value]; // Need to make sure this is safe for invalid names
+                CollectionRuleTriggerOptions options = _shortcutOptions.CurrentValue.Triggers[section.Value];
                 ruleOptions.Trigger = options;
             }
 
@@ -157,7 +160,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                     return false;
                 }
 
-                CollectionRuleLimitsOptions options = _shortcutOptions.CurrentValue.Limits[section.Value]; // Need to make sure this is safe for invalid names
+                CollectionRuleLimitsOptions options = _shortcutOptions.CurrentValue.Limits[section.Value];
                 ruleOptions.Limits = options;
             }
 
