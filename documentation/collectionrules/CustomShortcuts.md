@@ -46,7 +46,7 @@ You can easily translate existing configuration to Custom Shortcuts using the fo
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
   DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Type: "CollectTrace"
@@ -185,7 +185,7 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
 </details>
 
 <details>
-  <summary>ConfigMap</summary>
+  <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
   DotnetMonitor_CustomShortcuts__Actions__CPUTrace__Type: "CollectTrace"
