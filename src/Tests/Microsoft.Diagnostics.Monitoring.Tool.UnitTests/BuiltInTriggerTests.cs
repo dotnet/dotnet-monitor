@@ -2,30 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
-using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using System;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using static Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers.EventPipeTriggerFactory;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class BuiltInTriggerTests
     {
-        private const string DefaultRuleName = nameof(BuiltInTriggerTests);
-        private readonly TimeSpan SlidingWindowDurationDefault = TimeSpan.Parse(TriggerOptionsConstants.SlidingWindowDuration_Default);
         private readonly TimeSpan CustomSlidingWindowDuration = TimeSpan.Parse("00:00:03");
         private const double CustomLessThan = 20;
 
@@ -37,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public async Task GCHeapSizeTrigger_CorrectCustomOptions()
+        public void GCHeapSizeTrigger_CorrectCustomOptions()
         {
             EventCounterOptions expectedSettings = new()
             {
@@ -48,15 +35,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
-            await IEventCounterTrigger_CorrectOptions<GCHeapSizeOptions>(KnownCollectionRuleTriggers.GCHeapSize, expectedSettings, options =>
+            GCHeapSizeOptions options = new()
             {
-                options.LessThan = CustomLessThan;
-                options.SlidingWindowDuration = CustomSlidingWindowDuration;
-            });
+                LessThan = CustomLessThan,
+                SlidingWindowDuration = CustomSlidingWindowDuration
+            };
+
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateGCHeapSizeToEventCounterOptions(options);
+
+            ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
 
         [Fact]
-        public async Task ThreadpoolQueueLengthTrigger_CorrectCustomOptions()
+        public void ThreadpoolQueueLengthTrigger_CorrectCustomOptions()
         {
             EventCounterOptions expectedSettings = new()
             {
@@ -67,15 +58,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
-            await IEventCounterTrigger_CorrectOptions<ThreadpoolQueueLengthOptions>(KnownCollectionRuleTriggers.ThreadpoolQueueLength, expectedSettings, options =>
+            ThreadpoolQueueLengthOptions options = new()
             {
-                options.LessThan = CustomLessThan;
-                options.SlidingWindowDuration = CustomSlidingWindowDuration;
-            });
+                LessThan = CustomLessThan,
+                SlidingWindowDuration = CustomSlidingWindowDuration
+            };
+
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateThreadpoolQueueLengthToEventCounterOptions(options);
+
+            ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
 
         [Fact]
-        public async Task CPUUsageTrigger_CorrectCustomOptions()
+        public void CPUUsageTrigger_CorrectCustomOptions()
         {
             EventCounterOptions expectedSettings = new()
             {
@@ -86,15 +81,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
-            await IEventCounterTrigger_CorrectOptions<CPUUsageOptions>(KnownCollectionRuleTriggers.CPUUsage, expectedSettings, options =>
+            CPUUsageOptions options = new()
             {
-                options.LessThan = CustomLessThan;
-                options.SlidingWindowDuration = CustomSlidingWindowDuration;
-            });
+                LessThan = CustomLessThan,
+                SlidingWindowDuration = CustomSlidingWindowDuration
+            };
+
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateCPUUsageToEventCounterOptions(options);
+
+            ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
 
         [Fact]
-        public async Task GCHeapSizeTrigger_CorrectDefaultOptions()
+        public void GCHeapSizeTrigger_CorrectDefaultOptions()
         {
             EventCounterOptions expectedSettings = new()
             {
@@ -102,14 +101,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CounterName = IEventCounterShortcutsConstants.GCHeapSize,
                 GreaterThan = GCHeapSizeOptionsDefaults.GreaterThan,
                 LessThan = null,
-                SlidingWindowDuration = SlidingWindowDurationDefault
+                SlidingWindowDuration = null // NOTE: This is populated when EventCounterOptions -> EventCounterTriggerSettings, not when GCHeapSizeOptions -> EventCounterOptions
             };
 
-            await IEventCounterTrigger_CorrectOptions<GCHeapSizeOptions>(KnownCollectionRuleTriggers.GCHeapSize, expectedSettings);
+            GCHeapSizeOptions options = new();
+
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateGCHeapSizeToEventCounterOptions(options);
+
+            ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
 
         [Fact]
-        public async Task ThreadpoolQueueLengthTrigger_CorrectDefaultOptions()
+        public void ThreadpoolQueueLengthTrigger_CorrectDefaultOptions()
         {
             EventCounterOptions expectedSettings = new()
             {
@@ -117,14 +120,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CounterName = IEventCounterShortcutsConstants.ThreadpoolQueueLength,
                 GreaterThan = ThreadpoolQueueLengthOptionsDefaults.GreaterThan,
                 LessThan = null,
-                SlidingWindowDuration = SlidingWindowDurationDefault
+                SlidingWindowDuration = null // NOTE: This is populated when EventCounterOptions -> EventCounterTriggerSettings, not when ThreadpoolQueueLengthOptions -> EventCounterOptions
             };
 
-            await IEventCounterTrigger_CorrectOptions<ThreadpoolQueueLengthOptions>(KnownCollectionRuleTriggers.ThreadpoolQueueLength, expectedSettings);
+            ThreadpoolQueueLengthOptions options = new();
+
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateThreadpoolQueueLengthToEventCounterOptions(options);
+
+            ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
 
         [Fact]
-        public async Task CPUUsageTrigger_CorrectDefaultOptions()
+        public void CPUUsageTrigger_CorrectDefaultOptions()
         {
             EventCounterOptions expectedSettings = new()
             {
@@ -132,41 +139,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CounterName = IEventCounterShortcutsConstants.CPUUsage,
                 GreaterThan = CPUUsageOptionsDefaults.GreaterThan,
                 LessThan = null,
-                SlidingWindowDuration = SlidingWindowDurationDefault
+                SlidingWindowDuration = null // NOTE: This is populated when EventCounterOptions -> EventCounterTriggerSettings, not when CPUUsageOptions -> EventCounterOptions
             };
 
-            await IEventCounterTrigger_CorrectOptions<CPUUsageOptions>(KnownCollectionRuleTriggers.CPUUsage, expectedSettings);
+            CPUUsageOptions options = new();
+
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateCPUUsageToEventCounterOptions(options);
+
+            ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
 
-        private async Task IEventCounterTrigger_CorrectOptions<T>(string triggerName, EventCounterOptions expectedSettings, Action<IEventCounterShortcuts> callback = null)
+        private void ValidateEventCounterOptionsTranslation(EventCounterOptions expected, EventCounterOptions actual)
         {
-            using TemporaryDirectory tempDirectory = new(_outputHelper);
-
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
-            {
-                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
-
-                rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider)
-                    .SetIEventCounterTrigger(typeof(T), triggerName, callback);
-            }, host =>
-            {
-                T options = TriggerTestsHelper.GetTriggerOptions<T>(host, DefaultRuleName);
-
-                ICollectionRuleTriggerFactoryProxy factory;
-                Assert.True(host.Services.GetService<ICollectionRuleTriggerOperations>().TryCreateFactory(triggerName, out factory));
-
-                EventPipeTrigger<EventCounterTriggerSettings> trigger = (EventPipeTrigger<EventCounterTriggerSettings>)factory.Create(new EndpointInfo(), null, options);
-
-                // We have to open EventPipeTrigger from private to internal (and _pipeline as well) to get this to work -> is there a better way to do this?
-                EventCounterTriggerSettings triggerSettings = trigger._pipeline.Settings.TriggerSettings;
-
-                Assert.Equal(expectedSettings.CounterName, triggerSettings.CounterName);
-                Assert.Equal(expectedSettings.ProviderName, triggerSettings.ProviderName);
-                Assert.Equal(expectedSettings.GreaterThan, triggerSettings.GreaterThan);
-                Assert.Equal(expectedSettings.LessThan, triggerSettings.LessThan);
-                Assert.Equal(expectedSettings.SlidingWindowDuration, triggerSettings.SlidingWindowDuration);
-            });
+            Assert.Equal(expected.CounterName, actual.CounterName);
+            Assert.Equal(expected.ProviderName, actual.ProviderName);
+            Assert.Equal(expected.GreaterThan, actual.GreaterThan);
+            Assert.Equal(expected.LessThan, actual.LessThan);
+            Assert.Equal(expected.SlidingWindowDuration, actual.SlidingWindowDuration);
         }
     }
 }

@@ -58,36 +58,56 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, CPUUsageOptions options)
         {
-            return Create(endpointInfo, callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.CPUUsage, greaterThanDefault: CPUUsageOptionsDefaults.GreaterThan);
+            EventCounterOptions eventCounterOptions = TranslateCPUUsageToEventCounterOptions(options);
+            return Create(endpointInfo, callback, eventCounterOptions);
+        }
+
+        internal static EventCounterOptions TranslateCPUUsageToEventCounterOptions(CPUUsageOptions options)
+        {
+            return TranslateIEventCounterShortcutsToEventCounterOptions(options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.CPUUsage, greaterThanDefault: CPUUsageOptionsDefaults.GreaterThan);
         }
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, GCHeapSizeOptions options)
         {
-            return Create(endpointInfo, callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.GCHeapSize, greaterThanDefault:GCHeapSizeOptionsDefaults.GreaterThan);
+            EventCounterOptions eventCounterOptions = TranslateGCHeapSizeToEventCounterOptions(options);
+            return Create(endpointInfo, callback, eventCounterOptions);
+        }
+
+        internal static EventCounterOptions TranslateGCHeapSizeToEventCounterOptions(GCHeapSizeOptions options)
+        {
+            return TranslateIEventCounterShortcutsToEventCounterOptions(options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.GCHeapSize, greaterThanDefault: GCHeapSizeOptionsDefaults.GreaterThan);
         }
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, ThreadpoolQueueLengthOptions options)
         {
-            return Create(endpointInfo,callback, options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.ThreadpoolQueueLength, greaterThanDefault: ThreadpoolQueueLengthOptionsDefaults.GreaterThan);
+            EventCounterOptions eventCounterOptions = TranslateThreadpoolQueueLengthToEventCounterOptions(options);
+            return Create(endpointInfo, callback, eventCounterOptions);
         }
 
-        private ICollectionRuleTrigger Create(IEndpointInfo endpointInfo,
-            Action callback,
-            IEventCounterShortcuts options,
+        internal static EventCounterOptions TranslateThreadpoolQueueLengthToEventCounterOptions(ThreadpoolQueueLengthOptions options)
+        {
+            return TranslateIEventCounterShortcutsToEventCounterOptions(options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.ThreadpoolQueueLength, greaterThanDefault: ThreadpoolQueueLengthOptionsDefaults.GreaterThan);
+        }
+
+        /// <summary>
+        /// Intermediary translation layer is used because it allows for testing whether built-in triggers correctly map
+        /// from IEventCounterShortcuts into EventCounterOptions.
+        /// </summary> 
+        internal static EventCounterOptions TranslateIEventCounterShortcutsToEventCounterOptions(IEventCounterShortcuts options,
             string providerName,
             string counterName,
             double? greaterThanDefault = null,
             double? lessThanDefault = null,
             TimeSpan? slidingWindowDurationDefault = null)
         {
-            return Create(endpointInfo, callback, new EventCounterOptions()
+            return new EventCounterOptions()
             {
                 ProviderName = providerName,
                 CounterName = counterName,
                 GreaterThan = options.LessThan.HasValue ? options.GreaterThan : (options.GreaterThan ?? greaterThanDefault),
                 LessThan = options.GreaterThan.HasValue ? options.LessThan : (options.LessThan ?? lessThanDefault),
                 SlidingWindowDuration = options.SlidingWindowDuration ?? slidingWindowDurationDefault
-            });
+            };
         }
     }
 }
