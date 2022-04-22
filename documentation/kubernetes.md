@@ -9,7 +9,6 @@ For Dockerfiles and repository information, see [Running in Docker](./docker.md)
 The following example demonstrates a deployment of the dotnet-monitor container image monitoring two application containers within the same pod.
 
 ```yaml
-# Tell us about your experience using dotnet monitor: https://aka.ms/dotnet-monitor-survey
 apiVersion: apps/v1
 kind: Deployment
 metadata:

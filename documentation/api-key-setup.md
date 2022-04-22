@@ -15,8 +15,6 @@ The output from this command will display the API key (a bearer JWT token) forma
 >**Note:** The `Authorization` header value is the string `Bearer` (representing the type) + the JWT, separated by a space. In some applications (like Postman), you fill in the `Authorization` header type in a separate field from the JWT.
 
 ```yaml
-Tell us about your experience with dotnet monitor: https://aka.ms/dotnet-monitor-survey
-
 Generated ApiKey for dotnet-monitor; use the following header for authorization:
 
 Authorization: Bearer eyJhbGciOiJFUffffffffffffCI6IkpXVCJ9.eyJhdWQiOiJodffffffffffffGh1Yi5jb20vZG90bmV0L2RvdG5ldC1tb25pdG9yIiwiaXNzIjoiaHR0cHM6Ly9naXRodWIuY29tL2RvdG5ldC9kb3RuZXQtbW9uaXRvci9nZW5lcmF0ZWtleStNb25pdG9yQXBpS2V5Iiwic3ViIjoiYWU1NDczYjYtOGRhZC00OThkLWI5MTUtNTNiOWM2ODQwMDBlIn0.RZffffffffffff_yIyApvFKcxFpDJ65HJZek1_dt7jCTCMEEEffffffffffffR08OyhZZHs46PopwAsf_6fdTLKB1UGvLr95volwEwIFnHjdvMfTJ9ffffffffffffAU
