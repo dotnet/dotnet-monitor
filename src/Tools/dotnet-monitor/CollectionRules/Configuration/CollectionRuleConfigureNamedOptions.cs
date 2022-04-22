@@ -8,7 +8,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
@@ -58,29 +57,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             if (null != actionOptions &&
                 _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
             {
-                int index = 0;
+                int configurationIndex = 0;
+                int actionsFound = 0;
 
-                while (0 <= actionIndex)
+                while (actionsFound <= actionIndex)
                 {
                     IConfigurationSection actionSection = ruleSection.GetSection(ConfigurationPath.Combine(
                         nameof(CollectionRuleOptions.Actions),
-                        index.ToString(CultureInfo.InvariantCulture)));
+                        configurationIndex.ToString(CultureInfo.InvariantCulture)));
 
-                    if (actionSection.Exists() && string.IsNullOrEmpty(actionSection.Value))
+                    actionsFound = actionSection.Exists() && string.IsNullOrEmpty(actionSection.Value) ? actionsFound + 1 : actionsFound;
+
+                    if (actionsFound > actionIndex)
                     {
-                        actionIndex -= 1;
+                        IConfigurationSection settingsSection = actionSection.GetSection(
+                            nameof(CollectionRuleActionOptions.Settings));
 
-                        if (0 > actionIndex)
-                        {
-                            IConfigurationSection settingsSection = actionSection.GetSection(
-                                nameof(CollectionRuleActionOptions.Settings));
-
-                            settingsSection.Bind(actionSettings);
-                            actionOptions.Settings = actionSettings;
-                        }
+                        settingsSection.Bind(actionSettings);
+                        actionOptions.Settings = actionSettings;
                     }
 
-                    ++index;
+                    ++configurationIndex;
                 }
             }
         }

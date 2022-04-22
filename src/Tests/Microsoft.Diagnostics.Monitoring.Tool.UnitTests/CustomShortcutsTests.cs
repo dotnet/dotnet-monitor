@@ -2,26 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -38,8 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _outputHelper = outputHelper;
         }
 
-        // IMPROVE THIS TEST SO THAT IT VERIFIES FILTERS/ACTIONS THAT HAVE A MIX OF SHORTCUTS
-
         /// <summary>
         /// Tests that Custom Shortcuts are correctly translated from JSON to CollectionRuleOptions.
         /// </summary>
@@ -49,8 +38,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 
             IHostBuilder builder = GetHostBuilder(userConfigDir);
-
-            // UPDATE THE VALUES IN HERE AFTER LUNCH
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => {}, host =>
             {
@@ -107,7 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 OptionsValidationException ex = Assert.Throws<OptionsValidationException>(() => optionsMonitor.Get("InvalidRule"));
 
-                Assert.Equal(string.Format("The Trigger field is required."), ex.Message); // Push to resx
+                Assert.Equal(string.Format("The Trigger field is required."), ex.Message); // Push to resx?
 
             }, builder: (HostBuilder)builder);
         }
