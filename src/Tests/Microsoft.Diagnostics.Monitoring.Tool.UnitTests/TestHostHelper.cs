@@ -68,10 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IDictionary<string, string> overrideSource = null,
             HostBuilder builder = null)
         {
-            if (builder == null)
-            {
-                builder = new HostBuilder();
-            }
+            builder = builder ?? new HostBuilder();
 
             return builder
                 .ConfigureAppConfiguration(builder =>
