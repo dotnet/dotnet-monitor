@@ -1,8 +1,92 @@
 # Custom Shortcuts
 
-Custom Shortcuts allow users to design reusable collection rule components to decrease configuration verbosity, improve standardization between rules, and speed up the process of writing complex scenarios.
+Custom Shortcuts allow users to design reusable collection rule components to decrease configuration verbosity, reduce duplication between rules, and speed up the process of writing complex scenarios.
 
 Custom Shortcuts associate a name with a single Filter, Trigger, Action, or Limit; this name can then be used throughout configuration to represent the use of that Filter/Trigger/Action/Limit. This is ideal for scenarios where multiple collection rules re-use the same functionality, allowing the author to write/edit the configuration in a single place.
+
+You can easily translate existing configuration to Custom Shortcuts using the format in the following sample; once defined, the Custom Shortcut is referenced by its name in the collection rule.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "CustomShortcuts": {
+      "Actions": {
+        "NameOfActionShortcut": {
+          "Type": "CollectTrace",
+          "Settings": {
+            "Egress": "artifacts",
+            "SlidingWindowDuration": "00:00:15",
+            "Profile": "Cpu"
+          }
+        }
+      },
+      "Triggers": {
+        "NameOfTriggerShortcut": {
+          "Type": "AspNetRequestCount",
+          "Settings": {
+            "RequestCount": 10,
+            "SlidingWindowDuration": "00:01:00"
+          }
+        }
+      }
+    },
+    ...
+    "CollectionRules": {
+      "NameOfCollectionRule": {
+        "Trigger": "NameOfTriggerShortcut",
+        "Actions": [
+          "NameOfActionShortcut"
+        ] 
+      }
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>ConfigMap</summary>
+  
+  ```yaml
+  DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Type: "CollectTrace"
+  DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__Egress: "artifacts"
+  DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__SlidingWindowDuration: "00:00:15"
+  DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__Profile: "Cpu"
+  DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Type: "AspNetRequestCount"
+  DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__RequestCount: "10"
+  DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__SlidingWindowDuration: "00:01:00"
+
+  DotnetMonitor_CollectionRules__NameOfCollectionRule__Trigger: "NameOfTriggerShortcut"
+  DotnetMonitor_CollectionRules__NameOfCollectionRule__Actions__0: "NameOfActionShortcut"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Type
+    value: "CollectTrace"
+  - name: DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__Egress
+    value: "artifacts"
+  - name: DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__SlidingWindowDuration
+    value: "00:00:15"
+  - name: DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__Profile
+    value: "Cpu"
+  - name: DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Type
+    value: "AspNetRequestCount"
+  - name: DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__RequestCount
+    value: "10"
+  - name: DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__SlidingWindowDuration
+    value: "00:01:00"
+  - name: DotnetMonitor_CollectionRules__NameOfCollectionRule__Trigger
+    value: "NameOfTriggerShortcut"
+  - name: DotnetMonitor_CollectionRules__NameOfCollectionRule__Actions__0
+    value: "NameOfActionShortcut"
+
+  ```
+</details>
 
 ## Example
 
