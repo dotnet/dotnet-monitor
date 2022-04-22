@@ -8,8 +8,15 @@
 #include <WinSock2.h>
 #include <afunix.h>
 #else
+#include <sys/socket.h>
+#include <sys/select.h>
+#include <sys/un.h>
 typedef int SOCKET;
+typedef struct timeval TIMEVAL;
 #endif
+
+//Includes pal on Linux
+#include <windows.h>
 
 class SocketWrapper
 {
@@ -84,7 +91,12 @@ private:
     {
         if (Valid())
         {
+#if TARGET_WINDOWS
             closesocket(_socket);
+
+#else
+            close(_socket);
+#endif
             _socket = 0;
         }
     }

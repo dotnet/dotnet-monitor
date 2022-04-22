@@ -9,6 +9,7 @@
 #include <functional>
 #include <string>
 #include <atomic>
+#include <thread>
 #include "../Logging/Logger.h"
 #include "../Utilities/BlockingQueue.h"
 
@@ -23,7 +24,7 @@ private:
     void ListeningThread();
     void ClientProcessingThread();
 
-    std::atomic_bool _shutdown = false;
+    std::atomic_bool _shutdown;
 
     std::function<HRESULT(const IpcMessage& message)> _callback;
     IpcCommServer _server;

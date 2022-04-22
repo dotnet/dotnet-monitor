@@ -101,6 +101,6 @@ void IpcCommClient::Shutdown()
     );
 }
 
-IpcCommClient::IpcCommClient(SOCKET socket) : _socket(socket)
+IpcCommClient::IpcCommClient(SOCKET socket) : _socket(socket), _shutdown(false)
 {
 }

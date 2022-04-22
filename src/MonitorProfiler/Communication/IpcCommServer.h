@@ -11,6 +11,11 @@
 #include "SocketWrapper.h"
 #include "IpcCommClient.h"
 
+#if TARGET_UNIX
+//This is actually not defined on Unix
+#define UNIX_PATH_MAX 108
+#endif
+
 class IpcCommServer
 {
 public:
@@ -23,5 +28,5 @@ private:
     const int AcceptTimeoutSeconds = 3;
     const int Backlog = 20;
     SocketWrapper _domainSocket = 0;
-    std::atomic_bool _shutdown = false;
+    std::atomic_bool _shutdown;
 };

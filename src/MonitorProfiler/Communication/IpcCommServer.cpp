@@ -5,7 +5,7 @@
 #include "IpcCommClient.h"
 #include "IpcCommServer.h"
 
-IpcCommServer::IpcCommServer()
+IpcCommServer::IpcCommServer() : _shutdown(false)
 {
 }
 
@@ -33,7 +33,7 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
     ZeroMemory(&address, sizeof(address));
     address.sun_family = AF_UNIX;
     errno_t error = strncpy_s(address.sun_path, rootAddress.c_str(), UNIX_PATH_MAX);
-    if (error != ERROR_SUCCESS)
+    if (error != 0)
     {
         return HRESULT_FROM_WIN32(error);
     }

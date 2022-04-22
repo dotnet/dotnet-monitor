@@ -19,5 +19,5 @@ public:
 
 private:
     SocketWrapper _socket;
-    std::atomic_bool _shutdown = false;
+    std::atomic_bool _shutdown;
 };

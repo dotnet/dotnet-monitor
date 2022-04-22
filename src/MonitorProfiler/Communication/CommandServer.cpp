@@ -6,7 +6,7 @@
 #include <thread>
 #include "../Logging/Logger.h"
 
-CommandServer::CommandServer(std::shared_ptr<ILogger> logger) : _logger(logger)
+CommandServer::CommandServer(std::shared_ptr<ILogger> logger) : _shutdown(false), _logger(logger)
 {
 }
 
