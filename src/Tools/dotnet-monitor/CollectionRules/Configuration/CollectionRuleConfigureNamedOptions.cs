@@ -4,11 +4,8 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
@@ -21,19 +18,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         private readonly ICollectionRuleActionOperations _actionOperations;
         private readonly CollectionRulesConfigurationProvider _configurationProvider;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
-        private readonly IServiceProvider _serviceProvider;
 
         public CollectionRuleConfigureNamedOptions(
             CollectionRulesConfigurationProvider configurationProvider,
             ICollectionRuleActionOperations actionOperations,
-            ICollectionRuleTriggerOperations triggerOperations,
-            IServiceProvider serviceProvider,
-            ILogger<CollectionRuleConfigureNamedOptions> logger)
+            ICollectionRuleTriggerOperations triggerOperations)
         {
             _actionOperations = actionOperations;
             _configurationProvider = configurationProvider;
             _triggerOperations = triggerOperations;
-            _serviceProvider = serviceProvider;
         }
 
         public void Configure(string name, CollectionRuleOptions options)
@@ -89,70 +82,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 settingsSection.Bind(triggerSettings);
 
                 triggerOptions.Settings = triggerSettings;
-
-                if (triggerSettings is IEventCounterShortcuts shortcutsOptions)
-                {
-                    EventCounterOptions eventCounterOptions = TranslateShortcutToEventCounter(shortcutsOptions);
-                    
-                    if (null != eventCounterOptions)
-                    {
-                        triggerOptions.Type = KnownCollectionRuleTriggers.EventCounter;
-                        triggerOptions.Settings = eventCounterOptions;
-                    }
-                }
             }
-        }
-
-        private EventCounterOptions TranslateShortcutToEventCounter(IEventCounterShortcuts options)
-        {
-            EventCounterOptions eventCounterOptions = new EventCounterOptions();
-
-            eventCounterOptions.ProviderName = IEventCounterShortcutsConstants.SystemRuntime;
-
-            double? greaterThanDefault = null;
-            double? lessThanDefault = null;
-            TimeSpan? slidingWindowDurationDefault = null;
-
-            ValidateOptionsResult validationResult = new();
-
-            if (options is CPUUsageOptions)
-            {
-                validationResult = ValidateShortcut<CPUUsageOptions>(options);
-
-                eventCounterOptions.CounterName = IEventCounterShortcutsConstants.CPUUsage;
-                greaterThanDefault = CPUUsageOptionsDefaults.GreaterThan;
-            }
-            else if (options is GCHeapSizeOptions)
-            {
-                validationResult = ValidateShortcut<GCHeapSizeOptions>(options);
-
-                eventCounterOptions.CounterName = IEventCounterShortcutsConstants.GCHeapSize;
-                greaterThanDefault = GCHeapSizeOptionsDefaults.GreaterThan;
-            }
-            else if (options is ThreadpoolQueueLengthOptions)
-            {
-                validationResult = ValidateShortcut<ThreadpoolQueueLengthOptions>(options);
-
-                eventCounterOptions.CounterName = IEventCounterShortcutsConstants.ThreadpoolQueueLength;
-                greaterThanDefault = ThreadpoolQueueLengthOptionsDefaults.GreaterThan;
-            }
-
-            if (validationResult.Failed)
-            {
-                return null; // Don't do the transformation -> allows the proper Validation message to be logged.
-            }
-
-            eventCounterOptions.GreaterThan = options.LessThan.HasValue ? options.GreaterThan : (options.GreaterThan ?? greaterThanDefault);
-            eventCounterOptions.LessThan = options.GreaterThan.HasValue ? options.LessThan : (options.LessThan ?? lessThanDefault);
-            eventCounterOptions.SlidingWindowDuration = options.SlidingWindowDuration ?? slidingWindowDurationDefault;
-
-            return eventCounterOptions;
-        }
-
-        private ValidateOptionsResult ValidateShortcut<T>(IEventCounterShortcuts options) where T : class
-        {
-            DataAnnotationValidateOptions<T> validateOptions = new(_serviceProvider);
-            return validateOptions.Validate(string.Empty, (T)options);
         }
     }
 }

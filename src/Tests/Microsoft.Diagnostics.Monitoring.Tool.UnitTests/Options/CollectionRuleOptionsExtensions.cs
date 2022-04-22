@@ -369,6 +369,33 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return Assert.IsType<EventCounterOptions>(ruleOptions.Trigger.Settings);
         }
 
+        public static CPUUsageOptions VerifyCPUUsageTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.CPUUsage);
+            return Assert.IsType<CPUUsageOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static GCHeapSizeOptions VerifyGCHeapSizeTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.GCHeapSize);
+            return Assert.IsType<GCHeapSizeOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static ThreadpoolQueueLengthOptions VerifyThreadpoolQueueLengthTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.ThreadpoolQueueLength);
+            return Assert.IsType<ThreadpoolQueueLengthOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static IEventCounterShortcuts VerifyIEventCounterTrigger(this CollectionRuleOptions ruleOptions, Type triggerType, string triggerName)
+        {
+            ruleOptions.VerifyTrigger(triggerName);
+
+            Assert.IsType(triggerType, ruleOptions.Trigger.Settings);
+
+            return (IEventCounterShortcuts)ruleOptions.Trigger.Settings;
+        }
+
         public static AspNetRequestCountOptions VerifyAspNetRequestCountTrigger(this CollectionRuleOptions ruleOptions)
         {
             ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.AspNetRequestCount);

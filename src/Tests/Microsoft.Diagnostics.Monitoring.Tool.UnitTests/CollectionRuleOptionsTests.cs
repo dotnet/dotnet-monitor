@@ -252,8 +252,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetIEventCounterShortcuts))]
-        public Task CollectionRuleOptions_IEventCounterShortcutsTrigger_MinimumOptions(Type triggerType, string triggerName)
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_MinimumOptions(Type triggerType, string triggerName)
         {
             return ValidateSuccess(
                 rootOptions =>
@@ -263,17 +263,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 ruleOptions =>
                 {
-                    (string providerName, string counterName) = TriggerTestsHelper.GetProviderAndCounterNames(triggerType);
-                    EventCounterOptions eventCounterOptions = ruleOptions.VerifyEventCounterTrigger();
-                    Assert.Equal(providerName, eventCounterOptions.ProviderName);
-                    Assert.Equal(counterName, eventCounterOptions.CounterName);
-                    Assert.True(eventCounterOptions.GreaterThan.HasValue || eventCounterOptions.LessThan.HasValue);
+                    ruleOptions.VerifyIEventCounterTrigger(triggerType, triggerName);
                 });
         }
 
         [Theory]
-        [MemberData(nameof(GetIEventCounterShortcuts))]
-        public Task CollectionRuleOptions_IEventCounterShortcutsTrigger_RoundTrip(Type triggerType, string triggerName)
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_RoundTrip(Type triggerType, string triggerName)
         {
             const double ExpectedGreaterThan = 0.5;
             const double ExpectedLessThan = 0.75;
@@ -292,10 +288,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 ruleOptions =>
                 {
-                    (string providerName, string counterName) = TriggerTestsHelper.GetProviderAndCounterNames(triggerType);
-                    EventCounterOptions options = ruleOptions.VerifyEventCounterTrigger();
-                    Assert.Equal(providerName, options.ProviderName);
-                    Assert.Equal(counterName, options.CounterName);
+                    IEventCounterShortcuts options = ruleOptions.VerifyIEventCounterTrigger(triggerType, triggerName);
                     Assert.Equal(ExpectedGreaterThan, options.GreaterThan);
                     Assert.Equal(ExpectedLessThan, options.LessThan);
                     Assert.Equal(ExpectedDuration, options.SlidingWindowDuration);
@@ -303,8 +296,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetIEventCounterShortcuts))]
-        public Task CollectionRuleOptions_IEventCounterShortcutsTrigger_GreaterThanLargerThanLessThan(Type triggerType, string triggerName)
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_GreaterThanLargerThanLessThan(Type triggerType, string triggerName)
         {
             return ValidateFailure(
                 rootOptions =>
@@ -409,8 +402,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetIEventCounterShortcuts))]
-        public Task CollectionRuleOptions_IEventCounterShortcutsTrigger_LessThanAssignedGreaterThanUnassigned(Type triggerType, string triggerName)
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_LessThanAssignedGreaterThanUnassigned(Type triggerType, string triggerName)
         {
             const double ExpectedLessThan = 20;
 
@@ -425,10 +418,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 ruleOptions =>
                 {
-                    (string providerName, string counterName) = TriggerTestsHelper.GetProviderAndCounterNames(triggerType);
-                    EventCounterOptions options = ruleOptions.VerifyEventCounterTrigger();
-                    Assert.Equal(providerName, options.ProviderName);
-                    Assert.Equal(counterName, options.CounterName);
+                    IEventCounterShortcuts options = ruleOptions.VerifyIEventCounterTrigger(triggerType, triggerName);
                     Assert.Null(options.GreaterThan);
                     Assert.Equal(ExpectedLessThan, options.LessThan);
                 });
@@ -1460,7 +1450,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
-        public static IEnumerable<object[]> GetIEventCounterShortcuts()
+        public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
         {
             yield return new object[] { typeof(CPUUsageOptions), KnownCollectionRuleTriggers.CPUUsage };
             yield return new object[] { typeof(GCHeapSizeOptions), KnownCollectionRuleTriggers.GCHeapSize };
