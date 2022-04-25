@@ -11,11 +11,6 @@
 #include "SocketWrapper.h"
 #include "IpcCommClient.h"
 
-#if TARGET_UNIX
-//This is actually not defined on Unix
-#define UNIX_PATH_MAX 108
-#endif
-
 class IpcCommServer
 {
 public:

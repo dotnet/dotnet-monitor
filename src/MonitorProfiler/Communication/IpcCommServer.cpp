@@ -21,7 +21,10 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
         return E_UNEXPECTED;
     }
 
-    if ((rootAddress.length() == 0) || (rootAddress.length() >= UNIX_PATH_MAX))
+    sockaddr_un address;
+    ZeroMemory(&address, sizeof(address));
+
+    if ((rootAddress.length() == 0) || (rootAddress.length() >= sizeof(address.sun_path)))
     {
         return E_INVALIDARG;
     }
@@ -29,14 +32,11 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
     //We don't error check this on purpose
     std::remove(rootAddress.c_str());
 
-    sockaddr_un address;
-    ZeroMemory(&address, sizeof(address));
     address.sun_family = AF_UNIX;
-    errno_t error = strncpy_s(address.sun_path, rootAddress.c_str(), UNIX_PATH_MAX);
-    if (error != 0)
-    {
-        return HRESULT_FROM_WIN32(error);
-    }
+#pragma warning(push)
+#pragma warning(disable:4996)
+    strncpy(address.sun_path, rootAddress.c_str(), sizeof(address.sun_path));
+#pragma warning(pop)
     _domainSocket = socket(AF_UNIX, SOCK_STREAM, 0);
     if (!_domainSocket.Valid())
     {
