@@ -7,6 +7,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     internal class ActionTestsConstants
     {
         public const string ExpectedEgressProvider = "TmpEgressProvider";
+        public const string UnknownEgressProvider = "UnknownEgressProvider";
         public const string ZeroExitCode = "ZeroExitCode";
         public const string NonzeroExitCode = "NonzeroExitCode";
         public const string Sleep = "Sleep";
