@@ -152,6 +152,8 @@ dotnet monitor config show
 The output of the command should resemble the following JSON object:
 
 ```json
+Tell us about your experience with dotnet monitor: https://aka.ms/dotnet-monitor-survey
+
 {
   "urls": "https://localhost:52323",
   "Kestrel": ":NOT PRESENT:",
