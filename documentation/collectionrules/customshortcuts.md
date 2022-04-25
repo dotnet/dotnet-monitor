@@ -47,7 +47,7 @@ You can easily translate existing configuration to Custom Shortcuts using the fo
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Type: "CollectTrace"
   DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__Egress: "artifacts"
@@ -56,7 +56,6 @@ You can easily translate existing configuration to Custom Shortcuts using the fo
   DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Type: "AspNetRequestCount"
   DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__RequestCount: "10"
   DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__SlidingWindowDuration: "00:01:00"
-
   DotnetMonitor_CollectionRules__NameOfCollectionRule__Trigger: "NameOfTriggerShortcut"
   DotnetMonitor_CollectionRules__NameOfCollectionRule__Actions__0: "NameOfActionShortcut"
   ```
@@ -64,7 +63,7 @@ You can easily translate existing configuration to Custom Shortcuts using the fo
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Type
     value: "CollectTrace"
@@ -84,7 +83,6 @@ You can easily translate existing configuration to Custom Shortcuts using the fo
     value: "NameOfTriggerShortcut"
   - name: DotnetMonitor_CollectionRules__NameOfCollectionRule__Actions__0
     value: "NameOfActionShortcut"
-
   ```
 </details>
 
@@ -186,7 +184,7 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   DotnetMonitor_CustomShortcuts__Actions__CPUTrace__Type: "CollectTrace"
   DotnetMonitor_CustomShortcuts__Actions__CPUTrace__Settings__Egress: "artifacts"
@@ -214,7 +212,6 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
   DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Actions__1__Settings__Type: "Full"
   DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Filters__0: "AppPID"
   DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Limits: "ShortDuration"
-
   DotnetMonitor_CollectionRules__TraceWhenHighCPU__Trigger__Type: "EventCounter"
   DotnetMonitor_CollectionRules__TraceWhenHighCPU__Trigger__Settings__ProviderName: "System.Runtime"
   DotnetMonitor_CollectionRules__TraceWhenHighCPU__Trigger__Settings__CounterName: "cpu-usage"
@@ -227,7 +224,7 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CustomShortcuts__Actions__CPUTrace__Type
     value: "CollectTrace"
