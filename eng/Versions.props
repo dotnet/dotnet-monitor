@@ -1,97 +1,97 @@
 <Project>
-    <PropertyGroup Label="Versioning">
-        <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
-        <VersionPrefix>7.0.0</VersionPrefix>
-        <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
-        <PreReleaseVersionIteration>4</PreReleaseVersionIteration>
-        <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
-        <!--
+  <PropertyGroup Label="Versioning">
+    <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
+    <VersionPrefix>7.0.0</VersionPrefix>
+    <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
+    <PreReleaseVersionIteration>4</PreReleaseVersionIteration>
+    <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
+    <!--
       Build quality notion for blob group naming, similar to aka.ms channel build quality in Arcade:
       - 'daily': sets the blob group release name to 'daily' so a release type does not have to be assigned.
       - 'prerelease': allows the blob group release name to use prerelease version information.
       - 'release': sets the blob group release name to 'release'.
     -->
-        <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
-    </PropertyGroup>
-    <PropertyGroup Label="TargetFrameworks">
-        <!-- The TFMs of the dotnet-monitor tool.  -->
-        <ToolTargetFrameworks>net6.0</ToolTargetFrameworks>
-        <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
-        <ToolTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(ToolTargetFrameworks);net7.0</ToolTargetFrameworks>
-        <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
-        <TestTargetFrameworks>netcoreapp3.1;net5.0;net6.0</TestTargetFrameworks>
-        <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
-        <TestTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(TestTargetFrameworks);net7.0</TestTargetFrameworks>
-        <!-- The TFM for generating schema.json and OpenAPI docs. -->
-        <SchemaTargetFramework>net6.0</SchemaTargetFramework>
-        <!-- Defines for including the next .NET version -->
-        <DefineConstants Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(DefineConstants);INCLUDE_NEXT_DOTNET</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Label="Arcade">
-        <UsingToolXliff>false</UsingToolXliff>
-        <UsingToolNetFrameworkReferenceAssemblies>false</UsingToolNetFrameworkReferenceAssemblies>
-        <!-- Use `dotnet test` to have the ability to collect dumps on hanging tests.  -->
-        <UseVSTestRunner>true</UseVSTestRunner>
-        <MicrosoftTestPlatformVersion>16.11.0</MicrosoftTestPlatformVersion>
-    </PropertyGroup>
-    <!--
+    <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
+  </PropertyGroup>
+  <PropertyGroup Label="TargetFrameworks">
+    <!-- The TFMs of the dotnet-monitor tool.  -->
+    <ToolTargetFrameworks>net6.0</ToolTargetFrameworks>
+    <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
+    <ToolTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(ToolTargetFrameworks);net7.0</ToolTargetFrameworks>
+    <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
+    <TestTargetFrameworks>netcoreapp3.1;net5.0;net6.0</TestTargetFrameworks>
+    <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
+    <TestTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(TestTargetFrameworks);net7.0</TestTargetFrameworks>
+    <!-- The TFM for generating schema.json and OpenAPI docs. -->
+    <SchemaTargetFramework>net6.0</SchemaTargetFramework>
+    <!-- Defines for including the next .NET version -->
+    <DefineConstants Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(DefineConstants);INCLUDE_NEXT_DOTNET</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Label="Arcade">
+    <UsingToolXliff>false</UsingToolXliff>
+    <UsingToolNetFrameworkReferenceAssemblies>false</UsingToolNetFrameworkReferenceAssemblies>
+    <!-- Use `dotnet test` to have the ability to collect dumps on hanging tests.  -->
+    <UseVSTestRunner>true</UseVSTestRunner>
+    <MicrosoftTestPlatformVersion>16.11.0</MicrosoftTestPlatformVersion>
+  </PropertyGroup>
+  <!--
     These versions should ONLY be updated by automation.
     DO NOT UPDATE THESE MANUALLY. Use the `darc` command line tool to update this file so it stays in sync with
     Version.Details.xml.
     See https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md for instructions on using darc.
   -->
-    <PropertyGroup Label="Automated">
-        <!-- dotnet/arcade references -->
-        <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22222.4</MicrosoftDotNetXUnitExtensionsVersion>
-        <!-- dotnet/aspnetcore references -->
-        <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.5.22224.2</MicrosoftAspNetCoreAppRuntimewinx64Version>
-        <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.5.22224.2</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
-        <!-- dotnet/diagnostics references -->
-        <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22222.1</MicrosoftDiagnosticsMonitoringVersion>
-        <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22222.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
-        <!-- dotnet/runtime references -->
-        <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0-preview.5.22223.6</MicrosoftNETCoreAppRuntimewinx64Version>
-        <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-preview.5.22223.6</VSRedistCommonNetCoreSharedFrameworkx6470Version>
-        <!-- dotnet/symstore references -->
-        <MicrosoftFileFormatsVersion>1.0.321801</MicrosoftFileFormatsVersion>
-    </PropertyGroup>
-    <PropertyGroup Label="Runtime Versions">
-        <MicrosoftNETCoreApp31Version>3.1.22</MicrosoftNETCoreApp31Version>
-        <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
-        <MicrosoftNETCoreApp50Version>5.0.13</MicrosoftNETCoreApp50Version>
-        <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
-        <MicrosoftNETCoreApp60Version>6.0.1</MicrosoftNETCoreApp60Version>
-        <MicrosoftAspNetCoreApp60Version>6.0.1</MicrosoftAspNetCoreApp60Version>
-        <MicrosoftNETCoreApp70Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp70Version>
-        <MicrosoftAspNetCoreApp70Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp70Version>
-    </PropertyGroup>
-    <PropertyGroup Label="Manual">
-        <AzureStorageBlobsVersion>12.10.0</AzureStorageBlobsVersion>
-        <AzureStorageQueuesVersion>12.8.0</AzureStorageQueuesVersion>
-        <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.0</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-        <MicrosoftAspNetCoreAuthenticationNegotiateVersion>6.0.0</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
-        <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
-        <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.0</MicrosoftExtensionsConfigurationKeyPerFileVersion>
-        <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.0</MicrosoftExtensionsLoggingAbstractionsVersion>
-        <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
-        <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
-        <MicrosoftIdentityModelTokensVersion>6.11.1</MicrosoftIdentityModelTokensVersion>
-        <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
-        <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
-        <SystemIdentityModelTokensJwtVersion>6.11.1</SystemIdentityModelTokensJwtVersion>
-        <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
-        <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
-        <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>
-        <!-- Third-party references -->
-        <NJsonSchemaVersion>10.3.11</NJsonSchemaVersion>
-        <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
-        <XunitAssertVersion>2.4.1</XunitAssertVersion>
-    </PropertyGroup>
-    <PropertyGroup Label="Dev Workflow">
-        <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
+  <PropertyGroup Label="Automated">
+    <!-- dotnet/arcade references -->
+    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22222.4</MicrosoftDotNetXUnitExtensionsVersion>
+    <!-- dotnet/aspnetcore references -->
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.5.22224.2</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.5.22224.2</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
+    <!-- dotnet/diagnostics references -->
+    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22222.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22222.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <!-- dotnet/runtime references -->
+    <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0-preview.5.22223.6</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-preview.5.22223.6</VSRedistCommonNetCoreSharedFrameworkx6470Version>
+    <!-- dotnet/symstore references -->
+    <MicrosoftFileFormatsVersion>1.0.321801</MicrosoftFileFormatsVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="Runtime Versions">
+    <MicrosoftNETCoreApp31Version>3.1.22</MicrosoftNETCoreApp31Version>
+    <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
+    <MicrosoftNETCoreApp50Version>5.0.13</MicrosoftNETCoreApp50Version>
+    <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
+    <MicrosoftNETCoreApp60Version>6.0.1</MicrosoftNETCoreApp60Version>
+    <MicrosoftAspNetCoreApp60Version>6.0.1</MicrosoftAspNetCoreApp60Version>
+    <MicrosoftNETCoreApp70Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp70Version>
+    <MicrosoftAspNetCoreApp70Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp70Version>
+  </PropertyGroup>
+  <PropertyGroup Label="Manual">
+    <AzureStorageBlobsVersion>12.10.0</AzureStorageBlobsVersion>
+    <AzureStorageQueuesVersion>12.8.0</AzureStorageQueuesVersion>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.0</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>6.0.0</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
+    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.0</MicrosoftExtensionsConfigurationKeyPerFileVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.0</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
+    <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
+    <MicrosoftIdentityModelTokensVersion>6.11.1</MicrosoftIdentityModelTokensVersion>
+    <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
+    <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
+    <SystemIdentityModelTokensJwtVersion>6.11.1</SystemIdentityModelTokensJwtVersion>
+    <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
+    <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
+    <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>
+    <!-- Third-party references -->
+    <NJsonSchemaVersion>10.3.11</NJsonSchemaVersion>
+    <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
+    <XunitAssertVersion>2.4.1</XunitAssertVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="Dev Workflow">
+    <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
          project references for command line builds. They should match the values in the diagnostics repo. -->
-        <MicrosoftBclAsyncInterfacesVersion>1.1.0</MicrosoftBclAsyncInterfacesVersion>
-        <MicrosoftDiagnosticsTracingTraceEventVersion>2.0.64</MicrosoftDiagnosticsTracingTraceEventVersion>
-        <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
-    </PropertyGroup>
+    <MicrosoftBclAsyncInterfacesVersion>1.1.0</MicrosoftBclAsyncInterfacesVersion>
+    <MicrosoftDiagnosticsTracingTraceEventVersion>2.0.64</MicrosoftDiagnosticsTracingTraceEventVersion>
+    <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
+  </PropertyGroup>
 </Project>
