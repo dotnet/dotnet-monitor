@@ -100,6 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
+                _outputHelper,
                 services =>
                 {
                     services.RegisterTestAction(callbackService);
@@ -162,6 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     await pipeline.StopAsync(cancellationSource.Token);
                 },
+                _outputHelper,
                 services =>
                 {
                     services.RegisterTestAction(callbackService);
@@ -201,6 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // Action list should not have been executed.
                     VerifyExecutionCount(callbackService, expectedCount: 0);
                 },
+                _outputHelper,
                 services =>
                 {
                     services.RegisterManualTrigger(triggerService);
@@ -264,6 +267,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // Action list should have been executed the expected number of times
                     VerifyExecutionCount(callbackService, ExpectedActionExecutionCount);
                 },
+                _outputHelper,
                 services =>
                 {
                     services.AddSingleton<ISystemClock>(clock);
@@ -348,6 +352,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     await pipeline.StopAsync(cancellationSource.Token);
                 },
+                _outputHelper,
                 services =>
                 {
                     services.AddSingleton<ISystemClock>(clock);
@@ -359,7 +364,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Writes the list of action execution timestamps to the output log.
         /// </summary>
-        private void VerifyExecutionCount(CallbackActionService service, int expectedCount)
+        internal void VerifyExecutionCount(CallbackActionService service, int expectedCount)
         {
             _outputHelper.WriteLine("Action execution times:");
             foreach (DateTime timestamp in service.ExecutionTimestamps)
@@ -375,7 +380,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// that the actions are invoked for the number of expected iterations (<paramref name="expectedCount"/>) and
         /// are throttled for the remaining number of iterations.
         /// </summary>
-        private async Task ManualTriggerAsync(
+        internal async static Task ManualTriggerAsync(
             ManualTriggerService triggerService,
             CallbackActionService callbackService,
             PipelineCallbacks callbacks,
@@ -463,7 +468,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.False(actionStartedTask.IsCompleted);
         }
 
-        private async Task ManualTriggerBurstAsync(ManualTriggerService service, int count = 10)
+        internal async Task ManualTriggerBurstAsync(ManualTriggerService service, int count = 10)
         {
             for (int i = 0; i < count; i++)
             {
@@ -478,19 +483,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             yield return new object[] { TargetFrameworkMoniker.Net60 };
         }
 
-        private async Task ExecuteScenario(
+        internal static async Task ExecuteScenario(
             TargetFrameworkMoniker tfm,
             string scenarioName,
             string collectionRuleName,
             Action<Tools.Monitor.RootOptions> setup,
             Func<AppRunner, CollectionRulePipeline, PipelineCallbacks, Task> pipelineCallback,
+            ITestOutputHelper outputHelper,
             Action<IServiceCollection> servicesCallback = null)
         {
-            EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
-            EndpointUtilities endpointUtilities = new(_outputHelper);
+            EndpointInfoSourceCallback endpointInfoCallback = new(outputHelper);
+            EndpointUtilities endpointUtilities = new(outputHelper);
             await using ServerSourceHolder sourceHolder = await endpointUtilities.StartServerAsync(endpointInfoCallback);
 
-            AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly(), tfm: tfm);
+            AppRunner runner = new(outputHelper, Assembly.GetExecutingAssembly(), tfm: tfm);
             runner.ConnectionMode = DiagnosticPortConnectionMode.Connect;
             runner.DiagnosticPortPath = sourceHolder.TransportName;
             runner.ScenarioName = scenarioName;            
@@ -502,7 +508,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 IEndpointInfo endpointInfo = await endpointInfoTask;
 
                 await TestHostHelper.CreateCollectionRulesHost(
-                    _outputHelper,
+                    outputHelper,
                     setup,
                     async host =>
                     {
@@ -541,7 +547,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private class PipelineCallbacks
+        internal class PipelineCallbacks
         {
             private readonly List<CompletionEntry> _entries = new();
 
