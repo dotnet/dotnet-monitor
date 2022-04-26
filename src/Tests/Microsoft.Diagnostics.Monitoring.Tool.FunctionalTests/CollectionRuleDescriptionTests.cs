@@ -10,14 +10,11 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -63,6 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     await ruleCompletedTask;
 
+                    // These checks are technically outside the scope of these tests...pull them out?
                     Assert.True(File.Exists(ExpectedFilePath));
                     Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
 
@@ -170,6 +168,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+        // Consider adding a comparer...that way if we add more attributes in the future, we don't need to manually add them here
         private void ValidateCollectionRuleDescriptions(Dictionary<string, CollectionRuleDescription> actualCollectionRuleDescriptions, Dictionary<string, CollectionRuleDescription> expectedCollectionRuleDescriptions)
         {
             Assert.Equal(actualCollectionRuleDescriptions.Keys.Count, expectedCollectionRuleDescriptions.Keys.Count);

@@ -257,8 +257,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         completesOnLastExpectedIteration: true,
                         cancellationSource.Token);
 
-                    _outputHelper.WriteLine("CurrState: " + pipeline.stateHolder.CurrState);
-
                     // Pipeline should run to completion due to action count limit without sliding window.
                     await runTask.WithCancellation(cancellationSource.Token);
 

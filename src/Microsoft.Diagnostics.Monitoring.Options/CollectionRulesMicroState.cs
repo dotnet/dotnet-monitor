@@ -4,8 +4,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    // Needs a rename - is essentially meant to track the micro-states of the Collection Rule, and isn't user-facing
-    public enum CollectionRulesStateInternal
+    public enum CollectionRulesMicroState
     {
         Running,
         ActionStarted,

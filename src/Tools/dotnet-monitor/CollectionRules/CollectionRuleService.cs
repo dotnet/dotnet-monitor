@@ -271,7 +271,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             pipeline.CheckForThrottling((limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount), pipeline._executionTimestamps.Count, limitsOptions?.ActionCountSlidingWindowDuration);
 
-            var stateAndReason = GetCollectionRulesState(pipeline);
+            var stateAndReason = pipeline.stateHolder.GetCollectionRulesState();
 
             var description = new CollectionRuleDescription()
             {
@@ -317,36 +317,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private static TimeSpan? GetTruncatedPositiveTimeSpan(TimeSpan original)
         {
             return (original > TimeSpan.Zero) ? TimeSpan.FromSeconds((long)original.TotalSeconds) : null; // Intentionally lose millisecond precision
-        }
-        
-        
-        private static Tuple<CollectionRulesState, string> GetCollectionRulesState(CollectionRulePipeline pipeline)
-        {
-            // Don't like this approach -> push it down a level deeper to where we keep track of state
-            switch (pipeline.stateHolder.CurrState)
-            {
-                case CollectionRulesStateInternal.Running:
-                    return new(CollectionRulesState.Running, CollectionRulesStateReasons.Running);
-                case CollectionRulesStateInternal.ActionStarted:
-                    return new(CollectionRulesState.ActionExecuting, CollectionRulesStateReasons.ExecutingActions);
-                case CollectionRulesStateInternal.ActionFailed:
-                    break;
-                case CollectionRulesStateInternal.FinishedViaFailure:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_Failure);
-                case CollectionRulesStateInternal.FinishedViaRuleDuration:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_RuleDuration);
-                case CollectionRulesStateInternal.FinishedViaConfigChange:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_ConfigurationChanged);
-                case CollectionRulesStateInternal.FinishedViaStartup:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_Startup);
-                case CollectionRulesStateInternal.FinishedViaActionCount:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_ActionCount);
-                case CollectionRulesStateInternal.Throttled:
-                    return new(CollectionRulesState.Throttled, CollectionRulesStateReasons.Throttled);
-            }
-
-            // Need to handle default case better
-            return new(CollectionRulesState.Running, CollectionRulesStateReasons.Running);
         }
 
         private void CleanUpCompletedPipelines(IEndpointInfo key)

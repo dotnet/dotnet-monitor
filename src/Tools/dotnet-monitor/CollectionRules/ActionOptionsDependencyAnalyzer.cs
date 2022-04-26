@@ -169,7 +169,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 _dependencies = new Dictionary<int, Dictionary<string, PropertyDependency>>(_ruleContext.Options.Actions.Count);
                 for (int i = 0; i < _ruleContext.Options.Actions.Count; i++)
                 {
-                    CollectionRuleActionOptions options = (CollectionRuleActionOptions)_ruleContext.Options.Actions[i];
+                    CollectionRuleActionOptions options = _ruleContext.Options.Actions[i];
                     EnsureDependencies(options, i);
                 }
             }
@@ -255,7 +255,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
 
             //We only check previous actions for our dependencies.
-            CollectionRuleActionOptions dependencyOptions = (CollectionRuleActionOptions)_ruleContext.Options.Actions.Take(actionIndex)
+            CollectionRuleActionOptions dependencyOptions = _ruleContext.Options.Actions.Take(actionIndex)
                 .FirstOrDefault(a => string.Equals(a.Name, name, StringComparison.Ordinal));
 
             if (dependencyOptions == null)

@@ -31,9 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Flag used to guard against multiple invocations of _startCallback.
         private bool _invokedStartCallback = false;
 
-        internal CollectionRuleCleanupExplanation _cleanupExplanation;
-
-        // Exposed for showing Collection Rule State
         internal Queue<DateTime> _executionTimestamps;
         internal List<DateTime> _allExecutionTimestamps = new();
         internal DateTime _pipelineStartTime;
