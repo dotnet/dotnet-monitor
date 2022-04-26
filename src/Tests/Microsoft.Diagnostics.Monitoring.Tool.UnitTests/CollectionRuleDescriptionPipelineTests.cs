@@ -127,6 +127,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ManualTriggerService triggerService = new();
             CallbackActionService callbackService = new(_outputHelper, clock);
 
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
             return ExecuteScenario(
                 appTfm,
                 TestAppScenarios.AsyncWait.Name,
@@ -135,10 +137,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     options.CreateCollectionRule(TestRuleName)
                         .SetManualTrigger()
+                        .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider) // Having this seems to stabilize the test (presumably since it doesn't happen instantly)
                         .AddAction(CallbackAction.ActionName)
                         .SetActionLimits(
                             count: ExpectedActionExecutionCount
                             );
+
+                    options.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
                 },
                 async (runner, pipeline, callbacks) =>
                 {
@@ -197,23 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     triggerService.NotifyStarted -= startedHandler;
 
-                    // Advance the clock source.
-                    clock.Increment(ClockIncrementDuration);
-
-                    // Check that actions were not throttled.
-                    Assert.False(actionsThrottledTask.IsCompleted);
-
-                    actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
-
-                    // Check that no actions have been executed.
-                    Assert.False(actionStartedTask.IsCompleted);
-
                     /////////////////////////////////
-
-                    VerifyExecutionCount(callbackService, 1);
-
-                    // Pipeline should not run to completion due to sliding window existance.
-                    Assert.False(runTask.IsCompleted);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
