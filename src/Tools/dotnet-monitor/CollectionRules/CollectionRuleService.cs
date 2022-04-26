@@ -353,22 +353,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             var collectionRuleNamesFrequency = new Dictionary<string, int>();
 
-            var pipelinesToRemove = new Dictionary<string, DateTime>();
+            var pipelinesToKeep = new Dictionary<string, DateTime>();
 
             foreach (var pipeline in _containersMap[key].pipelines)
             {
                 collectionRuleNamesFrequency[pipeline._context.Name] = collectionRuleNamesFrequency.GetValueOrDefault(pipeline._context.Name) + 1;
-                var currDateTime = pipelinesToRemove.GetValueOrDefault(pipeline._context.Name);
+                var currDateTime = pipelinesToKeep.GetValueOrDefault(pipeline._context.Name);
 
                 if (pipeline._pipelineStartTime > currDateTime)
                 {
-                    pipelinesToRemove[pipeline._context.Name] = pipeline._pipelineStartTime;
+                    pipelinesToKeep[pipeline._context.Name] = pipeline._pipelineStartTime;
                 }
 
             }
 
             // This is a less elegant way of doing this -> previously used _isCleanedUp, but that required changing the field from Private in the Diagnostics repo
-            _containersMap[key].pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline._pipelineStartTime == pipelinesToRemove.GetValueOrDefault(pipeline._context.Name));
+            _containersMap[key].pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline._pipelineStartTime != pipelinesToKeep.GetValueOrDefault(pipeline._context.Name));
         }
     }
 }

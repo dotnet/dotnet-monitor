@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     await startedTask.WithCancellation(cancellationSource.Token);
 
                     // Since the action list was completed before the pipeline finished starting,
-                    // the action should have invoked it's callback.
+                    // the action should have invoked its callback.
                     await actionStarted1Task.WithCancellation(cancellationSource.Token);
 
                     // Pipeline should have completed shortly after finished starting. This should only
@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     options.CreateCollectionRule(TestRuleName)
                         .SetManualTrigger()
-                        .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider) // Having this seems to stabilize the test (presumably since it doesn't happen instantly)
+                        .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider) // Having this seems to stabilize the test (presumably since it doesn't happen instantly)...don't trust the timing
                         .AddAction(CallbackAction.ActionName)
                         .SetActionLimits(
                             count: ExpectedActionExecutionCount
@@ -280,7 +280,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
                         State = CollectionRulesState.Throttled,
                         StateReason = CollectionRulesStateReasons.Throttled,
-                        SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01")
+                        SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01") // Rounding due to (intentional) lost precision
                     };
 
                     ValidateCollectionRuleDescriptions(actualDescription1, expectedDescription1);
@@ -328,7 +328,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
                         State = CollectionRulesState.Throttled,
                         StateReason = CollectionRulesStateReasons.Throttled,
-                        SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01")
+                        SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01") // Rounding due to (intentional) lost precision
                     };
 
                     ValidateCollectionRuleDescriptions(actualDescription3, expectedDescription3);
