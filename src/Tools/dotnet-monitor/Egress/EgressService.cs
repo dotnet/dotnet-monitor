@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             // GetProvider should never return null so no need to check; it will throw
             // if the egress provider could not be located or instantiated.
             IEgressProviderConfigurationProvider configProvider = GetConfigProvider(providerName);
-            IEgressProviderInternal _ = GetProvider(configProvider);
+            //IEgressProviderInternal _ = GetProvider(configProvider);
         }
 
         public string GetProviderCategory(string providerName)
