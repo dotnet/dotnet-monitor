@@ -14,6 +14,7 @@ using NJsonSchema;
 using NJsonSchema.Generation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 {
@@ -150,7 +151,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         private static void AddCollectionRuleActionSchema<TOptions>(GenerationContext context, JsonSchema actionTypeSchema, string actionType)
         {
             JsonSchema subSchema = new JsonSchema();
-            subSchema.RequiredProperties.Add(nameof(CollectionRuleActionOptions.Settings));
 
             JsonSchemaProperty settingsProperty = AddDiscriminatedSubSchema(
                 context.Schema.Definitions[nameof(CollectionRuleActionOptions)],
@@ -160,6 +160,19 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 subSchema);
 
             settingsProperty.Reference = context.AddTypeIfNotExist<TOptions>();
+
+            var propertyNames = GetCollectionRuleDefaultsPropertyNames();
+
+            // Don't require properties that have a corresponding collection rule default
+            foreach (var propName in propertyNames)
+            {
+                settingsProperty.Reference.RequiredProperties.Remove(propName);
+            }
+
+            if (settingsProperty.Reference.RequiredProperties.Count > 0)
+            {
+                subSchema.RequiredProperties.Add(nameof(CollectionRuleActionOptions.Settings));
+            }
 
             actionTypeSchema.Enumeration.Add(actionType);
         }
@@ -180,7 +193,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         private static void AddCollectionRuleTriggerSchema<TOptions>(GenerationContext context, JsonSchema triggerTypeSchema, string triggerType)
         {
             JsonSchema subSchema = new JsonSchema();
-            subSchema.RequiredProperties.Add(nameof(CollectionRuleTriggerOptions.Settings));
 
             JsonSchemaProperty settingsProperty = AddDiscriminatedSubSchema(
                 context.Schema.Definitions[nameof(CollectionRuleTriggerOptions)],
@@ -191,7 +203,32 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
             settingsProperty.Reference = context.AddTypeIfNotExist<TOptions>();
 
+            IEnumerable<string> propertyNames = GetCollectionRuleDefaultsPropertyNames();
+
+            // Don't require properties that have a corresponding collection rule default
+            foreach (var propName in propertyNames)
+            {
+                settingsProperty.Reference.RequiredProperties.Remove(propName);
+            }
+
+            if (settingsProperty.Reference.RequiredProperties.Count > 0)
+            {
+                subSchema.RequiredProperties.Add(nameof(CollectionRuleTriggerOptions.Settings));
+            }
+
             triggerTypeSchema.Enumeration.Add(triggerType);
+        }
+
+        private static IEnumerable<string> GetCollectionRuleDefaultsPropertyNames()
+        {
+            List<string> propertyNames = new();
+
+            foreach (var defaultsType in typeof(CollectionRuleDefaultsOptions).GetProperties())
+            {
+                propertyNames.AddRange(defaultsType.PropertyType.GetProperties().Select(x => x.Name));
+            }
+
+            return propertyNames;
         }
 
         private static JsonSchemaProperty AddDiscriminatedSubSchema(

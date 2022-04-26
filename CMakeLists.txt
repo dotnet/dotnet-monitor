@@ -10,6 +10,7 @@ include_directories(
     src/inc
     )
 
+include_directories(${PROJECT_BINARY_DIR})
 if(CLR_CMAKE_HOST_UNIX)
     include_directories(
         src/external/runtime/src/coreclr/pal/inc/rt

@@ -28,5 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public StorageOptions Storage { get; set; }
 
         public ProcessFilterOptions DefaultProcess { get; set; }
+
+        public CollectionRuleDefaultsOptions CollectionRuleDefaults { get; set; }
     }
 }

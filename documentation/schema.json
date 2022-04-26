@@ -116,6 +116,17 @@
           "$ref": "#/definitions/ProcessFilterOptions"
         }
       ]
+    },
+    "CollectionRuleDefaults": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/CollectionRuleDefaultsOptions"
+        }
+      ]
     }
   },
   "definitions": {
@@ -552,9 +563,6 @@
       },
       "oneOf": [
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "AspNetRequestCount"
@@ -565,9 +573,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "AspNetRequestDuration"
@@ -659,9 +664,6 @@
       },
       "oneOf": [
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "CollectDump"
@@ -672,9 +674,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "CollectGCDump"
@@ -685,9 +684,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "CollectLogs"
@@ -698,9 +694,6 @@
           }
         },
         {
-          "required": [
-            "Settings"
-          ],
           "properties": {
             "Type": {
               "const": "CollectTrace"
@@ -1125,6 +1118,124 @@
         }
       }
     },
+    "CollectionRuleDefaultsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Triggers": {
+          "description": "The Collection Rule Defaults that can be applied to triggers.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CollectionRuleTriggerDefaultsOptions"
+            }
+          ]
+        },
+        "Actions": {
+          "description": "The Collection Rule Defaults that can be applied to actions.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CollectionRuleActionDefaultsOptions"
+            }
+          ]
+        },
+        "Limits": {
+          "description": "The Collection Rule Defaults that can be applied to limits.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CollectionRuleLimitsDefaultsOptions"
+            }
+          ]
+        }
+      }
+    },
+    "CollectionRuleTriggerDefaultsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "RequestCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The default threshold of the number of requests that start within the sliding window of time.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "ResponseCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The default threshold number of responses with matching status codes.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The default sliding window duration.",
+          "format": "time-span"
+        }
+      }
+    },
+    "CollectionRuleActionDefaultsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the default Egress Provider."
+        }
+      }
+    },
+    "CollectionRuleLimitsDefaultsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ActionCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The default number of times the action list may be executed before being throttled.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "ActionCountSlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed.",
+          "format": "time-span"
+        },
+        "RuleDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process.",
+          "format": "time-span"
+        }
+      }
+    },
     "CollectionRuleActionType": {
       "type": "string",
       "enum": [
@@ -1141,9 +1252,6 @@
     "CollectDumpOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Egress"
-      ],
       "properties": {
         "Type": {
           "description": "The type of dump to collect from the target process.",
@@ -1183,9 +1291,6 @@
     "CollectGCDumpOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Egress"
-      ],
       "properties": {
         "Egress": {
           "type": "string",
@@ -1197,9 +1302,6 @@
     "CollectLogsOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Egress"
-      ],
       "properties": {
         "DefaultLevel": {
           "description": "The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value.",
@@ -1283,9 +1385,6 @@
     "CollectTraceOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "Egress"
-      ],
       "properties": {
         "Profile": {
           "description": "Use a predefined set of event providers and settings to capture in the trace. More than one profile may be specified at the same time. Either Profile or Providers must be specified, but not both.",
@@ -1508,9 +1607,6 @@
     "AspNetRequestCountOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "RequestCount"
-      ],
       "properties": {
         "RequestCount": {
           "type": "integer",
@@ -1525,8 +1621,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of requests are counted.",
-          "format": "time-span",
-          "default": "00:01:00"
+          "format": "time-span"
         },
         "IncludePaths": {
           "type": [
@@ -1553,9 +1648,6 @@
     "AspNetRequestDurationOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "RequestCount"
-      ],
       "properties": {
         "RequestCount": {
           "type": "integer",
@@ -1579,8 +1671,7 @@
             "string"
           ],
           "description": "The sliding time window in which the the number of slow requests are counted.",
-          "format": "time-span",
-          "default": "00:01:00"
+          "format": "time-span"
         },
         "IncludePaths": {
           "type": [
@@ -1608,8 +1699,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "StatusCodes",
-        "ResponseCount"
+        "StatusCodes"
       ],
       "properties": {
         "StatusCodes": {
@@ -1634,8 +1724,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of responses with matching status codes must occur.",
-          "format": "time-span",
-          "default": "00:01:00"
+          "format": "time-span"
         },
         "IncludePaths": {
           "type": [
@@ -1699,8 +1788,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
-          "default": "00:01:00"
+          "format": "time-span"
         }
       }
     },

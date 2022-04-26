@@ -4,7 +4,7 @@ Authenticated requests to `dotnet monitor` help protect sensitive diagnostic art
 
 > **NOTE:** Authentication is not performed on requests to the metrics endpoint (by default, http://localhost:52325).
 
-The recommended configuration for `dotnet monitor` is to use [API Key Authentication](#api-key-authentication) over a channel [secured with TLS](./enabling-ssl.md).
+The recommended configuration for `dotnet monitor` is to use [API Key Authentication](#api-key-authentication) over a channel secured with TLS.
 
 ## Windows Authentication
 
@@ -18,7 +18,7 @@ Windows authentication doesn't require explicit configuration and is enabled aut
 
 An API Key is the recommended authentication mechanism for `dotnet monitor`. API Keys are referred to as `MonitorApiKey` in configuration and source code but we will shorten the term to "API key" in this document. To enable it, you will need to generate a secret token, update the configuration of `dotnet monitor`, and then specify the secret token in the `Authorization` header on all requests to `dotnet monitor`. To configure API Key authentication using the integrated `generatekey` command see: [API Key Setup](./api-key-setup.md).
 
-> **NOTE:** API Key Authentication should only be used when [TLS is enabled](#) to protect the key while in transit. `dotnet monitor` will emit a warning if authentication is enabled over an insecure transport medium.
+> **NOTE:** API Key Authentication should only be used when TLS is enabled to protect the key while in transit. `dotnet monitor` will emit a warning if authentication is enabled over an insecure transport medium.
 
 ## Authenticating requests
 

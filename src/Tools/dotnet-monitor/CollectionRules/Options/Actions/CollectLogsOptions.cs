@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the CollectLogs action.
     /// </summary>
     [DebuggerDisplay("CollectLogs")]
-    internal sealed partial class CollectLogsOptions
+    internal sealed partial class CollectLogsOptions : IEgressProviderProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -47,7 +48,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLogsOptions_Egress))]
-        [Required]
+        [Required(
+            ErrorMessageResourceType = typeof(OptionsDisplayStrings),
+            ErrorMessageResourceName = nameof(OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider))]
 #if !UNITTEST && !SCHEMAGEN
         [ValidateEgressProvider]
 #endif

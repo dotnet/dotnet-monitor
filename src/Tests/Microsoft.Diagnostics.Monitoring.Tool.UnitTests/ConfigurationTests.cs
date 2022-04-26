@@ -59,6 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             "urls",
             "Kestrel",
+            "CollectionRuleDefaults",
             "GlobalCounter",
             "CollectionRules",
             "CorsConfiguration",
@@ -74,6 +75,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const string ExpectedShowSourcesConfigurationsDirectory = "ExpectedShowSourcesConfigurations";
 
         private const string ExpectedConfigurationsDirectory = "ExpectedConfigurations";
+
+        private const string SampleConfigurationsDirectory = "SampleConfigurations";
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -241,7 +244,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             settings.Urls = new[] { "https://localhost:44444" }; // This corresponds to the value in SampleConfigurations/URLs.json
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("Egress.json", "CollectionRules.json"));
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("Egress.json", "CollectionRules.json", "CollectionRuleDefaults.json"));
 
             // This is the appsettings.json file that is normally next to the entrypoint assembly.
             // The location of the appsettings.json is determined by the content root in configuration.
@@ -311,7 +314,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Contains(CleanWhitespace(expectedDiagnosticPortConfig), CleanWhitespace(generatedConfig));
         }
 
-        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent=false, bool showSources = false)
+        private string WriteAndRetrieveConfiguration(IConfiguration configuration, bool redact, bool skipNotPresent = false, bool showSources = false)
         {
             Stream stream = new MemoryStream();
 
@@ -338,7 +341,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private string ConstructSettingsJson(params string[] permittedFileNames)
         {
-            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SampleConfigurations"));
+            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SampleConfigurationsDirectory));
 
             IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
 
@@ -404,6 +407,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 { "DefaultProcess", "DefaultProcess.json" },
                 { "DiagnosticPort", "DiagnosticPort.json" },
                 { "CollectionRules", "CollectionRules.json" },
+                { "CollectionRuleDefaults", "CollectionRuleDefaults.json" },
                 { "Authentication", redact ? "AuthenticationRedacted.json" : "AuthenticationFull.json" }
             };
         }
