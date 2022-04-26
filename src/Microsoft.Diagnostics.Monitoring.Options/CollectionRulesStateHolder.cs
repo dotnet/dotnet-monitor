@@ -5,63 +5,62 @@
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     // Will need an actual name for this...mostly just experimenting for now.
-    internal class CollectionRulesStateUpdater
+    internal class CollectionRulesStateHolder
     {
-        public CollectionRulesStateInternal CurrState { get; private set; }
+        public CollectionRulesMicroState CurrState { get; private set; }
 
         internal void BeginActionExecution()
         {
-            CurrState = CollectionRulesStateInternal.ActionStarted;
+            CurrState = CollectionRulesMicroState.ActionStarted;
         }
 
         internal void ActionExecutionSucceeded()
         {
-            CurrState = CollectionRulesStateInternal.Running;
+            CurrState = CollectionRulesMicroState.Running;
         }
 
-        // Not sure what the use-case is here (if there is one)
         internal void ActionExecutionFailed()
         {
-            CurrState = CollectionRulesStateInternal.ActionFailed;
+            CurrState = CollectionRulesMicroState.ActionFailed;
         }
 
         internal void BeginThrottled()
         {
-            CurrState = CollectionRulesStateInternal.Throttled;
+            CurrState = CollectionRulesMicroState.Throttled;
         }
 
         internal void EndThrottled()
         {
-            if (CurrState == CollectionRulesStateInternal.Throttled)
+            if (CurrState == CollectionRulesMicroState.Throttled)
             {
-                CurrState = CollectionRulesStateInternal.Running;
+                CurrState = CollectionRulesMicroState.Running;
             }
         }
 
         internal void StartupTriggerCompleted()
         {
-            CurrState = CollectionRulesStateInternal.FinishedViaStartup;
+            CurrState = CollectionRulesMicroState.FinishedViaStartup;
         }
 
         internal void RuleDurationReached()
         {
-            CurrState = CollectionRulesStateInternal.FinishedViaRuleDuration;
+            CurrState = CollectionRulesMicroState.FinishedViaRuleDuration;
         }
 
         internal void ActionCountReached()
         {
-            CurrState = CollectionRulesStateInternal.FinishedViaActionCount;
+            CurrState = CollectionRulesMicroState.FinishedViaActionCount;
         }
 
         internal void ConfigurationChanged()
         {
-            CurrState = CollectionRulesStateInternal.FinishedViaConfigChange;
+            CurrState = CollectionRulesMicroState.FinishedViaConfigChange;
         }
 
         // Not sure what the use-case is here (if there is one)
         internal void RuleFailure()
         {
-            CurrState = CollectionRulesStateInternal.FinishedViaFailure;
+            CurrState = CollectionRulesMicroState.FinishedViaFailure;
         }
     }
 }

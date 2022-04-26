@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         internal List<DateTime> _allExecutionTimestamps = new();
         internal DateTime _pipelineStartTime;
 
-        public CollectionRulesStateUpdater stateHolder = new();
+        public CollectionRulesStateHolder stateHolder = new();
 
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
