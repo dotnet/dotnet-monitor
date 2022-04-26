@@ -15,6 +15,7 @@ class IpcCommServer
 {
 public:
     IpcCommServer();
+    ~IpcCommServer();
     HRESULT Bind(const std::string& rootAddress);
     HRESULT Accept(std::shared_ptr<IpcCommClient>& client);
     void Shutdown();
@@ -22,6 +23,7 @@ private:
     const int ReceiveTimeoutMilliseconds = 10000;
     const int AcceptTimeoutSeconds = 3;
     const int Backlog = 20;
+    std::string _rootAddress;
     SocketWrapper _domainSocket = 0;
     std::atomic_bool _shutdown;
 };

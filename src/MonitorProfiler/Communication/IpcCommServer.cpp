@@ -9,6 +9,12 @@ IpcCommServer::IpcCommServer() : _shutdown(false)
 {
 }
 
+IpcCommServer::~IpcCommServer()
+{
+    _domainSocket.~SocketWrapper();
+    std::remove(_rootAddress.c_str());
+}
+
 HRESULT IpcCommServer::Bind(const std::string& rootAddress)
 {
     if (_shutdown.load())
@@ -20,6 +26,8 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
     {
         return E_UNEXPECTED;
     }
+
+    _rootAddress = rootAddress;
 
     sockaddr_un address;
     ZeroMemory(&address, sizeof(address));

@@ -9,7 +9,6 @@ if(CLR_CMAKE_HOST_WIN32)
         MonitorProfiler.def
         )
     add_definitions(-DWIN32_LEAN_AND_MEAN)
-    add_definitions(-D_SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING)
 endif(CLR_CMAKE_HOST_WIN32)
 
 set(SOURCES

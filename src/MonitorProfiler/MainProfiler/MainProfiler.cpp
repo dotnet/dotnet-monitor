@@ -9,7 +9,6 @@
 #include "../Logging/DebugLogger.h"
 #include "corhlpr.h"
 #include "macros.h"
-#include <experimental/filesystem>
 #include <memory>
 
 using namespace std;
@@ -104,19 +103,22 @@ HRESULT MainProfiler::InitializeCommandServer()
     HRESULT hr = S_OK;
 
     tstring instanceId;
-    tstring tmpDir = _T("/tmp");
-
     IfFailRet(m_pEnvironment->GetEnvironmentVariable(_T("DotnetMonitorProfiler_InstanceId"), instanceId));
 
-#if TARGET_WINDOWS
+#if TARGET_UNIX
+    tstring tmpDir = _T("/tmp");
+    tstring separator = _T("/");
+#else
+    tstring tmpDir;
     IfFailRet(m_pEnvironment->GetEnvironmentVariable(_T("TEMP"), tmpDir));
+
+    tstring separator = _T("\\");
 #endif
 
     _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger));
-    std::string socketPath = std::experimental::filesystem::path(tmpDir).append(instanceId).replace_extension(".sock").string();
-    std::remove(socketPath.c_str());
+    tstring socketPath = tmpDir + separator + instanceId + _T(".sock");
 
-    IfFailRet(_commandServer->Start(socketPath, [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); }));
+    IfFailRet(_commandServer->Start(to_string(socketPath), [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); }));
 
     return S_OK;
 }
