@@ -1,19 +1,17 @@
 {
   "CollectionRules": {
-    "LargeGCHeap": {
+    "Rule1": {
       "Trigger": {
-        "Type": "EventCounter",
-        "Settings": {
-          "ProviderName": "System.Runtime",
-          "CounterName": "gc-heap-size",
-          "GreaterThan": 10
-        }
+        "Type": "AspNetRequestCount"
       },
       "Actions": [
         {
-          "Type": "CollectGCDump",
+          "Type": "CollectGCDump"
+        },
+        {
+          "Type": "CollectDump",
           "Settings": {
-            "Egress": "artifacts"
+            "Egress": "monitorBlob"
           }
         }
       ],
@@ -24,8 +22,52 @@
         }
       ],
       "Limits": {
-        "ActionCount": 2,
-        "ActionCountSlidingWindowDuration": "1:00:00"
+        "ActionCountSlidingWindowDuration": "1:00:00",
+        "ActionCount": 3,
+        "RuleDuration": "00:00:05"
+      }
+    },
+    "Rule2": {
+      "Trigger": {
+        "Type": "AspNetResponseStatus",
+        "Settings": {
+          "StatusCodes": [ "400-409" ]
+        }
+      },
+      "Actions": [
+        {
+          "Type": "CollectDump",
+          "Settings": {
+            "Type": "Mini"
+          }
+        }
+      ],
+      "Filters": [
+        {
+          "Key": "ProcessName",
+          "Value": "FirstWebApp"
+        }
+      ]
+    },
+    "Rule3": {
+      "Trigger": {
+        "Type": "AspNetRequestDuration",
+        "Settings": {
+          "RequestCount": "123",
+          "SlidingWindowDuration": "00:00:02"
+        }
+      },
+      "Actions": [
+        {
+          "Type": "CollectTrace",
+          "Settings": {
+            "Profile": "Cpu",
+            "Duration": "00:01:00"
+          }
+        }
+      ],
+      "Limits": {
+        "ActionCountSlidingWindowDuration": "5:00:00"
       }
     }
   }

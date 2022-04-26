@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -87,6 +88,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 yield return new object[] { tfm, LogFormat.NewlineDelimitedJson };
                 yield return new object[] { tfm, LogFormat.JsonSequence };
+            }
+        }
+
+        public static IEnumerable<object[]> GetTfmArchitectureProfilerPath()
+        {
+            // There isn't a good way to check which architecture to use when running unit tests.
+            // Each build job builds one specific architecture, but from a test perspective,
+            // it cannot tell which one was built. Gather all of the profilers for every architecture
+            // so long as they exist.
+            List<object[]> arguments = new();
+            AddTestCases(arguments, Architecture.X64);
+            AddTestCases(arguments, Architecture.X86);
+            AddTestCases(arguments, Architecture.Arm64);
+            return arguments;
+
+            static void AddTestCases(List<object[]> arguments, Architecture architecture)
+            {
+                string profilerPath = NativeLibraryHelper.GetMonitorProfilerPath(architecture);
+                if (File.Exists(profilerPath))
+                {
+                    foreach (TargetFrameworkMoniker tfm in ActionTestsHelper.tfms6PlusToTest)
+                    {
+                        arguments.Add(new object[] { tfm, architecture, profilerPath });
+                    }
+                }
             }
         }
 

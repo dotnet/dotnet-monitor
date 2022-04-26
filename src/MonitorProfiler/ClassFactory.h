@@ -8,7 +8,7 @@
 #include "com.h"
 #include "refcount.h"
 
-class ClassFactory :
+class ClassFactory final :
     public RefCount,
     public IClassFactory
 {

@@ -305,6 +305,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the default Egress Provider..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleActionDefaultsOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionDefaultsOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name used to refer to the action..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleActionOptions_Name {
@@ -337,6 +346,61 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectionRuleActionOptions_WaitForCompletion {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionOptions_WaitForCompletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to actions..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to limits..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to triggers..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default number of times the action list may be executed before being throttled..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCountSlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCountSlidin" +
+                        "gWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default amount of time before the rule will stop monitoring a process after it has been applied to a process..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_RuleDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_RuleDuration", resourceCulture);
             }
         }
         
@@ -401,6 +465,34 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectionRuleOptions_Trigger {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleOptions_Trigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default threshold of the number of requests that start within the sliding window of time..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_RequestCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_RequestCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default threshold number of responses with matching status codes..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_ResponseCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_ResponseCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default sliding window duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_SlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_SlidingWindowDur" +
+                        "ation", resourceCulture);
             }
         }
         
@@ -1122,6 +1214,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_FilterValueMissing {
             get {
                 return ResourceManager.GetString("ErrorMessage_FilterValueMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An egress provider must be specified if there is no default egress provider..
+        /// </summary>
+        public static string ErrorMessage_NoDefaultEgressProvider {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoDefaultEgressProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A request count must be specified if there is no default request count..
+        /// </summary>
+        public static string ErrorMessage_NoDefaultRequestCount {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoDefaultRequestCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A response count must be specified if there is no default response count..
+        /// </summary>
+        public static string ErrorMessage_NoDefaultResponseCount {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoDefaultResponseCount", resourceCulture);
             }
         }
         
