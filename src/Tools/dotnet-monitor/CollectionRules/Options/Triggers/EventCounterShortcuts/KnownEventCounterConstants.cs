@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts
 {
-    internal static class IEventCounterShortcutsConstants
+    internal static class KnownEventCounterConstants
     {
         internal const string CPUUsage = "cpu-usage";
         internal const string GCHeapSize = "gc-heap-size";

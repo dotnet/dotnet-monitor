@@ -91,9 +91,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
-
-            RegisterEventCounterShortcuts(services);
-
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, CPUUsageOptions>(KnownCollectionRuleTriggers.CPUUsage);
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions>(KnownCollectionRuleTriggers.GCHeapSize);
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, ThreadpoolQueueLengthOptions>(KnownCollectionRuleTriggers.ThreadpoolQueueLength);
             services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
 
             services.AddSingleton<EventPipeTriggerFactory>();
@@ -121,15 +121,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, DefaultCollectionRulePostConfigureOptions>();
-
-            return services;
-        }
-
-        public static IServiceCollection RegisterEventCounterShortcuts(this IServiceCollection services)
-        {
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, CPUUsageOptions>(KnownCollectionRuleTriggers.CPUUsage);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions>(KnownCollectionRuleTriggers.GCHeapSize);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, ThreadpoolQueueLengthOptions>(KnownCollectionRuleTriggers.ThreadpoolQueueLength);
 
             return services;
         }

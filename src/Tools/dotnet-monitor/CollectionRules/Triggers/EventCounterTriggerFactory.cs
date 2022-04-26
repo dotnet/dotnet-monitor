@@ -58,42 +58,42 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, CPUUsageOptions options)
         {
-            EventCounterOptions eventCounterOptions = TranslateCPUUsageToEventCounterOptions(options);
+            EventCounterOptions eventCounterOptions = ToEventCounterOptions(options);
             return Create(endpointInfo, callback, eventCounterOptions);
         }
 
-        internal static EventCounterOptions TranslateCPUUsageToEventCounterOptions(CPUUsageOptions options)
+        internal static EventCounterOptions ToEventCounterOptions(CPUUsageOptions options)
         {
-            return TranslateIEventCounterShortcutsToEventCounterOptions(options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.CPUUsage, greaterThanDefault: CPUUsageOptionsDefaults.GreaterThan);
+            return ToEventCounterOptions(options, KnownEventCounterConstants.SystemRuntime, KnownEventCounterConstants.CPUUsage, greaterThanDefault: CPUUsageOptionsDefaults.GreaterThan);
         }
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, GCHeapSizeOptions options)
         {
-            EventCounterOptions eventCounterOptions = TranslateGCHeapSizeToEventCounterOptions(options);
+            EventCounterOptions eventCounterOptions = ToEventCounterOptions(options);
             return Create(endpointInfo, callback, eventCounterOptions);
         }
 
-        internal static EventCounterOptions TranslateGCHeapSizeToEventCounterOptions(GCHeapSizeOptions options)
+        internal static EventCounterOptions ToEventCounterOptions(GCHeapSizeOptions options)
         {
-            return TranslateIEventCounterShortcutsToEventCounterOptions(options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.GCHeapSize, greaterThanDefault: GCHeapSizeOptionsDefaults.GreaterThan);
+            return ToEventCounterOptions(options, KnownEventCounterConstants.SystemRuntime, KnownEventCounterConstants.GCHeapSize, greaterThanDefault: GCHeapSizeOptionsDefaults.GreaterThan);
         }
 
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, ThreadpoolQueueLengthOptions options)
         {
-            EventCounterOptions eventCounterOptions = TranslateThreadpoolQueueLengthToEventCounterOptions(options);
+            EventCounterOptions eventCounterOptions = ToEventCounterOptions(options);
             return Create(endpointInfo, callback, eventCounterOptions);
         }
 
-        internal static EventCounterOptions TranslateThreadpoolQueueLengthToEventCounterOptions(ThreadpoolQueueLengthOptions options)
+        internal static EventCounterOptions ToEventCounterOptions(ThreadpoolQueueLengthOptions options)
         {
-            return TranslateIEventCounterShortcutsToEventCounterOptions(options, IEventCounterShortcutsConstants.SystemRuntime, IEventCounterShortcutsConstants.ThreadpoolQueueLength, greaterThanDefault: ThreadpoolQueueLengthOptionsDefaults.GreaterThan);
+            return ToEventCounterOptions(options, KnownEventCounterConstants.SystemRuntime, KnownEventCounterConstants.ThreadpoolQueueLength, greaterThanDefault: ThreadpoolQueueLengthOptionsDefaults.GreaterThan);
         }
 
         /// <summary>
         /// Intermediary translation layer is used because it allows for testing whether built-in triggers correctly map
         /// from IEventCounterShortcuts into EventCounterOptions.
         /// </summary> 
-        internal static EventCounterOptions TranslateIEventCounterShortcutsToEventCounterOptions(IEventCounterShortcuts options,
+        internal static EventCounterOptions ToEventCounterOptions(IEventCounterShortcuts options,
             string providerName,
             string counterName,
             double? greaterThanDefault = null,

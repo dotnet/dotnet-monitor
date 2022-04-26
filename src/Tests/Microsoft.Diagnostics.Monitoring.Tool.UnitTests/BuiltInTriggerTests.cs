@@ -28,8 +28,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
-                CounterName = IEventCounterShortcutsConstants.GCHeapSize,
+                ProviderName = KnownEventCounterConstants.SystemRuntime,
+                CounterName = KnownEventCounterConstants.GCHeapSize,
                 GreaterThan = null,
                 LessThan = CustomLessThan,
                 SlidingWindowDuration = CustomSlidingWindowDuration
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
-            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateGCHeapSizeToEventCounterOptions(options);
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.ToEventCounterOptions(options);
 
             ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
@@ -51,8 +51,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
-                CounterName = IEventCounterShortcutsConstants.ThreadpoolQueueLength,
+                ProviderName = KnownEventCounterConstants.SystemRuntime,
+                CounterName = KnownEventCounterConstants.ThreadpoolQueueLength,
                 GreaterThan = null,
                 LessThan = CustomLessThan,
                 SlidingWindowDuration = CustomSlidingWindowDuration
@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
-            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateThreadpoolQueueLengthToEventCounterOptions(options);
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.ToEventCounterOptions(options);
 
             ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
@@ -74,8 +74,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
-                CounterName = IEventCounterShortcutsConstants.CPUUsage,
+                ProviderName = KnownEventCounterConstants.SystemRuntime,
+                CounterName = KnownEventCounterConstants.CPUUsage,
                 GreaterThan = null,
                 LessThan = CustomLessThan,
                 SlidingWindowDuration = CustomSlidingWindowDuration
@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 SlidingWindowDuration = CustomSlidingWindowDuration
             };
 
-            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateCPUUsageToEventCounterOptions(options);
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.ToEventCounterOptions(options);
 
             ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
@@ -97,8 +97,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
-                CounterName = IEventCounterShortcutsConstants.GCHeapSize,
+                ProviderName = KnownEventCounterConstants.SystemRuntime,
+                CounterName = KnownEventCounterConstants.GCHeapSize,
                 GreaterThan = GCHeapSizeOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = null // NOTE: This is populated when EventCounterOptions -> EventCounterTriggerSettings, not when GCHeapSizeOptions -> EventCounterOptions
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             GCHeapSizeOptions options = new();
 
-            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateGCHeapSizeToEventCounterOptions(options);
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.ToEventCounterOptions(options);
 
             ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
@@ -116,8 +116,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
-                CounterName = IEventCounterShortcutsConstants.ThreadpoolQueueLength,
+                ProviderName = KnownEventCounterConstants.SystemRuntime,
+                CounterName = KnownEventCounterConstants.ThreadpoolQueueLength,
                 GreaterThan = ThreadpoolQueueLengthOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = null // NOTE: This is populated when EventCounterOptions -> EventCounterTriggerSettings, not when ThreadpoolQueueLengthOptions -> EventCounterOptions
@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             ThreadpoolQueueLengthOptions options = new();
 
-            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateThreadpoolQueueLengthToEventCounterOptions(options);
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.ToEventCounterOptions(options);
 
             ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
@@ -135,8 +135,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             EventCounterOptions expectedSettings = new()
             {
-                ProviderName = IEventCounterShortcutsConstants.SystemRuntime,
-                CounterName = IEventCounterShortcutsConstants.CPUUsage,
+                ProviderName = KnownEventCounterConstants.SystemRuntime,
+                CounterName = KnownEventCounterConstants.CPUUsage,
                 GreaterThan = CPUUsageOptionsDefaults.GreaterThan,
                 LessThan = null,
                 SlidingWindowDuration = null // NOTE: This is populated when EventCounterOptions -> EventCounterTriggerSettings, not when CPUUsageOptions -> EventCounterOptions
@@ -144,7 +144,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             CPUUsageOptions options = new();
 
-            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.TranslateCPUUsageToEventCounterOptions(options);
+            EventCounterOptions eventCounterOptions = EventCounterTriggerFactory.ToEventCounterOptions(options);
 
             ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
