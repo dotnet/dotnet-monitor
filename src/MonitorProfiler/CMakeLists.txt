@@ -34,6 +34,12 @@ if(CLR_CMAKE_HOST_WIN32)
     target_link_libraries(MonitorProfiler ws2_32)
 endif(CLR_CMAKE_HOST_WIN32)
 
+if (CLR_CMAKE_HOST_UNIX)
+    target_link_libraries(MonitorProfiler
+    stdc++
+    pthread)
+endif(CLR_CMAKE_HOST_UNIX)
+
 # Install library
 install(TARGETS MonitorProfiler DESTINATION .)
 # Install symbols
