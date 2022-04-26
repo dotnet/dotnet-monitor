@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -20,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     /// </summary>
     internal class EgressProviderInternal<TOptions> :
         IEgressProviderInternal<TOptions>
-        where TOptions : class
+        where TOptions : new()
     {
         private readonly ILogger<EgressProviderInternal<TOptions>> _logger;
         private readonly IEgressProvider<TOptions> _provider;
@@ -38,12 +39,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         /// <inheritdoc/>
         public Task<string> EgressAsync(
+            string providerCategory,
             string providerName,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
             return _provider.EgressAsync(
+                providerCategory,
+                providerName,
                 GetOptions(providerName),
                 action,
                 artifactSettings,
@@ -52,12 +56,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         /// <inheritdoc/>
         public Task<string> EgressAsync(
+            string providerCategory,
             string providerName,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
             return _provider.EgressAsync(
+                providerCategory,
+                providerName,
                 GetOptions(providerName),
                 action,
                 artifactSettings,
@@ -68,7 +75,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             try
             {
-                return _monitor.Get(providerName);
+                TOptions opts = _monitor.Get(providerName);
+                return opts;
             }
             catch (OptionsValidationException ex)
             {

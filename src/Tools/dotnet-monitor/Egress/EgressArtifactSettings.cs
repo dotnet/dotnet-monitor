@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
-    internal sealed class EgressArtifactSettings
+    public sealed class EgressArtifactSettings
     {
         /// <summary>
         /// The content encoding of the blob to be created.

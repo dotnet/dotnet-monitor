@@ -18,9 +18,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         IConfiguration Configuration { get; }
 
         /// <summary>
-        /// The type of the egress provider.
+        /// The name of the category defined in configuration of this provider.
         /// </summary>
-        string ProviderType { get; }
+        string ProviderCategory  { get; }
 
         /// <summary>
         /// The type of the options class associated with the egress provider.
