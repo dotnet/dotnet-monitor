@@ -37,10 +37,10 @@ Execute a trigger when the target application's CPU Usage is continuously greate
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "EventCounter"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName: "cpu-usage"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan: "50"
+  CollectionRules__RuleName__Trigger__Type: "EventCounter"
+  CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
+  CollectionRules__RuleName__Trigger__Settings__CounterName: "cpu-usage"
+  CollectionRules__RuleName__Trigger__Settings__GreaterThan: "50"
   ```
 </details>
 
@@ -79,7 +79,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 50%
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "CPUUsage"
+  CollectionRules__RuleName__Trigger__Type: "CPUUsage"
   ```
 </details>
 
@@ -127,10 +127,10 @@ Execute a trigger when the target application's GC Heap Size is continuously gre
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "EventCounter"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName: "gc-heap-size"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan: "10"
+  CollectionRules__RuleName__Trigger__Type: "EventCounter"
+  CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
+  CollectionRules__RuleName__Trigger__Settings__CounterName: "gc-heap-size"
+  CollectionRules__RuleName__Trigger__Settings__GreaterThan: "10"
   ```
 </details>
 
@@ -169,7 +169,7 @@ Usage that is satisfied when the GC Heap Size of the application is greater than
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "GCHeapSize"
+  CollectionRules__RuleName__Trigger__Type: "GCHeapSize"
   ```
 </details>
 
@@ -217,10 +217,10 @@ Execute a trigger when the target application's threadpool queue length is conti
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "EventCounter"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName: "threadpool-queue-length"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan: "200"
+  CollectionRules__RuleName__Trigger__Type: "EventCounter"
+  CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
+  CollectionRules__RuleName__Trigger__Settings__CounterName: "threadpool-queue-length"
+  CollectionRules__RuleName__Trigger__Settings__GreaterThan: "200"
   ```
 </details>
 
@@ -259,7 +259,7 @@ Usage that is satisfied when the threadpool queue length of the application is h
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Type: "ThreadpoolQueueLength"
+  CollectionRules__RuleName__Trigger__Type: "ThreadpoolQueueLength"
   ```
 </details>
 
