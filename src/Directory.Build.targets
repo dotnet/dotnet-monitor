@@ -44,7 +44,6 @@
     <!-- These are the valid BlobGroupBuildQuality values. -->
     <ItemGroup>
       <_BlobGroupBuildQualityName Include="daily" ReleaseName="daily" />
-      <_BlobGroupBuildQualityName Include="prerelease" ReleaseName="$(_BlobGroupPreReleaseLabel).$(_BlobGroupPreReleaseIteration)" />
       <_BlobGroupBuildQualityName Include="release" ReleaseName="release" />
     </ItemGroup>
     <!-- Select the blob group build quality based on the specified property. -->
@@ -67,7 +66,6 @@
       <!--
         Combine all parts to create blob group name.
         Daily: '7.0.0-preview.1.12345' -> '7.0/daily'
-        Prerelease: '7.0.0-preview.1.12345' -> '7.0/preview.1'
         Release: '7.0.0' -> '7.0/release'
         -->
       <_BlobGroupName>$(_BlobGroupVersionMajor).$(_BlobGroupVersionMinor)/$(_BlobGroupReleaseName)</_BlobGroupName>
