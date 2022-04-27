@@ -218,7 +218,7 @@ It is possible to change this behavior and have .NET processes connect to `dotne
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_DiagnosticPort: "/diag/port.sock"
+  DiagnosticPort: "/diag/port.sock"
   ```
 </details>
 
@@ -250,8 +250,8 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_DiagnosticPort__ConnectionMode: "Listen"
-  DotnetMonitor_DiagnosticPort__EndpointName: "/diag/port.sock"
+  DiagnosticPort__ConnectionMode: "Listen"
+  DiagnosticPort__EndpointName: "/diag/port.sock"
   ```
 </details>
 
@@ -292,7 +292,7 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_DiagnosticPort__MaxConnections: "10"
+  DiagnosticPort__MaxConnections: "10"
   ```
 </details>
 
@@ -329,7 +329,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Storage__DumpTempFolder: "/diag/dumps/"
+  Storage__DumpTempFolder: "/diag/dumps/"
   ```
 </details>
 
@@ -384,8 +384,8 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_DefaultProcess__Filters__0__Key: "ProcessName"
-  DotnetMonitor_DefaultProcess__Filters__0__Value: "iisexpress"
+  DefaultProcess__Filters__0__Key: "ProcessName"
+  DefaultProcess__Filters__0__Value: "iisexpress"
   ```
 </details>
 
@@ -420,7 +420,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_DefaultProcess__Filters__0__ProcessName: "iisexpress"
+  DefaultProcess__Filters__0__ProcessName: "iisexpress"
   ```
 </details>
 
@@ -454,8 +454,8 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_DefaultProcess__Filters__0__Key: "ProcessId"
-  DotnetMonitor_DefaultProcess__Filters__0__Value: "1"
+  DefaultProcess__Filters__0__Key: "ProcessId"
+  DefaultProcess__Filters__0__Value: "1"
   ```
 </details>
 
@@ -490,7 +490,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_DefaultProcess__Filters__0__ProcessId: "1"
+  DefaultProcess__Filters__0__ProcessId: "1"
   ```
 </details>
 
@@ -530,7 +530,7 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_GlobalCounter__IntervalSeconds: "10"
+  GlobalCounter__IntervalSeconds: "10"
   ```
 </details>
 
@@ -571,7 +571,7 @@ In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it 
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Metrics__Endpoints: "http://*:52325"
+  Metrics__Endpoints: "http://*:52325"
   ```
 </details>
 
@@ -606,7 +606,7 @@ You can customize the number of data points stored per metric via the following 
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Metrics__MetricCount: "3"
+  Metrics__MetricCount: "3"
   ```
 </details>
 
@@ -649,9 +649,9 @@ Additional metrics providers and counter names to return from this route can be 
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Metrics__Providers__0__ProviderName: "Microsoft-AspNetCore-Server-Kestrel"
-  DotnetMonitor_Metrics__Providers__0__CounterNames__0: "connections-per-second"
-  DotnetMonitor_Metrics__Providers__0__CounterNames__1: "total-connections"
+  Metrics__Providers__0__ProviderName: "Microsoft-AspNetCore-Server-Kestrel"
+  Metrics__Providers__0__CounterNames__0: "connections-per-second"
+  Metrics__Providers__0__CounterNames__1: "total-connections"
   ```
 </details>
 
@@ -692,7 +692,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Metrics__IncludeDefaultProviders: "false"
+  Metrics__IncludeDefaultProviders: "false"
   ```
 </details>
 
@@ -750,11 +750,11 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountKeyName: "MonitorBlobAccountKey"
-  DotnetMonitor_Egress__Properties__MonitorBlobAccountKey: "accountKey"
+  Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
+  Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
+  Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
+  Egress__AzureBlobStorage__monitorBlob__accountKeyName: "MonitorBlobAccountKey"
+  Egress__Properties__MonitorBlobAccountKey: "accountKey"
   ```
 </details>
 
@@ -805,13 +805,13 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountKeyName: "MonitorBlobAccountKey"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__queueAccountUri: "https://exampleaccount.queue.core.windows.net"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__queueName: "dotnet-monitor-queue"
-  DotnetMonitor_Egress__Properties__MonitorBlobAccountKey: "accountKey"
+  Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
+  Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
+  Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
+  Egress__AzureBlobStorage__monitorBlob__accountKeyName: "MonitorBlobAccountKey"
+  Egress__AzureBlobStorage__monitorBlob__queueAccountUri: "https://exampleaccount.queue.core.windows.net"
+  Egress__AzureBlobStorage__monitorBlob__queueName: "dotnet-monitor-queue"
+  Egress__Properties__MonitorBlobAccountKey: "accountKey"
   ```
 </details>
 
@@ -870,8 +870,8 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Egress__FileSystem__monitorFile__directoryPath: "/artifacts"
-  DotnetMonitor_Egress__FileSystem__monitorFile__intermediateDirectoryPath: "/intermediateArtifacts"
+  Egress__FileSystem__monitorFile__directoryPath: "/artifacts"
+  Egress__FileSystem__monitorFile__intermediateDirectoryPath: "/intermediateArtifacts"
   ```
 </details>
 
@@ -937,20 +937,20 @@ The following is a collection rule that collects a 1 minute CPU trace and egress
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__Key: "ProcessName"
-  DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__Value: "dotnet"
-  DotnetMonitor_CollectionRules__HighCpuRule__Filters__0__MatchType: "Exact"
-  DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Type: "EventCounter"
-  DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Settings__ProviderName: "System.Runtime"
-  DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Settings__CounterName: "cpu-usage"
-  DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Settings__GreaterThan: "70"
-  DotnetMonitor_CollectionRules__HighCpuRule__Trigger__Settings__SlidingWindowDuration: "00:00:10"
-  DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Type: "CollectTrace"
-  DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Settings__Profile: "Cpu"
-  DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Settings__Duration: "00:01:00"
-  DotnetMonitor_CollectionRules__HighCpuRule__Actions__0__Settings__Egress: "TmpDir"
-  DotnetMonitor_CollectionRules__HighCpuRule__Limits__ActionCount: "2"
-  DotnetMonitor_CollectionRules__HighCpuRule__Limits__ActionCountSlidingWindowDuration: "1:00:00"
+  CollectionRules__HighCpuRule__Filters__0__Key: "ProcessName"
+  CollectionRules__HighCpuRule__Filters__0__Value: "dotnet"
+  CollectionRules__HighCpuRule__Filters__0__MatchType: "Exact"
+  CollectionRules__HighCpuRule__Trigger__Type: "EventCounter"
+  CollectionRules__HighCpuRule__Trigger__Settings__ProviderName: "System.Runtime"
+  CollectionRules__HighCpuRule__Trigger__Settings__CounterName: "cpu-usage"
+  CollectionRules__HighCpuRule__Trigger__Settings__GreaterThan: "70"
+  CollectionRules__HighCpuRule__Trigger__Settings__SlidingWindowDuration: "00:00:10"
+  CollectionRules__HighCpuRule__Actions__0__Type: "CollectTrace"
+  CollectionRules__HighCpuRule__Actions__0__Settings__Profile: "Cpu"
+  CollectionRules__HighCpuRule__Actions__0__Settings__Duration: "00:01:00"
+  CollectionRules__HighCpuRule__Actions__0__Settings__Egress: "TmpDir"
+  CollectionRules__HighCpuRule__Limits__ActionCount: "2"
+  CollectionRules__HighCpuRule__Limits__ActionCountSlidingWindowDuration: "1:00:00"
   ```
 </details>
 
@@ -1018,11 +1018,11 @@ The following example shows the `Filters` portion of a collection rule that has 
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Filters__0__Key: "ProcessName"
-  DotnetMonitor_CollectionRules__RuleName__Filters__0__Value: "dotnet"
-  DotnetMonitor_CollectionRules__RuleName__Filters__0__MatchType: "Exact"
-  DotnetMonitor_CollectionRules__RuleName__Filters__1__CommandLine: "myapp.dll"
-  DotnetMonitor_CollectionRules__RuleName__Filters__1__MatchType: "Contains"
+  CollectionRules__RuleName__Filters__0__Key: "ProcessName"
+  CollectionRules__RuleName__Filters__0__Value: "dotnet"
+  CollectionRules__RuleName__Filters__0__MatchType: "Exact"
+  CollectionRules__RuleName__Filters__1__CommandLine: "myapp.dll"
+  CollectionRules__RuleName__Filters__1__MatchType: "Contains"
   ```
 </details>
 
@@ -1080,9 +1080,9 @@ Usage that is satisfied when request count is higher than 500 requests during a 
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount: "500"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__IncludePaths__0: "/api/**/*"
+  CollectionRules__RuleName__Trigger__Settings__RequestCount: "500"
+  CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
+  CollectionRules__RuleName__Trigger__Settings__IncludePaths__0: "/api/**/*"
   ```
 </details>
 
@@ -1136,10 +1136,10 @@ Usage that is satisfied when 10 requests take longer than 3 seconds during a 1 m
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount: "10"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestDuration: "00:00:03"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__IncludePaths__0: "/api/**/*"
+  CollectionRules__RuleName__Trigger__Settings__RequestCount: "10"
+  CollectionRules__RuleName__Trigger__Settings__RequestDuration: "00:00:03"
+  CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
+  CollectionRules__RuleName__Trigger__Settings__IncludePaths__0: "/api/**/*"
   ```
 </details>
 
@@ -1195,10 +1195,10 @@ Usage that is satisfied when 10 requests respond with a 5XX status code during a
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__StatusCodes__0: "500-599"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__RequestCount: "10"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__IncludePaths__0: "/api/**/*"
+  CollectionRules__RuleName__Trigger__Settings__StatusCodes__0: "500-599"
+  CollectionRules__RuleName__Trigger__Settings__RequestCount: "10"
+  CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:01:00"
+  CollectionRules__RuleName__Trigger__Settings__IncludePaths__0: "/api/**/*"
   ```
 </details>
 
@@ -1254,10 +1254,10 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__CounterName: "cpu-usage"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan: "70"
-  DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:00:10"
+  CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
+  CollectionRules__RuleName__Trigger__Settings__CounterName: "cpu-usage"
+  CollectionRules__RuleName__Trigger__Settings__GreaterThan: "70"
+  CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:00:10"
   ```
 </details>
 
@@ -1331,8 +1331,8 @@ Usage that collects a full dump and egresses it to a provider named "AzureBlobDu
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Type: "Full"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlobDumps"
+  CollectionRules__RuleName__Actions__0__Settings__Type: "Full"
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlobDumps"
   ```
 </details>
 
@@ -1381,7 +1381,7 @@ Usage that collects a gcdump and egresses it to a provider named "AzureBlobGCDum
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlobGCDumps"
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlobGCDumps"
   ```
 </details>
 
@@ -1434,8 +1434,8 @@ Usage that collects a CPU trace for 30 seconds and egresses it to a provider nam
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
+  CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
   ```
 </details>
 
@@ -1491,9 +1491,9 @@ Usage that collects logs at the Information level for 30 seconds and egresses it
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__DefaultLevel: "Information"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__UseAppFilters: "false"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
+  CollectionRules__RuleName__Actions__0__Settings__DefaultLevel: "Information"
+  CollectionRules__RuleName__Actions__0__Settings__UseAppFilters: "false"
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
   ```
 </details>
 
@@ -1547,8 +1547,8 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path: "C:\\Program Files\\dotnet\\dotnet.exe"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Arguments: "C:\\Program Files\\MyApp\\myapp.dll"
+  CollectionRules__RuleName__Actions__0__Settings__Path: "C:\\Program Files\\dotnet\\dotnet.exe"
+  CollectionRules__RuleName__Actions__0__Settings__Arguments: "C:\\Program Files\\MyApp\\myapp.dll"
   ```
 </details>
 
@@ -1597,8 +1597,8 @@ Usage that loads one of the sample profilers from [`dotnet/runtime`: src/tests/p
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Path: "Profilers\\Profiler.dll"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Clsid: "55b9554d-6115-45a2-be1e-c80f7fa35369"
+  CollectionRules__RuleName__Actions__0__Settings__Path: "Profilers\\Profiler.dll"
+  CollectionRules__RuleName__Actions__0__Settings__Clsid: "55b9554d-6115-45a2-be1e-c80f7fa35369"
   ```
 </details>
 
@@ -1647,8 +1647,8 @@ Usage that sets a parameter to the profiler you loaded. In this case, your profi
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Name: "MyProfiler_AccountId"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Value: "8fb138d2c44e4aea8545cc2df541ed4c"
+  CollectionRules__RuleName__Actions__0__Settings__Name: "MyProfiler_AccountId"
+  CollectionRules__RuleName__Actions__0__Settings__Value: "8fb138d2c44e4aea8545cc2df541ed4c"
   ```
 </details>
 
@@ -1717,17 +1717,17 @@ Usage that gets a token your app has access to and uses it to send a trace.
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Name: "A"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Type: "CollectTrace"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlob"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Name: "GetEnvAction"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Type: "GetEnvironmentVariable"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Name: "Azure_SASToken"
-  DotnetMonitor_CollectionRules__RuleName__Actions__2__Name: "B"
-  DotnetMonitor_CollectionRules__RuleName__Actions__2__Type: "Execute"
-  DotnetMonitor_CollectionRules__RuleName__Actions__2__Settings__Path: "azcopy"
-  DotnetMonitor_CollectionRules__RuleName__Actions__2__Settings__Arguments: "$(Actions.A.EgressPath) https://Contoso.blob.core.windows.net/MyTraces/AwesomeAppTrace.nettrace?$(Actions.GetEnvAction.Value)"
+  CollectionRules__RuleName__Actions__0__Name: "A"
+  CollectionRules__RuleName__Actions__0__Type: "CollectTrace"
+  CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlob"
+  CollectionRules__RuleName__Actions__1__Name: "GetEnvAction"
+  CollectionRules__RuleName__Actions__1__Type: "GetEnvironmentVariable"
+  CollectionRules__RuleName__Actions__1__Settings__Name: "Azure_SASToken"
+  CollectionRules__RuleName__Actions__2__Name: "B"
+  CollectionRules__RuleName__Actions__2__Type: "Execute"
+  CollectionRules__RuleName__Actions__2__Settings__Path: "azcopy"
+  CollectionRules__RuleName__Actions__2__Settings__Arguments: "$(Actions.A.EgressPath) https://Contoso.blob.core.windows.net/MyTraces/AwesomeAppTrace.nettrace?$(Actions.GetEnvAction.Value)"
   ```
 </details>
 
@@ -1791,8 +1791,8 @@ The following example shows the `Limits` portion of a collection rule that has t
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Limits__ActionCount: "3"
-  DotnetMonitor_CollectionRules__RuleName__Limits__ActionCountSlidingWindowDuration: "01:00:00"
+  CollectionRules__RuleName__Limits__ActionCount: "3"
+  CollectionRules__RuleName__Limits__ActionCountSlidingWindowDuration: "01:00:00"
   ```
 </details>
 
@@ -1884,19 +1884,19 @@ The following example includes a default egress provider that corresponds to the
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
-  DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountKeyName: "MonitorBlobAccountKey"
-  DotnetMonitor_Egress__Properties__MonitorBlobAccountKey: "accountKey"
-  DotnetMonitor_Egress__FileSystem__artifacts__directoryPath: "/artifacts"
-  DotnetMonitor_Egress__FileSystem__artifacts__intermediateDirectoryPath: "/intermediateArtifacts"
-  DotnetMonitor_CollectionRuleDefaults__Actions__Egress: "artifacts"
-  DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Type: "AspNetRequestCount"
-  DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__RequestCount: "10"
-  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Type: "CollectDump"
-  DotnetMonitor_CollectionRules__HighRequestCount__Actions__1__Type: "CollectGCDump"
-  DotnetMonitor_CollectionRules__HighRequestCount__Actions__1__Settings__Egress: "monitorBlob"
+  Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
+  Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
+  Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
+  Egress__AzureBlobStorage__monitorBlob__accountKeyName: "MonitorBlobAccountKey"
+  Egress__Properties__MonitorBlobAccountKey: "accountKey"
+  Egress__FileSystem__artifacts__directoryPath: "/artifacts"
+  Egress__FileSystem__artifacts__intermediateDirectoryPath: "/intermediateArtifacts"
+  CollectionRuleDefaults__Actions__Egress: "artifacts"
+  CollectionRules__HighRequestCount__Trigger__Type: "AspNetRequestCount"
+  CollectionRules__HighRequestCount__Trigger__Settings__RequestCount: "10"
+  CollectionRules__HighRequestCount__Actions__0__Type: "CollectDump"
+  CollectionRules__HighRequestCount__Actions__1__Type: "CollectGCDump"
+  CollectionRules__HighRequestCount__Actions__1__Settings__Egress: "monitorBlob"
   ```
 </details>
 
