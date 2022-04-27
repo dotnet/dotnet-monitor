@@ -14,9 +14,17 @@
 class EnvironmentHelper final
 {
 private:
+    static constexpr LPCWSTR s_wszDebugLoggerLevelEnvVar = _T("DotnetMonitorProfiler_DebugLogger_Level");
     static constexpr LPCWSTR s_wszProfilerVersionEnvVar = _T("DotnetMonitorProfiler_ProductVersion");
 
 public:
+    /// <summary>
+    /// Gets the log level for the debug logger from the environment.
+    /// </summary>
+    static HRESULT GetDebugLoggerLevel(
+        const std::shared_ptr<IEnvironment>& pEnvironment,
+        LogLevel& level);
+
     /// <summary>
     /// Sets the product version environment variable in the specified environment.
     /// </summary>
