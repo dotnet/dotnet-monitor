@@ -36,13 +36,13 @@ The following examples provide sample scenarios for using a collection rule. The
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type: "Startup"
-  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type: "CollectTrace"
-  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name: "Microsoft-Windows-DotNETRuntime"
-  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel: "Informational"
-  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords: "0x8"
-  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration: "00:00:15"
-  DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress: "artifacts"
+  CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type: "Startup"
+  CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type: "CollectTrace"
+  CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name: "Microsoft-Windows-DotNETRuntime"
+  CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel: "Informational"
+  CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords: "0x8"
+  CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration: "00:00:15"
+  CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress: "artifacts"
   ```
 </details>
 
@@ -104,12 +104,12 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type: "EventCounter"
-  DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__ProviderName: "System.Runtime"
-  DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__CounterName: "gc-heap-size"
-  DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Settings__GreaterThan: "10"
-  DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Type: "CollectGCDump"
-  DotnetMonitor_CollectionRules__LargeGCHeapSize__Actions__0__Settings__Egress: "artifacts"
+  CollectionRules__LargeGCHeapSize__Trigger__Type: "EventCounter"
+  CollectionRules__LargeGCHeapSize__Trigger__Settings__ProviderName: "System.Runtime"
+  CollectionRules__LargeGCHeapSize__Trigger__Settings__CounterName: "gc-heap-size"
+  CollectionRules__LargeGCHeapSize__Trigger__Settings__GreaterThan: "10"
+  CollectionRules__LargeGCHeapSize__Actions__0__Type: "CollectGCDump"
+  CollectionRules__LargeGCHeapSize__Actions__0__Settings__Egress: "artifacts"
   ```
 </details>
 
@@ -177,16 +177,16 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type: "EventCounter"
-  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__ProviderName: "System.Runtime"
-  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__CounterName: "cpu-usage"
-  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__GreaterThan: "60"
-  DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Settings__SlidingWindowDuration: "00:00:10"
-  DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Type: "CollectTrace"
-  DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Profile: "Cpu"
-  DotnetMonitor_CollectionRules__HighCpuUsage__Actions__0__Settings__Egress: "artifacts"
-  DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Key: "ProcessName"
-  DotnetMonitor_CollectionRules__HighCpuUsage__Filters__0__Value: "MyProcessName"
+  CollectionRules__HighCpuUsage__Trigger__Type: "EventCounter"
+  CollectionRules__HighCpuUsage__Trigger__Settings__ProviderName: "System.Runtime"
+  CollectionRules__HighCpuUsage__Trigger__Settings__CounterName: "cpu-usage"
+  CollectionRules__HighCpuUsage__Trigger__Settings__GreaterThan: "60"
+  CollectionRules__HighCpuUsage__Trigger__Settings__SlidingWindowDuration: "00:00:10"
+  CollectionRules__HighCpuUsage__Actions__0__Type: "CollectTrace"
+  CollectionRules__HighCpuUsage__Actions__0__Settings__Profile: "Cpu"
+  CollectionRules__HighCpuUsage__Actions__0__Settings__Egress: "artifacts"
+  CollectionRules__HighCpuUsage__Filters__0__Key: "ProcessName"
+  CollectionRules__HighCpuUsage__Filters__0__Value: "MyProcessName"
   ```
 </details>
 
@@ -260,14 +260,14 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type: "AspNetResponseStatus"
-  DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount: "5"
-  DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__StatusCodes__0: "400-499"
-  DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Type: "CollectDump"
-  DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Egress: "artifacts"
-  DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Type: "Full"
-  DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCount: "3"
-  DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCountSlidingWindowDuration: "00:30:00"
+  CollectionRules__BadResponseStatus__Trigger__Type: "AspNetResponseStatus"
+  CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount: "5"
+  CollectionRules__BadResponseStatus__Trigger__Settings__StatusCodes__0: "400-499"
+  CollectionRules__BadResponseStatus__Actions__0__Type: "CollectDump"
+  CollectionRules__BadResponseStatus__Actions__0__Settings__Egress: "artifacts"
+  CollectionRules__BadResponseStatus__Actions__0__Settings__Type: "Full"
+  CollectionRules__BadResponseStatus__Limits__ActionCount: "3"
+  CollectionRules__BadResponseStatus__Limits__ActionCountSlidingWindowDuration: "00:30:00"
   ```
 </details>
 
@@ -343,18 +343,18 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
   <summary>Kubernetes ConfigMap</summary>
     
   ```yaml
-  DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key: "ProcessId"
-  DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Value: "12345"
-  DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__MatchType: "Exact"
-  DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Type: "AspNetRequestCount"
-  DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__RequestCount: "10"
-  DotnetMonitor_CollectionRules__HighRequestCount__Trigger__Settings__SlidingWindowDuration: "00:01:00"
-  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Type: "CollectLogs"
-  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Egress: "artifacts"
-  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__DefaultLevel: "Error"
-  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__UseAppFilters: "false"
-  DotnetMonitor_CollectionRules__HighRequestCount__Actions__0__Settings__Duration: "00:01:00"
-  DotnetMonitor_CollectionRules__HighRequestCount__Limits__RuleDuration: "01:00:00"
+  CollectionRules__HighRequestCount__Filters__0__Key: "ProcessId"
+  CollectionRules__HighRequestCount__Filters__0__Value: "12345"
+  CollectionRules__HighRequestCount__Filters__0__MatchType: "Exact"
+  CollectionRules__HighRequestCount__Trigger__Type: "AspNetRequestCount"
+  CollectionRules__HighRequestCount__Trigger__Settings__RequestCount: "10"
+  CollectionRules__HighRequestCount__Trigger__Settings__SlidingWindowDuration: "00:01:00"
+  CollectionRules__HighRequestCount__Actions__0__Type: "CollectLogs"
+  CollectionRules__HighRequestCount__Actions__0__Settings__Egress: "artifacts"
+  CollectionRules__HighRequestCount__Actions__0__Settings__DefaultLevel: "Error"
+  CollectionRules__HighRequestCount__Actions__0__Settings__UseAppFilters: "false"
+  CollectionRules__HighRequestCount__Actions__0__Settings__Duration: "00:01:00"
+  CollectionRules__HighRequestCount__Limits__RuleDuration: "01:00:00"
   ```
 </details>
 
@@ -429,15 +429,15 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type: "AspNetRequestDuration"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount: "5"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__RequestDuration: "00:00:08"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__SlidingWindowDuration: "00:02:00"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Settings__IncludePaths__0: "/api/**/*"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Type: "CollectTrace"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Profile: "Http"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Egress: "artifacts"
-  DotnetMonitor_CollectionRules__LongRequestDuration__Actions__0__Settings__Duration: "00:01:00"
+  CollectionRules__LongRequestDuration__Trigger__Type: "AspNetRequestDuration"
+  CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount: "5"
+  CollectionRules__LongRequestDuration__Trigger__Settings__RequestDuration: "00:00:08"
+  CollectionRules__LongRequestDuration__Trigger__Settings__SlidingWindowDuration: "00:02:00"
+  CollectionRules__LongRequestDuration__Trigger__Settings__IncludePaths__0: "/api/**/*"
+  CollectionRules__LongRequestDuration__Actions__0__Type: "CollectTrace"
+  CollectionRules__LongRequestDuration__Actions__0__Settings__Profile: "Http"
+  CollectionRules__LongRequestDuration__Actions__0__Settings__Egress: "artifacts"
+  CollectionRules__LongRequestDuration__Actions__0__Settings__Duration: "00:01:00"
   ```
 </details>
 
@@ -514,17 +514,17 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type: "AspNetResponseStatus"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__ResponseCount: "3"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Settings__StatusCodes__0: "400"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Name: "MyDump"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Type: "CollectDump"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Egress: "artifacts"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Type: "Mini"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__0__WaitForCompletion: "true"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Type: "Execute"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Path: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe"
-  DotnetMonitor_CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Arguments: "\"$(Actions.MyDump.EgressPath)\""
+  CollectionRules__CollectDumpAndExecute__Trigger__Type: "AspNetResponseStatus"
+  CollectionRules__CollectDumpAndExecute__Trigger__Settings__ResponseCount: "3"
+  CollectionRules__CollectDumpAndExecute__Trigger__Settings__StatusCodes__0: "400"
+  CollectionRules__CollectDumpAndExecute__Actions__0__Name: "MyDump"
+  CollectionRules__CollectDumpAndExecute__Actions__0__Type: "CollectDump"
+  CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Egress: "artifacts"
+  CollectionRules__CollectDumpAndExecute__Actions__0__Settings__Type: "Mini"
+  CollectionRules__CollectDumpAndExecute__Actions__0__WaitForCompletion: "true"
+  CollectionRules__CollectDumpAndExecute__Actions__1__Type: "Execute"
+  CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Path: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\Common7\\IDE\\devenv.exe"
+  CollectionRules__CollectDumpAndExecute__Actions__1__Settings__Arguments: "\"$(Actions.MyDump.EgressPath)\""
   ```
 </details>
 

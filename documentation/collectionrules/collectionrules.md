@@ -105,14 +105,14 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Name: "A"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Type: "CollectTrace"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
-  DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlob"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Name: "B"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Type: "Execute"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Path: "path-to-dotnet"
-  DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Arguments: "MyApp.dll $(Actions.A.EgressPath)"
+  CollectionRules__RuleName__Actions__0__Name: "A"
+  CollectionRules__RuleName__Actions__0__Type: "CollectTrace"
+  CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlob"
+  CollectionRules__RuleName__Actions__1__Name: "B"
+  CollectionRules__RuleName__Actions__1__Type: "Execute"
+  CollectionRules__RuleName__Actions__1__Settings__Path: "path-to-dotnet"
+  CollectionRules__RuleName__Actions__1__Settings__Arguments: "MyApp.dll $(Actions.A.EgressPath)"
   ```
 </details>
 
