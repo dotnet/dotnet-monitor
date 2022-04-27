@@ -79,6 +79,11 @@ void CommandServer::ListeningThread()
             _logger->Log(LogLevel::Error, _T("Unexpected error when sending data: 0x%08x"), hr);
             continue;
         }
+        hr = client->Shutdown();
+        if (FAILED(hr))
+        {
+            _logger->Log(LogLevel::Warning, _T("Unexpected error during shutdown: 0x%08x"), hr);
+        }
 
         _clientQueue.Push(message);
     }

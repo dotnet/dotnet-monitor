@@ -65,9 +65,10 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
     *reinterpret_cast<int*>(&buffer[sizeof(MessageType)]) = message.Parameters;
 
     int sent = 0;
+    int offset = 0;
     do
     {
-        sent = send(_socket, buffer, sizeof(buffer), 0);
+        sent = send(_socket, &buffer[offset], sizeof(buffer) - offset, 0);
 
         if (sent == 0)
         {
@@ -84,21 +85,28 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
 #endif
             return SocketWrapper::GetSocketError();
         }
-    } while (sent < 0);
+        offset += sent;
+    } while (offset < sizeof(buffer));
 
     return S_OK;
 }
 
-void IpcCommClient::Shutdown()
+HRESULT IpcCommClient::Shutdown()
 {
     _shutdown.store(true);
-    shutdown(_socket,
+    int result = shutdown(_socket,
 #if TARGET_WINDOWS
         SD_BOTH
 #else
         SHUT_RDWR
 #endif
     );
+
+    if (result != 0)
+    {
+        return SocketWrapper::GetSocketError();
+    }
+    return S_OK;
 }
 
 IpcCommClient::IpcCommClient(SOCKET socket) : _socket(socket), _shutdown(false)

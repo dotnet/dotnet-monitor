@@ -14,7 +14,7 @@ class IpcCommClient
 public:
     HRESULT Receive(IpcMessage& message);
     HRESULT Send(const IpcMessage& message);
-    void Shutdown();
+    HRESULT Shutdown();
     IpcCommClient(SOCKET socket);
 
 private:
