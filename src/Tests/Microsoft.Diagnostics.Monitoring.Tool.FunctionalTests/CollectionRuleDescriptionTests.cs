@@ -43,11 +43,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_StartupTriggerTest(DiagnosticPortConnectionMode mode)
+        public async Task CollectionRuleDescription_StartupTriggerTest(DiagnosticPortConnectionMode mode)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
+
+            const int ExpectedActionCountLimit = 3;
 
             Task ruleCompletedTask = null;
 
@@ -70,6 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     expectedDescriptions.Add(DefaultRuleName, new()
                     {
+                        ActionCountLimit = ExpectedActionCountLimit,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRulesState.Finished,
@@ -84,7 +87,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
+                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent)
+                        .SetActionLimits(count: ExpectedActionCountLimit);
 
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
@@ -96,11 +100,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public async Task CollectionRule_ActionLimitTest(DiagnosticPortConnectionMode mode)
+        public async Task CollectionRuleDescription_ActionLimitTest(DiagnosticPortConnectionMode mode)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
+
+            const int ExpectedActionCountLimit = 1;
 
             Task ruleCompletedTask = null;
 
@@ -117,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     expectedDescriptions_Before.Add(DefaultRuleName, new()
                     {
-                        ActionCountLimit = 1,
+                        ActionCountLimit = ExpectedActionCountLimit,
                         LifetimeOccurrences = 0,
                         SlidingWindowOccurrences = 0,
                         State = CollectionRulesState.Running,
@@ -141,7 +147,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     expectedDescriptions_After.Add(DefaultRuleName, new()
                     {
-                        ActionCountLimit = 1,
+                        ActionCountLimit = ExpectedActionCountLimit,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRulesState.Finished,
@@ -162,7 +168,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
                         .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent)
-                        .SetActionLimits(count: 1);
+                        .SetActionLimits(count: ExpectedActionCountLimit);
 
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
@@ -178,6 +184,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 CollectionRuleDescription actualDescription = actualCollectionRuleDescriptions[key];
                 CollectionRuleDescription expectedDescription = expectedCollectionRuleDescriptions[key];
 
+                Assert.Equal(expectedDescription, actualDescription);
+
+                /*
                 Assert.Equal(actualDescription.ActionCountLimit, expectedDescription.ActionCountLimit);
                 Assert.Equal(actualDescription.ActionCountSlidingWindowDurationLimit, expectedDescription.ActionCountSlidingWindowDurationLimit);
                 Assert.Equal(actualDescription.LifetimeOccurrences, expectedDescription.LifetimeOccurrences);
@@ -186,6 +195,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Equal(actualDescription.SlidingWindowOccurrences, expectedDescription.SlidingWindowOccurrences);
                 Assert.Equal(actualDescription.State, expectedDescription.State);
                 Assert.Equal(actualDescription.StateReason, expectedDescription.StateReason);
+                */
             }
         }
 #endif

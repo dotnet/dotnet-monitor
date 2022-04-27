@@ -792,7 +792,7 @@
           "Diag"
         ],
         "summary": "Gets information about the current state of the collection rules.",
-        "operationId": "GetCollectionRules",
+        "operationId": "GetCollectionRulesDescription",
         "parameters": [
           {
             "name": "pid",
