@@ -59,22 +59,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             // GetProvider should never return null so no need to check; it will throw
             // if the egress provider could not be located or instantiated.
-            IEgressProviderConfigurationProvider configProvider = GetConfigProvider(providerName);
-        }
-
-        public string GetProviderCategory(string providerName)
-        {
-            IEgressProviderConfigurationProvider configProvider = GetConfigProvider(providerName);
-            return configProvider.ProviderCategory;
+            string providerType = GetProviderType(providerName);
         }
 
         public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
         {
-            IEgressProviderConfigurationProvider configProvider = GetConfigProvider(providerName);
+            string providerType = GetProviderType(providerName);
+            IEgressProviderConfigurationProvider configProvider = GetConfigProvider(providerType);
             IEgressProviderInternal provider = GetProvider(configProvider);
 
             string value = await provider.EgressAsync(
-                configProvider.ProviderCategory,
+                providerType,
                 providerName,
                 action,
                 CreateSettings(source, fileName, contentType),
@@ -85,11 +80,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
         {
-            IEgressProviderConfigurationProvider configProvider = GetConfigProvider(providerName);
+            string providerType = GetProviderType(providerName);
+            IEgressProviderConfigurationProvider configProvider = GetConfigProvider(providerType);
             IEgressProviderInternal provider = GetProvider(configProvider);
 
             string value = await provider.EgressAsync(
-                configProvider.ProviderCategory,
+                providerType,
                 providerName,
                 action,
                 CreateSettings(source, fileName, contentType),
@@ -98,16 +94,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return new EgressResult(value);
         }
 
-        private IEgressProviderConfigurationProvider GetConfigProvider(string providerName)
+        private string GetProviderType(string providerName)
         {
-            if (!_providerNameToTypeMap.TryGetValue(providerName, out string providerCategoryName))
+            if (!_providerNameToTypeMap.TryGetValue(providerName, out string providerType))
             {
                 throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
             }
+            return providerType;
+        }
 
-            if (!_egressProviderMap.TryGetValue(providerCategoryName, out IEgressProviderConfigurationProvider configProvider) || configProvider.ProviderCategory != providerCategoryName)
+        private IEgressProviderConfigurationProvider GetConfigProvider(string providerType)
+        {
+            if (!_egressProviderMap.TryGetValue(providerType, out IEgressProviderConfigurationProvider configProvider))
             {
-                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderTypeNotRegistered, providerCategoryName));
+                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderTypeNotRegistered, providerType));
             }
 
             return configProvider;
@@ -166,18 +166,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             // information.
             foreach (IEgressProviderConfigurationProvider provider in _providers)
             {
-                _egressProviderMap.Add(provider.ProviderCategory, provider);
-
-                foreach (IConfigurationSection optionsSection in provider.Configuration.GetChildren())
+                foreach (string providerType in provider.ProviderTypes)
                 {
-                    string providerName = optionsSection.Key;
-                    if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderCategory))
+                    _egressProviderMap.Add(providerType, provider);
+                    IConfigurationSection typeSection = provider.GetConfigurationSection(providerType);
+
+                    foreach (IConfigurationSection optionsSection in typeSection.GetChildren())
                     {
-                        _logger.DuplicateEgressProviderIgnored(providerName, provider.ProviderCategory, existingProviderCategory);
-                    }
-                    else
-                    {
-                        _providerNameToTypeMap.Add(providerName, provider.ProviderCategory);
+                        string providerName = optionsSection.Key;
+                        if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderCategory))
+                        {
+                            _logger.DuplicateEgressProviderIgnored(providerName, providerType, existingProviderCategory);
+                        }
+                        else
+                        {
+                            _providerNameToTypeMap.Add(providerName, providerType);
+                        }
                     }
                 }
             }

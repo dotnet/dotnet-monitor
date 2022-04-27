@@ -4,6 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 {
@@ -14,19 +16,45 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal sealed class EgressProviderConfigurationProvider<TOptions> :
         IEgressProviderConfigurationProvider<TOptions>
     {
-        public EgressProviderConfigurationProvider(IConfiguration configuration, string providerCategory)
+        private readonly IOptionsTypeToProviderTypesMapper _optionsMapper;
+        private readonly IConfigurationSection _egressSection;
+
+        public EgressProviderConfigurationProvider(IConfiguration configuration, IOptionsTypeToProviderTypesMapper optionsMapper)
         {
-            ProviderCategory  = providerCategory;
-            Configuration = configuration.GetEgressSection().GetSection(providerCategory);
+            _optionsMapper  = optionsMapper;
+            _egressSection = configuration.GetEgressSection();
         }
 
         /// <inheritdoc/>
-        public IConfiguration Configuration { get; }
-
-        /// <inheritdoc/>
-        public string ProviderCategory  { get; }
-
-        /// <inheritdoc/>
         public Type OptionsType => typeof(TOptions);
+
+        /// <inheritdoc/>
+        public IEnumerable<string> ProviderTypes
+        {
+            get
+            {
+                return _optionsMapper.GetOptions(_egressSection, this.OptionsType).Select(s => s.Key);
+            }
+        }
+
+        /// <inheritdoc/>
+        public IConfigurationSection GetConfigurationSection(string providerType)
+        {
+            return _optionsMapper.GetOptions(_egressSection, this.OptionsType).First(s => s.Key == providerType);
+        }
+
+        /// <inheritdoc/>
+        public IConfigurationSection GetTokenChangeSourceSection()
+        {
+            IConfigurationSection[] sections = _optionsMapper.GetOptions(_egressSection, this.OptionsType).ToArray();
+
+            // If we are monitoring a specific section, return that element, otherwise we need to monitor the whole egress section
+            if (sections.Length == 1)
+            {
+                return sections[0];
+            }
+
+            return _egressSection;
+        }
     }
 }

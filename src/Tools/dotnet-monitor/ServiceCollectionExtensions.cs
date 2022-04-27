@@ -185,19 +185,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IEgressPropertiesConfigurationProvider, EgressPropertiesConfigurationProvider>();
             services.AddSingleton<IEgressPropertiesProvider, EgressPropertiesProvider>();
 
-            // Register egress providers
-            services.RegisterEgressProvider<AzureBlobEgressProviderOptions, AzureBlobEgressProvider>(EgressProviderTypes.AzureBlobStorage);
-            services.RegisterEgressOptionsType<AzureBlobEgressProviderOptions, AzureBlobEgressProvider>();
-            services.RegisterEgressProvider<FileSystemEgressProviderOptions, FileSystemEgressProvider>(EgressProviderTypes.FileSystem);
-            services.RegisterEgressOptionsType<FileSystemEgressProviderOptions, FileSystemEgressProvider>();
+            services.AddSingleton<IOptionsTypeToProviderTypesMapper, OptionsTypeToProviderTypesMapper>();
 
-            // Register the extensions egress providers
-            ExtensionEgressDiscoverer egressDiscoverer = new ExtensionEgressDiscoverer(configuration);
-            foreach (string providerCategoryName in egressDiscoverer)
-            {
-                services.RegisterEgressProvider<ExtensionEgressProviderOptions, ExtensionEgressProvider>(providerCategoryName);
-            }
-            services.RegisterEgressOptionsType<ExtensionEgressProviderOptions, ExtensionEgressProvider>();
+            // Register egress providers
+            services.RegisterEgressType<AzureBlobEgressProviderOptions, AzureBlobEgressProvider>();
+            services.RegisterEgressType<FileSystemEgressProviderOptions, FileSystemEgressProvider>();
+
+            services.RegisterEgressType<ExtensionEgressProviderOptions, ExtensionEgressProvider>();
 
             // Extra registrations for provider specific behavior
             services.AddSingleton<IPostConfigureOptions<AzureBlobEgressProviderOptions>, AzureBlobEgressPostConfigureOptions>();
@@ -214,22 +208,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        private static IServiceCollection RegisterEgressProvider<TOptions, TProvider>(this IServiceCollection services, string providerCategoryName)
+        private static IServiceCollection RegisterEgressType<TOptions, TProvider>(this IServiceCollection services)
             where TProvider : class, IEgressProvider<TOptions>
             where TOptions : class, new()
         {
             // These Singletons are "IEnumerable<T>" services where there are multiple services registered (if TOptions is the same)
             // Add services to provide raw configuration for the options type
-            services.AddSingleton<IEgressProviderConfigurationProvider>(sp => new EgressProviderConfigurationProvider<TOptions>(sp.GetRequiredService<IConfiguration>(), providerCategoryName));
-            services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(sp => new EgressProviderConfigurationChangeTokenSource<TOptions>(sp.GetRequiredService<IConfiguration>(), providerCategoryName));
+            services.AddSingleton<EgressProviderConfigurationProvider<TOptions>>();
+            services.AddSingletonForwarder<IEgressProviderConfigurationProvider<TOptions>, EgressProviderConfigurationProvider<TOptions>>();
+            services.AddSingletonForwarder<IEgressProviderConfigurationProvider, EgressProviderConfigurationProvider<TOptions>>();
 
-            return services;
-        }
+            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
 
-        private static IServiceCollection RegisterEgressOptionsType<TOptions, TProvider>(this IServiceCollection services)
-            where TProvider : class, IEgressProvider<TOptions>
-            where TOptions : class, new()
-        {
             // Add options services for configuring the options type
             services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();

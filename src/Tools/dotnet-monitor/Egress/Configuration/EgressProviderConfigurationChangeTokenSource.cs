@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 {
@@ -14,8 +15,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal sealed class EgressProviderConfigurationChangeTokenSource<TOptions> :
         ConfigurationChangeTokenSource<TOptions>
     {
-        public EgressProviderConfigurationChangeTokenSource(IConfiguration configuration, string providerCategoryName)
-            : base (configuration.GetEgressSection().GetSection(providerCategoryName))
+        public EgressProviderConfigurationChangeTokenSource(IEgressProviderConfigurationProvider<TOptions> provider)
+            : base(provider.GetTokenChangeSourceSection())
         {
         }
     }
