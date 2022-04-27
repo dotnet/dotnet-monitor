@@ -93,7 +93,6 @@ private:
         {
 #if TARGET_WINDOWS
             closesocket(_socket);
-
 #else
             close(_socket);
 #endif

@@ -16,7 +16,7 @@
 class CommandServer final
 {
 public:
-    CommandServer(std::shared_ptr<ILogger> logger);
+    CommandServer(const std::shared_ptr<ILogger>& logger);
     HRESULT Start(const std::string& path, std::function<HRESULT (const IpcMessage& message)> callback);
     void Shutdown();
 

@@ -30,7 +30,7 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
     _rootAddress = rootAddress;
 
     sockaddr_un address;
-    ZeroMemory(&address, sizeof(address));
+    memset(&address, 0, sizeof(address));
 
     if ((rootAddress.length() == 0) || (rootAddress.length() >= sizeof(address.sun_path)))
     {
@@ -41,10 +41,11 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
     std::remove(rootAddress.c_str());
 
     address.sun_family = AF_UNIX;
-#pragma warning(push)
-#pragma warning(disable:4996)
+#if TARGET_WINDOWS
+    strncpy_s(address.sun_path, rootAddress.c_str(), sizeof(address.sun_path));
+#else
     strncpy(address.sun_path, rootAddress.c_str(), sizeof(address.sun_path));
-#pragma warning(pop)
+#endif
     _domainSocket = socket(AF_UNIX, SOCK_STREAM, 0);
     if (!_domainSocket.Valid())
     {
@@ -90,6 +91,8 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
         {
             return E_ABORT;
         }
+
+        //0 indicates timeout
         if (result < 0)
         {
 #if TARGET_UNIX
@@ -100,11 +103,6 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
 #endif
             return SocketWrapper::GetSocketError();
         }
-        if (result == 0)
-        {
-            //timeout
-            continue;
-        }
     } while (result <= 0);
 
     //TODO server socket should be in non-blocking mode
@@ -114,7 +112,15 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
     {
         return SocketWrapper::GetSocketError();
     }
-    if (setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&ReceiveTimeoutMilliseconds), sizeof(ReceiveTimeoutMilliseconds)) != 0)
+#if TARGET_WINDOWS
+    DWORD receiveTimeout = ReceiveTimeoutMilliseconds;
+#else
+    TIMEVAL receiveTimeout;
+    timeout.tv_sec = ReceiveTimeoutMilliseconds / 1000;
+    timeout.tv_usec  0;
+#endif
+
+    if (setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&receiveTimeout), sizeof(receiveTimeout)) != 0)
     {
         return SocketWrapper::GetSocketError();
     }
