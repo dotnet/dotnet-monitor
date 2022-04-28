@@ -11,6 +11,8 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <sys/un.h>
+#include <unistd.h> 
+#include <fcntl.h> 
 typedef int SOCKET;
 typedef struct timeval TIMEVAL;
 #endif
@@ -44,6 +46,38 @@ public:
         SOCKET s = _socket;
         _socket = 0;
         return s;
+    }
+
+    HRESULT SetBlocking(bool blocking)
+    {
+#if TARGET_WINDOWS
+        u_long blockParameter = blocking ? 0 : 1; //0 == blocking
+        if (ioctlsocket(_socket, FIONBIO, &blockParameter) != 0)
+        {
+            return SocketWrapper::GetSocketError();
+        }
+#else
+        int flags = fcntl(_socket, F_GETFD);
+        if (flags < 0)
+        {
+            return SocketWrapper::GetSocketError();
+        }
+        if (blocking)
+        {
+            flags &= ~O_NONBLOCK;
+        }
+        else
+        {
+            flags |= O_NONBLOCK;
+        }
+
+        if (fcntl(_socket, F_SETFD, flags) != 0)
+        {
+            return SocketWrapper::GetSocketError();
+        }
+#endif
+
+        return S_OK;
     }
 
     static HRESULT GetSocketError()

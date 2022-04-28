@@ -5,11 +5,6 @@
 #include "IpcCommClient.h"
 #include "IpcCommServer.h"
 
-#if TARGET_UNIX
-#include <unistd.h> 
-#include <fcntl.h> 
-#endif
-
 IpcCommServer::IpcCommServer() : _shutdown(false)
 {
 }
@@ -57,23 +52,7 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
         return SocketWrapper::GetSocketError();
     }
 
-#if TARGET_WINDOWS
-    u_long blockParameter = 1; //0 == blocking
-    if (ioctlsocket(_domainSocket, FIONBIO, &blockParameter) != 0)
-    {
-        return SocketWrapper::GetSocketError();
-    }
-#else
-    int flags = fcntl(_domainSocket, F_GETFD);
-    if (flags < 0)
-    {
-        return SocketWrapper::GetSocketError();
-    }
-    if (fcntl(_domainSocket, F_SETFD, flags | O_NONBLOCK) != 0)
-    {
-        return SocketWrapper::GetSocketError();
-    }
-#endif
+    _domainSocket.SetBlocking(false);
 
     if (bind(_domainSocket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != 0)
     {
@@ -129,8 +108,6 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
         }
     } while (result <= 0);
 
-    //TODO server socket should be in non-blocking mode
-
     SocketWrapper clientSocket = SocketWrapper(accept(_domainSocket, nullptr, nullptr));
     if (!clientSocket.Valid())
     {
@@ -138,6 +115,10 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
     }
 #if TARGET_WINDOWS
     DWORD receiveTimeout = ReceiveTimeoutMilliseconds;
+
+    //Windows sockets inherit non-blocking
+    clientSocket.SetBlocking(true);
+
 #else
     TIMEVAL receiveTimeout;
     receiveTimeout.tv_sec = ReceiveTimeoutMilliseconds / 1000;
