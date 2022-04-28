@@ -70,7 +70,7 @@ public:
     }
 
     /// <summary>
-    /// Converts a string its corresponding LogLevel
+    /// Converts a string to its corresponding LogLevel
     /// </summary>
     static HRESULT ToLogLevel(const tstring& tstrLevel, LogLevel& level)
     {

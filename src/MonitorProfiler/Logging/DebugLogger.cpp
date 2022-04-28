@@ -13,8 +13,8 @@ DebugLogger::DebugLogger(const shared_ptr<IEnvironment>& pEnvironment)
     // Try to get log level from environment
     if (FAILED(EnvironmentHelper::GetDebugLoggerLevel(pEnvironment, m_level)))
     {
-        // Fallback to Information level
-        m_level = LogLevel::Information;
+        // Fallback to default level
+        m_level = s_DefaultLevel;
     }
 }
 
