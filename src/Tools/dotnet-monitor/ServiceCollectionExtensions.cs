@@ -176,7 +176,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services.Configure<T>(configuration.GetSection(key));
         }
 
-        public static IServiceCollection ConfigureEgress(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection ConfigureEgress(this IServiceCollection services)
         {
             // Register IEgressService implementation that provides egressing
             // of artifacts for the REST server.

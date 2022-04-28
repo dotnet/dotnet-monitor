@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.ConfigureCollectionRuleDefaults(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
-                    services.ConfigureEgress(context.Configuration);
+                    services.ConfigureEgress();
 
                     services.ConfigureDiagnosticPort(context.Configuration);
 
