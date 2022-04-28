@@ -185,17 +185,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 CollectionRuleDescription expectedDescription = expectedCollectionRuleDescriptions[key];
 
                 Assert.Equal(expectedDescription, actualDescription);
-
-                /*
-                Assert.Equal(actualDescription.ActionCountLimit, expectedDescription.ActionCountLimit);
-                Assert.Equal(actualDescription.ActionCountSlidingWindowDurationLimit, expectedDescription.ActionCountSlidingWindowDurationLimit);
-                Assert.Equal(actualDescription.LifetimeOccurrences, expectedDescription.LifetimeOccurrences);
-                Assert.Equal(actualDescription.RuleFinishedCountdown, expectedDescription.RuleFinishedCountdown);
-                Assert.Equal(actualDescription.SlidingWindowDurationCountdown, expectedDescription.SlidingWindowDurationCountdown);
-                Assert.Equal(actualDescription.SlidingWindowOccurrences, expectedDescription.SlidingWindowOccurrences);
-                Assert.Equal(actualDescription.State, expectedDescription.State);
-                Assert.Equal(actualDescription.StateReason, expectedDescription.StateReason);
-                */
             }
         }
 #endif

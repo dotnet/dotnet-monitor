@@ -154,18 +154,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         _executionTimestamps.Enqueue(currentTimestamp);
                         _allExecutionTimestamps.Add(currentTimestamp);
 
-                        // This conceptually seems like it would work, and removes the need for doing checks at the CollectionRuleService level -> but doesn't play nicely with simulated time in tests. Might be able to work around this...
-                        /*
-                        if (actionCountWindowDuration.HasValue)
-                        {
-                            var dequeueToken = new CancellationTokenSource(actionCountWindowDuration.Value).Token;
-                            dequeueToken.Register(() =>
-                            {
-                                _executionTimestamps.Dequeue();
-                                CheckForThrottling(actionCountLimit, _executionTimestamps.Count);
-                            });
-                        }*/
-
                         bool actionsCompleted = false;
                         try
                         {
@@ -242,7 +230,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        // Apparently, this is still needed (ripping it out broke a test - need to investigate more why that was happening and if we need this logic long-term
         public static void DequeueOldTimestamps(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
         {
             // If rule has an action count window, Remove all execution timestamps that fall outside the window.

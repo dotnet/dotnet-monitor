@@ -28,7 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     // Finished (Startup)
     // Finished (Rule Duration)
     // Finished (Action Count)
-    // 
 
     public class CollectionRuleDescriptionPipelineTests
     {
@@ -96,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         StateReason = CollectionRulesStateReasons.Finished_Startup
                     };
 
-                    ValidateCollectionRuleDescriptions(actualDescription, expectedDescription);
+                    Assert.Equal(actualDescription, expectedDescription);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -176,7 +175,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         StateReason = CollectionRulesStateReasons.ExecutingActions
                     };
 
-                    ValidateCollectionRuleDescriptions(actualDescription, expectedDescription);
+                    Assert.Equal(actualDescription, expectedDescription);
 
                     await startedSource.WithCancellation(cancellationSource.Token);
 
@@ -191,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         StateReason = CollectionRulesStateReasons.Running
                     };
 
-                    ValidateCollectionRuleDescriptions(actualDescription2, expectedDescription2);
+                    Assert.Equal(actualDescription2, expectedDescription2);
 
                     triggerService.NotifyStarted -= startedHandler;
 
@@ -273,7 +272,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01") // Rounding due to (intentional) lost precision
                     };
 
-                    ValidateCollectionRuleDescriptions(actualDescription1, expectedDescription1);
+                    Assert.Equal(actualDescription1, expectedDescription1);
 
                     clock.Increment(2 * SlidingWindowDuration);
 
@@ -289,7 +288,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         StateReason = CollectionRulesStateReasons.Running,
                     };
 
-                    ValidateCollectionRuleDescriptions(actualDescription2, expectedDescription2);
+                    Assert.Equal(actualDescription2, expectedDescription2);
 
                     await CollectionRulePipelineTests.ManualTriggerAsync(
                         triggerService,
@@ -318,7 +317,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01") // Rounding due to (intentional) lost precision
                     };
 
-                    ValidateCollectionRuleDescriptions(actualDescription3, expectedDescription3);
+                    Assert.Equal(actualDescription3, expectedDescription3);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
@@ -374,7 +373,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         StateReason = CollectionRulesStateReasons.Finished_RuleDuration,
                     };
 
-                    ValidateCollectionRuleDescriptions(actualDescription, expectedDescription);
+                    Assert.Equal(actualDescription, expectedDescription);
                 },
                 _outputHelper,
                 services =>
@@ -446,7 +445,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         StateReason = CollectionRulesStateReasons.Finished_ActionCount,
                     };
 
-                    ValidateCollectionRuleDescriptions(actualDescription, expectedDescription);
+                    Assert.Equal(actualDescription, expectedDescription);
                 },
                 _outputHelper,
                 services =>
@@ -455,18 +454,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
                 });
-        }
-
-        private void ValidateCollectionRuleDescriptions(CollectionRuleDescription actualDescription, CollectionRuleDescription expectedDescription)
-        {
-            Assert.Equal(expectedDescription.ActionCountLimit, actualDescription.ActionCountLimit);
-            Assert.Equal(expectedDescription.ActionCountSlidingWindowDurationLimit, actualDescription.ActionCountSlidingWindowDurationLimit);
-            Assert.Equal(expectedDescription.LifetimeOccurrences, actualDescription.LifetimeOccurrences);
-            Assert.Equal(expectedDescription.RuleFinishedCountdown, actualDescription.RuleFinishedCountdown);
-            Assert.Equal(expectedDescription.SlidingWindowDurationCountdown, actualDescription.SlidingWindowDurationCountdown);
-            Assert.Equal(expectedDescription.SlidingWindowOccurrences, actualDescription.SlidingWindowOccurrences);
-            Assert.Equal(expectedDescription.State, actualDescription.State);
-            Assert.Equal(expectedDescription.StateReason, actualDescription.StateReason);
         }
     }
 }

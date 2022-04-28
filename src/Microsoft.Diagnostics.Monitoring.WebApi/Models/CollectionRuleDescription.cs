@@ -70,18 +70,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         public int CompareTo(CollectionRuleDescription other)
         {
-            var currType = typeof(CollectionRuleDescription);
+            var propertyInfos = typeof(CollectionRuleDescription).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            var unequalProperties =
-                from pi in
-                typeof(CollectionRuleDescription).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                let selfValue = currType.GetProperty(pi.Name).GetValue(this, null)
-                let toValue = currType.GetProperty(pi.Name).GetValue(other, null)
-                where selfValue != toValue &&
-                (selfValue == null || !selfValue.Equals(toValue))
-                select selfValue;
+            foreach (var propertyInfo in propertyInfos)
+            {
+                var currVal = typeof(CollectionRuleDescription).GetProperty(propertyInfo.Name).GetValue(this, null);
+                var otherVal = typeof(CollectionRuleDescription).GetProperty(propertyInfo.Name).GetValue(other, null);
 
-            return unequalProperties.Any() ? 1 : 0;
+                if (currVal != otherVal && (currVal == null || !currVal.Equals(otherVal)))
+                {
+                    return 1;
+                }
+            }
+
+            return 0;
         }
     }
 }
