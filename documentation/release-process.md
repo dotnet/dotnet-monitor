@@ -4,7 +4,7 @@
 
 1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`).
 1. In `/eng/Versions.props`, update `dotnet/diagnostics` dependencies to versions from the corresponding release of the `dotnet/diagnostics` repo.
-1. In `/eng/Version.props`, ensure that `<BlobGroupBuildQuality>` is set appropriately. See the documentation next to this setting for the appropriate values. In release branches, its value should either be `prerelease` or `release`. This setting, in combination with the version settings, determine for which 'channel' the aks.ms links are created.
+1. In `/eng/Version.props`, ensure that `<BlobGroupBuildQuality>` is set appropriately. See the documentation next to this setting for the appropriate values. In release branches, its value should be `release`. This setting, in combination with the version settings, determine for which 'channel' the aks.ms links are created.
 1. Complete at least one successful [release build](<#Build Release Branch>).
 1. [Update dotnet-docker pipeline variables](<#Update Pipeline Variable for Release>) to pick up builds from the release branch.
 1. Bump the version number in the `main` branch. [Example Pull Request](https://github.com/dotnet/dotnet-monitor/pull/1560). 
