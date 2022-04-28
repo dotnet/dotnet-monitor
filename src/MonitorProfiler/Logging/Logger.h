@@ -28,6 +28,11 @@ enum class LogLevel
 DECLARE_INTERFACE(ILogger)
 {
     /// <summary>
+    /// Determines if the logger accepts a message at the given LogLevel.
+    /// </summary>
+    STDMETHOD_(bool, IsEnabled)(LogLevel level) PURE;
+
+    /// <summary>
     /// Writes a log message.
     /// </summary>
     STDMETHOD(Log)(LogLevel level, const tstring format, va_list args) PURE;
@@ -49,11 +54,14 @@ DECLARE_INTERFACE(ILogger)
         hr = (EXPR); \
         if(FAILED(hr)) { \
             if (nullptr != pLogger) { \
-                pLogger->Log( \
-                    LogLevel::Error, \
-                    _T("IfFailLogRet(" #EXPR ") failed in function %s: 0x%08x"), \
-                    to_tstring(__func__).c_str(), \
-                    hr); \
+                if (pLogger->IsEnabled(LogLevel::Error)) \
+                { \
+                    pLogger->Log(\
+                        LogLevel::Error, \
+                        _T("IfFailLogRet(" #EXPR ") failed in function %s: 0x%08x"), \
+                        to_tstring(__func__).c_str(), \
+                        hr); \
+                } \
             } \
             return (hr); \
         } \
@@ -65,10 +73,13 @@ DECLARE_INTERFACE(ILogger)
     do { \
         if(nullptr == (EXPR)) { \
             if (nullptr != pLogger) { \
-                pLogger->Log( \
-                    LogLevel::Error, \
-                    _T("IfNullLogRetPtr(" #EXPR ") failed in function %s"), \
-                    to_tstring(__func__).c_str()); \
+                if (pLogger->IsEnabled(LogLevel::Error)) \
+                { \
+                    pLogger->Log( \
+                        LogLevel::Error, \
+                        _T("IfNullLogRetPtr(" #EXPR ") failed in function %s"), \
+                        to_tstring(__func__).c_str()); \
+                } \
             } \
             return E_POINTER; \
         } \
@@ -77,7 +88,10 @@ DECLARE_INTERFACE(ILogger)
 // Logs a message with arguments at the specified level
 // Checks if logging failed, returns the HRESULT if failed
 #define LogV_(pLogger, level, format, ...) \
-    IfFailRet(pLogger->Log(level, format, __VA_ARGS__))
+    if (pLogger->IsEnabled(level)) \
+    { \
+        IfFailRet(pLogger->Log(level, format, __VA_ARGS__)); \
+    }
 
 // Logs a message at the Trace level
 #define LogTraceV_(pLogger, format, ...) \
