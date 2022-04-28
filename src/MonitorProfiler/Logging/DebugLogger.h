@@ -16,9 +16,10 @@ class DebugLogger final :
     public ILogger
 {
 private:
+    const static LogLevel s_DefaultLevel = LogLevel::Information;
     const static int s_nMaxEntrySize = 1000;
 
-    LogLevel m_level = LogLevel::None;
+    LogLevel m_level = s_DefaultLevel;
 
 public:
     DebugLogger(const std::shared_ptr<IEnvironment>& pEnvironment);
