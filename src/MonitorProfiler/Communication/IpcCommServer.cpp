@@ -4,6 +4,7 @@
 
 #include "IpcCommClient.h"
 #include "IpcCommServer.h"
+#include "../Logging/Logger.h"
 
 IpcCommServer::IpcCommServer() : _shutdown(false)
 {
@@ -51,8 +52,9 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
     {
         return SocketWrapper::GetSocketError();
     }
-
-    _domainSocket.SetBlocking(false);
+    
+    HRESULT hr;
+    IfFailRet(_domainSocket.SetBlocking(false));
 
     if (bind(_domainSocket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != 0)
     {
@@ -116,8 +118,10 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
 #if TARGET_WINDOWS
     DWORD receiveTimeout = ReceiveTimeoutMilliseconds;
 
+    HRESULT hr;
+
     //Windows sockets inherit non-blocking
-    clientSocket.SetBlocking(true);
+    IfFailRet(clientSocket.SetBlocking(true));
 
 #else
     TIMEVAL receiveTimeout;

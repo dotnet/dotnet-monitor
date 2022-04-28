@@ -10,7 +10,7 @@ template<typename T>
 class BlockingQueue final
 {
 public:
-    HRESULT Push(const T& item)
+    HRESULT Enqueue(const T& item)
     {
         {
             std::lock_guard<std::mutex> lock(_mutex);

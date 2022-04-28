@@ -18,7 +18,7 @@ STDMETHODIMP ProfilerBase::Initialize(IUnknown *pICorProfilerInfoUnk)
     HRESULT hr = S_OK;
 
     IfFailRet(pICorProfilerInfoUnk->QueryInterface(
-        IID_ICorProfilerInfo12,
+        IID_ICorProfilerInfo11,
         reinterpret_cast<void **>(&m_pCorProfilerInfo)));
 
     return S_OK;

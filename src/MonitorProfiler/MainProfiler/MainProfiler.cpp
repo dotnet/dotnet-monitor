@@ -103,17 +103,16 @@ HRESULT MainProfiler::InitializeCommandServer()
     HRESULT hr = S_OK;
 
     tstring instanceId;
-    IfFailRet(m_pEnvironment->GetEnvironmentVariable(_T("DotnetMonitorProfiler_InstanceId"), instanceId));
+    IfFailRet(EnvironmentHelper::GetRuntimeInstanceId(m_pEnvironment, m_pLogger, instanceId));
 
 #if TARGET_UNIX
-    tstring tmpDir = _T("/tmp");
     tstring separator = _T("/");
 #else
-    tstring tmpDir;
-    IfFailRet(m_pEnvironment->GetEnvironmentVariable(_T("TEMP"), tmpDir));
-
     tstring separator = _T("\\");
 #endif
+
+    tstring tmpDir;
+    IfFailRet(EnvironmentHelper::GetTempFolder(m_pEnvironment, m_pLogger, tmpDir));
 
     _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger));
     tstring socketPath = tmpDir + separator + instanceId + _T(".sock");

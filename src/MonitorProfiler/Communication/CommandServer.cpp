@@ -85,7 +85,7 @@ void CommandServer::ListeningThread()
             _logger->Log(LogLevel::Warning, _T("Unexpected error during shutdown: 0x%08x"), hr);
         }
 
-        _clientQueue.Push(message);
+        _clientQueue.Enqueue(message);
     }
 }
 
