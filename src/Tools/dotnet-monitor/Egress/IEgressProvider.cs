@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     internal interface IEgressProvider<TOptions>
     {
         Task<string> EgressAsync(
-            string providerCategory,
+            string providerType,
             string providerName,
             TOptions options,
             Func<CancellationToken, Task<Stream>> action,
@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             CancellationToken token);
 
         Task<string> EgressAsync(
-            string providerCategory,
+            string providerType,
             string providerName,
             TOptions options,
             Func<Stream, CancellationToken, Task> action,

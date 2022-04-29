@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         }
 
         public override async Task<string> EgressAsync(
-            string providerCategory,
+            string providerType,
             string providerName,
             AzureBlobEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         }
 
         public override async Task<string> EgressAsync(
-            string providerCategory,
+            string providerType,
             string providerName,
             AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,

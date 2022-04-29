@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         /// this is a path to access the stream without any information indicating whether any particular
         /// user has access to it (e.g. no file system permissions or SAS tokens).</returns>
         public virtual Task<string> EgressAsync(
-            string providerCategory,
+            string providerType,
             string providerName,
             TOptions options,
             Func<CancellationToken, Task<Stream>> action,
@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             };
 
             return EgressAsync(
-                providerCategory,
+                providerType,
                 providerName,
                 options,
                 wrappingAction,
@@ -98,7 +98,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         /// this is a path to access the stream without any information indicating whether any particular
         /// user has access to it (e.g. no file system permissions or SAS tokens).</returns>
         public abstract Task<string> EgressAsync(
-            string providerCategory,
+            string providerType,
             string providerName,
             TOptions options,
             Func<Stream, CancellationToken, Task> action,

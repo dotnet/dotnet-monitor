@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         }
 
         public override async Task<string> EgressAsync(
-            string providerCategory,
+            string providerType,
             string providerName,
             ExtensionEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,

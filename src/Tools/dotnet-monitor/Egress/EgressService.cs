@@ -174,9 +174,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                     foreach (IConfigurationSection optionsSection in typeSection.GetChildren())
                     {
                         string providerName = optionsSection.Key;
-                        if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderCategory))
+                        if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderType))
                         {
-                            _logger.DuplicateEgressProviderIgnored(providerName, providerType, existingProviderCategory);
+                            _logger.DuplicateEgressProviderIgnored(providerName, providerType, existingProviderType);
                         }
                         else
                         {
