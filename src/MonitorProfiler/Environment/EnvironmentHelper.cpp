@@ -37,15 +37,16 @@ HRESULT EnvironmentHelper::GetTempFolder(const std::shared_ptr<IEnvironment>& pE
     HRESULT hr = S_OK;
 
     tstring tmpDir;
-    hr = pEnvironment->GetEnvironmentVariable(s_wszTempEnvVar, tmpDir);
 #if TARGET_WINDOWS
-    IfFailLogRet(hr);
+    IfFailLogRet(pEnvironment->GetEnvironmentVariable(s_wszTempEnvVar, tmpDir));
 #else
+    hr = pEnvironment->GetEnvironmentVariable(s_wszTempEnvVar, tmpDir);
+#endif
+
     if (FAILED(hr))
     {
         tmpDir = s_wszDefaultTempFolder;
     }
-#endif
 
     tempFolder = std::move(tmpDir);
 
