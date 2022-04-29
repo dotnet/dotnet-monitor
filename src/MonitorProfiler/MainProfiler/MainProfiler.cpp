@@ -9,6 +9,7 @@
 #include "../Logging/DebugLogger.h"
 #include "corhlpr.h"
 #include "macros.h"
+#include <memory>
 
 using namespace std;
 
@@ -28,9 +29,12 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     HRESULT hr = S_OK;
 
+    //These should always be initialized first
     IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
     IfFailRet(InitializeEnvironment());
     IfFailRet(InitializeLogging());
+
+    IfFailLogRet(InitializeCommandServer());
 
     // Logging is initialized and can now be used
 
@@ -51,6 +55,8 @@ STDMETHODIMP MainProfiler::Shutdown()
 {
     m_pLogger.reset();
     m_pEnvironment.reset();
+    _commandServer->Shutdown();
+    _commandServer.reset();
 
     return ProfilerBase::Shutdown();
 }
@@ -91,5 +97,44 @@ HRESULT MainProfiler::InitializeLogging()
 
     m_pLogger.reset(pAggregateLogger.release());
 
+    return S_OK;
+}
+
+HRESULT MainProfiler::InitializeCommandServer()
+{
+    HRESULT hr = S_OK;
+
+    //TODO For now we are using the process id to generate the unique server name. We should use the environment
+    //value with the runtime instance id once it's available.
+    unsigned long pid =
+#if TARGET_WINDOWS
+        GetCurrentProcessId();
+#else
+        getpid();
+#endif
+
+    tstring instanceId = to_tstring(to_string(pid));
+    //IfFailRet(EnvironmentHelper::GetRuntimeInstanceId(m_pEnvironment, m_pLogger, instanceId));
+
+#if TARGET_UNIX
+    tstring separator = _T("/");
+#else
+    tstring separator = _T("\\");
+#endif
+
+    tstring tmpDir;
+    IfFailRet(EnvironmentHelper::GetTempFolder(m_pEnvironment, m_pLogger, tmpDir));
+
+    _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger));
+    tstring socketPath = tmpDir + separator + instanceId + _T(".sock");
+
+    IfFailRet(_commandServer->Start(to_string(socketPath), [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); }));
+
+    return S_OK;
+}
+
+HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
+{
+    m_pLogger->Log(LogLevel::Information, _T("Message received from client: %d %d"), message.MessageType, message.Parameters);
     return S_OK;
 }
