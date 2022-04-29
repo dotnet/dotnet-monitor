@@ -4,21 +4,21 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class CollectionRulesStateHolder
+    internal class CollectionRuleStateHolder
     {
-        public CollectionRulesState CurrState { get; private set; } = CollectionRulesState.Running;
-        public string CurrStateReason { get; private set; } = CollectionRulesStateReasons.Running;
+        public CollectionRuleState CurrState { get; private set; } = CollectionRuleState.Running;
+        public string CurrStateReason { get; private set; } = CollectionRuleStateReasons.Running;
 
         internal void BeginActionExecution()
         {
-            CurrState = CollectionRulesState.ActionExecuting;
-            CurrStateReason = CollectionRulesStateReasons.ExecutingActions;
+            CurrState = CollectionRuleState.ActionExecuting;
+            CurrStateReason = CollectionRuleStateReasons.ExecutingActions;
         }
 
         internal void ActionExecutionSucceeded()
         {
-            CurrState = CollectionRulesState.Running;
-            CurrStateReason = CollectionRulesStateReasons.Running;
+            CurrState = CollectionRuleState.Running;
+            CurrStateReason = CollectionRuleStateReasons.Running;
         }
 
 
@@ -30,48 +30,48 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         internal void BeginThrottled()
         {
-            CurrState = CollectionRulesState.Throttled;
-            CurrStateReason = CollectionRulesStateReasons.Throttled;
+            CurrState = CollectionRuleState.Throttled;
+            CurrStateReason = CollectionRuleStateReasons.Throttled;
         }
 
         internal void EndThrottled()
         {
-            if (CurrState == CollectionRulesState.Throttled)
+            if (CurrState == CollectionRuleState.Throttled)
             {
-                CurrState = CollectionRulesState.Running;
-                CurrStateReason = CollectionRulesStateReasons.Running;
+                CurrState = CollectionRuleState.Running;
+                CurrStateReason = CollectionRuleStateReasons.Running;
             }
         }
 
         internal void StartupTriggerCompleted()
         {
-            CurrState = CollectionRulesState.Finished;
-            CurrStateReason = CollectionRulesStateReasons.Finished_Startup;
+            CurrState = CollectionRuleState.Finished;
+            CurrStateReason = CollectionRuleStateReasons.Finished_Startup;
         }
 
         internal void RuleDurationReached()
         {
-            CurrState = CollectionRulesState.Finished;
-            CurrStateReason = CollectionRulesStateReasons.Finished_RuleDuration;
+            CurrState = CollectionRuleState.Finished;
+            CurrStateReason = CollectionRuleStateReasons.Finished_RuleDuration;
         }
 
         internal void ActionCountReached()
         {
-            CurrState = CollectionRulesState.Finished;
-            CurrStateReason = CollectionRulesStateReasons.Finished_ActionCount;
+            CurrState = CollectionRuleState.Finished;
+            CurrStateReason = CollectionRuleStateReasons.Finished_ActionCount;
         }
 
         internal void ConfigurationChanged()
         {
-            CurrState = CollectionRulesState.Finished;
-            CurrStateReason = CollectionRulesStateReasons.Finished_ConfigurationChanged;
+            CurrState = CollectionRuleState.Finished;
+            CurrStateReason = CollectionRuleStateReasons.Finished_ConfigurationChanged;
         }
 
         // Not sure what the use-case is here (if there is one)
         internal void RuleFailure()
         {
-            CurrState = CollectionRulesState.Finished;
-            CurrStateReason = CollectionRulesStateReasons.Finished_Failure;
+            CurrState = CollectionRuleState.Finished;
+            CurrStateReason = CollectionRuleStateReasons.Finished_Failure;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         /// Indicates what state the collection rule is in for the process.
         /// </summary>
         [JsonPropertyName("state")]
-        public CollectionRulesState State { get; set; }
+        public CollectionRuleState State { get; set; }
 
         /// <summary>
         /// Human-readable explanation for the current state of the collection rule.

@@ -92,8 +92,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ActionCountLimit = 5,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
-                        State = CollectionRulesState.Finished,
-                        StateReason = CollectionRulesStateReasons.Finished_Startup
+                        State = CollectionRuleState.Finished,
+                        StateReason = CollectionRuleStateReasons.Finished_Startup
                     };
 
                     Assert.Equal(actualDescription, expectedDescription);
@@ -171,8 +171,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ActionCountLimit = ExpectedActionExecutionCount,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
-                        State = CollectionRulesState.ActionExecuting,
-                        StateReason = CollectionRulesStateReasons.ExecutingActions
+                        State = CollectionRuleState.ActionExecuting,
+                        StateReason = CollectionRuleStateReasons.ExecutingActions
                     };
 
                     Assert.Equal(actualDescription, expectedDescription);
@@ -186,8 +186,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ActionCountLimit = ExpectedActionExecutionCount,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
-                        State = CollectionRulesState.Running,
-                        StateReason = CollectionRulesStateReasons.Running
+                        State = CollectionRuleState.Running,
+                        StateReason = CollectionRuleStateReasons.Running
                     };
 
                     Assert.Equal(actualDescription2, expectedDescription2);
@@ -266,8 +266,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ActionCountSlidingWindowDurationLimit = SlidingWindowDuration,
                         LifetimeOccurrences = ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
-                        State = CollectionRulesState.Throttled,
-                        StateReason = CollectionRulesStateReasons.Throttled,
+                        State = CollectionRuleState.Throttled,
+                        StateReason = CollectionRuleStateReasons.Throttled,
                         SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01") // Rounding due to (intentional) lost precision
                     };
 
@@ -283,8 +283,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ActionCountSlidingWindowDurationLimit = SlidingWindowDuration,
                         LifetimeOccurrences = ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = 0,
-                        State = CollectionRulesState.Running,
-                        StateReason = CollectionRulesStateReasons.Running,
+                        State = CollectionRuleState.Running,
+                        StateReason = CollectionRuleStateReasons.Running,
                     };
 
                     Assert.Equal(actualDescription2, expectedDescription2);
@@ -311,8 +311,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ActionCountSlidingWindowDurationLimit = SlidingWindowDuration,
                         LifetimeOccurrences = 2 * ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
-                        State = CollectionRulesState.Throttled,
-                        StateReason = CollectionRulesStateReasons.Throttled,
+                        State = CollectionRuleState.Throttled,
+                        StateReason = CollectionRuleStateReasons.Throttled,
                         SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01") // Rounding due to (intentional) lost precision
                     };
 
@@ -368,8 +368,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
                         LifetimeOccurrences = 0,
                         SlidingWindowOccurrences = 0,
-                        State = CollectionRulesState.Finished,
-                        StateReason = CollectionRulesStateReasons.Finished_RuleDuration,
+                        State = CollectionRuleState.Finished,
+                        StateReason = CollectionRuleStateReasons.Finished_RuleDuration,
                     };
 
                     Assert.Equal(actualDescription, expectedDescription);
@@ -439,8 +439,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         ActionCountLimit = ExpectedActionExecutionCount,
                         LifetimeOccurrences = ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
-                        State = CollectionRulesState.Finished,
-                        StateReason = CollectionRulesStateReasons.Finished_ActionCount,
+                        State = CollectionRuleState.Finished,
+                        StateReason = CollectionRuleStateReasons.Finished_ActionCount,
                     };
 
                     Assert.Equal(actualDescription, expectedDescription);

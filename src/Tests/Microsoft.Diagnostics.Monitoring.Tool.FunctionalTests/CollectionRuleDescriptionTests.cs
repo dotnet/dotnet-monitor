@@ -69,8 +69,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                                 ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
                                 LifetimeOccurrences = 1,
                                 SlidingWindowOccurrences = 1,
-                                State = CollectionRulesState.Finished,
-                                StateReason = CollectionRulesStateReasons.Finished_Startup
+                                State = CollectionRuleState.Finished,
+                                StateReason = CollectionRuleStateReasons.Finished_Startup
                             }
                         }
                     };
@@ -122,8 +122,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                                 ActionCountLimit = ExpectedActionCountLimit,
                                 LifetimeOccurrences = 0,
                                 SlidingWindowOccurrences = 0,
-                                State = CollectionRulesState.Running,
-                                StateReason = CollectionRulesStateReasons.Running
+                                State = CollectionRuleState.Running,
+                                StateReason = CollectionRuleStateReasons.Running
                             }
                         }
                     };
@@ -147,8 +147,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                                 ActionCountLimit = ExpectedActionCountLimit,
                                 LifetimeOccurrences = 1,
                                 SlidingWindowOccurrences = 1,
-                                State = CollectionRulesState.Finished,
-                                StateReason = CollectionRulesStateReasons.Finished_ActionCount
+                                State = CollectionRuleState.Finished,
+                                StateReason = CollectionRuleStateReasons.Finished_ActionCount
                             }
                         }
                     };
