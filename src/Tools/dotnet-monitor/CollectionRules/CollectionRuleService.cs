@@ -281,7 +281,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration,
             };
 
-            if (description.State != CollectionRulesState.Finished)
+            if (description.State != CollectionRuleState.Finished)
             {
                 description.SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
                 description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline._pipelineStartTime, limitsOptions?.RuleDuration, currentTime);

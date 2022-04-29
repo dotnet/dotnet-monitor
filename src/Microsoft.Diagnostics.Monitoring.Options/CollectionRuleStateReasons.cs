@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    public class CollectionRulesStateReasons
+    public class CollectionRuleStateReasons
     {
         public const string Running = "This collection rule is active and waiting for its triggering conditions to be satisfied.";
         public const string ExecutingActions = "This collection rule has had its triggering conditions satisfied and is currently executing its action list.";

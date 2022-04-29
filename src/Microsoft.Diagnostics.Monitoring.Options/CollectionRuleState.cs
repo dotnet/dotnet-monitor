@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    public enum CollectionRulesState
+    public enum CollectionRuleState
     {
         Running,
         ActionExecuting,
