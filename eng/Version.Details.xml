@@ -14,9 +14,9 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="7.0.0-preview.5.22227.5">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="7.0.0-preview.5.22228.1">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>4b514766b2c119fffde8b4e3290ead8861dacab1</Sha>
+      <Sha>b998a44e59339840d347a61e7275149d9ae5c20a</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22225.6">
       <Uri>https://github.com/dotnet/arcade</Uri>
@@ -34,9 +34,9 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>c10154087e734fa58f08f2797e5d99404e9cd96b</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.5.22227.5">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.5.22228.1">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>4b514766b2c119fffde8b4e3290ead8861dacab1</Sha>
+      <Sha>b998a44e59339840d347a61e7275149d9ae5c20a</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.5.22226.6" CoherentParentDependency="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
