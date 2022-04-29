@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -333,6 +334,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ExperienceSurvey);
 
+        private static readonly Action<ILogger, string, Exception> _extensionProbeStart =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExtensionProbeStart.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionProbeStart);
+
+        private static readonly Action<ILogger, string, string, Exception> _extensionProbeRepo =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ExtensionProbeRepo.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionProbeRepo);
+
+        private static readonly Action<ILogger, string, string, Exception> _extensionProbeSucceeded =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ExtensionProbeSucceeded.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionProbeSucceeded);
+
+        private static readonly Action<ILogger, string, Exception> _extensionProbeFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExtensionProbeFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExtensionProbeFailed);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -611,6 +636,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExperienceSurvey(this ILogger logger)
         {
             _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
+        }
+
+        public static void ExtensionProbeStart(this ILogger logger, string extensionMoniker)
+        {
+            _extensionProbeStart(logger, extensionMoniker, null);
+        }
+
+        public static void ExtensionProbeRepo(this ILogger logger, string extensionMoniker, IExtensionRepository extensionRepository)
+        {
+            _extensionProbeRepo(logger, extensionMoniker, extensionRepository.Name, null);
+        }
+
+        public static void ExtensionProbeSucceeded(this ILogger logger, string extensionMoniker, IExtension extension)
+        {
+            _extensionProbeSucceeded(logger, extensionMoniker, extension.Name, null);
+        }
+
+        public static void ExtensionProbeFailed(this ILogger logger, string extensionMoniker)
+        {
+            _extensionProbeFailed(logger, extensionMoniker, null);
         }
     }
 }

@@ -880,6 +880,42 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to locate extension &apos;{extensionMoniker}&apos;..
+        /// </summary>
+        internal static string LogFormatString_ExtensionProbeFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionProbeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Searching {extensionRepository} for extension &apos;{extensionMoniker}&apos;..
+        /// </summary>
+        internal static string LogFormatString_ExtensionProbeRepo {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionProbeRepo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempting to locate extension &apos;{extensionMoniker}&apos;..
+        /// </summary>
+        internal static string LogFormatString_ExtensionProbeStart {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionProbeStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Found extension &apos;{extensionMoniker}&apos; at {extension}..
+        /// </summary>
+        internal static string LogFormatString_ExtensionProbeSucceeded {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionProbeSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting the environment variable {variableName} from process {processId}..
         /// </summary>
         internal static string LogFormatString_GetEnvironmentVariable {
@@ -1029,6 +1065,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string Message_ExperienceSurvey {
             get {
                 return ResourceManager.GetString("Message_ExperienceSurvey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to folder &apos;{0}&apos;.
+        /// </summary>
+        internal static string Message_FolderExtensionRepoName {
+            get {
+                return ResourceManager.GetString("Message_FolderExtensionRepoName", resourceCulture);
             }
         }
         

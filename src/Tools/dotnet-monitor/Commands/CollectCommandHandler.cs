@@ -158,6 +158,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();
                 services.AddSingleton<RequestLimitTracker>();
                 services.ConfigureOperationStore();
+                services.ConfigureExtensions(context.Configuration);
                 services.ConfigureEgress();
                 services.ConfigureMetrics(context.Configuration);
                 services.ConfigureStorage(context.Configuration);

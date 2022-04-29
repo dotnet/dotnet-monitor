@@ -19,13 +19,14 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -174,6 +175,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class
         {
             return services.Configure<T>(configuration.GetSection(key));
+        }
+
+        public static IServiceCollection ConfigureExtensions(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Add the services to discover extensions
+            services.AddSingleton<IExtensionDiscoverer, ExtensionDiscoverer>();
+
+            // Add the Extension Repositories to probe
+            foreach (Func<IServiceProvider, IExtensionRepository> loadDelegate in PreDefinedExtensionRepositories.GetExtensionRepositoryDelegates(configuration))
+            {
+                services.AddSingleton<IExtensionRepository>(loadDelegate);
+            }
+
+            return services;
         }
 
         public static IServiceCollection ConfigureEgress(this IServiceCollection services)

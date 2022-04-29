@@ -544,6 +544,32 @@
   <data name="LogFormatString_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {link}</value>
   </data>
+  <data name="LogFormatString_ExtensionProbeFailed" xml:space="preserve">
+    <value>Failed to locate extension '{extensionMoniker}'.</value>
+    <comment>Gets the format string that is printed in the 64:ExtensionProbeFailed event.
+1 Format Parameter:
+1. extensionMoniker: The name of the extension or moniker</comment>
+  </data>
+  <data name="LogFormatString_ExtensionProbeRepo" xml:space="preserve">
+    <value>Searching {extensionRepository} for extension '{extensionMoniker}'.</value>
+    <comment>Gets the format string that is printed in the 62:ExtensionProbeRepo event.
+1 Format Parameter:
+1. extensionMoniker: The name of the extension or moniker
+2. extensionRepository: The friendly name of the extension repository</comment>
+  </data>
+  <data name="LogFormatString_ExtensionProbeStart" xml:space="preserve">
+    <value>Attempting to locate extension '{extensionMoniker}'.</value>
+    <comment>Gets the format string that is printed in the 61:ExtensionProbeStart event.
+1 Format Parameter:
+1. extensionMoniker: The name of the extension or moniker</comment>
+  </data>
+  <data name="LogFormatString_ExtensionProbeSucceeded" xml:space="preserve">
+    <value>Found extension '{extensionMoniker}' at {extension}.</value>
+    <comment>Gets the format string that is printed in the 63:ExtensionProbeSucceeded event.
+1 Format Parameter:
+1. extensionMoniker: The name of the extension or moniker
+2. extension: The friendly name of the extension from the IExtension interface</comment>
+  </data>
   <data name="LogFormatString_GetEnvironmentVariable" xml:space="preserve">
     <value>Getting the environment variable {variableName} from process {processId}.</value>
     <comment>Gets the format string that is printed in the 55:GetEnvironmentVariable event.
@@ -637,6 +663,10 @@
   </data>
   <data name="Message_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {0}</value>
+  </data>
+  <data name="Message_FolderExtensionRepoName" xml:space="preserve">
+    <value>folder '{0}'</value>
+    <comment>Gets the string for describing a folder extension repo</comment>
   </data>
   <data name="Message_GenerateApiKey" xml:space="preserve">
     <value>Generated ApiKey for dotnet-monitor; use the following header for authorization:</value>
