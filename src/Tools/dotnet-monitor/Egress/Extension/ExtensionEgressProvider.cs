@@ -50,7 +50,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 ProviderName = providerName,
             };
 
-            // [TODO] add a new service to dynamically find these extensions
+            /* [TODOs]
+             * 1. Add a new service to dynamically find these extension(s)
+             * 2. Remove all raw logging statements from this method and refactor into LoggingExtensions
+             * 3. Stream StdOut and StdErr async in the process so their streams don't need to end before we can return
+             * 4. Refactor WaitForExit to do an async wait
+             */
             const string extensionProcessPath = "MyPathTo\\Extension.exe";
             ProcessStartInfo pStart = new ProcessStartInfo()
             {
