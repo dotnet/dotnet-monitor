@@ -49,15 +49,15 @@ You can easily translate existing configuration to Custom Shortcuts using the fo
   <summary>Kubernetes ConfigMap</summary>
 
   ```yaml
-  DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Type: "CollectTrace"
-  DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__Egress: "artifacts"
-  DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__SlidingWindowDuration: "00:00:15"
-  DotnetMonitor_CustomShortcuts__Actions__NameOfActionShortcut__Settings__Profile: "Cpu"
-  DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Type: "AspNetRequestCount"
-  DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__RequestCount: "10"
-  DotnetMonitor_CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__SlidingWindowDuration: "00:01:00"
-  DotnetMonitor_CollectionRules__NameOfCollectionRule__Trigger: "NameOfTriggerShortcut"
-  DotnetMonitor_CollectionRules__NameOfCollectionRule__Actions__0: "NameOfActionShortcut"
+  CustomShortcuts__Actions__NameOfActionShortcut__Type: "CollectTrace"
+  CustomShortcuts__Actions__NameOfActionShortcut__Settings__Egress: "artifacts"
+  CustomShortcuts__Actions__NameOfActionShortcut__Settings__SlidingWindowDuration: "00:00:15"
+  CustomShortcuts__Actions__NameOfActionShortcut__Settings__Profile: "Cpu"
+  CustomShortcuts__Triggers__NameOfTriggerShortcut__Type: "AspNetRequestCount"
+  CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__RequestCount: "10"
+  CustomShortcuts__Triggers__NameOfTriggerShortcut__Settings__SlidingWindowDuration: "00:01:00"
+  CollectionRules__NameOfCollectionRule__Trigger: "NameOfTriggerShortcut"
+  CollectionRules__NameOfCollectionRule__Actions__0: "NameOfActionShortcut"
   ```
 </details>
 
@@ -88,7 +88,7 @@ You can easily translate existing configuration to Custom Shortcuts using the fo
 
 ## Example
 
-The following example creates a custom shortcut trigger named "HighRequestCount", two custom shortcut actions named "CpuTrace" and "ErrorLogs", a custom shortcut filter named "AppPID", and a custom shortcut limit named "ShortDuration". These custom shortcuts are integrated into collection rules alongside the existing configuration format to demonstrate that rules can contain a mix of custom shortcuts and standard configuration.
+The following example creates a custom shortcut trigger named "HighRequestCount", two custom shortcut actions named "CpuTrace" and "ErrorLogs", a custom shortcut filter named "AppName", and a custom shortcut limit named "ShortDuration". These custom shortcuts are integrated into collection rules alongside the existing configuration format to demonstrate that rules can contain a mix of custom shortcuts and standard configuration.
 
 <details>
   <summary>JSON</summary>
@@ -125,9 +125,9 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
         }
       },
       "Filters": {
-        "AppPID": {
-          "Key": "ProcessId",
-          "Value": "12345",
+        "AppName": {
+          "Key": "ProcessName",
+          "Value": "MyProcessName",
           "MatchType": "Exact"
         }
       },
@@ -154,7 +154,7 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
           }
         ],
         "Filters": [
-          "AppPID"
+          "AppName"
         ],
         "Limits": "ShortDuration"  
       }
@@ -174,7 +174,7 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
       ],
       "Filters": [
         {
-          "ProcessName": "MyProcess"
+          "ProcessId": "12345"
         }
       ]
     }
@@ -186,39 +186,39 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
   <summary>Kubernetes ConfigMap</summary>
 
   ```yaml
-  DotnetMonitor_CustomShortcuts__Actions__CPUTrace__Type: "CollectTrace"
-  DotnetMonitor_CustomShortcuts__Actions__CPUTrace__Settings__Egress: "artifacts"
-  DotnetMonitor_CustomShortcuts__Actions__CPUTrace__Settings__SlidingWindowDuration: "00:00:15"
-  DotnetMonitor_CustomShortcuts__Actions__CPUTrace__Settings__Profile: "Cpu"
-  DotnetMonitor_CustomShortcuts__Actions__ErrorLogs__Type: "CollectLogs"
-  DotnetMonitor_CustomShortcuts__Actions__ErrorLogs__Settings__Egress: "artifacts"
-  DotnetMonitor_CustomShortcuts__Actions__ErrorLogs__Settings__DefaultLevel: "Error"
-  DotnetMonitor_CustomShortcuts__Actions__ErrorLogs__Settings__UseAppFilters: "false"
-  DotnetMonitor_CustomShortcuts__Actions__ErrorLogs__Settings__Duration: "00:01:00"
-  DotnetMonitor_CustomShortcuts__Triggers__HighRequestCount__Type: "AspNetRequestCount"
-  DotnetMonitor_CustomShortcuts__Triggers__HighRequestCount__Settings__RequestCount: "10"
-  DotnetMonitor_CustomShortcuts__Triggers__HighRequestCount__Settings__SlidingWindowDuration: "00:01:00"
-  DotnetMonitor_CustomShortcuts__Filters__AppPID__Key: "ProcessId"
-  DotnetMonitor_CustomShortcuts__Filters__AppPID__Value: "12345"
-  DotnetMonitor_CustomShortcuts__Filters__AppPID__MatchType: "Exact"
-  DotnetMonitor_CustomShortcuts__Limits__ShortDuration__RuleDuration: "00:05:00"
-  DotnetMonitor_CustomShortcuts__Limits__ShortDuration__ActionCount: "1"
-  DotnetMonitor_CustomShortcuts__Limits__ShortDuration__ActionCountSlidingWindowDuration: "00:00:30"
+  CustomShortcuts__Actions__CPUTrace__Type: "CollectTrace"
+  CustomShortcuts__Actions__CPUTrace__Settings__Egress: "artifacts"
+  CustomShortcuts__Actions__CPUTrace__Settings__SlidingWindowDuration: "00:00:15"
+  CustomShortcuts__Actions__CPUTrace__Settings__Profile: "Cpu"
+  CustomShortcuts__Actions__ErrorLogs__Type: "CollectLogs"
+  CustomShortcuts__Actions__ErrorLogs__Settings__Egress: "artifacts"
+  CustomShortcuts__Actions__ErrorLogs__Settings__DefaultLevel: "Error"
+  CustomShortcuts__Actions__ErrorLogs__Settings__UseAppFilters: "false"
+  CustomShortcuts__Actions__ErrorLogs__Settings__Duration: "00:01:00"
+  CustomShortcuts__Triggers__HighRequestCount__Type: "AspNetRequestCount"
+  CustomShortcuts__Triggers__HighRequestCount__Settings__RequestCount: "10"
+  CustomShortcuts__Triggers__HighRequestCount__Settings__SlidingWindowDuration: "00:01:00"
+  CustomShortcuts__Filters__AppName__Key: "ProcessName"
+  CustomShortcuts__Filters__AppName__Value: "MyProcessName"
+  CustomShortcuts__Filters__AppName__MatchType: "Exact"
+  CustomShortcuts__Limits__ShortDuration__RuleDuration: "00:05:00"
+  CustomShortcuts__Limits__ShortDuration__ActionCount: "1"
+  CustomShortcuts__Limits__ShortDuration__ActionCountSlidingWindowDuration: "00:00:30"
   
-  DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Trigger: "HighRequestCount"
-  DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Actions__0: "ErrorLogs"
-  DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Actions__1__Type: "CollectDump"
-  DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Actions__1__Settings__Egress: "artifacts"
-  DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Actions__1__Settings__Type: "Full"
-  DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Filters__0: "AppPID"
-  DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Limits: "ShortDuration"
-  DotnetMonitor_CollectionRules__TraceWhenHighCPU__Trigger__Type: "EventCounter"
-  DotnetMonitor_CollectionRules__TraceWhenHighCPU__Trigger__Settings__ProviderName: "System.Runtime"
-  DotnetMonitor_CollectionRules__TraceWhenHighCPU__Trigger__Settings__CounterName: "cpu-usage"
-  DotnetMonitor_CollectionRules__TraceWhenHighCPU__Trigger__Settings__GreaterThan: "60"
-  DotnetMonitor_CollectionRules__TraceWhenHighCPU__Trigger__Settings__SlidingWindowDuration: "00:00:10"
-  DotnetMonitor_CollectionRules__TraceWhenHighCPU__Actions__0: "CPUTrace"
-  DotnetMonitor_CollectionRules__TraceWhenHighCPU__Filters__0__ProcessName: "MyProcess"
+  CollectionRules__LogAndDumpWhenHighRequestCount__Trigger: "HighRequestCount"
+  CollectionRules__LogAndDumpWhenHighRequestCount__Actions__0: "ErrorLogs"
+  CollectionRules__LogAndDumpWhenHighRequestCount__Actions__1__Type: "CollectDump"
+  CollectionRules__LogAndDumpWhenHighRequestCount__Actions__1__Settings__Egress: "artifacts"
+  CollectionRules__LogAndDumpWhenHighRequestCount__Actions__1__Settings__Type: "Full"
+  CollectionRules__LogAndDumpWhenHighRequestCount__Filters__0: "AppName"
+  CollectionRules__LogAndDumpWhenHighRequestCount__Limits: "ShortDuration"
+  CollectionRules__TraceWhenHighCPU__Trigger__Type: "EventCounter"
+  CollectionRules__TraceWhenHighCPU__Trigger__Settings__ProviderName: "System.Runtime"
+  CollectionRules__TraceWhenHighCPU__Trigger__Settings__CounterName: "cpu-usage"
+  CollectionRules__TraceWhenHighCPU__Trigger__Settings__GreaterThan: "60"
+  CollectionRules__TraceWhenHighCPU__Trigger__Settings__SlidingWindowDuration: "00:00:10"
+  CollectionRules__TraceWhenHighCPU__Actions__0: "CPUTrace"
+  CollectionRules__TraceWhenHighCPU__Filters__0__ProcessId: "12345"
   ```
 </details>
 
@@ -250,11 +250,11 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
     value: "10"
   - name: DotnetMonitor_CustomShortcuts__Triggers__HighRequestCount__Settings__SlidingWindowDuration
     value: "00:01:00"
-  - name: DotnetMonitor_CustomShortcuts__Filters__AppPID__Key
-    value: "ProcessId"
-  - name: DotnetMonitor_CustomShortcuts__Filters__AppPID__Value
-    value: "12345"
-  - name: DotnetMonitor_CustomShortcuts__Filters__AppPID__MatchType
+  - name: DotnetMonitor_CustomShortcuts__Filters__AppName__Key
+    value: "ProcessName"
+  - name: DotnetMonitor_CustomShortcuts__Filters__AppName__Value
+    value: "MyProcessName"
+  - name: DotnetMonitor_CustomShortcuts__Filters__AppName__MatchType
     value: "Exact"
   - name: DotnetMonitor_CustomShortcuts__Limits__ShortDuration__RuleDuration
     value: "00:05:00"
@@ -273,7 +273,7 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
   - name: DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Actions__1__Settings__Type
     value: "Full"
   - name: DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Filters__0
-    value: "AppPID"
+    value: "AppName"
   - name: DotnetMonitor_CollectionRules__LogAndDumpWhenHighRequestCount__Limits
     value: "ShortDuration"
   - name: DotnetMonitor_CollectionRules__TraceWhenHighCPU__Trigger__Type
@@ -288,7 +288,7 @@ The following example creates a custom shortcut trigger named "HighRequestCount"
     value: "00:00:10"
   - name: DotnetMonitor_CollectionRules__TraceWhenHighCPU__Actions__0
     value: "CPUTrace"
-  - name: DotnetMonitor_CollectionRules__TraceWhenHighCPU__Filters__0__ProcessName
-    value: "MyProcess"
+  - name: DotnetMonitor_CollectionRules__TraceWhenHighCPU__Filters__0__ProcessId
+    value: "12345"
   ```
 </details>
