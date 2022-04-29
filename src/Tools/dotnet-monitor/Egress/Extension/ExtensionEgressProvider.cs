@@ -77,10 +77,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, payload, options: null, token);
             await p.StandardInput.WriteLineAsync();
-            await p.StandardInput.BaseStream.FlushAsync();
+            await p.StandardInput.BaseStream.FlushAsync(token);
 
             await action(p.StandardInput.BaseStream, token);
-            await p.StandardInput.BaseStream.FlushAsync();
+            await p.StandardInput.BaseStream.FlushAsync(token);
 
             Logger?.LogInformation("Stream done, sending close...");
 
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             string procStdOutContent = await p.StandardOutput.ReadToEndAsync();
             string procErrorContent = await p.StandardError.ReadToEndAsync();
 
-            p.WaitForExit();
+            await p.WaitForExitAsync(token);
             Logger?.LogInformation($"Exited with code: {p.ExitCode}");
 
             if (!string.IsNullOrWhiteSpace(procErrorContent))
