@@ -123,6 +123,7 @@ public:
 private:
     void Close()
     {
+        //Note this should be idempotent. The destructor may be called twice.
         if (Valid())
         {
 #if TARGET_WINDOWS

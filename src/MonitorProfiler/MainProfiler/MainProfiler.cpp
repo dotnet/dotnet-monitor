@@ -102,8 +102,17 @@ HRESULT MainProfiler::InitializeCommandServer()
 {
     HRESULT hr = S_OK;
 
-    tstring instanceId;
-    IfFailRet(EnvironmentHelper::GetRuntimeInstanceId(m_pEnvironment, m_pLogger, instanceId));
+    //TODO For now we are using the process id to generate the unique server name. We should use the environment
+    //value with the runtime instance id once it's available.
+    unsigned long pid =
+#if TARGET_WINDOWS
+        GetCurrentProcessId();
+#else
+        getpid();
+#endif
+
+    tstring instanceId = to_tstring(to_string(pid));
+    //IfFailRet(EnvironmentHelper::GetRuntimeInstanceId(m_pEnvironment, m_pLogger, instanceId));
 
 #if TARGET_UNIX
     tstring separator = _T("/");

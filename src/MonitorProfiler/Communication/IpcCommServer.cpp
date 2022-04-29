@@ -12,6 +12,7 @@ IpcCommServer::IpcCommServer() : _shutdown(false)
 
 IpcCommServer::~IpcCommServer()
 {
+    //We explicitly run the destructor first so that it can call closesocket prior to deletion of the path.
     _domainSocket.~SocketWrapper();
     std::remove(_rootAddress.c_str());
 }
