@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
@@ -84,25 +85,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         private bool InsertCustomActionsIntoActionList(CollectionRuleOptions ruleOptions, string name)
         {
-            bool boundAllActions = false;
-            int index = 0;
+            var section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Actions)));
+                        
+            var actionSections = section.GetChildren();
 
-            while (!boundAllActions)
+            for (int index = 0; index < actionSections.Count(); ++index)
             {
-                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Actions), index.ToString(CultureInfo.InvariantCulture)));
-                if (section.Exists() && !string.IsNullOrEmpty(section.Value))
+                if (!string.IsNullOrEmpty(actionSections.ElementAt(index).Value))
                 {
-                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Actions, section.Value, ruleOptions.Actions, index))
+                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Actions, actionSections.ElementAt(index).Value, ruleOptions.Actions, index))
                     {
                         return false;
                     }
                 }
-                else if (!section.Exists())
-                {
-                    boundAllActions = true;
-                }
-
-                ++index;
             }
 
             return true;
@@ -127,25 +122,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         private bool InsertCustomFiltersIntoFilterList(CollectionRuleOptions ruleOptions, string name)
         {
-            bool boundAllFilters = false;
-            int index = 0;
+            var section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Filters)));
 
-            while (!boundAllFilters)
-            {                
-                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Filters), index.ToString(CultureInfo.InvariantCulture)));
-                if (section.Exists() && !string.IsNullOrEmpty(section.Value))
+            var filterSections = section.GetChildren();
+
+            for (int index = 0; index < filterSections.Count(); ++index)
+            {
+                if (!string.IsNullOrEmpty(filterSections.ElementAt(index).Value))
                 {
-                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Filters, section.Value, ruleOptions.Filters, index))
+                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Filters, filterSections.ElementAt(index).Value, ruleOptions.Filters, index))
                     {
                         return false;
                     }
                 }
-                else if (!section.Exists())
-                {
-                    boundAllFilters = true;
-                }
-
-                ++index;
             }
 
             return true;
