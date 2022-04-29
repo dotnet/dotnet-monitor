@@ -6,11 +6,25 @@ Object describing the current state of a collection rule for the executing insta
 
 | Name | Type | Description |
 |---|---|---|
-| Version | string | The current version of `dotnet monitor`. |
-| RuntimeVersion | string | The version of the dotnet runtime. |
-| DiagnosticPortMode | DiagnosticPortConnectionMode | Indicates whether `dotnet monitor` is in `connect` mode or `listen` mode. |
-| DiagnosticPortName | string | The name of the named pipe or unix domain socket to use for connecting to the diagnostic server. |
+| State | [CollectionRuleState](#CollectionRuleState) | Indicates what state the collection rule is in for the current process. |
+| StateReason | string | Human-readable explanation for the current state of the collection rule. |
+| LifetimeOccurrences | int | The number of time the trigger has executed for a process in its lifetime. |
+| SlidingWindowOccurrences | int | The number of times the trigger has executed within the current sliding window. |
+| ActionCountLimit | int | 	The number of times the action list may be executed before being throttled. |
+| ActionCountSlidingWindowDurationLimit | TimeSpan? | The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting. If not specified, all action list executions will be counted for the entire duration of the rule.	 |
+| SlidingWindowDurationCountdown | TimeSpan? | The amount of time remaining before the collection rule will no longer be throttled (when Action ActionCountSlidingWindowDurationLimit and SlidingWindowOccurrences has reached the ActionCountLimit)  |
+| RuleFinishedCountdown | TimeSpan? | The amount of time remaining before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. |
 
+## CollectionRuleState
+
+Enumeration that describes the current state of the collection rule.
+
+| Name | Description |
+|---|---|
+| `Running` | Indicates that the collection rule is active and waiting for its triggering conditions to be satisfied. |
+| `ActionExecuting` | Indicates that the collection has had its triggering conditions satisfied and is currently executing its action list. |
+| `Throttled` | Indicates that the collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration. |
+| `Finished` | Indicates that the collection rule has completed and will no longer trigger. |
 
 ## DotnetMonitorInfo
 
