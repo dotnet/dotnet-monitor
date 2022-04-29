@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         /// <summary>
         /// Gets the ProviderTypes for a given <paramref name="optionsType"/> reference.
         /// </summary>
-        /// <returns><see cref="IEnumerable{string}"/> that has the set of ProviderTypes that can be retreived.</returns>
-        IEnumerable<IConfigurationSection> GetOptions(IConfigurationSection egressSection, Type optionsType);
+        /// <returns><see cref="IEnumerable{string}"/> that has the set of ProviderTypes that can be retrieved.</returns>
+        IEnumerable<IConfigurationSection> GetProviderSections(Type optionsType);
     }
 }

@@ -15,12 +15,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     /// </summary>
     internal class OptionsTypeToProviderTypesMapper : IOptionsTypeToProviderTypesMapper
     {
+        private readonly IConfigurationSection _egressSection;
+
+        public OptionsTypeToProviderTypesMapper(IConfiguration configuration)
+        {
+            _egressSection = configuration.GetEgressSection();
+        }
+
         /// <inheritdoc/>
-        public IEnumerable<IConfigurationSection> GetOptions(IConfigurationSection egressSection, Type optionsType)
+        public IEnumerable<IConfigurationSection> GetProviderSections(Type optionsType)
         {
             if (optionsType == typeof(ExtensionEgressProviderOptions))
             {
-                foreach (IConfigurationSection providerTypeSection in egressSection.GetChildren())
+                foreach (IConfigurationSection providerTypeSection in _egressSection.GetChildren())
                 {
                     if (providerTypeSection.Exists() && !IsBuiltInSection(providerTypeSection))
                     {
@@ -31,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
             }
             else if (optionsType == typeof(AzureBlobEgressProviderOptions))
             {
-                IConfigurationSection azureBlobSection = egressSection.GetSection(EgressProviderTypes.AzureBlobStorage);
+                IConfigurationSection azureBlobSection = _egressSection.GetSection(EgressProviderTypes.AzureBlobStorage);
                 if (azureBlobSection.Exists())
                 {
                     yield return azureBlobSection;
@@ -40,7 +47,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
             }
             else if (optionsType == typeof(FileSystemEgressProviderOptions))
             {
-                IConfigurationSection fileSystemSection = egressSection.GetSection(EgressProviderTypes.FileSystem);
+                IConfigurationSection fileSystemSection = _egressSection.GetSection(EgressProviderTypes.FileSystem);
                 if (fileSystemSection.Exists())
                 {
                     yield return fileSystemSection;
@@ -63,7 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         private bool IsBuiltInSection(IConfigurationSection s)
         {
             Type egressType = typeof(EgressOptions);
-            return egressType.GetProperty(s.Key) != null || egressType.GetField(s.Key) != null;
+            return egressType.GetProperty(s.Key) != null;
         }
     }
 }

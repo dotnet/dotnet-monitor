@@ -12,10 +12,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal interface IEgressPropertiesProvider
     {
         /// <summary>
-        /// Gets the set of keys defined.
+        /// Gets the set of keys defined as a <see cref="IDictionary{strings, string}"/> with values populated.
         /// </summary>
-        /// <returns><see cref="IEnumerable{string}"/> that has the set of keys that can be retreived.</returns>
-        IEnumerable<string> GetKeys();
+        /// <returns><see cref="IDictionary{strings, string}"/> representing the set of properties.</returns>
+        IDictionary<string, string> GetAllProperties();
 
         /// <summary>
         /// Attempts to get the value associated with the specified key from the Egress:Properties section.

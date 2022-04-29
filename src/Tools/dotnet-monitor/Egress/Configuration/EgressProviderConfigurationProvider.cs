@@ -33,20 +33,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         {
             get
             {
-                return _optionsMapper.GetOptions(_egressSection, this.OptionsType).Select(s => s.Key);
+                return _optionsMapper.GetProviderSections(this.OptionsType).Select(s => s.Key);
             }
         }
 
         /// <inheritdoc/>
         public IConfigurationSection GetConfigurationSection(string providerType)
         {
-            return _optionsMapper.GetOptions(_egressSection, this.OptionsType).First(s => s.Key == providerType);
+            return _optionsMapper.GetProviderSections(this.OptionsType).First(s => s.Key == providerType);
         }
 
         /// <inheritdoc/>
         public IConfigurationSection GetTokenChangeSourceSection()
         {
-            IConfigurationSection[] sections = _optionsMapper.GetOptions(_egressSection, this.OptionsType).ToArray();
+            IConfigurationSection[] sections = _optionsMapper.GetProviderSections(this.OptionsType).ToArray();
 
             // If we are monitoring a specific section, return that element, otherwise we need to monitor the whole egress section
             if (sections.Length == 1)

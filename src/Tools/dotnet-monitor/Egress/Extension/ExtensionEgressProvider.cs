@@ -42,21 +42,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            Dictionary<string, string> props = new Dictionary<string, string>();
-            foreach (string key in _propertyProvider.GetKeys())
-            {
-                if (_propertyProvider.TryGetPropertyValue(key, out string val))
-                {
-                    props.Add(key, val);
-                }
-            }
-
             ExtensionEgressPayload payload = new ExtensionEgressPayload()
             {
                 Settings = artifactSettings,
                 Configuration = options,
-                Properties = props,
-                ProfileName = providerName,
+                Properties = _propertyProvider.GetAllProperties(),
+                ProviderName = providerName,
             };
 
             // [TODO] add a new service to dynamically find these extensions
@@ -80,9 +71,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             Logger?.LogInformation("starting stream...");
 
             await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, payload, options: null, token);
+            await p.StandardInput.WriteLineAsync();
+            await p.StandardInput.BaseStream.FlushAsync();
 
             await action(p.StandardInput.BaseStream, token);
-            p.StandardInput.BaseStream.Flush();
+            await p.StandardInput.BaseStream.FlushAsync();
 
             Logger?.LogInformation("Stream done, sending close...");
 

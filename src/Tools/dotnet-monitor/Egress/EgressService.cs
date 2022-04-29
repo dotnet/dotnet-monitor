@@ -65,8 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
         {
             string providerType = GetProviderType(providerName);
-            IEgressProviderConfigurationProvider configProvider = GetConfigProvider(providerType);
-            IEgressProviderInternal provider = GetProvider(configProvider);
+            IEgressProviderInternal provider = GetProvider(providerType);
 
             string value = await provider.EgressAsync(
                 providerType,
@@ -81,8 +80,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
         {
             string providerType = GetProviderType(providerName);
-            IEgressProviderConfigurationProvider configProvider = GetConfigProvider(providerType);
-            IEgressProviderInternal provider = GetProvider(configProvider);
+            IEgressProviderInternal provider = GetProvider(providerType);
 
             string value = await provider.EgressAsync(
                 providerType,
@@ -103,18 +101,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return providerType;
         }
 
-        private IEgressProviderConfigurationProvider GetConfigProvider(string providerType)
+        private IEgressProviderInternal GetProvider(string providerType)
         {
             if (!_egressProviderMap.TryGetValue(providerType, out IEgressProviderConfigurationProvider configProvider))
             {
                 throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderTypeNotRegistered, providerType));
             }
 
-            return configProvider;
-        }
-
-        private IEgressProviderInternal GetProvider(IEgressProviderConfigurationProvider configProvider)
-        {
             // Get the egress provider that matches the options type and return the weaker-typed
             // interface in order to allow egressing from the service without having to use reflection
             // to invoke it.            

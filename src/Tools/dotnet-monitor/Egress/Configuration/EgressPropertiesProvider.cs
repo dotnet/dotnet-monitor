@@ -22,9 +22,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         }
 
         /// <inheritdoc/>
-        public IEnumerable<string> GetKeys()
+        public IDictionary<string, string> GetAllProperties()
         {
-            return _provider.Configuration.GetChildren().Select(s => s.Key);
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            foreach (IConfigurationSection section in _provider.Configuration.GetChildren())
+            {
+                if (section.Exists())
+                {
+                    properties.Add(section.Key, section.Value);
+                }
+            }
+            return properties;
         }
 
         /// <inheritdoc/>
