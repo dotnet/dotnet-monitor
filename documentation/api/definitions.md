@@ -1,5 +1,17 @@
 # Definitions
 
+## CollectionRuleDescription
+
+Object describing the current state of a collection rule for the executing instance of `dotnet monitor`.
+
+| Name | Type | Description |
+|---|---|---|
+| Version | string | The current version of `dotnet monitor`. |
+| RuntimeVersion | string | The version of the dotnet runtime. |
+| DiagnosticPortMode | DiagnosticPortConnectionMode | Indicates whether `dotnet monitor` is in `connect` mode or `listen` mode. |
+| DiagnosticPortName | string | The name of the named pipe or unix domain socket to use for connecting to the diagnostic server. |
+
+
 ## DotnetMonitorInfo
 
 Object describing diagnostic/automation information about the executing instance of `dotnet monitor`.
