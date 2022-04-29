@@ -59,14 +59,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 ProfileName = providerName,
             };
 
-            string startingPayload = JsonSerializer.Serialize<ExtensionEgressPayload>(payload);
-
             // [TODO] add a new service to dynamically find these extensions
             const string extensionProcessPath = "MyPathTo\\Extension.exe";
             ProcessStartInfo pStart = new ProcessStartInfo()
             {
                 FileName = extensionProcessPath,
                 RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                UseShellExecute = false,
             };
             Process p = new Process()
             {
@@ -77,7 +79,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             p.Start();
             Logger?.LogInformation("starting stream...");
 
-            p.StandardInput.WriteLine(startingPayload);
+            await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, payload, options: null, token);
 
             await action(p.StandardInput.BaseStream, token);
             p.StandardInput.BaseStream.Flush();
@@ -86,13 +88,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             p.StandardInput.Close();
 
-            string procContent = await p.StandardOutput.ReadToEndAsync();
-
             Logger?.LogInformation("Waiting for exit...");
+
+            string procStdOutContent = await p.StandardOutput.ReadToEndAsync();
+            string procErrorContent = await p.StandardError.ReadToEndAsync();
+
             p.WaitForExit();
             Logger?.LogInformation($"Exited with code: {p.ExitCode}");
 
-            return procContent;
+            if (!string.IsNullOrWhiteSpace(procErrorContent))
+            {
+                Logger?.LogWarning($"Process Error output: {procErrorContent}");
+            }
+
+            return procStdOutContent;
         }
     }
 }

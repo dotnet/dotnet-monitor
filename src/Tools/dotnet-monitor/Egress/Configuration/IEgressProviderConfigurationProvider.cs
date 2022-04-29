@@ -9,34 +9,38 @@ using System.Collections.Generic;
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 {
     /// <summary>
-    /// Provides access to a set of Egress:{ProviderType} sections of the configuration based on the type of options.
+    /// Provides access to all of the egress provider configuraiton blocks that use the given <see cref="OptionsType"/>.
+    /// These configuration blocks will be from "Egress:{ProviderType}" where "{ProviderType}" is one of the strings definded in <see cref="ProviderTypes"/>.
     /// </summary>
     internal interface IEgressProviderConfigurationProvider
     {
         /// <summary>
-        /// The name of the category defined in configuration of this provider.
+        /// The name of the categories defined in configuration of this options type. These keys can be passed to <see cref="GetConfigurationSection(string)"/> to get the specific configuration section.
         /// </summary>
         IEnumerable<string> ProviderTypes { get; }
 
         /// <summary>
-        /// The type of the options class associated with the egress provider.
+        /// The type of the options class associated with the egress providers. This type is intended to be 1-to-1 with the instance of <see cref="IEgressPropertiesConfigurationProvider"/>.
         /// </summary>
         Type OptionsType { get; }
 
         /// <summary>
-        /// The configuration section associated with the egress provider.
+        /// Gets the <see cref="IConfigurationSection"/> associated with the given <paramref name="providerType"/>.
         /// </summary>
+        /// <param name="providerType">The provider type, this is element under "Egress:" in configuration. You can use <see cref="ProviderTypes"/> to get valid strings to use here.</param>
         IConfigurationSection GetConfigurationSection(string providerType);
 
         /// <summary>
-        /// The configuration section that should be monitored for changes.
+        /// The configuration section that should be monitored for changes. This will return the minimum set of <see cref="IConfigurationSection"/> to monitor for changes.
+        /// Note: a change in this section does not guarentee a meaningful change to configuration.
         /// </summary>
         IConfigurationSection GetTokenChangeSourceSection();
     }
 
     /// <summary>
-    /// Provides access to the Egress:{ProviderType} section of the configuration that is
-    /// associated with the <typeparamref name="TOptions"/> type.
+    /// Provides access to all of the egress provider configuraiton blocks that use the given <see cref="OptionsType"/>.
+    /// These configuration blocks will be from "Egress:{ProviderType}" where "{ProviderType}" is one of the strings definded in <see cref="ProviderTypes"/>.
+    /// This is the typed instance of <see cref="IEgressPropertiesConfigurationProvider"/>.
     /// </summary>
     internal interface IEgressProviderConfigurationProvider<TOptions> :
         IEgressProviderConfigurationProvider
