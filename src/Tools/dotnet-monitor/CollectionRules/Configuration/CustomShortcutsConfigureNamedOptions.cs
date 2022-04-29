@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
@@ -40,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             // Action Shortcuts
             foreach (var key in _shortcutOptions.CurrentValue.Actions.Keys)
             {
-                IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CustomShortcuts)}:{nameof(CustomShortcutOptions.Actions)}:{key}");
+                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CustomShortcuts), nameof(CustomShortcutOptions.Actions), key));
 
                 if (section.Exists())
                 {
@@ -53,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             // Trigger Shortcuts
             foreach (var key in _shortcutOptions.CurrentValue.Triggers.Keys)
             {
-                IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CustomShortcuts)}:{nameof(CustomShortcutOptions.Triggers)}:{key}");
+                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CustomShortcuts), nameof(CustomShortcutOptions.Triggers), key));
 
                 if (section.Exists())
                 {
@@ -88,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
             while (!boundAllActions)
             {
-                IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Actions)}:{index}");
+                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Actions), index.ToString(CultureInfo.InvariantCulture)));
                 if (section.Exists() && !string.IsNullOrEmpty(section.Value))
                 {
                     if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Actions, section.Value, ruleOptions.Actions, index))
@@ -109,7 +110,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         private bool InsertCustomTriggerIntoTrigger(CollectionRuleOptions ruleOptions, string name)
         {
-            IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Trigger)}");
+            IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Trigger)));
             if (section.Exists() && !string.IsNullOrEmpty(section.Value))
             {
                 if (!ValidateCustomShortcutExists(_shortcutOptions.CurrentValue.Triggers, section.Value))
@@ -130,8 +131,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             int index = 0;
 
             while (!boundAllFilters)
-            {
-                IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Filters)}:{index}");
+            {                
+                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Filters), index.ToString(CultureInfo.InvariantCulture)));
                 if (section.Exists() && !string.IsNullOrEmpty(section.Value))
                 {
                     if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Filters, section.Value, ruleOptions.Filters, index))
@@ -152,7 +153,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         private bool InsertCustomLimitIntoLimit(CollectionRuleOptions ruleOptions, string name)
         {
-            IConfigurationSection section = _configuration.GetSection($"{nameof(RootOptions.CollectionRules)}:{name}:{nameof(CollectionRuleOptions.Limits)}");
+            IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Limits)));
             if (section.Exists() && !string.IsNullOrEmpty(section.Value))
             {
                 if (!ValidateCustomShortcutExists(_shortcutOptions.CurrentValue.Limits, section.Value))
