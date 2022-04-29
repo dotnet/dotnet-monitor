@@ -271,19 +271,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             pipeline.CheckForThrottling((limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount), pipeline._executionTimestamps.Count, limitsOptions?.ActionCountSlidingWindowDuration);
 
-            var stateAndReason = pipeline.stateHolder.GetCollectionRulesState();
-
             var description = new CollectionRuleDescription()
             {
-                State = stateAndReason.Item1,
-                StateReason = stateAndReason.Item2,
+                State = pipeline.stateHolder.CurrState,
+                StateReason = pipeline.stateHolder.CurrStateReason,
                 LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
                 ActionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount),
                 SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
                 ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration,
             };
 
-            if (description.State != CollectionRulesState.Finished) // Make sure this works -> previously used isCleanedUp
+            if (description.State != CollectionRulesState.Finished)
             {
                 description.SlidingWindowDurationCountdown = GetSWDCountdown(pipeline._executionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
                 description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline._pipelineStartTime, limitsOptions?.RuleDuration, currentTime);
@@ -323,22 +321,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             var collectionRuleNamesFrequency = new Dictionary<string, int>();
 
-            var pipelinesToKeep = new Dictionary<string, DateTime>();
+            var activePipelineTimestamps = new Dictionary<string, DateTime>();
 
             foreach (var pipeline in _containersMap[key].pipelines)
             {
                 collectionRuleNamesFrequency[pipeline._context.Name] = collectionRuleNamesFrequency.GetValueOrDefault(pipeline._context.Name) + 1;
-                var currDateTime = pipelinesToKeep.GetValueOrDefault(pipeline._context.Name);
+                var latestTimestamp = activePipelineTimestamps.GetValueOrDefault(pipeline._context.Name);
 
-                if (pipeline._pipelineStartTime > currDateTime)
-                {
-                    pipelinesToKeep[pipeline._context.Name] = pipeline._pipelineStartTime;
-                }
-
+                activePipelineTimestamps[pipeline._context.Name] = pipeline._pipelineStartTime > latestTimestamp ? pipeline._pipelineStartTime : latestTimestamp;
             }
 
             // This is a less elegant way of doing this -> previously used _isCleanedUp, but that required changing the field from Private in the Diagnostics repo
-            _containersMap[key].pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline._pipelineStartTime != pipelinesToKeep.GetValueOrDefault(pipeline._context.Name));
+            _containersMap[key].pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline._pipelineStartTime != activePipelineTimestamps.GetValueOrDefault(pipeline._context.Name));
         }
     }
 }

@@ -2,96 +2,76 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    // Will need an actual name for this...mostly just experimenting for now.
     internal class CollectionRulesStateHolder
     {
-        private CollectionRulesMicroState CurrMicroState { get; set; }
-
-        public Tuple<CollectionRulesState, string> GetCollectionRulesState()
-        {
-            switch (CurrMicroState)
-            {
-                case CollectionRulesMicroState.Running:
-                    return new(CollectionRulesState.Running, CollectionRulesStateReasons.Running);
-                case CollectionRulesMicroState.ActionStarted:
-                    return new(CollectionRulesState.ActionExecuting, CollectionRulesStateReasons.ExecutingActions);
-                case CollectionRulesMicroState.ActionFailed:
-                    // What does it mean if we're in this scenario?
-                    break;
-                case CollectionRulesMicroState.FinishedViaFailure:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_Failure);
-                case CollectionRulesMicroState.FinishedViaRuleDuration:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_RuleDuration);
-                case CollectionRulesMicroState.FinishedViaConfigChange:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_ConfigurationChanged);
-                case CollectionRulesMicroState.FinishedViaStartup:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_Startup);
-                case CollectionRulesMicroState.FinishedViaActionCount:
-                    return new(CollectionRulesState.Finished, CollectionRulesStateReasons.Finished_ActionCount);
-                case CollectionRulesMicroState.Throttled:
-                    return new(CollectionRulesState.Throttled, CollectionRulesStateReasons.Throttled);
-            }
-
-            // Need to handle default case better
-            return new(CollectionRulesState.Running, CollectionRulesStateReasons.Running);
-        }
+        public CollectionRulesState CurrState { get; private set; }
+        public string CurrStateReason { get; private set; }
 
         internal void BeginActionExecution()
         {
-            CurrMicroState = CollectionRulesMicroState.ActionStarted;
+            CurrState = CollectionRulesState.ActionExecuting;
+            CurrStateReason = CollectionRulesStateReasons.ExecutingActions;
         }
 
         internal void ActionExecutionSucceeded()
         {
-            CurrMicroState = CollectionRulesMicroState.Running;
+            CurrState = CollectionRulesState.Running;
+            CurrStateReason = CollectionRulesStateReasons.Running;
         }
 
+
+        // NOT SURE WHAT TO DO HERE
         internal void ActionExecutionFailed()
         {
-            CurrMicroState = CollectionRulesMicroState.ActionFailed;
+
         }
 
         internal void BeginThrottled()
         {
-            CurrMicroState = CollectionRulesMicroState.Throttled;
+            CurrState = CollectionRulesState.Throttled;
+            CurrStateReason = CollectionRulesStateReasons.Throttled;
         }
 
         internal void EndThrottled()
         {
-            if (CurrMicroState == CollectionRulesMicroState.Throttled)
+            if (CurrState == CollectionRulesState.Throttled)
             {
-                CurrMicroState = CollectionRulesMicroState.Running;
+                CurrState = CollectionRulesState.Running;
+                CurrStateReason = CollectionRulesStateReasons.Running;
             }
         }
 
         internal void StartupTriggerCompleted()
         {
-            CurrMicroState = CollectionRulesMicroState.FinishedViaStartup;
+            CurrState = CollectionRulesState.Finished;
+            CurrStateReason = CollectionRulesStateReasons.Finished_Startup;
         }
 
         internal void RuleDurationReached()
         {
-            CurrMicroState = CollectionRulesMicroState.FinishedViaRuleDuration;
+            CurrState = CollectionRulesState.Finished;
+            CurrStateReason = CollectionRulesStateReasons.Finished_RuleDuration;
         }
 
         internal void ActionCountReached()
         {
-            CurrMicroState = CollectionRulesMicroState.FinishedViaActionCount;
+            CurrState = CollectionRulesState.Finished;
+            CurrStateReason = CollectionRulesStateReasons.Finished_ActionCount;
         }
 
         internal void ConfigurationChanged()
         {
-            CurrMicroState = CollectionRulesMicroState.FinishedViaConfigChange;
+            CurrState = CollectionRulesState.Finished;
+            CurrStateReason = CollectionRulesStateReasons.Finished_ConfigurationChanged;
         }
 
         // Not sure what the use-case is here (if there is one)
         internal void RuleFailure()
         {
-            CurrMicroState = CollectionRulesMicroState.FinishedViaFailure;
+            CurrState = CollectionRulesState.Finished;
+            CurrStateReason = CollectionRulesStateReasons.Finished_Failure;
         }
     }
 }

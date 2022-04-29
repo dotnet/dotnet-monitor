@@ -33,6 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private readonly TimeSpan DefaultPipelineTimeout = TimeSpan.FromSeconds(30);
         private const string TestRuleName = "TestPipelineRule";
+        const int ExpectedActionExecutionCount = 3;
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -113,7 +114,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(CollectionRulePipelineTests.GetTfmsSupportingPortListener), MemberType = typeof(CollectionRulePipelineTests))]
         public Task CollectionRuleDescriptionPipeline_ExecutingAction(TargetFrameworkMoniker appTfm)
         {
-            const int ExpectedActionExecutionCount = 3;
             TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
 
             MockSystemClock clock = new();
@@ -217,7 +217,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task CollectionRuleDescriptionPipeline_Throttled(TargetFrameworkMoniker appTfm)
         {
             const int IterationCount = 5;
-            const int ExpectedActionExecutionCount = 3;
             TimeSpan SlidingWindowDuration = TimeSpan.FromMilliseconds(2000); // NOTE: A value greater than 1 second is necessary since the Countdown trims precision to the nearest second (for user-readability)
             TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
 
@@ -390,7 +389,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(CollectionRulePipelineTests.GetTfmsSupportingPortListener), MemberType = typeof(CollectionRulePipelineTests))]
         public Task CollectionRuleDescriptionPipeline_ActionCountLimitUnlimitedDurationTest(TargetFrameworkMoniker appTfm)
         {
-            const int ExpectedActionExecutionCount = 3;
             TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
 
             MockSystemClock clock = new();
