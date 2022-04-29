@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -38,18 +39,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string DefaultRuleName = "FunctionalTestRule";
 
         /// <summary>
-        /// Validates that a startup rule will execute and complete without action beyond
-        /// discovering the target process.
+        /// Validates that a startup rule will execute and complete with the correct collection rule descriptions
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRuleDescription_StartupTriggerTest(DiagnosticPortConnectionMode mode)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
-            string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
-            string ExpectedFileContent = Guid.NewGuid().ToString("N");
-
-            const int ExpectedActionCountLimit = 3;
 
             Task ruleCompletedTask = null;
 
@@ -62,22 +58,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     await ruleCompletedTask;
 
-                    // These checks are technically outside the scope of these tests...pull them out?
-                    Assert.True(File.Exists(ExpectedFilePath));
-                    Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
-
                     Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptions = new();
-
-                    expectedDescriptions.Add(DefaultRuleName, new()
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions = new()
                     {
-                        ActionCountLimit = ExpectedActionCountLimit,
-                        LifetimeOccurrences = 1,
-                        SlidingWindowOccurrences = 1,
-                        State = CollectionRulesState.Finished,
-                        StateReason = CollectionRulesStateReasons.Finished_Startup
-                    });
+                        {
+                            DefaultRuleName,
+                            new()
+                            {
+                                ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
+                                LifetimeOccurrences = 1,
+                                SlidingWindowOccurrences = 1,
+                                State = CollectionRulesState.Finished,
+                                StateReason = CollectionRulesStateReasons.Finished_Startup
+                            }
+                        }
+                    };
 
                     ValidateCollectionRuleDescriptions(collectionRuleDescriptions, expectedDescriptions);
 
@@ -86,9 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureTool: runner =>
                 {
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
-                        .SetStartupTrigger()
-                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent)
-                        .SetActionLimits(count: ExpectedActionCountLimit);
+                        .SetStartupTrigger();
 
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
@@ -119,16 +113,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions_Before = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_Before = new();
-
-                    expectedDescriptions_Before.Add(DefaultRuleName, new()
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_Before = new()
                     {
-                        ActionCountLimit = ExpectedActionCountLimit,
-                        LifetimeOccurrences = 0,
-                        SlidingWindowOccurrences = 0,
-                        State = CollectionRulesState.Running,
-                        StateReason = CollectionRulesStateReasons.Running
-                    });
+                        {
+                            DefaultRuleName,
+                            new()
+                            {
+                                ActionCountLimit = ExpectedActionCountLimit,
+                                LifetimeOccurrences = 0,
+                                SlidingWindowOccurrences = 0,
+                                State = CollectionRulesState.Running,
+                                StateReason = CollectionRulesStateReasons.Running
+                            }
+                        }
+                    };
 
                     ValidateCollectionRuleDescriptions(collectionRuleDescriptions_Before, expectedDescriptions_Before);
 
@@ -138,21 +136,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StopSpin);
 
-                    Assert.True(File.Exists(ExpectedFilePath));
-                    Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
-
                     Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions_After = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_After = new();
-
-                    expectedDescriptions_After.Add(DefaultRuleName, new()
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_After = new()
                     {
-                        ActionCountLimit = ExpectedActionCountLimit,
-                        LifetimeOccurrences = 1,
-                        SlidingWindowOccurrences = 1,
-                        State = CollectionRulesState.Finished,
-                        StateReason = CollectionRulesStateReasons.Finished_ActionCount
-                    });
+                        {
+                            DefaultRuleName,
+                            new()
+                            {
+                                ActionCountLimit = ExpectedActionCountLimit,
+                                LifetimeOccurrences = 1,
+                                SlidingWindowOccurrences = 1,
+                                State = CollectionRulesState.Finished,
+                                StateReason = CollectionRulesStateReasons.Finished_ActionCount
+                            }
+                        }
+                    };
 
                     ValidateCollectionRuleDescriptions(collectionRuleDescriptions_After, expectedDescriptions_After);
                 },
@@ -174,7 +173,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        // Consider adding a comparer...that way if we add more attributes in the future, we don't need to manually add them here
         private void ValidateCollectionRuleDescriptions(Dictionary<string, CollectionRuleDescription> actualCollectionRuleDescriptions, Dictionary<string, CollectionRuleDescription> expectedCollectionRuleDescriptions)
         {
             Assert.Equal(actualCollectionRuleDescriptions.Keys.Count, expectedCollectionRuleDescriptions.Keys.Count);

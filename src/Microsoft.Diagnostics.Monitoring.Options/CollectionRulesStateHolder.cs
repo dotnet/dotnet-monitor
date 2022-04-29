@@ -6,8 +6,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal class CollectionRulesStateHolder
     {
-        public CollectionRulesState CurrState { get; private set; }
-        public string CurrStateReason { get; private set; }
+        public CollectionRulesState CurrState { get; private set; } = CollectionRulesState.Running;
+        public string CurrStateReason { get; private set; } = CollectionRulesStateReasons.Running;
 
         internal void BeginActionExecution()
         {
