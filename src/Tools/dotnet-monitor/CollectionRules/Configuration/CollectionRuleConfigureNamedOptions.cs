@@ -8,7 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
-using System.Globalization;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
@@ -57,16 +57,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             if (null != actionOptions &&
                 _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
             {
-                int configurationIndex = 0;
+                var section = ruleSection.GetSection(nameof(CollectionRuleOptions.Actions));
+
+                var actionSections = section.GetChildren();
+
                 int actionsFound = 0;
 
-                while (actionsFound <= actionIndex)
+                for (int index = 0; index < actionSections.Count(); ++index)
                 {
-                    IConfigurationSection actionSection = ruleSection.GetSection(ConfigurationPath.Combine(
-                        nameof(CollectionRuleOptions.Actions),
-                        configurationIndex.ToString(CultureInfo.InvariantCulture)));
+                    var actionSection = actionSections.ElementAt(index);
 
-                    actionsFound = actionSection.Exists() && string.IsNullOrEmpty(actionSection.Value) ? actionsFound + 1 : actionsFound;
+                    actionsFound = string.IsNullOrEmpty(actionSection.Value) ? actionsFound + 1 : actionsFound;
 
                     if (actionsFound > actionIndex)
                     {
@@ -75,9 +76,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
                         settingsSection.Bind(actionSettings);
                         actionOptions.Settings = actionSettings;
-                    }
 
-                    ++configurationIndex;
+                        break;
+                    }
                 }
             }
         }
