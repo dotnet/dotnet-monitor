@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading;
@@ -38,12 +37,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         /// <inheritdoc/>
         public Task<string> EgressAsync(
+            string providerType,
             string providerName,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
             return _provider.EgressAsync(
+                providerType,
+                providerName,
                 GetOptions(providerName),
                 action,
                 artifactSettings,
@@ -52,12 +54,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         /// <inheritdoc/>
         public Task<string> EgressAsync(
+            string providerType,
             string providerName,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
             return _provider.EgressAsync(
+                providerType,
+                providerName,
                 GetOptions(providerName),
                 action,
                 artifactSettings,
@@ -68,7 +73,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             try
             {
-                return _monitor.Get(providerName);
+                TOptions opts = _monitor.Get(providerName);
+                return opts;
             }
             catch (OptionsValidationException ex)
             {

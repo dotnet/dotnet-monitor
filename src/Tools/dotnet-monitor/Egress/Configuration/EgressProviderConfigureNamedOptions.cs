@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
-using System.Diagnostics;
+using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 {
@@ -28,12 +28,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 
         public void Configure(string name, TOptions options)
         {
-            IConfigurationSection section = _provider.Configuration.GetSection(name);
-            Debug.Assert(section.Exists());
-            if (section.Exists())
+            foreach (string providerType in _provider.ProviderTypes)
             {
-                section.Bind(options);
+                IConfigurationSection providerTypeSection = _provider.GetConfigurationSection(providerType);
+                IConfigurationSection providerOptionsSection = providerTypeSection.GetSection(name);
+                if (providerOptionsSection.Exists())
+                {
+                    providerOptionsSection.Bind(options);
+                    return;
+                }
             }
+
+            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, name));
         }
 
         public void Configure(TOptions options)

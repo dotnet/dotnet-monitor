@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 {
@@ -17,6 +19,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         public EgressPropertiesProvider(IEgressPropertiesConfigurationProvider provider)
         {
             _provider = provider;
+        }
+
+        /// <inheritdoc/>
+        public IDictionary<string, string> GetAllProperties()
+        {
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            foreach (IConfigurationSection section in _provider.Configuration.GetChildren())
+            {
+                properties.Add(section.Key, section.Value);
+            }
+            return properties;
         }
 
         /// <inheritdoc/>
