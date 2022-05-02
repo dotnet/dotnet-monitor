@@ -27,10 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
             Dictionary<string, string> properties = new Dictionary<string, string>();
             foreach (IConfigurationSection section in _provider.Configuration.GetChildren())
             {
-                if (section.Exists())
-                {
-                    properties.Add(section.Key, section.Value);
-                }
+                properties.Add(section.Key, section.Value);
             }
             return properties;
         }
