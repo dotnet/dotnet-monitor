@@ -55,6 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
              * 2. Remove all raw logging statements from this method and refactor into LoggingExtensions
              * 3. Stream StdOut and StdErr async in the process so their streams don't need to end before we can return
              * 4. Refactor WaitForExit to do an async wait
+             * 5. Add well-factored protocol for returning information from an extension
              */
             const string extensionProcessPath = "MyPathTo\\Extension.exe";
             ProcessStartInfo pStart = new ProcessStartInfo()

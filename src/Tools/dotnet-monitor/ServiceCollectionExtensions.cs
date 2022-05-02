@@ -210,7 +210,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static IServiceCollection RegisterEgressType<TOptions, TProvider>(this IServiceCollection services)
             where TProvider : class, IEgressProvider<TOptions>
-            where TOptions : class, new()
+            where TOptions : class
         {
             // These Singletons are "IEnumerable<T>" services where there are multiple services registered (if TOptions is the same)
             // Add services to provide raw configuration for the options type
@@ -218,13 +218,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingletonForwarder<IEgressProviderConfigurationProvider<TOptions>, EgressProviderConfigurationProvider<TOptions>>();
             services.AddSingletonForwarder<IEgressProviderConfigurationProvider, EgressProviderConfigurationProvider<TOptions>>();
 
+            // Register change sources for the options type
+            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();
             services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
 
             // Add options services for configuring the options type
             services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
-            // Register change sources for the options type
-            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();
 
             // Add custom options cache to override behavior of default named options
             services.AddSingleton<IOptionsMonitorCache<TOptions>, DynamicNamedOptionsCache<TOptions>>();
