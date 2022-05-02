@@ -3,14 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
-    public class CollectionRuleDescription : IComparable<CollectionRuleDescription>
+    public record class CollectionRuleDescription
     {
         /*
         /// <summary>
@@ -67,23 +64,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         /// </summary>
         [JsonPropertyName("ruleFinishedCountdown")]
         public TimeSpan? RuleFinishedCountdown { get; set; }
-
-        public int CompareTo(CollectionRuleDescription other)
-        {
-            var propertyInfos = typeof(CollectionRuleDescription).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            foreach (var propertyInfo in propertyInfos)
-            {
-                var currVal = typeof(CollectionRuleDescription).GetProperty(propertyInfo.Name).GetValue(this, null);
-                var otherVal = typeof(CollectionRuleDescription).GetProperty(propertyInfo.Name).GetValue(other, null);
-
-                if (currVal != otherVal && (currVal == null || !currVal.Equals(otherVal)))
-                {
-                    return 1;
-                }
-            }
-
-            return 0;
-        }
     }
 }
