@@ -7,7 +7,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Diagnostics.Tracing.Parsers.IIS_Trace;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -156,7 +155,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 foreach (var key in _containersMap.Keys)
                 {
-                    foreach (var pipeline in _containersMap[key].pipelines)
+                    foreach (var pipeline in _containersMap[key]._pipelines)
                     {
                         pipeline.stateHolder.ConfigurationChanged();
                     }
@@ -252,7 +251,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 CleanUpCompletedPipelines(key);
 
-                foreach (var pipeline in _containersMap[key].pipelines)
+                foreach (var pipeline in _containersMap[key]._pipelines)
                 {
                     collectionRulesState.Add(pipeline._context.Name, GetCollectionRuleDescription(pipeline));
                 }
@@ -266,17 +265,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             CollectionRuleLimitsOptions limitsOptions = pipeline._context.Options.Limits;
 
             DateTime currentTime = pipeline._context.Clock.UtcNow.UtcDateTime;
-
             CollectionRulePipeline.DequeueOldTimestamps(pipeline._executionTimestamps, limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
 
-            pipeline.CheckForThrottling((limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount), pipeline._executionTimestamps.Count, limitsOptions?.ActionCountSlidingWindowDuration);
+            int actionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
+            pipeline.CheckForThrottling(actionCountLimit, pipeline._executionTimestamps.Count, limitsOptions?.ActionCountSlidingWindowDuration);
 
             var description = new CollectionRuleDescription()
             {
                 State = pipeline.stateHolder.CurrState,
                 StateReason = pipeline.stateHolder.CurrStateReason,
                 LifetimeOccurrences = pipeline._allExecutionTimestamps.Count,
-                ActionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount),
+                ActionCountLimit = actionCountLimit,
                 SlidingWindowOccurrences = pipeline._executionTimestamps.Count,
                 ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration,
             };
@@ -323,7 +322,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             var activePipelineTimestamps = new Dictionary<string, DateTime>();
 
-            foreach (var pipeline in _containersMap[key].pipelines)
+            foreach (var pipeline in _containersMap[key]._pipelines)
             {
                 collectionRuleNamesFrequency[pipeline._context.Name] = collectionRuleNamesFrequency.GetValueOrDefault(pipeline._context.Name) + 1;
                 var latestTimestamp = activePipelineTimestamps.GetValueOrDefault(pipeline._context.Name);
@@ -332,7 +331,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
 
             // This is a less elegant way of doing this -> previously used _isCleanedUp, but that required changing the field from Private in the Diagnostics repo
-            _containersMap[key].pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline._pipelineStartTime != activePipelineTimestamps.GetValueOrDefault(pipeline._context.Name));
+            _containersMap[key]._pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline._context.Name] > 1 && pipeline._pipelineStartTime != activePipelineTimestamps.GetValueOrDefault(pipeline._context.Name));
         }
     }
 }

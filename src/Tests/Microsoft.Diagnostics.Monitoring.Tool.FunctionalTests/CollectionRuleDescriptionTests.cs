@@ -60,20 +60,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptions = new()
-                    {
-                        {
-                            DefaultRuleName,
-                            new()
-                            {
-                                ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
-                                LifetimeOccurrences = 1,
-                                SlidingWindowOccurrences = 1,
-                                State = CollectionRuleState.Finished,
-                                StateReason = CollectionRuleStateReasons.Finished_Startup
-                            }
-                        }
-                    };
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions = new();
+
+                    expectedDescriptions.Add(DefaultRuleName, new() {                        
+                        ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
+                        LifetimeOccurrences = 1,
+                        SlidingWindowOccurrences = 1,
+                        State = CollectionRuleState.Finished,
+                        StateReason = CollectionRuleStateReasons.Finished_Startup
+                    });
 
                     ValidateCollectionRuleDescriptions(collectionRuleDescriptions, expectedDescriptions);
 
@@ -113,20 +108,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions_Before = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_Before = new()
-                    {
-                        {
-                            DefaultRuleName,
-                            new()
-                            {
-                                ActionCountLimit = ExpectedActionCountLimit,
-                                LifetimeOccurrences = 0,
-                                SlidingWindowOccurrences = 0,
-                                State = CollectionRuleState.Running,
-                                StateReason = CollectionRuleStateReasons.Running
-                            }
-                        }
-                    };
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_Before = new();
+
+                    expectedDescriptions_Before.Add(DefaultRuleName, new() {
+                        ActionCountLimit = ExpectedActionCountLimit,
+                        LifetimeOccurrences = 0,
+                        SlidingWindowOccurrences = 0,
+                        State = CollectionRuleState.Running,
+                        StateReason = CollectionRuleStateReasons.Running
+                    });
 
                     ValidateCollectionRuleDescriptions(collectionRuleDescriptions_Before, expectedDescriptions_Before);
 
@@ -138,20 +128,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions_After = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_After = new()
-                    {
-                        {
-                            DefaultRuleName,
-                            new()
-                            {
-                                ActionCountLimit = ExpectedActionCountLimit,
-                                LifetimeOccurrences = 1,
-                                SlidingWindowOccurrences = 1,
-                                State = CollectionRuleState.Finished,
-                                StateReason = CollectionRuleStateReasons.Finished_ActionCount
-                            }
-                        }
-                    };
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_After = new();
+
+                    expectedDescriptions_After.Add(DefaultRuleName, new() {
+                        ActionCountLimit = ExpectedActionCountLimit,
+                        LifetimeOccurrences = 1,
+                        SlidingWindowOccurrences = 1,
+                        State = CollectionRuleState.Finished,
+                        StateReason = CollectionRuleStateReasons.Finished_ActionCount
+                    });
 
                     ValidateCollectionRuleDescriptions(collectionRuleDescriptions_After, expectedDescriptions_After);
                 },

@@ -67,8 +67,15 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  STILL NEED THIS...
-
+  "MyCollectionRule": {
+    "state":"Running",
+    "stateReason":"This collection rule is active and waiting for its triggering conditions to be satisfied.",
+    "lifetimeOccurrences":0,
+    "slidingWindowOccurrences":0,
+    "actionCountLimit":2,
+    "actionCountSlidingWindowDurationLimit":"00:01:00",
+    "slidingWindowDurationCountdown":null,
+    "ruleFinishedCountdown":"00:03:00"}
 }
 ```
 

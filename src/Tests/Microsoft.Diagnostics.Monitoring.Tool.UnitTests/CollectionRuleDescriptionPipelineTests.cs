@@ -21,14 +21,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    // Test Coverage:
-    // Running
-    // Running -> Throttled -> Running
-    // Running -> Action Executing -> Running
-    // Finished (Startup)
-    // Finished (Rule Duration)
-    // Finished (Action Count)
-
     public class CollectionRuleDescriptionPipelineTests
     {
         private readonly TimeSpan DefaultPipelineTimeout = TimeSpan.FromSeconds(30);
@@ -85,18 +77,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // wait for a very short time, if at all.
                     await runTask.WithCancellation(cancellationSource.Token);
 
-                    CollectionRuleDescription actualDescription = CollectionRuleService.GetCollectionRuleDescription(pipeline);
-
-                    CollectionRuleDescription expectedDescription = new()
+                    CompareCollectionRuleDescriptions(pipeline, new()
                     {
-                        ActionCountLimit = 5,
+                        ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.Finished,
                         StateReason = CollectionRuleStateReasons.Finished_Startup
-                    };
-
-                    Assert.Equal(actualDescription, expectedDescription);
+                    });
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -150,6 +138,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Task actionStartedTask;
                     Task actionsThrottledTask = callbacks.StartWaitForActionsThrottled();
 
+                    // Borrowed portions of this from ManualTriggerAsync implementation
+
                     TaskCompletionSource<object> startedSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
                     EventHandler startedHandler = (s, e) => startedSource.TrySetResult(null);
                     using var _ = cancellationSource.Token.Register(() => startedSource.TrySetCanceled(cancellationSource.Token));
@@ -164,37 +154,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // Wait until action has started.
                     await actionStartedTask.WithCancellation(cancellationSource.Token);
 
-                    CollectionRuleDescription actualDescription = CollectionRuleService.GetCollectionRuleDescription(pipeline);
-
-                    CollectionRuleDescription expectedDescription = new()
+                    CompareCollectionRuleDescriptions(pipeline, new()
                     {
                         ActionCountLimit = ExpectedActionExecutionCount,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.ActionExecuting,
                         StateReason = CollectionRuleStateReasons.ExecutingActions
-                    };
-
-                    Assert.Equal(actualDescription, expectedDescription);
+                    });
 
                     await startedSource.WithCancellation(cancellationSource.Token);
 
-                    CollectionRuleDescription actualDescription2 = CollectionRuleService.GetCollectionRuleDescription(pipeline);
-
-                    CollectionRuleDescription expectedDescription2 = new()
+                    CompareCollectionRuleDescriptions(pipeline, new()
                     {
                         ActionCountLimit = ExpectedActionExecutionCount,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.Running,
                         StateReason = CollectionRuleStateReasons.Running
-                    };
-
-                    Assert.Equal(actualDescription2, expectedDescription2);
+                    });
 
                     triggerService.NotifyStarted -= startedHandler;
-
-                    /////////////////////////////////
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
@@ -217,7 +197,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task CollectionRuleDescriptionPipeline_Throttled(TargetFrameworkMoniker appTfm)
         {
             const int IterationCount = 5;
-            TimeSpan SlidingWindowDuration = TimeSpan.FromMilliseconds(2000); // NOTE: A value greater than 1 second is necessary since the Countdown trims precision to the nearest second (for user-readability)
+            TimeSpan SlidingWindowDuration = TimeSpan.FromSeconds(2); // NOTE: A value greater than 1 second is necessary since the countdown trims precision to the nearest second (for user-readability)
+            TimeSpan ExpectedSlidingWindowDurationCountdown = TimeSpan.FromSeconds(1);
             TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
 
             MockSystemClock clock = new();
@@ -258,9 +239,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         completesOnLastExpectedIteration: false,
                         cancellationSource.Token);
 
-                    CollectionRuleDescription actualDescription1 = CollectionRuleService.GetCollectionRuleDescription(pipeline);
-
-                    CollectionRuleDescription expectedDescription1 = new()
+                    CompareCollectionRuleDescriptions(pipeline, new()
                     {
                         ActionCountLimit = ExpectedActionExecutionCount,
                         ActionCountSlidingWindowDurationLimit = SlidingWindowDuration,
@@ -268,26 +247,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
                         State = CollectionRuleState.Throttled,
                         StateReason = CollectionRuleStateReasons.Throttled,
-                        SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01") // Rounding due to (intentional) lost precision
-                    };
-
-                    Assert.Equal(actualDescription1, expectedDescription1);
+                        SlidingWindowDurationCountdown = ExpectedSlidingWindowDurationCountdown
+                    });
 
                     clock.Increment(2 * SlidingWindowDuration);
 
-                    CollectionRuleDescription actualDescription2 = CollectionRuleService.GetCollectionRuleDescription(pipeline);
-
-                    CollectionRuleDescription expectedDescription2 = new()
+                    CompareCollectionRuleDescriptions(pipeline, new()
                     {
                         ActionCountLimit = ExpectedActionExecutionCount,
                         ActionCountSlidingWindowDurationLimit = SlidingWindowDuration,
                         LifetimeOccurrences = ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = 0,
                         State = CollectionRuleState.Running,
-                        StateReason = CollectionRuleStateReasons.Running,
-                    };
-
-                    Assert.Equal(actualDescription2, expectedDescription2);
+                        StateReason = CollectionRuleStateReasons.Running
+                    });
 
                     await CollectionRulePipelineTests.ManualTriggerAsync(
                         triggerService,
@@ -300,12 +273,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         completesOnLastExpectedIteration: false,
                         cancellationSource.Token);
 
-                    // Pipeline should not run to completion due to sliding window existance.
-                    Assert.False(runTask.IsCompleted);
-
-                    CollectionRuleDescription actualDescription3 = CollectionRuleService.GetCollectionRuleDescription(pipeline);
-
-                    CollectionRuleDescription expectedDescription3 = new()
+                    CompareCollectionRuleDescriptions(pipeline, new()
                     {
                         ActionCountLimit = ExpectedActionExecutionCount,
                         ActionCountSlidingWindowDurationLimit = SlidingWindowDuration,
@@ -313,10 +281,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
                         State = CollectionRuleState.Throttled,
                         StateReason = CollectionRuleStateReasons.Throttled,
-                        SlidingWindowDurationCountdown = TimeSpan.Parse("00:00:01") // Rounding due to (intentional) lost precision
-                    };
-
-                    Assert.Equal(actualDescription3, expectedDescription3);
+                        SlidingWindowDurationCountdown = ExpectedSlidingWindowDurationCountdown
+                    });
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
@@ -361,18 +327,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
-                    CollectionRuleDescription actualDescription = CollectionRuleService.GetCollectionRuleDescription(pipeline);
-
-                    CollectionRuleDescription expectedDescription = new()
+                    CompareCollectionRuleDescriptions(pipeline, new()
                     {
                         ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
                         LifetimeOccurrences = 0,
                         SlidingWindowOccurrences = 0,
                         State = CollectionRuleState.Finished,
-                        StateReason = CollectionRuleStateReasons.Finished_RuleDuration,
-                    };
-
-                    Assert.Equal(actualDescription, expectedDescription);
+                        StateReason = CollectionRuleStateReasons.Finished_RuleDuration
+                    });
                 },
                 _outputHelper,
                 services =>
@@ -432,18 +394,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
-                    CollectionRuleDescription actualDescription = CollectionRuleService.GetCollectionRuleDescription(pipeline);
-
-                    CollectionRuleDescription expectedDescription = new()
+                    CompareCollectionRuleDescriptions(pipeline, new()
                     {
                         ActionCountLimit = ExpectedActionExecutionCount,
                         LifetimeOccurrences = ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
                         State = CollectionRuleState.Finished,
-                        StateReason = CollectionRuleStateReasons.Finished_ActionCount,
-                    };
-
-                    Assert.Equal(actualDescription, expectedDescription);
+                        StateReason = CollectionRuleStateReasons.Finished_ActionCount
+                    });
                 },
                 _outputHelper,
                 services =>
@@ -452,6 +410,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
                 });
+        }
+
+        private static void CompareCollectionRuleDescriptions(CollectionRulePipeline pipeline, CollectionRuleDescription expectedDescription)
+        {
+            CollectionRuleDescription actualDescription = CollectionRuleService.GetCollectionRuleDescription(pipeline);
+
+            Assert.Equal(actualDescription, expectedDescription);
         }
     }
 }

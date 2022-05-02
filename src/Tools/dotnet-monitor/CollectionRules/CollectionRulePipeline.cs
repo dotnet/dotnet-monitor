@@ -232,7 +232,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public static void DequeueOldTimestamps(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
         {
-            // If rule has an action count window, Remove all execution timestamps that fall outside the window.
+            // If rule has an action count window, remove all execution timestamps that fall outside the window.
             if (actionCountWindowDuration.HasValue)
             {
                 DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
@@ -259,11 +259,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 stateHolder.EndThrottled();
                 return false;
             }
-            else
-            {
-                stateHolder.BeginThrottled();
-                return true;
-            }
+
+            stateHolder.BeginThrottled();
+            return true;
         }
 
         // Temporary until Pipeline APIs are public or get an InternalsVisibleTo for the tests

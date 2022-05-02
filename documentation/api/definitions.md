@@ -8,11 +8,11 @@ Object describing the current state of a collection rule for the executing insta
 |---|---|---|
 | State | [CollectionRuleState](#CollectionRuleState) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
-| LifetimeOccurrences | int | The number of time the trigger has executed for a process in its lifetime. |
+| LifetimeOccurrences | int | The number of times the trigger has executed for a process in its lifetime. |
 | SlidingWindowOccurrences | int | The number of times the trigger has executed within the current sliding window. |
-| ActionCountLimit | int | 	The number of times the action list may be executed before being throttled. |
-| ActionCountSlidingWindowDurationLimit | TimeSpan? | The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting. If not specified, all action list executions will be counted for the entire duration of the rule.	 |
-| SlidingWindowDurationCountdown | TimeSpan? | The amount of time remaining before the collection rule will no longer be throttled (when Action ActionCountSlidingWindowDurationLimit and SlidingWindowOccurrences has reached the ActionCountLimit)  |
+| ActionCountLimit | int | The number of times the action list may be executed before being throttled. |
+| ActionCountSlidingWindowDurationLimit | TimeSpan? | The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting. If not specified, all action list executions will be counted for the entire duration of the rule. |
+| SlidingWindowDurationCountdown | TimeSpan? | The amount of time remaining before the collection rule will no longer be throttled. |
 | RuleFinishedCountdown | TimeSpan? | The amount of time remaining before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. |
 
 ## CollectionRuleState
