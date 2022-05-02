@@ -228,6 +228,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 // Handle it to allow pipeline to be in completed state.
                 stateHolder.RuleDurationReached();
             }
+            catch (Exception)
+            {
+                stateHolder.RuleFailure(); // Untested...not sure if this is correct behavior
+                throw;
+            }
         }
 
         public static void DequeueOldTimestamps(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)

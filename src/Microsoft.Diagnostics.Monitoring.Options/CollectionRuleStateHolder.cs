@@ -22,10 +22,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
 
 
-        // NOT SURE WHAT TO DO HERE
         internal void ActionExecutionFailed()
         {
-
+            // Is this the correct behavior? Treating the same as action success, but internally store this separately if we want to handle it differently
+            CurrState = CollectionRuleState.Running;
+            CurrStateReason = CollectionRuleStateReasons.Running;
         }
 
         internal void BeginThrottled()
@@ -67,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             CurrStateReason = CollectionRuleStateReasons.Finished_ConfigurationChanged;
         }
 
-        // Not sure what the use-case is here (if there is one)
+        // Untested -> Not sure when/how this is used
         internal void RuleFailure()
         {
             CurrState = CollectionRuleState.Finished;
