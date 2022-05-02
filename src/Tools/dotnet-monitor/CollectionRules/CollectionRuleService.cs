@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ChannelWriter<CollectionRuleContainer> _containersToRemoveWriter;
         private readonly ILogger<CollectionRuleService> _logger;
         private readonly CollectionRulesConfigurationProvider _provider;
+        private readonly DiagnosticPortOptions _portOptions;
         private readonly IServiceProvider _serviceProvider;
 
         private long _disposalState;
@@ -34,12 +36,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public CollectionRuleService(
             IServiceProvider serviceProvider,
             ILogger<CollectionRuleService> logger,
-            CollectionRulesConfigurationProvider provider
+            CollectionRulesConfigurationProvider provider,
+            IOptions<DiagnosticPortOptions> portOptions
             )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _portOptions = portOptions.Value ?? throw new ArgumentNullException(nameof(portOptions));
 
             BoundedChannelOptions containersToRemoveChannelOptions = new(PendingRemovalChannelCapacity)
             {
@@ -154,6 +158,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 rulesChanged = false;
 
                 _logger.CollectionRuleConfigurationChanged();
+
+                if (!(_portOptions.ConnectionMode == DiagnosticPortConnectionMode.Listen && !string.IsNullOrEmpty(_portOptions.EndpointName)))
+                {
+                    _logger.LogWarning(Strings.ErrorMessage_DiagnosticPortNotInListenModeForCollectionRules);
+                }
 
                 // Get a copy of the container list to avoid having to
                 // lock the entire list during stop and restart of all containers.
