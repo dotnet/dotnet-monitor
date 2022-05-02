@@ -159,7 +159,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleConfigurationChanged();
 
-                if (!(_portOptions.ConnectionMode == DiagnosticPortConnectionMode.Listen && !string.IsNullOrEmpty(_portOptions.EndpointName)))
+                if (_portOptions.ConnectionMode != DiagnosticPortConnectionMode.Listen || string.IsNullOrEmpty(_portOptions.EndpointName))
                 {
                     _logger.LogWarning(Strings.ErrorMessage_DiagnosticPortNotInListenModeForCollectionRules);
                 }
