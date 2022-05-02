@@ -29,8 +29,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (collectionRuleNames != null && collectionRuleNames.Count > 0)
             {
-                if (!(options.ConnectionMode == DiagnosticPortConnectionMode.Listen
-                    && !string.IsNullOrEmpty(options.EndpointName)))
+                if (options.ConnectionMode != DiagnosticPortConnectionMode.Listen
+                    || string.IsNullOrEmpty(options.EndpointName))
                 {
                     _logger.LogWarning(Strings.ErrorMessage_DiagnosticPortNotInListenModeForCollectionRules);
                 }
