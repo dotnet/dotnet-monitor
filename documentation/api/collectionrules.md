@@ -75,7 +75,8 @@ Content-Type: application/json
     "actionCountLimit":2,
     "actionCountSlidingWindowDurationLimit":"00:01:00",
     "slidingWindowDurationCountdown":null,
-    "ruleFinishedCountdown":"00:03:00"}
+    "ruleFinishedCountdown":"00:03:00"
+  }
 }
 ```
 
