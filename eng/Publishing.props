@@ -16,10 +16,72 @@
     <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.nupkg" IsShipping="false" />
   </ItemGroup>
 
-  <Target Name="GenerateChecksumsForBlobgroups">
+  <Target Name="CalculateBlobGroupAndBuildVersion">
+    <PropertyGroup>
+      <!--
+        These properties take a package version and transform it into a blob group name so that
+        all builds from the same product and release version are grouped together. This code has
+        to consider when the version is a release version (e.g. 7.0.0) or has a prerelease label
+        (e.g. 7.0.0-preview.1). The former is transformed into '7.0/release' whereas
+        the latter is transformed into '7.0/preview.1'. It also accounts for the
+        BlobGroupBuildQuality defined in Version.props, which determines if the prerelease information
+        should be used in the final blob group name.
+        -->
+      <_PreReleaseSeperatorIndex>$(Version.IndexOf('-'))</_PreReleaseSeperatorIndex>
+      
+      <!-- Prerelease: '7.0.0-preview.8' -> '7.0.0' and 'preview.8' -->
+      <_BlobGroupVersion Condition="'$(_PreReleaseSeperatorIndex)' != '-1'">$(Version.Substring(0, $(_PreReleaseSeperatorIndex)))</_BlobGroupVersion>
+      
+      <!-- Release: take the package version as-is. -->
+      <_BlobGroupVersion Condition="'$(_PreReleaseSeperatorIndex)' == '-1'">$(Version)</_BlobGroupVersion>
+    </PropertyGroup>
+    <!-- These are the valid BlobGroupBuildQuality values. -->
     <ItemGroup>
-      <GenerateChecksumItems Include="%(PackageFile.Identity)"
-                             Condition="$([System.IO.File]::Exists('%(PackageFile.Identity).blobgroup'))" >
+      <_BlobGroupBuildQualityName Include="daily" ReleaseName="daily" />
+      <_BlobGroupBuildQualityName Include="release" ReleaseName="release" />
+    </ItemGroup>
+    <!-- Select the blob group build quality based on the specified property. -->
+    <ItemGroup>
+      <_SelectedBlobGroupQualityName Include="@(_BlobGroupBuildQualityName)" Condition="'%(Identity)' == '$(BlobGroupBuildQuality)'" />
+    </ItemGroup>
+    <PropertyGroup>
+      <!-- Extract major and minor version fields from version number. -->
+      <_BlobGroupVersionMajor>$(_BlobGroupVersion.Split('.')[0])</_BlobGroupVersionMajor>
+      <_BlobGroupVersionMinor>$(_BlobGroupVersion.Split('.')[1])</_BlobGroupVersionMinor>
+      <!-- Get release name from blob group build quality. -->
+      <_BlobGroupReleaseName>@(_SelectedBlobGroupQualityName->'%(ReleaseName)')</_BlobGroupReleaseName>
+    </PropertyGroup>
+    <!-- Validate the selected and calculated values. -->
+    <Error Text="BlobGroupBuildQuality must be set to a valid value: @(_BlobGroupBuildQualityName, ', ')" Condition="'@(_SelectedBlobGroupQualityName)' == ''" />
+    <Error Text="Unable to calculate _BlobGroupVersionMajor" Condition="'$(_BlobGroupVersionMajor)' == ''" />
+    <Error Text="Unable to calculate _BlobGroupVersionMinor" Condition="'$(_BlobGroupVersionMinor)' == ''" />
+    <Error Text="Unable to calculate _BlobGroupReleaseName" Condition="'$(_BlobGroupReleaseName)' == ''" />
+    <PropertyGroup>
+      <!--
+        Combine all parts to create blob group name.
+        Daily: '7.0.0-preview.1.12345' -> '7.0/daily'
+        Release: '7.0.0' -> '7.0/release'
+        -->
+      <_BlobGroupName>$(_BlobGroupVersionMajor).$(_BlobGroupVersionMinor)/$(_BlobGroupReleaseName)</_BlobGroupName>
+      <!--
+        This computes the original version without considering the effect of DotNetFinalVersionKind.
+        This can be used to uniquely identify a version of a specific build even if the build produces
+        stable package versions.
+        -->
+      <_BuildVersion>$(_OriginalVersionPrefix)-$(_PreReleaseLabel)$(_BuildNumberLabels)</_BuildVersion>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="CalculatePackagesToPublish">
+    <ItemGroup>
+      <PackageToPublish Include="%(PackageFile.Identity)"
+                        Condition="$([System.IO.File]::Exists('%(PackageFile.Identity).projectpath'))" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GenerateChecksumsForPackages">
+    <ItemGroup>
+      <GenerateChecksumItems Include="@(PackageToPublish)">
         <DestinationPath>%(FullPath).sha512</DestinationPath>
       </GenerateChecksumItems>
     </ItemGroup>
@@ -27,51 +89,52 @@
     <GenerateChecksums Items="@(GenerateChecksumItems)" />
   </Target>
 
-  <!-- Run the CollectPackageArtifactFiles target on each PackageFile by target batching on a non-existing file.
+  <!-- Run the CollectPackageArtifactFiles target on each PackageToPublish by target batching on a non-existing file.
        This allows using the ReadLinesFromFile task to read the blob group file, which was written with WriteLinesToFile,
        thus avoiding erroneously reading in the newline at the end of the blob group file. -->
   <Target Name="CollectPackageArtifactFiles"
-          DependsOnTargets="GenerateChecksumsForBlobgroups"
-          Inputs="@(PackageFile)"
-          Outputs="%(PackageFile.Identity).notexist">
+          DependsOnTargets="CalculateBlobGroupAndBuildVersion;CalculatePackagesToPublish;GenerateChecksumsForPackages"
+          Inputs="@(PackageToPublish)"
+          Outputs="%(PackageToPublish.Identity).notexist">
 
     <!-- Find the artifact files next to the package file. -->
     <PropertyGroup>
-      <_BlobGroupFilePath>%(PackageFile.FullPath).blobgroup</_BlobGroupFilePath>
-      <_ChecksumFilePath>%(PackageFile.FullPath).sha512</_ChecksumFilePath>
-      <_BuildVersionFileFilePath>%(PackageFile.FullPath).buildversionfile</_BuildVersionFileFilePath>
-      <_PackageVersionFileFilePath>%(PackageFile.FullPath).versionfile</_PackageVersionFileFilePath>
+      <_ChecksumFilePath>%(PackageToPublish.FullPath).sha512</_ChecksumFilePath>
+      <_BuildVersionFilePath>%(PackageToPublish.FullPath).buildversion</_BuildVersionFilePath>
+      <_PackageVersionFilePath>%(PackageToPublish.FullPath).version</_PackageVersionFilePath>
     </PropertyGroup>
 
-    <Error Condition="Exists('$(_BlobGroupFilePath)') and !Exists('$(_ChecksumFilePath)')"
-        Text="Expected SHA512 hash for %(PackageFile.FullPath) not found at $(_ChecksumFilePath)"/>
-
-    <!-- Read in blob group name, if it exists -->
-    <ReadLinesFromFile File="$(_BlobGroupFilePath)" Condition="Exists('$(_BlobGroupFilePath)')">
-      <Output TaskParameter="Lines" PropertyName="_BlobGroupName"/>
-    </ReadLinesFromFile>
-    <!-- Read in build version file name, if it exists -->
-    <ReadLinesFromFile File="$(_BuildVersionFileFilePath)" Condition="Exists('$(_BuildVersionFileFilePath)')">
-      <Output TaskParameter="Lines" PropertyName="_BuildVersionFileName"/>
-    </ReadLinesFromFile>
-    <!-- Read in package version file name, if it exists -->
-    <ReadLinesFromFile File="$(_PackageVersionFileFilePath)" Condition="Exists('$(_PackageVersionFileFilePath)')">
-      <Output TaskParameter="Lines" PropertyName="_PackageVersionFileName"/>
+    <!-- Read in project file name -->
+    <ReadLinesFromFile File="%(PackageToPublish.FullPath).projectpath">
+      <Output TaskParameter="Lines" PropertyName="_ProjectPath"/>
     </ReadLinesFromFile>
 
-    <PropertyGroup>
-      <_BuildVersionFilePath>%(PackageFile.RootDir)%(PackageFile.Directory)$(_BuildVersionFileName)</_BuildVersionFilePath>
-      <_PackageVersionFilePath>%(PackageFile.RootDir)%(PackageFile.Directory)$(_PackageVersionFileName)</_PackageVersionFilePath>
-    </PropertyGroup>
+    <!-- Get package version from project -->
+    <MSBuild Projects="$(_ProjectPath)"
+             Targets="GetPackageVersion">
+      <Output ItemName="_PackageVersion" TaskParameter="TargetOutputs" />
+    </MSBuild>
 
-    <!-- Read in build version, if it exists -->
-    <ReadLinesFromFile File="$(_BuildVersionFilePath)" Condition="Exists('$(_BuildVersionFilePath)')">
-      <Output TaskParameter="Lines" PropertyName="_BuildVersion"/>
-    </ReadLinesFromFile>
+    <!--
+      A file that contains the version of the package.
+      Example name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.version
+      -->
+    <WriteLinesToFile File="$(_PackageVersionFilePath)"
+                      Lines="@(_PackageVersion)"
+                      Overwrite="true" />
+
+    <!--
+      A file that contains the build version of the package. The name of this file contains the build
+      version in order to avoid collisions when uploaded to blob storage.
+      Example name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.buildversion
+      -->
+    <WriteLinesToFile File="$(_BuildVersionFilePath)"
+                      Lines="$(_BuildVersion)"
+                      Overwrite="true" />
 
     <!-- Calculate manifest artifact data for each file type. -->
     <ItemGroup>
-      <_CommonArtifactData Include="NonShipping=true" Condition="'%(PackageFile.IsShipping)' != 'true'" />
+      <_CommonArtifactData Include="NonShipping=true" Condition="'%(PackageToPublish.IsShipping)' != 'true'" />
     </ItemGroup>
     <ItemGroup>
       <_PackageArtifactData Include="@(_CommonArtifactData)" />
@@ -96,7 +159,7 @@
       </_VersionContainerBlobItem>
       <!-- Publish the nupkg as a blob in addition to their normal publishing mechanism
            so that they can be retrieved from a stable location. -->
-      <_VersionContainerBlobItem Include="%(PackageFile.FullPath)" Condition="Exists('%(PackageFile.FullPath)')" >
+      <_VersionContainerBlobItem Include="%(PackageToPublish.FullPath)" Condition="Exists('%(PackageToPublish.FullPath)')" >
         <ManifestArtifactData Condition="'@(_PackageArtifactData)' != ''">@(_PackageArtifactData)</ManifestArtifactData>
       </_VersionContainerBlobItem>
     </ItemGroup>
