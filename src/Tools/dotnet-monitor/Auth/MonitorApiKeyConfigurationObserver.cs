@@ -33,10 +33,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public void Initialize()
         {
-            _changeRegistration = _options.OnChange(OnMonitorApiKeyOptionsChanged);
-
             if (_authConfigurationOptions.KeyAuthenticationMode != KeyAuthenticationMode.NoAuth)
             {
+                _changeRegistration = _options.OnChange(OnMonitorApiKeyOptionsChanged);
+
                 // Write out current validation state of options when starting the tool.
                 CheckMonitorApiKeyOptions(_options.CurrentValue);
             }
