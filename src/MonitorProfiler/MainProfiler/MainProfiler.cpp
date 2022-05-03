@@ -74,6 +74,8 @@ HRESULT MainProfiler::InitializeEnvironment()
 
 HRESULT MainProfiler::InitializeLogging()
 {
+    HRESULT hr = S_OK;
+
     // Create an aggregate logger to allow for multiple logging implementations
     unique_ptr<AggregateLogger> pAggregateLogger(new (nothrow) AggregateLogger());
     IfNullRet(pAggregateLogger);
@@ -81,7 +83,7 @@ HRESULT MainProfiler::InitializeLogging()
 #ifdef _DEBUG
 #ifdef TARGET_WINDOWS
     // Add the debug output logger for when debugging on Windows
-    shared_ptr<DebugLogger> pDebugLogger = make_shared<DebugLogger>();
+    shared_ptr<DebugLogger> pDebugLogger = make_shared<DebugLogger>(m_pEnvironment);
     IfNullRet(pDebugLogger);
     pAggregateLogger->Add(pDebugLogger);
 #endif
