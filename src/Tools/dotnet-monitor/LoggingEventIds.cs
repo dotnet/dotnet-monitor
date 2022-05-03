@@ -70,7 +70,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         QueueDoesNotExist = 57,
         QueueOptionsPartiallySet = 58,
         WritingMessageToQueueFailed = 59,
-        ExperienceSurvey = 60
+        ExperienceSurvey = 60,
+        DiagnosticPortNotInListenModeForCollectionRules = 61
     }
 
     internal static class LoggingEventIdsExtensions
