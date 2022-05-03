@@ -880,6 +880,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extension &apos;{extensionPath}&apos; started process {pid}, configuration sent..
+        /// </summary>
+        internal static string LogFormatString_ExtensionConfigured {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payload egress complete to extension process {pid}, waiting for process exit..
+        /// </summary>
+        internal static string LogFormatString_ExtensionEgressPayloadCompleted {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionEgressPayloadCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extension process {pid} exited with code {exitCode}..
+        /// </summary>
+        internal static string LogFormatString_ExtensionExited {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionExited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to locate extension &apos;{extensionMoniker}&apos;..
         /// </summary>
         internal static string LogFormatString_ExtensionProbeFailed {
@@ -912,6 +939,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_ExtensionProbeSucceeded {
             get {
                 return ResourceManager.GetString("LogFormatString_ExtensionProbeSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting extension &apos;{extensionPath} {cmdArgs}&apos;..
+        /// </summary>
+        internal static string LogFormatString_ExtensionStarting {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionStarting", resourceCulture);
             }
         }
         

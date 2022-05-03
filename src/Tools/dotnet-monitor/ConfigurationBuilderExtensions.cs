@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             return builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
+                {ConfigurationPath.Combine(ExtensionTypes.Storage, nameof(StorageOptions.DumpTempFolder)), StorageOptionsDefaults.DumpTempFolder }
             });
         }
     }

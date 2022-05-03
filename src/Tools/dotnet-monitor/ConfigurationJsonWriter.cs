@@ -65,29 +65,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
 
                 //No sensitive information
-                ProcessChildSection(configuration, ConfigurationKeys.CollectionRuleDefaults, skipNotPresent, includeChildSections: true, showSources: showSources);
-                ProcessChildSection(configuration, ConfigurationKeys.GlobalCounter, skipNotPresent, includeChildSections: true, showSources: showSources);
-                ProcessChildSection(configuration, ConfigurationKeys.CollectionRules, skipNotPresent, includeChildSections: true, showSources: showSources);
-                ProcessChildSection(configuration, ConfigurationKeys.CorsConfiguration, skipNotPresent, includeChildSections: true, showSources: showSources);
-                ProcessChildSection(configuration, ConfigurationKeys.DiagnosticPort, skipNotPresent, includeChildSections: true, showSources: showSources);
-                ProcessChildSection(configuration, ConfigurationKeys.Metrics, skipNotPresent, includeChildSections: true, showSources: showSources);
-                ProcessChildSection(configuration, ConfigurationKeys.Storage, skipNotPresent, includeChildSections: true, showSources: showSources);
-                ProcessChildSection(configuration, ConfigurationKeys.DefaultProcess, skipNotPresent, includeChildSections: true, showSources: showSources);
-                ProcessChildSection(configuration, ConfigurationKeys.Logging, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ExtensionTypes.CollectionRuleDefaults, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ExtensionTypes.GlobalCounter, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ExtensionTypes.CollectionRules, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ExtensionTypes.CorsConfiguration, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ExtensionTypes.DiagnosticPort, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ExtensionTypes.Metrics, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ExtensionTypes.Storage, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ExtensionTypes.DefaultProcess, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ExtensionTypes.Logging, skipNotPresent, includeChildSections: true, showSources: showSources);
 
                 if (full)
                 {
-                    ProcessChildSection(configuration, ConfigurationKeys.Authentication, skipNotPresent, includeChildSections: true, showSources: showSources);
-                    ProcessChildSection(configuration, ConfigurationKeys.Egress, skipNotPresent, includeChildSections: true, showSources: showSources);
+                    ProcessChildSection(configuration, ExtensionTypes.Authentication, skipNotPresent, includeChildSections: true, showSources: showSources);
+                    ProcessChildSection(configuration, ExtensionTypes.Egress, skipNotPresent, includeChildSections: true, showSources: showSources);
                 }
                 else
                 {
-                    IConfigurationSection auth = ProcessChildSection(configuration, ConfigurationKeys.Authentication, skipNotPresent, includeChildSections: false, showSources: showSources);
+                    IConfigurationSection auth = ProcessChildSection(configuration, ExtensionTypes.Authentication, skipNotPresent, includeChildSections: false, showSources: showSources);
                     if (null != auth)
                     {
                         using (new JsonObjectContext(_writer))
                         {
-                            IConfigurationSection monitorApiKey = ProcessChildSection(auth, ConfigurationKeys.MonitorApiKey, skipNotPresent, includeChildSections: false, showSources: showSources);
+                            IConfigurationSection monitorApiKey = ProcessChildSection(auth, ExtensionTypes.MonitorApiKey, skipNotPresent, includeChildSections: false, showSources: showSources);
                             if (null != monitorApiKey)
                             {
                                 using (new JsonObjectContext(_writer))
@@ -101,7 +101,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                     }
 
-                    IConfigurationSection egress = ProcessChildSection(configuration, ConfigurationKeys.Egress, skipNotPresent, includeChildSections: false, showSources: showSources);
+                    IConfigurationSection egress = ProcessChildSection(configuration, ExtensionTypes.Egress, skipNotPresent, includeChildSections: false, showSources: showSources);
                     if (egress != null)
                     {
                         using (new JsonObjectContext(_writer))
@@ -212,7 +212,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 bool isSequentialIndices = CheckForSequentialIndices(children);
 
-                bool parentIsCR = section.Key.Equals(ConfigurationKeys.CollectionRules);
+                bool parentIsCR = section.Key.Equals(ExtensionTypes.CollectionRules);
 
                 if (isSequentialIndices && !parentIsCR)
                 {

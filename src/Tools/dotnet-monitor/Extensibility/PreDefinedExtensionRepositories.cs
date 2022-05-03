@@ -5,13 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
-using static System.Environment;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -20,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public static IEnumerable<Func<IServiceProvider, IExtensionRepository>> GetExtensionRepositoryDelegates(IConfiguration configuration)
         {
-            IConfigurationSection hostBuilderSettings = configuration.GetRequiredSection(ConfigurationKeys.InternalHostBuilderSettings);
+            IConfigurationSection hostBuilderSettings = configuration.GetRequiredSection(ExtensionTypes.InternalHostBuilderSettings);
             string progDataFolder = hostBuilderSettings.GetValue<string>(nameof(HostBuilderSettings.SharedConfigDirectory));
             string settingsFolder = hostBuilderSettings.GetValue<string>(nameof(HostBuilderSettings.UserConfigDirectory));
 
@@ -47,7 +45,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             };
             foreach (FolderExtensionRepoDefinition folderProvider in folderProviders)
             {
-                yield return (IServiceProvider sp) => new FolderExtensionRepository(new PhysicalFileProvider(folderProvider.ExtensionDirectory), folderProvider.Priority, folderProvider.ExtensionDirectory);
+                yield return 
+                    (IServiceProvider serviceProvider) => 
+                        new FolderExtensionRepository(
+                            new PhysicalFileProvider(
+                                folderProvider.ExtensionDirectory), 
+                                serviceProvider.GetRequiredService<ILoggerFactory>(), 
+                                folderProvider.Priority, 
+                                folderProvider.ExtensionDirectory);
             }
         }
 

@@ -23,7 +23,6 @@ using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
@@ -34,23 +33,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter);
+            return ConfigureOptions<GlobalCounterOptions>(services, configuration, ExtensionTypes.GlobalCounter);
         }
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);
+            return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ExtensionTypes.CollectionRuleDefaults);
         }
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics)
+            return ConfigureOptions<MetricsOptions>(services, configuration, ExtensionTypes.Metrics)
                 .AddSingleton<IValidateOptions<MetricsOptions>, DataAnnotationValidateOptions<MetricsOptions>>();
         }
 
         public static IServiceCollection ConfigureMonitorApiKeyOptions(this IServiceCollection services, IConfiguration configuration)
         {
-            ConfigureOptions<MonitorApiKeyOptions>(services, configuration, ConfigurationKeys.MonitorApiKey);
+            ConfigureOptions<MonitorApiKeyOptions>(services, configuration, ExtensionTypes.MonitorApiKey);
 
             // Loads and validates MonitorApiKeyOptions into MonitorApiKeyConfiguration
             services.AddSingleton<IPostConfigureOptions<MonitorApiKeyConfiguration>, MonitorApiKeyPostConfigure>();
@@ -62,7 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static AuthenticationBuilder ConfigureMonitorApiKeyAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            IConfigurationSection authSection = configuration.GetSection(ConfigurationKeys.Authentication);
+            IConfigurationSection authSection = configuration.GetSection(ExtensionTypes.Authentication);
             services.ConfigureMonitorApiKeyOptions(authSection);
 
             // Notifies that the JwtBearerOptions change when MonitorApiKeyConfiguration gets changed.
@@ -164,12 +163,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
+            return ConfigureOptions<StorageOptions>(services, configuration, ExtensionTypes.Storage);
         }
 
         public static IServiceCollection ConfigureDefaultProcess(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<ProcessFilterOptions>(services, configuration, ConfigurationKeys.DefaultProcess);
+            return ConfigureOptions<ProcessFilterOptions>(services, configuration, ExtensionTypes.DefaultProcess);
         }
 
         private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class
@@ -216,7 +215,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureDiagnosticPort(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<DiagnosticPortOptions>(configuration.GetSection(ConfigurationKeys.DiagnosticPort));
+            services.Configure<DiagnosticPortOptions>(configuration.GetSection(ExtensionTypes.DiagnosticPort));
             services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
             services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
 

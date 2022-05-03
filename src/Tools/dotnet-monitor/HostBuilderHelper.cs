@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         string[] urls = ConfigurationHelper.SplitValue(hostingUrl);
 
                         var metricsOptions = new MetricsOptions();
-                        context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
+                        context.Configuration.Bind(ExtensionTypes.Metrics, metricsOptions);
 
                         string metricHostingUrls = metricsOptions.Endpoints;
                         string[] metricUrls = ConfigurationHelper.SplitValue(metricHostingUrls);
@@ -125,8 +125,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 builder.AddInMemoryCollection(new Dictionary<string, string>
                 {
-                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)), authenticationOptions.TemporaryJwtKey.Subject },
-                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)), authenticationOptions.TemporaryJwtKey.PublicKey },
+                    { ConfigurationPath.Combine(ExtensionTypes.Authentication, ExtensionTypes.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)), authenticationOptions.TemporaryJwtKey.Subject },
+                    { ConfigurationPath.Combine(ExtensionTypes.Authentication, ExtensionTypes.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)), authenticationOptions.TemporaryJwtKey.PublicKey },
                 });
             }
         }
@@ -135,10 +135,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Endpoints)), string.Join(';', metricEndpoints)},
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)), enableMetrics.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.MetricCount)), MetricsOptionsDefaults.MetricCount.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()}
+                {ConfigurationPath.Combine(ExtensionTypes.Metrics, nameof(MetricsOptions.Endpoints)), string.Join(';', metricEndpoints)},
+                {ConfigurationPath.Combine(ExtensionTypes.Metrics, nameof(MetricsOptions.Enabled)), enableMetrics.ToString()},
+                {ConfigurationPath.Combine(ExtensionTypes.Metrics, nameof(MetricsOptions.MetricCount)), MetricsOptionsDefaults.MetricCount.ToString()},
+                {ConfigurationPath.Combine(ExtensionTypes.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()}
             });
         }
 
@@ -146,7 +146,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.GlobalCounter, nameof(GlobalCounterOptions.IntervalSeconds)), GlobalCounterOptionsDefaults.IntervalSeconds.ToString() }
+                {ConfigurationPath.Combine(ExtensionTypes.GlobalCounter, nameof(GlobalCounterOptions.IntervalSeconds)), GlobalCounterOptionsDefaults.IntervalSeconds.ToString() }
             });
         }
 
@@ -154,8 +154,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.InternalHostBuilderSettings, nameof(HostBuilderSettings.UserConfigDirectory)), userConfigDirectory },
-                {ConfigurationPath.Combine(ConfigurationKeys.InternalHostBuilderSettings, nameof(HostBuilderSettings.SharedConfigDirectory)), sharedConfigDirectory },
+                {ConfigurationPath.Combine(ExtensionTypes.InternalHostBuilderSettings, nameof(HostBuilderSettings.UserConfigDirectory)), userConfigDirectory },
+                {ConfigurationPath.Combine(ExtensionTypes.InternalHostBuilderSettings, nameof(HostBuilderSettings.SharedConfigDirectory)), sharedConfigDirectory },
             });
         }
 
@@ -164,8 +164,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
+                {ConfigurationPath.Combine(ExtensionTypes.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
+                {ConfigurationPath.Combine(ExtensionTypes.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
             });
         }
 

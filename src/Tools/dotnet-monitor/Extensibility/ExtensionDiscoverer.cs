@@ -19,6 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public IExtension FindExtension(string extensionMoniker)
         {
             _logger.ExtensionProbeStart(extensionMoniker);

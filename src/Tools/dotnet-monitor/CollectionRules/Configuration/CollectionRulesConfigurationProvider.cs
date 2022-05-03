@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public CollectionRulesConfigurationProvider(IConfiguration configuration)
         {
-            _section = configuration.GetSection(nameof(ConfigurationKeys.CollectionRules));
+            _section = configuration.GetSection(nameof(ExtensionTypes.CollectionRules));
 
             _changeRegistration = ChangeToken.OnChange(
                 () => _section.GetReloadToken(),

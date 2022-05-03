@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal static class ConfigurationKeys
+    internal static class ExtensionTypes
     {
         public const string Authentication = nameof(RootOptions.Authentication);
 

@@ -75,6 +75,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ExtensionProbeRepo = 62,
         ExtensionProbeSucceeded = 63,
         ExtensionProbeFailed = 64,
+        ExtensionStarting = 65,
+        ExtensionConfigured = 66,
+        ExtensionEgressPayloadCompleted = 67,
+        ExtensionExited = 68,
     }
 
     internal static class LoggingEventIdsExtensions

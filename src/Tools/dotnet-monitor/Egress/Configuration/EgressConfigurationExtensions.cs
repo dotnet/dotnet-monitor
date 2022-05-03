@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         /// </summary>
         public static IConfigurationSection GetEgressSection(this IConfiguration configuration)
         {
-            return configuration.GetSection(ConfigurationKeys.Egress);
+            return configuration.GetSection(ExtensionTypes.Egress);
         }
 
         /// <summary>

@@ -358,6 +358,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ExtensionProbeFailed);
 
+        private static readonly Action<ILogger, string, string, Exception> _extensionStarting =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ExtensionStarting.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionStarting);
+
+        private static readonly Action<ILogger, string, int, Exception> _extensionConfigured =
+            LoggerMessage.Define<string, int>(
+                eventId: LoggingEventIds.ExtensionConfigured.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionConfigured);
+
+        private static readonly Action<ILogger, int, Exception> _extensionEgressPayloadCompleted =
+            LoggerMessage.Define<int>(
+                eventId: LoggingEventIds.ExtensionEgressPayloadCompleted.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionEgressPayloadCompleted);
+
+        private static readonly Action<ILogger, int, int, Exception> _extensionExited =
+            LoggerMessage.Define<int, int>(
+                eventId: LoggingEventIds.ExtensionExited.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionExited);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -433,7 +457,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             foreach (ValidationResult error in errors)
             {
-                _apiKeyValidationFailure(logger, ConfigurationKeys.MonitorApiKey, error.ErrorMessage, null);
+                _apiKeyValidationFailure(logger, ExtensionTypes.MonitorApiKey, error.ErrorMessage, null);
             }
         }
 
@@ -449,7 +473,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static void ApiKeyAuthenticationOptionsValidated(this ILogger logger)
         {
-            _apiKeyAuthenticationOptionsValidated(logger, ConfigurationKeys.MonitorApiKey, null);
+            _apiKeyAuthenticationOptionsValidated(logger, ExtensionTypes.MonitorApiKey, null);
         }
 
         public static void NotifyPrivateKey(this ILogger logger, string fieldName)
@@ -656,6 +680,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExtensionProbeFailed(this ILogger logger, string extensionMoniker)
         {
             _extensionProbeFailed(logger, extensionMoniker, null);
+        }
+
+        public static void ExtensionStarting(this ILogger logger, string extensionPath, string arguments)
+        {
+            _extensionStarting(logger, extensionPath, arguments, null);
+        }
+
+        public static void ExtensionConfigured(this ILogger logger, string extensionPath, int pid)
+        {
+            _extensionConfigured(logger, extensionPath, pid, null);
+        }
+
+        public static void ExtensionEgressPayloadCompleted(this ILogger logger, int pid)
+        {
+            _extensionEgressPayloadCompleted(logger, pid, null);
+        }
+
+        public static void ExtensionExited(this ILogger logger, int pid, int exitCode)
+        {
+            _extensionExited(logger, pid, exitCode, null);
         }
     }
 }
