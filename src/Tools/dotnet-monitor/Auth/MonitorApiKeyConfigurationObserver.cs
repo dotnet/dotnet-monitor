@@ -35,8 +35,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             _changeRegistration = _options.OnChange(OnMonitorApiKeyOptionsChanged);
 
-            // Write out current validation state of options when starting the tool.
-            CheckMonitorApiKeyOptions(_options.CurrentValue);
+            if (_authConfigurationOptions.KeyAuthenticationMode != KeyAuthenticationMode.NoAuth)
+            {
+                // Write out current validation state of options when starting the tool.
+                CheckMonitorApiKeyOptions(_options.CurrentValue);
+            }
         }
 
         public void Dispose()
@@ -51,11 +54,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private void CheckMonitorApiKeyOptions(MonitorApiKeyConfiguration options)
         {
-            if (_authConfigurationOptions.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth)
-            {
-                return;
-            }
-
             if (options.Configured)
             {
                 if (null != options.ValidationErrors && options.ValidationErrors.Any())
