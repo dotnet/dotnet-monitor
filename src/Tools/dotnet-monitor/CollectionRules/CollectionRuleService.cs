@@ -55,6 +55,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 Channel.CreateBounded<CollectionRuleContainer>(containersToRemoveChannelOptions);
             _containersToRemoveReader = containersToRemoveChannel.Reader;
             _containersToRemoveWriter = containersToRemoveChannel.Writer;
+
+            CheckForListenDiagnosticMode();
         }
 
         public async ValueTask DisposeAsync()
@@ -159,10 +161,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleConfigurationChanged();
 
-                if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen)
-                {
-                    _logger.DiagnosticPortNotInListenModeForCollectionRules();
-                }
+                CheckForListenDiagnosticMode();
 
                 // Get a copy of the container list to avoid having to
                 // lock the entire list during stop and restart of all containers.
@@ -227,6 +226,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     tasks.Clear();
                 }
+            }
+        }
+
+        private void CheckForListenDiagnosticMode()
+        {
+            if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen 
+                && _provider.GetCollectionRuleNames().Any())
+            {
+                _logger.DiagnosticPortNotInListenModeForCollectionRules();
             }
         }
 
