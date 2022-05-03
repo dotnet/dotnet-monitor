@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     _logger.ApiKeyAuthenticationOptionsValidated();
                 }
             }
-            else if (!options.Configured && !noAuthEnabled)
+            else
             {
                 _logger.MonitorApiKeyNotConfigured();
             }
