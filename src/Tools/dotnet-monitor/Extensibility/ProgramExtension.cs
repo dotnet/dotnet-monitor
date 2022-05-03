@@ -60,6 +60,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 StartInfo = pStart,
             };
 
+            using OutputParser<EgressArtifactResult> parser = new(p, _logger);
+
             _logger.ExtensionStarting(_path, pStart.Arguments);
             p.Start();
             await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, configPayload, options: null, token);

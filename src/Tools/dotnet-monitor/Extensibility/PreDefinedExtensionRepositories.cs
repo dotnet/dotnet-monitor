@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public static IEnumerable<Func<IServiceProvider, IExtensionRepository>> GetExtensionRepositoryDelegates(IConfiguration configuration)
         {
-            IConfigurationSection hostBuilderSettings = configuration.GetRequiredSection(ExtensionTypes.InternalHostBuilderSettings);
+            IConfigurationSection hostBuilderSettings = configuration.GetRequiredSection(ConfigurationKeys.InternalHostBuilderSettings);
             string progDataFolder = hostBuilderSettings.GetValue<string>(nameof(HostBuilderSettings.SharedConfigDirectory));
             string settingsFolder = hostBuilderSettings.GetValue<string>(nameof(HostBuilderSettings.UserConfigDirectory));
 

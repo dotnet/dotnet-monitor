@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             });
 
             var metricsOptions = new MetricsOptions();
-            Configuration.Bind(ExtensionTypes.Metrics, metricsOptions);
+            Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
             if (metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled))
             {
                 services.AddSingleton<MetricsStoreService>();
@@ -183,7 +183,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             app.UseAuthorization();
 
             CorsConfigurationOptions corsConfiguration = new CorsConfigurationOptions();
-            Configuration.Bind(ExtensionTypes.CorsConfiguration, corsConfiguration);
+            Configuration.Bind(ConfigurationKeys.CorsConfiguration, corsConfiguration);
             if (!string.IsNullOrEmpty(corsConfiguration.AllowedOrigins))
             {
                 app.UseCors(builder => builder.WithOrigins(corsConfiguration.GetOrigins()).AllowAnyHeader().AllowAnyMethod());

@@ -33,23 +33,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<GlobalCounterOptions>(services, configuration, ExtensionTypes.GlobalCounter);
+            return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter);
         }
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ExtensionTypes.CollectionRuleDefaults);
+            return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);
         }
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<MetricsOptions>(services, configuration, ExtensionTypes.Metrics)
+            return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics)
                 .AddSingleton<IValidateOptions<MetricsOptions>, DataAnnotationValidateOptions<MetricsOptions>>();
         }
 
         public static IServiceCollection ConfigureMonitorApiKeyOptions(this IServiceCollection services, IConfiguration configuration)
         {
-            ConfigureOptions<MonitorApiKeyOptions>(services, configuration, ExtensionTypes.MonitorApiKey);
+            ConfigureOptions<MonitorApiKeyOptions>(services, configuration, ConfigurationKeys.MonitorApiKey);
 
             // Loads and validates MonitorApiKeyOptions into MonitorApiKeyConfiguration
             services.AddSingleton<IPostConfigureOptions<MonitorApiKeyConfiguration>, MonitorApiKeyPostConfigure>();
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static AuthenticationBuilder ConfigureMonitorApiKeyAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            IConfigurationSection authSection = configuration.GetSection(ExtensionTypes.Authentication);
+            IConfigurationSection authSection = configuration.GetSection(ConfigurationKeys.Authentication);
             services.ConfigureMonitorApiKeyOptions(authSection);
 
             // Notifies that the JwtBearerOptions change when MonitorApiKeyConfiguration gets changed.
@@ -163,12 +163,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<StorageOptions>(services, configuration, ExtensionTypes.Storage);
+            return ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
         }
 
         public static IServiceCollection ConfigureDefaultProcess(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<ProcessFilterOptions>(services, configuration, ExtensionTypes.DefaultProcess);
+            return ConfigureOptions<ProcessFilterOptions>(services, configuration, ConfigurationKeys.DefaultProcess);
         }
 
         private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class
@@ -215,7 +215,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureDiagnosticPort(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<DiagnosticPortOptions>(configuration.GetSection(ExtensionTypes.DiagnosticPort));
+            services.Configure<DiagnosticPortOptions>(configuration.GetSection(ConfigurationKeys.DiagnosticPort));
             services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
             services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
 

@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -382,6 +383,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ExtensionExited);
 
+        private static readonly Action<ILogger, int, string, Exception> _extensionOutputMessage =
+            LoggerMessage.Define<int, string>(
+                eventId: LoggingEventIds.ExtensionOutputMessage.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionOutputMessage);
+
+        private static readonly Action<ILogger, int, string, Exception> _extensionErrorMessage =
+            LoggerMessage.Define<int, string>(
+                eventId: LoggingEventIds.ExtensionErrorMessage.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExtensionErrorMessage);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -457,7 +470,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             foreach (ValidationResult error in errors)
             {
-                _apiKeyValidationFailure(logger, ExtensionTypes.MonitorApiKey, error.ErrorMessage, null);
+                _apiKeyValidationFailure(logger, ConfigurationKeys.MonitorApiKey, error.ErrorMessage, null);
             }
         }
 
@@ -473,7 +486,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static void ApiKeyAuthenticationOptionsValidated(this ILogger logger)
         {
-            _apiKeyAuthenticationOptionsValidated(logger, ExtensionTypes.MonitorApiKey, null);
+            _apiKeyAuthenticationOptionsValidated(logger, ConfigurationKeys.MonitorApiKey, null);
         }
 
         public static void NotifyPrivateKey(this ILogger logger, string fieldName)
@@ -700,6 +713,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExtensionExited(this ILogger logger, int pid, int exitCode)
         {
             _extensionExited(logger, pid, exitCode, null);
+        }
+
+        public static void ExtensionOutputMessage(this ILogger logger, int pid, string message)
+        {
+            _extensionOutputMessage(logger, pid, message, null);
+        }
+
+        public static void ExtensionErrorMessage(this ILogger logger, int pid, string message)
+        {
+            _extensionErrorMessage(logger, pid, message, null);
         }
     }
 }

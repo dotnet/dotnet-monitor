@@ -79,6 +79,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ExtensionConfigured = 66,
         ExtensionEgressPayloadCompleted = 67,
         ExtensionExited = 68,
+        ExtensionOutputMessage = 69,
+        ExtensionErrorMessage = 70,
     }
 
     internal static class LoggingEventIdsExtensions

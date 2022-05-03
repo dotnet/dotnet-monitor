@@ -557,12 +557,26 @@
 1 Format Parameter:
 1. pid: Process ID of the extension process</comment>
   </data>
+  <data name="LogFormatString_ExtensionErrorMessage" xml:space="preserve">
+    <value>Extension process {pid} wrote error: {message}</value>
+    <comment>Gets the format string that is printed in the 70:ExtensionErrorMessage event.
+2 Format Parameters:
+1. pid: Process ID of the started process
+2. message: the line output message from the process written to standard error</comment>
+  </data>
   <data name="LogFormatString_ExtensionExited" xml:space="preserve">
     <value>Extension process {pid} exited with code {exitCode}.</value>
     <comment>Gets the format string that is printed in the 68:ExtensionExited event.
 2 Format Parameters:
 1. pid: Process ID of the started process
 2. exitCode: Exit code of the extension process</comment>
+  </data>
+  <data name="LogFormatString_ExtensionOutputMessage" xml:space="preserve">
+    <value>Extension process {pid} wrote output: {message}</value>
+    <comment>Gets the format string that is printed in the 69:ExtensionOutputMessage event.
+2 Format Parameters:
+1. pid: Process ID of the started process
+2. message: the line output message from the process written to standard out</comment>
   </data>
   <data name="LogFormatString_ExtensionProbeFailed" xml:space="preserve">
     <value>Failed to locate extension '{extensionMoniker}'.</value>

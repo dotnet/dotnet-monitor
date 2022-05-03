@@ -898,11 +898,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extension process {pid} wrote error: {message}.
+        /// </summary>
+        internal static string LogFormatString_ExtensionErrorMessage {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Extension process {pid} exited with code {exitCode}..
         /// </summary>
         internal static string LogFormatString_ExtensionExited {
             get {
                 return ResourceManager.GetString("LogFormatString_ExtensionExited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extension process {pid} wrote output: {message}.
+        /// </summary>
+        internal static string LogFormatString_ExtensionOutputMessage {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionOutputMessage", resourceCulture);
             }
         }
         
