@@ -5,9 +5,11 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -246,6 +248,179 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
                     VerifyFieldLessThanOtherFieldMessage(failures, 0, nameof(EventCounterOptions.GreaterThan), nameof(EventCounterOptions.LessThan));
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_MinimumOptions(Type triggerType, string triggerName)
+        {
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetIEventCounterTrigger(triggerType, triggerName);
+                },
+                ruleOptions =>
+                {
+                    ruleOptions.VerifyIEventCounterTrigger(triggerType, triggerName);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_RoundTrip(Type triggerType, string triggerName)
+        {
+            const double ExpectedGreaterThan = 0.5;
+            const double ExpectedLessThan = 0.75;
+            TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetIEventCounterTrigger(triggerType, triggerName, options =>
+                        {
+                            options.GreaterThan = ExpectedGreaterThan;
+                            options.LessThan = ExpectedLessThan;
+                            options.SlidingWindowDuration = ExpectedDuration;
+                        });
+                },
+                ruleOptions =>
+                {
+                    IEventCounterShortcuts options = ruleOptions.VerifyIEventCounterTrigger(triggerType, triggerName);
+                    Assert.Equal(ExpectedGreaterThan, options.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, options.LessThan);
+                    Assert.Equal(ExpectedDuration, options.SlidingWindowDuration);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_GreaterThanLargerThanLessThan(Type triggerType, string triggerName)
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetIEventCounterTrigger(triggerType, triggerName, options =>
+                        {
+                            options.GreaterThan = 0.75;
+                            options.LessThan = 0.5;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFieldLessThanOtherFieldMessage(failures, 0, nameof(IEventCounterShortcuts.GreaterThan), nameof(IEventCounterShortcuts.LessThan));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CPUUsageTrigger_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetCPUUsageTrigger(options =>
+                        {
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                            options.GreaterThan = -1;
+                            options.LessThan = 101;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Equal(3, failures.Length);
+                    VerifyRangeMessage<double>(failures, 0, nameof(CPUUsageOptions.GreaterThan),
+                        TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
+                    VerifyRangeMessage<double>(failures, 1, nameof(CPUUsageOptions.LessThan),
+                        TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(CPUUsageOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_GCHeapSizeTrigger_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetGCHeapSizeTrigger(options =>
+                        {
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                            options.GreaterThan = -1;
+                            options.LessThan = -1;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Equal(3, failures.Length);
+                    VerifyRangeMessage<double>(failures, 0, nameof(GCHeapSizeOptions.GreaterThan),
+                        "0", double.MaxValue.ToString());
+                    VerifyRangeMessage<double>(failures, 1, nameof(GCHeapSizeOptions.LessThan),
+                        "0", double.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(GCHeapSizeOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_ThreadpoolQueueLengthTrigger_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetThreadpoolQueueLengthTrigger(options =>
+                        {
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                            options.GreaterThan = -1;
+                            options.LessThan = -1;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+
+                    Assert.Equal(3, failures.Length);
+                    VerifyRangeMessage<double>(failures, 0, nameof(ThreadpoolQueueLengthOptions.GreaterThan),
+                        "0", double.MaxValue.ToString());
+                    VerifyRangeMessage<double>(failures, 1, nameof(ThreadpoolQueueLengthOptions.LessThan),
+                        "0", double.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(ThreadpoolQueueLengthOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
+        public Task CollectionRuleOptions_IEventCounterTrigger_LessThanAssignedGreaterThanUnassigned(Type triggerType, string triggerName)
+        {
+            const double ExpectedLessThan = 20;
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetIEventCounterTrigger(triggerType, triggerName, options =>
+                        {
+                            options.LessThan = ExpectedLessThan;
+                        });
+                },
+                ruleOptions =>
+                {
+                    IEventCounterShortcuts options = ruleOptions.VerifyIEventCounterTrigger(triggerType, triggerName);
+                    Assert.Null(options.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, options.LessThan);
                 });
         }
 
@@ -1273,6 +1448,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Single(failures);
                     VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions.Name));
                 });
+        }
+
+        public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
+        {
+            yield return new object[] { typeof(CPUUsageOptions), KnownCollectionRuleTriggers.CPUUsage };
+            yield return new object[] { typeof(GCHeapSizeOptions), KnownCollectionRuleTriggers.GCHeapSize };
+            yield return new object[] { typeof(ThreadpoolQueueLengthOptions), KnownCollectionRuleTriggers.ThreadpoolQueueLength };
         }
 
         private Task Validate(
