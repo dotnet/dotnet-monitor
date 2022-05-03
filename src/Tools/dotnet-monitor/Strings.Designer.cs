@@ -97,15 +97,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When using collection rules, the diagnostic port must be in &apos;Listen&apos; mode and the diagnostic port endpoint name must be specified. To use collection rules, please restart dotnet monitor with the updated configuration..
-        /// </summary>
-        internal static string ErrorMessage_DiagnosticPortNotInListenModeForCollectionRules {
-            get {
-                return ResourceManager.GetString("ErrorMessage_DiagnosticPortNotInListenModeForCollectionRules", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Duplicate action name &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorMessage_DuplicateActionName {
@@ -759,6 +750,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_CollectionRuleUnmatchedFilters {
             get {
                 return ResourceManager.GetString("LogFormatString_CollectionRuleUnmatchedFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When using collection rules, the diagnostic port must be in &apos;Listen&apos; mode. Please correct the configuration and restart dotnet monitor..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticPortNotInListenModeForCollectionRules {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticPortNotInListenModeForCollectionRules", resourceCulture);
             }
         }
         

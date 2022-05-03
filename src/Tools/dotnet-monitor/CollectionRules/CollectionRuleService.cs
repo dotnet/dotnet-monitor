@@ -159,9 +159,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleConfigurationChanged();
 
-                if (_portOptions.ConnectionMode != DiagnosticPortConnectionMode.Listen || string.IsNullOrEmpty(_portOptions.EndpointName))
+                if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen)
                 {
-                    _logger.LogWarning(Strings.ErrorMessage_DiagnosticPortNotInListenModeForCollectionRules);
+                    _logger.DiagnosticPortNotInListenModeForCollectionRules();
                 }
 
                 // Get a copy of the container list to avoid having to

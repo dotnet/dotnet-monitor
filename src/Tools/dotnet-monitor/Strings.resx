@@ -133,10 +133,6 @@
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
   </data>
-  <data name="ErrorMessage_DiagnosticPortNotInListenModeForCollectionRules" xml:space="preserve">
-    <value>When using collection rules, the diagnostic port must be in 'Listen' mode and the diagnostic port endpoint name must be specified. To use collection rules, please restart dotnet monitor with the updated configuration.</value>
-    <comment>Gets a string similar to "When using collection rules, the diagnostic port must be in 'Listen' mode and the diagnostic port endpoint name must be specified. To use collection rules, please restart dotnet monitor with the updated configuration.".</comment>
-  </data>
   <data name="ErrorMessage_DuplicateActionName" xml:space="preserve">
     <value>Duplicate action name '{0}'.</value>
   </data>
@@ -471,6 +467,9 @@
   </data>
   <data name="LogFormatString_CollectionRuleUnmatchedFilters" xml:space="preserve">
     <value>Collection rule '{ruleName}' filters do not match the process.</value>
+  </data>
+  <data name="LogFormatString_DiagnosticPortNotInListenModeForCollectionRules" xml:space="preserve">
+    <value>When using collection rules, the diagnostic port must be in 'Listen' mode. Please correct the configuration and restart dotnet monitor.</value>
   </data>
   <data name="LogFormatString_DiagnosticRequestCancelled" xml:space="preserve">
     <value>Cancelled waiting for diagnostic response from runtime in process {processId}.</value>

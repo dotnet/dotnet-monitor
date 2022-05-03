@@ -25,17 +25,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public ValidateOptionsResult Validate(string name, DiagnosticPortOptions options)
         {
-            var collectionRuleNames = _provider.GetCollectionRuleNames();
-
-            if (collectionRuleNames != null && collectionRuleNames.Count > 0)
-            {
-                if (options.ConnectionMode != DiagnosticPortConnectionMode.Listen
-                    || string.IsNullOrEmpty(options.EndpointName))
-                {
-                    _logger.LogWarning(Strings.ErrorMessage_DiagnosticPortNotInListenModeForCollectionRules);
-                }
-            }
-
             var failures = new List<string>();
 
             if (options.ConnectionMode == DiagnosticPortConnectionMode.Listen
