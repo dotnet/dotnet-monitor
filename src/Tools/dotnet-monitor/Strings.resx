@@ -146,6 +146,9 @@
     <value>Azure blob egress failed.</value>
     <comment>Gets a string similar to "Azure blob egress failed.".</comment>
   </data>
+  <data name="ErrorMessage_EgressExtensionFailed" xml:space="preserve">
+    <value>Extension egress failed.</value>
+  </data>
   <data name="ErrorMessage_EgressFileFailedDetailed" xml:space="preserve">
     <value>File system egress failed" {0}</value>
     <comment>Gets the format string for egress failure to File (with an inner message).

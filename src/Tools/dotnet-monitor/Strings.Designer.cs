@@ -124,6 +124,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extension egress failed..
+        /// </summary>
+        internal static string ErrorMessage_EgressExtensionFailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressExtensionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File system egress failed&quot; {0}.
         /// </summary>
         internal static string ErrorMessage_EgressFileFailedDetailed {
