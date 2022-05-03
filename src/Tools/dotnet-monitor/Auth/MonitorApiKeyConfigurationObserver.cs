@@ -17,16 +17,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly ILogger<MonitorApiKeyConfigurationObserver> _logger;
         private readonly IOptionsMonitor<MonitorApiKeyConfiguration> _options;
+        private readonly IAuthConfiguration _authConfigurationOptions;
 
         private IDisposable _changeRegistration;
 
         public MonitorApiKeyConfigurationObserver(
             ILogger<MonitorApiKeyConfigurationObserver> logger,
-            IOptionsMonitor<MonitorApiKeyConfiguration> options
-            )
+            IOptionsMonitor<MonitorApiKeyConfiguration> options,
+            IAuthConfiguration authConfigurationOptions)
         {
             _logger = logger;
             _options = options;
+            _authConfigurationOptions = authConfigurationOptions;
         }
 
         public void Initialize()
@@ -49,7 +51,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private void CheckMonitorApiKeyOptions(MonitorApiKeyConfiguration options)
         {
-            if (options.Configured)
+            bool noAuthEnabled = _authConfigurationOptions.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth;
+
+            if (options.Configured || noAuthEnabled)
             {
                 if (null != options.ValidationErrors && options.ValidationErrors.Any())
                 {
@@ -60,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     _logger.ApiKeyAuthenticationOptionsValidated();
                 }
             }
-            else
+            else if (!options.Configured && !noAuthEnabled)
             {
                 _logger.MonitorApiKeyNotConfigured();
             }
