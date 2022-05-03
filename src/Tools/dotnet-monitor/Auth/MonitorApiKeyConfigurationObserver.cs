@@ -51,9 +51,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private void CheckMonitorApiKeyOptions(MonitorApiKeyConfiguration options)
         {
-            bool noAuthEnabled = _authConfigurationOptions.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth;
+            if (_authConfigurationOptions.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth)
+            {
+                return;
+            }
 
-            if (options.Configured || noAuthEnabled)
+            if (options.Configured)
             {
                 if (null != options.ValidationErrors && options.ValidationErrors.Any())
                 {
