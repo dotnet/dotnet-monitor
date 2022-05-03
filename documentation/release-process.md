@@ -5,7 +5,19 @@
 1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`).
 1. In `/eng/Versions.props`, update `dotnet/diagnostics` dependencies to versions from the corresponding release of the `dotnet/diagnostics` repo.
 1. In `/eng/Version.props`, ensure that `<BlobGroupBuildQuality>` is set appropriately. See the documentation next to this setting for the appropriate values. In release branches, its value should either be `prerelease` or `release`. This setting, in combination with the version settings, determine for which 'channel' the aks.ms links are created.
-4. Complete at least one successful build.
+1. Complete at least one successful build.
+1. Bump the version number in the `main` branch. [Example Pull Request](https://github.com/dotnet/dotnet-monitor/pull/1560). 
+
+## Additional steps when creating a new release branch
+
+1. When creating a new release branch (such as `release/8.x`) there are additional steps that need to be taken.
+1. Follow [these steps](https://github.com/dotnet/arcade/blob/main/Documentation/Darc.md#setting-up-your-darc-client) to install darc.
+1. Be sure to call [darc authenticate](https://github.com/dotnet/arcade/blob/main/Documentation/Darc.md#authenticate). You will need to create the requested tokens.
+1. You will need to add the branch to a channel. E.g.
+`darc add-default-channel --channel ".NET Core Tooling Release" --branch release/8.x --repo https://github.com/dotnet/dotnet-monitor`
+
+- It can be helpful to create test release branches (e.g. release/test/8.x). Note these branches will trigger warnings because they are considered unprotected release branches and should be deleted as soon as possible.
+- If you created a build from a newly created release branch without a channel, you will get the message 'target build already exists on all channels'. To use this build you need to add it to a channel: `darc add-build-to-channel --id <Build BAR ID> --channel "General Testing"`.
 
 ## Build Release Branch
 
@@ -29,11 +41,24 @@ The `channel` value is used by the `dotnet-docker` repository to consume the cor
 
 The `dotnet-docker` repository runs an update process each day that detects the latest version of a given `dotnet-monitor` channel. During the stabilization/testing/release period for a release of `dotnet-monitor`, the update process should be changed to pick up builds for the release branch.
 
-The `monitorChannel` pipeline variable of the [dotnet-docker-update-dependencies](https://dev.azure.com/dnceng/internal/_build?definitionId=470) pipeline instructs the update process of which channel to use in order to update the `nightly` branch. Normally, its value is `6.0/daily` to pull the latest daily build. However, during the stabilization and release of dotnet-monitor, it should be set to the prerelease channel (e.g. `6.0/preview.8`, `6.0/rc.1`) or release channel (e.g. `6.0/release`) value.
+The following variables for [dotnet-docker-update-dependencies](https://dev.azure.com/dnceng/internal/_build?definitionId=470) need to be updated for release:
+* `monitorXMinorVersion`: Make sure these are set to the correct values.
+* `monitorXQuality`: Normally this is daily, but should be set to release.
+* `monitorXStableBranding`: Normally this is false, but should be set to true when the package version is stable e.g. `dotnet-monitor.8.0.0.nupkg` (does not have a prerelease label on it such as `-preview.X` or `-rtm.X`.
+* `update-monitor-enabled`: Make sure this is true.
+* `update-dotnet-enabled`: When doing an ad-hoc run, make sure to **disable** this.
 
 ### Revert Pipeline Variable After Release
 
 After the release has been completed, this pipeline variable should be changed to the appropriate daily channel (e.g. `6.0/daily`).
+
+### Updating dependencies
+
+If necessary, update dependencies in the release branch. Most commonly this means picking up a new version of diagnostics packages.
+
+1. For new branches only, you need to setup a subscription using darc: `darc add-subscription --channel ".NET Core Tooling Release" --source-repo https://github.com/dotnet/diagnostics --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x --update-frequency None --standard-automerge`
+1. Use `darc get-subscriptions --target-repo monitor` to see existing subscriptions.
+1. Use `darc trigger-subscriptions` to trigger an update. This will create a pull request that will update the Versions.details.xml file.
 
 ### Image Update Process
 
