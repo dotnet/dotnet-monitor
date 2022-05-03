@@ -8,8 +8,6 @@ using System;
 using System.Globalization;
 using System.IO;
 
-#nullable enable
-
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class FolderExtensionRepository : ExtensionRepository
@@ -29,10 +27,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _loggerFactory = loggerFactory;
         }
 
-        public override TExtensionType FindExtension<TExtensionType>(string extensionMoniker)
+        public override TExtensionType FindExtension<TExtensionType>(string extensionMoniker) where TExtensionType : class
         {
             // Pass 1: Require an exact case sensitive match
-            IExtension? exactMatch = ScanExtensionDir(extensionMoniker, StringComparison.Ordinal);
+            IExtension exactMatch = ScanExtensionDir(extensionMoniker, StringComparison.Ordinal);
             if (exactMatch != null)
             {
                 TExtensionType resultExact = (TExtensionType)exactMatch;
@@ -40,18 +38,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             }
 
             // Pass 2: Relax case sensitivity
-            IExtension? caseVarianceMatch = ScanExtensionDir(extensionMoniker, StringComparison.OrdinalIgnoreCase);
+            IExtension caseVarianceMatch = ScanExtensionDir(extensionMoniker, StringComparison.OrdinalIgnoreCase);
             if (caseVarianceMatch != null)
             {
                 TExtensionType result = (TExtensionType)caseVarianceMatch;
                 return result;
             }
 
-            // [TODO] figure out how to return null and keep the base class happy
-            throw new NotImplementedException();
+            return null;
         }
 
-        private IExtension? ScanExtensionDir(string extensionMoniker, StringComparison comparisionType)
+        private IExtension ScanExtensionDir(string extensionMoniker, StringComparison comparisionType)
         {
             IDirectoryContents extensionRoot = _fileSystem.GetDirectoryContents(_targetFolder);
 

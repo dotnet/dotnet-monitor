@@ -28,7 +28,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     ConfigureEndpointInfoSource(builder, settings.DiagnosticPort);
                     ConfigureMetricsEndpoint(builder, settings.EnableMetrics, settings.MetricsUrls ?? Array.Empty<string>());
                     ConfigureGlobalMetrics(builder);
-                    ConfigureConfigDirectorySettings(builder, settings.UserConfigDirectory, settings.SharedConfigDirectory);
                     builder.ConfigureStorageDefaults();
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>()) });
@@ -147,15 +146,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 {ConfigurationPath.Combine(ConfigurationKeys.GlobalCounter, nameof(GlobalCounterOptions.IntervalSeconds)), GlobalCounterOptionsDefaults.IntervalSeconds.ToString() }
-            });
-        }
-
-        private static void ConfigureConfigDirectorySettings(IConfigurationBuilder builder, string userConfigDirectory, string sharedConfigDirectory)
-        {
-            builder.AddInMemoryCollection(new Dictionary<string, string>
-            {
-                {ConfigurationPath.Combine(ConfigurationKeys.InternalHostBuilderSettings, nameof(HostBuilderSettings.UserConfigDirectory)), userConfigDirectory },
-                {ConfigurationPath.Combine(ConfigurationKeys.InternalHostBuilderSettings, nameof(HostBuilderSettings.SharedConfigDirectory)), sharedConfigDirectory },
             });
         }
 

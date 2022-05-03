@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
-#nullable enable
-
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class ExtensionDiscoverer : IExtensionDiscoverer
@@ -22,13 +20,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         }
 
         /// <inheritdoc/>
-        public TExtensionType? FindExtension<TExtensionType>(string extensionMoniker) where TExtensionType : class, IExtension
+        public TExtensionType FindExtension<TExtensionType>(string extensionMoniker) where TExtensionType : class, IExtension
         {
             _logger.ExtensionProbeStart(extensionMoniker);
             foreach (IExtensionRepository repo in _extensionRepos)
             {
                 _logger.ExtensionProbeRepo(extensionMoniker, repo);
-                TExtensionType? result = repo.FindExtension<TExtensionType>(extensionMoniker);
+                TExtensionType result = repo.FindExtension<TExtensionType>(extensionMoniker);
                 if (result != null)
                 {
                     _logger.ExtensionProbeSucceeded(extensionMoniker, result);

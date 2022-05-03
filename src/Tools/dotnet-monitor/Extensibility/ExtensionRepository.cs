@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal abstract class ExtensionRepository : IExtensionRepository
@@ -21,6 +19,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public string Name => _name;
 
-        public abstract TExtensionType? FindExtension<TExtensionType>(string extensionMoniker) where TExtensionType : class, IExtension;
+        public abstract TExtensionType FindExtension<TExtensionType>(string extensionMoniker) where TExtensionType : class, IExtension;
     }
 }

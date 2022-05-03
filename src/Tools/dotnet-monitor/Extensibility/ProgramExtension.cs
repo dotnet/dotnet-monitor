@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             // This _should_ only be used in this method, it can get moved to a constants class if that changes
             const string CommandArgProviderName = "--Provider-Name";
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
-            ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("/r/n".ToCharArray());
+            ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
 
             /* [TODOs]
              * 1. [Done] Add a new service to dynamically find these extension(s)

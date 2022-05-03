@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -16,11 +15,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
     internal static class PreDefinedExtensionRepositories
     {
 
-        public static IEnumerable<Func<IServiceProvider, IExtensionRepository>> GetExtensionRepositoryDelegates(IConfiguration configuration)
+        public static IEnumerable<Func<IServiceProvider, IExtensionRepository>> GetExtensionRepositoryDelegates(HostBuilderSettings settings)
         {
-            IConfigurationSection hostBuilderSettings = configuration.GetRequiredSection(ConfigurationKeys.InternalHostBuilderSettings);
-            string progDataFolder = hostBuilderSettings.GetValue<string>(nameof(HostBuilderSettings.SharedConfigDirectory));
-            string settingsFolder = hostBuilderSettings.GetValue<string>(nameof(HostBuilderSettings.UserConfigDirectory));
+            string progDataFolder = settings.SharedConfigDirectory;
+            string settingsFolder = settings.UserConfigDirectory;
 
             if (string.IsNullOrWhiteSpace(progDataFolder))
             {
