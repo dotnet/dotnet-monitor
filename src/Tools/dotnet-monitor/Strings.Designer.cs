@@ -754,6 +754,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to When using collection rules, the diagnostic port must be in &apos;Listen&apos; mode. Please correct the configuration and restart dotnet monitor..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticPortNotInListenModeForCollectionRules {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticPortNotInListenModeForCollectionRules", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancelled waiting for diagnostic response from runtime in process {processId}..
         /// </summary>
         internal static string LogFormatString_DiagnosticRequestCancelled {
