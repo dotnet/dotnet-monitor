@@ -9,8 +9,7 @@
     <!--
       Build quality notion for blob group naming, similar to aka.ms channel build quality in Arcade:
       - 'daily': sets the blob group release name to 'daily' so a release type does not have to be assigned.
-      - 'prerelease': allows the blob group release name to use prerelease version information.
-      - 'release': sets the blob group release name to 'release'.
+      - 'release': sets the blob group release name to 'release'. Can be used for prereleases and full releases.
     -->
     <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
   </PropertyGroup>
