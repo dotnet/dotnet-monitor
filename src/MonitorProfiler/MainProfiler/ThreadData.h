@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <memory>
 #include <mutex>
 #include "corhlpr.h"
 #include "corprof.h"
