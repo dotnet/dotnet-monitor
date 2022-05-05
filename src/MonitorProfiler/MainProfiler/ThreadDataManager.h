@@ -26,7 +26,7 @@ public:
     ThreadDataManager(const std::shared_ptr<ILogger>& pLogger);
 
     /// <summary>
-    /// Adds profiler event masks need by class.
+    /// Adds profiler event masks needed by class.
     /// </summary>
     static void AddProfilerEventMask(DWORD& eventsLow);
 

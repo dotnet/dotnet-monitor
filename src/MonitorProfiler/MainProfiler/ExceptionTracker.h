@@ -26,7 +26,7 @@ public:
         ICorProfilerInfo2* pCorProfilerInfo);
 
     /// <summary>
-    /// Adds profiler event masks need by class.
+    /// Adds profiler event masks needed by class.
     /// </summary>
     static void AddProfilerEventMask(DWORD& eventsLow);
 

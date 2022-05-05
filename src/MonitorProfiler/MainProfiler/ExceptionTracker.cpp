@@ -201,28 +201,30 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
         (IUnknown**)&pMetadataImport
     ));
 
-    // Get Module Name
-    ULONG count = 0;
+    // Get Module Name: typically the full path to the assembly
+    ULONG moduleNameCount = 0; // Includes null-terminater
     IfFailLogRet(m_pCorProfilerInfo->GetModuleInfo(
         moduleId,
         nullptr,
         0,
-        &count,
+        &moduleNameCount,
         nullptr,
         nullptr
     ));
 
-    unique_ptr<WCHAR[]> pModulePath(new (nothrow) WCHAR[count + 1]);
+    unique_ptr<WCHAR[]> pModulePath(new (nothrow) WCHAR[moduleNameCount]);
+    IfNullRet(pModulePath);
+
     IfFailLogRet(m_pCorProfilerInfo->GetModuleInfo(
         moduleId,
         nullptr,
-        count + 1,
+        moduleNameCount,
         nullptr,
         pModulePath.get(),
         nullptr
     ));
 
-    // Get Class Name
+    // Get Class Name: The namespace + type name in the form <Namespace>.<Type>
     tstring className;
     if (0 == classId)
     {
@@ -238,20 +240,23 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
             &typeDef
         ));
 
+        ULONG classNameCount = 0; // Includes null-terminater
         IfFailLogRet(pMetadataImport->GetTypeDefProps(
             typeDef,
             nullptr,
             0,
-            &count,
+            &classNameCount,
             nullptr,
             nullptr
         ));
 
-        unique_ptr<WCHAR[]> pClassName(new (nothrow) WCHAR[count + 1]);
+        unique_ptr<WCHAR[]> pClassName(new (nothrow) WCHAR[classNameCount]);
+        IfNullRet(pClassName);
+
         IfFailLogRet(pMetadataImport->GetTypeDefProps(
             typeDef,
             pClassName.get(),
-            count + 1,
+            classNameCount,
             nullptr,
             nullptr,
             nullptr
@@ -261,12 +266,13 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
     }
 
     // Get Method Name
+    ULONG methodNameCount = 0; // Includes null-terminater
     IfFailLogRet(pMetadataImport->GetMethodProps(
         methodDef,
         nullptr,
         nullptr,
         0,
-        &count,
+        &methodNameCount,
         nullptr,
         nullptr,
         nullptr,
@@ -274,12 +280,14 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
         nullptr
     ));
 
-    unique_ptr<WCHAR[]> pMethodName(new (nothrow) WCHAR[count + 1]);
+    unique_ptr<WCHAR[]> pMethodName(new (nothrow) WCHAR[methodNameCount]);
+    IfNullRet(pMethodName);
+
     IfFailLogRet(pMetadataImport->GetMethodProps(
         methodDef,
         nullptr,
         pMethodName.get(),
-        count + 1,
+        methodNameCount,
         nullptr,
         nullptr,
         nullptr,
@@ -290,6 +298,8 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
 
     tstring modulePath(pModulePath.get());
 
+    // The full method name should be in the following format: <ModuleName>!<Namespace>.<TypeName>.<MethodName>
+    // Example: ConsoleApp1.dll!ConsoleApp1.Program.Main
     fullMethodName.clear();
     fullMethodName.append(modulePath.substr(modulePath.find_last_of(_T("/\\")) + 1));
     fullMethodName.append(_T("!"));
