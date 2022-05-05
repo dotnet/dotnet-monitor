@@ -29,22 +29,13 @@
       
       <!-- Prerelease: '6.0.0-preview.8' -> '6.0.0' and 'preview.8' -->
       <_BlobGroupVersion Condition="'$(_PreReleaseSeperatorIndex)' != '-1'">$(PackageVersion.Substring(0, $(_PreReleaseSeperatorIndex)))</_BlobGroupVersion>
-      <_BlobGroupPreRelease Condition="'$(_PreReleaseSeperatorIndex)' != '-1'">$(PackageVersion.Substring($([MSBuild]::Add($(_PreReleaseSeperatorIndex), 1))))</_BlobGroupPreRelease>
       
       <!-- Release: take the package version as-is. -->
       <_BlobGroupVersion Condition="'$(_PreReleaseSeperatorIndex)' == '-1'">$(PackageVersion)</_BlobGroupVersion>
-
-      <!--
-        Prerelease may contain additional fields; only want the label and first number
-        (e.g. 'preview.1.12345' -> 'preview' and '1').
-        -->
-      <_BlobGroupPreReleaseLabel Condition="'$(_BlobGroupPreRelease)' != ''">$(_BlobGroupPreRelease.Split('.')[0])</_BlobGroupPreReleaseLabel>
-      <_BlobGroupPreReleaseIteration Condition="'$(_BlobGroupPreRelease)' != ''">$(_BlobGroupPreRelease.Split('.')[1])</_BlobGroupPreReleaseIteration>
     </PropertyGroup>
     <!-- These are the valid BlobGroupBuildQuality values. -->
     <ItemGroup>
       <_BlobGroupBuildQualityName Include="daily" ReleaseName="daily" />
-      <_BlobGroupBuildQualityName Include="prerelease" ReleaseName="$(_BlobGroupPreReleaseLabel).$(_BlobGroupPreReleaseIteration)" />
       <_BlobGroupBuildQualityName Include="release" ReleaseName="release" />
     </ItemGroup>
     <!-- Select the blob group build quality based on the specified property. -->
@@ -67,7 +58,6 @@
       <!--
         Combine all parts to create blob group name.
         Daily: '6.0.0-preview.1.12345' -> '6.0/daily'
-        Prerelease: '6.0.0-preview.1.12345' -> '6.0/preview.1'
         Release: '6.0.0' -> '6.0/release'
         -->
       <_BlobGroupName>$(_BlobGroupVersionMajor).$(_BlobGroupVersionMinor)/$(_BlobGroupReleaseName)</_BlobGroupName>
