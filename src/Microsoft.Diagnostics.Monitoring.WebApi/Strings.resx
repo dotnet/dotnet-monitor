@@ -227,4 +227,28 @@
     <comment>Gets the format string that is printed in the 5:WrittenToHttpStream event.
 0 Format Parameters</comment>
   </data>
+  <data name="Message_CollectionRuleStateReason_ExecutingActions" xml:space="preserve">
+    <value>This collection rule has had its triggering conditions satisfied and is currently executing its action list.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Finished_ActionCount" xml:space="preserve">
+    <value>The collection rule will no longer trigger because the ActionCount was reached.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Finished_ConfigurationChanged" xml:space="preserve">
+    <value>This collection rule will no longer trigger because it no longer exists.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Finished_Failure" xml:space="preserve">
+    <value>The collection rule will no longer trigger because a failure occurred.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Finished_RuleDuration" xml:space="preserve">
+    <value>The collection rule will no longer trigger because the RuleDuration limit was reached.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Finished_Startup" xml:space="preserve">
+    <value>The collection rule will no longer trigger because the Startup trigger only executes once.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Running" xml:space="preserve">
+    <value>This collection rule is active and waiting for its triggering conditions to be satisfied.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Throttled" xml:space="preserve">
+    <value>This collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration.</value>
+  </data>
 </root>

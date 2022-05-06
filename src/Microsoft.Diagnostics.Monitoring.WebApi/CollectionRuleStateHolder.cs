@@ -7,72 +7,71 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal class CollectionRuleStateHolder
     {
         public CollectionRuleState CurrState { get; private set; } = CollectionRuleState.Running;
-        public string CurrStateReason { get; private set; } = CollectionRuleStateReasons.Running;
+        public string CurrStateReason { get; private set; } = Strings.Message_CollectionRuleStateReason_Running;
 
-        internal void BeginActionExecution()
+        public void BeginActionExecution()
         {
             CurrState = CollectionRuleState.ActionExecuting;
-            CurrStateReason = CollectionRuleStateReasons.ExecutingActions;
+            CurrStateReason = Strings.Message_CollectionRuleStateReason_ExecutingActions;
         }
 
-        internal void ActionExecutionSucceeded()
+        public void ActionExecutionSucceeded()
         {
             CurrState = CollectionRuleState.Running;
-            CurrStateReason = CollectionRuleStateReasons.Running;
+            CurrStateReason = Strings.Message_CollectionRuleStateReason_Running;
         }
 
-
-        internal void ActionExecutionFailed()
+        public void ActionExecutionFailed()
         {
             // Is this the correct behavior? Treating the same as action success, but internally store this separately if we want to handle it differently
             CurrState = CollectionRuleState.Running;
-            CurrStateReason = CollectionRuleStateReasons.Running;
+            CurrStateReason = Strings.Message_CollectionRuleStateReason_Running;
         }
 
-        internal void BeginThrottled()
+        public void BeginThrottled()
         {
             CurrState = CollectionRuleState.Throttled;
-            CurrStateReason = CollectionRuleStateReasons.Throttled;
+            CurrStateReason = Strings.Message_CollectionRuleStateReason_Throttled;
         }
 
-        internal void EndThrottled()
+        public void EndThrottled()
         {
             if (CurrState == CollectionRuleState.Throttled)
             {
                 CurrState = CollectionRuleState.Running;
-                CurrStateReason = CollectionRuleStateReasons.Running;
+                CurrStateReason = Strings.Message_CollectionRuleStateReason_Running;
             }
         }
 
-        internal void StartupTriggerCompleted()
+        public void StartupTriggerCompleted()
         {
             CurrState = CollectionRuleState.Finished;
-            CurrStateReason = CollectionRuleStateReasons.Finished_Startup;
+            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_Startup;
         }
 
-        internal void RuleDurationReached()
+        public void RuleDurationReached()
         {
             CurrState = CollectionRuleState.Finished;
-            CurrStateReason = CollectionRuleStateReasons.Finished_RuleDuration;
+            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_RuleDuration;
         }
 
-        internal void ActionCountReached()
+        public void ActionCountReached()
         {
             CurrState = CollectionRuleState.Finished;
-            CurrStateReason = CollectionRuleStateReasons.Finished_ActionCount;
+            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_ActionCount;
         }
 
-        internal void ConfigurationChanged()
+        public void ConfigurationChanged()
         {
             CurrState = CollectionRuleState.Finished;
-            CurrStateReason = CollectionRuleStateReasons.Finished_ConfigurationChanged;
+            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_ConfigurationChanged;
         }
 
         // Untested -> Not sure when/how this is used
-        internal void RuleFailure()
+        public void RuleFailure()
         {
             CurrState = CollectionRuleState.Finished;
-            CurrStateReason = CollectionRuleStateReasons.Finished_Failure;
+            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_Failure;
         }
     }
 }

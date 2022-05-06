@@ -38,6 +38,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 #if NET5_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
 
+        // These should be identical to the messages found in Strings.resx
+        private const string FinishedStartup = "The collection rule will no longer trigger because the Startup trigger only executes once.";
+        private const string FinishedActionCount = "The collection rule will no longer trigger because the ActionCount was reached.";
+        private const string Running = "This collection rule is active and waiting for its triggering conditions to be satisfied.";
+
         /// <summary>
         /// Validates that a startup rule will execute and complete with the correct collection rule descriptions
         /// </summary>
@@ -67,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.Finished,
-                        StateReason = CollectionRuleStateReasons.Finished_Startup
+                        StateReason = FinishedStartup
                     });
 
                     ValidateCollectionRuleDescriptions(collectionRuleDescriptions, expectedDescriptions);
@@ -115,7 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         LifetimeOccurrences = 0,
                         SlidingWindowOccurrences = 0,
                         State = CollectionRuleState.Running,
-                        StateReason = CollectionRuleStateReasons.Running
+                        StateReason = Running
                     });
 
                     ValidateCollectionRuleDescriptions(collectionRuleDescriptions_Before, expectedDescriptions_Before);
@@ -135,7 +140,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.Finished,
-                        StateReason = CollectionRuleStateReasons.Finished_ActionCount
+                        StateReason = FinishedActionCount
                     });
 
                     ValidateCollectionRuleDescriptions(collectionRuleDescriptions_After, expectedDescriptions_After);

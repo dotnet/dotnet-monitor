@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.Finished,
-                        StateReason = CollectionRuleStateReasons.Finished_Startup
+                        StateReason = Strings.Message_CollectionRuleStateReason_Finished_Startup
                     });
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
@@ -160,7 +160,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.ActionExecuting,
-                        StateReason = CollectionRuleStateReasons.ExecutingActions
+                        StateReason = Strings.Message_CollectionRuleStateReason_ExecutingActions
                     });
 
                     await startedSource.WithCancellation(cancellationSource.Token);
@@ -171,7 +171,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.Running,
-                        StateReason = CollectionRuleStateReasons.Running
+                        StateReason = Strings.Message_CollectionRuleStateReason_Running
                     });
 
                     triggerService.NotifyStarted -= startedHandler;
@@ -246,7 +246,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         LifetimeOccurrences = ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
                         State = CollectionRuleState.Throttled,
-                        StateReason = CollectionRuleStateReasons.Throttled,
+                        StateReason = Strings.Message_CollectionRuleStateReason_Throttled,
                         SlidingWindowDurationCountdown = ExpectedSlidingWindowDurationCountdown
                     });
 
@@ -259,7 +259,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         LifetimeOccurrences = ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = 0,
                         State = CollectionRuleState.Running,
-                        StateReason = CollectionRuleStateReasons.Running
+                        StateReason = Strings.Message_CollectionRuleStateReason_Running
                     });
 
                     await CollectionRulePipelineTests.ManualTriggerAsync(
@@ -280,7 +280,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         LifetimeOccurrences = 2 * ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
                         State = CollectionRuleState.Throttled,
-                        StateReason = CollectionRuleStateReasons.Throttled,
+                        StateReason = Strings.Message_CollectionRuleStateReason_Throttled,
                         SlidingWindowDurationCountdown = ExpectedSlidingWindowDurationCountdown
                     });
 
@@ -333,7 +333,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         LifetimeOccurrences = 0,
                         SlidingWindowOccurrences = 0,
                         State = CollectionRuleState.Finished,
-                        StateReason = CollectionRuleStateReasons.Finished_RuleDuration
+                        StateReason = Strings.Message_CollectionRuleStateReason_Finished_RuleDuration
                     });
                 },
                 _outputHelper,
@@ -400,7 +400,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         LifetimeOccurrences = ExpectedActionExecutionCount,
                         SlidingWindowOccurrences = ExpectedActionExecutionCount,
                         State = CollectionRuleState.Finished,
-                        StateReason = CollectionRuleStateReasons.Finished_ActionCount
+                        StateReason = Strings.Message_CollectionRuleStateReason_Finished_ActionCount
                     });
                 },
                 _outputHelper,

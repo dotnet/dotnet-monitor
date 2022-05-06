@@ -275,5 +275,77 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
                 return ResourceManager.GetString("LogFormatString_WrittenToHttpStream", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection rule has had its triggering conditions satisfied and is currently executing its action list..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_ExecutingActions {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_ExecutingActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The collection rule will no longer trigger because the ActionCount was reached..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Finished_ActionCount {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_ActionCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection rule will no longer trigger because it no longer exists..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Finished_ConfigurationChanged {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_ConfigurationChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The collection rule will no longer trigger because a failure occurred..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Finished_Failure {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_Failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The collection rule will no longer trigger because the RuleDuration limit was reached..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Finished_RuleDuration {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_RuleDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The collection rule will no longer trigger because the Startup trigger only executes once..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Finished_Startup {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_Startup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection rule is active and waiting for its triggering conditions to be satisfied..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Running {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Throttled {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Throttled", resourceCulture);
+            }
+        }
     }
 }
