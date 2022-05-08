@@ -74,7 +74,7 @@
 
   <Target Name="CalculatePackagesToPublish">
     <ItemGroup>
-      <PackageToPublish Include="%(PackageFile.Identity)"
+      <PackageToPublish Include="@(PackageFile)"
                         Condition="$([System.IO.File]::Exists('%(PackageFile.Identity).projectpath'))" />
     </ItemGroup>
   </Target>
