@@ -10,7 +10,6 @@
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <RollForward>Major</RollForward>
-    <PublishToBlob>true</PublishToBlob>
     <!-- File locking warnings (that are typically resolved with automatic retries) are failing builds
          quite frequently with messages such as:
          
