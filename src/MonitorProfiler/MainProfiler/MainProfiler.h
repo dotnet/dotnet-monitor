@@ -6,6 +6,7 @@
 
 #include "../ProfilerBase.h"
 #include "../Environment/Environment.h"
+#include "../Environment/EnvironmentHelper.h"
 #include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
 #include <memory>
@@ -15,6 +16,7 @@ class MainProfiler final :
 {
 private:
     std::shared_ptr<IEnvironment> m_pEnvironment;
+    std::shared_ptr<EnvironmentHelper> _environmentHelper;
     std::shared_ptr<ILogger> m_pLogger;
 
 public:
