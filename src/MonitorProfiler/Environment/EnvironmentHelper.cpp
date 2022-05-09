@@ -10,6 +10,12 @@ using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(_logger, EXPR)
 
+EnvironmentHelper::EnvironmentHelper(
+    const std::shared_ptr<IEnvironment>& pEnvironment,
+    const std::shared_ptr<ILogger>& pLogger) : _environment(pEnvironment), _logger(pLogger)
+{
+}
+
 HRESULT EnvironmentHelper::GetDebugLoggerLevel(LogLevel& level)
 {
     HRESULT hr = S_OK;
@@ -52,9 +58,9 @@ HRESULT EnvironmentHelper::GetTempFolder(tstring& tempFolder)
 
     tstring tmpDir;
 #if TARGET_WINDOWS
-    IfFailLogRet(_environment->GetEnvironmentVariable(s_wszTempEnvVar, tmpDir));
+    IfFailLogRet(_environment->GetEnvironmentVariable(TempEnvVar, tmpDir));
 #else
-    hr = pEnvironment->GetEnvironmentVariable(s_wszTempEnvVar, tmpDir);
+    hr = _environment->GetEnvironmentVariable(TempEnvVar, tmpDir);
     if (FAILED(hr))
     {
         tmpDir = DefaultTempFolder;
