@@ -25,7 +25,7 @@ private:
     static constexpr LPCWSTR DefaultTempFolder = _T("/tmp");
 #endif
 
-    static constexpr LPCWSTR s_wszTempEnvVar =
+    static constexpr LPCWSTR TempEnvVar =
 #if TARGET_WINDOWS
     _T("TEMP");
 #else
@@ -34,10 +34,8 @@ private:
 
 public:
 
-    EnvironmentHelper::EnvironmentHelper(const std::shared_ptr<IEnvironment>& pEnvironment,
-        const std::shared_ptr<ILogger>& pLogger) : _environment(pEnvironment), _logger(pLogger)
-    {
-    }
+    EnvironmentHelper(const std::shared_ptr<IEnvironment>& pEnvironment,
+        const std::shared_ptr<ILogger>& pLogger);
 
     /// <summary>
     /// Gets the log level for the debug logger from the environment.
