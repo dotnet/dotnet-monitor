@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the <see cref="CollectionRules.Actions.GetEnvironmentVariableAction"/> action.
     /// </summary>
     [DebuggerDisplay("GetEnvironmentVariable")]
-    internal class GetEnvironmentVariableOptions
+    internal sealed record class GetEnvironmentVariableOptions : BaseRecordOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

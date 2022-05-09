@@ -14,10 +14,16 @@
 class EnvironmentHelper final
 {
 private:
-    static constexpr LPCWSTR s_wszDebugLoggerLevelEnvVar = _T("DotnetMonitorProfiler_DebugLogger_Level");
-    static constexpr LPCWSTR s_wszProfilerVersionEnvVar = _T("DotnetMonitorProfiler_ProductVersion");
-    static constexpr LPCWSTR s_wszRuntimeInstanceEnvVar = _T("DotnetMonitorProfiler_InstanceId");
-    static constexpr LPCWSTR s_wszDefaultTempFolder = _T("/tmp");
+    static constexpr LPCWSTR DebugLoggerLevelEnvVar = _T("DotnetMonitorProfiler_DebugLogger_Level");
+    static constexpr LPCWSTR ProfilerVersionEnvVar = _T("DotnetMonitorProfiler_ProductVersion");
+    static constexpr LPCWSTR RuntimeInstanceEnvVar = _T("DotnetMonitorProfiler_InstanceId");
+
+    std::shared_ptr<IEnvironment> _environment;
+    std::shared_ptr<ILogger> _logger;
+
+#if TARGET_UNIX
+    static constexpr LPCWSTR DefaultTempFolder = _T("/tmp");
+#endif
 
     static constexpr LPCWSTR s_wszTempEnvVar =
 #if TARGET_WINDOWS
@@ -27,27 +33,23 @@ private:
 #endif
 
 public:
+
+    EnvironmentHelper::EnvironmentHelper(const std::shared_ptr<IEnvironment>& pEnvironment,
+        const std::shared_ptr<ILogger>& pLogger) : _environment(pEnvironment), _logger(pLogger)
+    {
+    }
+
     /// <summary>
     /// Gets the log level for the debug logger from the environment.
     /// </summary>
-    static HRESULT GetDebugLoggerLevel(
-        const std::shared_ptr<IEnvironment>& pEnvironment,
-        LogLevel& level);
+    HRESULT GetDebugLoggerLevel(LogLevel& level);
 
     /// <summary>
     /// Sets the product version environment variable in the specified environment.
     /// </summary>
-    static HRESULT SetProductVersion(
-        const std::shared_ptr<IEnvironment>& pEnvironment,
-        const std::shared_ptr<ILogger>& pLogger);
+    HRESULT SetProductVersion();
 
-    static HRESULT GetRuntimeInstanceId(
-        const std::shared_ptr<IEnvironment>& pEnvironment,
-        const std::shared_ptr<ILogger>& pLogger,
-        tstring& instanceId);
+    HRESULT GetRuntimeInstanceId(tstring& instanceId);
 
-    static HRESULT GetTempFolder(
-        const std::shared_ptr<IEnvironment>& pEnvironment,
-        const std::shared_ptr<ILogger>& pLogger,
-        tstring& tempFolder);
+    HRESULT GetTempFolder(tstring& tempFolder);
 };
