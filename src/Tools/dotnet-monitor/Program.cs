@@ -60,25 +60,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static Option Urls() =>
             new Option(
                 aliases: new[] { "-u", "--urls" },
-                description: Strings.HelpDescription_OptionUrls)
+                description: Strings.HelpDescription_OptionUrls,
+                getDefaultValue: () => new[] { "https://localhost:52323" })
             {
-                Argument = new Argument<string[]>(name: "urls", getDefaultValue: () => new[] { "https://localhost:52323" })
+                ArgumentHelpName = "urls"
             };
 
         private static Option MetricUrls() =>
-            new Option(
+            new Option<string[]>(
                 aliases: new[] { "--metricUrls" },
-                description: Strings.HelpDescription_OptionMetricsUrls)
+                description: Strings.HelpDescription_OptionMetricsUrls,
+                getDefaultValue: () => new[] { "http://localhost:52325" })
             {
-                Argument = new Argument<string[]>(name: "metricUrls", getDefaultValue: () => new[] { "http://localhost:52325" })
+                ArgumentHelpName = "metricUrls"
             };
 
         private static Option ProvideMetrics() =>
             new Option(
                 aliases: new[] { "-m", "--metrics" },
-                description: Strings.HelpDescription_OptionMetrics)
+                description: Strings.HelpDescription_OptionMetrics,
+                getDefaultValue: () => true)
             {
-                Argument = new Argument<bool>(name: "metrics", getDefaultValue: () => true)
+                ArgumentHelpName = "metrics"
             };
 
         private static Option DiagnosticPort() =>
@@ -86,58 +89,61 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 alias: "--diagnostic-port",
                 description: Strings.HelpDescription_OptionDiagnosticPort)
             {
-                Argument = new Argument<string>(name: "diagnosticPort")
+                ArgumentHelpName = "diagnosticPort"
             };
 
         private static Option NoAuth() =>
             new Option(
                 alias: "--no-auth",
-                description: Strings.HelpDescription_OptionNoAuth
-                )
+                description: Strings.HelpDescription_OptionNoAuth,
+                getDefaultValue: () => false)
             {
-                Argument = new Argument<bool>(name: "noAuth", getDefaultValue: () => false)
+                ArgumentHelpName = "noAuth"
             };
 
         private static Option NoHttpEgress() =>
             new Option(
                 alias: "--no-http-egress",
-                description: Strings.HelpDescription_OptionNoHttpEgress
-                )
+                description: Strings.HelpDescription_OptionNoHttpEgress,
+                getDefaultValue: () => false)
             {
-                Argument = new Argument<bool>(name: "noHttpEgress", getDefaultValue: () => false)
+                ArgumentHelpName =  "noHttpEgress"
             };
 
         private static Option TempApiKey() =>
             new Option(
                 alias: "--temp-apikey",
-                description: Strings.HelpDescription_OptionTempApiKey
-                )
+                description: Strings.HelpDescription_OptionTempApiKey,
+                getDefaultValue: () => false)
             {
-                Argument = new Argument<bool>(name: "tempApiKey", getDefaultValue: () => false)
+                ArgumentHelpName = "tempApiKey"
             };
 
         private static Option Output() =>
             new Option(
                 aliases: new[] { "-o", "--output" },
-                description: Strings.HelpDescription_OutputFormat)
+                description: Strings.HelpDescription_OutputFormat,
+                getDefaultValue: () => OutputFormat.Json)
             {
-                Argument = new Argument<OutputFormat>(name: "output", getDefaultValue: () => OutputFormat.Json)
+                ArgumentHelpName = "output"
             };
 
         private static Option ConfigLevel() =>
             new Option(
                 alias: "--level",
-                description: Strings.HelpDescription_OptionLevel)
+                description: Strings.HelpDescription_OptionLevel,
+                getDefaultValue: () => ConfigDisplayLevel.Redacted)
             {
-                Argument = new Argument<ConfigDisplayLevel>(name: "level", getDefaultValue: () => ConfigDisplayLevel.Redacted)
+                ArgumentHelpName = "level"
             };
 
         private static Option ShowSources() =>
             new Option(
                 alias: "--show-sources",
-                description: Strings.HelpDescription_OptionShowSources)
+                description: Strings.HelpDescription_OptionShowSources,
+                getDefaultValue: () => false)
             {
-                Argument = new Argument<bool>(name: "showSources", getDefaultValue: () => false)
+                ArgumentHelpName = "showSources"
             };
 
         public static Task<int> Main(string[] args)
