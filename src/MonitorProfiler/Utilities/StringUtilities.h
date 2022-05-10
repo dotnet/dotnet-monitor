@@ -20,6 +20,9 @@ class StringUtilities
             {
                 return HRESULT_FROM_WIN32(result);
             }
+#elif defined(TARGET_LINUX) && !defined(TARGET_ALPINE_LINUX)
+            //TODO Glibc does not support the recommened string copy functions
+            strncpy(destination, source, DestinationSize);
 #else
             if (strlcpy(destination, source, DestinationSize) >= DestinationSize)
             {
