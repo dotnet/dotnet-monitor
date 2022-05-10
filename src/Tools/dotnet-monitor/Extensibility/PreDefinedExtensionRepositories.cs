@@ -14,7 +14,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal static class PreDefinedExtensionRepositories
     {
-
         public static IEnumerable<Func<IServiceProvider, IExtensionRepository>> GetExtensionRepositoryDelegates(HostBuilderSettings settings)
         {
             string progDataFolder = settings.SharedConfigDirectory;
@@ -46,11 +45,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 yield return 
                     (IServiceProvider serviceProvider) => 
                         new FolderExtensionRepository(
-                            new PhysicalFileProvider(
-                                folderProvider.ExtensionDirectory), 
-                                serviceProvider.GetRequiredService<ILoggerFactory>(), 
-                                folderProvider.Priority, 
-                                folderProvider.ExtensionDirectory);
+                            new FolderFileProvider(folderProvider.ExtensionDirectory), 
+                            serviceProvider.GetRequiredService<ILoggerFactory>(), 
+                            folderProvider.Priority, 
+                            folderProvider.ExtensionDirectory);
             }
         }
 
