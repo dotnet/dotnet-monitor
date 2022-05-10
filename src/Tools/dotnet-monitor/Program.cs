@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         };
         
         private static Option Urls() =>
-            new Option(
+            new Option<string[]>(
                 aliases: new[] { "-u", "--urls" },
                 description: Strings.HelpDescription_OptionUrls,
                 getDefaultValue: () => new[] { "https://localhost:52323" })
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
 
         private static Option ProvideMetrics() =>
-            new Option(
+            new Option<bool>(
                 aliases: new[] { "-m", "--metrics" },
                 description: Strings.HelpDescription_OptionMetrics,
                 getDefaultValue: () => true)
@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
 
         private static Option DiagnosticPort() =>
-            new Option(
+            new Option<string>(
                 alias: "--diagnostic-port",
                 description: Strings.HelpDescription_OptionDiagnosticPort)
             {
@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
 
         private static Option NoAuth() =>
-            new Option(
+            new Option<bool>(
                 alias: "--no-auth",
                 description: Strings.HelpDescription_OptionNoAuth,
                 getDefaultValue: () => false)
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
 
         private static Option NoHttpEgress() =>
-            new Option(
+            new Option<bool>(
                 alias: "--no-http-egress",
                 description: Strings.HelpDescription_OptionNoHttpEgress,
                 getDefaultValue: () => false)
@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
 
         private static Option TempApiKey() =>
-            new Option(
+            new Option<bool>(
                 alias: "--temp-apikey",
                 description: Strings.HelpDescription_OptionTempApiKey,
                 getDefaultValue: () => false)
@@ -120,7 +120,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
 
         private static Option Output() =>
-            new Option(
+            new Option<OutputFormat>(
                 aliases: new[] { "-o", "--output" },
                 description: Strings.HelpDescription_OutputFormat,
                 getDefaultValue: () => OutputFormat.Json)
@@ -129,7 +129,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
 
         private static Option ConfigLevel() =>
-            new Option(
+            new Option<ConfigDisplayLevel>(
                 alias: "--level",
                 description: Strings.HelpDescription_OptionLevel,
                 getDefaultValue: () => ConfigDisplayLevel.Redacted)
@@ -138,7 +138,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
 
         private static Option ShowSources() =>
-            new Option(
+            new Option<bool>(
                 alias: "--show-sources",
                 description: Strings.HelpDescription_OptionShowSources,
                 getDefaultValue: () => false)

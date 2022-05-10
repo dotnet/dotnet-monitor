@@ -69,10 +69,10 @@
   <PropertyGroup Label="Manual">
     <AzureStorageBlobsVersion>12.12.0</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.10.0</AzureStorageQueuesVersion>
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.4</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>6.0.4</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>6.0.5</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
-    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.4</MicrosoftExtensionsConfigurationKeyPerFileVersion>
+    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
@@ -82,7 +82,6 @@
     <SystemIdentityModelTokensJwtVersion>6.17.0</SystemIdentityModelTokensJwtVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
-    <SystemTextJsonVersion>6.0.3</SystemTextJsonVersion>
     <!-- Third-party references -->
     <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>6.2.3</SwashbuckleAspNetCoreSwaggerGenVersion>

@@ -49,9 +49,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -60,9 +58,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -70,9 +66,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -110,9 +104,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -121,9 +113,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -131,9 +121,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -174,9 +162,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -185,9 +171,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -195,9 +179,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           },
           {
@@ -213,9 +195,7 @@
             "in": "query",
             "description": "The egress provider to which the dump is saved.",
             "schema": {
-              "type": "string",
-              "description": "The egress provider to which the dump is saved.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -260,9 +240,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -271,9 +249,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -281,9 +257,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           },
           {
@@ -291,9 +265,7 @@
             "in": "query",
             "description": "The egress provider to which the GC dump is saved.",
             "schema": {
-              "type": "string",
-              "description": "The egress provider to which the GC dump is saved.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -338,9 +310,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -349,9 +319,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -359,9 +327,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           },
           {
@@ -380,7 +346,6 @@
               "maximum": 2147483647,
               "minimum": -1,
               "type": "integer",
-              "description": "The duration of the trace session (in seconds).",
               "format": "int32",
               "default": 30
             }
@@ -390,9 +355,7 @@
             "in": "query",
             "description": "The egress provider to which the trace is saved.",
             "schema": {
-              "type": "string",
-              "description": "The egress provider to which the trace is saved.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -435,9 +398,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -446,9 +407,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -456,9 +415,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           },
           {
@@ -469,7 +426,6 @@
               "maximum": 2147483647,
               "minimum": -1,
               "type": "integer",
-              "description": "The duration of the trace session (in seconds).",
               "format": "int32",
               "default": 30
             }
@@ -479,9 +435,7 @@
             "in": "query",
             "description": "The egress provider to which the trace is saved.",
             "schema": {
-              "type": "string",
-              "description": "The egress provider to which the trace is saved.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -547,9 +501,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -558,9 +510,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -568,9 +518,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           },
           {
@@ -581,7 +529,6 @@
               "maximum": 2147483647,
               "minimum": -1,
               "type": "integer",
-              "description": "The duration of the logs session (in seconds).",
               "format": "int32",
               "default": 30
             }
@@ -599,9 +546,7 @@
             "in": "query",
             "description": "The egress provider to which the logs are saved.",
             "schema": {
-              "type": "string",
-              "description": "The egress provider to which the logs are saved.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -653,9 +598,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -664,9 +607,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -674,9 +615,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           },
           {
@@ -687,7 +626,6 @@
               "maximum": 2147483647,
               "minimum": -1,
               "type": "integer",
-              "description": "The duration of the logs session (in seconds).",
               "format": "int32",
               "default": 30
             }
@@ -697,9 +635,7 @@
             "in": "query",
             "description": "The egress provider to which the logs are saved.",
             "schema": {
-              "type": "string",
-              "description": "The egress provider to which the logs are saved.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -800,9 +736,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -811,9 +745,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -821,9 +753,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           },
           {
@@ -834,7 +764,6 @@
               "maximum": 2147483647,
               "minimum": -1,
               "type": "integer",
-              "description": "The duration of the metrics session (in seconds).",
               "format": "int32",
               "default": 30
             }
@@ -844,9 +773,7 @@
             "in": "query",
             "description": "The egress provider to which the metrics are saved.",
             "schema": {
-              "type": "string",
-              "description": "The egress provider to which the metrics are saved.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -878,9 +805,7 @@
             "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
-              "description": "Process ID used to identify the target process.",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             }
           },
           {
@@ -889,9 +814,7 @@
             "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
-              "description": "The Runtime instance cookie used to identify the target process.",
-              "format": "uuid",
-              "nullable": true
+              "format": "uuid"
             }
           },
           {
@@ -899,9 +822,7 @@
             "in": "query",
             "description": "Process name used to identify the target process.",
             "schema": {
-              "type": "string",
-              "description": "Process name used to identify the target process.",
-              "nullable": true
+              "type": "string"
             }
           },
           {
@@ -912,7 +833,6 @@
               "maximum": 2147483647,
               "minimum": -1,
               "type": "integer",
-              "description": "The duration of the metrics session (in seconds).",
               "format": "int32",
               "default": 30
             }
@@ -922,9 +842,7 @@
             "in": "query",
             "description": "The egress provider to which the metrics are saved.",
             "schema": {
-              "type": "string",
-              "description": "The egress provider to which the metrics are saved.",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -1084,7 +1002,246 @@
   },
   "components": {
     "schemas": {
-      "ValidationProblemDetails": {
+      "DiagnosticPortConnectionMode": {
+        "enum": [
+          "Connect",
+          "Listen"
+        ],
+        "type": "string"
+      },
+      "DotnetMonitorInfo": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "The dotnet monitor version.",
+            "nullable": true
+          },
+          "runtimeVersion": {
+            "type": "string",
+            "description": "The dotnet runtime version.",
+            "nullable": true
+          },
+          "diagnosticPortMode": {
+            "$ref": "#/components/schemas/DiagnosticPortConnectionMode"
+          },
+          "diagnosticPortName": {
+            "type": "string",
+            "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DumpType": {
+        "enum": [
+          "Full",
+          "Mini",
+          "WithHeap",
+          "Triage"
+        ],
+        "type": "string"
+      },
+      "EventLevel": {
+        "enum": [
+          "LogAlways",
+          "Critical",
+          "Error",
+          "Warning",
+          "Informational",
+          "Verbose"
+        ],
+        "type": "string"
+      },
+      "EventMetricsConfiguration": {
+        "type": "object",
+        "properties": {
+          "includeDefaultProviders": {
+            "type": "boolean"
+          },
+          "providers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventMetricsProvider"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventMetricsProvider": {
+        "required": [
+          "providerName"
+        ],
+        "type": "object",
+        "properties": {
+          "providerName": {
+            "type": "string"
+          },
+          "counterNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventPipeConfiguration": {
+        "required": [
+          "providers"
+        ],
+        "type": "object",
+        "properties": {
+          "providers": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventPipeProvider"
+            }
+          },
+          "requestRundown": {
+            "type": "boolean"
+          },
+          "bufferSizeInMB": {
+            "maximum": 1024,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventPipeProvider": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "string",
+            "nullable": true
+          },
+          "eventLevel": {
+            "$ref": "#/components/schemas/EventLevel"
+          },
+          "arguments": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LogLevel": {
+        "enum": [
+          "Trace",
+          "Debug",
+          "Information",
+          "Warning",
+          "Error",
+          "Critical",
+          "None"
+        ],
+        "type": "string"
+      },
+      "LogsConfiguration": {
+        "required": [
+          "logLevel"
+        ],
+        "type": "object",
+        "properties": {
+          "logLevel": {
+            "$ref": "#/components/schemas/LogLevel"
+          },
+          "filterSpecs": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LogLevel"
+            },
+            "description": "The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.",
+            "nullable": true
+          },
+          "useAppFilters": {
+            "type": "boolean",
+            "description": "Set to true to collect logs at the application-defined categories and levels."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OperationError": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OperationState": {
+        "enum": [
+          "Running",
+          "Succeeded",
+          "Failed",
+          "Cancelled"
+        ],
+        "type": "string"
+      },
+      "OperationStatus": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OperationState"
+          },
+          "resourceLocation": {
+            "type": "string",
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/OperationError"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the state of a long running operation. Used for all types of results, including successes and failures."
+      },
+      "OperationSummary": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OperationState"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a partial model when enumerating all operations."
+      },
+      "ProblemDetails": {
         "type": "object",
         "properties": {
           "type": {
@@ -1107,17 +1264,6 @@
           "instance": {
             "type": "string",
             "nullable": true
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "nullable": true,
-            "readOnly": true
           }
         },
         "additionalProperties": { }
@@ -1173,16 +1319,16 @@
         },
         "additionalProperties": false
       },
-      "DumpType": {
+      "TraceProfile": {
         "enum": [
-          "Full",
-          "Mini",
-          "WithHeap",
-          "Triage"
+          "Cpu",
+          "Http",
+          "Logs",
+          "Metrics"
         ],
         "type": "string"
       },
-      "ProblemDetails": {
+      "ValidationProblemDetails": {
         "type": "object",
         "properties": {
           "type": {
@@ -1205,248 +1351,19 @@
           "instance": {
             "type": "string",
             "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true
           }
         },
         "additionalProperties": { }
-      },
-      "TraceProfile": {
-        "enum": [
-          "Cpu",
-          "Http",
-          "Logs",
-          "Metrics"
-        ],
-        "type": "string"
-      },
-      "EventLevel": {
-        "enum": [
-          "LogAlways",
-          "Critical",
-          "Error",
-          "Warning",
-          "Informational",
-          "Verbose"
-        ],
-        "type": "string"
-      },
-      "EventPipeProvider": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "keywords": {
-            "type": "string",
-            "nullable": true
-          },
-          "eventLevel": {
-            "$ref": "#/components/schemas/EventLevel"
-          },
-          "arguments": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "EventPipeConfiguration": {
-        "required": [
-          "providers"
-        ],
-        "type": "object",
-        "properties": {
-          "providers": {
-            "minItems": 1,
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/EventPipeProvider"
-            }
-          },
-          "requestRundown": {
-            "type": "boolean"
-          },
-          "bufferSizeInMB": {
-            "maximum": 1024,
-            "minimum": 1,
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "LogLevel": {
-        "enum": [
-          "Trace",
-          "Debug",
-          "Information",
-          "Warning",
-          "Error",
-          "Critical",
-          "None"
-        ],
-        "type": "string"
-      },
-      "LogsConfiguration": {
-        "required": [
-          "logLevel"
-        ],
-        "type": "object",
-        "properties": {
-          "logLevel": {
-            "$ref": "#/components/schemas/LogLevel"
-          },
-          "filterSpecs": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/LogLevel"
-            },
-            "description": "The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.",
-            "nullable": true
-          },
-          "useAppFilters": {
-            "type": "boolean",
-            "description": "Set to true to collect logs at the application-defined categories and levels."
-          }
-        },
-        "additionalProperties": false
-      },
-      "DiagnosticPortConnectionMode": {
-        "enum": [
-          "Connect",
-          "Listen"
-        ],
-        "type": "string"
-      },
-      "DotnetMonitorInfo": {
-        "type": "object",
-        "properties": {
-          "version": {
-            "type": "string",
-            "description": "The dotnet monitor version.",
-            "nullable": true
-          },
-          "runtimeVersion": {
-            "type": "string",
-            "description": "The dotnet runtime version.",
-            "nullable": true
-          },
-          "diagnosticPortMode": {
-            "$ref": "#/components/schemas/DiagnosticPortConnectionMode"
-          },
-          "diagnosticPortName": {
-            "type": "string",
-            "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "EventMetricsProvider": {
-        "required": [
-          "providerName"
-        ],
-        "type": "object",
-        "properties": {
-          "providerName": {
-            "type": "string"
-          },
-          "counterNames": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "EventMetricsConfiguration": {
-        "type": "object",
-        "properties": {
-          "includeDefaultProviders": {
-            "type": "boolean"
-          },
-          "providers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/EventMetricsProvider"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "OperationState": {
-        "enum": [
-          "Running",
-          "Succeeded",
-          "Failed",
-          "Cancelled"
-        ],
-        "type": "string"
-      },
-      "OperationSummary": {
-        "type": "object",
-        "properties": {
-          "operationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdDateTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "$ref": "#/components/schemas/OperationState"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Represents a partial model when enumerating all operations."
-      },
-      "OperationError": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "nullable": true
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "OperationStatus": {
-        "type": "object",
-        "properties": {
-          "operationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdDateTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "$ref": "#/components/schemas/OperationState"
-          },
-          "resourceLocation": {
-            "type": "string",
-            "nullable": true
-          },
-          "error": {
-            "$ref": "#/components/schemas/OperationError"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Represents the state of a long running operation. Used for all types of results, including successes and failures."
       }
     },
     "responses": {
