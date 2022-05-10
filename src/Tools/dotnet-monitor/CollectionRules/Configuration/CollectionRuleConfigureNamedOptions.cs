@@ -59,27 +59,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             {
                 var section = ruleSection.GetSection(nameof(CollectionRuleOptions.Actions));
 
-                var actionSections = section.GetChildren();
+                section.GetChildren().Where(child => string.IsNullOrEmpty(child.Value)); // Doesn't include string values for custom shortcuts
 
-                int actionsFound = 0;
+                var actionSections = section.GetChildren().Where(child => string.IsNullOrEmpty(child.Value));
 
-                for (int index = 0; index < actionSections.Count(); ++index)
-                {
-                    var actionSection = actionSections.ElementAt(index);
+                IConfigurationSection settingsSection = actionSections.ElementAt(actionIndex).GetSection(
+                    nameof(CollectionRuleActionOptions.Settings));
 
-                    actionsFound = string.IsNullOrEmpty(actionSection.Value) ? actionsFound + 1 : actionsFound;
-
-                    if (actionsFound > actionIndex)
-                    {
-                        IConfigurationSection settingsSection = actionSection.GetSection(
-                            nameof(CollectionRuleActionOptions.Settings));
-
-                        settingsSection.Bind(actionSettings);
-                        actionOptions.Settings = actionSettings;
-
-                        break;
-                    }
-                }
+                settingsSection.Bind(actionSettings);
+                actionOptions.Settings = actionSettings;
             }
         }
 
