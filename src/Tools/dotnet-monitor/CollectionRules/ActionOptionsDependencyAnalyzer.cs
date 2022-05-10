@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private const string ActionsReference = "Actions";
         private const string ProcessInfoReference = "ProcessInfo";
         private static readonly string ActionReferencePrefix = FormattableString.Invariant($"{SubstitutionPrefix}{ActionsReference}{Separator}");
-        private static readonly string RuntimeIdReference = FormattableString.Invariant($"{SubstitutionPrefix}{ProcessInfoReference}{Separator}InstanceId{SubstitutionSuffix}");
+        public static readonly string RuntimeIdReference = FormattableString.Invariant($"{SubstitutionPrefix}{ProcessInfoReference}{Separator}InstanceId{SubstitutionSuffix}");
 
         private readonly CollectionRuleContext _ruleContext;
 
@@ -121,7 +121,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             foreach(PropertyInfo propertyInfo in GetPropertiesFromSettings(settings, p => true))
             {
                 string property = (string)propertyInfo.GetValue(settings);
-                if (string.IsNullOrEmpty(property))
+                //If we don't have an Endpoint info (such as test scenarios) we cannot perform this substitution.
+                if (string.IsNullOrEmpty(property) || (_ruleContext.EndpointInfo == null))
                 {
                     continue;
                 }
@@ -322,7 +323,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings(CollectionRuleActionOptions options)
         {
-            return GetPropertiesFromSettings(options, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
+            return GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
         }
 
         private IEnumerable<PropertyInfo> GetPropertiesFromSettings(object settings, Predicate<PropertyInfo> predicate) =>
