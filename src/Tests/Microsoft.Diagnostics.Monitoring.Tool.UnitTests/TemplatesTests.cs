@@ -18,22 +18,22 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    public sealed class CustomShortcutsTests
+    public sealed class TemplatesTests
     {
         private readonly ITestOutputHelper _outputHelper;
 
-        private const string SampleConfigurationsDirectory = "CustomShortcutsConfigurations";
+        private const string SampleConfigurationsDirectory = "TemplatesConfigurations";
 
-        public CustomShortcutsTests(ITestOutputHelper outputHelper)
+        public TemplatesTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
 
         /// <summary>
-        /// Tests that Custom Shortcuts are correctly translated from JSON to CollectionRuleOptions.
+        /// Tests that Templates are correctly translated from JSON to CollectionRuleOptions.
         /// </summary>
         [Fact]
-        public async void CustomShortcutsTranslationSuccessTest()
+        public async void TemplatesTranslationSuccessTest()
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 
@@ -79,10 +79,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Tests that incorrectly referenced Custom Shortcuts cause options to be nullifed.
+        /// Tests that incorrectly referenced Templates cause options to be nullifed.
         /// </summary>
         [Fact]
-        public async void CustomShortcutsTranslationFailTest()
+        public async void TemplatesTranslationFailTest()
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 

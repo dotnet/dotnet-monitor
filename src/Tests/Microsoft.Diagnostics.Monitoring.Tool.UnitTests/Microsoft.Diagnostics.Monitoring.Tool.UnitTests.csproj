@@ -18,7 +18,7 @@
     <None Update="ExpectedConfigurations\CollectionRuleDefaults.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ExpectedConfigurations\CustomShortcuts.json">
+    <None Update="ExpectedConfigurations\Templates.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ExpectedConfigurations\CollectionRules.json">
@@ -30,7 +30,7 @@
     <None Update="ExpectedShowSourcesConfigurations\AuthenticationRedacted.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ExpectedShowSourcesConfigurations\CustomShortcuts.json">
+    <None Update="ExpectedShowSourcesConfigurations\Templates.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ExpectedShowSourcesConfigurations\CollectionRules.json">
@@ -108,22 +108,22 @@
     <None Update="DiagnosticPortConfigurations\SimplifiedListen.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="CustomShortcutsConfigurations\CollectionRuleDefaults.json">
+    <None Update="TemplatesConfigurations\CollectionRuleDefaults.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="CustomShortcutsConfigurations\CollectionRules.json">
+    <None Update="TemplatesConfigurations\CollectionRules.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="CustomShortcutsConfigurations\CustomShortcuts.json">
+    <None Update="TemplatesConfigurations\Templates.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="CustomShortcutsConfigurations\DiagnosticPort.json">
+    <None Update="TemplatesConfigurations\DiagnosticPort.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="CustomShortcutsConfigurations\Egress.json">
+    <None Update="TemplatesConfigurations\Egress.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleConfigurations\CustomShortcuts.json">
+    <None Update="SampleConfigurations\Templates.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SampleConfigurations\CollectionRuleDefaults.json">

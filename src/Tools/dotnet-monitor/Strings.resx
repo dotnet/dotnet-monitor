@@ -129,12 +129,6 @@
     <value>The '{0}' trigger was not registered correctly.</value>
     <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleTriggerProxy.</comment>
   </data>
-  <data name="ErrorMessage_CustomShortcutNotFound" xml:space="preserve">
-    <value>Could not find a custom shortcut with the name: {0}</value>
-    <comment>Gets the format string for custom shortcut resolution failure.
-1 Format Parameter:
-0. shortcutName: The name of the custom shortcut that could not be found.</comment>
-  </data>
   <data name="ErrorMessage_DiagnosticPortMissingInListenMode" xml:space="preserve">
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
@@ -279,6 +273,12 @@
     <comment>Gets the format string for rejecting a config param because it is not a jwk type that is accepted.
 1 Format Parameter:
 0. configName: The variable name for the provided string.</comment>
+  </data>
+  <data name="ErrorMessage_TemplateNotFound" xml:space="preserve">
+    <value>Could not find a template with the name: {0}</value>
+    <comment>Gets the format string for template resolution failure.
+1 Format Parameter:
+0. templateName: The name of the template that could not be found.</comment>
   </data>
   <data name="ErrorMessage_TriggerFactoryFailed" xml:space="preserve">
     <value>The '{0}' trigger factory failed to create a trigger instance.</value>

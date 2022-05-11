@@ -10,14 +10,14 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
-    internal sealed class CustomShortcutsConfigureOptions :
-        IConfigureOptions<CustomShortcutOptions>
+    internal sealed class TemplatesPostConfigureOptions :
+        IPostConfigureOptions<TemplateOptions>
     {
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
         private readonly ICollectionRuleActionOperations _actionOperations;
         private readonly IConfiguration _configuration;
 
-        public CustomShortcutsConfigureOptions(
+        public TemplatesPostConfigureOptions(
             ICollectionRuleTriggerOperations triggerOperations,
             ICollectionRuleActionOperations actionOperations,
             IConfiguration configuration)
@@ -27,44 +27,39 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             _configuration = configuration;
         }
 
-        public void Configure(CustomShortcutOptions options)
+        public void PostConfigure(string name, TemplateOptions options)
         {
             // Action Shortcuts
-            foreach (var key in options.Actions.Keys)
+            foreach (var key in options.CollectionRuleActions.Keys)
             {
-                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CustomShortcuts), nameof(CustomShortcutOptions.Actions), key));
+                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleActions), key));
 
                 if (section.Exists())
                 {
-                    section.Bind(options);
-
                     BindCustomActions(section, options, key);
                 }
             }
 
             // Trigger Shortcuts
-            foreach (var key in options.Triggers.Keys)
+            foreach (var key in options.CollectionRuleTriggers.Keys)
             {
-                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CustomShortcuts), nameof(CustomShortcutOptions.Triggers), key));
+                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleTriggers), key));
 
                 if (section.Exists())
                 {
-                    section.Bind(options);
-
                     BindCustomTriggers(section, options, key);
                 }
             }
         }
 
-        private void BindCustomActions(IConfigurationSection ruleSection, CustomShortcutOptions shortcutOptions, string shortcutName)
+        private void BindCustomActions(IConfigurationSection ruleSection, TemplateOptions shortcutOptions, string shortcutName)
         {
-            CollectionRuleActionOptions actionOptions = shortcutOptions.Actions[shortcutName];
+            CollectionRuleActionOptions actionOptions = shortcutOptions.CollectionRuleActions[shortcutName];
 
             if (null != actionOptions &&
                 _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
             {
-                IConfigurationSection settingsSection = ruleSection.GetSection(ConfigurationPath.Combine(
-                    nameof(CollectionRuleActionOptions.Settings)));
+                IConfigurationSection settingsSection = ruleSection.GetSection(nameof(CollectionRuleActionOptions.Settings));
 
                 settingsSection.Bind(actionSettings);
 
@@ -72,15 +67,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             }
         }
 
-        private void BindCustomTriggers(IConfigurationSection ruleSection, CustomShortcutOptions shortcutOptions, string shortcutName)
+        private void BindCustomTriggers(IConfigurationSection ruleSection, TemplateOptions shortcutOptions, string shortcutName)
         {
-            CollectionRuleTriggerOptions triggerOptions = shortcutOptions.Triggers[shortcutName];
+            CollectionRuleTriggerOptions triggerOptions = shortcutOptions.CollectionRuleTriggers[shortcutName];
 
             if (null != triggerOptions &&
                 _triggerOperations.TryCreateOptions(triggerOptions.Type, out object triggerSettings))
             {
-                IConfigurationSection settingsSection = ruleSection.GetSection(ConfigurationPath.Combine(
-                    nameof(CollectionRuleTriggerOptions.Settings)));
+                IConfigurationSection settingsSection = ruleSection.GetSection(nameof(CollectionRuleTriggerOptions.Settings));
 
                 settingsSection.Bind(triggerSettings);
 

@@ -9,28 +9,28 @@ using System.ComponentModel.DataAnnotations;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
     /// <summary>
-    /// Options for describing custom user-defined shortcuts.
+    /// Options for describing custom user-defined templates.
     /// </summary>
-    internal sealed partial class CustomShortcutOptions
+    internal sealed partial class TemplateOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Filters))]
-        public IDictionary<string, ProcessFilterDescriptor> Filters { get; } = new Dictionary<string, ProcessFilterDescriptor>();
+        public IDictionary<string, ProcessFilterDescriptor> CollectionRuleFilters { get; } = new Dictionary<string, ProcessFilterDescriptor>();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Trigger))]
-        public IDictionary<string, CollectionRuleTriggerOptions> Triggers { get; set; } = new Dictionary<string, CollectionRuleTriggerOptions>();
+        public IDictionary<string, CollectionRuleTriggerOptions> CollectionRuleTriggers { get; set; } = new Dictionary<string, CollectionRuleTriggerOptions>();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Actions))]
-        public IDictionary<string, CollectionRuleActionOptions> Actions { get; set; } = new Dictionary<string, CollectionRuleActionOptions>();
+        public IDictionary<string, CollectionRuleActionOptions> CollectionRuleActions { get; set; } = new Dictionary<string, CollectionRuleActionOptions>();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Limits))]
-        public IDictionary<string, CollectionRuleLimitsOptions> Limits { get; set; } = new Dictionary<string, CollectionRuleLimitsOptions>();
+        public IDictionary<string, CollectionRuleLimitsOptions> CollectionRuleLimits { get; set; } = new Dictionary<string, CollectionRuleLimitsOptions>();
     }
 }

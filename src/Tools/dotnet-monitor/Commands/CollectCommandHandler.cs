@@ -150,7 +150,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
                 services.ConfigureCollectionRuleDefaults(context.Configuration);
 
-                services.ConfigureCustomShortcuts(context.Configuration);
+                services.ConfigureTemplates(context.Configuration);
 
                 services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                 services.AddSingleton<ServerEndpointInfoSource>();
