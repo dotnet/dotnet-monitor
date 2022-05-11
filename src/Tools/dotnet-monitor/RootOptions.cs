@@ -31,6 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public CollectionRuleDefaultsOptions CollectionRuleDefaults { get; set; }
 
-        public CustomShortcutOptions CustomShortcuts { get; set; }
+        public TemplateOptions Templates { get; set; }
     }
 }

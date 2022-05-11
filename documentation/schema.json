@@ -128,14 +128,14 @@
         }
       ]
     },
-    "CustomShortcuts": {
+    "Templates": {
       "default": {},
       "oneOf": [
         {
           "type": "null"
         },
         {
-          "$ref": "#/definitions/CustomShortcutOptions"
+          "$ref": "#/definitions/TemplateOptions"
         }
       ]
     }
@@ -1277,11 +1277,11 @@
         }
       }
     },
-    "CustomShortcutOptions": {
+    "TemplateOptions": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Filters": {
+        "CollectionRuleFilters": {
           "type": [
             "null",
             "object"
@@ -1291,7 +1291,7 @@
             "$ref": "#/definitions/ProcessFilterDescriptor"
           }
         },
-        "Triggers": {
+        "CollectionRuleTriggers": {
           "type": [
             "null",
             "object"
@@ -1301,7 +1301,7 @@
             "$ref": "#/definitions/CollectionRuleTriggerOptions"
           }
         },
-        "Actions": {
+        "CollectionRuleActions": {
           "type": [
             "null",
             "object"
@@ -1311,7 +1311,7 @@
             "$ref": "#/definitions/CollectionRuleActionOptions"
           }
         },
-        "Limits": {
+        "CollectionRuleLimits": {
           "type": [
             "null",
             "object"

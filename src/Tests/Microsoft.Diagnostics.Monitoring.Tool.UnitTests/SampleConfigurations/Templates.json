@@ -1,7 +1,7 @@
 {
-  "CustomShortcuts": {
-    "Triggers": {
-      "TriggerCustomShortcut": {
+  "Templates": {
+    "CollectionRuleTriggers": {
+      "TriggerTemplate": {
         "Type": "AspNetRequestCount",
         "Settings": {
           "RequestCount": "20",
@@ -9,14 +9,14 @@
         }
       }
     },
-    "Actions": {
-      "ActionCustomShortcut1": {
+    "CollectionRuleActions": {
+      "ActionTemplate1": {
         "Type": "CollectGCDump",
         "Settings": {
           "Egress": "artifacts"
         }
       },
-      "ActionCustomShortcut2": {
+      "ActionTemplate2": {
         "Type": "CollectTrace",
         "Settings": {
           "Egress": "monitorBlob",
@@ -24,15 +24,15 @@
         }
       }
     },
-    "Filters": {
-      "FilterCustomShortcut": {
+    "CollectionRuleFilters": {
+      "FilterTemplate": {
         "Key": "ProcessName",
         "Value": "FirstWebApp1",
         "MatchType": "Exact"
       }
     },
-    "Limits": {
-      "LimitCustomShortcut": {
+    "CollectionRuleLimits": {
+      "LimitTemplate": {
         "RuleDuration": "00:05:00",
         "ActionCount": "1",
         "ActionCountSlidingWindowDuration": "00:00:30"

@@ -1,12 +1,12 @@
 {
-  "Actions": {
-    "ActionCustomShortcut1": {
+  "CollectionRuleActions": {
+    "ActionTemplate1": {
       "Settings": {
         "Egress": "artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
       },
       "Type": "CollectGCDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     },
-    "ActionCustomShortcut2": {
+    "ActionTemplate2": {
       "Settings": {
         "Egress": "monitorBlob" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
         "Profile": "Cpu" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
@@ -14,22 +14,22 @@
       "Type": "CollectTrace" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     }
   },
-  "Filters": {
-    "FilterCustomShortcut": {
+  "CollectionRuleFilters": {
+    "FilterTemplate": {
       "Key": "ProcessName" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
       "MatchType": "Exact" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
       "Value": "FirstWebApp1" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     }
   },
-  "Limits": {
-    "LimitCustomShortcut": {
+  "CollectionRuleLimits": {
+    "LimitTemplate": {
       "ActionCount": "1" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
       "ActionCountSlidingWindowDuration": "00:00:30" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
       "RuleDuration": "00:05:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     }
   },
-  "Triggers": {
-    "TriggerCustomShortcut": {
+  "CollectionRuleTriggers": {
+    "TriggerTemplate": {
       "Settings": {
         "RequestCount": "20" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
         "SlidingWindowDuration": "00:01:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/

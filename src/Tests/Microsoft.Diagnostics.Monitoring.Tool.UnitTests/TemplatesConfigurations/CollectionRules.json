@@ -1,13 +1,13 @@
 {
   "CollectionRules": {
     "ValidRule": {
-      "Trigger": "TriggerCustomShortcut",
+      "Trigger": "TriggerTemplate",
       "Actions": [
-        "ActionCustomShortcut1",
+        "ActionTemplate1",
         {
           "Type": "CollectGCDump"
         },
-        "ActionCustomShortcut2",
+        "ActionTemplate2",
         {
           "Type": "CollectDump",
           "Settings": {
@@ -20,18 +20,18 @@
           "Key": "ProcessName",
           "Value": "FirstWebApp"
         },
-        "FilterCustomShortcut"
+        "FilterTemplate"
       ],
-      "Limits": "LimitCustomShortcut"
+      "Limits": "LimitTemplate"
     },
     "InvalidRule": {
-      "Trigger": "TriggerCustomShortcutINVALID",
+      "Trigger": "TriggerTemplateINVALID",
       "Actions": [
-        "ActionCustomShortcut1",
-        "ActionCustomShortcut2"
+        "ActionTemplate1",
+        "ActionTemplate2"
       ],
       "Filters": [
-        "FilterCustomShortcutINVALID"
+        "FilterTemplateINVALID"
       ]
     }
   }

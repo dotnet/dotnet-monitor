@@ -1,12 +1,12 @@
 {
-  "Actions": {
-    "ActionCustomShortcut1": {
+  "CollectionRuleActions": {
+    "ActionTemplate1": {
       "Settings": {
         "Egress": "artifacts"
       },
       "Type": "CollectGCDump"
     },
-    "ActionCustomShortcut2": {
+    "ActionTemplate2": {
       "Settings": {
         "Egress": "monitorBlob",
         "Profile": "Cpu"
@@ -14,22 +14,22 @@
       "Type": "CollectTrace"
     }
   },
-  "Filters": {
-    "FilterCustomShortcut": {
+  "CollectionRuleFilters": {
+    "FilterTemplate": {
       "Key": "ProcessName",
       "MatchType": "Exact",
       "Value": "FirstWebApp1"
     }
   },
-  "Limits": {
-    "LimitCustomShortcut": {
+  "CollectionRuleLimits": {
+    "LimitTemplate": {
       "ActionCount": "1",
       "ActionCountSlidingWindowDuration": "00:00:30",
       "RuleDuration": "00:05:00"
     }
   },
-  "Triggers": {
-    "TriggerCustomShortcut": {
+  "CollectionRuleTriggers": {
+    "TriggerTemplate": {
       "Settings": {
         "RequestCount": "20",
         "SlidingWindowDuration": "00:01:00"

@@ -2,146 +2,191 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
     internal sealed class CollectionRulePostConfigureOptions :
         IPostConfigureOptions<CollectionRuleOptions>
     {
-        private readonly IOptionsMonitor<CustomShortcutOptions> _shortcutOptions;
+        private readonly ICollectionRuleActionOperations _actionOperations;
+        private readonly ICollectionRuleTriggerOperations _triggerOperations;
+        private readonly TemplateOptions _templateOptions;
         private readonly IConfiguration _configuration;
         private readonly ILogger<CollectionRulePostConfigureOptions> _logger;
 
         public CollectionRulePostConfigureOptions(
-            IOptionsMonitor<CustomShortcutOptions> shortcutOptions,
+            IOptionsMonitor<TemplateOptions> templateOptions,
             IConfiguration configuration,
+            ICollectionRuleActionOperations actionOperations,
+            ICollectionRuleTriggerOperations triggerOperations,
             ILogger<CollectionRulePostConfigureOptions> logger)
         {
-            _shortcutOptions = shortcutOptions;
+            _templateOptions = templateOptions.CurrentValue;
             _configuration = configuration;
+            _actionOperations = actionOperations;
+            _triggerOperations = triggerOperations;
             _logger = logger;
         }
 
         public void PostConfigure(string name, CollectionRuleOptions options)
         {
-            if (_shortcutOptions.CurrentValue != null)
-            {
-                bool actionInsertion = InsertCustomActionsIntoActionList(options, name);
-                bool triggerInsertion = InsertCustomTriggerIntoTrigger(options, name);
-                bool filterInsertion = InsertCustomFiltersIntoFilterList(options, name);
-                bool limitInsertion = InsertCustomLimitIntoLimit(options, name);
+            bool validActionList = ResolveActionList(options, name);
+            bool validTrigger = ResolveTrigger(options, name);
+            bool validFilterList = ResolveFilterList(options, name);
+            bool validLimits = ResolveLimits(options, name);
 
-                // If any insertions fail, clear out the options so that the rule will fail Validation
-                if (!(actionInsertion && triggerInsertion && filterInsertion && limitInsertion))
-                {
-                    options.Trigger = null;
-                    options.Actions.Clear();
-                    options.Filters.Clear();
-                    options.Limits = null;
-                }
+            // If any template substitutions fail, clear out the options so that the rule will fail Validation
+            if (!(validActionList && validTrigger && validFilterList && validLimits))
+            {
+                options.Trigger = null;
+                options.Actions.Clear();
+                options.Filters.Clear();
+                options.Limits = null;
             }
         }
 
-        private bool InsertCustomActionsIntoActionList(CollectionRuleOptions ruleOptions, string name)
+        private bool ResolveActionList(CollectionRuleOptions ruleOptions, string name)
         {
-            var section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Actions)));
+            ruleOptions.Actions.Clear();
 
-            var actionSections = section.GetChildren();
+            IConfigurationSection actionsSection = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Actions)));
 
-            for (int index = 0; index < actionSections.Count(); ++index)
+            foreach (IConfigurationSection actionSection in actionsSection.GetChildren())
             {
-                if (!string.IsNullOrEmpty(actionSections.ElementAt(index).Value))
+                if (!string.IsNullOrEmpty(actionSection.Value))
                 {
-                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Actions, actionSections.ElementAt(index).Value, ruleOptions.Actions, index))
+                    if (!TryGetTemplate(_templateOptions.CollectionRuleActions, actionSection.Value, out CollectionRuleActionOptions templateActionOptions))
                     {
                         return false;
                     }
+
+                    ruleOptions.Actions.Add(templateActionOptions);
+                }
+                else
+                {
+                    CollectionRuleActionOptions actionOptions = new();
+
+                    actionSection.Bind(actionOptions);
+
+                    BindActionSettings(actionSection, actionOptions);
+
+                    ruleOptions.Actions.Add(actionOptions);
                 }
             }
 
             return true;
         }
 
-        private bool InsertCustomTriggerIntoTrigger(CollectionRuleOptions ruleOptions, string name)
+        private bool ResolveTrigger(CollectionRuleOptions ruleOptions, string name)
         {
             IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Trigger)));
+
             if (section.Exists() && !string.IsNullOrEmpty(section.Value))
             {
-                if (!ValidateCustomShortcutExists(_shortcutOptions.CurrentValue.Triggers, section.Value))
+                if (!TryGetTemplate(_templateOptions.CollectionRuleTriggers, section.Value, out CollectionRuleTriggerOptions triggerOptions))
                 {
                     return false;
                 }
 
-                CollectionRuleTriggerOptions options = _shortcutOptions.CurrentValue.Triggers[section.Value];
-                ruleOptions.Trigger = options;
+                ruleOptions.Trigger = triggerOptions;
+            }
+            else
+            {
+                BindTriggerSettings(section, ruleOptions.Trigger);
             }
 
             return true;
         }
 
-        private bool InsertCustomFiltersIntoFilterList(CollectionRuleOptions ruleOptions, string name)
+        private bool ResolveFilterList(CollectionRuleOptions ruleOptions, string name)
         {
-            var section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Filters)));
+            ruleOptions.Filters.Clear();
 
-            var filterSections = section.GetChildren();
+            IConfigurationSection filtersSections = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Filters)));
 
-            for (int index = 0; index < filterSections.Count(); ++index)
+            foreach (IConfigurationSection filtersSection in filtersSections.GetChildren())
             {
-                if (!string.IsNullOrEmpty(filterSections.ElementAt(index).Value))
+                if (!string.IsNullOrEmpty(filtersSection.Value))
                 {
-                    if (!InsertCustomShortcut(_shortcutOptions.CurrentValue.Filters, filterSections.ElementAt(index).Value, ruleOptions.Filters, index))
+                    if (!TryGetTemplate(_templateOptions.CollectionRuleFilters, filtersSection.Value, out ProcessFilterDescriptor templateFilterOptions))
                     {
                         return false;
                     }
+
+                    ruleOptions.Filters.Add(templateFilterOptions);
+                }
+                else
+                {
+                    ProcessFilterDescriptor filterOptions = new();
+
+                    filtersSection.Bind(filterOptions);
+
+                    ruleOptions.Filters.Add(filterOptions);
                 }
             }
 
             return true;
         }
 
-        private bool InsertCustomLimitIntoLimit(CollectionRuleOptions ruleOptions, string name)
+        private bool ResolveLimits(CollectionRuleOptions ruleOptions, string name)
         {
             IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Limits)));
             if (section.Exists() && !string.IsNullOrEmpty(section.Value))
             {
-                if (!ValidateCustomShortcutExists(_shortcutOptions.CurrentValue.Limits, section.Value))
+                if (!TryGetTemplate(_templateOptions.CollectionRuleLimits, section.Value, out CollectionRuleLimitsOptions limitsOptions))
                 {
                     return false;
                 }
 
-                CollectionRuleLimitsOptions options = _shortcutOptions.CurrentValue.Limits[section.Value];
-                ruleOptions.Limits = options;
+                ruleOptions.Limits = limitsOptions;
             }
 
             return true;
         }
 
-        private bool InsertCustomShortcut<T>(IDictionary<string, T> shortcutsOptions, string shortcutKey, List<T> options, int index) where T : class
+        private bool TryGetTemplate<T>(IDictionary<string, T> templatesOptions, string templateKey, out T templatesValue)
         {
-            if (!ValidateCustomShortcutExists(shortcutsOptions, shortcutKey))
-            {
-                return false;
-            }
-
-            options.Insert(index, shortcutsOptions[shortcutKey]);
-            return true;
-        }
-
-        private bool ValidateCustomShortcutExists<T>(IDictionary<string, T> shortcutsOptions, string shortcutKey)
-        {
-            if (shortcutsOptions.ContainsKey(shortcutKey))
+            if (templatesOptions.TryGetValue(templateKey, out templatesValue))
             {
                 return true;
             }
 
-            _logger.LogError(Strings.ErrorMessage_CustomShortcutNotFound, shortcutKey);
+            _logger.LogError(Strings.ErrorMessage_TemplateNotFound, templateKey);
             return false;
+        }
+
+        private void BindActionSettings(IConfigurationSection actionSection, CollectionRuleActionOptions actionOptions)
+        {
+            if (null != actionOptions &&
+                _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
+            {
+                IConfigurationSection settingsSection = actionSection.GetSection(
+                    nameof(CollectionRuleActionOptions.Settings));
+
+                settingsSection.Bind(actionSettings);
+                actionOptions.Settings = actionSettings;
+            }
+        }
+
+        private void BindTriggerSettings(IConfigurationSection triggerSection, CollectionRuleTriggerOptions triggerOptions)
+        {
+            if (null != triggerOptions &&
+                _triggerOperations.TryCreateOptions(triggerOptions.Type, out object triggerSettings))
+            {
+                IConfigurationSection settingsSection = triggerSection.GetSection(nameof(CollectionRuleTriggerOptions.Settings));
+
+                settingsSection.Bind(triggerSettings);
+
+                triggerOptions.Settings = triggerSettings;
+            }
         }
     }
 }
