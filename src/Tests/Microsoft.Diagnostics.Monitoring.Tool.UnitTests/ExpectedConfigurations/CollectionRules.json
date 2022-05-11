@@ -71,13 +71,13 @@
   },
   "Rule4": {
     "Actions": [
-      "ActionCustomShortcut1",
-      "ActionCustomShortcut2"
+      "ActionTemplate1",
+      "ActionTemplate2"
     ],
     "Filters": [
-      "FilterCustomShortcut"
+      "FilterTemplate"
     ],
-    "Limits": "LimitCustomShortcut",
-    "Trigger": "TriggerCustomShortcut"
+    "Limits": "LimitTemplate",
+    "Trigger": "TriggerTemplate"
   }
 }

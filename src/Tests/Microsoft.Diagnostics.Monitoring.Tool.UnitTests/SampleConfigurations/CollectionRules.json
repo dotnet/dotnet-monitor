@@ -71,14 +71,14 @@
       }
     },
     "Rule4": {
-      "Trigger": "TriggerCustomShortcut",
+      "Trigger": "TriggerTemplate",
       "Actions": [
-        "ActionCustomShortcut1",
-        "ActionCustomShortcut2"
+        "ActionTemplate1",
+        "ActionTemplate2"
       ],
-      "Limits": "LimitCustomShortcut",
+      "Limits": "LimitTemplate",
       "Filters": [
-        "FilterCustomShortcut"
+        "FilterTemplate"
       ]
     }
   }
