@@ -29,32 +29,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public void PostConfigure(string name, TemplateOptions options)
         {
-            // Action Shortcuts
-            foreach (var key in options.CollectionRuleActions.Keys)
+            foreach (string key in options.CollectionRuleActions.Keys)
             {
                 IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleActions), key));
 
                 if (section.Exists())
                 {
-                    BindCustomActions(section, options, key);
+                    BindTemplateActions(section, options, key);
                 }
             }
 
-            // Trigger Shortcuts
-            foreach (var key in options.CollectionRuleTriggers.Keys)
+            foreach (string key in options.CollectionRuleTriggers.Keys)
             {
                 IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleTriggers), key));
 
                 if (section.Exists())
                 {
-                    BindCustomTriggers(section, options, key);
+                    BindTemplateTriggers(section, options, key);
                 }
             }
         }
 
-        private void BindCustomActions(IConfigurationSection ruleSection, TemplateOptions shortcutOptions, string shortcutName)
+        private void BindTemplateActions(IConfigurationSection ruleSection, TemplateOptions templateOptions, string templateName)
         {
-            CollectionRuleActionOptions actionOptions = shortcutOptions.CollectionRuleActions[shortcutName];
+            CollectionRuleActionOptions actionOptions = templateOptions.CollectionRuleActions[templateName];
 
             if (null != actionOptions &&
                 _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
@@ -67,9 +65,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             }
         }
 
-        private void BindCustomTriggers(IConfigurationSection ruleSection, TemplateOptions shortcutOptions, string shortcutName)
+        private void BindTemplateTriggers(IConfigurationSection ruleSection, TemplateOptions templateOptions, string templateName)
         {
-            CollectionRuleTriggerOptions triggerOptions = shortcutOptions.CollectionRuleTriggers[shortcutName];
+            CollectionRuleTriggerOptions triggerOptions = templateOptions.CollectionRuleTriggers[templateName];
 
             if (null != triggerOptions &&
                 _triggerOperations.TryCreateOptions(triggerOptions.Type, out object triggerSettings))

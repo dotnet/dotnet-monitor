@@ -71,13 +71,13 @@
   },
   "Rule4": {
     "Actions": [
-      "ActionCustomShortcut1" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-      "ActionCustomShortcut2" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      "ActionTemplate1" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "ActionTemplate2" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     ],
     "Filters": [
-      "FilterCustomShortcut" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      "FilterTemplate" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     ],
-    "Limits": "LimitCustomShortcut" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-    "Trigger": "TriggerCustomShortcut" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    "Limits": "LimitTemplate" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+    "Trigger": "TriggerTemplate" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
   }
 }
