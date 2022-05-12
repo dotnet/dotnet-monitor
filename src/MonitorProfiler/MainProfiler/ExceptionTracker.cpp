@@ -6,11 +6,11 @@
 
 using namespace std;
 
-#define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
+#define IfFailLogRet(EXPR) IfFailLogRet_(_logger, EXPR)
 
-#define LogDebugV(format, ...) LogDebugV_(m_pLogger, format, __VA_ARGS__)
-#define LogInformationV(format, ...) LogInformationV_(m_pLogger, format, __VA_ARGS__)
-#define LogErrorV(format, ...) LogErrorV_(m_pLogger, format, __VA_ARGS__)
+#define LogDebugV(format, ...) LogDebugV_(_logger, format, __VA_ARGS__)
+#define LogInformationV(format, ...) LogInformationV_(_logger, format, __VA_ARGS__)
+#define LogErrorV(format, ...) LogErrorV_(_logger, format, __VA_ARGS__)
 
 /*
     Exception Callbacks
@@ -59,13 +59,13 @@ using namespace std;
 
 
 ExceptionTracker::ExceptionTracker(
-    const shared_ptr<ILogger>& pLogger,
-    const shared_ptr<ThreadDataManager> pThreadDataManager,
-    ICorProfilerInfo2* pCorProfilerInfo)
+    const shared_ptr<ILogger>& logger,
+    const shared_ptr<ThreadDataManager> threadDataManager,
+    ICorProfilerInfo2* corProfilerInfo)
 {
-    m_pCorProfilerInfo = pCorProfilerInfo;
-    m_pLogger = pLogger;
-    m_pThreadDataManager = pThreadDataManager;
+    _corProfilerInfo = corProfilerInfo;
+    _logger = logger;
+    _threadDataManager = threadDataManager;
 }
 
 void ExceptionTracker::AddProfilerEventMask(DWORD& eventsLow)
@@ -78,13 +78,13 @@ HRESULT ExceptionTracker::ExceptionThrown(ThreadID threadId, ObjectID objectId)
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(m_pThreadDataManager->SetExceptionObject(threadId, objectId));
+    IfFailLogRet(_threadDataManager->SetExceptionObject(threadId, objectId));
 
     // Exception throwing is common; don't pay to calculate method name if it won't be logged.
-    if (m_pLogger->IsEnabled(LogLevel::Debug))
+    if (_logger->IsEnabled(LogLevel::Debug))
     {
         FunctionID functionId = 0;
-        hr = m_pCorProfilerInfo->DoStackSnapshot(
+        hr = _corProfilerInfo->DoStackSnapshot(
             threadId,
             ExceptionThrownStackSnapshotCallback,
             COR_PRF_SNAPSHOT_INFO::COR_PRF_SNAPSHOT_DEFAULT,
@@ -110,7 +110,7 @@ HRESULT ExceptionTracker::ExceptionSearchCatcherFound(ThreadID threadId, Functio
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(m_pThreadDataManager->SetExceptionCatcherFunction(threadId, functionId));
+    IfFailLogRet(_threadDataManager->SetExceptionCatcherFunction(threadId, functionId));
 
     return S_OK;
 }
@@ -121,7 +121,7 @@ HRESULT ExceptionTracker::ExceptionUnwindFunctionEnter(ThreadID threadId, Functi
 
     ObjectID thrownObjectId;
     FunctionID catcherFunctionId;
-    IfFailLogRet(m_pThreadDataManager->GetException(threadId, &thrownObjectId, &catcherFunctionId));
+    IfFailLogRet(_threadDataManager->GetException(threadId, &thrownObjectId, &catcherFunctionId));
 
     if (ThreadData::NoFunctionId == catcherFunctionId)
     {
@@ -135,10 +135,10 @@ HRESULT ExceptionTracker::ExceptionUnwindFunctionEnter(ThreadID threadId, Functi
     }
     else if (functionId == catcherFunctionId)
     {
-        IfFailLogRet(m_pThreadDataManager->ClearException(threadId));
+        IfFailLogRet(_threadDataManager->ClearException(threadId));
 
         // Exception handling is common; don't pay to calculate method name if it won't be logged.
-        if (m_pLogger->IsEnabled(LogLevel::Debug))
+        if (_logger->IsEnabled(LogLevel::Debug))
         {
             tstring methodName;
             IfFailLogRet(GetFullyQualifiedMethodName(functionId, methodName));
@@ -153,7 +153,7 @@ HRESULT ExceptionTracker::MovedReferences(ULONG cMovedObjectIDRanges, ObjectID o
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(m_pThreadDataManager->MovedReferences(cMovedObjectIDRanges, oldObjectIDRangeStart, newObjectIDRangeStart, cObjectIDRangeLength));
+    IfFailLogRet(_threadDataManager->MovedReferences(cMovedObjectIDRanges, oldObjectIDRangeStart, newObjectIDRangeStart, cObjectIDRangeLength));
 
     return S_OK;
 }
@@ -180,7 +180,7 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
     ClassID classId;
     ModuleID moduleId;
     mdToken token;
-    IfFailLogRet(m_pCorProfilerInfo->GetFunctionInfo(
+    IfFailLogRet(_corProfilerInfo->GetFunctionInfo(
         functionId,
         &classId,
         &moduleId,
@@ -194,7 +194,7 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
     mdMethodDef methodDef = token;
 
     ComPtr<IMetaDataImport2> pMetadataImport;
-    IfFailLogRet(m_pCorProfilerInfo->GetModuleMetaData(
+    IfFailLogRet(_corProfilerInfo->GetModuleMetaData(
         moduleId,
         CorOpenFlags::ofRead,
         IID_IMetaDataImport2,
@@ -202,39 +202,39 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
     ));
 
     // Get Module Name: typically the full path to the assembly
-    ULONG moduleNameCount = 0; // Includes null-terminater
-    IfFailLogRet(m_pCorProfilerInfo->GetModuleInfo(
+    ULONG modulePathCount = 0; // Includes null-terminater
+    IfFailLogRet(_corProfilerInfo->GetModuleInfo(
         moduleId,
         nullptr,
         0,
-        &moduleNameCount,
+        &modulePathCount,
         nullptr,
         nullptr
     ));
 
-    unique_ptr<WCHAR[]> pModulePath(new (nothrow) WCHAR[moduleNameCount]);
-    IfNullRet(pModulePath);
+    unique_ptr<WCHAR[]> modulePath(new (nothrow) WCHAR[modulePathCount]);
+    IfNullRet(modulePath);
 
-    IfFailLogRet(m_pCorProfilerInfo->GetModuleInfo(
+    IfFailLogRet(_corProfilerInfo->GetModuleInfo(
         moduleId,
         nullptr,
-        moduleNameCount,
+        modulePathCount,
         nullptr,
-        pModulePath.get(),
+        modulePath.get(),
         nullptr
     ));
 
     // Get Class Name: The namespace + type name in the form <Namespace>.<Type>
-    tstring className;
+    tstring classNameStr;
     if (0 == classId)
     {
         // Probably a value type e.g. struct
-        className.assign(_T("[Unknown]"));
+        classNameStr.assign(_T("[Unknown]"));
     }
     else
     {
         mdTypeDef typeDef = mdTokenNil;
-        IfFailLogRet(m_pCorProfilerInfo->GetClassIDInfo(
+        IfFailLogRet(_corProfilerInfo->GetClassIDInfo(
             classId,
             nullptr,
             &typeDef
@@ -250,19 +250,19 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
             nullptr
         ));
 
-        unique_ptr<WCHAR[]> pClassName(new (nothrow) WCHAR[classNameCount]);
-        IfNullRet(pClassName);
+        unique_ptr<WCHAR[]> className(new (nothrow) WCHAR[classNameCount]);
+        IfNullRet(className);
 
         IfFailLogRet(pMetadataImport->GetTypeDefProps(
             typeDef,
-            pClassName.get(),
+            className.get(),
             classNameCount,
             nullptr,
             nullptr,
             nullptr
         ));
 
-        className.assign(pClassName.get());
+        classNameStr.assign(className.get());
     }
 
     // Get Method Name
@@ -280,13 +280,13 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
         nullptr
     ));
 
-    unique_ptr<WCHAR[]> pMethodName(new (nothrow) WCHAR[methodNameCount]);
-    IfNullRet(pMethodName);
+    unique_ptr<WCHAR[]> methodName(new (nothrow) WCHAR[methodNameCount]);
+    IfNullRet(methodName);
 
     IfFailLogRet(pMetadataImport->GetMethodProps(
         methodDef,
         nullptr,
-        pMethodName.get(),
+        methodName.get(),
         methodNameCount,
         nullptr,
         nullptr,
@@ -296,16 +296,16 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
         nullptr
     ));
 
-    tstring modulePath(pModulePath.get());
+    tstring modulePathStr(modulePath.get());
 
     // The full method name should be in the following format: <ModuleName>!<Namespace>.<TypeName>.<MethodName>
     // Example: ConsoleApp1.dll!ConsoleApp1.Program.Main
     fullMethodName.clear();
-    fullMethodName.append(modulePath.substr(modulePath.find_last_of(_T("/\\")) + 1));
+    fullMethodName.append(modulePathStr.substr(modulePathStr.find_last_of(_T("/\\")) + 1));
     fullMethodName.append(_T("!"));
-    fullMethodName.append(className);
+    fullMethodName.append(classNameStr);
     fullMethodName.append(_T("."));
-    fullMethodName.append(pMethodName.get());
+    fullMethodName.append(methodName.get());
 
     return S_OK;
 }

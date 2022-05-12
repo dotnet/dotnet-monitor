@@ -32,14 +32,14 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
     IfFailRet(InitializeEnvironment());
     IfFailRet(InitializeLogging());
 
-    m_pThreadDataManager = make_shared<ThreadDataManager>(m_pLogger);
-    IfNullRet(m_pThreadDataManager);
-    m_pExceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, m_pThreadDataManager, m_pCorProfilerInfo));
-    IfNullRet(m_pExceptionTracker);
+    // Logging is initialized and can now be used
+
+    _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
+    IfNullRet(_threadDataManager);
+    _exceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, _threadDataManager, m_pCorProfilerInfo));
+    IfNullRet(_exceptionTracker);
 
     IfFailLogRet(InitializeCommandServer());
-
-    // Logging is initialized and can now be used
 
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
@@ -71,7 +71,7 @@ STDMETHODIMP MainProfiler::ThreadCreated(ThreadID threadId)
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(m_pThreadDataManager->ThreadCreated(threadId));
+    IfFailLogRet(_threadDataManager->ThreadCreated(threadId));
 
     return S_OK;
 }
@@ -80,7 +80,7 @@ STDMETHODIMP MainProfiler::ThreadDestroyed(ThreadID threadId)
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(m_pThreadDataManager->ThreadDestroyed(threadId));
+    IfFailLogRet(_threadDataManager->ThreadDestroyed(threadId));
 
     return S_OK;
 }
@@ -92,7 +92,7 @@ STDMETHODIMP MainProfiler::ExceptionThrown(ObjectID thrownObjectId)
     ThreadID threadId;
     IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
 
-    IfFailLogRet(m_pExceptionTracker->ExceptionThrown(threadId, thrownObjectId));
+    IfFailLogRet(_exceptionTracker->ExceptionThrown(threadId, thrownObjectId));
 
     return S_OK;
 }
@@ -104,7 +104,7 @@ STDMETHODIMP MainProfiler::ExceptionSearchCatcherFound(FunctionID functionId)
     ThreadID threadId;
     IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
 
-    IfFailLogRet(m_pExceptionTracker->ExceptionSearchCatcherFound(threadId, functionId));
+    IfFailLogRet(_exceptionTracker->ExceptionSearchCatcherFound(threadId, functionId));
 
     return S_OK;
 }
@@ -116,7 +116,7 @@ STDMETHODIMP MainProfiler::ExceptionUnwindFunctionEnter(FunctionID functionId)
     ThreadID threadId;
     IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
 
-    IfFailLogRet(m_pExceptionTracker->ExceptionUnwindFunctionEnter(threadId, functionId));
+    IfFailLogRet(_exceptionTracker->ExceptionUnwindFunctionEnter(threadId, functionId));
 
     return S_OK;
 }
@@ -125,7 +125,7 @@ STDMETHODIMP MainProfiler::MovedReferences2(ULONG cMovedObjectIDRanges, ObjectID
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(m_pExceptionTracker->MovedReferences(cMovedObjectIDRanges, oldObjectIDRangeStart, newObjectIDRangeStart, cObjectIDRangeLength));
+    IfFailLogRet(_exceptionTracker->MovedReferences(cMovedObjectIDRanges, oldObjectIDRangeStart, newObjectIDRangeStart, cObjectIDRangeLength));
 
     return S_OK;
 }

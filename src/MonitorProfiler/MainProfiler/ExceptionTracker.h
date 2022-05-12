@@ -15,15 +15,15 @@
 class ExceptionTracker
 {
 private:
-    ComPtr<ICorProfilerInfo2> m_pCorProfilerInfo;
-    std::shared_ptr<ILogger> m_pLogger;
-    std::shared_ptr<ThreadDataManager> m_pThreadDataManager;
+    ComPtr<ICorProfilerInfo2> _corProfilerInfo;
+    std::shared_ptr<ILogger> _logger;
+    std::shared_ptr<ThreadDataManager> _threadDataManager;
 
 public:
     ExceptionTracker(
-        const std::shared_ptr<ILogger>& pLogger,
-        const std::shared_ptr<ThreadDataManager> pThreadDataManager,
-        ICorProfilerInfo2* pCorProfilerInfo);
+        const std::shared_ptr<ILogger>& logger,
+        const std::shared_ptr<ThreadDataManager> threadDataManager,
+        ICorProfilerInfo2* corProfilerInfo);
 
     /// <summary>
     /// Adds profiler event masks needed by class.
@@ -39,7 +39,7 @@ public:
     HRESULT MovedReferences(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[]);
 
 private:
-    HRESULT GetFullyQualifiedMethodName(FunctionID functionId, tstring& tstrName);
+    HRESULT GetFullyQualifiedMethodName(FunctionID functionId, tstring& name);
     static HRESULT STDMETHODCALLTYPE ExceptionThrownStackSnapshotCallback(
         FunctionID funcId,
         UINT_PTR ip,

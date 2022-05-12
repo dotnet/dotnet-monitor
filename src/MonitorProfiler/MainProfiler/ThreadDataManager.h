@@ -18,12 +18,12 @@
 class ThreadDataManager
 {
 private:
-    std::unordered_map<ThreadID, std::shared_ptr<ThreadData>> m_dataMap;
-    std::mutex m_dataMapMutex;
-    std::shared_ptr<ILogger> m_pLogger;
+    std::unordered_map<ThreadID, std::shared_ptr<ThreadData>> _dataMap;
+    std::mutex _dataMapMutex;
+    std::shared_ptr<ILogger> _logger;
 
 public:
-    ThreadDataManager(const std::shared_ptr<ILogger>& pLogger);
+    ThreadDataManager(const std::shared_ptr<ILogger>& logger);
 
     /// <summary>
     /// Adds profiler event masks needed by class.
@@ -36,13 +36,13 @@ public:
 
     // Exceptions
     HRESULT ClearException(ThreadID threadId);
-    HRESULT GetException(ThreadID threadId, ObjectID* pObjectId, FunctionID* pHandlingFunctionId);
+    HRESULT GetException(ThreadID threadId, ObjectID* objectId, FunctionID* catcherFunctionId);
     HRESULT SetExceptionObject(ThreadID threadId, ObjectID objectId);
-    HRESULT SetExceptionCatcherFunction(ThreadID threadId, FunctionID handlingFunctionId);
+    HRESULT SetExceptionCatcherFunction(ThreadID threadId, FunctionID catcherFunctionId);
 
     // Garbage Collection
     HRESULT MovedReferences(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[]);
 
 private:
-    HRESULT GetThreadData(ThreadID threadId, std::shared_ptr<ThreadData>& pThreadData);
+    HRESULT GetThreadData(ThreadID threadId, std::shared_ptr<ThreadData>& threadData);
 };

@@ -7,43 +7,43 @@
 
 using namespace std;
 
-#define IfFalseLogRet(EXPR, hr) IfFalseLogRet_(m_pLogger, EXPR, hr)
+#define IfFalseLogRet(EXPR, hr) IfFalseLogRet_(_logger, EXPR, hr)
 
-ThreadData::ThreadData(const shared_ptr<ILogger>& pLogger) :
-    m_exceptionCatcherFunctionId(NoFunctionId),
-    m_exceptionObjectId(NoExceptionId),
-    m_pLogger(pLogger)
+ThreadData::ThreadData(const shared_ptr<ILogger>& logger) :
+    _exceptionCatcherFunctionId(NoFunctionId),
+    _exceptionObjectId(NoExceptionId),
+    _logger(logger)
 {
 }
 
 mutex& ThreadData::GetMutex()
 {
-    return m_mutex;
+    return _mutex;
 }
 
 void ThreadData::ClearException()
 {
-    m_exceptionCatcherFunctionId = NoFunctionId;
-    m_exceptionObjectId = NoExceptionId;
+    _exceptionCatcherFunctionId = NoFunctionId;
+    _exceptionObjectId = NoExceptionId;
 }
 
 HRESULT ThreadData::ExceptionObjectMoved(ObjectID newObjectId)
 {
     IfFalseLogRet(NoExceptionId != newObjectId, E_INVALIDARG);
-    IfFalseLogRet(NoExceptionId != m_exceptionObjectId, E_UNEXPECTED);
+    IfFalseLogRet(NoExceptionId != _exceptionObjectId, E_UNEXPECTED);
 
-    m_exceptionObjectId = newObjectId;
+    _exceptionObjectId = newObjectId;
 
     return S_OK;
 }
 
-HRESULT ThreadData::GetException(ObjectID* pObjectId, FunctionID* pCatcherFunctionId)
+HRESULT ThreadData::GetException(ObjectID* objectId, FunctionID* catcherFunctionId)
 {
-    ExpectedPtr(pObjectId);
-    ExpectedPtr(pCatcherFunctionId);
+    ExpectedPtr(objectId);
+    ExpectedPtr(catcherFunctionId);
 
-    *pObjectId = m_exceptionObjectId;
-    *pCatcherFunctionId = m_exceptionCatcherFunctionId;
+    *objectId = _exceptionObjectId;
+    *catcherFunctionId = _exceptionCatcherFunctionId;
 
     return S_OK;
 }
@@ -51,10 +51,10 @@ HRESULT ThreadData::GetException(ObjectID* pObjectId, FunctionID* pCatcherFuncti
 HRESULT ThreadData::SetExceptionObject(ObjectID objectId)
 {
     IfFalseLogRet(NoExceptionId != objectId, E_INVALIDARG);
-    IfFalseLogRet(NoExceptionId == m_exceptionObjectId, E_UNEXPECTED);
-    IfFalseLogRet(NoFunctionId == m_exceptionCatcherFunctionId, E_UNEXPECTED);
+    IfFalseLogRet(NoExceptionId == _exceptionObjectId, E_UNEXPECTED);
+    IfFalseLogRet(NoFunctionId == _exceptionCatcherFunctionId, E_UNEXPECTED);
 
-    m_exceptionObjectId = objectId;
+    _exceptionObjectId = objectId;
 
     return S_OK;
 }
@@ -62,9 +62,9 @@ HRESULT ThreadData::SetExceptionObject(ObjectID objectId)
 HRESULT ThreadData::SetExceptionCatcherFunction(FunctionID functionId)
 {
     IfFalseLogRet(NoFunctionId != functionId, E_INVALIDARG);
-    IfFalseLogRet(NoExceptionId != m_exceptionObjectId, E_UNEXPECTED);
+    IfFalseLogRet(NoExceptionId != _exceptionObjectId, E_UNEXPECTED);
 
-    m_exceptionCatcherFunctionId = functionId;
+    _exceptionCatcherFunctionId = functionId;
 
     return S_OK;
 }

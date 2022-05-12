@@ -8,13 +8,13 @@
 
 using namespace std;
 
-#define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
+#define IfFailLogRet(EXPR) IfFailLogRet_(_logger, EXPR)
 
 typedef unordered_map<ThreadID, shared_ptr<ThreadData>>::iterator DataMapIterator;
 
-ThreadDataManager::ThreadDataManager(const shared_ptr<ILogger>& pLogger)
+ThreadDataManager::ThreadDataManager(const shared_ptr<ILogger>& logger)
 {
-    m_pLogger = pLogger;
+    _logger = logger;
 }
 
 void ThreadDataManager::AddProfilerEventMask(DWORD& eventsLow)
@@ -26,18 +26,18 @@ void ThreadDataManager::AddProfilerEventMask(DWORD& eventsLow)
 
 HRESULT ThreadDataManager::ThreadCreated(ThreadID threadId)
 {
-    lock_guard<mutex> lock(m_dataMapMutex);
+    lock_guard<mutex> lock(_dataMapMutex);
 
-    m_dataMap.insert(make_pair(threadId, make_shared<ThreadData>(m_pLogger)));
+    _dataMap.insert(make_pair(threadId, make_shared<ThreadData>(_logger)));
 
     return S_OK;
 }
 
 HRESULT ThreadDataManager::ThreadDestroyed(ThreadID threadId)
 {
-    lock_guard<mutex> lock(m_dataMapMutex);
+    lock_guard<mutex> lock(_dataMapMutex);
 
-    m_dataMap.erase(threadId);
+    _dataMap.erase(threadId);
 
     return S_OK;
 }
@@ -46,57 +46,57 @@ HRESULT ThreadDataManager::ClearException(ThreadID threadId)
 {
     HRESULT hr = S_OK;
 
-    shared_ptr<ThreadData> pThreadData;
-    IfFailLogRet(GetThreadData(threadId, pThreadData));
+    shared_ptr<ThreadData> threadData;
+    IfFailLogRet(GetThreadData(threadId, threadData));
 
-    lock_guard<mutex> lock(pThreadData->GetMutex());
+    lock_guard<mutex> lock(threadData->GetMutex());
 
-    pThreadData->ClearException();
+    threadData->ClearException();
 
     return S_OK;
 }
 
-HRESULT ThreadDataManager::GetException(ThreadID threadId, ObjectID* pObjectId, FunctionID* pCatcherFunctionId)
+HRESULT ThreadDataManager::GetException(ThreadID threadId, ObjectID* objectId, FunctionID* catcherFunctionId)
 {
-    ExpectedPtr(pObjectId);
-    ExpectedPtr(pCatcherFunctionId);
+    ExpectedPtr(objectId);
+    ExpectedPtr(catcherFunctionId);
 
     HRESULT hr = S_OK;
 
-    shared_ptr<ThreadData> pThreadData;
-    IfFailLogRet(GetThreadData(threadId, pThreadData));
+    shared_ptr<ThreadData> threadData;
+    IfFailLogRet(GetThreadData(threadId, threadData));
 
-    lock_guard<mutex> lock(pThreadData->GetMutex());
+    lock_guard<mutex> lock(threadData->GetMutex());
 
-    IfFailLogRet(pThreadData->GetException(pObjectId, pCatcherFunctionId));
+    IfFailLogRet(threadData->GetException(objectId, catcherFunctionId));
 
-    return ThreadData::NoExceptionId == *pObjectId ? S_FALSE : S_OK;
+    return ThreadData::NoExceptionId == *objectId ? S_FALSE : S_OK;
 }
 
 HRESULT ThreadDataManager::SetExceptionObject(ThreadID threadId, ObjectID objectId)
 {
     HRESULT hr = S_OK;
 
-    shared_ptr<ThreadData> pThreadData;
-    IfFailLogRet(GetThreadData(threadId, pThreadData));
+    shared_ptr<ThreadData> threadData;
+    IfFailLogRet(GetThreadData(threadId, threadData));
 
-    lock_guard<mutex> lock(pThreadData->GetMutex());
+    lock_guard<mutex> lock(threadData->GetMutex());
 
-    IfFailLogRet(pThreadData->SetExceptionObject(objectId));
+    IfFailLogRet(threadData->SetExceptionObject(objectId));
 
     return S_OK;
 }
 
-HRESULT ThreadDataManager::SetExceptionCatcherFunction(ThreadID threadId, FunctionID handlingFunctionId)
+HRESULT ThreadDataManager::SetExceptionCatcherFunction(ThreadID threadId, FunctionID catcherFunctionId)
 {
     HRESULT hr = S_OK;
 
-    shared_ptr<ThreadData> pThreadData;
-    IfFailLogRet(GetThreadData(threadId, pThreadData));
+    shared_ptr<ThreadData> threadData;
+    IfFailLogRet(GetThreadData(threadId, threadData));
 
-    lock_guard<mutex> lock(pThreadData->GetMutex());
+    lock_guard<mutex> lock(threadData->GetMutex());
 
-    IfFailLogRet(pThreadData->SetExceptionCatcherFunction(handlingFunctionId));
+    IfFailLogRet(threadData->SetExceptionCatcherFunction(catcherFunctionId));
 
     return S_OK;
 }
@@ -105,17 +105,17 @@ HRESULT ThreadDataManager::MovedReferences(ULONG cMovedObjectIDRanges, ObjectID 
 {
     HRESULT hr = S_OK;
 
-    lock_guard<mutex> mapLock(m_dataMapMutex);
+    lock_guard<mutex> mapLock(_dataMapMutex);
 
     // Update all of the exception ObjectIDs for each thread
-    for (pair<const ThreadID, shared_ptr<ThreadData>>& pair : m_dataMap)
+    for (pair<const ThreadID, shared_ptr<ThreadData>>& pair : _dataMap)
     {
-        shared_ptr<ThreadData> pThreadData = pair.second;
-        lock_guard<mutex> lock(pThreadData->GetMutex());
+        shared_ptr<ThreadData> threadData = pair.second;
+        lock_guard<mutex> lock(threadData->GetMutex());
 
         ObjectID exceptionObjectId;
         FunctionID exceptionCatcherFunctionId;
-        IfFailLogRet(pThreadData->GetException(&exceptionObjectId, &exceptionCatcherFunctionId));
+        IfFailLogRet(threadData->GetException(&exceptionObjectId, &exceptionCatcherFunctionId));
 
         // If the thread has an exception associated with it, check if it is one of the compacted
         // ranges. If it is in a range, recalculate the new ObjectID and store it.
@@ -126,7 +126,7 @@ HRESULT ThreadDataManager::MovedReferences(ULONG cMovedObjectIDRanges, ObjectID 
                 if (oldObjectIDRangeStart[i] <= exceptionObjectId && exceptionObjectId < (oldObjectIDRangeStart[i] + cObjectIDRangeLength[i]))
                 {
                     ObjectID newExceptionObjectId = newObjectIDRangeStart[i] + (exceptionObjectId - oldObjectIDRangeStart[i]);
-                    IfFailLogRet(pThreadData->ExceptionObjectMoved(newExceptionObjectId));
+                    IfFailLogRet(threadData->ExceptionObjectMoved(newExceptionObjectId));
                 }
             }
         }
@@ -135,17 +135,17 @@ HRESULT ThreadDataManager::MovedReferences(ULONG cMovedObjectIDRanges, ObjectID 
     return S_OK;
 }
 
-HRESULT ThreadDataManager::GetThreadData(ThreadID threadId, shared_ptr<ThreadData>& pThreadData)
+HRESULT ThreadDataManager::GetThreadData(ThreadID threadId, shared_ptr<ThreadData>& threadData)
 {
-    lock_guard<mutex> mapLock(m_dataMapMutex);
+    lock_guard<mutex> mapLock(_dataMapMutex);
 
-    DataMapIterator iterator = m_dataMap.find(threadId);
-    if (iterator == m_dataMap.end())
+    DataMapIterator iterator = _dataMap.find(threadId);
+    if (iterator == _dataMap.end())
     {
         return E_FAIL;
     }
 
-    pThreadData = iterator->second;
+    threadData = iterator->second;
 
     return S_OK;
 }

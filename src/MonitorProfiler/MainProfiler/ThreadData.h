@@ -20,20 +20,20 @@ public:
     static const FunctionID NoFunctionId = 0;
 
 private:
-    FunctionID m_exceptionCatcherFunctionId;
-    ObjectID m_exceptionObjectId;
-    std::mutex m_mutex;
-    std::shared_ptr<ILogger> m_pLogger;
+    FunctionID _exceptionCatcherFunctionId;
+    ObjectID _exceptionObjectId;
+    std::mutex _mutex;
+    std::shared_ptr<ILogger> _logger;
 
 public:
-    ThreadData(const std::shared_ptr<ILogger>& pLogger);
+    ThreadData(const std::shared_ptr<ILogger>& logger);
 
     std::mutex& GetMutex();
 
     // Exceptions
     void ClearException();
     HRESULT ExceptionObjectMoved(ObjectID newObjectId);
-    HRESULT GetException(ObjectID* pObjectId, FunctionID* pHandlingFunctionId);
+    HRESULT GetException(ObjectID* objectId, FunctionID* catcherFunctionId);
     HRESULT SetExceptionObject(ObjectID objectId);
     HRESULT SetExceptionCatcherFunction(FunctionID functionId);
 };

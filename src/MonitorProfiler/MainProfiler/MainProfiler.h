@@ -18,8 +18,8 @@ class MainProfiler final :
 private:
     std::shared_ptr<IEnvironment> m_pEnvironment;
     std::shared_ptr<ILogger> m_pLogger;
-    std::shared_ptr<ThreadDataManager> m_pThreadDataManager;
-    std::unique_ptr<ExceptionTracker> m_pExceptionTracker;
+    std::shared_ptr<ThreadDataManager> _threadDataManager;
+    std::unique_ptr<ExceptionTracker> _exceptionTracker;
 
 public:
     static GUID GetClsid();
