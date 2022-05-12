@@ -41,13 +41,11 @@ using namespace std;
     Unhandled Exception Detection Algorithm
 
     A subset of the aboved described callbacks is used to determine if an unhandled exception has occurred:
-    - ExceptionThrown: Record the originating FunctionID and ObjectID of the exception that is thrown.
+    - ExceptionThrown: Record the originating FunctionID and the existance of the exception.
     - ExceptionSearchCatcherFound: Record that the exception will be handled in a catching FunctionID.
     - ExceptionUnwindFunctionEnter: If the exception was not handled (ExceptionSearchCatcherFound was not invoked),
       then the exception is unhandled at this point. Do some extra bookkeeping in the case when the exception is
-      handled so that the exception is cleared once frame with the corresponding catching FunctionID is encountered.
-
-    Additionally, use GC callbacks, such as MovedReferences#, to update the exception ObjectID when compacting occurs.
+      handled so that the exception is cleared once the frame with the corresponding catching FunctionID is encountered.
 
     Current pitfalls:
     - Algorithm doesn't account for exceptions thrown within exception filters. These will be seen as a new set of
