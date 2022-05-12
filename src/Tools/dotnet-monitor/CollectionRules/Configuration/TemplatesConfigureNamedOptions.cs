@@ -16,6 +16,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
         private readonly ICollectionRuleActionOperations _actionOperations;
         private readonly IConfiguration _configuration;
+        private static readonly string collectionRuleActionsPath = ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleActions));
+        private static readonly string collectionRuleTriggersPath = ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleTriggers));
 
         public TemplatesPostConfigureOptions(
             ICollectionRuleTriggerOperations triggerOperations,
@@ -29,54 +31,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public void PostConfigure(string name, TemplateOptions options)
         {
+            IConfigurationSection collectionRuleActionsSection = _configuration.GetSection(collectionRuleActionsPath);
+
             foreach (string key in options.CollectionRuleActions.Keys)
             {
-                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleActions), key));
+                IConfigurationSection actionSection = collectionRuleActionsSection.GetSection(key);
 
-                if (section.Exists())
+                if (actionSection.Exists())
                 {
-                    BindTemplateActions(section, options, key);
+                    CollectionRuleBindingHelper.BindActionSettings(actionSection, options.CollectionRuleActions[key], _actionOperations);
                 }
             }
+
+            IConfigurationSection collectionRuleTriggersSection = _configuration.GetSection(collectionRuleTriggersPath);
 
             foreach (string key in options.CollectionRuleTriggers.Keys)
             {
-                IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleTriggers), key));
+                IConfigurationSection triggerSection = collectionRuleTriggersSection.GetSection(key);
 
-                if (section.Exists())
+                if (triggerSection.Exists())
                 {
-                    BindTemplateTriggers(section, options, key);
+                    CollectionRuleBindingHelper.BindTriggerSettings(triggerSection, options.CollectionRuleTriggers[key], _triggerOperations);
                 }
-            }
-        }
-
-        private void BindTemplateActions(IConfigurationSection ruleSection, TemplateOptions templateOptions, string templateName)
-        {
-            CollectionRuleActionOptions actionOptions = templateOptions.CollectionRuleActions[templateName];
-
-            if (null != actionOptions &&
-                _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
-            {
-                IConfigurationSection settingsSection = ruleSection.GetSection(nameof(CollectionRuleActionOptions.Settings));
-
-                settingsSection.Bind(actionSettings);
-
-                actionOptions.Settings = actionSettings;
-            }
-        }
-
-        private void BindTemplateTriggers(IConfigurationSection ruleSection, TemplateOptions templateOptions, string templateName)
-        {
-            CollectionRuleTriggerOptions triggerOptions = templateOptions.CollectionRuleTriggers[templateName];
-
-            if (null != triggerOptions &&
-                _triggerOperations.TryCreateOptions(triggerOptions.Type, out object triggerSettings))
-            {
-                IConfigurationSection settingsSection = ruleSection.GetSection(nameof(CollectionRuleTriggerOptions.Settings));
-
-                settingsSection.Bind(triggerSettings);
-
-                triggerOptions.Settings = triggerSettings;
             }
         }
     }

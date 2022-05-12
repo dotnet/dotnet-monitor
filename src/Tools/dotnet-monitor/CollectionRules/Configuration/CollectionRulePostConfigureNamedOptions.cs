@@ -7,9 +7,10 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
@@ -20,53 +21,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
         private readonly TemplateOptions _templateOptions;
         private readonly IConfiguration _configuration;
-        private readonly ILogger<CollectionRulePostConfigureOptions> _logger;
 
         public CollectionRulePostConfigureOptions(
             IOptionsMonitor<TemplateOptions> templateOptions,
             IConfiguration configuration,
             ICollectionRuleActionOperations actionOperations,
-            ICollectionRuleTriggerOperations triggerOperations,
-            ILogger<CollectionRulePostConfigureOptions> logger)
+            ICollectionRuleTriggerOperations triggerOperations)
         {
             _templateOptions = templateOptions.CurrentValue;
             _configuration = configuration;
             _actionOperations = actionOperations;
             _triggerOperations = triggerOperations;
-            _logger = logger;
         }
 
         public void PostConfigure(string name, CollectionRuleOptions options)
         {
-            bool validActionList = ResolveActionList(options, name);
-            bool validTrigger = ResolveTrigger(options, name);
-            bool validFilterList = ResolveFilterList(options, name);
-            bool validLimits = ResolveLimits(options, name);
+            IConfigurationSection ruleSection = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name));
 
-            // If any template substitutions fail, clear out the options so that the rule will fail Validation
-            if (!(validActionList && validTrigger && validFilterList && validLimits))
-            {
-                options.Trigger = null;
-                options.Actions.Clear();
-                options.Filters.Clear();
-                options.Limits = null;
-            }
+            ResolveActionList(options, ruleSection);
+            ResolveTrigger(options, ruleSection);
+            ResolveFilterList(options, ruleSection);
+            ResolveLimits(options, ruleSection);
         }
 
-        private bool ResolveActionList(CollectionRuleOptions ruleOptions, string name)
+        private void ResolveActionList(CollectionRuleOptions ruleOptions, IConfigurationSection ruleSection)
         {
             ruleOptions.Actions.Clear();
 
-            IConfigurationSection actionsSection = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Actions)));
+            IConfigurationSection actionSections = ruleSection.GetSection(nameof(CollectionRuleOptions.Actions));
 
-            foreach (IConfigurationSection actionSection in actionsSection.GetChildren())
+            foreach (IConfigurationSection actionSection in actionSections.GetChildren())
             {
-                if (!string.IsNullOrEmpty(actionSection.Value))
+                if (!SectionHasValue(actionSection))
                 {
-                    if (!TryGetTemplate(_templateOptions.CollectionRuleActions, actionSection.Value, out CollectionRuleActionOptions templateActionOptions))
-                    {
-                        return false;
-                    }
+                    TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleActions, actionSection.Value, out CollectionRuleActionOptions templateActionOptions);
 
                     ruleOptions.Actions.Add(templateActionOptions);
                 }
@@ -76,50 +64,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
                     actionSection.Bind(actionOptions);
 
-                    BindActionSettings(actionSection, actionOptions);
+                    CollectionRuleBindingHelper.BindActionSettings(actionSection, actionOptions, _actionOperations);
 
                     ruleOptions.Actions.Add(actionOptions);
                 }
             }
-
-            return true;
         }
 
-        private bool ResolveTrigger(CollectionRuleOptions ruleOptions, string name)
+        private void ResolveTrigger(CollectionRuleOptions ruleOptions, IConfigurationSection ruleSection)
         {
-            IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Trigger)));
+            IConfigurationSection section = ruleSection.GetSection(nameof(CollectionRuleOptions.Trigger));
 
-            if (section.Exists() && !string.IsNullOrEmpty(section.Value))
+            if (!SectionHasValue(section))
             {
-                if (!TryGetTemplate(_templateOptions.CollectionRuleTriggers, section.Value, out CollectionRuleTriggerOptions triggerOptions))
-                {
-                    return false;
-                }
+                TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleTriggers, section.Value, out CollectionRuleTriggerOptions triggerOptions);
 
                 ruleOptions.Trigger = triggerOptions;
             }
             else
             {
-                BindTriggerSettings(section, ruleOptions.Trigger);
+                CollectionRuleBindingHelper.BindTriggerSettings(section, ruleOptions.Trigger, _triggerOperations);
             }
-
-            return true;
         }
 
-        private bool ResolveFilterList(CollectionRuleOptions ruleOptions, string name)
+        private void ResolveFilterList(CollectionRuleOptions ruleOptions, IConfigurationSection ruleSection)
         {
             ruleOptions.Filters.Clear();
 
-            IConfigurationSection filtersSections = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Filters)));
+            IConfigurationSection filterSections = ruleSection.GetSection(nameof(CollectionRuleOptions.Filters));
 
-            foreach (IConfigurationSection filtersSection in filtersSections.GetChildren())
+            foreach (IConfigurationSection filterSection in filterSections.GetChildren())
             {
-                if (!string.IsNullOrEmpty(filtersSection.Value))
+                if (!SectionHasValue(filterSection))
                 {
-                    if (!TryGetTemplate(_templateOptions.CollectionRuleFilters, filtersSection.Value, out ProcessFilterDescriptor templateFilterOptions))
-                    {
-                        return false;
-                    }
+                    TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleFilters, filterSection.Value, out ProcessFilterDescriptor templateFilterOptions);
 
                     ruleOptions.Filters.Add(templateFilterOptions);
                 }
@@ -127,66 +105,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 {
                     ProcessFilterDescriptor filterOptions = new();
 
-                    filtersSection.Bind(filterOptions);
+                    filterSection.Bind(filterOptions);
 
                     ruleOptions.Filters.Add(filterOptions);
                 }
             }
-
-            return true;
         }
 
-        private bool ResolveLimits(CollectionRuleOptions ruleOptions, string name)
+        private void ResolveLimits(CollectionRuleOptions ruleOptions, IConfigurationSection ruleSection)
         {
-            IConfigurationSection section = _configuration.GetSection(ConfigurationPath.Combine(nameof(RootOptions.CollectionRules), name, nameof(CollectionRuleOptions.Limits)));
-            if (section.Exists() && !string.IsNullOrEmpty(section.Value))
+            IConfigurationSection section = ruleSection.GetSection(nameof(CollectionRuleOptions.Limits));
+
+            if (!SectionHasValue(section))
             {
-                if (!TryGetTemplate(_templateOptions.CollectionRuleLimits, section.Value, out CollectionRuleLimitsOptions limitsOptions))
-                {
-                    return false;
-                }
+                TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleLimits, section.Value, out CollectionRuleLimitsOptions limitsOptions);
 
                 ruleOptions.Limits = limitsOptions;
             }
-
-            return true;
         }
 
-        private bool TryGetTemplate<T>(IDictionary<string, T> templatesOptions, string templateKey, out T templatesValue)
+        private void TryGetTemplate<T>(CollectionRuleOptions ruleOptions, IDictionary<string, T> templatesOptions, string templateKey, out T templatesValue) where T : new()
         {
-            if (templatesOptions.TryGetValue(templateKey, out templatesValue))
+            if (!templatesOptions.TryGetValue(templateKey, out templatesValue))
             {
-                return true;
-            }
-
-            _logger.LogError(Strings.ErrorMessage_TemplateNotFound, templateKey);
-            return false;
-        }
-
-        private void BindActionSettings(IConfigurationSection actionSection, CollectionRuleActionOptions actionOptions)
-        {
-            if (null != actionOptions &&
-                _actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
-            {
-                IConfigurationSection settingsSection = actionSection.GetSection(
-                    nameof(CollectionRuleActionOptions.Settings));
-
-                settingsSection.Bind(actionSettings);
-                actionOptions.Settings = actionSettings;
+                templatesValue = new();
+                ruleOptions.ErrorList.Add(new ValidationResult(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey)));
             }
         }
 
-        private void BindTriggerSettings(IConfigurationSection triggerSection, CollectionRuleTriggerOptions triggerOptions)
+        private bool SectionHasValue(IConfigurationSection section)
         {
-            if (null != triggerOptions &&
-                _triggerOperations.TryCreateOptions(triggerOptions.Type, out object triggerSettings))
-            {
-                IConfigurationSection settingsSection = triggerSection.GetSection(nameof(CollectionRuleTriggerOptions.Settings));
-
-                settingsSection.Bind(triggerSettings);
-
-                triggerOptions.Settings = triggerSettings;
-            }
+            // If the section has a value, the value is the name of a template.
+            return string.IsNullOrEmpty(section.Value);
         }
     }
 }
