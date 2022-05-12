@@ -7,6 +7,7 @@
 using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(_logger, EXPR)
+#define IfFalseLogRet(EXPR, hr) IfFalseLogRet_(_logger, EXPR, hr)
 
 #define LogDebugV(format, ...) LogDebugV_(_logger, format, __VA_ARGS__)
 #define LogInformationV(format, ...) LogInformationV_(_logger, format, __VA_ARGS__)
@@ -71,14 +72,16 @@ ExceptionTracker::ExceptionTracker(
 void ExceptionTracker::AddProfilerEventMask(DWORD& eventsLow)
 {
     eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_STACK_SNAPSHOT;
-    eventsLow |= COR_PRF_MONITOR::COR_PRF_MONITOR_GC;
 }
 
 HRESULT ExceptionTracker::ExceptionThrown(ThreadID threadId, ObjectID objectId)
 {
+    // CAUTION: Do not store the exception ObjectID. It is not guaranteed to be correct
+    // outside of the ExceptionThrown callback without updating it using GC callbacks.
+
     HRESULT hr = S_OK;
 
-    IfFailLogRet(_threadDataManager->SetExceptionObject(threadId, objectId));
+    IfFailLogRet(_threadDataManager->SetHasException(threadId));
 
     // Exception throwing is common; don't pay to calculate method name if it won't be logged.
     if (_logger->IsEnabled(LogLevel::Debug))
@@ -119,9 +122,10 @@ HRESULT ExceptionTracker::ExceptionUnwindFunctionEnter(ThreadID threadId, Functi
 {
     HRESULT hr = S_OK;
 
-    ObjectID thrownObjectId;
-    FunctionID catcherFunctionId;
-    IfFailLogRet(_threadDataManager->GetException(threadId, &thrownObjectId, &catcherFunctionId));
+    bool hasException = false;
+    FunctionID catcherFunctionId = ThreadData::NoFunctionId;
+    IfFailLogRet(_threadDataManager->GetException(threadId, &hasException, &catcherFunctionId));
+    IfFalseLogRet(hasException, E_UNEXPECTED);
 
     if (ThreadData::NoFunctionId == catcherFunctionId)
     {
@@ -145,15 +149,6 @@ HRESULT ExceptionTracker::ExceptionUnwindFunctionEnter(ThreadID threadId, Functi
             LogDebugV(_T("Exception handled: %s"), methodName.c_str());
         }
     }
-
-    return S_OK;
-}
-
-HRESULT ExceptionTracker::MovedReferences(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[])
-{
-    HRESULT hr = S_OK;
-
-    IfFailLogRet(_threadDataManager->MovedReferences(cMovedObjectIDRanges, oldObjectIDRangeStart, newObjectIDRangeStart, cObjectIDRangeLength));
 
     return S_OK;
 }

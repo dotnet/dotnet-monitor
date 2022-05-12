@@ -21,7 +21,6 @@ void ThreadDataManager::AddProfilerEventMask(DWORD& eventsLow)
 {
     eventsLow |= COR_PRF_MONITOR::COR_PRF_MONITOR_THREADS;
     eventsLow |= COR_PRF_MONITOR::COR_PRF_MONITOR_EXCEPTIONS;
-    eventsLow |= COR_PRF_MONITOR::COR_PRF_MONITOR_GC;
 }
 
 HRESULT ThreadDataManager::ThreadCreated(ThreadID threadId)
@@ -56,9 +55,9 @@ HRESULT ThreadDataManager::ClearException(ThreadID threadId)
     return S_OK;
 }
 
-HRESULT ThreadDataManager::GetException(ThreadID threadId, ObjectID* objectId, FunctionID* catcherFunctionId)
+HRESULT ThreadDataManager::GetException(ThreadID threadId, bool* hasException, FunctionID* catcherFunctionId)
 {
-    ExpectedPtr(objectId);
+    ExpectedPtr(hasException);
     ExpectedPtr(catcherFunctionId);
 
     HRESULT hr = S_OK;
@@ -68,12 +67,12 @@ HRESULT ThreadDataManager::GetException(ThreadID threadId, ObjectID* objectId, F
 
     lock_guard<mutex> lock(threadData->GetMutex());
 
-    IfFailLogRet(threadData->GetException(objectId, catcherFunctionId));
+    IfFailLogRet(threadData->GetException(hasException, catcherFunctionId));
 
-    return ThreadData::NoExceptionId == *objectId ? S_FALSE : S_OK;
+    return *hasException ? S_FALSE : S_OK;
 }
 
-HRESULT ThreadDataManager::SetExceptionObject(ThreadID threadId, ObjectID objectId)
+HRESULT ThreadDataManager::SetHasException(ThreadID threadId)
 {
     HRESULT hr = S_OK;
 
@@ -82,7 +81,7 @@ HRESULT ThreadDataManager::SetExceptionObject(ThreadID threadId, ObjectID object
 
     lock_guard<mutex> lock(threadData->GetMutex());
 
-    IfFailLogRet(threadData->SetExceptionObject(objectId));
+    IfFailLogRet(threadData->SetHasException());
 
     return S_OK;
 }
@@ -97,40 +96,6 @@ HRESULT ThreadDataManager::SetExceptionCatcherFunction(ThreadID threadId, Functi
     lock_guard<mutex> lock(threadData->GetMutex());
 
     IfFailLogRet(threadData->SetExceptionCatcherFunction(catcherFunctionId));
-
-    return S_OK;
-}
-
-HRESULT ThreadDataManager::MovedReferences(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[])
-{
-    HRESULT hr = S_OK;
-
-    lock_guard<mutex> mapLock(_dataMapMutex);
-
-    // Update all of the exception ObjectIDs for each thread
-    for (pair<const ThreadID, shared_ptr<ThreadData>>& pair : _dataMap)
-    {
-        shared_ptr<ThreadData> threadData = pair.second;
-        lock_guard<mutex> lock(threadData->GetMutex());
-
-        ObjectID exceptionObjectId;
-        FunctionID exceptionCatcherFunctionId;
-        IfFailLogRet(threadData->GetException(&exceptionObjectId, &exceptionCatcherFunctionId));
-
-        // If the thread has an exception associated with it, check if it is one of the compacted
-        // ranges. If it is in a range, recalculate the new ObjectID and store it.
-        if (ThreadData::NoExceptionId != exceptionObjectId)
-        {
-            for (ULONG i = 0; i < cMovedObjectIDRanges; i++)
-            {
-                if (oldObjectIDRangeStart[i] <= exceptionObjectId && exceptionObjectId < (oldObjectIDRangeStart[i] + cObjectIDRangeLength[i]))
-                {
-                    ObjectID newExceptionObjectId = newObjectIDRangeStart[i] + (exceptionObjectId - oldObjectIDRangeStart[i]);
-                    IfFailLogRet(threadData->ExceptionObjectMoved(newExceptionObjectId));
-                }
-            }
-        }
-    }
 
     return S_OK;
 }

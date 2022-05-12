@@ -121,21 +121,11 @@ STDMETHODIMP MainProfiler::ExceptionUnwindFunctionEnter(FunctionID functionId)
     return S_OK;
 }
 
-STDMETHODIMP MainProfiler::MovedReferences2(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[])
-{
-    HRESULT hr = S_OK;
-
-    IfFailLogRet(_exceptionTracker->MovedReferences(cMovedObjectIDRanges, oldObjectIDRangeStart, newObjectIDRangeStart, cObjectIDRangeLength));
-
-    return S_OK;
-}
-
 STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
 {
     ExpectedPtr(pbNotificationOnly);
 
-    // GC callbacks are not supported by notification only profilers
-    //*pbNotificationOnly = TRUE;
+    *pbNotificationOnly = TRUE;
 
     return S_OK;
 }

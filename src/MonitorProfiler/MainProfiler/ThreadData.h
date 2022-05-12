@@ -16,12 +16,11 @@
 class ThreadData
 {
 public:
-    static const ObjectID NoExceptionId = 0;
     static const FunctionID NoFunctionId = 0;
 
 private:
     FunctionID _exceptionCatcherFunctionId;
-    ObjectID _exceptionObjectId;
+    ObjectID _hasException;
     std::mutex _mutex;
     std::shared_ptr<ILogger> _logger;
 
@@ -32,8 +31,7 @@ public:
 
     // Exceptions
     void ClearException();
-    HRESULT ExceptionObjectMoved(ObjectID newObjectId);
-    HRESULT GetException(ObjectID* objectId, FunctionID* catcherFunctionId);
-    HRESULT SetExceptionObject(ObjectID objectId);
+    HRESULT GetException(bool* hasException, FunctionID* catcherFunctionId);
+    HRESULT SetHasException();
     HRESULT SetExceptionCatcherFunction(FunctionID functionId);
 };

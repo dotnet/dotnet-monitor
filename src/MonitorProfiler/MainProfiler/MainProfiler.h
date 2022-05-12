@@ -31,7 +31,6 @@ public:
     STDMETHOD(ExceptionThrown)(ObjectID thrownObjectId) override;
     STDMETHOD(ExceptionSearchCatcherFound)(FunctionID functionId) override;
     STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionId) override;
-    STDMETHOD(MovedReferences2)(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[]) override;
     STDMETHOD(LoadAsNotficationOnly)(BOOL *pbNotificationOnly) override;
 
 private:

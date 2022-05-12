@@ -36,12 +36,9 @@ public:
 
     // Exceptions
     HRESULT ClearException(ThreadID threadId);
-    HRESULT GetException(ThreadID threadId, ObjectID* objectId, FunctionID* catcherFunctionId);
-    HRESULT SetExceptionObject(ThreadID threadId, ObjectID objectId);
+    HRESULT GetException(ThreadID threadId, bool* hasException, FunctionID* catcherFunctionId);
+    HRESULT SetHasException(ThreadID threadId);
     HRESULT SetExceptionCatcherFunction(ThreadID threadId, FunctionID catcherFunctionId);
-
-    // Garbage Collection
-    HRESULT MovedReferences(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[]);
 
 private:
     HRESULT GetThreadData(ThreadID threadId, std::shared_ptr<ThreadData>& threadData);

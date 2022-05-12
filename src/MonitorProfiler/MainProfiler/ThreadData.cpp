@@ -11,7 +11,7 @@ using namespace std;
 
 ThreadData::ThreadData(const shared_ptr<ILogger>& logger) :
     _exceptionCatcherFunctionId(NoFunctionId),
-    _exceptionObjectId(NoExceptionId),
+    _hasException(false),
     _logger(logger)
 {
 }
@@ -24,37 +24,26 @@ mutex& ThreadData::GetMutex()
 void ThreadData::ClearException()
 {
     _exceptionCatcherFunctionId = NoFunctionId;
-    _exceptionObjectId = NoExceptionId;
+    _hasException = false;
 }
 
-HRESULT ThreadData::ExceptionObjectMoved(ObjectID newObjectId)
+HRESULT ThreadData::GetException(bool* hasException, FunctionID* catcherFunctionId)
 {
-    IfFalseLogRet(NoExceptionId != newObjectId, E_INVALIDARG);
-    IfFalseLogRet(NoExceptionId != _exceptionObjectId, E_UNEXPECTED);
-
-    _exceptionObjectId = newObjectId;
-
-    return S_OK;
-}
-
-HRESULT ThreadData::GetException(ObjectID* objectId, FunctionID* catcherFunctionId)
-{
-    ExpectedPtr(objectId);
+    ExpectedPtr(hasException);
     ExpectedPtr(catcherFunctionId);
 
-    *objectId = _exceptionObjectId;
+    *hasException = _hasException;
     *catcherFunctionId = _exceptionCatcherFunctionId;
 
     return S_OK;
 }
 
-HRESULT ThreadData::SetExceptionObject(ObjectID objectId)
+HRESULT ThreadData::SetHasException()
 {
-    IfFalseLogRet(NoExceptionId != objectId, E_INVALIDARG);
-    IfFalseLogRet(NoExceptionId == _exceptionObjectId, E_UNEXPECTED);
+    IfFalseLogRet(!_hasException, E_UNEXPECTED);
     IfFalseLogRet(NoFunctionId == _exceptionCatcherFunctionId, E_UNEXPECTED);
 
-    _exceptionObjectId = objectId;
+    _hasException = true;
 
     return S_OK;
 }
@@ -62,7 +51,7 @@ HRESULT ThreadData::SetExceptionObject(ObjectID objectId)
 HRESULT ThreadData::SetExceptionCatcherFunction(FunctionID functionId)
 {
     IfFalseLogRet(NoFunctionId != functionId, E_INVALIDARG);
-    IfFalseLogRet(NoExceptionId != _exceptionObjectId, E_UNEXPECTED);
+    IfFalseLogRet(_hasException, E_UNEXPECTED);
 
     _exceptionCatcherFunctionId = functionId;
 
