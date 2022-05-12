@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 using System.IO;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,6 +24,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private readonly ITestOutputHelper _outputHelper;
 
         private const string SampleConfigurationsDirectory = "TemplatesConfigurations";
+
+        // This should be identical to the error message found in Strings.resx
+        private string TemplateNotFoundErrorMessage = "Could not find a template with the name: {0}";
 
         public TemplatesTests(ITestOutputHelper outputHelper)
         {
@@ -94,7 +98,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 OptionsValidationException ex = Assert.Throws<OptionsValidationException>(() => optionsMonitor.Get("InvalidRule"));
 
-                Assert.Equal(string.Format("The Trigger field is required."), ex.Message); // Push to resx?
+                string[] failures = ex.Failures.ToArray();
+                Assert.Equal(2, failures.Length);
+
+                Assert.Equal(string.Format(TemplateNotFoundErrorMessage, "TriggerTemplateINVALID"), failures[0]);
+                Assert.Equal(string.Format(TemplateNotFoundErrorMessage, "FilterTemplateINVALID"), failures[1]);
 
             }, builder: (HostBuilder)builder);
         }

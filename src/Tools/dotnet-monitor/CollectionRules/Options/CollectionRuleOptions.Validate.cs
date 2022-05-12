@@ -15,6 +15,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         {
             List<ValidationResult> results = new();
 
+            results.AddRange(ErrorList);
+
+            if (results.Count > 0)
+            {
+                return results; // QUESTION: Do we want to short-circuit here? Invalid template names may cause other error messages that distract from the actual issue (e.g. saying the Type field is required on a trigger when the trigger template wasn't found)
+            }
+
             ValidationContext filtersContext = new(Filters, validationContext, validationContext.Items);
             filtersContext.MemberName = nameof(Filters);
             ValidationHelper.TryValidateItems(Filters, filtersContext, results);
