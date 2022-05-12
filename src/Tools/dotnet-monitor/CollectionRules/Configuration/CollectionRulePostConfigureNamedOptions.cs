@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
             foreach (IConfigurationSection actionSection in actionSections.GetChildren())
             {
-                if (!SectionHasValue(actionSection))
+                if (SectionHasValue(actionSection))
                 {
                     TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleActions, actionSection.Value, out CollectionRuleActionOptions templateActionOptions);
 
@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         {
             IConfigurationSection section = ruleSection.GetSection(nameof(CollectionRuleOptions.Trigger));
 
-            if (!SectionHasValue(section))
+            if (SectionHasValue(section))
             {
                 TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleTriggers, section.Value, out CollectionRuleTriggerOptions triggerOptions);
 
@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
             foreach (IConfigurationSection filterSection in filterSections.GetChildren())
             {
-                if (!SectionHasValue(filterSection))
+                if (SectionHasValue(filterSection))
                 {
                     TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleFilters, filterSection.Value, out ProcessFilterDescriptor templateFilterOptions);
 
@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         {
             IConfigurationSection section = ruleSection.GetSection(nameof(CollectionRuleOptions.Limits));
 
-            if (!SectionHasValue(section))
+            if (SectionHasValue(section))
             {
                 TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleLimits, section.Value, out CollectionRuleLimitsOptions limitsOptions);
 
@@ -136,7 +136,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         private bool SectionHasValue(IConfigurationSection section)
         {
             // If the section has a value, the value is the name of a template.
-            return string.IsNullOrEmpty(section.Value);
+            return !string.IsNullOrEmpty(section.Value);
         }
     }
 }
