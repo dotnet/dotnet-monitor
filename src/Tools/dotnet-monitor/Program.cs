@@ -8,10 +8,11 @@ using Microsoft.Tools.Common;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Builder;
-using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+using System.CommandLine.Binding;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -23,67 +24,48 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 name: "generatekey",
                 description: Strings.HelpDescription_CommandGenerateKey);
 
-            var output = Output();
+            command.Add(Output());
 
-            command.Add(output);
-
-            command.SetHandler((CancellationToken token, OutputFormat output, IConsole console) => GenerateApiKeyCommandHandler.Invoke(token, output, console), output);
+            command.SetHandler<CancellationToken, OutputFormat, IConsole>(GenerateApiKeyCommandHandler.Invoke, command.Children.OfType<IValueDescriptor>().ToArray());
 
             return command;
         }
 
         private static Command CollectCommand()
         {
-            var urls = Urls();
-            var metricUrls = MetricUrls();
-            var provideMetrics = ProvideMetrics();
-            var diagnosticPort = DiagnosticPort();
-            var noAuth = NoAuth();
-            var tempApiKey = TempApiKey();
-            var noHttpEgress = NoHttpEgress();
-
             Command command = new Command(
                 name: "collect",
                 description: Strings.HelpDescription_CommandCollect)
             {
-                urls, metricUrls, provideMetrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress
+                SharedOptions()
             };
 
-            //command.Add(SharedOptions());
-
-            //             Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey(), NoHttpEgress()
-
-            command.SetHandler((CancellationToken token, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress) => CollectCommandHandler.Invoke(token, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress), urls, metricUrls, provideMetrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress);
-
+            command.SetHandler<CancellationToken, string[], string[], bool, string, bool, bool, bool>(CollectCommandHandler.Invoke, command.Children.OfType<IValueDescriptor>().ToArray());
+ 
             return command;
         }
 
-        /*
-        private static Command CollectCommand() =>
-            new Command(
-                name: "collect",
-                description: Strings.HelpDescription_CommandCollect)
-            {
-                // Handler
-                CommandHandler.Create(CollectCommandHandler.Dummy),
-                SharedOptions()
-            };
-        */
-
         private static Command ConfigCommand()
         {
-            // Doesn't have show
-            Command command = new Command(
+            Command showCommand = new Command(
+                name: "show",
+                description: Strings.HelpDescription_CommandShow)
+            {
+                SharedOptions(),
+                ConfigLevel(),
+                ShowSources()
+            };
+
+            showCommand.SetHandler<string[], string[], bool, string, bool, bool, bool, ConfigDisplayLevel, bool>(ConfigShowCommandHandler.Invoke, showCommand.Children.OfType<IValueDescriptor>().ToArray());
+
+            Command configCommand = new Command(
                 name: "config",
-                description: Strings.HelpDescription_CommandConfig);
+                description: Strings.HelpDescription_CommandConfig)
+            {
+                showCommand
+            };
 
-            command.Add(SharedOptions());
-            command.Add(ConfigLevel());
-            command.Add(ShowSources());
-
-            command.SetHandler((string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, ConfigDisplayLevel level, bool showSources) => ConfigShowCommandHandler.Invoke(urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, noHttpEgress, level, showSources));
-
-            return command;
+            return configCommand;
         }
 
         private static IEnumerable<Option> SharedOptions() => new Option[]
