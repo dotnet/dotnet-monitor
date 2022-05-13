@@ -7,7 +7,7 @@
 1. In `/eng/Version.props`, ensure that `<BlobGroupBuildQuality>` is set appropriately. See the documentation next to this setting for the appropriate values. In release branches, its value should be `release`. This setting, in combination with the version settings, determine for which 'channel' the aks.ms links are created.
 1. Complete at least one successful [release build](#build-release-branch).
 1. [Update dotnet-docker pipeline variables](#update-pipeline-variable-for-release) to pick up builds from the release branch.
-1. Bump the version number in the `main` branch. [Example Pull Request](https://github.com/dotnet/dotnet-monitor/pull/1560). 
+1. Bump the version number in the `main` branch and reset release notes. [Example Pull Request](https://github.com/dotnet/dotnet-monitor/pull/1560). 
 
 ## Additional steps when creating a new release branch
 
@@ -41,6 +41,8 @@ The `channel` value is used by the `dotnet-docker` repository to consume the cor
 ### Update Pipeline Variable for Release
 
 The `dotnet-docker` repository runs an update process each day that detects the latest version of a given `dotnet-monitor` channel. During the stabilization/testing/release period for a release of `dotnet-monitor`, the update process should be changed to pick up builds for the release branch.
+
+>**Note:** you will need permission to edit pipeline variables; **what should we advise here?**.
 
 The following variables for [dotnet-docker-update-dependencies](https://dev.azure.com/dnceng/internal/_build?definitionId=470) need to be updated for release:
 * `monitorXMinorVersion`: Make sure these are set to the correct values.
@@ -77,17 +79,17 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 
 1. Grab the file [/documentation/releaseNotes/releaseNotes.md](https://github.com/dotnet/dotnet-monitor/blob/release/6.0/documentation/releaseNotes/releaseNotes.md) from the release branch and check this file into [main](https://github.com/dotnet/dotnet-monitor/tree/main) as [/documentation/releaseNotes/releaseNotes.v{NugetVersionNumber}.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releaseNotes/releaseNotes.v6.0.0-preview.8.21503.3.md).
 >**Note:** this file comes from the **release** branch and is checked into the **main** branch.
-2. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105). During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact.
-3. The release will start the stage "Pre-Release Verification" this will check that the above steps were done as expected.
+2. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105). Allow the stages to trigger automatically (do not check the boxes in the associated dropdown). During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact (set `dotnet-monitor_build` to the pipeline run of `dotnet monitor` that is being released; set `dotnet-monitor_source` to the latest commit from `Main`). The name of the release will be updated automatically.
+3. The release will start the stage "Pre-Release Verification"; this will check that the above steps were done as expected.
 4. Approve the sign-off step the day before the release after 8:45 AM PDT, when ready to publish.
->**Note:** After sign-off of the "Pre-Release Verification" environment the NuGet and GitHub release steps will automatically wait 8:45 AM PDT the next day to correspond with the typical docker release time of 9:00 AM PDT.
+>**Note:** After sign-off of the "Pre-Release Verification" environment the NuGet and GitHub release steps will automatically wait until 8:45 AM PDT the next day to correspond with the typical docker release time of 9:00 AM PDT.
 
 The remainder of the release will automatically push NuGet packages to nuget.org, [tag](https://github.com/dotnet/dotnet-monitor/tags) the commit from the build with the release version, and add a new [GitHub release](https://github.com/dotnet/dotnet-monitor/releases).
 
 ## Release to Storage Accounts
 
-1. Approximately 3 days before Docker image release, execute a dry-run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`IsDryRun` should be checked; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will validate that the nupkg files can be published to the `dotnetcli` storage account and checksums can be published to the `dotnetclichecksums` storage account.
-1. The day before Docker image release, execute run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (uncheck `IsDryRun`; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will publish the nupkg files to the `dotnetcli` storage account and the checksums to the `dotnetclichecksums` storage account.
+1. Approximately 3 days before Docker image release, execute a dry-run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `Main`; `IsDryRun` should be checked; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will validate that the nupkg files can be published to the `dotnetcli` storage account and checksums can be published to the `dotnetclichecksums` storage account.
+1. The day before Docker image release, execute run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `Main`; uncheck `IsDryRun`; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will publish the nupkg files to the `dotnetcli` storage account and the checksums to the `dotnetclichecksums` storage account.
 
 ## Release Docker Images
 
@@ -97,3 +99,9 @@ The remainder of the release will automatically push NuGet packages to nuget.org
 1. The `dotnet-docker` team will start the build ahead of the release and wait for the all-clear from `dotnet-monitor` team before publishing the images.
 
 The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https://mcr.microsoft.com/v2/dotnet/monitor/tags/list.
+
+## After the Release
+
+1. Update [releases.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releases.md) with the latest version.
+1. When necessary, update [docker.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/docker.md).
+1. When necessary, update this document if its instructions were unclear or incorrect.
