@@ -31,6 +31,8 @@ When running a dotnet application, differences in diverse local and production e
       - [API Key Setup Guide](./api-key-setup.md)
     - [Windows](./authentication.md#windows-authentication)
 - [Collection Rules](./collectionrules/collectionrules.md)
+    - [Collection Rules examples](./collectionrules/collectionruleexamples.md)
+    - [Trigger shortcut](./collectionrules/triggershortcuts.md)
 - [Egress Providers](./egress.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Clone, build, and test the repo](./building.md)

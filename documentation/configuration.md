@@ -266,11 +266,12 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
   ```
 </details>
 
-When `dotnet monitor` is in `Listen` mode, you have to configure .NET processes to connect to `dotnet monitor`. You can do so by specifying the appropriate environment variable on your .NET process
+When `dotnet monitor` is in `Listen` mode, you have to configure .NET processes to connect to `dotnet monitor`. You can do so by specifying the appropriate environment variable on your .NET process.
 
-```powershell
-$env:DOTNET_DiagnosticPorts="dotnet-monitor-pipe,suspend"
+```bash
+export DOTNET_DiagnosticPorts="/diag/port.sock,suspend"
 ```
+
 
 #### Maximum connection
 
