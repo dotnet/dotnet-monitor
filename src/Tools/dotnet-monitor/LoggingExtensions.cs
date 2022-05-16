@@ -395,6 +395,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ExtensionErrorMessage);
 
+        private static readonly Action<ILogger, string, string, string, Exception> _extensionNotOfType =
+            LoggerMessage.Define<string, string, string>(
+                eventId: LoggingEventIds.ExtensionNotOfType.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExtensionNotOfType);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -680,14 +686,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _extensionProbeStart(logger, extensionMoniker, null);
         }
 
-        public static void ExtensionProbeRepo(this ILogger logger, string extensionMoniker, IExtensionRepository extensionRepository)
+        public static void ExtensionProbeRepo(this ILogger logger, string extensionMoniker, ExtensionRepository extensionRepository)
         {
-            _extensionProbeRepo(logger, extensionMoniker, extensionRepository.Name, null);
+            _extensionProbeRepo(logger, extensionMoniker, extensionRepository.DisplayName, null);
         }
 
         public static void ExtensionProbeSucceeded(this ILogger logger, string extensionMoniker, IExtension extension)
         {
-            _extensionProbeSucceeded(logger, extensionMoniker, extension.Name, null);
+            _extensionProbeSucceeded(logger, extensionMoniker, extension.DisplayName, null);
         }
 
         public static void ExtensionProbeFailed(this ILogger logger, string extensionMoniker)
@@ -723,6 +729,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExtensionErrorMessage(this ILogger logger, int pid, string message)
         {
             _extensionErrorMessage(logger, pid, message, null);
+        }
+
+        public static void ExtensionNotOfType(this ILogger logger, string extensionMoniker, IExtension extension, Type desiredType)
+        {
+            _extensionNotOfType(logger, extensionMoniker, extension.DisplayName, desiredType.Name, null);
         }
     }
 }

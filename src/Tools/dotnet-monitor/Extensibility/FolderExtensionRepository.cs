@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Globalization;
 using System.IO;
 
@@ -12,6 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class FolderExtensionRepository : ExtensionRepository
     {
+        private const string ExtensionDefinitionFile = "extension.jsonc";
         private readonly string _targetFolder;
         private readonly IFileProvider _fileSystem;
         private readonly ILoggerFactory _loggerFactory;
@@ -21,63 +21,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         {
             _fileSystem = fileSystem;
 
-            // This is the root that we will start looking at relative to _fileSystem, _fileSystem is already scoped to the correct folder, so we use an empty string
-            _targetFolder = String.Empty;
+            _targetFolder = targetFolder;
 
             _loggerFactory = loggerFactory;
         }
 
-        public override TExtensionType FindExtension<TExtensionType>(string extensionMoniker) where TExtensionType : class
+        public override bool TryFindExtension(string extensionMoniker, out IExtension extension)
         {
-            // Pass 1: Require an exact case sensitive match
-            IExtension exactMatch = ScanExtensionDir(extensionMoniker, StringComparison.Ordinal);
-            if (exactMatch != null)
+            IFileInfo extensionDir = _fileSystem.GetFileInfo(extensionMoniker);
+
+            if (extensionDir.Exists && extensionDir.IsDirectory)
             {
-                TExtensionType resultExact = (TExtensionType)exactMatch;
-                return resultExact;
-            }
-
-            // Pass 2: Relax case sensitivity
-            IExtension caseVarianceMatch = ScanExtensionDir(extensionMoniker, StringComparison.OrdinalIgnoreCase);
-            if (caseVarianceMatch != null)
-            {
-                TExtensionType result = (TExtensionType)caseVarianceMatch;
-                return result;
-            }
-
-            return null;
-        }
-
-        private IExtension ScanExtensionDir(string extensionMoniker, StringComparison comparisionType)
-        {
-            IDirectoryContents extensionRoot = _fileSystem.GetDirectoryContents(_targetFolder);
-
-            string expectedFile = GetOSSpecificExecutableFormat(extensionMoniker);
-
-            foreach (IFileInfo extDir in extensionRoot)
-            {
-                if (extDir.Exists && extDir.IsDirectory && string.Equals(extDir.Name, extensionMoniker, comparisionType))
+                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionMoniker, ExtensionDefinitionFile));
+                if (defFile.Exists && !defFile.IsDirectory)
                 {
-                    IDirectoryContents extension = _fileSystem.GetDirectoryContents(_targetFolder);
-                    foreach (IFileInfo file in extension)
-                    {
-                        if (file.Exists && !file.IsDirectory && string.Equals(file.Name, expectedFile, comparisionType))
-                        {
-                            ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
-                            return new ProgramExtension(Path.Combine(_targetFolder, extDir.Name, file.Name), logger);
-                        }
-                    }
+                    ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
+                    extension = new ProgramExtension(Path.Combine(_targetFolder, extensionMoniker, ExtensionDefinitionFile), logger);
+                    return true;
                 }
             }
 
-            return null;
-        }
-
-        private string GetOSSpecificExecutableFormat(string executableName)
-        {
-            string format = "{0}.exe";
-            string result = string.Format(CultureInfo.InvariantCulture, format, executableName);
-            return result;
+            extension = null;
+            return false;
         }
     }
 }

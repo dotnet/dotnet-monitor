@@ -25,7 +25,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         }
 
         /// <inheritdoc/>
-        public string Name => Path.GetDirectoryName(_path);
+        public string DisplayName => Path.GetDirectoryName(_path);
+
+        /// <inheritdoc/>
+        bool IExtension.TryGetTypedExtension<TExtensionType>(out TExtensionType extension)
+        {
+            if (typeof(TExtensionType) == typeof(IEgressExtension))
+            {
+                extension = (TExtensionType) (IExtension) this;
+                return true;
+            }
+
+            extension = null;
+            return false;
+        }
 
         /// <inheritdoc/>
         public async Task<EgressArtifactResult> EgressArtifact(ExtensionEgressPayload configPayload, Func<Stream, CancellationToken, Task> getStreamAction, CancellationToken token)

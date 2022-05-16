@@ -181,6 +181,10 @@
 1 Format Parameter:
 0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
   </data>
+  <data name="ErrorMessage_ExtensionNotFound" xml:space="preserve">
+    <value>Failed to locate extension '{0}'.</value>
+    <comment>Gets the error message string for ExtensionNotFoundException. 1 Format parameter: extensionMoniker</comment>
+  </data>
   <data name="ErrorMessage_FieldMustBeLessThanOtherField" xml:space="preserve">
     <value>The value of field {0} must be less than the value of field {1}.</value>
     <comment>{0} = Field name that must be lower.
@@ -574,6 +578,14 @@
 1. pid: Process ID of the started process
 2. exitCode: Exit code of the extension process</comment>
   </data>
+  <data name="LogFormatString_ExtensionNotOfType" xml:space="preserve">
+    <value>The extension'{extensionMoniker} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type.</value>
+    <comment>Gets the format string that is printed in the 71:ExtensionNotOfType event.
+3 Format Parameters:
+1. extensionMoniker: The name of the extension or moniker
+2. extension: The friendly name of the extension from the IExtension interface
+3. extensionType: The type that the extension failed to be typed to</comment>
+  </data>
   <data name="LogFormatString_ExtensionOutputMessage" xml:space="preserve">
     <value>Extension process {pid} wrote output: {message}</value>
     <comment>Gets the format string that is printed in the 69:ExtensionOutputMessage event.
@@ -609,7 +621,7 @@
   </data>
   <data name="LogFormatString_ExtensionStarting" xml:space="preserve">
     <value>Starting extension '{extensionPath} {cmdArgs}'.</value>
-    <comment>Gets the format string that is printed in the 65:ExtesnionStarting event.
+    <comment>Gets the format string that is printed in the 65:ExtensionStarting event.
 2 Format Parameters:
 1. extensionPath: Path to the executable extension
 2. cmdArgs: the commandline arguments being passed to the executable</comment>

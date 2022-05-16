@@ -187,6 +187,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to locate extension &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_ExtensionNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExtensionNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value of field {0} must be less than the value of field {1}..
         /// </summary>
         internal static string ErrorMessage_FieldMustBeLessThanOtherField {
@@ -921,6 +930,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_ExtensionExited {
             get {
                 return ResourceManager.GetString("LogFormatString_ExtensionExited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The extension&apos;{extensionMoniker} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type..
+        /// </summary>
+        internal static string LogFormatString_ExtensionNotOfType {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionNotOfType", resourceCulture);
             }
         }
         

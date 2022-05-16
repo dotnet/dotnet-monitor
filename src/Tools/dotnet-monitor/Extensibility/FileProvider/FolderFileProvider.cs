@@ -94,19 +94,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         {
             public bool Exists => false;
 
-            public bool IsDirectory => throw new NotImplementedException();
+            public bool IsDirectory => false;
 
-            public DateTimeOffset LastModified => throw new NotImplementedException();
+            public DateTimeOffset LastModified => throw new FileNotFoundException();
 
-            public long Length => throw new NotImplementedException();
+            public long Length => throw new FileNotFoundException();
 
-            public string Name => throw new NotImplementedException();
+            public string Name => throw new FileNotFoundException();
 
-            public string PhysicalPath => throw new NotImplementedException();
+            public string PhysicalPath => throw new FileNotFoundException();
 
             public Stream CreateReadStream()
             {
-                throw new NotImplementedException();
+                throw new FileNotFoundException();
             }
         }
     }
