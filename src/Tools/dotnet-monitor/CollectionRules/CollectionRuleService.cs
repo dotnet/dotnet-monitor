@@ -153,9 +153,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     await rulesChangedTaskSource.Task;
                 }
 
-                foreach (var key in _containersMap.Keys)
+                foreach (IEndpointInfo key in _containersMap.Keys)
                 {
-                    foreach (var pipeline in _containersMap[key]._pipelines)
+                    foreach (CollectionRulePipeline pipeline in _containersMap[key].Pipelines)
                     {
                         pipeline.StateHolder.ConfigurationChanged();
                     }
@@ -251,7 +251,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 CleanUpCompletedPipelines(key);
 
-                foreach (var pipeline in _containersMap[key]._pipelines)
+                foreach (var pipeline in _containersMap[key].Pipelines)
                 {
                     collectionRulesState.Add(pipeline.Context.Name, GetCollectionRuleDescription(pipeline));
                 }
@@ -322,7 +322,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             var activePipelineTimestamps = new Dictionary<string, DateTime>();
 
-            foreach (var pipeline in _containersMap[key]._pipelines)
+            foreach (var pipeline in _containersMap[key].Pipelines)
             {
                 collectionRuleNamesFrequency[pipeline.Context.Name] = collectionRuleNamesFrequency.GetValueOrDefault(pipeline.Context.Name) + 1;
                 var latestTimestamp = activePipelineTimestamps.GetValueOrDefault(pipeline.Context.Name);
@@ -331,7 +331,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
 
             // This is a less elegant way of doing this -> previously used _isCleanedUp, but that required changing the field from Private in the Diagnostics repo
-            _containersMap[key]._pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline.Context.Name] > 1 && pipeline.PipelineStartTime != activePipelineTimestamps.GetValueOrDefault(pipeline.Context.Name));
+            _containersMap[key].Pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline.Context.Name] > 1 && pipeline.PipelineStartTime != activePipelineTimestamps.GetValueOrDefault(pipeline.Context.Name));
         }
     }
 }
