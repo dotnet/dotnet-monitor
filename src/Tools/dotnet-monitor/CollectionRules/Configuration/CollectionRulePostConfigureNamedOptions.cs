@@ -124,13 +124,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             }
         }
 
-        private void TryGetTemplate<T>(CollectionRuleOptions ruleOptions, IDictionary<string, T> templatesOptions, string templateKey, out T templatesValue) where T : new()
+        private bool TryGetTemplate<T>(CollectionRuleOptions ruleOptions, IDictionary<string, T> templatesOptions, string templateKey, out T templatesValue) where T : new()
         {
             if (!templatesOptions.TryGetValue(templateKey, out templatesValue))
             {
                 templatesValue = new();
                 ruleOptions.ErrorList.Add(new ValidationResult(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey)));
+                return false;
             }
+
+            return true;
         }
 
         private bool SectionHasValue(IConfigurationSection section)
