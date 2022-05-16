@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
     internal class CollectionRuleBindingHelper
     {
-        internal static void BindActionSettings(IConfigurationSection actionSection, CollectionRuleActionOptions actionOptions, ICollectionRuleActionOperations actionOperations)
+        public static void BindActionSettings(IConfigurationSection actionSection, CollectionRuleActionOptions actionOptions, ICollectionRuleActionOperations actionOperations)
         {
             if (null != actionOptions &&
                 actionOperations.TryCreateOptions(actionOptions.Type, out object actionSettings))
@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             }
         }
 
-        internal static void BindTriggerSettings(IConfigurationSection triggerSection, CollectionRuleTriggerOptions triggerOptions, ICollectionRuleTriggerOperations triggerOperations)
+        public static void BindTriggerSettings(IConfigurationSection triggerSection, CollectionRuleTriggerOptions triggerOptions, ICollectionRuleTriggerOperations triggerOperations)
         {
             if (null != triggerOptions &&
                 triggerOperations.TryCreateOptions(triggerOptions.Type, out object triggerSettings))
