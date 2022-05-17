@@ -52,6 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
             foreach (IConfigurationSection actionSection in actionSections.GetChildren())
             {
+                // The Section Key is the action index; the value (if present) is the name of the template
                 if (SectionHasValue(actionSection))
                 {
                     TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleActions, actionSection.Value, out CollectionRuleActionOptions templateActionOptions);
@@ -95,6 +96,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
             foreach (IConfigurationSection filterSection in filterSections.GetChildren())
             {
+                // The Section Key is the filter index; the value (if present) is the name of the template
                 if (SectionHasValue(filterSection))
                 {
                     TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleFilters, filterSection.Value, out ProcessFilterDescriptor templateFilterOptions);
