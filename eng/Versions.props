@@ -84,7 +84,7 @@
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
     <!-- Third-party references -->
     <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
-    <SwashbuckleAspNetCoreSwaggerGenVersion>6.2.3</SwashbuckleAspNetCoreSwaggerGenVersion>
+    <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
     <XunitAssertVersion>2.4.1</XunitAssertVersion>
   </PropertyGroup>
   <PropertyGroup Label="Dev Workflow">
