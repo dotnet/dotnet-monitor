@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Tests that incorrectly referenced Templates cause options to be nullifed.
+        /// Tests that incorrectly referenced Templates error correctly.
         /// </summary>
         [Fact]
         public async void TemplatesTranslationFailTest()
