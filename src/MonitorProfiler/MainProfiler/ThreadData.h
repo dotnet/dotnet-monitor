@@ -20,7 +20,7 @@ public:
 
 private:
     FunctionID _exceptionCatcherFunctionId;
-    ObjectID _hasException;
+    bool _hasException;
     std::mutex _mutex;
     std::shared_ptr<ILogger> _logger;
 

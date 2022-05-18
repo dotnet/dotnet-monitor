@@ -35,12 +35,18 @@ public:
     HRESULT ExceptionSearchCatcherFound(ThreadID threadId, FunctionID functionId);
     HRESULT ExceptionUnwindFunctionEnter(ThreadID threadId, FunctionID functionId);
 
-    // Garbage Collection
-    HRESULT MovedReferences(ULONG cMovedObjectIDRanges, ObjectID oldObjectIDRangeStart[], ObjectID newObjectIDRangeStart[], SIZE_T cObjectIDRangeLength[]);
-
 private:
-    HRESULT GetFullyQualifiedMethodName(FunctionID functionId, tstring& name);
-    static HRESULT STDMETHODCALLTYPE ExceptionThrownStackSnapshotCallback(
+    // Method and type name utilities
+    HRESULT GetFullyQualifiedMethodName(FunctionID functionId, tstring& fullMethodName);
+    HRESULT GetFullyQualifiedMethodName(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo, tstring& fullMethodName);
+    HRESULT GetFullyQualifiedMethodName(ModuleID moduleId, ClassID classId, mdMethodDef token, tstring& fullMethodName);
+    HRESULT GetFullClassName(ClassID classId, tstring& fullClassName);
+    HRESULT GetFullTypeName(IMetaDataImport2* metadataImport, mdTypeDef typeDefToken, tstring& fullTypeName);
+    static bool IsNestedType(CorTypeAttr attributes);
+
+    // ExceptionThrown frame logging utilities
+    HRESULT LogExceptionThrownFrame(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo);
+    static HRESULT STDMETHODCALLTYPE LogExceptionThrownFrameCallback(
         FunctionID funcId,
         UINT_PTR ip,
         COR_PRF_FRAME_INFO frameInfo,

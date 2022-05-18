@@ -9,6 +9,7 @@
 using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(_logger, EXPR)
+#define IfFalseLogRet(EXPR, hr) IfFalseLogRet_(_logger, EXPR, hr)
 
 typedef unordered_map<ThreadID, shared_ptr<ThreadData>>::iterator DataMapIterator;
 
@@ -105,10 +106,7 @@ HRESULT ThreadDataManager::GetThreadData(ThreadID threadId, shared_ptr<ThreadDat
     lock_guard<mutex> mapLock(_dataMapMutex);
 
     DataMapIterator iterator = _dataMap.find(threadId);
-    if (iterator == _dataMap.end())
-    {
-        return E_FAIL;
-    }
+    IfFalseLogRet(iterator != _dataMap.end(), E_UNEXPECTED);
 
     threadData = iterator->second;
 

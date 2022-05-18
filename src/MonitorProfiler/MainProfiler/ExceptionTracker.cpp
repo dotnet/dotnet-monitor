@@ -87,9 +87,9 @@ HRESULT ExceptionTracker::ExceptionThrown(ThreadID threadId, ObjectID objectId)
         FunctionID functionId = 0;
         hr = _corProfilerInfo->DoStackSnapshot(
             threadId,
-            ExceptionThrownStackSnapshotCallback,
+            LogExceptionThrownFrameCallback,
             COR_PRF_SNAPSHOT_INFO::COR_PRF_SNAPSHOT_DEFAULT,
-            &functionId,
+            this,
             nullptr,
             0);
 
@@ -98,10 +98,6 @@ HRESULT ExceptionTracker::ExceptionThrown(ThreadID threadId, ObjectID objectId)
             LogErrorV(_T("DoStackSnapshot failed in function %s: 0x%08x"), to_tstring(__func__).c_str(), hr);
             return hr;
         }
-
-        tstring methodName;
-        IfFailLogRet(GetFullyQualifiedMethodName(functionId, methodName));
-        LogDebugV(_T("Exception thrown: %s"), methodName.c_str());
     }
 
     return S_OK;
@@ -151,47 +147,50 @@ HRESULT ExceptionTracker::ExceptionUnwindFunctionEnter(ThreadID threadId, Functi
     return S_OK;
 }
 
-HRESULT ExceptionTracker::ExceptionThrownStackSnapshotCallback(
-    FunctionID funcId,
-    UINT_PTR ip,
-    COR_PRF_FRAME_INFO frameInfo,
-    ULONG32 contextSize,
-    BYTE context[],
-    void* clientData)
+HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tstring& fullMethodName)
 {
-    // Callback is only used to get the function ID of the top frame.
-    *static_cast<FunctionID*>(clientData) = funcId;
+    HRESULT hr = S_OK;
 
-    // Cancel stack snapshot callbacks after the top frame.
-    return S_FALSE;
+    IfFailRet(GetFullyQualifiedMethodName(functionId, 0, fullMethodName));
+
+    return S_OK;
 }
 
-HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tstring& fullMethodName)
+HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo, tstring& fullMethodName)
 {
     HRESULT hr = S_OK;
 
     ClassID classId;
     ModuleID moduleId;
     mdToken token;
-    IfFailLogRet(_corProfilerInfo->GetFunctionInfo(
+    IfFailLogRet(_corProfilerInfo->GetFunctionInfo2(
         functionId,
+        frameInfo,
         &classId,
         &moduleId,
-        &token
+        &token,
+        0,
+        nullptr,
+        nullptr
     ));
 
-    if (0 == (token & mdtMethodDef))
-    {
-        return E_FAIL;
-    }
-    mdMethodDef methodDef = token;
+    IfFalseLogRet(0 != (token & mdtMethodDef), E_UNEXPECTED);
 
-    ComPtr<IMetaDataImport2> pMetadataImport;
+    IfFailRet(GetFullyQualifiedMethodName(moduleId, classId, token, fullMethodName));
+
+    return S_OK;
+}
+
+HRESULT ExceptionTracker::GetFullyQualifiedMethodName(ModuleID moduleId, ClassID classId, mdMethodDef token, tstring& fullMethodName)
+{
+    HRESULT hr = S_OK;
+
+    ComPtr<IMetaDataImport2> metadataImport;
     IfFailLogRet(_corProfilerInfo->GetModuleMetaData(
         moduleId,
         CorOpenFlags::ofRead,
         IID_IMetaDataImport2,
-        (IUnknown**)&pMetadataImport
+        (IUnknown**)&metadataImport
     ));
 
     // Get Module Name: typically the full path to the assembly
@@ -217,51 +216,13 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
         nullptr
     ));
 
-    // Get Class Name: The namespace + type name in the form <Namespace>.<Type>
     tstring classNameStr;
-    if (0 == classId)
-    {
-        // Probably a value type e.g. struct
-        classNameStr.assign(_T("[Unknown]"));
-    }
-    else
-    {
-        mdTypeDef typeDef = mdTokenNil;
-        IfFailLogRet(_corProfilerInfo->GetClassIDInfo(
-            classId,
-            nullptr,
-            &typeDef
-        ));
-
-        ULONG classNameCount = 0; // Includes null-terminater
-        IfFailLogRet(pMetadataImport->GetTypeDefProps(
-            typeDef,
-            nullptr,
-            0,
-            &classNameCount,
-            nullptr,
-            nullptr
-        ));
-
-        unique_ptr<WCHAR[]> className(new (nothrow) WCHAR[classNameCount]);
-        IfNullRet(className);
-
-        IfFailLogRet(pMetadataImport->GetTypeDefProps(
-            typeDef,
-            className.get(),
-            classNameCount,
-            nullptr,
-            nullptr,
-            nullptr
-        ));
-
-        classNameStr.assign(className.get());
-    }
+    IfFailRet(GetFullClassName(classId, classNameStr));
 
     // Get Method Name
     ULONG methodNameCount = 0; // Includes null-terminater
-    IfFailLogRet(pMetadataImport->GetMethodProps(
-        methodDef,
+    IfFailLogRet(metadataImport->GetMethodProps(
+        token,
         nullptr,
         nullptr,
         0,
@@ -276,8 +237,8 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
     unique_ptr<WCHAR[]> methodName(new (nothrow) WCHAR[methodNameCount]);
     IfNullRet(methodName);
 
-    IfFailLogRet(pMetadataImport->GetMethodProps(
-        methodDef,
+    IfFailLogRet(metadataImport->GetMethodProps(
+        token,
         nullptr,
         methodName.get(),
         methodNameCount,
@@ -289,10 +250,15 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
         nullptr
     ));
 
+    // CONSIDER: If generic parameters should be replaced with actual types, do that
+    // as part of calculating the method name. Requires calling GetMethodProps to get
+    // the method signature, parsing the method signature, and resolving type names
+    // from the various type tokens.
+
     tstring modulePathStr(modulePath.get());
 
     // The full method name should be in the following format: <ModuleName>!<Namespace>.<TypeName>.<MethodName>
-    // Example: ConsoleApp1.dll!ConsoleApp1.Program.Main
+    // Example: System.Private.CoreLib.dll!System.Collections.Generic.Dictionary`2+Enumerator.MoveNext
     fullMethodName.clear();
     fullMethodName.append(modulePathStr.substr(modulePathStr.find_last_of(_T("/\\")) + 1));
     fullMethodName.append(_T("!"));
@@ -301,4 +267,126 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tst
     fullMethodName.append(methodName.get());
 
     return S_OK;
+}
+
+HRESULT ExceptionTracker::GetFullClassName(ClassID classId, tstring& fullClassName)
+{
+    HRESULT hr = S_OK;
+
+    ModuleID moduleId;
+    mdTypeDef typeDefToken;
+    IfFailLogRet(_corProfilerInfo->GetClassIDInfo2(
+        classId,
+        &moduleId,
+        &typeDefToken,
+        nullptr,
+        0,
+        nullptr,
+        nullptr
+    ));
+
+    ComPtr<IMetaDataImport2> metadataImport;
+    IfFailLogRet(_corProfilerInfo->GetModuleMetaData(
+        moduleId,
+        CorOpenFlags::ofRead,
+        IID_IMetaDataImport2,
+        (IUnknown**)&metadataImport
+    ));
+
+    // CONSIDER: If generic parameters should be replaced with actual types, do that
+    // as part of calculating the full type name. Requires calling GetClassIDInfo2 to
+    // get the generic parameter ClassID values and getting their full type name.
+
+    IfFailLogRet(GetFullTypeName(metadataImport, typeDefToken, fullClassName));
+
+    return S_OK;
+}
+
+HRESULT ExceptionTracker::GetFullTypeName(IMetaDataImport2* metadataImport, mdTypeDef typeDefToken, tstring& fullTypeName)
+{
+    HRESULT hr = S_OK;
+
+    ULONG typeNameCount = 0; // Includes null-terminater
+    DWORD typeDefFlags = 0;
+    IfFailLogRet(metadataImport->GetTypeDefProps(
+        typeDefToken,
+        nullptr,
+        0,
+        &typeNameCount,
+        &typeDefFlags,
+        nullptr
+    ));
+    
+    tstring parentTypeName;
+    if (IsNestedType(static_cast<CorTypeAttr>(typeDefFlags)))
+    {
+        mdTypeDef parentTypeDefToken;
+        IfFailLogRet(metadataImport->GetNestedClassProps(typeDefToken, &parentTypeDefToken));
+
+        IfFailLogRet(GetFullTypeName(metadataImport, parentTypeDefToken, parentTypeName));
+    }
+
+    unique_ptr<WCHAR[]> className(new (nothrow) WCHAR[typeNameCount]);
+    IfNullRet(className);
+
+    IfFailLogRet(metadataImport->GetTypeDefProps(
+        typeDefToken,
+        className.get(),
+        typeNameCount,
+        nullptr,
+        nullptr,
+        nullptr
+    ));
+
+    // The full type name should be in the following format: <OuterTypeNamespace>.<OuterType>+<InnerType>
+    // Example: System.Collections.Generic.Dictionary`2+Enumerator
+    fullTypeName.clear();
+    if (parentTypeName.length() > 0)
+    {
+        fullTypeName.append(parentTypeName);
+        fullTypeName.append(_T("+"));
+    }
+    fullTypeName.append(className.get());
+
+    return S_OK;
+}
+
+bool ExceptionTracker::IsNestedType(CorTypeAttr attributes)
+{
+    CorTypeAttr visibility = static_cast<CorTypeAttr>(attributes & CorTypeAttr::tdVisibilityMask);
+    return CorTypeAttr::tdNestedPublic <= visibility && visibility <= CorTypeAttr::tdNestedFamORAssem;
+}
+
+HRESULT ExceptionTracker::LogExceptionThrownFrame(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo)
+{
+    HRESULT hr = S_OK;
+
+    tstring methodName;
+    IfFailLogRet(GetFullyQualifiedMethodName(functionId, frameInfo, methodName));
+    LogDebugV(_T("Exception thrown: %s"), methodName.c_str());
+
+    return S_OK;
+}
+
+HRESULT ExceptionTracker::LogExceptionThrownFrameCallback(
+    FunctionID funcId,
+    UINT_PTR ip,
+    COR_PRF_FRAME_INFO frameInfo,
+    ULONG32 contextSize,
+    BYTE context[],
+    void* clientData)
+{
+    if (nullptr == clientData)
+    {
+        return E_POINTER;
+    }
+
+    ExceptionTracker* exceptionTracker = static_cast<ExceptionTracker*>(clientData);
+
+    HRESULT hr = S_OK;
+
+    IfFailRet(exceptionTracker->LogExceptionThrownFrame(funcId, frameInfo));
+
+    // Cancel stack snapshot callbacks after the top frame.
+    return S_FALSE;
 }
