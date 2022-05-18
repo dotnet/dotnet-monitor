@@ -198,7 +198,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(SampleConfigurationsDirectory));
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson());
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -245,15 +245,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             settings.Urls = new[] { "https://localhost:44444" }; // This corresponds to the value in SampleConfigurations/URLs.json
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson(SampleConfigurationsDirectory, "Egress.json", "CollectionRules.json", "CollectionRuleDefaults.json", "Templates.json"));
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("Egress.json", "CollectionRules.json", "CollectionRuleDefaults.json", "Templates.json"));
 
             // This is the appsettings.json file that is normally next to the entrypoint assembly.
             // The location of the appsettings.json is determined by the content root in configuration.
-            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson(SampleConfigurationsDirectory, "Storage.json", "Authentication.json"));
+            File.WriteAllText(Path.Combine(contentRootDirectory.FullName, "appsettings.json"), ConstructSettingsJson("Storage.json", "Authentication.json"));
 
             // This is the settings.json file in the shared configuration directory that is visible
             // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
-            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson(SampleConfigurationsDirectory, "Logging.json", "Metrics.json"));
+            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("Logging.json", "Metrics.json"));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -340,9 +340,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
-        internal static string ConstructSettingsJson(string sampleConfigurationsDirectory, params string[] permittedFileNames)
+        private string ConstructSettingsJson(params string[] permittedFileNames)
         {
-            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), sampleConfigurationsDirectory));
+            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SampleConfigurationsDirectory));
 
             IDictionary<string, JsonElement> combinedFiles = new Dictionary<string, JsonElement>();
 

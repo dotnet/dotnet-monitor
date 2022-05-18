@@ -2,14 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Func<IHost, Task> hostCallback,
             Action<IServiceCollection> servicesCallback = null,
             Action<ILoggingBuilder> loggingCallback = null,
-            IDictionary<string, string> overrideSource = null)
+            List<IConfigurationSource> overrideSource = null)
         {
             IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource);
 
@@ -45,10 +43,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<IHost> hostCallback,
             Action<IServiceCollection> servicesCallback = null,
             Action<ILoggingBuilder> loggingCallback = null,
-            IDictionary<string, string> overrideSource = null,
-            HostBuilder builder = null)
+            List<IConfigurationSource> overrideSource = null)
         {
-            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource, builder: builder);
+            IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource);
 
             try
             {
@@ -65,12 +62,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<RootOptions> setup,
             Action<IServiceCollection> servicesCallback,
             Action<ILoggingBuilder> loggingCallback = null,
-            IDictionary<string, string> overrideSource = null,
-            HostBuilder builder = null)
+            List<IConfigurationSource> overrideSource = null)
         {
-            builder = builder ?? new HostBuilder();
-
-            return builder
+            return new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
                 {
                     RootOptions options = new();
@@ -90,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     if (null != overrideSource)
                     {
-                        builder.AddInMemoryCollection(overrideSource);
+                        overrideSource.ForEach(source => builder.Sources.Add(source));
                     }
                 })
                 .ConfigureLogging( loggingBuilder =>
