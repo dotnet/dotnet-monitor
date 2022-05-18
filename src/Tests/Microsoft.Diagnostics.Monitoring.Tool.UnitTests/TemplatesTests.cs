@@ -43,8 +43,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 
-            List<IConfigurationSource> sources = GetConfigurationSources(SampleConfigurationsDirectory);
-
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => {}, host =>
             {
                 IOptionsMonitor<CollectionRuleOptions> optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
@@ -81,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(TimeSpan.Parse("00:00:30"), options.Limits.ActionCountSlidingWindowDuration);
                 Assert.Equal(TimeSpan.Parse("00:05:00"), options.Limits.RuleDuration);
 
-            }, overrideSource: sources);
+            }, overrideSource: GetConfigurationSources());
         }
 
         /// <summary>
@@ -91,8 +89,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async void TemplatesTranslationFailTest()
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
-
-            List<IConfigurationSource> sources = GetConfigurationSources(SampleConfigurationsDirectory);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => { }, host =>
             {
@@ -106,12 +102,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(string.Format(TemplateNotFoundErrorMessage, "TriggerTemplateINVALID"), failures[0]);
                 Assert.Equal(string.Format(TemplateNotFoundErrorMessage, "FilterTemplateINVALID"), failures[1]);
 
-            }, overrideSource: sources);
+            }, overrideSource: GetConfigurationSources());
         }
 
-        private List<IConfigurationSource> GetConfigurationSources(string sampleConfigurationsDirectory)
+        private List<IConfigurationSource> GetConfigurationSources()
         {
-            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), sampleConfigurationsDirectory));
+            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SampleConfigurationsDirectory));
 
             List<IConfigurationSource> sources = new();
 
