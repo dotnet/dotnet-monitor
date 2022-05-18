@@ -21,7 +21,7 @@ public:
     /// <inheritdoc />
     STDMETHOD_(bool, IsEnabled)(LogLevel level) override
     {
-        return true;
+        return false;
     }
 
     /// <inheritdoc />

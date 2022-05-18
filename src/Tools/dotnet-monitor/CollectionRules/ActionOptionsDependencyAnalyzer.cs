@@ -118,16 +118,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             //Attempt to substitute context properties.
             object originalSettings = settings;
 
-            foreach(PropertyInfo propertyInfo in GetPropertiesFromSettings(settings, p => true))
+            foreach(PropertyInfo propertyInfo in GetPropertiesFromSettings(settings))
             {
-                string property = (string)propertyInfo.GetValue(settings);
+                string originalPropertyValue = (string)propertyInfo.GetValue(settings);
                 //If we don't have an Endpoint info (such as test scenarios) we cannot perform this substitution.
-                if (string.IsNullOrEmpty(property) || (_ruleContext.EndpointInfo == null))
+                if (string.IsNullOrEmpty(originalPropertyValue) || (_ruleContext.EndpointInfo == null))
                 {
                     continue;
                 }
-                string replacement = property.Replace(RuntimeIdReference, _ruleContext.EndpointInfo.RuntimeInstanceCookie.ToString("D"), StringComparison.Ordinal);
-                if (!ReferenceEquals(replacement, property))
+
+                string replacement = originalPropertyValue.Replace(RuntimeIdReference, _ruleContext.EndpointInfo.RuntimeInstanceCookie.ToString("D"), StringComparison.Ordinal);
+
+                if (!ReferenceEquals(replacement, originalPropertyValue))
                 {
                     if (!TryCloneSettings(originalSettings, ref settings))
                     {
@@ -326,14 +328,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
         }
 
-        private IEnumerable<PropertyInfo> GetPropertiesFromSettings(object settings, Predicate<PropertyInfo> predicate) =>
+        private IEnumerable<PropertyInfo> GetPropertiesFromSettings(object settings, Predicate<PropertyInfo> predicate = null) =>
             //CONSIDER
             //In the future we may want to do additional substitutions, such as $(Environment.Value)
             //or $(Process.Id). We would likely remove the attribute in this case.
             //Note settings could be null, although we do not have any options like this currently.
             settings?.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.PropertyType == typeof(string) && predicate(p)) ??
+                .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true)) ??
             Enumerable.Empty<PropertyInfo>();
     }
 }

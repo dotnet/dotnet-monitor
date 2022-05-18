@@ -28,6 +28,7 @@ public:
 
 private:
     HRESULT InitializeEnvironment();
+    HRESULT InitializeEnvironmentHelper();
     HRESULT InitializeLogging();
     HRESULT InitializeCommandServer();
     HRESULT MessageCallback(const IpcMessage& message);
