@@ -3,17 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -41,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 
-            IHostBuilder builder = GetHostBuilder(userConfigDir);
+            List<IConfigurationSource> sources = GetConfigurationSources(SampleConfigurationsDirectory);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => {}, host =>
             {
@@ -79,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(TimeSpan.Parse("00:00:30"), options.Limits.ActionCountSlidingWindowDuration);
                 Assert.Equal(TimeSpan.Parse("00:05:00"), options.Limits.RuleDuration);
 
-            }, builder: (HostBuilder)builder);
+            }, overrideSource: sources);
         }
 
         /// <summary>
@@ -90,7 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 
-            IHostBuilder builder = GetHostBuilder(userConfigDir);
+            List<IConfigurationSource> sources = GetConfigurationSources(SampleConfigurationsDirectory);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => { }, host =>
             {
@@ -104,34 +106,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(string.Format(TemplateNotFoundErrorMessage, "TriggerTemplateINVALID"), failures[0]);
                 Assert.Equal(string.Format(TemplateNotFoundErrorMessage, "FilterTemplateINVALID"), failures[1]);
 
-            }, builder: (HostBuilder)builder);
+            }, overrideSource: sources);
         }
 
-        private IHostBuilder GetHostBuilder(TemporaryDirectory userConfigDir)
+        private List<IConfigurationSource> GetConfigurationSources(string sampleConfigurationsDirectory)
         {
-            // Set up the initial settings used to create the host builder.
-            HostBuilderSettings settings = new()
+            string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), sampleConfigurationsDirectory));
+
+            List<IConfigurationSource> sources = new();
+
+            foreach (string filePath in filePaths)
             {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
-                ContentRootDirectory = string.Empty,
-                SharedConfigDirectory = string.Empty,
-                UserConfigDirectory = userConfigDir.FullName
-            };
+                JsonConfigurationSource source = new JsonConfigurationSource();
+                source.Path = filePath;
+                source.ResolveFileProvider();
+                sources.Add(source);
+            }
 
-            // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConfigurationTests.ConstructSettingsJson(SampleConfigurationsDirectory));
-
-            // Create the initial host builder.
-            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
-
-            // Override the environment configurations to use predefined values so that the test host
-            // doesn't inadvertently provide unexpected values. Passing null replaces with an empty
-            // in-memory collection source.
-            builder.ReplaceAspnetEnvironment();
-            builder.ReplaceDotnetEnvironment();
-            builder.ReplaceMonitorEnvironment();
-
-            return builder;
+            return sources;
         }
     }
 }
