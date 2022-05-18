@@ -123,7 +123,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 description: Strings.HelpDescription_OptionNoHttpEgress,
                 getDefaultValue: () => false)
             {
-                ArgumentHelpName =  "noHttpEgress"
+                ArgumentHelpName = "noHttpEgress"
             };
 
         private static Option TempApiKey() =>
