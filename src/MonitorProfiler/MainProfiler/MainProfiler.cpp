@@ -32,10 +32,10 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
     //These should always be initialized first
     IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
 
-    m_pEnvironment = make_shared<ProfilerEnvironment>(m_pCorProfilerInfo);
-
-    IfFailRet(InitializeLogging());
+    //These are created in dependency order!
     IfFailRet(InitializeEnvironment());
+    IfFailRet(InitializeLogging());
+    IfFailRet(InitializeEnvironmentHelper());
 
     IfFailLogRet(InitializeCommandServer());
 
@@ -74,6 +74,16 @@ STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
 }
 
 HRESULT MainProfiler::InitializeEnvironment()
+{
+    if (m_pEnvironment)
+    {
+        return E_UNEXPECTED;
+    }
+    m_pEnvironment = make_shared<ProfilerEnvironment>(m_pCorProfilerInfo);
+    return S_OK;
+}
+
+HRESULT MainProfiler::InitializeEnvironmentHelper()
 {
     IfNullRet(m_pEnvironment);
 
