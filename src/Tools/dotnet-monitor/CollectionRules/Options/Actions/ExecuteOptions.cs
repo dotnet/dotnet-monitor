@@ -14,6 +14,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the Execute action.
     /// </summary>
     [DebuggerDisplay("Execute: Path = {Path}")]
+#if SCHEMAGEN
+    [NJsonSchema.Annotations.JsonSchemaFlatten]
+#endif
     internal sealed record class ExecuteOptions : BaseRecordOptions
     {
         [Display(

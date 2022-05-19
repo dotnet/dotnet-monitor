@@ -1845,6 +1845,18 @@
       }
     },
     "JavaScriptEncoder": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/TextEncoder"
+        },
+        {
+          "type": "object",
+          "x-abstract": true,
+          "additionalProperties": false
+        }
+      ]
+    },
+    "TextEncoder": {
       "type": "object",
       "x-abstract": true,
       "additionalProperties": false
