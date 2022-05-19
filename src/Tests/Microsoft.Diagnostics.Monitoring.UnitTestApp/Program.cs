@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
+using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
@@ -13,14 +14,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
     {
         public static Task<int> Main(string[] args)
         {
-            return new CommandLineBuilder()
-                .AddCommand(AsyncWaitScenario.Command())
-                .AddCommand(LoggerScenario.Command())
-                .AddCommand(SpinWaitScenario.Command())
-                .AddCommand(EnvironmentVariablesScenario.Command())
-                .UseDefaults()
-                .Build()
-                .InvokeAsync(args);
+            return new CommandLineBuilder(new RootCommand()
+            {
+                AsyncWaitScenario.Command(),
+                LoggerScenario.Command(),
+                SpinWaitScenario.Command(),
+                EnvironmentVariablesScenario.Command()
+            })
+            .UseDefaults()
+            .Build()
+            .InvokeAsync(args);
         }
     }
 }
