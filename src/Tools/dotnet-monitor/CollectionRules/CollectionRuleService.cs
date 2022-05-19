@@ -155,10 +155,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 foreach (IEndpointInfo key in _containersMap.Keys)
                 {
-                    foreach (CollectionRulePipeline pipeline in _containersMap[key].Pipelines)
-                    {
-                        pipeline.StateHolder.ConfigurationChanged();
-                    }
+                    _containersMap[key].Pipelines.Clear();
                 }
 
                 rulesChanged = false;
@@ -249,8 +246,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             foreach (var key in _containersMap.Keys.Where(x => x == endpointInfo))
             {
-                CleanUpCompletedPipelines(key);
-
                 foreach (var pipeline in _containersMap[key].Pipelines)
                 {
                     collectionRulesState.Add(pipeline.Context.Name, GetCollectionRuleDescription(pipeline));
@@ -265,15 +260,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             CollectionRuleLimitsOptions limitsOptions = pipeline.Context.Options.Limits;
 
             DateTime currentTime = pipeline.Context.Clock.UtcNow.UtcDateTime;
-            CollectionRulePipeline.DequeueOldTimestamps(pipeline.ExecutionTimestamps, limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
+            Queue<DateTime> currentTimestamps = CollectionRulePipeline.DequeueOldTimestamps(pipeline.ExecutionTimestamps, limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
+
+            CollectionRuleStateHolder stateHolderCopy = new CollectionRuleStateHolder(pipeline.StateHolder);
 
             int actionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
-            pipeline.CheckForThrottling(actionCountLimit, pipeline.ExecutionTimestamps.Count, limitsOptions?.ActionCountSlidingWindowDuration);
 
-            var description = new CollectionRuleDescription()
+            // This feels a bit clunky, but it should resolve the problem of the front-end modifying our stateHolder...
+            if (pipeline.CheckForThrottling(actionCountLimit, currentTimestamps.Count, limitsOptions?.ActionCountSlidingWindowDuration))
             {
-                State = pipeline.StateHolder.CurrState,
-                StateReason = pipeline.StateHolder.CurrStateReason,
+                stateHolderCopy.BeginThrottled();
+            }
+            else
+            {
+                stateHolderCopy.EndThrottled();
+            }
+
+            CollectionRuleDescription description = new()
+            {
+                State = stateHolderCopy.CurrentState,
+                StateReason = stateHolderCopy.CurrentStateReason,
                 LifetimeOccurrences = pipeline.AllExecutionTimestamps.Count,
                 ActionCountLimit = actionCountLimit,
                 SlidingWindowOccurrences = pipeline.ExecutionTimestamps.Count,
@@ -314,24 +320,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private static TimeSpan? GetTruncatedPositiveTimeSpan(TimeSpan original)
         {
             return (original > TimeSpan.Zero) ? TimeSpan.FromSeconds((long)original.TotalSeconds) : null; // Intentionally lose millisecond precision
-        }
-
-        private void CleanUpCompletedPipelines(IEndpointInfo key)
-        {
-            var collectionRuleNamesFrequency = new Dictionary<string, int>();
-
-            var activePipelineTimestamps = new Dictionary<string, DateTime>();
-
-            foreach (var pipeline in _containersMap[key].Pipelines)
-            {
-                collectionRuleNamesFrequency[pipeline.Context.Name] = collectionRuleNamesFrequency.GetValueOrDefault(pipeline.Context.Name) + 1;
-                var latestTimestamp = activePipelineTimestamps.GetValueOrDefault(pipeline.Context.Name);
-
-                activePipelineTimestamps[pipeline.Context.Name] = pipeline.PipelineStartTime > latestTimestamp ? pipeline.PipelineStartTime : latestTimestamp;
-            }
-
-            // This is a less elegant way of doing this -> previously used _isCleanedUp, but that required changing the field from Private in the Diagnostics repo
-            _containersMap[key].Pipelines.RemoveAll(pipeline => collectionRuleNamesFrequency[pipeline.Context.Name] > 1 && pipeline.PipelineStartTime != activePipelineTimestamps.GetValueOrDefault(pipeline.Context.Name));
         }
     }
 }

@@ -6,72 +6,77 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal class CollectionRuleStateHolder
     {
-        public CollectionRuleState CurrState { get; private set; } = CollectionRuleState.Running;
-        public string CurrStateReason { get; private set; } = Strings.Message_CollectionRuleStateReason_Running;
+        public CollectionRuleState CurrentState { get; private set; } = CollectionRuleState.Running;
+        public string CurrentStateReason { get; private set; } = Strings.Message_CollectionRuleStateReason_Running;
+
+        public CollectionRuleStateHolder(CollectionRuleStateHolder other)
+        {
+            CurrentState = other.CurrentState;
+            CurrentStateReason = other.CurrentStateReason;
+        }
+
+        public CollectionRuleStateHolder()
+        {
+            CurrentState = CollectionRuleState.Running;
+            CurrentStateReason = Strings.Message_CollectionRuleStateReason_Running;
+        }
 
         public void BeginActionExecution()
         {
-            CurrState = CollectionRuleState.ActionExecuting;
-            CurrStateReason = Strings.Message_CollectionRuleStateReason_ExecutingActions;
+            CurrentState = CollectionRuleState.ActionExecuting;
+            CurrentStateReason = Strings.Message_CollectionRuleStateReason_ExecutingActions;
         }
 
         public void ActionExecutionSucceeded()
         {
-            CurrState = CollectionRuleState.Running;
-            CurrStateReason = Strings.Message_CollectionRuleStateReason_Running;
+            CurrentState = CollectionRuleState.Running;
+            CurrentStateReason = Strings.Message_CollectionRuleStateReason_Running;
         }
 
         public void ActionExecutionFailed()
         {
             // Is this the correct behavior? Treating the same as action success, but internally store this separately if we want to handle it differently
-            CurrState = CollectionRuleState.Running;
-            CurrStateReason = Strings.Message_CollectionRuleStateReason_Running;
+            CurrentState = CollectionRuleState.Running;
+            CurrentStateReason = Strings.Message_CollectionRuleStateReason_Running;
         }
 
         public void BeginThrottled()
         {
-            CurrState = CollectionRuleState.Throttled;
-            CurrStateReason = Strings.Message_CollectionRuleStateReason_Throttled;
+            CurrentState = CollectionRuleState.Throttled;
+            CurrentStateReason = Strings.Message_CollectionRuleStateReason_Throttled;
         }
 
         public void EndThrottled()
         {
-            if (CurrState == CollectionRuleState.Throttled)
+            if (CurrentState == CollectionRuleState.Throttled)
             {
-                CurrState = CollectionRuleState.Running;
-                CurrStateReason = Strings.Message_CollectionRuleStateReason_Running;
+                CurrentState = CollectionRuleState.Running;
+                CurrentStateReason = Strings.Message_CollectionRuleStateReason_Running;
             }
         }
 
         public void StartupTriggerCompleted()
         {
-            CurrState = CollectionRuleState.Finished;
-            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_Startup;
+            CurrentState = CollectionRuleState.Finished;
+            CurrentStateReason = Strings.Message_CollectionRuleStateReason_Finished_Startup;
         }
 
         public void RuleDurationReached()
         {
-            CurrState = CollectionRuleState.Finished;
-            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_RuleDuration;
+            CurrentState = CollectionRuleState.Finished;
+            CurrentStateReason = Strings.Message_CollectionRuleStateReason_Finished_RuleDuration;
         }
 
         public void ActionCountReached()
         {
-            CurrState = CollectionRuleState.Finished;
-            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_ActionCount;
+            CurrentState = CollectionRuleState.Finished;
+            CurrentStateReason = Strings.Message_CollectionRuleStateReason_Finished_ActionCount;
         }
 
-        public void ConfigurationChanged()
+        public void RuleFailure(string errorMessage)
         {
-            CurrState = CollectionRuleState.Finished;
-            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_ConfigurationChanged;
-        }
-
-        // Untested -> Not sure when/how this is used
-        public void RuleFailure()
-        {
-            CurrState = CollectionRuleState.Finished;
-            CurrStateReason = Strings.Message_CollectionRuleStateReason_Finished_Failure;
+            CurrentState = CollectionRuleState.Finished;
+            CurrentStateReason = string.Format(Strings.Message_CollectionRuleStateReason_Finished_Failure, errorMessage);
         }
     }
 }

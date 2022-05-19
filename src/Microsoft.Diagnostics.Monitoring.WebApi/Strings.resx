@@ -233,11 +233,8 @@
   <data name="Message_CollectionRuleStateReason_Finished_ActionCount" xml:space="preserve">
     <value>The collection rule will no longer trigger because the ActionCount was reached.</value>
   </data>
-  <data name="Message_CollectionRuleStateReason_Finished_ConfigurationChanged" xml:space="preserve">
-    <value>This collection rule will no longer trigger because it no longer exists.</value>
-  </data>
   <data name="Message_CollectionRuleStateReason_Finished_Failure" xml:space="preserve">
-    <value>The collection rule will no longer trigger because a failure occurred.</value>
+    <value>The collection rule will no longer trigger because a failure occurred with message: {0}.</value>
   </data>
   <data name="Message_CollectionRuleStateReason_Finished_RuleDuration" xml:space="preserve">
     <value>The collection rule will no longer trigger because the RuleDuration limit was reached.</value>

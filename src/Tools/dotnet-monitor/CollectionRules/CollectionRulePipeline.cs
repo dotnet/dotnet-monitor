@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -145,11 +146,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     DateTime currentTimestamp = Context.Clock.UtcNow.UtcDateTime;
 
-                    DequeueOldTimestamps(ExecutionTimestamps, actionCountWindowDuration, currentTimestamp);
+                    ExecutionTimestamps = DequeueOldTimestamps(ExecutionTimestamps, actionCountWindowDuration, currentTimestamp);
 
                     // Check if executing actions has been throttled due to count limit
                     if (!CheckForThrottling(actionCountLimit, ExecutionTimestamps.Count, actionCountWindowDuration))
                     {
+                        StateHolder.EndThrottled();
+
                         ExecutionTimestamps.Enqueue(currentTimestamp);
                         AllExecutionTimestamps.Add(currentTimestamp);
 
@@ -182,7 +185,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                                 Context.Logger.CollectionRuleActionsCompleted(Context.Name);
                             }
 
-                            CheckForThrottling(actionCountLimit, ExecutionTimestamps.Count, actionCountWindowDuration);
+                            if (CheckForThrottling(actionCountLimit, ExecutionTimestamps.Count, actionCountWindowDuration))
+                            {
+                                StateHolder.BeginThrottled();
+                            }
 
                             // The collection rule has executed the action list the maximum
                             // number of times as specified by the limits and the action count
@@ -199,6 +205,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     }
                     else
                     {
+                        StateHolder.BeginThrottled();
+
                         Context.ThrottledCallback?.Invoke();
 
                         Context.Logger.CollectionRuleThrottled(Context.Name);
@@ -227,25 +235,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 // Handle it to allow pipeline to be in completed state.
                 StateHolder.RuleDurationReached();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                StateHolder.RuleFailure(); // Untested...not sure if this is correct behavior
+                StateHolder.RuleFailure(ex.Message);
                 throw;
             }
         }
 
-        public static void DequeueOldTimestamps(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
+        public static Queue<DateTime> DequeueOldTimestamps(in Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
         {
+            Queue<DateTime> currentTimestamps = new Queue<DateTime>(timestamps);
+
             // If rule has an action count window, remove all execution timestamps that fall outside the window.
             if (actionCountWindowDuration.HasValue)
             {
                 DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
-                while (timestamps.Count > 0)
+                while (currentTimestamps.Count > 0)
                 {
-                    DateTime executionTimestamp = timestamps.Peek();
+                    DateTime executionTimestamp = currentTimestamps.Peek();
                     if (executionTimestamp < windowStartTimestamp)
                     {
-                        timestamps.Dequeue();
+                        currentTimestamps.Dequeue();
                     }
                     else
                     {
@@ -254,18 +264,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     }
                 }
             }
+
+            return currentTimestamps;
         }
 
         internal bool CheckForThrottling(int actionCountLimit, int currExecutions, TimeSpan? actionCountSWD)
         {
-            if (!actionCountSWD.HasValue || actionCountLimit > currExecutions)
-            {
-                StateHolder.EndThrottled();
-                return false;
-            }
-
-            StateHolder.BeginThrottled();
-            return true;
+            return actionCountSWD.HasValue && actionCountLimit <= currExecutions;
         }
 
         // Temporary until Pipeline APIs are public or get an InternalsVisibleTo for the tests

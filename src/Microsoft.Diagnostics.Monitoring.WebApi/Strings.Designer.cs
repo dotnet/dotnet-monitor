@@ -295,16 +295,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This collection rule will no longer trigger because it no longer exists..
-        /// </summary>
-        internal static string Message_CollectionRuleStateReason_Finished_ConfigurationChanged {
-            get {
-                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_ConfigurationChanged", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The collection rule will no longer trigger because a failure occurred..
+        ///   Looks up a localized string similar to The collection rule will no longer trigger because a failure occurred with message: {0}..
         /// </summary>
         internal static string Message_CollectionRuleStateReason_Finished_Failure {
             get {
