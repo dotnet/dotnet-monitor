@@ -282,7 +282,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 StateReason = stateHolderCopy.CurrentStateReason,
                 LifetimeOccurrences = pipeline.AllExecutionTimestamps.Count,
                 ActionCountLimit = actionCountLimit,
-                SlidingWindowOccurrences = pipeline.ExecutionTimestamps.Count,
+                SlidingWindowOccurrences = currentTimestamps.Count,
                 ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration,
             };
 

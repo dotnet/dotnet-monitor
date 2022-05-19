@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
+
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal class CollectionRuleStateHolder
@@ -76,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public void RuleFailure(string errorMessage)
         {
             CurrentState = CollectionRuleState.Finished;
-            CurrentStateReason = string.Format(Strings.Message_CollectionRuleStateReason_Finished_Failure, errorMessage);
+            CurrentStateReason = string.Format(CultureInfo.InvariantCulture, Strings.Message_CollectionRuleStateReason_Finished_Failure, errorMessage);
         }
     }
 }
