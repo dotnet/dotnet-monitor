@@ -273,7 +273,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 Schema = rootSchema;
 
                 _settings = new JsonSchemaGeneratorSettings();
-                _settings.FlattenInheritanceHierarchy = true;
                 _settings.SerializerSettings = new JsonSerializerSettings();
                 _settings.SerializerSettings.Converters.Add(new StringEnumConverter());
 
