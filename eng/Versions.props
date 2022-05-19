@@ -58,18 +58,23 @@
   </PropertyGroup>
   <PropertyGroup Label="Manual">
     <AzureIdentityVersion>1.6.0</AzureIdentityVersion>
-    <AzureStorageBlobsVersion>12.10.0</AzureStorageBlobsVersion>
-    <AzureStorageQueuesVersion>12.8.0</AzureStorageQueuesVersion>
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>3.1.17</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>3.1.10</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
-    <MicrosoftIdentityModelTokensVersion>6.11.1</MicrosoftIdentityModelTokensVersion>
+    <AzureStorageBlobsVersion>12.12.0</AzureStorageBlobsVersion>
+    <AzureStorageQueuesVersion>12.10.0</AzureStorageQueuesVersion>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>6.0.5</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
+    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
+    <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
+    <MicrosoftIdentityModelTokensVersion>6.17.0</MicrosoftIdentityModelTokensVersion>
     <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
-    <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
-    <SystemIdentityModelTokensJwtVersion>6.11.1</SystemIdentityModelTokensJwtVersion>
+    <SystemCommandLineVersion>2.0.0-beta3.22173.1</SystemCommandLineVersion>
+    <SystemIdentityModelTokensJwtVersion>6.17.0</SystemIdentityModelTokensJwtVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
     <!-- Third-party references -->
-    <NJsonSchemaVersion>10.3.11</NJsonSchemaVersion>
+    <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
     <XunitAssertVersion>2.4.1</XunitAssertVersion>
   </PropertyGroup>
