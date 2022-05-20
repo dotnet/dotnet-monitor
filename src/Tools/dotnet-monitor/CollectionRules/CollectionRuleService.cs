@@ -242,17 +242,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public Dictionary<string, CollectionRuleDescription> GetCollectionRulesDescriptions(IEndpointInfo endpointInfo)
         {
-            Dictionary<string, CollectionRuleDescription> collectionRulesState = new();
+            Dictionary<string, CollectionRuleDescription> collectionRulesDescriptions = new();
 
-            foreach (var key in _containersMap.Keys.Where(x => x == endpointInfo))
+            foreach (IEndpointInfo key in _containersMap.Keys.Where(x => x == endpointInfo))
             {
-                foreach (var pipeline in _containersMap[key].Pipelines)
-                {
-                    collectionRulesState.Add(pipeline.Context.Name, GetCollectionRuleDescription(pipeline));
-                }
+                _containersMap[key].Pipelines.ForEach(pipeline => collectionRulesDescriptions.Add(pipeline.Context.Name, GetCollectionRuleDescription(pipeline)));
             }
 
-            return collectionRulesState;
+            return collectionRulesDescriptions;
         }
 
         internal static CollectionRuleDescription GetCollectionRuleDescription(CollectionRulePipeline pipeline)
@@ -260,14 +257,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             CollectionRuleLimitsOptions limitsOptions = pipeline.Context.Options.Limits;
 
             DateTime currentTime = pipeline.Context.Clock.UtcNow.UtcDateTime;
-            Queue<DateTime> currentTimestamps = CollectionRulePipeline.DequeueOldTimestamps(pipeline.ExecutionTimestamps, limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
+            Queue<DateTime> timestampsCopy = CollectionRulePipeline.DequeueOldTimestamps(pipeline.ExecutionTimestamps, limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
 
             CollectionRuleStateHolder stateHolderCopy = new CollectionRuleStateHolder(pipeline.StateHolder);
 
             int actionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
 
             // This feels a bit clunky, but it should resolve the problem of the front-end modifying our stateHolder...
-            if (pipeline.CheckForThrottling(actionCountLimit, currentTimestamps.Count, limitsOptions?.ActionCountSlidingWindowDuration))
+            if (pipeline.CheckForThrottling(actionCountLimit, timestampsCopy.Count, limitsOptions?.ActionCountSlidingWindowDuration))
             {
                 stateHolderCopy.BeginThrottled();
             }
@@ -282,13 +279,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 StateReason = stateHolderCopy.CurrentStateReason,
                 LifetimeOccurrences = pipeline.AllExecutionTimestamps.Count,
                 ActionCountLimit = actionCountLimit,
-                SlidingWindowOccurrences = currentTimestamps.Count,
+                SlidingWindowOccurrences = timestampsCopy.Count,
                 ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration,
             };
 
             if (description.State != CollectionRuleState.Finished)
             {
-                description.SlidingWindowDurationCountdown = GetSWDCountdown(pipeline.ExecutionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
+                description.SlidingWindowDurationCountdown = GetSWDCountdown(timestampsCopy, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
                 description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline.PipelineStartTime, limitsOptions?.RuleDuration, currentTime);
             }
 

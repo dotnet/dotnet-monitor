@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             CallbackActionService callbackService = new(_outputHelper);
 
-            return CollectionRulePipelineTests.ExecuteScenario(
+            return CollectionRulePipelineTestsHelper.ExecuteScenario(
                 appTfm,
                 TestAppScenarios.AsyncWait.Name,
                 TestRuleName,
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     // Register first callback before pipeline starts. This callback should be completed before
                     // the pipeline finishes starting.
-                    Task actionStarted1Task = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
+                    Task actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
 
                     // Startup trigger will cause the the pipeline to complete the start phase
                     // after the action list has been completed.
@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     // Since the action list was completed before the pipeline finished starting,
                     // the action should have invoked its callback.
-                    await actionStarted1Task.WithCancellation(cancellationSource.Token);
+                    await actionStartedTask.WithCancellation(cancellationSource.Token);
 
                     // Pipeline should have completed shortly after finished starting. This should only
                     // wait for a very short time, if at all.
@@ -110,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
-            return CollectionRulePipelineTests.ExecuteScenario(
+            return CollectionRulePipelineTestsHelper.ExecuteScenario(
                 appTfm,
                 TestAppScenarios.AsyncWait.Name,
                 TestRuleName,
@@ -123,7 +123,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetActionLimits(count: ExpectedActionExecutionCount);
 
                     options.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
-
                 },
                 async (runner, pipeline, callbacks) =>
                 {
@@ -135,16 +134,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     await startedTask.WithCancellation(cancellationSource.Token);
 
-                    Task actionStartedTask;
                     Task actionsThrottledTask = callbacks.StartWaitForActionsThrottled();
 
                     // Borrowed portions of this from ManualTriggerAsync implementation
-
                     TaskCompletionSource<object> startedSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
                     EventHandler startedHandler = (s, e) => startedSource.TrySetResult(null);
                     using var _ = cancellationSource.Token.Register(() => startedSource.TrySetCanceled(cancellationSource.Token));
 
-                    actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
+                    Task actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
 
                     triggerService.NotifyStarted += startedHandler;
 
@@ -205,7 +202,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ManualTriggerService triggerService = new();
             CallbackActionService callbackService = new(_outputHelper, clock);
 
-            return CollectionRulePipelineTests.ExecuteScenario(
+            return CollectionRulePipelineTestsHelper.ExecuteScenario(
                 appTfm,
                 TestAppScenarios.AsyncWait.Name,
                 TestRuleName,
@@ -228,7 +225,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     await startedTask.WithCancellation(cancellationSource.Token);
 
-                    await CollectionRulePipelineTests.ManualTriggerAsync(
+                    await CollectionRulePipelineTestsHelper.ManualTriggerAsync(
                         triggerService,
                         callbackService,
                         callbacks,
@@ -262,7 +259,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         StateReason = Strings.Message_CollectionRuleStateReason_Running
                     });
 
-                    await CollectionRulePipelineTests.ManualTriggerAsync(
+                    await CollectionRulePipelineTestsHelper.ManualTriggerAsync(
                         triggerService,
                         callbackService,
                         callbacks,
@@ -307,7 +304,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ManualTriggerService triggerService = new();
             CallbackActionService callbackService = new(_outputHelper);
 
-            return CollectionRulePipelineTests.ExecuteScenario(
+            return CollectionRulePipelineTestsHelper.ExecuteScenario(
                 appTfm,
                 TestAppScenarios.AsyncWait.Name,
                 TestRuleName,
@@ -357,7 +354,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ManualTriggerService triggerService = new();
             CallbackActionService callbackService = new(_outputHelper, clock);
 
-            return CollectionRulePipelineTests.ExecuteScenario(
+            return CollectionRulePipelineTestsHelper.ExecuteScenario(
                 appTfm,
                 TestAppScenarios.AsyncWait.Name,
                 TestRuleName,
@@ -378,7 +375,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     await startedTask.WithCancellation(cancellationSource.Token);
 
-                    await CollectionRulePipelineTests.ManualTriggerAsync(
+                    await CollectionRulePipelineTestsHelper.ManualTriggerAsync(
                         triggerService,
                         callbackService,
                         callbacks,

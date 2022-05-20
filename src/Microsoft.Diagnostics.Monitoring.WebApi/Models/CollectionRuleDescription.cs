@@ -9,14 +9,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
     public record class CollectionRuleDescription
     {
-        /*
-        /// <summary>
-        /// Whether the trigger is currently enabled.
-        /// </summary>
-        [JsonPropertyName("enabled")]
-        public bool isEnabled { get; set; }
-        */
-
         /// <summary>
         /// Indicates what state the collection rule is in for the process.
         /// </summary>
@@ -42,19 +34,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public int SlidingWindowOccurrences { get; set; }
 
         /// <summary>
-        /// The number of times the trigger can execute for a process before being limited -> (as defined by Limits).
+        /// The number of times the trigger can execute for a process before being limited (as defined by Limits).
         /// </summary>
         [JsonPropertyName("actionCountLimit")]
         public int ActionCountLimit { get; set; }
 
         /// <summary>
-        /// The sliding window duration in which the ActionCount is the maximum number of occurrences -> (as defined by Limits).
+        /// The sliding window duration in which the actionCountLimit is the maximum number of occurrences (as defined by Limits).
         /// </summary>
         [JsonPropertyName("actionCountSlidingWindowDurationLimit")]
         public TimeSpan? ActionCountSlidingWindowDurationLimit { get; set; }
 
         /// <summary>
-        /// The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCount
+        /// The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCountLimit
         /// </summary>
         [JsonPropertyName("slidingWindowDurationCountdown")]
         public TimeSpan? SlidingWindowDurationCountdown { get; set; }

@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     Dictionary<string, CollectionRuleDescription> expectedDescriptions = new();
 
-                    expectedDescriptions.Add(DefaultRuleName, new() {                        
+                    expectedDescriptions.Add(DefaultRuleName, new() {
                         ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
@@ -111,11 +111,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.SpinWait.Name,
                 appValidate: async (runner, client) =>
                 {
-                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions_Before = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptionsBefore = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_Before = new();
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptionsBefore = new();
 
-                    expectedDescriptions_Before.Add(DefaultRuleName, new() {
+                    expectedDescriptionsBefore.Add(DefaultRuleName, new() {
                         ActionCountLimit = ExpectedActionCountLimit,
                         LifetimeOccurrences = 0,
                         SlidingWindowOccurrences = 0,
@@ -123,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         StateReason = Running
                     });
 
-                    ValidateCollectionRuleDescriptions(collectionRuleDescriptions_Before, expectedDescriptions_Before);
+                    ValidateCollectionRuleDescriptions(collectionRuleDescriptionsBefore, expectedDescriptionsBefore);
 
                     await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StartSpin);
 
@@ -131,11 +131,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StopSpin);
 
-                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions_After = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptionsAfter = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_After = new();
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptionsAfter = new();
 
-                    expectedDescriptions_After.Add(DefaultRuleName, new() {
+                    expectedDescriptionsAfter.Add(DefaultRuleName, new() {
                         ActionCountLimit = ExpectedActionCountLimit,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
@@ -143,7 +143,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         StateReason = FinishedActionCount
                     });
 
-                    ValidateCollectionRuleDescriptions(collectionRuleDescriptions_After, expectedDescriptions_After);
+                    ValidateCollectionRuleDescriptions(collectionRuleDescriptionsAfter, expectedDescriptionsAfter);
                 },
                 configureTool: runner =>
                 {

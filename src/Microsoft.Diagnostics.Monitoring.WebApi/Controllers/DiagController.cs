@@ -488,7 +488,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet("info", Name = nameof(GetInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
-        public ActionResult<DotnetMonitorInfo> GetInfo()
+        public ActionResult<Models.DotnetMonitorInfo> GetInfo()
         {
             return this.InvokeService(() =>
             {
@@ -518,7 +518,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         [HttpGet("collectionrules", Name = nameof(GetCollectionRulesDescription))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(DotnetMonitorInfo), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Dictionary<string, CollectionRuleDescription>), StatusCodes.Status200OK)]
         public Task<ActionResult<Dictionary<string, CollectionRuleDescription>>> GetCollectionRulesDescription(
             [FromQuery]
             int? pid = null,
@@ -527,13 +527,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
-
             return InvokeForProcess<Dictionary<string, CollectionRuleDescription>>(processInfo =>
             {
                 return _collectionRuleService.GetCollectionRulesDescriptions(processInfo.EndpointInfo);
             },
-            processKey);
+            GetProcessKey(pid, uid, name));
         }
 
         private static string GetDotnetMonitorVersion()

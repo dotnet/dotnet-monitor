@@ -8,8 +8,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal class CollectionRuleStateHolder
     {
-        public CollectionRuleState CurrentState { get; private set; } = CollectionRuleState.Running;
-        public string CurrentStateReason { get; private set; } = Strings.Message_CollectionRuleStateReason_Running;
+        public CollectionRuleState CurrentState { get; private set; }
+        public string CurrentStateReason { get; private set; }
 
         public CollectionRuleStateHolder(CollectionRuleStateHolder other)
         {
@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public void ActionExecutionFailed()
         {
-            // Is this the correct behavior? Treating the same as action success, but internally store this separately if we want to handle it differently
+            // Is this the correct behavior?
             CurrentState = CollectionRuleState.Running;
             CurrentStateReason = Strings.Message_CollectionRuleStateReason_Running;
         }
