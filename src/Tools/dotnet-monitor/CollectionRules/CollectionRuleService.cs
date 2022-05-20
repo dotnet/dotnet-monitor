@@ -257,9 +257,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             CollectionRuleLimitsOptions limitsOptions = pipeline.Context.Options.Limits;
 
             DateTime currentTime = pipeline.Context.Clock.UtcNow.UtcDateTime;
-            Queue<DateTime> timestampsCopy = CollectionRulePipeline.DequeueOldTimestamps(pipeline.ExecutionTimestamps, limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
+            Queue<DateTime> timestampsCopy = pipeline.DequeueOldTimestamps(limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
 
-            CollectionRuleStateHolder stateHolderCopy = new CollectionRuleStateHolder(pipeline.StateHolder);
+            CollectionRuleStateHolder stateHolderCopy = pipeline.GetStateHolderCopy();
 
             int actionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
 
