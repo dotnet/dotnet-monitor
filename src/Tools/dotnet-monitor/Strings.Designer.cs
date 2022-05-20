@@ -331,6 +331,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find a template with the name: {0}.
+        /// </summary>
+        internal static string ErrorMessage_TemplateNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TemplateNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;{0}&apos; trigger factory failed to create a trigger instance..
         /// </summary>
         internal static string ErrorMessage_TriggerFactoryFailed {

@@ -65,6 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
 
                 //No sensitive information
+                ProcessChildSection(configuration, ConfigurationKeys.Templates, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.CollectionRuleDefaults, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.GlobalCounter, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.CollectionRules, skipNotPresent, includeChildSections: true, showSources: showSources);
