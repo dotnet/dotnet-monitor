@@ -22,9 +22,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         EgressProvider<ExtensionEgressProviderOptions>
     {
         private readonly IEgressPropertiesProvider _propertyProvider;
-        private readonly IExtensionDiscoverer _extensionDiscoverer;
+        private readonly ExtensionDiscoverer _extensionDiscoverer;
 
-        public ExtensionEgressProvider(IEgressPropertiesProvider propertyProvider, IExtensionDiscoverer extensionDiscoverer, ILogger<ExtensionEgressProvider> logger)
+        public ExtensionEgressProvider(IEgressPropertiesProvider propertyProvider, ExtensionDiscoverer extensionDiscoverer, ILogger<ExtensionEgressProvider> logger)
             : base(logger)
         {
             _propertyProvider = propertyProvider;

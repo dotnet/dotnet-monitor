@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -30,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                         _fileProvider = new PhysicalFileProvider(_rootPath);
                     }
                 }
-                return _fileProvider ?? new EmptyProvider();
+                return _fileProvider ?? new MissingDirectoryProvider();
             }
         }
 
@@ -57,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             return BaseProvider.Watch(filter);
         }
 
-        private class EmptyProvider : IFileProvider
+        private class MissingDirectoryProvider : IFileProvider
         {
             public IDirectoryContents GetDirectoryContents(string subpath)
             {
@@ -71,7 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             public IChangeToken Watch(string filter)
             {
-                throw new System.NotImplementedException();
+                return NullChangeToken.Singleton;
             }
         }
 
@@ -81,12 +82,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             public IEnumerator<IFileInfo> GetEnumerator()
             {
-                yield break;
+                return Enumerable.Empty<IFileInfo>().GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                yield break;
+                return Enumerable.Empty<IFileInfo>().GetEnumerator();
             }
         }
 

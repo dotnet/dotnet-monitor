@@ -23,31 +23,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// Attempts to locate an extension with the given moniker and return it in the provided type.
         /// </summary>
         /// <typeparam name="TExtensionType">The type of the extension that must be found.</typeparam>
-        /// <param name="extensionMoniker">The string moniker used to reffer to the extension</param>
+        /// <param name="extensionName">The string moniker used to reffer to the extension</param>
         /// <returns></returns>
         /// <exception cref="ExtensionNotFoundException"></exception>
-        public TExtensionType FindExtension<TExtensionType>(string extensionMoniker) where TExtensionType : class, IExtension
+        public TExtensionType FindExtension<TExtensionType>(string extensionName) where TExtensionType : class, IExtension
         {
-            _logger.ExtensionProbeStart(extensionMoniker);
+            _logger.ExtensionProbeStart(extensionName);
             foreach (ExtensionRepository repo in _extensionRepos)
             {
-                bool found = repo.TryFindExtension(extensionMoniker, out IExtension genericResult);
+                bool found = repo.TryFindExtension(extensionName, out IExtension genericResult);
                 if (found)
                 {
                     bool isOfType = genericResult.TryGetTypedExtension(out TExtensionType result);
                     if (isOfType)
                     {
-                        _logger.ExtensionProbeSucceeded(extensionMoniker, genericResult);
+                        _logger.ExtensionProbeSucceeded(extensionName, genericResult);
                         return result;
                     }
                     else
                     {
-                        _logger.ExtensionNotOfType(extensionMoniker, genericResult, typeof(TExtensionType));
+                        _logger.ExtensionNotOfType(extensionName, genericResult, typeof(TExtensionType));
                     }
                 }
             }
-            _logger.ExtensionProbeFailed(extensionMoniker);
-            throw new ExtensionNotFoundException(extensionMoniker);
+            _logger.ExtensionProbeFailed(extensionName);
+            throw new ExtensionNotFoundException(extensionName);
         }
     }
 }

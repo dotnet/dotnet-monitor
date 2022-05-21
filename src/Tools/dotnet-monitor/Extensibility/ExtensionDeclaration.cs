@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -15,8 +19,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         public Version Version { get; set; }
 
         /// <summary>
-        /// This is the command that will be executed in the 
+        /// This is the relative path to the executable file to be launched.
         /// </summary>
         public string Program { get; set; }
+
+        /// <summary>
+        /// An array of strings declaring what types of extensions are supported by this extension.
+        /// This should contain values from <see cref="ExtensionTypes"/>.
+        /// </summary>
+        public string[] SupportedExtensionTypes { get; set; }
     }
 }

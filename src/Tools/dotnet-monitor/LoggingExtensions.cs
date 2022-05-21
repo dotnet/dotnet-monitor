@@ -401,6 +401,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ExtensionNotOfType);
 
+        private static readonly Action<ILogger, string, string, Exception> _extensionDeclarationFileBroken =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ExtensionDeclarationFileBroken.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExtensionDeclarationFileBroken);
+
+        private static readonly Action<ILogger, string, string, string, Exception> _extensionProgramMissing =
+            LoggerMessage.Define<string, string, string>(
+                eventId: LoggingEventIds.ExtensionProgramMissing.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExtensionProgramMissing);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -681,24 +693,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
         }
 
-        public static void ExtensionProbeStart(this ILogger logger, string extensionMoniker)
+        public static void ExtensionProbeStart(this ILogger logger, string extensionName)
         {
-            _extensionProbeStart(logger, extensionMoniker, null);
+            _extensionProbeStart(logger, extensionName, null);
         }
 
-        public static void ExtensionProbeRepo(this ILogger logger, string extensionMoniker, ExtensionRepository extensionRepository)
+        public static void ExtensionProbeRepo(this ILogger logger, string extensionName, ExtensionRepository extensionRepository)
         {
-            _extensionProbeRepo(logger, extensionMoniker, extensionRepository.DisplayName, null);
+            _extensionProbeRepo(logger, extensionName, extensionRepository.DisplayName, null);
         }
 
-        public static void ExtensionProbeSucceeded(this ILogger logger, string extensionMoniker, IExtension extension)
+        public static void ExtensionProbeSucceeded(this ILogger logger, string extensionName, IExtension extension)
         {
-            _extensionProbeSucceeded(logger, extensionMoniker, extension.DisplayName, null);
+            _extensionProbeSucceeded(logger, extensionName, extension.DisplayName, null);
         }
 
-        public static void ExtensionProbeFailed(this ILogger logger, string extensionMoniker)
+        public static void ExtensionProbeFailed(this ILogger logger, string extensionName)
         {
-            _extensionProbeFailed(logger, extensionMoniker, null);
+            _extensionProbeFailed(logger, extensionName, null);
         }
 
         public static void ExtensionStarting(this ILogger logger, string extensionPath, string arguments)
@@ -731,9 +743,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _extensionErrorMessage(logger, pid, message, null);
         }
 
-        public static void ExtensionNotOfType(this ILogger logger, string extensionMoniker, IExtension extension, Type desiredType)
+        public static void ExtensionNotOfType(this ILogger logger, string extensionName, IExtension extension, Type desiredType)
         {
-            _extensionNotOfType(logger, extensionMoniker, extension.DisplayName, desiredType.Name, null);
+            _extensionNotOfType(logger, extensionName, extension.DisplayName, desiredType.Name, null);
+        }
+        public static void ExtensionDeclarationFileBroken(this ILogger logger, string extensionName, string extensionDeclarationFile, Exception ex)
+        {
+            _extensionDeclarationFileBroken(logger, extensionName, extensionDeclarationFile, ex);
+        }
+
+        public static void ExtensionProgramMissing(this ILogger logger, string extensionName, string extensionDeclarationFile, string program)
+        {
+            _extensionProgramMissing(logger, extensionName, extensionDeclarationFile, program, null);
         }
     }
 }

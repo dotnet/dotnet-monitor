@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Globalization;
+using Microsoft.Diagnostics.Monitoring;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
-    public class ExtensionNotFoundException : Exception
+    internal class ExtensionNotFoundException : MonitoringException
     {
-        public ExtensionNotFoundException(string extensionMoniker)
-            : base(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_ExtensionNotFound, extensionMoniker))
+        public ExtensionNotFoundException(string extensionName)
+            : base(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_ExtensionNotFound, extensionName))
         {
         }
     }

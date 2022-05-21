@@ -907,6 +907,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extension &apos;{extensionName}&apos; declaration file &apos;{extensionDeclarationFile}&apos; is missing or incorrectly formed..
+        /// </summary>
+        internal static string LogFormatString_ExtensionDeclarationFileBroken {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionDeclarationFileBroken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Payload egress complete to extension process {pid}, waiting for process exit..
         /// </summary>
         internal static string LogFormatString_ExtensionEgressPayloadCompleted {
@@ -934,7 +943,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The extension&apos;{extensionMoniker} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type..
+        ///   Looks up a localized string similar to The extension&apos;{extensionName} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type..
         /// </summary>
         internal static string LogFormatString_ExtensionNotOfType {
             get {
@@ -952,7 +961,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to locate extension &apos;{extensionMoniker}&apos;..
+        ///   Looks up a localized string similar to Failed to locate extension &apos;{extensionName}&apos;..
         /// </summary>
         internal static string LogFormatString_ExtensionProbeFailed {
             get {
@@ -961,7 +970,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Searching {extensionRepository} for extension &apos;{extensionMoniker}&apos;..
+        ///   Looks up a localized string similar to Searching {extensionRepository} for extension &apos;{extensionName}&apos;..
         /// </summary>
         internal static string LogFormatString_ExtensionProbeRepo {
             get {
@@ -970,7 +979,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempting to locate extension &apos;{extensionMoniker}&apos;..
+        ///   Looks up a localized string similar to Attempting to locate extension &apos;{extensionName}&apos;..
         /// </summary>
         internal static string LogFormatString_ExtensionProbeStart {
             get {
@@ -979,11 +988,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Found extension &apos;{extensionMoniker}&apos; at {extension}..
+        ///   Looks up a localized string similar to Found extension &apos;{extensionName}&apos; at {extension}..
         /// </summary>
         internal static string LogFormatString_ExtensionProbeSucceeded {
             get {
                 return ResourceManager.GetString("LogFormatString_ExtensionProbeSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The extension &apos;{extensionName}&apos;&apos;s program defined in &apos;{extensionDeclarationFile}&apos; is missing the program to execute &apos;{program}&apos;..
+        /// </summary>
+        internal static string LogFormatString_ExtensionProgramMissing {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionProgramMissing", resourceCulture);
             }
         }
         

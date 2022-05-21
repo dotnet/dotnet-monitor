@@ -82,6 +82,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ExtensionOutputMessage = 69,
         ExtensionErrorMessage = 70,
         ExtensionNotOfType = 71,
+        ExtensionDeclarationFileBroken = 72,
+        ExtensionProgramMissing = 73,
     }
 
     internal static class LoggingEventIdsExtensions

@@ -26,17 +26,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _loggerFactory = loggerFactory;
         }
 
-        public override bool TryFindExtension(string extensionMoniker, out IExtension extension)
+        public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            IFileInfo extensionDir = _fileSystem.GetFileInfo(extensionMoniker);
+            IFileInfo extensionDir = _fileSystem.GetFileInfo(extensionName);
 
             if (extensionDir.Exists && extensionDir.IsDirectory)
             {
-                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionMoniker, ExtensionDefinitionFile));
+                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionName, ExtensionDefinitionFile));
                 if (defFile.Exists && !defFile.IsDirectory)
                 {
                     ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
-                    extension = new ProgramExtension(Path.Combine(_targetFolder, extensionMoniker, ExtensionDefinitionFile), logger);
+                    extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionName, ExtensionDefinitionFile), logger);
                     return true;
                 }
             }

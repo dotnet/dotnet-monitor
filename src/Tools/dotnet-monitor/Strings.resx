@@ -558,6 +558,13 @@
 1. extensionPath: Path to the executable extension
 2. pid: Process ID of the started process</comment>
   </data>
+  <data name="LogFormatString_ExtensionDeclarationFileBroken" xml:space="preserve">
+    <value>The extension '{extensionName}' declaration file '{extensionDeclarationFile}' is missing or incorrectly formed.</value>
+    <comment>Gets the format string that is printed in the 72:ExtensionDeclarationFileBroken event.
+2 Format Parameters:
+1. extensionName The name of the extension or moniker
+2. extensionDeclarationFile: The constant name of the file where the extension is declared</comment>
+  </data>
   <data name="LogFormatString_ExtensionEgressPayloadCompleted" xml:space="preserve">
     <value>Payload egress complete to extension process {pid}, waiting for process exit.</value>
     <comment>Gets the format string that is printed in the 67:ExtensionEgressPayloadCompleted event.
@@ -579,10 +586,10 @@
 2. exitCode: Exit code of the extension process</comment>
   </data>
   <data name="LogFormatString_ExtensionNotOfType" xml:space="preserve">
-    <value>The extension'{extensionMoniker} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type.</value>
+    <value>The extension'{extensionName} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type.</value>
     <comment>Gets the format string that is printed in the 71:ExtensionNotOfType event.
 3 Format Parameters:
-1. extensionMoniker: The name of the extension or moniker
+1. extensionName: The name of the extension or moniker
 2. extension: The friendly name of the extension from the IExtension interface
 3. extensionType: The type that the extension failed to be typed to</comment>
   </data>
@@ -594,30 +601,38 @@
 2. message: the line output message from the process written to standard out</comment>
   </data>
   <data name="LogFormatString_ExtensionProbeFailed" xml:space="preserve">
-    <value>Failed to locate extension '{extensionMoniker}'.</value>
+    <value>Failed to locate extension '{extensionName}'.</value>
     <comment>Gets the format string that is printed in the 64:ExtensionProbeFailed event.
 1 Format Parameter:
-1. extensionMoniker: The name of the extension or moniker</comment>
+1. extensionName: The name of the extension or moniker</comment>
   </data>
   <data name="LogFormatString_ExtensionProbeRepo" xml:space="preserve">
-    <value>Searching {extensionRepository} for extension '{extensionMoniker}'.</value>
+    <value>Searching {extensionRepository} for extension '{extensionName}'.</value>
     <comment>Gets the format string that is printed in the 62:ExtensionProbeRepo event.
 1 Format Parameter:
-1. extensionMoniker: The name of the extension or moniker
+1. extensionName: The name of the extension or moniker
 2. extensionRepository: The friendly name of the extension repository</comment>
   </data>
   <data name="LogFormatString_ExtensionProbeStart" xml:space="preserve">
-    <value>Attempting to locate extension '{extensionMoniker}'.</value>
+    <value>Attempting to locate extension '{extensionName}'.</value>
     <comment>Gets the format string that is printed in the 61:ExtensionProbeStart event.
 1 Format Parameter:
-1. extensionMoniker: The name of the extension or moniker</comment>
+1. extensionName: The name of the extension or moniker</comment>
   </data>
   <data name="LogFormatString_ExtensionProbeSucceeded" xml:space="preserve">
-    <value>Found extension '{extensionMoniker}' at {extension}.</value>
+    <value>Found extension '{extensionName}' at {extension}.</value>
     <comment>Gets the format string that is printed in the 63:ExtensionProbeSucceeded event.
 1 Format Parameter:
-1. extensionMoniker: The name of the extension or moniker
+1. extensionName: The name of the extension or moniker
 2. extension: The friendly name of the extension from the IExtension interface</comment>
+  </data>
+  <data name="LogFormatString_ExtensionProgramMissing" xml:space="preserve">
+    <value>The extension '{extensionName}''s program defined in '{extensionDeclarationFile}' is missing the program to execute '{program}'.</value>
+    <comment>Gets the format string that is printed in the 73:ExtensionProgramMissing event.
+3 Format Parameters:
+1. extensionName The name of the extension or moniker
+2. extensionDeclarationFile: The constant name of the file where the extension is declared
+3. program: The program defined to launch the executable</comment>
   </data>
   <data name="LogFormatString_ExtensionStarting" xml:space="preserve">
     <value>Starting extension '{extensionPath} {cmdArgs}'.</value>
