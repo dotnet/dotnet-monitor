@@ -55,10 +55,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     _operationsStore.CompleteOperation(egressRequest.OperationId, result);
                 }
                 //This is unexpected, but an unhandled exception should still fail the operation.
-                catch (Exception e)
+                catch (Exception e) when (!(e is OperationCanceledException))
                 {
                     _operationsStore.CompleteOperation(egressRequest.OperationId, ExecutionResult<EgressResult>.Failed(e));
-                    throw;
                 }
             }
         }

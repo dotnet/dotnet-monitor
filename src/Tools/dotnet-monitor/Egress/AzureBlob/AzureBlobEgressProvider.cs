@@ -282,6 +282,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
             else if (!string.IsNullOrEmpty(options.ManagedIdentityClientId))
             {
+                // Remove Query in case SAS token was specified
                 Uri accountUri = GetBlobAccountUri(options, out _);
 
                 DefaultAzureCredential credential = CreateManagedIdentityCredentials(options.ManagedIdentityClientId);
