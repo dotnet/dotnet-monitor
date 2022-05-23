@@ -110,7 +110,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<ActionListExecutor>();
             services.AddSingleton<ICollectionRuleService, CollectionRuleService>();
             services.AddHostedService(sp => (CollectionRuleService)sp.GetRequiredService<ICollectionRuleService>());
-
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 
             return services;

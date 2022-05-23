@@ -153,10 +153,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     await rulesChangedTaskSource.Task;
                 }
 
-                foreach (IEndpointInfo key in _containersMap.Keys)
-                {
-                    _containersMap[key].Pipelines.Clear();
-                }
+                _containersMap.Keys.ToList().ForEach(key => _containersMap[key].Pipelines.Clear());
 
                 rulesChanged = false;
 
@@ -292,22 +289,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return description;
         }
 
-        private static TimeSpan? GetSWDCountdown(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, int actionCount, DateTime currentTimestamp)
+        private static TimeSpan? GetSWDCountdown(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, int actionCount, DateTime currentTime)
         {
             if (actionCountWindowDuration.HasValue && timestamps.Count >= actionCount)
             {
-                TimeSpan countdown =  timestamps.Peek() - (currentTimestamp - actionCountWindowDuration.Value);
+                TimeSpan countdown =  timestamps.Peek() - (currentTime - actionCountWindowDuration.Value);
                 return GetTruncatedPositiveTimeSpan(countdown);
             }
 
             return null;
         }
 
-        private static TimeSpan? GetRuleFinishedCountdown(DateTime pipelineStartTime, TimeSpan? ruleDuration, DateTime currentTimestamp)
+        private static TimeSpan? GetRuleFinishedCountdown(DateTime pipelineStartTime, TimeSpan? ruleDuration, DateTime currentTime)
         {
             if (ruleDuration.HasValue)
             {
-                TimeSpan countdown = ruleDuration.Value - (currentTimestamp - pipelineStartTime);
+                TimeSpan countdown = ruleDuration.Value - (currentTime - pipelineStartTime);
                 return GetTruncatedPositiveTimeSpan(countdown);
             }
 
