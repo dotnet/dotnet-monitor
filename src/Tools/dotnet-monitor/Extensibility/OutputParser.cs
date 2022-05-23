@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 {
                     // Check if the object is a TResult
                     TResult result = JsonSerializer.Deserialize<TResult>(eventArgs.Data);
-                    _resultCompletionSource.SetResult(result);
+                    _resultCompletionSource.TrySetResult(result);
                 }
                 catch (Exception)
                 {

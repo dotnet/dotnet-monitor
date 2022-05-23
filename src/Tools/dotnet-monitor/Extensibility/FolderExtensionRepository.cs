@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class FolderExtensionRepository : ExtensionRepository
     {
-        private const string ExtensionDefinitionFile = "extension.jsonc";
+        private const string ExtensionDefinitionFile = "extension.json";
         private readonly string _targetFolder;
         private readonly IFileProvider _fileSystem;
         private readonly ILoggerFactory _loggerFactory;

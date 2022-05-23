@@ -181,6 +181,11 @@
 1 Format Parameter:
 0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
   </data>
+  <data name="ErrorMessage_ExtensionLaunchFailed" xml:space="preserve">
+    <value>The extension '{extensionName}' failed to launch.</value>
+    <comment>Gets the format string for a launch failure.
+1. extensionName The name of the extension or moniker</comment>
+  </data>
   <data name="ErrorMessage_ExtensionNotFound" xml:space="preserve">
     <value>Failed to locate extension '{0}'.</value>
     <comment>Gets the error message string for ExtensionNotFoundException. 1 Format parameter: extensionMoniker</comment>

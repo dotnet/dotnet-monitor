@@ -187,6 +187,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extension &apos;{extensionName}&apos; failed to launch..
+        /// </summary>
+        internal static string ErrorMessage_ExtensionLaunchFailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExtensionLaunchFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to locate extension &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorMessage_ExtensionNotFound {
