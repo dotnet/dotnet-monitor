@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -14,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal static class PreDefinedExtensionRepositories
     {
-        public static IEnumerable<Func<IServiceProvider, IExtensionRepository>> GetExtensionRepositoryDelegates(HostBuilderSettings settings)
+        public static IServiceCollection AddExtensionsRepositories(this IServiceCollection services, HostBuilderSettings settings)
         {
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
@@ -42,14 +40,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             };
             foreach (FolderExtensionRepoDefinition folderProvider in folderProviders)
             {
-                yield return 
-                    (IServiceProvider serviceProvider) => 
+                services.AddSingleton<ExtensionRepository>(
+                    (IServiceProvider serviceProvider) =>
                         new FolderExtensionRepository(
-                            new FolderFileProvider(folderProvider.ExtensionDirectory), 
-                            serviceProvider.GetRequiredService<ILoggerFactory>(), 
-                            folderProvider.Priority, 
-                            folderProvider.ExtensionDirectory);
+                            new FolderFileProvider(folderProvider.ExtensionDirectory),
+                            serviceProvider.GetRequiredService<ILoggerFactory>(),
+                            folderProvider.Priority,
+                            folderProvider.ExtensionDirectory));
             }
+
+            return services;
         }
 
         private class FolderExtensionRepoDefinition

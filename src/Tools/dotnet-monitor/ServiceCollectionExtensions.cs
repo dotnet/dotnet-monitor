@@ -179,13 +179,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureExtensions(this IServiceCollection services, HostBuilderSettings settings)
         {
             // Add the services to discover extensions
-            services.AddSingleton<IExtensionDiscoverer, ExtensionDiscoverer>();
+            services.AddSingleton<ExtensionDiscoverer>();
 
-            // Add the Extension Repositories to probe
-            foreach (Func<IServiceProvider, IExtensionRepository> loadDelegate in PreDefinedExtensionRepositories.GetExtensionRepositoryDelegates(settings))
-            {
-                services.AddSingleton<IExtensionRepository>(loadDelegate);
-            }
+            services.AddExtensionsRepositories(settings);
 
             return services;
         }
