@@ -952,6 +952,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extension process {pid} wrote output message &apos;{message}&apos;. This message was parsed correctly as &apos;{resultType}&apos; but contained malformed data or was missing critical data to be considered valid..
+        /// </summary>
+        internal static string LogFormatString_ExtensionMalformedOutput {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionMalformedOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The extension&apos;{extensionName} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type..
         /// </summary>
         internal static string LogFormatString_ExtensionNotOfType {

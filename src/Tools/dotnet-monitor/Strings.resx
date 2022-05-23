@@ -590,6 +590,14 @@
 1. pid: Process ID of the started process
 2. exitCode: Exit code of the extension process</comment>
   </data>
+  <data name="LogFormatString_ExtensionMalformedOutput" xml:space="preserve">
+    <value>Extension process {pid} wrote output message '{message}'. This message was parsed correctly as '{resultType}' but contained malformed data or was missing critical data to be considered valid.</value>
+    <comment>Gets the format string that is printed in the 74:ExtensionMalformedOutput event.
+2 Format Parameters:
+1. pid: Process ID of the started process
+2. message: the line output message from the process written to standard out that was parsed correctly but was missing critical data.
+3. resultType: the type that the message was parsed to but not considered valid</comment>
+  </data>
   <data name="LogFormatString_ExtensionNotOfType" xml:space="preserve">
     <value>The extension'{extensionName} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type.</value>
     <comment>Gets the format string that is printed in the 71:ExtensionNotOfType event.

@@ -9,15 +9,13 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
-    internal class ProgramExtension : IExtension, IEgressExtension
+    internal partial class ProgramExtension : IExtension, IEgressExtension
     {
         private readonly string _extensionName;
         private readonly string _targetFolder;

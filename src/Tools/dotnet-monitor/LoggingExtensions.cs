@@ -413,6 +413,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ExtensionProgramMissing);
 
+        private static readonly Action<ILogger, int, string, string, Exception> _extensionMalformedOutput =
+            LoggerMessage.Define<int, string, string>(
+                eventId: LoggingEventIds.ExtensionMalformedOutput.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExtensionMalformedOutput);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -755,6 +761,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExtensionProgramMissing(this ILogger logger, string extensionName, string extensionDeclarationFile, string program)
         {
             _extensionProgramMissing(logger, extensionName, extensionDeclarationFile, program, null);
+        }
+
+        public static void ExtensionMalformedOutput(this ILogger logger, int pid, string message, Type resultType)
+        {
+            _extensionMalformedOutput(logger, pid, message, resultType.Name, null);
         }
     }
 }
