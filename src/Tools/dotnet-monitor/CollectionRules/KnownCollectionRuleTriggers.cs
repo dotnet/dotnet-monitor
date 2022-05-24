@@ -14,5 +14,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public const string AspNetRequestDuration = nameof(AspNetRequestDuration);
         public const string AspNetResponseStatus = nameof(AspNetResponseStatus);
         public const string EventCounter = nameof(EventCounter);
+
+        // Shortcut Triggers
+        public const string CPUUsage = nameof(CPUUsage);
+        public const string GCHeapSize = nameof(GCHeapSize);
+        public const string ThreadpoolQueueLength = nameof(ThreadpoolQueueLength);
     }
 }

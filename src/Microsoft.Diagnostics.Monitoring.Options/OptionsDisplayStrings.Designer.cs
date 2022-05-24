@@ -731,6 +731,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The threshold level as a percentage that the counter must maintain (or higher) for the specified duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_CPUUsageOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CPUUsageOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level as a percentage that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null..
+        /// </summary>
+        public static string DisplayAttributeDescription_CPUUsageOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CPUUsageOptions_LessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In &apos;Connect&apos; mode, dotnet-monitor connects to the application for diagnostics. In &apos;Listen&apos; mode, the application connects to dotnet-monitor via EndpointName..
         /// </summary>
         public static string DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode {
@@ -863,6 +881,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectory" +
                         "Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level in MBs that the counter must maintain (or higher) for the specified duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_GCHeapSizeOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GCHeapSizeOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level in MBs that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null..
+        /// </summary>
+        public static string DisplayAttributeDescription_GCHeapSizeOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GCHeapSizeOptions_LessThan", resourceCulture);
             }
         }
         
@@ -1205,6 +1241,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_StorageOptions_DumpTempFolder {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_DumpTempFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level the counter must maintain (or higher) for the specified duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_ThreadpoolQueueLengthOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ThreadpoolQueueLengthOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null..
+        /// </summary>
+        public static string DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan", resourceCulture);
             }
         }
         
