@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private const string SubstitutionSuffix = ")";
         private const string Separator = ".";
         private const string ActionsReference = "Actions";
-        private const string ProcessInfoReference = "ProcessInfo";
+        private const string ProcessInfoReference = "Process";
         private static readonly string ActionReferencePrefix = FormattableString.Invariant($"{SubstitutionPrefix}{ActionsReference}{Separator}");
         public static readonly string RuntimeIdReference = FormattableString.Invariant($"{SubstitutionPrefix}{ProcessInfoReference}{Separator}InstanceId{SubstitutionSuffix}");
 

@@ -26,7 +26,7 @@ class StringUtilities
 #else
             if (strlcpy(destination, source, DestinationSize) >= DestinationSize)
             {
-                return E_FAIL;
+                return E_INVALIDARG;
             }
 #endif
 
