@@ -63,6 +63,10 @@ HRESULT EnvironmentHelper::GetTempFolder(tstring& tempFolder)
     hr = _environment->GetEnvironmentVariable(TempEnvVar, tmpDir);
     if (FAILED(hr))
     {
+        if (hr != ERROR_ENVVAR_NOT_FOUND)
+        {
+            return hr;
+        }
         tmpDir = DefaultTempFolder;
     }
 #endif
