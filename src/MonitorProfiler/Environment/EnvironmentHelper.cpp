@@ -40,3 +40,33 @@ HRESULT EnvironmentHelper::SetProductVersion(
 
     return S_OK;
 }
+
+HRESULT EnvironmentHelper::GetRuntimeInstanceId(const std::shared_ptr<IEnvironment>& pEnvironment, const std::shared_ptr<ILogger>& pLogger, tstring& instanceId)
+{
+    HRESULT hr = S_OK;
+
+    IfFailLogRet(pEnvironment->GetEnvironmentVariable(s_wszRuntimeInstanceEnvVar, instanceId));
+
+    return S_OK;
+}
+
+HRESULT EnvironmentHelper::GetTempFolder(const std::shared_ptr<IEnvironment>& pEnvironment, const std::shared_ptr<ILogger>& pLogger, tstring& tempFolder)
+{
+    HRESULT hr = S_OK;
+
+    tstring tmpDir;
+#if TARGET_WINDOWS
+    IfFailLogRet(pEnvironment->GetEnvironmentVariable(s_wszTempEnvVar, tmpDir));
+#else
+    hr = pEnvironment->GetEnvironmentVariable(s_wszTempEnvVar, tmpDir);
+#endif
+
+    if (FAILED(hr))
+    {
+        tmpDir = s_wszDefaultTempFolder;
+    }
+
+    tempFolder = std::move(tmpDir);
+
+    return S_OK;
+}
