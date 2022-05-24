@@ -15,6 +15,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         {
             List<ValidationResult> results = new();
 
+            // ErrorList is populated by incorrectly using templates - this will be empty if all templates names can be resolved or if templates are not used.
+            results.AddRange(ErrorList);
+
+            if (results.Count > 0)
+            {
+                return results;
+            }
+
             ValidationContext filtersContext = new(Filters, validationContext, validationContext.Items);
             filtersContext.MemberName = nameof(Filters);
             ValidationHelper.TryValidateItems(Filters, filtersContext, results);

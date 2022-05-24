@@ -274,6 +274,12 @@
 1 Format Parameter:
 0. configName: The variable name for the provided string.</comment>
   </data>
+  <data name="ErrorMessage_TemplateNotFound" xml:space="preserve">
+    <value>Could not find a template with the name: {0}</value>
+    <comment>Gets the format string for template resolution failure.
+1 Format Parameter:
+0. templateName: The name of the template that could not be found.</comment>
+  </data>
   <data name="ErrorMessage_TriggerFactoryFailed" xml:space="preserve">
     <value>The '{0}' trigger factory failed to create a trigger instance.</value>
     <comment>Gets the format string describing the error condition when a trigger factory does not return a valid trigger instance.</comment>

@@ -40,6 +40,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);
         }
 
+        public static IServiceCollection ConfigureTemplates(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<TemplateOptions>(services, configuration, ConfigurationKeys.Templates);
+        }
+
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics)
@@ -106,7 +111,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<ICollectionRuleActionOperations, CollectionRuleActionOperations>();
             services.AddSingleton<ICollectionRuleTriggerOperations, CollectionRuleTriggerOperations>();
 
+            services.AddSingleton<IPostConfigureOptions<TemplateOptions>, TemplatesPostConfigureOptions>();
+
             services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, CollectionRulePostConfigureOptions>();
+            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, DefaultCollectionRulePostConfigureOptions>();
             services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
 
             // Register change sources for the options type
@@ -119,8 +128,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<CollectionRuleService>();
             services.AddHostedServiceForwarder<CollectionRuleService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
-
-            services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, DefaultCollectionRulePostConfigureOptions>();
 
             return services;
         }

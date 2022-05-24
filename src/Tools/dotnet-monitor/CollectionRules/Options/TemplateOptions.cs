@@ -9,31 +9,28 @@ using System.ComponentModel.DataAnnotations;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
     /// <summary>
-    /// Options for describing an entire collection rule.
+    /// Options for describing custom user-defined templates.
     /// </summary>
-    internal sealed partial class CollectionRuleOptions
+    internal sealed partial class TemplateOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Filters))]
-        public List<ProcessFilterDescriptor> Filters { get; } = new List<ProcessFilterDescriptor>(0);
+        public IDictionary<string, ProcessFilterDescriptor> CollectionRuleFilters { get; } = new Dictionary<string, ProcessFilterDescriptor>();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Trigger))]
-        [Required]
-        public CollectionRuleTriggerOptions Trigger { get; set; }
+        public IDictionary<string, CollectionRuleTriggerOptions> CollectionRuleTriggers { get; set; } = new Dictionary<string, CollectionRuleTriggerOptions>();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Actions))]
-        public List<CollectionRuleActionOptions> Actions { get; } = new List<CollectionRuleActionOptions>(0);
+        public IDictionary<string, CollectionRuleActionOptions> CollectionRuleActions { get; set; } = new Dictionary<string, CollectionRuleActionOptions>();
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Limits))]
-        public CollectionRuleLimitsOptions Limits { get; set; }
-
-        internal List<ValidationResult> ErrorList { get; } = new List<ValidationResult>();
+        public IDictionary<string, CollectionRuleLimitsOptions> CollectionRuleLimits { get; set; } = new Dictionary<string, CollectionRuleLimitsOptions>();
     }
 }

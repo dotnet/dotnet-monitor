@@ -68,5 +68,16 @@
       },
       "Type": "AspNetRequestDuration"
     }
+  },
+  "Rule4": {
+    "Actions": [
+      "ActionTemplate1",
+      "ActionTemplate2"
+    ],
+    "Filters": [
+      "FilterTemplate"
+    ],
+    "Limits": "LimitTemplate",
+    "Trigger": "TriggerTemplate"
   }
 }
