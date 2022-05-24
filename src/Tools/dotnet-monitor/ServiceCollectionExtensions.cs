@@ -24,8 +24,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -181,9 +184,44 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Add the services to discover extensions
             services.AddSingleton<ExtensionDiscoverer>();
 
-            services.AddExtensionsRepositories(settings);
+            string nextToMeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string progDataFolder = settings.SharedConfigDirectory;
+            string settingsFolder = settings.UserConfigDirectory;
+
+            if (string.IsNullOrWhiteSpace(progDataFolder))
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (string.IsNullOrWhiteSpace(settingsFolder))
+            {
+                throw new InvalidOperationException();
+            }
+
+            // Add the folders we search to get extensions from
+            services.AddExtensionRepository(1000, nextToMeFolder);
+            services.AddExtensionRepository(2000, progDataFolder);
+            services.AddExtensionRepository(3000, settingsFolder);
 
             return services;
+        }
+
+        public static IServiceCollection AddExtensionRepository(this IServiceCollection services, int priority, string path)
+        {
+            const string ExtensionFolder = "extensions";
+
+            string targetExtensionFolder = Path.Combine(path, ExtensionFolder);
+
+            Func<IServiceProvider, ExtensionRepository> createDelegate =
+                (IServiceProvider serviceProvider) =>
+                {
+                    FolderFileProvider fileProvider = new(targetExtensionFolder);
+                    ILoggerFactory logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+                    FolderExtensionRepository newRepo = new(fileProvider, logger, priority, targetExtensionFolder);
+                    return newRepo;
+                };
+
+            return services.AddSingleton<ExtensionRepository>(createDelegate);
         }
 
         public static IServiceCollection ConfigureEgress(this IServiceCollection services)

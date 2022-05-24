@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             if (!progInfo.Exists || progInfo.IsDirectory || progInfo.PhysicalPath == null)
             {
                 _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _declarationPath), Declaration.Program);
-                throw new ExtensionNotFoundException(_extensionName);
+                ExtensionException.ThrowNotFound(_extensionName);
             }
 
             /* [TODOs]
@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _logger.ExtensionStarting(pStart.FileName, pStart.Arguments);
             if (!p.Start())
             {
-                throw new ExtensionLaunchFailure(_extensionName);
+                ExtensionException.ThrowLaunchFailure(_extensionName);
             }
 
             await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, configPayload, options: null, token);

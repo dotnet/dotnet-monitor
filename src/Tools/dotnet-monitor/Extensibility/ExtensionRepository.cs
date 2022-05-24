@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         public int ResolvePriority { get; private init; }
 
         /// <summary>
-        /// Gets a friendly name to describe this instance of an <see cref="IExtensionRepository"/>. This is used in Logs.
+        /// Gets a friendly name to describe this instance of an <see cref="ExtensionRepository"/>. This is used in Logs.
         /// </summary>
         public string DisplayName { get; private init; }
 

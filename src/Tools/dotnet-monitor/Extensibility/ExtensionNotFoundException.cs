@@ -7,11 +7,21 @@ using Microsoft.Diagnostics.Monitoring;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
-    internal class ExtensionNotFoundException : MonitoringException
+    internal class ExtensionException : MonitoringException
     {
-        public ExtensionNotFoundException(string extensionName)
-            : base(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_ExtensionNotFound, extensionName))
+        private ExtensionException(string message)
+            : base(message)
         {
+        }
+
+        public static ExtensionException ThrowNotFound(string extensionName)
+        {
+            throw new ExtensionException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_ExtensionNotFound, extensionName));
+        }
+
+        public static ExtensionException ThrowLaunchFailure(string extensionName)
+        {
+            throw new ExtensionException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_ExtensionLaunchFailed, extensionName));
         }
     }
 }
