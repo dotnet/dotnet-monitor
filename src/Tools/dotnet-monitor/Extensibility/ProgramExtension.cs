@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             if (!declFile.Exists || declFile.IsDirectory)
             {
                 LogBrokenDeclaration(null);
-                throw new ExtensionNotFoundException(_extensionName);
+                ExtensionException.ThrowNotFound(_extensionName);
             }
 
             try

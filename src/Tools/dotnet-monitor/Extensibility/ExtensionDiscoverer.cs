@@ -47,7 +47,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 }
             }
             _logger.ExtensionProbeFailed(extensionName);
-            throw new ExtensionNotFoundException(extensionName);
+            ExtensionException.ThrowNotFound(extensionName);
+
+            // This should never get hit, the line above should always throw
+            return null;
         }
     }
 }
