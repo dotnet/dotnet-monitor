@@ -77,9 +77,9 @@
     </ItemGroup>
     <ItemGroup>
       <!-- Pack the profiler library for each platform if it exists. -->
-      <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile->Exists())" />
+      <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile-&gt;Exists())" />
       <!-- Pack the profiler symbols for each platform if it exists. -->
-      <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile->Exists())" />
+      <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile-&gt;Exists())" />
     </ItemGroup>
   </Target>
 

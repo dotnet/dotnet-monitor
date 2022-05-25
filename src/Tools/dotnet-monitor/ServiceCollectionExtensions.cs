@@ -23,6 +23,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -212,16 +213,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             string targetExtensionFolder = Path.Combine(path, ExtensionFolder);
 
-            Func<IServiceProvider, ExtensionRepository> createDelegate =
-                (IServiceProvider serviceProvider) =>
-                {
-                    FolderFileProvider fileProvider = new(targetExtensionFolder);
-                    ILoggerFactory logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-                    FolderExtensionRepository newRepo = new(fileProvider, logger, priority, targetExtensionFolder);
-                    return newRepo;
-                };
+            if (Directory.Exists(targetExtensionFolder))
+            {
+                Func<IServiceProvider, ExtensionRepository> createDelegate =
+                    (IServiceProvider serviceProvider) =>
+                    {
+                        PhysicalFileProvider fileProvider = new(targetExtensionFolder);
+                        ILoggerFactory logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+                        FolderExtensionRepository newRepo = new(fileProvider, logger, priority, targetExtensionFolder);
+                        return newRepo;
+                    };
 
-            return services.AddSingleton<ExtensionRepository>(createDelegate);
+                services.AddSingleton<ExtensionRepository>(createDelegate);
+            }
+
+            return services;
         }
 
         public static IServiceCollection ConfigureEgress(this IServiceCollection services)

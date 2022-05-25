@@ -32,7 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 _process.Exited += ProcExited;
             }
 
-
             public void Dispose()
             {
                 _process.OutputDataReceived -= ParseStdOut;

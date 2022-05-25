@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Globalization;
 using Microsoft.Diagnostics.Monitoring;
 
@@ -22,6 +23,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         public static ExtensionException ThrowLaunchFailure(string extensionName)
         {
             throw new ExtensionException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_ExtensionLaunchFailed, extensionName));
+        }
+
+        public static ExtensionException ThrowWrongType(string extensionName, string extensionPath, Type requiredType)
+        {
+            throw new ExtensionException(string.Format(CultureInfo.CurrentCulture, Strings.LogFormatString_ExtensionNotOfType, extensionName, extensionPath, requiredType.Name));
         }
     }
 }

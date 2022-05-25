@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -23,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// Attempts to locate an extension with the given moniker and return it in the provided type.
         /// </summary>
         /// <typeparam name="TExtensionType">The type of the extension that must be found.</typeparam>
-        /// <param name="extensionName">The string moniker used to reffer to the extension</param>
+        /// <param name="extensionName">The string moniker used to refer to the extension</param>
         /// <returns></returns>
         /// <exception cref="ExtensionNotFoundException"></exception>
         public TExtensionType FindExtension<TExtensionType>(string extensionName) where TExtensionType : class, IExtension
@@ -34,11 +35,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 bool found = repo.TryFindExtension(extensionName, out IExtension genericResult);
                 if (found)
                 {
-                    bool isOfType = genericResult.TryGetTypedExtension(out TExtensionType result);
+                    bool isOfType = genericResult is TExtensionType;
                     if (isOfType)
                     {
                         _logger.ExtensionProbeSucceeded(extensionName, genericResult);
-                        return result;
+                        return (TExtensionType)genericResult;
                     }
                     else
                     {

@@ -46,22 +46,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         }
 
         /// <inheritdoc/>
-        bool IExtension.TryGetTypedExtension<TExtensionType>(out TExtensionType extension)
-        {
-            // Is Egress type requested and extension supports Egress
-            if (typeof(TExtensionType) == typeof(IEgressExtension) && Declaration.SupportedExtensionTypes.Contains(ExtensionTypes.Egress))
-            {
-                extension = (TExtensionType) (IExtension) this;
-                return true;
-            }
-
-            extension = null;
-            return false;
-        }
-
-        /// <inheritdoc/>
         public async Task<EgressArtifactResult> EgressArtifact(ExtensionEgressPayload configPayload, Func<Stream, CancellationToken, Task> getStreamAction, CancellationToken token)
         {
+            if (!Declaration.SupportedExtensionTypes.Contains(ExtensionTypes.Egress))
+            {
+                ExtensionException.ThrowWrongType(_extensionName, _declarationPath, typeof(IEgressExtension));
+            }
+
             // This _should_ only be used in this method, it can get moved to a constants class if that changes
             const string CommandArgProviderName = "--Provider-Name";
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
@@ -78,9 +69,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             /* [TODOs]
              * 1. [Done] Add a new service to dynamically find these extension(s)
              * 2. [Done] Remove all raw logging statements from this method and refactor into LoggingExtensions
-             * 3. Stream StdOut and StdErr async in the process so their streams don't need to end before we can return
+             * 3. [Done] Stream StdOut and StdErr async in the process so their streams don't need to end before we can return
              * 4. [Done] Refactor WaitForExit to do an async wait
-             * 5. Add well-factored protocol for returning information from an extension
+             * 5. [Simple first part done] Add well-factored protocol for returning information from an extension
              */
             ProcessStartInfo pStart = new ProcessStartInfo()
             {
