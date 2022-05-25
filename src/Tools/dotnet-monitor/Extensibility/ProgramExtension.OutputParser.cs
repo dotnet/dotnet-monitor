@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
@@ -15,16 +16,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         internal class OutputParser<TResult> : IDisposable where TResult : class, IExtensionResult
         {
             private readonly ILogger<ProgramExtension> _logger;
-            private readonly object _lock = new object();
             private readonly TaskCompletionSource<TResult> _resultCompletionSource;
+            private readonly EventWaitHandle _beginReadsHandle;
             private readonly Process _process;
-            private bool _resultReceived = false;
+            // We need to store the process ID for logging because we can't access it after the process exits
+            private int _processId = -1;
 
             public OutputParser(Process process, ILogger<ProgramExtension> logger)
             {
                 _process = process;
                 _logger = logger;
                 _resultCompletionSource = new TaskCompletionSource<TResult>();
+                _beginReadsHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
                 _process.OutputDataReceived += ParseStdOut;
                 _process.ErrorDataReceived += ParseErrOut;
@@ -32,11 +35,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 _process.Exited += ProcExited;
             }
 
+            public void BeginReading()
+            {
+                _process.BeginOutputReadLine();
+                _process.BeginErrorReadLine();
+                _beginReadsHandle.Set();
+                _processId = _process.Id;
+            }
+
             public void Dispose()
             {
+                // We don't own _process, so don't dispose it, but do unregister the handlers
+
                 _process.OutputDataReceived -= ParseStdOut;
                 _process.ErrorDataReceived -= ParseErrOut;
                 _process.Exited -= ProcExited;
+
+                _beginReadsHandle.Dispose();
             }
 
             public Task<TResult> ReadResult()
@@ -54,22 +69,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                         TResult result = JsonSerializer.Deserialize<TResult>(eventArgs.Data);
                         if (result.IsValid())
                         {
-                            lock (_lock)
-                            {
-                                _resultCompletionSource.TrySetResult(result);
-                                _resultReceived = true;
-                            }
+                            _resultCompletionSource.TrySetResult(result);
                         }
                         else
                         {
-                            _logger.ExtensionMalformedOutput(_process.Id, eventArgs.Data, typeof(TResult));
+                            _logger.ExtensionMalformedOutput(_processId, eventArgs.Data, typeof(TResult));
                         }
                     }
-                    catch (Exception)
+                    catch (JsonException)
                     {
                         // Expected that some things won't parse correctly
                     }
-                    _logger.ExtensionOutputMessage(_process.Id, eventArgs.Data);
+                    _logger.ExtensionOutputMessage(_processId, eventArgs.Data);
                 }
             }
 
@@ -77,19 +88,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             {
                 if (eventArgs.Data != null)
                 {
-                    _logger.ExtensionErrorMessage(_process.Id, eventArgs.Data);
+                    _logger.ExtensionErrorMessage(_processId, eventArgs.Data);
                 }
             }
 
             private void ProcExited(object sender, EventArgs e)
             {
-                lock (_lock)
-                {
-                    if (!_resultReceived)
-                    {
-                        _resultCompletionSource.TrySetResult(null);
-                    }
-                }
+                // We need to make sure we started reading in-order to be sure
+                // that output streams will be processed
+                _beginReadsHandle.WaitOne();
+
+                _resultCompletionSource.TrySetResult(null);
             }
         }
     }

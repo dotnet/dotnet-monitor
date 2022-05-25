@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
+    [DebuggerDisplay("{Succeeded?\"Succeeded\":\"Failed\",nq}: {Succeeded?ArtifactPath:FailureMessage}")]
     internal class EgressArtifactResult : IExtensionResult
     {
         public bool Succeeded { get; set; }

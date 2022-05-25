@@ -28,9 +28,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            IFileInfo extensionDir = _fileSystem.GetFileInfo(extensionName);
+            IDirectoryContents extensionDir = _fileSystem.GetDirectoryContents(extensionName);
 
-            if (extensionDir.Exists && extensionDir.IsDirectory)
+            if (extensionDir.Exists)
             {
                 IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionName, ExtensionDefinitionFile));
                 if (defFile.Exists && !defFile.IsDirectory)

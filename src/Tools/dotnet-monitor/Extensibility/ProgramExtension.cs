@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
+    [DebuggerDisplay("Extension {_extensionName,nq} @ {_declarationPath}")]
     internal partial class ProgramExtension : IExtension, IEgressExtension
     {
         private readonly string _extensionName;
@@ -86,7 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             pStart.ArgumentList.Add(CommandArgProviderName);
             pStart.ArgumentList.Add(configPayload.ProviderName);
 
-            Process p = new Process()
+            using Process p = new Process()
             {
                 StartInfo = pStart,
             };
@@ -99,6 +100,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 ExtensionException.ThrowLaunchFailure(_extensionName);
             }
 
+            parser.BeginReading();
+
             await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, configPayload, options: null, token);
             await p.StandardInput.WriteAsync(NewLine, token);
             await p.StandardInput.BaseStream.FlushAsync(token);
@@ -109,10 +112,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             p.StandardInput.Close();
             _logger.ExtensionEgressPayloadCompleted(p.Id);
 
-            await p.WaitForExitAsync(token);
+            EgressArtifactResult result = await parser.ReadResult();
             _logger.ExtensionExited(p.Id, p.ExitCode);
 
-            return null;
+            return result;
         }
 
         private ExtensionDeclaration GetExtensionDeclaration()
