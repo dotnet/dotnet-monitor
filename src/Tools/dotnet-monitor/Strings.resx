@@ -156,9 +156,9 @@
     <value>File system egress failed.</value>
     <comment>Gets a string similar to "File system egress failed.".</comment>
   </data>
-  <data name="ErrorMessage_EgressMissingSasOrKey" xml:space="preserve">
-    <value>SharedAccessSignature or AccountKey must be specified.</value>
-    <comment>Gets a string similar to "SharedAccessSignature or AccountKey must be specified.".</comment>
+  <data name="ErrorMessage_EgressMissingCredentials" xml:space="preserve">
+    <value>SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified.</value>
+    <comment>Gets a string similar to "SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified.".</comment>
   </data>
   <data name="ErrorMessage_EgressProviderDoesNotExist" xml:space="preserve">
     <value>Egress provider '{0}' does not exist.</value>
