@@ -988,6 +988,13 @@
           ],
           "description": "The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map."
         },
+        "ManagedIdentityClientId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage."
+        },
         "ContainerName": {
           "type": "string",
           "description": "The name of the container to which the blob will be egressed. If egressing to the root container, use the \"$root\" sentinel value.",
