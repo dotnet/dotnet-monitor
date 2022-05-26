@@ -120,15 +120,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         private ExtensionDeclaration GetExtensionDeclaration()
         {
-            IFileInfo declFile = _fileSystem.GetFileInfo(_declarationPath);
-            if (!declFile.Exists || declFile.IsDirectory)
-            {
-                LogBrokenDeclaration(null);
-                ExtensionException.ThrowNotFound(_extensionName);
-            }
-
             try
             {
+                IFileInfo declFile = _fileSystem.GetFileInfo(_declarationPath);
+                if (!declFile.Exists || declFile.IsDirectory)
+                {
+                    LogBrokenDeclaration(null);
+                    ExtensionException.ThrowNotFound(_extensionName);
+                }
+
                 using (Stream declStream = declFile.CreateReadStream())
                 {
                     ExtensionDeclaration declResult = JsonSerializer.Deserialize<ExtensionDeclaration>(declStream);

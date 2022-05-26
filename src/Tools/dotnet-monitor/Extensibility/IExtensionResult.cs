@@ -2,6 +2,6 @@
 {
     internal interface IExtensionResult
     {
-        public bool IsValid();
+        bool IsValid();
     }
 }

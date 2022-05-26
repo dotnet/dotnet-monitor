@@ -356,7 +356,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly Action<ILogger, string, Exception> _extensionProbeFailed =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.ExtensionProbeFailed.EventId(),
-                logLevel: LogLevel.Warning,
+                logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ExtensionProbeFailed);
 
         private static readonly Action<ILogger, string, string, Exception> _extensionStarting =
@@ -398,25 +398,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly Action<ILogger, string, string, string, Exception> _extensionNotOfType =
             LoggerMessage.Define<string, string, string>(
                 eventId: LoggingEventIds.ExtensionNotOfType.EventId(),
-                logLevel: LogLevel.Warning,
+                logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ExtensionNotOfType);
 
         private static readonly Action<ILogger, string, string, Exception> _extensionDeclarationFileBroken =
             LoggerMessage.Define<string, string>(
                 eventId: LoggingEventIds.ExtensionDeclarationFileBroken.EventId(),
-                logLevel: LogLevel.Warning,
+                logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ExtensionDeclarationFileBroken);
 
         private static readonly Action<ILogger, string, string, string, Exception> _extensionProgramMissing =
             LoggerMessage.Define<string, string, string>(
                 eventId: LoggingEventIds.ExtensionProgramMissing.EventId(),
-                logLevel: LogLevel.Warning,
+                logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ExtensionProgramMissing);
 
         private static readonly Action<ILogger, int, string, string, Exception> _extensionMalformedOutput =
             LoggerMessage.Define<int, string, string>(
                 eventId: LoggingEventIds.ExtensionMalformedOutput.EventId(),
-                logLevel: LogLevel.Warning,
+                logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ExtensionMalformedOutput);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
@@ -753,6 +753,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             _extensionNotOfType(logger, extensionName, extension.DisplayName, desiredType.Name, null);
         }
+
         public static void ExtensionDeclarationFileBroken(this ILogger logger, string extensionName, string extensionDeclarationFile, Exception ex)
         {
             _extensionDeclarationFileBroken(logger, extensionName, extensionDeclarationFile, ex);

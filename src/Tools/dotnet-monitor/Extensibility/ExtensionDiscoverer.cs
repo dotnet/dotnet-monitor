@@ -5,18 +5,17 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class ExtensionDiscoverer
     {
-        private readonly IOrderedEnumerable<ExtensionRepository> _extensionRepos;
+        private readonly ExtensionRepository[] _extensionRepos;
         private readonly ILogger<ExtensionDiscoverer> _logger;
 
         public ExtensionDiscoverer(IEnumerable<ExtensionRepository> extensionRepos, ILogger<ExtensionDiscoverer> logger)
         {
-            _extensionRepos = extensionRepos.OrderBy(eRepo => eRepo.ResolvePriority);
+            _extensionRepos = extensionRepos.OrderBy(eRepo => eRepo.ResolvePriority).ToArray<ExtensionRepository>();
             _logger = logger;
         }
 
@@ -26,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// <typeparam name="TExtensionType">The type of the extension that must be found.</typeparam>
         /// <param name="extensionName">The string moniker used to refer to the extension</param>
         /// <returns></returns>
-        /// <exception cref="ExtensionNotFoundException"></exception>
+        /// <exception cref="ExtensionException">Thrown when the target extension is not found.</exception>
         public TExtensionType FindExtension<TExtensionType>(string extensionName) where TExtensionType : class, IExtension
         {
             _logger.ExtensionProbeStart(extensionName);
@@ -50,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _logger.ExtensionProbeFailed(extensionName);
             ExtensionException.ThrowNotFound(extensionName);
 
-            // This should never get hit, the line above should always throw
+            // This will never get hit because the statement above should always throw
             return null;
         }
     }
