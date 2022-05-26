@@ -63,7 +63,7 @@ HRESULT EnvironmentHelper::GetTempFolder(tstring& tempFolder)
     hr = _environment->GetEnvironmentVariable(TempEnvVar, tmpDir);
     if (FAILED(hr))
     {
-        if (hr != ERROR_ENVVAR_NOT_FOUND)
+        if (hr != HRESULT_FROM_WIN32(ERROR_ENVVAR_NOT_FOUND))
         {
             return hr;
         }

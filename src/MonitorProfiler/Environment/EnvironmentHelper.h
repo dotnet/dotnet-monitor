@@ -8,6 +8,10 @@
 #include "Environment.h"
 #include "../Logging/Logger.h"
 
+#ifndef ERROR_ENVVAR_NOT_FOUND
+#define ERROR_ENVVAR_NOT_FOUND 203L
+#endif
+
 /// <summary>
 /// Helper class for getting and setting known environment variables.
 /// </summary>
