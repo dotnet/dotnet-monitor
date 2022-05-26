@@ -65,6 +65,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         ConfigureTempApiHashKey(builder, settings.Authentication);
                     }
+
+                    // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
+                    string userFilePath = settings.UserProvidedConfigFilePath;
+
+                    if (!string.IsNullOrEmpty(userFilePath))
+                    {
+                        using (FileStream filestream = new FileStream(userFilePath, FileMode.Open))
+                        {
+                            if (filestream.CanRead)
+                            {
+                                builder.AddJsonFile(userFilePath, optional: true, reloadOnChange: true);
+                            }
+                        }
+
+                        builder.AddJsonFile(settings.UserProvidedConfigFilePath, optional: true, reloadOnChange: true);
+                    }
                 })
                 //Note this is necessary for config only because Kestrel configuration
                 //is not added until WebHostDefaults are added.

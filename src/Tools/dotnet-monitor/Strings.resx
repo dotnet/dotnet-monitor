@@ -340,6 +340,10 @@
     <value>Shows configuration, as if dotnet-monitor collect was executed with these parameters.</value>
     <comment>Gets the string to display in help that explains what the 'show' command does.</comment>
   </data>
+  <data name="HelpDescription_OptionConfigurationFilePath" xml:space="preserve">
+    <value>The fully qualified path and filename of the configuration file you'd like to add to the list of configuration sources.</value>
+    <comment>Gets the string to display in help that explains what the '--configuration-file-path' option does.</comment>
+  </data>
   <data name="HelpDescription_OptionDiagnosticPort" xml:space="preserve">
     <value>The fully qualified path and filename of the diagnostic port to which runtime instances can connect.</value>
     <comment>Gets the string to display in help that explains what the '--diagnostic-port' option does.</comment>

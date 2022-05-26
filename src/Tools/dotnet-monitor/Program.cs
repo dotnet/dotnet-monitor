@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 SharedOptions()
             };
 
-            command.SetHandler<CancellationToken, string[], string[], bool, string, bool, bool, bool>(CollectCommandHandler.Invoke, command.Children.OfType<IValueDescriptor>().ToArray());
+            command.SetHandler<CancellationToken, string[], string[], bool, string, bool, bool, bool, string>(CollectCommandHandler.Invoke, command.Children.OfType<IValueDescriptor>().ToArray());
  
             return command;
         }
@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ShowSources()
             };
 
-            showCommand.SetHandler<string[], string[], bool, string, bool, bool, bool, ConfigDisplayLevel, bool>(ConfigShowCommandHandler.Invoke, showCommand.Children.OfType<IValueDescriptor>().ToArray());
+            showCommand.SetHandler<string[], string[], bool, string, bool, bool, bool, string, ConfigDisplayLevel, bool>(ConfigShowCommandHandler.Invoke, showCommand.Children.OfType<IValueDescriptor>().ToArray());
 
             Command configCommand = new Command(
                 name: "config",
@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static IEnumerable<Option> SharedOptions() => new Option[]
         {
-            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey(), NoHttpEgress()
+            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey(), NoHttpEgress(), ConfigurationFilePath()
         };
         
         private static Option Urls() =>
@@ -106,6 +106,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 description: Strings.HelpDescription_OptionDiagnosticPort)
             {
                 ArgumentHelpName = "diagnosticPort"
+            };
+
+        private static Option ConfigurationFilePath() =>
+            new Option<string>(
+                name: "--configuration-file-path",
+                description: Strings.HelpDescription_OptionConfigurationFilePath)
+            {
+                ArgumentHelpName = "configurationFilePath"
             };
 
         private static Option NoAuth() =>

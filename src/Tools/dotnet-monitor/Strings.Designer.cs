@@ -457,6 +457,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The fully qualified path and filename of the configuration file you&apos;d like to add to the list of configuration sources..
+        /// </summary>
+        internal static string HelpDescription_OptionConfigurationFilePath {
+            get {
+                return ResourceManager.GetString("HelpDescription_OptionConfigurationFilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The fully qualified path and filename of the diagnostic port to which runtime instances can connect..
         /// </summary>
         internal static string HelpDescription_OptionDiagnosticPort {

@@ -54,6 +54,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             { WebHostDefaults.ServerUrlsKey, nameof(ConfigurationLevel.UserSettings) }
         };
 
+        private static readonly Dictionary<string, string> UserProvidedFileSettingsContent = new(StringComparer.Ordinal)
+        {
+            { WebHostDefaults.ServerUrlsKey, nameof(ConfigurationLevel.UserProvidedFileSettings) }
+        };
+
         // This needs to be updated and kept in order for any future configuration sections
         private static readonly List<string> OrderedConfigurationKeys = new()
         {
@@ -79,6 +84,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private const string SampleConfigurationsDirectory = "SampleConfigurations";
 
+        private const string UserProvidedSettingsFileName = "UserSpecifiedFile.json";
+
         private readonly ITestOutputHelper _outputHelper;
 
         public ConfigurationTests(ITestOutputHelper outputHelper)
@@ -101,11 +108,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(ConfigurationLevel.SharedSettings)]
         [InlineData(ConfigurationLevel.SharedKeyPerFile)]
         [InlineData(ConfigurationLevel.MonitorEnvironment)]
+        [InlineData(ConfigurationLevel.UserProvidedFileSettings)]
         public void ConfigurationOrderingTest(ConfigurationLevel level)
         {
             using TemporaryDirectory contentRootDirectory = new(_outputHelper);
             using TemporaryDirectory sharedConfigDir = new(_outputHelper);
             using TemporaryDirectory userConfigDir = new(_outputHelper);
+            using TemporaryDirectory userProvidedConfigDir = new(_outputHelper);
+
+            string userProvidedConfigFullPath = Path.Combine(userProvidedConfigDir.FullName, UserProvidedSettingsFileName);
 
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
@@ -113,7 +124,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
+                UserConfigDirectory = userConfigDir.FullName,
+                UserProvidedConfigFilePath = level >= ConfigurationLevel.UserProvidedFileSettings ? userProvidedConfigFullPath : null
             };
             if (level >= ConfigurationLevel.HostBuilderSettingsUrl)
             {
@@ -146,6 +158,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 // This is a key-per-file file in the shared configuration directory. This configuration
                 // is typically used when mounting secrets from a Docker volume.
                 File.WriteAllText(Path.Combine(sharedConfigDir.FullName, WebHostDefaults.ServerUrlsKey), nameof(ConfigurationLevel.SharedKeyPerFile));
+            }
+            if (level >= ConfigurationLevel.UserProvidedFileSettings)
+            {
+                // This is the settings.json file in the shared configuration directory that is visible
+                // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
+                string userSpecifiedFileSettingsContent = JsonSerializer.Serialize(UserProvidedFileSettingsContent);
+
+                File.WriteAllText(userProvidedConfigFullPath, userSpecifiedFileSettingsContent);
             }
 
             // Create the initial host builder.
@@ -232,6 +252,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             using TemporaryDirectory contentRootDirectory = new(_outputHelper);
             using TemporaryDirectory sharedConfigDir = new(_outputHelper);
             using TemporaryDirectory userConfigDir = new(_outputHelper);
+            using TemporaryDirectory userProvidedConfigDir = new(_outputHelper);
+
+            string userProvidedConfigFullPath = Path.Combine(userProvidedConfigDir.FullName, UserProvidedSettingsFileName);
 
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
@@ -239,13 +262,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
+                UserConfigDirectory = userConfigDir.FullName,
+                UserProvidedConfigFilePath = userProvidedConfigFullPath
             };
 
             settings.Urls = new[] { "https://localhost:44444" }; // This corresponds to the value in SampleConfigurations/URLs.json
 
             // This is the settings.json file in the user profile directory.
-            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("Egress.json", "CollectionRules.json", "CollectionRuleDefaults.json", "Templates.json"));
+            File.WriteAllText(userProvidedConfigFullPath, ConstructSettingsJson("Egress.json"));
+
+            // This is the settings.json file in the user profile directory.
+            File.WriteAllText(Path.Combine(userConfigDir.FullName, "settings.json"), ConstructSettingsJson("CollectionRules.json", "CollectionRuleDefaults.json", "Templates.json"));
 
             // This is the appsettings.json file that is normally next to the entrypoint assembly.
             // The location of the appsettings.json is determined by the content root in configuration.
@@ -434,7 +461,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             UserSettings,
             SharedSettings,
             SharedKeyPerFile,
-            MonitorEnvironment
+            MonitorEnvironment,
+            UserProvidedFileSettings
         }
     }
 }
