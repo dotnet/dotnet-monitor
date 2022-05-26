@@ -125,7 +125,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 IFileInfo declFile = _fileSystem.GetFileInfo(_declarationPath);
                 if (!declFile.Exists || declFile.IsDirectory)
                 {
-                    LogBrokenDeclaration(null);
                     ExtensionException.ThrowNotFound(_extensionName);
                 }
 
