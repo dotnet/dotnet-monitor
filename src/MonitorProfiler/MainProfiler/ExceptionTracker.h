@@ -47,7 +47,7 @@ private:
     // ExceptionThrown frame logging utilities
     HRESULT LogExceptionThrownFrame(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo);
     static HRESULT STDMETHODCALLTYPE LogExceptionThrownFrameCallback(
-        FunctionID funcId,
+        FunctionID functionId,
         UINT_PTR ip,
         COR_PRF_FRAME_INFO frameInfo,
         ULONG32 contextSize,

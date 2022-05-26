@@ -87,7 +87,6 @@ HRESULT ExceptionTracker::ExceptionThrown(ThreadID threadId, ObjectID objectId)
     // Exception throwing is common; don't pay to calculate method name if it won't be logged.
     if (_logger->IsEnabled(LogLevel::Debug))
     {
-        FunctionID functionId = 0;
         hr = _corProfilerInfo->DoStackSnapshot(
             threadId,
             LogExceptionThrownFrameCallback,
@@ -372,7 +371,7 @@ HRESULT ExceptionTracker::LogExceptionThrownFrame(FunctionID functionId, COR_PRF
 }
 
 HRESULT ExceptionTracker::LogExceptionThrownFrameCallback(
-    FunctionID funcId,
+    FunctionID functionId,
     UINT_PTR ip,
     COR_PRF_FRAME_INFO frameInfo,
     ULONG32 contextSize,
@@ -388,7 +387,7 @@ HRESULT ExceptionTracker::LogExceptionThrownFrameCallback(
 
     HRESULT hr = S_OK;
 
-    IfFailRet(exceptionTracker->LogExceptionThrownFrame(funcId, frameInfo));
+    IfFailRet(exceptionTracker->LogExceptionThrownFrame(functionId, frameInfo));
 
     // Cancel stack snapshot callbacks after the top frame.
     return S_FALSE;
