@@ -28,7 +28,7 @@ public:
     /// <summary>
     /// Adds profiler event masks needed by class.
     /// </summary>
-    static void AddProfilerEventMask(DWORD& eventsLow);
+    void AddProfilerEventMask(DWORD& eventsLow);
 
     // Exceptions
     HRESULT ExceptionThrown(ThreadID threadId, ObjectID objectId);

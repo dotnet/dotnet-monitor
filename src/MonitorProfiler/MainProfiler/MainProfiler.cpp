@@ -48,7 +48,7 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
     ThreadDataManager::AddProfilerEventMask(eventsLow);
-    ExceptionTracker::AddProfilerEventMask(eventsLow);
+    _exceptionTracker->AddProfilerEventMask(eventsLow);
 
     IfFailRet(m_pCorProfilerInfo->SetEventMask2(
         eventsLow,

@@ -69,7 +69,10 @@ ExceptionTracker::ExceptionTracker(
 
 void ExceptionTracker::AddProfilerEventMask(DWORD& eventsLow)
 {
-    eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_STACK_SNAPSHOT;
+    if (_logger->IsEnabled(LogLevel::Debug))
+    {
+        eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_STACK_SNAPSHOT;
+    }
 }
 
 HRESULT ExceptionTracker::ExceptionThrown(ThreadID threadId, ObjectID objectId)
