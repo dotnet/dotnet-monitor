@@ -123,7 +123,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions>(this IServiceCollection services, string actionName)
             where TFactory : class, ICollectionRuleActionFactory<TOptions>
-            where TOptions : class, new()
+            where TOptions : BaseRecordOptions, new()
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleActionFactoryProxy<TFactory, TOptions>>();

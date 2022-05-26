@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 #endif
 {
-    partial class CollectLogsOptions :
+    partial record class CollectLogsOptions :
         IValidatableObject
     {
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
