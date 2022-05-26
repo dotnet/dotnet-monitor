@@ -49,8 +49,6 @@ HRESULT ThreadDataManager::ClearException(ThreadID threadId)
     shared_ptr<ThreadData> threadData;
     IfFailLogRet(GetThreadData(threadId, threadData));
 
-    lock_guard<mutex> lock(threadData->GetMutex());
-
     threadData->ClearException();
 
     return S_OK;
@@ -66,8 +64,6 @@ HRESULT ThreadDataManager::GetException(ThreadID threadId, bool* hasException, F
     shared_ptr<ThreadData> threadData;
     IfFailLogRet(GetThreadData(threadId, threadData));
 
-    lock_guard<mutex> lock(threadData->GetMutex());
-
     IfFailLogRet(threadData->GetException(hasException, catcherFunctionId));
 
     return *hasException ? S_FALSE : S_OK;
@@ -80,8 +76,6 @@ HRESULT ThreadDataManager::SetHasException(ThreadID threadId)
     shared_ptr<ThreadData> threadData;
     IfFailLogRet(GetThreadData(threadId, threadData));
 
-    lock_guard<mutex> lock(threadData->GetMutex());
-
     IfFailLogRet(threadData->SetHasException());
 
     return S_OK;
@@ -93,8 +87,6 @@ HRESULT ThreadDataManager::SetExceptionCatcherFunction(ThreadID threadId, Functi
 
     shared_ptr<ThreadData> threadData;
     IfFailLogRet(GetThreadData(threadId, threadData));
-
-    lock_guard<mutex> lock(threadData->GetMutex());
 
     IfFailLogRet(threadData->SetExceptionCatcherFunction(catcherFunctionId));
 

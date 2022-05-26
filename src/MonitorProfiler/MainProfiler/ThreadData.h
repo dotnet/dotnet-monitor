@@ -5,7 +5,6 @@
 #pragma once
 
 #include <memory>
-#include <mutex>
 #include "corhlpr.h"
 #include "corprof.h"
 #include "../Logging/Logger.h"
@@ -21,13 +20,10 @@ public:
 private:
     FunctionID _exceptionCatcherFunctionId;
     bool _hasException;
-    std::mutex _mutex;
     std::shared_ptr<ILogger> _logger;
 
 public:
     ThreadData(const std::shared_ptr<ILogger>& logger);
-
-    std::mutex& GetMutex();
 
     // Exceptions
     void ClearException();

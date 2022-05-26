@@ -16,11 +16,6 @@ ThreadData::ThreadData(const shared_ptr<ILogger>& logger) :
 {
 }
 
-mutex& ThreadData::GetMutex()
-{
-    return _mutex;
-}
-
 void ThreadData::ClearException()
 {
     _exceptionCatcherFunctionId = NoFunctionId;
