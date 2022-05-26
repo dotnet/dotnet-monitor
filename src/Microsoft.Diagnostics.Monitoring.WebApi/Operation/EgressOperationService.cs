@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,11 +48,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 CancellationToken token = linkedTokenSource.Token;
                 token.ThrowIfCancellationRequested();
 
-                var result = await egressRequest.EgressOperation.ExecuteAsync(_serviceProvider, token);
+                try
+                {
+                    var result = await egressRequest.EgressOperation.ExecuteAsync(_serviceProvider, token);
 
-                //It is possible that this operation never completes, due to infinite duration operations.
+                    //It is possible that this operation never completes, due to infinite duration operations.
 
-                _operationsStore.CompleteOperation(egressRequest.OperationId, result);
+                    _operationsStore.CompleteOperation(egressRequest.OperationId, result);
+                }
+                catch (Exception e) when (!(e is OperationCanceledException))
+                {
+                    _operationsStore.CompleteOperation(egressRequest.OperationId, ExecutionResult<EgressResult>.Failed(e.ToProblemDetails((int)HttpStatusCode.BadRequest)));
+                }
             }
         }
     }
