@@ -529,12 +529,13 @@
     <value>The location for temporary dump files. Defaults to the temp folder.</value>
     <comment>The description provided for the DumpTempFolder parameter on StorageOptions.</comment>
   </data>
-  <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
-    <value>The {0} field or the {1} field is required.</value>
-    <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
-2 Format Parameters:
+  <data name="ErrorMessage_CredentialsMissing" xml:space="preserve">
+    <value>The {0} field, {1} field, or {2} field is required.</value>
+    <comment>Gets the format string for rejecting validation due to 3 missing fields where at least one is required.
+3 Format Parameters:
 0. fieldNameOne: The name of the first field that is missing
-1. fieldNameTwo: The name of the second field that is missing</comment>
+1. fieldNameTwo: The name of the second field that is missing
+2. fieldNameThree: The name of the third field that is missing</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectLogsOptions_Format" xml:space="preserve">
     <value>The format of the logs artifact.</value>
@@ -676,5 +677,8 @@
   <data name="DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan" xml:space="preserve">
     <value>The threshold level the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.</value>
     <comment>The description provided for the LessThan parameter on ThreadpoolQueueLengthOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId" xml:space="preserve">
+    <value>Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage.</value>
   </data>
 </root>

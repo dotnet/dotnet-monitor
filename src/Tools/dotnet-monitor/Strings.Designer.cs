@@ -142,11 +142,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SharedAccessSignature or AccountKey must be specified..
+        ///   Looks up a localized string similar to SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified..
         /// </summary>
-        internal static string ErrorMessage_EgressMissingSasOrKey {
+        internal static string ErrorMessage_EgressMissingCredentials {
             get {
-                return ResourceManager.GetString("ErrorMessage_EgressMissingSasOrKey", resourceCulture);
+                return ResourceManager.GetString("ErrorMessage_EgressMissingCredentials", resourceCulture);
             }
         }
         

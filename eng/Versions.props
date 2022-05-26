@@ -67,6 +67,7 @@
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp70Version>
   </PropertyGroup>
   <PropertyGroup Label="Manual">
+    <AzureIdentityVersion>1.6.0</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.12.0</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.10.0</AzureStorageQueuesVersion>
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
