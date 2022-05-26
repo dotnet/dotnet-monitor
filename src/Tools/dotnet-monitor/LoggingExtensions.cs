@@ -4,7 +4,6 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
-using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;

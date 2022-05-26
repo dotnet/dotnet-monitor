@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
@@ -13,16 +13,41 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\dotnet-monitor\Strings.Designer.cs" Link="ExternalRefs\Strings.Designer.cs" />
+    <Compile Include="..\dotnet-monitor\LoggingEventIds.cs" Link="ExternalRefs\LoggingEventIds.cs" />
+    <Compile Include="..\dotnet-monitor\LoggingExtensions.cs" Link="ExternalRefs\LoggingExtensions.cs" />
+    <Compile Include="..\dotnet-monitor\ExperienceSurvey.cs" Link="ExternalRefs\ExperienceSurvey.cs" />
+    <Compile Include="..\dotnet-monitor\ConfigurationKeys.cs" Link="ExternalRefs\ConfigurationKeys.cs" />
+    <Compile Include="..\dotnet-monitor\RootOptions.cs" Link="ExternalRefs\RootOptions.cs" />
     <Compile Include="..\dotnet-monitor\Egress\EgressProvider.cs" Link="ExternalRefs\EgressProvider.cs" />
     <Compile Include="..\dotnet-monitor\Egress\IEgressProvider.cs" Link="ExternalRefs\IEgressProvider.cs" />
     <Compile Include="..\dotnet-monitor\Egress\EgressProviderTypes.cs" Link="ExternalRefs\EgressProviderTypes.cs" />
     <Compile Include="..\dotnet-monitor\Egress\EgressException.cs" Link="ExternalRefs\EgressException.cs" />
+    <Compile Include="..\dotnet-monitor\Egress\EgressArtifactSettings.cs" Link="ExternalRefs\EgressArtifactSettings.cs" />
     <Compile Include="..\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProvider.cs" Link="ExternalRefs\AzureBlobEgressProvider.cs" />
     <Compile Include="..\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProvider.AutoFlushStream.cs" Link="ExternalRefs\AzureBlobEgressProvider.AutoFlushStream.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\AzureBlobEgressProviderOptions.cs" Link="ExternalRefs\AzureBlobEgressProviderOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\IEgressProviderCommonOptions.cs" Link="ExternalRefs\IEgressProviderCommonOptions.cs" />
     <Compile Include="..\dotnet-monitor\Egress\Extension\EgressArtifactResult.cs" Link="ExternalRefs\EgressArtifactResult.cs" />
-    <Compile Include="..\dotnet-monitor\Egress\EgressArtifactSettings.cs" Link="ExternalRefs\EgressArtifactSettings.cs" />
+    <Compile Include="..\dotnet-monitor\Extensibility\ExtensionRepository.cs" Link="ExternalRefs\ExtensionRepository.cs" />
+    <Compile Include="..\dotnet-monitor\Extensibility\IExtension.cs" Link="ExternalRefs\IExtension.cs" />
+    <Compile Include="..\dotnet-monitor\Extensibility\IExtensionResult.cs" Link="ExternalRefs\IExtensionResult.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Auth\AuthConstants.cs" Link="ExternalRefs\AuthConstants.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\AzureBlobEgressProviderOptions.cs" Link="ExternalRefs\AzureBlobEgressProviderOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\AuthenticationOptions.cs" Link="ExternalRefs\AuthenticationOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\GlobalCounterOptions.cs" Link="ExternalRefs\GlobalCounterOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\GlobalCounterOptionsDefaults.cs" Link="ExternalRefs\GlobalCounterOptionsDefaults.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\CorsConfigurationOptions.cs" Link="ExternalRefs\CorsConfigurationOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\DiagnosticPortOptions.cs" Link="ExternalRefs\DiagnosticPortOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\DiagnosticPortOptionsDefaults.cs" Link="ExternalRefs\DiagnosticPortOptionsDefaults.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\DiagnosticPortConnectionMode.cs" Link="ExternalRefs\DiagnosticPortConnectionMode.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\EgressOptions.cs" Link="ExternalRefs\EgressOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\MetricsOptions.cs" Link="ExternalRefs\MetricsOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\MetricsOptionsDefaults.cs" Link="ExternalRefs\MetricsOptionsDefaults.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\MonitorApiKeyOptions.cs" Link="ExternalRefs\MonitorApiKeyOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\FileSystemEgressProviderOptions.cs" Link="ExternalRefs\FileSystemEgressProviderOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\StorageOptions.cs" Link="ExternalRefs\StorageOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\ProcessFilterOptions.cs" Link="ExternalRefs\ProcessFilterOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\IEgressProviderCommonOptions.cs" Link="ExternalRefs\IEgressProviderCommonOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\OptionsDisplayStrings.Designer.cs" Link="ExternalRefs\OptionsDisplayStrings.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
