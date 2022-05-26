@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
+using System.Collections.Generic;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -10,6 +12,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         public CollectionRuleState CurrentState { get; private set; }
         public string CurrentStateReason { get; private set; }
+
+        public Queue<DateTime> ExecutionTimestamps { get; private set; }
 
         public CollectionRuleStateHolder(CollectionRuleStateHolder other)
         {

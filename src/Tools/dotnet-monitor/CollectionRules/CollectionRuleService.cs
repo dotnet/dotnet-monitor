@@ -254,14 +254,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             CollectionRuleLimitsOptions limitsOptions = pipeline.Context.Options.Limits;
 
             DateTime currentTime = pipeline.Context.Clock.UtcNow.UtcDateTime;
-            Queue<DateTime> timestampsCopy = pipeline.DequeueOldTimestamps(limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
+            pipeline.DequeueOldTimestamps(limitsOptions?.ActionCountSlidingWindowDuration, currentTime);
 
             CollectionRuleStateHolder stateHolderCopy = pipeline.GetStateHolderCopy();
 
             int actionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
 
             // This feels a bit clunky, but it should resolve the problem of the front-end modifying our stateHolder...
-            if (pipeline.CheckForThrottling(actionCountLimit, timestampsCopy.Count, limitsOptions?.ActionCountSlidingWindowDuration))
+            if (pipeline.CheckForThrottling(actionCountLimit, limitsOptions?.ActionCountSlidingWindowDuration))
             {
                 stateHolderCopy.BeginThrottled();
             }
@@ -276,13 +276,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 StateReason = stateHolderCopy.CurrentStateReason,
                 LifetimeOccurrences = pipeline.AllExecutionTimestamps.Count,
                 ActionCountLimit = actionCountLimit,
-                SlidingWindowOccurrences = timestampsCopy.Count,
+                SlidingWindowOccurrences = pipeline.ExecutionTimestamps.Count,
                 ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration,
             };
 
             if (description.State != CollectionRuleState.Finished)
             {
-                description.SlidingWindowDurationCountdown = GetSWDCountdown(timestampsCopy, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
+                description.SlidingWindowDurationCountdown = GetSWDCountdown(pipeline.ExecutionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
                 description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline.PipelineStartTime, limitsOptions?.RuleDuration, currentTime);
             }
 
