@@ -241,6 +241,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientI" +
+                        "d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The URI of the Azure queue account..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri {
@@ -1262,6 +1272,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             }
         }
         
+        ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
+        /// </summary>
+        public static string ErrorMessage_CredentialsMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CredentialsMissing", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to A value is required for the process filter..
         /// </summary>
@@ -1304,15 +1322,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_StatusCodesRegularExpressionDoesNotMatch {
             get {
                 return ResourceManager.GetString("ErrorMessage_StatusCodesRegularExpressionDoesNotMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} field or the {1} field is required..
-        /// </summary>
-        public static string ErrorMessage_TwoFieldsMissing {
-            get {
-                return ResourceManager.GetString("ErrorMessage_TwoFieldsMissing", resourceCulture);
             }
         }
     }

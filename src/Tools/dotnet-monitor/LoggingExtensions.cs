@@ -334,6 +334,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.ExperienceSurvey.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ExperienceSurvey);
+                
+        private static readonly Action<ILogger, Exception> _diagnosticPortNotInListenModeForCollectionRules =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.DiagnosticPortNotInListenModeForCollectionRules.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortNotInListenModeForCollectionRules);
 
         private static readonly Action<ILogger, string, Exception> _extensionProbeStart =
             LoggerMessage.Define<string>(
@@ -697,6 +703,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExperienceSurvey(this ILogger logger)
         {
             _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
+        }
+        
+        public static void DiagnosticPortNotInListenModeForCollectionRules(this ILogger logger)
+        {
+            _diagnosticPortNotInListenModeForCollectionRules(logger, null);
         }
 
         public static void ExtensionProbeStart(this ILogger logger, string extensionName)

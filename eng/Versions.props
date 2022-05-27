@@ -43,48 +43,48 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22225.6</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22276.1</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.5.22252.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.5.22252.1</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.6.22276.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.6.22276.1</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22229.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22229.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22276.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22276.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
-    <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0-preview.5.22226.6</MicrosoftNETCoreAppRuntimewinx64Version>
-    <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-preview.5.22226.6</VSRedistCommonNetCoreSharedFrameworkx6470Version>
+    <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0-preview.5.22274.8</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-preview.5.22274.8</VSRedistCommonNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.321801</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.327301</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
-    <MicrosoftNETCoreApp31Version>3.1.22</MicrosoftNETCoreApp31Version>
+    <MicrosoftNETCoreApp31Version>3.1.25</MicrosoftNETCoreApp31Version>
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
-    <MicrosoftNETCoreApp50Version>5.0.13</MicrosoftNETCoreApp50Version>
+    <MicrosoftNETCoreApp50Version>5.0.17</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
-    <MicrosoftNETCoreApp60Version>6.0.1</MicrosoftNETCoreApp60Version>
-    <MicrosoftAspNetCoreApp60Version>6.0.1</MicrosoftAspNetCoreApp60Version>
+    <MicrosoftNETCoreApp60Version>6.0.5</MicrosoftNETCoreApp60Version>
+    <MicrosoftAspNetCoreApp60Version>6.0.5</MicrosoftAspNetCoreApp60Version>
     <MicrosoftNETCoreApp70Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp70Version>
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp70Version>
   </PropertyGroup>
   <PropertyGroup Label="Manual">
-    <AzureStorageBlobsVersion>12.10.0</AzureStorageBlobsVersion>
-    <AzureStorageQueuesVersion>12.8.0</AzureStorageQueuesVersion>
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.0</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>6.0.0</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <AzureIdentityVersion>1.6.0</AzureIdentityVersion>
+    <AzureStorageBlobsVersion>12.12.0</AzureStorageBlobsVersion>
+    <AzureStorageQueuesVersion>12.10.0</AzureStorageQueuesVersion>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>6.0.5</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
-    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.0</MicrosoftExtensionsConfigurationKeyPerFileVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.0</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
-    <MicrosoftIdentityModelTokensVersion>6.11.1</MicrosoftIdentityModelTokensVersion>
+    <MicrosoftIdentityModelTokensVersion>6.17.0</MicrosoftIdentityModelTokensVersion>
     <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
-    <SystemCommandLineVersion>2.0.0-beta1.20468.1</SystemCommandLineVersion>
-    <SystemIdentityModelTokensJwtVersion>6.11.1</SystemIdentityModelTokensJwtVersion>
+    <SystemCommandLineVersion>2.0.0-beta3.22173.1</SystemCommandLineVersion>
+    <SystemIdentityModelTokensJwtVersion>6.17.0</SystemIdentityModelTokensJwtVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
-    <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>
     <!-- Third-party references -->
-    <NJsonSchemaVersion>10.3.11</NJsonSchemaVersion>
+    <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
     <XunitAssertVersion>2.4.1</XunitAssertVersion>
   </PropertyGroup>
