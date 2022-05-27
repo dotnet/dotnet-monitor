@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -40,11 +41,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             CollectionRuleActionBase<CollectGCDumpOptions>
         {
             private readonly IServiceProvider _serviceProvider;
+            private readonly OperationTrackerService _operationTrackerService;
 
             public CollectGCDumpAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectGCDumpOptions options)
                 : base(endpointInfo, options)
             {
                 _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+                _operationTrackerService = _serviceProvider.GetRequiredService<OperationTrackerService>();
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
@@ -58,10 +61,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_GCDump, EndpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (stream, token) =>
+                    async (stream, token) =>
                     {
+                        using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
                         startCompleteSource.TrySetResult(null);
-                        return GCDumpUtilities.CaptureGCDumpAsync(EndpointInfo, stream, token);
+                        await GCDumpUtilities.CaptureGCDumpAsync(EndpointInfo, stream, token);
                     },
                     egress,
                     gcdumpFileName,
