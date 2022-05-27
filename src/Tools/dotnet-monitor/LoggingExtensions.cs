@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -333,6 +335,90 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ExperienceSurvey);
 
+        private static readonly Action<ILogger, string, Exception> _extensionProbeStart =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExtensionProbeStart.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionProbeStart);
+
+        private static readonly Action<ILogger, string, string, Exception> _extensionProbeRepo =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ExtensionProbeRepo.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionProbeRepo);
+
+        private static readonly Action<ILogger, string, string, Exception> _extensionProbeSucceeded =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ExtensionProbeSucceeded.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionProbeSucceeded);
+
+        private static readonly Action<ILogger, string, Exception> _extensionProbeFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExtensionProbeFailed.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_ExtensionProbeFailed);
+
+        private static readonly Action<ILogger, string, string, Exception> _extensionStarting =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ExtensionStarting.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionStarting);
+
+        private static readonly Action<ILogger, string, int, Exception> _extensionConfigured =
+            LoggerMessage.Define<string, int>(
+                eventId: LoggingEventIds.ExtensionConfigured.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionConfigured);
+
+        private static readonly Action<ILogger, int, Exception> _extensionEgressPayloadCompleted =
+            LoggerMessage.Define<int>(
+                eventId: LoggingEventIds.ExtensionEgressPayloadCompleted.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionEgressPayloadCompleted);
+
+        private static readonly Action<ILogger, int, int, Exception> _extensionExited =
+            LoggerMessage.Define<int, int>(
+                eventId: LoggingEventIds.ExtensionExited.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionExited);
+
+        private static readonly Action<ILogger, int, string, Exception> _extensionOutputMessage =
+            LoggerMessage.Define<int, string>(
+                eventId: LoggingEventIds.ExtensionOutputMessage.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionOutputMessage);
+
+        private static readonly Action<ILogger, int, string, Exception> _extensionErrorMessage =
+            LoggerMessage.Define<int, string>(
+                eventId: LoggingEventIds.ExtensionErrorMessage.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExtensionErrorMessage);
+
+        private static readonly Action<ILogger, string, string, string, Exception> _extensionNotOfType =
+            LoggerMessage.Define<string, string, string>(
+                eventId: LoggingEventIds.ExtensionNotOfType.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_ExtensionNotOfType);
+
+        private static readonly Action<ILogger, string, string, Exception> _extensionDeclarationFileBroken =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ExtensionDeclarationFileBroken.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_ExtensionDeclarationFileBroken);
+
+        private static readonly Action<ILogger, string, string, string, Exception> _extensionProgramMissing =
+            LoggerMessage.Define<string, string, string>(
+                eventId: LoggingEventIds.ExtensionProgramMissing.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_ExtensionProgramMissing);
+
+        private static readonly Action<ILogger, int, string, string, Exception> _extensionMalformedOutput =
+            LoggerMessage.Define<int, string, string>(
+                eventId: LoggingEventIds.ExtensionMalformedOutput.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_ExtensionMalformedOutput);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -611,6 +697,76 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExperienceSurvey(this ILogger logger)
         {
             _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
+        }
+
+        public static void ExtensionProbeStart(this ILogger logger, string extensionName)
+        {
+            _extensionProbeStart(logger, extensionName, null);
+        }
+
+        public static void ExtensionProbeRepo(this ILogger logger, string extensionName, ExtensionRepository extensionRepository)
+        {
+            _extensionProbeRepo(logger, extensionName, extensionRepository.DisplayName, null);
+        }
+
+        public static void ExtensionProbeSucceeded(this ILogger logger, string extensionName, IExtension extension)
+        {
+            _extensionProbeSucceeded(logger, extensionName, extension.DisplayName, null);
+        }
+
+        public static void ExtensionProbeFailed(this ILogger logger, string extensionName)
+        {
+            _extensionProbeFailed(logger, extensionName, null);
+        }
+
+        public static void ExtensionStarting(this ILogger logger, string extensionPath, string arguments)
+        {
+            _extensionStarting(logger, extensionPath, arguments, null);
+        }
+
+        public static void ExtensionConfigured(this ILogger logger, string extensionPath, int pid)
+        {
+            _extensionConfigured(logger, extensionPath, pid, null);
+        }
+
+        public static void ExtensionEgressPayloadCompleted(this ILogger logger, int pid)
+        {
+            _extensionEgressPayloadCompleted(logger, pid, null);
+        }
+
+        public static void ExtensionExited(this ILogger logger, int pid, int exitCode)
+        {
+            _extensionExited(logger, pid, exitCode, null);
+        }
+
+        public static void ExtensionOutputMessage(this ILogger logger, int pid, string message)
+        {
+            _extensionOutputMessage(logger, pid, message, null);
+        }
+
+        public static void ExtensionErrorMessage(this ILogger logger, int pid, string message)
+        {
+            _extensionErrorMessage(logger, pid, message, null);
+        }
+
+        public static void ExtensionNotOfType(this ILogger logger, string extensionName, IExtension extension, Type desiredType)
+        {
+            _extensionNotOfType(logger, extensionName, extension.DisplayName, desiredType.Name, null);
+        }
+
+        public static void ExtensionDeclarationFileBroken(this ILogger logger, string extensionName, string extensionDeclarationFile, Exception ex)
+        {
+            _extensionDeclarationFileBroken(logger, extensionName, extensionDeclarationFile, ex);
+        }
+
+        public static void ExtensionProgramMissing(this ILogger logger, string extensionName, string extensionDeclarationFile, string program)
+        {
+            _extensionProgramMissing(logger, extensionName, extensionDeclarationFile, program, null);
+        }
+
+        public static void ExtensionMalformedOutput(this ILogger logger, int pid, string message, Type resultType)
+        {
+            _extensionMalformedOutput(logger, pid, message, resultType.Name, null);
         }
     }
 }

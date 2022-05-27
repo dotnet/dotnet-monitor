@@ -20,13 +20,17 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -178,6 +182,56 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class
         {
             return services.Configure<T>(configuration.GetSection(key));
+        }
+
+        public static IServiceCollection ConfigureExtensions(this IServiceCollection services, HostBuilderSettings settings)
+        {
+            // Add the services to discover extensions
+            services.AddSingleton<ExtensionDiscoverer>();
+
+            string nextToMeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string progDataFolder = settings.SharedConfigDirectory;
+            string settingsFolder = settings.UserConfigDirectory;
+
+            if (string.IsNullOrWhiteSpace(progDataFolder))
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (string.IsNullOrWhiteSpace(settingsFolder))
+            {
+                throw new InvalidOperationException();
+            }
+
+            // Add the folders we search to get extensions from
+            services.AddExtensionRepository(1000, nextToMeFolder);
+            services.AddExtensionRepository(2000, progDataFolder);
+            services.AddExtensionRepository(3000, settingsFolder);
+
+            return services;
+        }
+
+        public static IServiceCollection AddExtensionRepository(this IServiceCollection services, int priority, string path)
+        {
+            const string ExtensionFolder = "extensions";
+
+            string targetExtensionFolder = Path.Combine(path, ExtensionFolder);
+
+            if (Directory.Exists(targetExtensionFolder))
+            {
+                Func<IServiceProvider, ExtensionRepository> createDelegate =
+                    (IServiceProvider serviceProvider) =>
+                    {
+                        PhysicalFileProvider fileProvider = new(targetExtensionFolder);
+                        ILoggerFactory logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+                        FolderExtensionRepository newRepo = new(fileProvider, logger, priority, targetExtensionFolder);
+                        return newRepo;
+                    };
+
+                services.AddSingleton<ExtensionRepository>(createDelegate);
+            }
+
+            return services;
         }
 
         public static IServiceCollection ConfigureEgress(this IServiceCollection services)

@@ -8,7 +8,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public const string Authentication = nameof(RootOptions.Authentication);
 
-        public const string CollectionRules = nameof(CollectionRules);
+        public const string CollectionRules = nameof(RootOptions.CollectionRules);
 
         public const string MonitorApiKey = nameof(AuthenticationOptions.MonitorApiKey);
 
@@ -22,12 +22,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public const string Storage = nameof(RootOptions.Storage);
         
-        public const string DefaultProcess = nameof(DefaultProcess);
+        public const string DefaultProcess = nameof(RootOptions.DefaultProcess);
 
         public const string Logging = nameof(Logging);
 
         public const string GlobalCounter = nameof(RootOptions.GlobalCounter);
 
         public const string CollectionRuleDefaults = nameof(RootOptions.CollectionRuleDefaults);
+
+        public const string InternalHostBuilderSettings = nameof(InternalHostBuilderSettings);
     }
 }

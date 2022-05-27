@@ -70,7 +70,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         QueueDoesNotExist = 57,
         QueueOptionsPartiallySet = 58,
         WritingMessageToQueueFailed = 59,
-        ExperienceSurvey = 60
+        ExperienceSurvey = 60,
+        ExtensionProbeStart = 61,
+        ExtensionProbeRepo = 62,
+        ExtensionProbeSucceeded = 63,
+        ExtensionProbeFailed = 64,
+        ExtensionStarting = 65,
+        ExtensionConfigured = 66,
+        ExtensionEgressPayloadCompleted = 67,
+        ExtensionExited = 68,
+        ExtensionOutputMessage = 69,
+        ExtensionErrorMessage = 70,
+        ExtensionNotOfType = 71,
+        ExtensionDeclarationFileBroken = 72,
+        ExtensionProgramMissing = 73,
+        ExtensionMalformedOutput = 74,
     }
 
     internal static class LoggingEventIdsExtensions
