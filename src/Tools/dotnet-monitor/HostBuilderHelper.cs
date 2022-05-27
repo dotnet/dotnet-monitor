@@ -69,17 +69,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
                     string userFilePath = settings.UserProvidedConfigFilePath;
 
-                    if (!string.IsNullOrEmpty(userFilePath))
+                    if (File.Exists(userFilePath))
                     {
-                        using (FileStream filestream = new FileStream(userFilePath, FileMode.Open))
+                        try
                         {
-                            if (filestream.CanRead)
-                            {
-                                builder.AddJsonFile(userFilePath, optional: true, reloadOnChange: true);
-                            }
+                            File.OpenRead(userFilePath).Dispose(); // If this succeeds, we have read-permissions
+                            builder.AddJsonFile(userFilePath, optional: true, reloadOnChange: true);
                         }
-
-                        builder.AddJsonFile(settings.UserProvidedConfigFilePath, optional: true, reloadOnChange: true);
+                        catch (Exception)
+                        {
+                            // Don't currently log to tell the user that their configuration file was not loaded
+                        }
                     }
                 })
                 //Note this is necessary for config only because Kestrel configuration
