@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ExtensionProbeStart = 62,
         ExtensionProbeRepo = 63,
         ExtensionProbeSucceeded = 64,
-        ExtensionProbeFailed = 65
+        ExtensionProbeFailed = 65,
         ExtensionStarting = 66,
         ExtensionConfigured = 67,
         ExtensionEgressPayloadCompleted = 68,
