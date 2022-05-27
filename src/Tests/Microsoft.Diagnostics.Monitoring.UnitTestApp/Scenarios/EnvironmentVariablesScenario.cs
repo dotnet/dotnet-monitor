@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new(TestAppScenarios.EnvironmentVariables.Name);
-            command.Handler = CommandHandler.Create((Func<CancellationToken, Task<int>>)ExecuteAsync);
+            command.SetHandler((Func<CancellationToken, Task<int>>)ExecuteAsync);
             return command;
         }
 

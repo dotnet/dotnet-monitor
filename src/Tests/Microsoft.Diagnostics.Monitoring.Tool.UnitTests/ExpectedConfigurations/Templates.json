@@ -1,0 +1,40 @@
+{
+  "CollectionRuleActions": {
+    "ActionTemplate1": {
+      "Settings": {
+        "Egress": "artifacts"
+      },
+      "Type": "CollectGCDump"
+    },
+    "ActionTemplate2": {
+      "Settings": {
+        "Egress": "monitorBlob",
+        "Profile": "Cpu"
+      },
+      "Type": "CollectTrace"
+    }
+  },
+  "CollectionRuleFilters": {
+    "FilterTemplate": {
+      "Key": "ProcessName",
+      "MatchType": "Exact",
+      "Value": "FirstWebApp1"
+    }
+  },
+  "CollectionRuleLimits": {
+    "LimitTemplate": {
+      "ActionCount": "1",
+      "ActionCountSlidingWindowDuration": "00:00:30",
+      "RuleDuration": "00:05:00"
+    }
+  },
+  "CollectionRuleTriggers": {
+    "TriggerTemplate": {
+      "Settings": {
+        "RequestCount": "20",
+        "SlidingWindowDuration": "00:01:00"
+      },
+      "Type": "AspNetRequestCount"
+    }
+  }
+}

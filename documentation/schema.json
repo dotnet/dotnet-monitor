@@ -127,6 +127,17 @@
           "$ref": "#/definitions/CollectionRuleDefaultsOptions"
         }
       ]
+    },
+    "Templates": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/TemplateOptions"
+        }
+      ]
     }
   },
   "definitions": {
@@ -977,6 +988,13 @@
           ],
           "description": "The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map."
         },
+        "ManagedIdentityClientId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage."
+        },
         "ContainerName": {
           "type": "string",
           "description": "The name of the container to which the blob will be egressed. If egressing to the root container, use the \"$root\" sentinel value.",
@@ -1263,6 +1281,52 @@
           ],
           "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process.",
           "format": "time-span"
+        }
+      }
+    },
+    "TemplateOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "CollectionRuleFilters": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Process filters used to determine to which process(es) the collection rule is applied. All filters must match. If no filters are specified, the rule is applied to all discovered processes.",
+          "additionalProperties": {
+            "$ref": "#/definitions/ProcessFilterDescriptor"
+          }
+        },
+        "CollectionRuleTriggers": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "The trigger to use to monitor for a condition in the target process.",
+          "additionalProperties": {
+            "$ref": "#/definitions/CollectionRuleTriggerOptions"
+          }
+        },
+        "CollectionRuleActions": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "The list of actions to be executed when the trigger raises its notification.",
+          "additionalProperties": {
+            "$ref": "#/definitions/CollectionRuleActionOptions"
+          }
+        },
+        "CollectionRuleLimits": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "The set of limits to constrain the execution of the rule and its components.",
+          "additionalProperties": {
+            "$ref": "#/definitions/CollectionRuleLimitsOptions"
+          }
         }
       }
     },

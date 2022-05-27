@@ -13,7 +13,8 @@
       "SharedAccessSignature": ":NOT PRESENT:",
       "AccountKey": ":NOT PRESENT:",
       "SharedAccessSignatureName": ":NOT PRESENT:",
-      "AccountKeyName": "MonitorBlobAccountKey" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      "AccountKeyName": "MonitorBlobAccountKey" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "ManagedIdentityClientId": ":NOT PRESENT:"
     }
   },
   "FileSystem": {

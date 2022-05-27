@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Azure;
+using Azure.Identity;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -75,6 +76,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             {
                 throw CreateException(ex);
             }
+            catch (CredentialUnavailableException ex)
+            {
+                throw CreateException(ex);
+            }
         }
 
         public override async Task<string> EgressAsync(
@@ -135,6 +140,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 throw CreateException(innerException);
             }
             catch (RequestFailedException ex)
+            {
+                throw CreateException(ex);
+            }
+            catch (CredentialUnavailableException ex)
             {
                 throw CreateException(ex);
             }
@@ -226,9 +235,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 serviceClient = new QueueServiceClient(accountUri, credential, clientOptions);
             }
+            else if (!string.IsNullOrEmpty(options.ManagedIdentityClientId))
+            {
+                // Remove Query in case SAS token was specified
+                Uri accountUri = GetQueueAccountUri(options, out _);
+
+                DefaultAzureCredential credential = CreateManagedIdentityCredentials(options.ManagedIdentityClientId);
+
+                serviceClient = new QueueServiceClient(accountUri, credential, clientOptions);
+            }
             else
             {
-                throw CreateException(Strings.ErrorMessage_EgressMissingSasOrKey);
+                throw CreateException(Strings.ErrorMessage_EgressMissingCredentials);
             }
 
             QueueClient queueClient = serviceClient.GetQueueClient(options.QueueName);
@@ -266,9 +284,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 serviceClient = new BlobServiceClient(accountUri, credential);
             }
+            else if (!string.IsNullOrEmpty(options.ManagedIdentityClientId))
+            {
+                // Remove Query in case SAS token was specified
+                Uri accountUri = GetBlobAccountUri(options, out _);
+
+                DefaultAzureCredential credential = CreateManagedIdentityCredentials(options.ManagedIdentityClientId);
+
+                serviceClient = new BlobServiceClient(accountUri, credential);
+            }
             else
             {
-                throw CreateException(Strings.ErrorMessage_EgressMissingSasOrKey);
+                throw CreateException(Strings.ErrorMessage_EgressMissingCredentials);
             }
 
             BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(options.ContainerName);
@@ -327,6 +354,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             {
                 return Strings.ErrorMessage_EgressAzureFailedGeneric;
             }
+        }
+
+        private static DefaultAzureCredential CreateManagedIdentityCredentials(string clientId)
+        {
+            var credential = new DefaultAzureCredential(
+                new DefaultAzureCredentialOptions
+                {
+                    ManagedIdentityClientId = clientId,
+                    ExcludeAzureCliCredential = true,
+                    ExcludeAzurePowerShellCredential = true,
+                    ExcludeEnvironmentCredential = true,
+                    ExcludeInteractiveBrowserCredential = true,
+                    ExcludeSharedTokenCacheCredential = true,
+                    ExcludeVisualStudioCodeCredential = true,
+                    ExcludeVisualStudioCredential = true
+                });
+
+            return credential;
         }
     }
 }

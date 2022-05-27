@@ -159,9 +159,9 @@
     <value>File system egress failed.</value>
     <comment>Gets a string similar to "File system egress failed.".</comment>
   </data>
-  <data name="ErrorMessage_EgressMissingSasOrKey" xml:space="preserve">
-    <value>SharedAccessSignature or AccountKey must be specified.</value>
-    <comment>Gets a string similar to "SharedAccessSignature or AccountKey must be specified.".</comment>
+  <data name="ErrorMessage_EgressMissingCredentials" xml:space="preserve">
+    <value>SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified.</value>
+    <comment>Gets a string similar to "SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified.".</comment>
   </data>
   <data name="ErrorMessage_EgressProviderDoesNotExist" xml:space="preserve">
     <value>Egress provider '{0}' does not exist.</value>
@@ -285,6 +285,12 @@
     <comment>Gets the format string for rejecting a config param because it is not a jwk type that is accepted.
 1 Format Parameter:
 0. configName: The variable name for the provided string.</comment>
+  </data>
+  <data name="ErrorMessage_TemplateNotFound" xml:space="preserve">
+    <value>Could not find a template with the name: {0}</value>
+    <comment>Gets the format string for template resolution failure.
+1 Format Parameter:
+0. templateName: The name of the template that could not be found.</comment>
   </data>
   <data name="ErrorMessage_TriggerFactoryFailed" xml:space="preserve">
     <value>The '{0}' trigger factory failed to create a trigger instance.</value>
@@ -480,6 +486,9 @@
   <data name="LogFormatString_CollectionRuleUnmatchedFilters" xml:space="preserve">
     <value>Collection rule '{ruleName}' filters do not match the process.</value>
   </data>
+  <data name="LogFormatString_DiagnosticPortNotInListenModeForCollectionRules" xml:space="preserve">
+    <value>When using collection rules, the diagnostic port must be in 'Listen' mode. Please correct the configuration and restart dotnet monitor.</value>
+  </data>
   <data name="LogFormatString_DiagnosticRequestCancelled" xml:space="preserve">
     <value>Cancelled waiting for diagnostic response from runtime in process {processId}.</value>
   </data>
@@ -558,41 +567,41 @@
   </data>
   <data name="LogFormatString_ExtensionConfigured" xml:space="preserve">
     <value>Extension '{extensionPath}' started process {pid}, configuration sent.</value>
-    <comment>Gets the format string that is printed in the 66:ExtensionConfigured event.
+    <comment>Gets the format string that is printed in the 67:ExtensionConfigured event.
 2 Format Parameters:
 1. extensionPath: Path to the executable extension
 2. pid: Process ID of the started process</comment>
   </data>
   <data name="LogFormatString_ExtensionDeclarationFileBroken" xml:space="preserve">
     <value>The extension '{extensionName}' declaration file '{extensionDeclarationFile}' is missing or incorrectly formed.</value>
-    <comment>Gets the format string that is printed in the 72:ExtensionDeclarationFileBroken event.
+    <comment>Gets the format string that is printed in the 73:ExtensionDeclarationFileBroken event.
 2 Format Parameters:
 1. extensionName The name of the extension or moniker
 2. extensionDeclarationFile: The constant name of the file where the extension is declared</comment>
   </data>
   <data name="LogFormatString_ExtensionEgressPayloadCompleted" xml:space="preserve">
     <value>Payload egress complete to extension process {pid}, waiting for process exit.</value>
-    <comment>Gets the format string that is printed in the 67:ExtensionEgressPayloadCompleted event.
+    <comment>Gets the format string that is printed in the 68:ExtensionEgressPayloadCompleted event.
 1 Format Parameter:
 1. pid: Process ID of the extension process</comment>
   </data>
   <data name="LogFormatString_ExtensionErrorMessage" xml:space="preserve">
     <value>Extension process {pid} wrote error: {message}</value>
-    <comment>Gets the format string that is printed in the 70:ExtensionErrorMessage event.
+    <comment>Gets the format string that is printed in the 71:ExtensionErrorMessage event.
 2 Format Parameters:
 1. pid: Process ID of the started process
 2. message: the line output message from the process written to standard error</comment>
   </data>
   <data name="LogFormatString_ExtensionExited" xml:space="preserve">
     <value>Extension process {pid} exited with code {exitCode}.</value>
-    <comment>Gets the format string that is printed in the 68:ExtensionExited event.
+    <comment>Gets the format string that is printed in the 69:ExtensionExited event.
 2 Format Parameters:
 1. pid: Process ID of the started process
 2. exitCode: Exit code of the extension process</comment>
   </data>
   <data name="LogFormatString_ExtensionMalformedOutput" xml:space="preserve">
     <value>Extension process {pid} wrote output message '{message}'. This message was parsed correctly as '{resultType}' but contained malformed data or was missing critical data to be considered valid.</value>
-    <comment>Gets the format string that is printed in the 74:ExtensionMalformedOutput event.
+    <comment>Gets the format string that is printed in the 75:ExtensionMalformedOutput event.
 2 Format Parameters:
 1. pid: Process ID of the started process
 2. message: the line output message from the process written to standard out that was parsed correctly but was missing critical data.
@@ -600,7 +609,7 @@
   </data>
   <data name="LogFormatString_ExtensionNotOfType" xml:space="preserve">
     <value>The extension'{extensionName} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type.</value>
-    <comment>Gets the format string that is printed in the 71:ExtensionNotOfType event.
+    <comment>Gets the format string that is printed in the 72:ExtensionNotOfType event.
 3 Format Parameters:
 1. extensionName: The name of the extension or moniker
 2. extension: The friendly name of the extension from the IExtension interface
@@ -608,40 +617,40 @@
   </data>
   <data name="LogFormatString_ExtensionOutputMessage" xml:space="preserve">
     <value>Extension process {pid} wrote output: {message}</value>
-    <comment>Gets the format string that is printed in the 69:ExtensionOutputMessage event.
+    <comment>Gets the format string that is printed in the 70:ExtensionOutputMessage event.
 2 Format Parameters:
 1. pid: Process ID of the started process
 2. message: the line output message from the process written to standard out</comment>
   </data>
   <data name="LogFormatString_ExtensionProbeFailed" xml:space="preserve">
     <value>Failed to locate extension '{extensionName}'.</value>
-    <comment>Gets the format string that is printed in the 64:ExtensionProbeFailed event.
+    <comment>Gets the format string that is printed in the 65:ExtensionProbeFailed event.
 1 Format Parameter:
 1. extensionName: The name of the extension or moniker</comment>
   </data>
   <data name="LogFormatString_ExtensionProbeRepo" xml:space="preserve">
     <value>Searching {extensionRepository} for extension '{extensionName}'.</value>
-    <comment>Gets the format string that is printed in the 62:ExtensionProbeRepo event.
+    <comment>Gets the format string that is printed in the 63:ExtensionProbeRepo event.
 1 Format Parameter:
 1. extensionName: The name of the extension or moniker
 2. extensionRepository: The friendly name of the extension repository</comment>
   </data>
   <data name="LogFormatString_ExtensionProbeStart" xml:space="preserve">
     <value>Attempting to locate extension '{extensionName}'.</value>
-    <comment>Gets the format string that is printed in the 61:ExtensionProbeStart event.
+    <comment>Gets the format string that is printed in the 62:ExtensionProbeStart event.
 1 Format Parameter:
 1. extensionName: The name of the extension or moniker</comment>
   </data>
   <data name="LogFormatString_ExtensionProbeSucceeded" xml:space="preserve">
     <value>Found extension '{extensionName}' at {extension}.</value>
-    <comment>Gets the format string that is printed in the 63:ExtensionProbeSucceeded event.
+    <comment>Gets the format string that is printed in the 64:ExtensionProbeSucceeded event.
 1 Format Parameter:
 1. extensionName: The name of the extension or moniker
 2. extension: The friendly name of the extension from the IExtension interface</comment>
   </data>
   <data name="LogFormatString_ExtensionProgramMissing" xml:space="preserve">
     <value>The extension '{extensionName}''s program defined in '{extensionDeclarationFile}' is missing the program to execute '{program}'.</value>
-    <comment>Gets the format string that is printed in the 73:ExtensionProgramMissing event.
+    <comment>Gets the format string that is printed in the 74:ExtensionProgramMissing event.
 3 Format Parameters:
 1. extensionName The name of the extension or moniker
 2. extensionDeclarationFile: The constant name of the file where the extension is declared
@@ -649,7 +658,7 @@
   </data>
   <data name="LogFormatString_ExtensionStarting" xml:space="preserve">
     <value>Starting extension '{extensionPath} {cmdArgs}'.</value>
-    <comment>Gets the format string that is printed in the 65:ExtensionStarting event.
+    <comment>Gets the format string that is printed in the 66:ExtensionStarting event.
 2 Format Parameters:
 1. extensionPath: Path to the executable extension
 2. cmdArgs: the commandline arguments being passed to the executable</comment>

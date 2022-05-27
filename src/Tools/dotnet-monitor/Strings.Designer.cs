@@ -151,11 +151,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SharedAccessSignature or AccountKey must be specified..
+        ///   Looks up a localized string similar to SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified..
         /// </summary>
-        internal static string ErrorMessage_EgressMissingSasOrKey {
+        internal static string ErrorMessage_EgressMissingCredentials {
             get {
-                return ResourceManager.GetString("ErrorMessage_EgressMissingSasOrKey", resourceCulture);
+                return ResourceManager.GetString("ErrorMessage_EgressMissingCredentials", resourceCulture);
             }
         }
         
@@ -354,6 +354,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_RejectedJwk {
             get {
                 return ResourceManager.GetString("ErrorMessage_RejectedJwk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a template with the name: {0}.
+        /// </summary>
+        internal static string ErrorMessage_TemplateNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_TemplateNotFound", resourceCulture);
             }
         }
         
@@ -777,6 +786,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_CollectionRuleUnmatchedFilters {
             get {
                 return ResourceManager.GetString("LogFormatString_CollectionRuleUnmatchedFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When using collection rules, the diagnostic port must be in &apos;Listen&apos; mode. Please correct the configuration and restart dotnet monitor..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticPortNotInListenModeForCollectionRules {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticPortNotInListenModeForCollectionRules", resourceCulture);
             }
         }
         
