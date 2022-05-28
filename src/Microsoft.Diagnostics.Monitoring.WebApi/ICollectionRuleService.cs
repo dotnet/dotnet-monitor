@@ -22,5 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             CancellationToken token);
 
         Dictionary<string, CollectionRuleDescription> GetCollectionRulesDescriptions(IEndpointInfo endpointInfo);
+
+        CollectionRuleDetailedDescription GetCollectionRuleDetailedDescription(string collectionRuleName, IEndpointInfo endpointInfo);
     }
 }

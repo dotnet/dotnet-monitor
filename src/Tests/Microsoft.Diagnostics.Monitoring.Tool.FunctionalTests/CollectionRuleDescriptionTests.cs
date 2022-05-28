@@ -36,7 +36,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
 #if NET5_0_OR_GREATER
-        private const string DefaultRuleName = "FunctionalTestRule";
+        private const string NonStartupRuleName = "NonStartupTestRule";
+        private const string StartupRuleName = "StartupTestRule";
 
         // These should be identical to the messages found in Strings.resx
         private const string FinishedStartup = "The collection rule will no longer trigger because the Startup trigger only executes once.";
@@ -63,28 +64,43 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     await ruleCompletedTask;
 
-                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptions = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    // Validate detailed description for the Startup rule
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptions = new();
-
-                    expectedDescriptions.Add(DefaultRuleName, new() {
+                    CollectionRuleDetailedDescription actualDetailedDescription = await client.GetCollectionRuleDetailedDescriptionAsync(StartupRuleName, await runner.ProcessIdTask, null, null);
+                    CollectionRuleDetailedDescription expectedDetailedDescription = new()
+                    {
                         ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.Finished,
                         StateReason = FinishedStartup
-                    });
+                    };
+                    Assert.Equal(expectedDetailedDescription, actualDetailedDescription);
 
-                    ValidateCollectionRuleDescriptions(collectionRuleDescriptions, expectedDescriptions);
+                    // Validate brief descriptions for all rules
+
+                    Dictionary<string, CollectionRuleDescription> actualDescriptions = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions = new()
+                    {
+                        {
+                            StartupRuleName, new CollectionRuleDescription()
+                            {
+                                State = expectedDetailedDescription.State,
+                                StateReason = expectedDetailedDescription.StateReason
+                            }
+                        }
+                    };
+
+                    ValidateCollectionRuleDescriptions(expectedDescriptions, actualDescriptions);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
                 configureTool: runner =>
                 {
-                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(StartupRuleName)
                         .SetStartupTrigger();
 
-                    ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
+                    ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(StartupRuleName);
                 });
         }
 
@@ -111,19 +127,34 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.SpinWait.Name,
                 appValidate: async (runner, client) =>
                 {
-                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptionsBefore = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    // Validate detailed description for the NonStartup rule before spinning the CPU
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptionsBefore = new();
-
-                    expectedDescriptionsBefore.Add(DefaultRuleName, new() {
+                    CollectionRuleDetailedDescription actualDetailedDescription_Before = await client.GetCollectionRuleDetailedDescriptionAsync(NonStartupRuleName, await runner.ProcessIdTask, null, null);
+                    CollectionRuleDetailedDescription expectedDetailedDescription_Before = new()
+                    {
                         ActionCountLimit = ExpectedActionCountLimit,
                         LifetimeOccurrences = 0,
                         SlidingWindowOccurrences = 0,
                         State = CollectionRuleState.Running,
                         StateReason = Running
-                    });
+                    };
+                    Assert.Equal(expectedDetailedDescription_Before, actualDetailedDescription_Before);
 
-                    ValidateCollectionRuleDescriptions(collectionRuleDescriptionsBefore, expectedDescriptionsBefore);
+                    // Validate brief descriptions for all rules before spinning the CPU
+
+                    Dictionary<string, CollectionRuleDescription> actualDescriptions_Before = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_Before = new()
+                    {
+                        {
+                            NonStartupRuleName, new CollectionRuleDescription()
+                            {
+                                State = expectedDetailedDescription_Before.State,
+                                StateReason = expectedDetailedDescription_Before.StateReason
+                            }
+                        }
+                    };
+
+                    ValidateCollectionRuleDescriptions(expectedDescriptions_Before, actualDescriptions_Before);
 
                     await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StartSpin);
 
@@ -131,23 +162,38 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StopSpin);
 
-                    Dictionary<string, CollectionRuleDescription> collectionRuleDescriptionsAfter = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    // Validate detailed description for the NonStartup rule after spinning the CPU
 
-                    Dictionary<string, CollectionRuleDescription> expectedDescriptionsAfter = new();
-
-                    expectedDescriptionsAfter.Add(DefaultRuleName, new() {
+                    CollectionRuleDetailedDescription actualDetailedDescription_After = await client.GetCollectionRuleDetailedDescriptionAsync(NonStartupRuleName, await runner.ProcessIdTask, null, null);
+                    CollectionRuleDetailedDescription expectedDetailedDescription_After = new()
+                    {
                         ActionCountLimit = ExpectedActionCountLimit,
                         LifetimeOccurrences = 1,
                         SlidingWindowOccurrences = 1,
                         State = CollectionRuleState.Finished,
                         StateReason = FinishedActionCount
-                    });
+                    };
+                    Assert.Equal(expectedDetailedDescription_After, actualDetailedDescription_After);
 
-                    ValidateCollectionRuleDescriptions(collectionRuleDescriptionsAfter, expectedDescriptionsAfter);
+                    // Validate brief descriptions for all rules after spinning the CPU
+
+                    Dictionary<string, CollectionRuleDescription> actualDescriptions_After = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_After = new()
+                    {
+                        {
+                            NonStartupRuleName, new CollectionRuleDescription()
+                            {
+                                State = expectedDetailedDescription_After.State,
+                                StateReason = expectedDetailedDescription_After.StateReason
+                            }
+                        }
+                    };
+
+                    ValidateCollectionRuleDescriptions(expectedDescriptions_After, actualDescriptions_After);
                 },
                 configureTool: runner =>
                 {
-                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(NonStartupRuleName)
                         .SetEventCounterTrigger(options =>
                         {
                             // cpu usage greater that 5% for 2 seconds
@@ -159,11 +205,149 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent)
                         .SetActionLimits(count: ExpectedActionCountLimit);
 
-                    ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
+                    ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(NonStartupRuleName);
                 });
         }
 
-        private void ValidateCollectionRuleDescriptions(Dictionary<string, CollectionRuleDescription> actualCollectionRuleDescriptions, Dictionary<string, CollectionRuleDescription> expectedCollectionRuleDescriptions)
+        /// <summary>
+        /// Validates the CollectionRuleDescriptions for two rules running on the same process
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRuleDescription_MultipleRulesTest(DiagnosticPortConnectionMode mode)
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+            string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
+            string ExpectedFileContent = Guid.NewGuid().ToString("N");
+
+            const int ExpectedActionCountLimit = 1;
+
+            Task ruleCompletedTask_Startup = null;
+            Task ruleCompletedTask_NonStartup = null;
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.SpinWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await ruleCompletedTask_Startup;
+
+                    // Validate detailed description for the NonStartup rule
+                    CollectionRuleDetailedDescription actualDetailedDescription_NonStartup = await client.GetCollectionRuleDetailedDescriptionAsync(NonStartupRuleName, await runner.ProcessIdTask, null, null);
+                    CollectionRuleDetailedDescription expectedDetailedDescription_NonStartup = new()
+                    {
+                        ActionCountLimit = ExpectedActionCountLimit,
+                        LifetimeOccurrences = 0,
+                        SlidingWindowOccurrences = 0,
+                        State = CollectionRuleState.Running,
+                        StateReason = Running
+                    };
+                    Assert.Equal(expectedDetailedDescription_NonStartup, actualDetailedDescription_NonStartup);
+
+                    // Validate detailed description for the Startup rule
+
+                    CollectionRuleDetailedDescription actualDetailedDescription_Startup = await client.GetCollectionRuleDetailedDescriptionAsync(StartupRuleName, await runner.ProcessIdTask, null, null);
+                    CollectionRuleDetailedDescription expectedDetailedDescription_Startup = new()
+                    {
+                        ActionCountLimit = CollectionRuleLimitsOptionsDefaults.ActionCount,
+                        LifetimeOccurrences = 1,
+                        SlidingWindowOccurrences = 1,
+                        State = CollectionRuleState.Finished,
+                        StateReason = FinishedStartup
+                    };
+                    Assert.Equal(expectedDetailedDescription_Startup, actualDetailedDescription_Startup);
+
+                    // Validate brief descriptions for all rules
+
+                    Dictionary<string, CollectionRuleDescription> actualDescriptions = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions = new()
+                    {
+                        {
+                            NonStartupRuleName, new CollectionRuleDescription()
+                            {
+                                State = expectedDetailedDescription_NonStartup.State,
+                                StateReason = expectedDetailedDescription_NonStartup.StateReason
+                            }
+                        },
+                        {
+                            StartupRuleName, new CollectionRuleDescription()
+                            {
+                                State = expectedDetailedDescription_Startup.State,
+                                StateReason = expectedDetailedDescription_Startup.StateReason
+                            }
+                        }
+                    };
+
+                    ValidateCollectionRuleDescriptions(expectedDescriptions, actualDescriptions);
+
+                    await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StartSpin);
+
+                    await ruleCompletedTask_NonStartup;
+
+                    await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StopSpin);
+
+                    // Validate detailed description for the NonStartup rule after spinning the CPU
+
+                    CollectionRuleDetailedDescription actualDetailedDescription_After = await client.GetCollectionRuleDetailedDescriptionAsync(NonStartupRuleName, await runner.ProcessIdTask, null, null);
+                    CollectionRuleDetailedDescription expectedDetailedDescription_After = new()
+                    {
+                        ActionCountLimit = ExpectedActionCountLimit,
+                        LifetimeOccurrences = 1,
+                        SlidingWindowOccurrences = 1,
+                        State = CollectionRuleState.Finished,
+                        StateReason = FinishedActionCount
+                    };
+                    Assert.Equal(expectedDetailedDescription_After, actualDetailedDescription_After);
+
+                    // Validate brief descriptions for all rules after spinning the CPU
+
+                    Dictionary<string, CollectionRuleDescription> actualDescriptions_After = await client.GetCollectionRulesDescriptionAsync(await runner.ProcessIdTask, null, null);
+                    Dictionary<string, CollectionRuleDescription> expectedDescriptions_After = new()
+                    {
+                        {
+                            NonStartupRuleName, new CollectionRuleDescription()
+                            {
+                                State = expectedDetailedDescription_After.State,
+                                StateReason = expectedDetailedDescription_After.StateReason
+                            }
+                        },
+                        {
+                            StartupRuleName, new CollectionRuleDescription()
+                            {
+                                State = expectedDetailedDescription_Startup.State,
+                                StateReason = expectedDetailedDescription_Startup.StateReason
+                            }
+                        }
+                    };
+
+                    ValidateCollectionRuleDescriptions(expectedDescriptions_After, actualDescriptions_After);
+
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(NonStartupRuleName)
+                        .SetEventCounterTrigger(options =>
+                        {
+                            // cpu usage greater that 5% for 2 seconds
+                            options.ProviderName = "System.Runtime";
+                            options.CounterName = "cpu-usage";
+                            options.GreaterThan = 5;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
+                        })
+                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent)
+                        .SetActionLimits(count: ExpectedActionCountLimit);
+
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(StartupRuleName)
+                        .SetStartupTrigger();
+
+                    ruleCompletedTask_Startup = runner.WaitForCollectionRuleCompleteAsync(StartupRuleName);
+                    ruleCompletedTask_NonStartup = runner.WaitForCollectionRuleCompleteAsync(NonStartupRuleName);
+                });
+        }
+
+        private void ValidateCollectionRuleDescriptions(Dictionary<string, CollectionRuleDescription> expectedCollectionRuleDescriptions, Dictionary<string, CollectionRuleDescription> actualCollectionRuleDescriptions)
         {
             Assert.Equal(actualCollectionRuleDescriptions.Keys.Count, expectedCollectionRuleDescriptions.Keys.Count);
 

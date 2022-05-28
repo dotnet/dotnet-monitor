@@ -2,7 +2,16 @@
 
 ## CollectionRuleDescription
 
-Object describing the current state of a collection rule for the executing instance of `dotnet monitor`.
+Object describing the basic state of a collection rule for the executing instance of `dotnet monitor`.
+
+| Name | Type | Description |
+|---|---|---|
+| State | [CollectionRuleState](#CollectionRuleState) | Indicates what state the collection rule is in for the current process. |
+| StateReason | string | Human-readable explanation for the current state of the collection rule. |
+
+## CollectionRuleDetailedDescription
+
+Object describing the detailed state of a collection rule for the executing instance of `dotnet monitor`.
 
 | Name | Type | Description |
 |---|---|---|

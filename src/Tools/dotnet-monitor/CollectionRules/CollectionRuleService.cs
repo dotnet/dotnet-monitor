@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -11,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
@@ -241,12 +244,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             Dictionary<string, CollectionRuleDescription> collectionRulesDescriptions = new();
 
-            foreach (IEndpointInfo key in _containersMap.Keys.Where(x => x == endpointInfo))
+            if (_containersMap.TryGetValue(endpointInfo, out CollectionRuleContainer container))
             {
-                _containersMap[key].Pipelines.ForEach(pipeline => collectionRulesDescriptions.Add(pipeline.Context.Name, GetCollectionRuleDescription(pipeline)));
+                container.Pipelines.ForEach(pipeline => collectionRulesDescriptions.Add(pipeline.Context.Name, GetCollectionRuleDescription(pipeline)));
             }
 
             return collectionRulesDescriptions;
+        }
+
+        public CollectionRuleDetailedDescription GetCollectionRuleDetailedDescription(string collectionRuleName, IEndpointInfo endpointInfo)
+        {
+            if (_containersMap.TryGetValue(endpointInfo, out CollectionRuleContainer container))
+            {
+                IEnumerable<CollectionRulePipeline> pipelines = container.Pipelines.Where(pipeline => pipeline.Context.Name.Equals(collectionRuleName));
+
+                if (null == pipelines || !pipelines.Any())
+                {
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_CollectionRuleNotFound, collectionRuleName));
+                }
+
+                return GetCollectionRuleDetailedDescription(pipelines.First());
+            }
+
+            return null;
         }
 
         internal static CollectionRuleDescription GetCollectionRuleDescription(CollectionRulePipeline pipeline)
@@ -274,14 +294,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 State = stateHolderCopy.CurrentState,
                 StateReason = stateHolderCopy.CurrentStateReason,
+            };
+
+            return description;
+        }
+
+        internal static CollectionRuleDetailedDescription GetCollectionRuleDetailedDescription(CollectionRulePipeline pipeline)
+        {
+            CollectionRuleDescription basicDescription = GetCollectionRuleDescription(pipeline);
+
+            CollectionRuleLimitsOptions limitsOptions = pipeline.Context.Options.Limits;
+
+            int actionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
+
+            CollectionRuleDetailedDescription description = new()
+            {
+                State = basicDescription.State,
+                StateReason = basicDescription.StateReason,
                 LifetimeOccurrences = pipeline.AllExecutionTimestamps.Count,
                 ActionCountLimit = actionCountLimit,
                 SlidingWindowOccurrences = pipeline.ExecutionTimestamps.Count,
-                ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration,
+                ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration
             };
 
             if (description.State != CollectionRuleState.Finished)
             {
+                DateTime currentTime = pipeline.Context.Clock.UtcNow.UtcDateTime;
+
                 description.SlidingWindowDurationCountdown = GetSWDCountdown(pipeline.ExecutionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
                 description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline.PipelineStartTime, limitsOptions?.RuleDuration, currentTime);
             }

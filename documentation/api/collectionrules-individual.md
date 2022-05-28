@@ -1,11 +1,11 @@
 # Collection Rules - Get
 
-Reports the state of the configured collection rules of a specific process.
+Reports the detailed state of the specified collection rule for a specific process.
 
 ## HTTP Route
 
 ```http
-GET /collectionrules?pid={pid}&uid={uid}&name={name} HTTP/1.1
+GET /collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -18,13 +18,14 @@ The default host address for these routes is `https://localhost:52323`. This rou
 
 | Name | In | Required | Type | Description |
 |---|---|---|---|---|
+| `collectionrulename` | path | true | string | The name of the collection rule for which a detailed description should be provided. |
 | `pid` | query | false | int | The ID of the process. |
 | `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `name` | query | false | string | The name of the process. |
 
 See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
-If none of `pid`, `uid`, or `name` are specified, a dump of the [default process](defaultprocess.md) will be captured. Attempting to capture a dump of the default process when the default process cannot be resolved will fail.
+If none of `pid`, `uid`, or `name` are specified, the detailed description of the collection rule for the [default process](defaultprocess.md) will be provided. Attempting to get the detailed description from the default process when the default process cannot be resolved will fail.
 
 ## Authentication
 
@@ -38,7 +39,7 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | Dictionary<string, [CollectionRuleDescription](definitions.md#CollectionRuleDescription)> | The detailed information about the current state of the configured collection rules. | `application/json` |
+| 200 OK | [CollectionRuleDetailedDescription](definitions.md#CollectionRuleDetailedDescription) | The detailed information about the current state of the specified collection rule. | `application/json` |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
@@ -67,16 +68,14 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "MyCollectionRule": {
-    "state":"Running",
-    "stateReason":"This collection rule is active and waiting for its triggering conditions to be satisfied.",
-    "lifetimeOccurrences":0,
-    "slidingWindowOccurrences":0,
-    "actionCountLimit":2,
-    "actionCountSlidingWindowDurationLimit":"00:01:00",
-    "slidingWindowDurationCountdown":null,
-    "ruleFinishedCountdown":"00:03:00"
-  }
+  "state":"Running",
+  "stateReason":"This collection rule is active and waiting for its triggering conditions to be satisfied.",
+  "lifetimeOccurrences":0,
+  "slidingWindowOccurrences":0,
+  "actionCountLimit":2,
+  "actionCountSlidingWindowDurationLimit":"00:01:00",
+  "slidingWindowDurationCountdown":null,
+  "ruleFinishedCountdown":"00:03:00"
 }
 ```
 
