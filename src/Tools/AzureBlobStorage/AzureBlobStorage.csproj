@@ -30,6 +30,13 @@
     <Compile Include="..\dotnet-monitor\Extensibility\ExtensionRepository.cs" Link="ExternalRefs\ExtensionRepository.cs" />
     <Compile Include="..\dotnet-monitor\Extensibility\IExtension.cs" Link="ExternalRefs\IExtension.cs" />
     <Compile Include="..\dotnet-monitor\Extensibility\IExtensionResult.cs" Link="ExternalRefs\IExtensionResult.cs" />
+    <Compile Include="..\dotnet-monitor\CollectionRules\Options\TemplateOptions.cs" Link="ExternalRefs\TemplateOptions.cs" />
+    <Compile Include="..\dotnet-monitor\CollectionRules\Options\CollectionRuleTriggerOptions.cs" Link="ExternalRefs\CollectionRuleTriggerOptions.cs" />
+    <Compile Include="..\dotnet-monitor\CollectionRules\Options\CollectionRuleOptionsConstants.cs" Link="ExternalRefs\CollectionRuleOptionsConstants.cs" />
+    <Compile Include="..\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptions.cs" Link="ExternalRefs\CollectionRuleActionOptions.cs" />
+    <Compile Include="..\dotnet-monitor\CollectionRules\Options\CollectionRuleActionOptionsDefaults.cs" Link="ExternalRefs\CollectionRuleActionOptionsDefaults.cs" />
+    <Compile Include="..\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptions.cs" Link="ExternalRefs\CollectionRuleLimitsOptions.cs" />
+    <Compile Include="..\dotnet-monitor\CollectionRules\Options\CollectionRuleLimitsOptionsDefaults.cs" Link="ExternalRefs\CollectionRuleLimitsOptionsDefaults.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Auth\AuthConstants.cs" Link="ExternalRefs\AuthConstants.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\AzureBlobEgressProviderOptions.cs" Link="ExternalRefs\AzureBlobEgressProviderOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\AuthenticationOptions.cs" Link="ExternalRefs\AuthenticationOptions.cs" />
@@ -51,6 +58,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
     <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
     <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />

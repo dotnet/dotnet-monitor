@@ -9,5 +9,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         public static string ErrorMessage_EgressMissingSasOrKey { get; internal set; }
         public static string ErrorMessage_EgressAzureFailedDetailed { get; internal set; }
         public static string ErrorMessage_EgressAzureFailedGeneric { get; internal set; }
+        public static string ErrorMessage_EgressMissingCredentials { get; internal set; }
     }
 }
