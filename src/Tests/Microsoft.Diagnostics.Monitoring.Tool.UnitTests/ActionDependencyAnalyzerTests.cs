@@ -24,6 +24,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class ActionDependencyAnalyzerTests
     {
+        private sealed class TestEndpointInfo : WebApi.EndpointInfoBase
+        {
+            public TestEndpointInfo(Guid runtimeInstanceCookie, int processId = 0, string commandLine = null, string operatingSystem = null, string processArchitecture = null)
+            {
+                ProcessId = processId;
+                RuntimeInstanceCookie = runtimeInstanceCookie;
+                CommandLine = commandLine;
+                OperatingSystem = operatingSystem;
+                ProcessArchitecture = processArchitecture;
+            }
+
+            public override int ProcessId { get; protected set; }
+            public override Guid RuntimeInstanceCookie { get; protected set; }
+            public override string CommandLine { get; protected set; }
+            public override string OperatingSystem { get; protected set; }
+            public override string ProcessArchitecture { get; protected set; }
+        }
+
         private readonly ITestOutputHelper _outputHelper;
         private static readonly TimeSpan TimeoutMs = TimeSpan.FromMilliseconds(500);
         private const string DefaultRuleName = nameof(ActionDependencyAnalyzerTests);
@@ -75,6 +93,39 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, loggingBuilder =>
             {
                 loggingBuilder.AddProvider(new TestLoggerProvider(record));
+            });
+        }
+
+        [Fact]
+        public async Task RuntimeIdReferenceTest()
+        {
+            PassThroughOptions settings = null;
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddPassThroughAction("a1", ActionOptionsDependencyAnalyzer.RuntimeIdReference, "test", "test")
+                    .SetStartupTrigger();
+
+                settings = (PassThroughOptions)options.Actions.Last().Settings;
+            }, host =>
+            {
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeoutMs);
+
+                CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+                ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
+
+                Guid instanceId = Guid.NewGuid();
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestEndpointInfo(instanceId), logger, clock);
+
+                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
+                PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
+
+                Assert.Equal(instanceId.ToString("D"), newSettings.Input1);
+
+            }, serviceCollection =>
+            {
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
             });
         }
     }

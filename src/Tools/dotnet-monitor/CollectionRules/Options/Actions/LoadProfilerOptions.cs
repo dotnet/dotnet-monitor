@@ -13,7 +13,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the <see cref="CollectionRules.Actions.LoadProfilerActionFactory.LoadProfilerAction"/> action.
     /// </summary>
     [DebuggerDisplay("LoadProfiler")]
-    internal sealed class LoadProfilerOptions
+#if SCHEMAGEN
+    [NJsonSchema.Annotations.JsonSchemaFlatten]
+#endif
+    internal sealed record class LoadProfilerOptions : BaseRecordOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

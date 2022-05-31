@@ -34,7 +34,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private const string SubstitutionPrefix = "$(";
         private const string SubstitutionSuffix = ")";
         private const string Separator = ".";
-        private const string ActionReferencePrefix = SubstitutionPrefix + "Actions" + Separator;
+        private const string ActionsReference = "Actions";
+        private const string ProcessInfoReference = "Process";
+        private static readonly string ActionReferencePrefix = FormattableString.Invariant($"{SubstitutionPrefix}{ActionsReference}{Separator}");
+        public static readonly string RuntimeIdReference = FormattableString.Invariant($"{SubstitutionPrefix}{ProcessInfoReference}{Separator}InstanceId{SubstitutionSuffix}");
 
         private readonly CollectionRuleContext _ruleContext;
 
@@ -112,18 +115,37 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public object SubstituteOptionValues(IDictionary<string, CollectionRuleActionResult> actionResults, int actionIndex, object settings)
         {
+            //Attempt to substitute context properties.
+            object originalSettings = settings;
+
+            foreach(PropertyInfo propertyInfo in GetPropertiesFromSettings(settings))
+            {
+                string originalPropertyValue = (string)propertyInfo.GetValue(settings);
+                //If we don't have an Endpoint info (such as test scenarios) we cannot perform this substitution.
+                if (string.IsNullOrEmpty(originalPropertyValue) || (_ruleContext.EndpointInfo == null))
+                {
+                    continue;
+                }
+
+                string replacement = originalPropertyValue.Replace(RuntimeIdReference, _ruleContext.EndpointInfo.RuntimeInstanceCookie.ToString("D"), StringComparison.Ordinal);
+
+                if (!ReferenceEquals(replacement, originalPropertyValue))
+                {
+                    if (!TryCloneSettings(originalSettings, ref settings))
+                    {
+                        return settings;
+                    }
+                    propertyInfo.SetValue(settings, replacement);
+                }
+            }
+            
             if (!_dependencies.TryGetValue(actionIndex, out Dictionary<string, PropertyDependency> properties))
             {
                 return settings;
             }
 
-            if (settings is ICloneable cloneable)
+            if (!TryCloneSettings(originalSettings, ref settings))
             {
-                settings = cloneable.Clone();
-            }
-            else
-            {
-                _ruleContext.Logger.ActionSettingsTokenizationNotSupported(settings.GetType().FullName);
                 return settings;
             }
 
@@ -162,6 +184,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return settings;
         }
 
+        private bool TryCloneSettings(object originalSettings, ref object settings)
+        {
+            if (originalSettings == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(originalSettings, settings))
+            {
+                if (originalSettings is BaseRecordOptions baseRecord)
+                {
+                    //Creates a copy using record's Clone method.
+                    settings = baseRecord with { };
+                    return true;
+                }
+                else
+                {
+                    _ruleContext.Logger.ActionSettingsTokenizationNotSupported(settings.GetType().FullName);
+                    settings = originalSettings;
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private void EnsureDependencies()
         {
             if (_dependencies == null)
@@ -177,7 +224,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private void EnsureDependencies(CollectionRuleActionOptions options, int actionIndex)
         {
-            foreach (PropertyInfo property in GetPropertiesFromSettings(options))
+            foreach (PropertyInfo property in GetDependencyPropertiesFromSettings(options))
             {
                 string originalValue = (string)property.GetValue(options.Settings);
                 string newValue = originalValue;
@@ -276,15 +323,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return true;
         }
 
-        private IEnumerable<PropertyInfo> GetPropertiesFromSettings(CollectionRuleActionOptions options) =>
+        private IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings(CollectionRuleActionOptions options)
+        {
+            return GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
+        }
+
+        private IEnumerable<PropertyInfo> GetPropertiesFromSettings(object settings, Predicate<PropertyInfo> predicate = null) =>
             //CONSIDER
             //In the future we may want to do additional substitutions, such as $(Environment.Value)
             //or $(Process.Id). We would likely remove the attribute in this case.
             //Note settings could be null, although we do not have any options like this currently.
-            options.Settings?.GetType()
+            settings?.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.PropertyType == typeof(string) &&
-                            p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any()) ??
+                .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true)) ??
             Enumerable.Empty<PropertyInfo>();
     }
 }

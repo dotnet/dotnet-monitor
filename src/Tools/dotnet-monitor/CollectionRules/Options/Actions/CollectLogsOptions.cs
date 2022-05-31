@@ -18,7 +18,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the CollectLogs action.
     /// </summary>
     [DebuggerDisplay("CollectLogs")]
-    internal sealed partial class CollectLogsOptions : IEgressProviderProperties
+#if SCHEMAGEN
+    [NJsonSchema.Annotations.JsonSchemaFlatten]
+#endif
+    internal sealed partial record class CollectLogsOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
