@@ -6,7 +6,7 @@
     <PackAsToolShimRuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</PackAsToolShimRuntimeIdentifiers>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Microsoft.Diagnostics.Monitoring.AzureStorage</RootNamespace>
+    <RootNamespace>Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <PublishToBlob>true</PublishToBlob>
