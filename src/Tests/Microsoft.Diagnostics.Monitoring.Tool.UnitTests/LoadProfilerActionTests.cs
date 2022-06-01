@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
@@ -29,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         // The value is determined BEFORE native build by the generation of the product version into the
         // _productversion.h header file.
         private const string ProductVersionEnvVarName = "DotnetMonitorProfiler_ProductVersion";
-        private const string MonitorProfilerInstanceIdEnvVarName = "DotnetMonitorProfiler_InstanceId";
+        private const string MonitorProfilerInstanceIdEnvVarName = "DotnetMonitorProfiler_RuntimeId";
 
         private readonly ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
@@ -58,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddSetEnvironmentVariableAction(MonitorProfilerInstanceIdEnvVarName, ActionOptionsDependencyAnalyzer.RuntimeIdReference)
+                    .AddSetEnvironmentVariableAction(MonitorProfilerInstanceIdEnvVarName, ConfigurationTokenParser.RuntimeIdReference)
                     .AddLoadProfilerAction(options =>
                     {
                         options.Path = profilerPath;
