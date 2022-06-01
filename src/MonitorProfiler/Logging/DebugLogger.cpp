@@ -5,13 +5,15 @@
 #include "DebugLogger.h"
 #include "LogLevelHelper.h"
 #include "../Environment/EnvironmentHelper.h"
-
+#include "NullLogger.h"
 using namespace std;
 
 DebugLogger::DebugLogger(const shared_ptr<IEnvironment>& pEnvironment)
 {
     // Try to get log level from environment
-    if (FAILED(EnvironmentHelper::GetDebugLoggerLevel(pEnvironment, m_level)))
+
+    EnvironmentHelper helper(pEnvironment, NullLogger::Instance);
+    if (FAILED(helper.GetDebugLoggerLevel(m_level)))
     {
         // Fallback to default level
         m_level = s_DefaultLevel;

@@ -13,7 +13,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the CollectGCDump action.
     /// </summary>
     [DebuggerDisplay("CollectGCDump")]
-    internal sealed partial class CollectGCDumpOptions : IEgressProviderProperties
+#if SCHEMAGEN
+    [NJsonSchema.Annotations.JsonSchemaFlatten]
+#endif
+    internal sealed partial record class CollectGCDumpOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
