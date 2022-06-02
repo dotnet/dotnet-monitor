@@ -31,15 +31,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
     /// </remarks>
     internal sealed class ActionOptionsDependencyAnalyzer
     {
-        private const string SubstitutionPrefix = "$(";
-        private const string SubstitutionSuffix = ")";
-        private const string Separator = ".";
         private const string ActionsReference = "Actions";
-        private const string ProcessInfoReference = "Process";
-        private static readonly string ActionReferencePrefix = FormattableString.Invariant($"{SubstitutionPrefix}{ActionsReference}{Separator}");
-        public static readonly string RuntimeIdReference = FormattableString.Invariant($"{SubstitutionPrefix}{ProcessInfoReference}{Separator}InstanceId{SubstitutionSuffix}");
+        private static readonly string ActionReferencePrefix = FormattableString.Invariant($"{ConfigurationTokenParser.SubstitutionPrefix}{ActionsReference}{ConfigurationTokenParser.Separator}");
 
         private readonly CollectionRuleContext _ruleContext;
+        private readonly ConfigurationTokenParser _tokenParser;
 
         //Use action index instead of name, since it's possible for an unnamed action to have named dependencies.
         private Dictionary<int, Dictionary<string, PropertyDependency>> _dependencies;
@@ -78,19 +74,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             public int EndIndex { get; }
 
             public string GetActionResultToken() => string.Concat(ActionReferencePrefix,
-                Action.Name, Separator, ResultName, SubstitutionSuffix);
+                Action.Name, ConfigurationTokenParser.Separator, ResultName, ConfigurationTokenParser.SubstitutionSuffix);
         }
 
         public static ActionOptionsDependencyAnalyzer Create(CollectionRuleContext context)
         {
-            var analyzer = new ActionOptionsDependencyAnalyzer(context);
+            var analyzer = new ActionOptionsDependencyAnalyzer(context, new ConfigurationTokenParser(context.Logger));
             analyzer.EnsureDependencies();
             return analyzer;
         }
 
-        private ActionOptionsDependencyAnalyzer(CollectionRuleContext context)
+        private ActionOptionsDependencyAnalyzer(CollectionRuleContext context, ConfigurationTokenParser tokenParser)
         {
             _ruleContext = context ?? throw new ArgumentNullException(nameof(context));
+            _tokenParser = tokenParser ?? throw new ArgumentNullException(nameof(tokenParser));
         }
 
         public IList<CollectionRuleActionOptions> GetActionDependencies(int actionIndex)
@@ -118,96 +115,56 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             //Attempt to substitute context properties.
             object originalSettings = settings;
 
-            foreach(PropertyInfo propertyInfo in GetPropertiesFromSettings(settings))
+            if (_dependencies.TryGetValue(actionIndex, out Dictionary<string, PropertyDependency> properties) && (properties.Count > 0))
             {
-                string originalPropertyValue = (string)propertyInfo.GetValue(settings);
-                //If we don't have an Endpoint info (such as test scenarios) we cannot perform this substitution.
-                if (string.IsNullOrEmpty(originalPropertyValue) || (_ruleContext.EndpointInfo == null))
+                if (!_tokenParser.TryCloneSettings(originalSettings, ref settings))
                 {
-                    continue;
+                    return settings;
                 }
 
-                string replacement = originalPropertyValue.Replace(RuntimeIdReference, _ruleContext.EndpointInfo.RuntimeInstanceCookie.ToString("D"), StringComparison.Ordinal);
-
-                if (!ReferenceEquals(replacement, originalPropertyValue))
+                foreach ((_, PropertyDependency property) in properties)
                 {
-                    if (!TryCloneSettings(originalSettings, ref settings))
+                    StringBuilder builder = property.ActionDependencies.Any() ? new() : null;
+                    int offset = 0;
+                    foreach (ActionDependency actionDependency in property.ActionDependencies)
                     {
-                        return settings;
+                        if (!actionResults.TryGetValue(actionDependency.Action.Name, out CollectionRuleActionResult results))
+                        {
+                            _ruleContext.Logger.InvalidActionResultReference(actionDependency.GetActionResultToken());
+                            continue;
+                        }
+                        if (!results.OutputValues.TryGetValue(actionDependency.ResultName, out string result))
+                        {
+                            _ruleContext.Logger.InvalidActionResultReference(actionDependency.GetActionResultToken());
+                            continue;
+                        }
+                        builder.Append(property.OriginalValue, offset, actionDependency.StartIndex - offset);
+                        builder.Append(result);
+                        offset = actionDependency.EndIndex + 1;
                     }
-                    propertyInfo.SetValue(settings, replacement);
+                    if (builder != null)
+                    {
+                        //It's possible there are trailing values after the last dependency or we simply couldn't process any tokens.
+                        if (offset < property.OriginalValue.Length)
+                        {
+                            builder.Append(property.OriginalValue, offset, property.OriginalValue.Length - offset);
+                        }
+
+                        property.Property.SetValue(settings, builder.ToString());
+                    }
                 }
             }
-            
-            if (!_dependencies.TryGetValue(actionIndex, out Dictionary<string, PropertyDependency> properties))
-            {
-                return settings;
-            }
 
-            if (!TryCloneSettings(originalSettings, ref settings))
-            {
-                return settings;
-            }
-
-            foreach ((_, PropertyDependency property) in properties)
-            {
-                StringBuilder builder = property.ActionDependencies.Any() ? new() : null;
-                int offset = 0;
-                foreach(ActionDependency actionDependency in property.ActionDependencies)
+            settings = _tokenParser.SubstituteOptionValues(settings, new TokenContext
                 {
-                    if (!actionResults.TryGetValue(actionDependency.Action.Name, out CollectionRuleActionResult results))
-                    {
-                        _ruleContext.Logger.InvalidActionResultReference(actionDependency.GetActionResultToken());
-                        continue;
-                    }
-                    if (!results.OutputValues.TryGetValue(actionDependency.ResultName, out string result))
-                    {
-                        _ruleContext.Logger.InvalidActionResultReference(actionDependency.GetActionResultToken());
-                        continue;
-                    }
-                    builder.Append(property.OriginalValue, offset, actionDependency.StartIndex - offset);
-                    builder.Append(result);
-                    offset = actionDependency.EndIndex + 1;
-                }
-                if (builder != null)
-                {
-                    //It's possible there are trailing values after the last dependency or we simply couldn't process any tokens.
-                    if (offset < property.OriginalValue.Length)
-                    {
-                        builder.Append(property.OriginalValue, offset, property.OriginalValue.Length - offset);
-                    }
-
-                    property.Property.SetValue(settings, builder.ToString());
-                }
-            }
+                    CloneOnSubstitution = ReferenceEquals(originalSettings, settings),
+                    RuntimeId = _ruleContext.EndpointInfo?.RuntimeInstanceCookie ?? Guid.Empty
+                });
 
             return settings;
         }
 
-        private bool TryCloneSettings(object originalSettings, ref object settings)
-        {
-            if (originalSettings == null)
-            {
-                return false;
-            }
 
-            if (ReferenceEquals(originalSettings, settings))
-            {
-                if (originalSettings is BaseRecordOptions baseRecord)
-                {
-                    //Creates a copy using record's Clone method.
-                    settings = baseRecord with { };
-                    return true;
-                }
-                else
-                {
-                    _ruleContext.Logger.ActionSettingsTokenizationNotSupported(settings.GetType().FullName);
-                    settings = originalSettings;
-                    return false;
-                }
-            }
-            return true;
-        }
 
         private void EnsureDependencies()
         {
@@ -240,7 +197,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 while ((foundIndex = newValue.IndexOf(ActionReferencePrefix, startIndex, StringComparison.OrdinalIgnoreCase)) >= 0)
                 {
-                    int suffixIndex = newValue.IndexOf(SubstitutionSuffix, foundIndex, StringComparison.OrdinalIgnoreCase);
+                    int suffixIndex = newValue.IndexOf(ConfigurationTokenParser.SubstitutionSuffix, foundIndex, StringComparison.OrdinalIgnoreCase);
                     if (suffixIndex == -1)
                     {
                         _ruleContext.Logger.InvalidActionReferenceToken(options.Name ?? actionIndex.ToString(), property.Name);
@@ -287,7 +244,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             action = null;
             actionResultName = null;
 
-            string[] parts = actionReference.Split(Separator);
+            string[] parts = actionReference.Split(ConfigurationTokenParser.Separator);
             if (parts.Length != 2)
             {
                 _ruleContext.Logger.InvalidActionReference(actionReference);
@@ -325,17 +282,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings(CollectionRuleActionOptions options)
         {
-            return GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
+            return _tokenParser.GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
         }
 
-        private IEnumerable<PropertyInfo> GetPropertiesFromSettings(object settings, Predicate<PropertyInfo> predicate = null) =>
-            //CONSIDER
-            //In the future we may want to do additional substitutions, such as $(Environment.Value)
-            //or $(Process.Id). We would likely remove the attribute in this case.
-            //Note settings could be null, although we do not have any options like this currently.
-            settings?.GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true)) ??
-            Enumerable.Empty<PropertyInfo>();
+
     }
 }
