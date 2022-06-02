@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
+namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Monitoring.AzureStorage.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -84,6 +84,60 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
         internal static string ErrorMessage_EgressMissingCredentials {
             get {
                 return ResourceManager.GetString("ErrorMessage_EgressMissingCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copying action stream to egress stream with buffer size {bufferSize}.
+        /// </summary>
+        internal static string LogFormatString_EgressCopyActionStreamToEgressStream {
+            get {
+                return ResourceManager.GetString("LogFormatString_EgressCopyActionStreamToEgressStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider {providerType}: Invoking stream action..
+        /// </summary>
+        internal static string LogFormatString_EgressProviderInvokeStreamAction {
+            get {
+                return ResourceManager.GetString("LogFormatString_EgressProviderInvokeStreamAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider {providerType}: Saved stream to {path}.
+        /// </summary>
+        internal static string LogFormatString_EgressProviderSavedStream {
+            get {
+                return ResourceManager.GetString("LogFormatString_EgressProviderSavedStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
+        /// </summary>
+        internal static string LogFormatString_QueueDoesNotExist {
+            get {
+                return ResourceManager.GetString("LogFormatString_QueueDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queue message egress requires {queueName} and {queueAccountUri} to be set.
+        /// </summary>
+        internal static string LogFormatString_QueueOptionsPartiallySet {
+            get {
+                return ResourceManager.GetString("LogFormatString_QueueOptionsPartiallySet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to send message to the queue {0}..
+        /// </summary>
+        internal static string LogFormatString_WritingMessageToQueueFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_WritingMessageToQueueFailed", resourceCulture);
             }
         }
     }

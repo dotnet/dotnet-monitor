@@ -40,7 +40,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", "src\Tests\Microsoft.Diagnostics.Monitoring.ExecuteActionApp\Microsoft.Diagnostics.Monitoring.ExecuteActionApp.csproj", "{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureBlobStorage", "src\Tools\AzureBlobStorage\AzureBlobStorage.csproj", "{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureBlobStorage", "src\Extensions\AzureBlobStorage\AzureBlobStorage.csproj", "{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

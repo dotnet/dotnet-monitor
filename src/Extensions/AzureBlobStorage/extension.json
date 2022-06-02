@@ -1,0 +1,8 @@
+{
+  "Id": "Microsoft.Diagnositcs.Monitoring.AzureStorage",
+  "Version": "1.0.0",
+  "Program": "AzureBlobStorage.exe",
+  "SupportedExtensionTypes": [
+    "Egress"
+  ]
+}
