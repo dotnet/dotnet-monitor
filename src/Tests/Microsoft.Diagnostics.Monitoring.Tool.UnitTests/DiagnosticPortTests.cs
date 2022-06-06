@@ -3,8 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(DiagnosticPortTestsConstants.SimplifiedDiagnosticPort, options.CurrentValue.EndpointName);
                 Assert.Equal(DiagnosticPortConnectionMode.Listen, options.CurrentValue.ConnectionMode);
 
-            }, overrideSource: DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables);
+            }, overrideSource: GetConfigurationSources(DiagnosticPortTestsConstants.SimplifiedListen_EnvironmentVariables));
         }
 
         [Fact]
@@ -43,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(DiagnosticPortTestsConstants.FullDiagnosticPort, options.CurrentValue.EndpointName);
                 Assert.Equal(DiagnosticPortConnectionMode.Listen, options.CurrentValue.ConnectionMode);
 
-            }, overrideSource: DiagnosticPortTestsConstants.FullListen_EnvironmentVariables);
+            }, overrideSource: GetConfigurationSources(DiagnosticPortTestsConstants.FullListen_EnvironmentVariables));
         }
 
         [Fact]
@@ -55,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 Assert.Equal(DiagnosticPortConnectionMode.Connect, options.CurrentValue.ConnectionMode);
 
-            }, overrideSource: DiagnosticPortTestsConstants.Connect_EnvironmentVariables);
+            }, overrideSource: GetConfigurationSources(DiagnosticPortTestsConstants.Connect_EnvironmentVariables));
         }
 
         [Fact]
@@ -68,7 +71,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(DiagnosticPortTestsConstants.SimplifiedDiagnosticPort, options.CurrentValue.EndpointName);
                 Assert.Equal(DiagnosticPortConnectionMode.Listen, options.CurrentValue.ConnectionMode);
 
-            }, overrideSource: DiagnosticPortTestsConstants.AllListen_EnvironmentVariables);
+            }, overrideSource: GetConfigurationSources(DiagnosticPortTestsConstants.AllListen_EnvironmentVariables));
+        }
+
+        private List<IConfigurationSource> GetConfigurationSources(IDictionary<string, string> initialData)
+        {
+            List<IConfigurationSource> sources = new();
+
+            MemoryConfigurationSource memoryConfigurationSource = new();
+            memoryConfigurationSource.InitialData = initialData;
+
+            sources.Add(memoryConfigurationSource);
+
+            return sources;
         }
     }
 }

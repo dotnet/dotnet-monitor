@@ -17,7 +17,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the CollectTrace action.
     /// </summary>
     [DebuggerDisplay("CollectTrace")]
-    internal sealed partial class CollectTraceOptions : IEgressProviderProperties
+#if SCHEMAGEN
+    [NJsonSchema.Annotations.JsonSchemaFlatten]
+#endif
+    internal sealed partial record class CollectTraceOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

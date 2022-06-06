@@ -127,6 +127,17 @@
           "$ref": "#/definitions/CollectionRuleDefaultsOptions"
         }
       ]
+    },
+    "Templates": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/TemplateOptions"
+        }
+      ]
     }
   },
   "definitions": {
@@ -611,6 +622,36 @@
         {
           "properties": {
             "Type": {
+              "const": "CPUUsage"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CPUUsageOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
+              "const": "GCHeapSize"
+            },
+            "Settings": {
+              "$ref": "#/definitions/GCHeapSizeOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
+              "const": "ThreadpoolQueueLength"
+            },
+            "Settings": {
+              "$ref": "#/definitions/ThreadpoolQueueLengthOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
               "const": "Startup"
             },
             "Settings": {
@@ -947,6 +988,13 @@
           ],
           "description": "The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map."
         },
+        "ManagedIdentityClientId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage."
+        },
         "ContainerName": {
           "type": "string",
           "description": "The name of the container to which the blob will be egressed. If egressing to the root container, use the \"$root\" sentinel value.",
@@ -1233,6 +1281,52 @@
           ],
           "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process.",
           "format": "time-span"
+        }
+      }
+    },
+    "TemplateOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "CollectionRuleFilters": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Process filters used to determine to which process(es) the collection rule is applied. All filters must match. If no filters are specified, the rule is applied to all discovered processes.",
+          "additionalProperties": {
+            "$ref": "#/definitions/ProcessFilterDescriptor"
+          }
+        },
+        "CollectionRuleTriggers": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "The trigger to use to monitor for a condition in the target process.",
+          "additionalProperties": {
+            "$ref": "#/definitions/CollectionRuleTriggerOptions"
+          }
+        },
+        "CollectionRuleActions": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "The list of actions to be executed when the trigger raises its notification.",
+          "additionalProperties": {
+            "$ref": "#/definitions/CollectionRuleActionOptions"
+          }
+        },
+        "CollectionRuleLimits": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "The set of limits to constrain the execution of the rule and its components.",
+          "additionalProperties": {
+            "$ref": "#/definitions/CollectionRuleLimitsOptions"
+          }
         }
       }
     },
@@ -1601,6 +1695,9 @@
         "AspNetRequestDuration",
         "AspNetResponseStatus",
         "EventCounter",
+        "CPUUsage",
+        "GCHeapSize",
+        "ThreadpoolQueueLength",
         "Startup"
       ]
     },
@@ -1789,6 +1886,110 @@
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
           "format": "time-span"
+        }
+      }
+    },
+    "CPUUsageOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "GreaterThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level as a percentage that the counter must maintain (or higher) for the specified duration.",
+          "format": "double",
+          "default": 50.0,
+          "maximum": 100.0,
+          "minimum": 0.0
+        },
+        "LessThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level as a percentage that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.",
+          "format": "double",
+          "maximum": 100.0,
+          "minimum": 0.0
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
+          "format": "time-span",
+          "default": "00:01:00"
+        }
+      }
+    },
+    "GCHeapSizeOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "GreaterThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level in MBs that the counter must maintain (or higher) for the specified duration.",
+          "format": "double",
+          "default": 10.0,
+          "minimum": 0.0
+        },
+        "LessThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level in MBs that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.",
+          "format": "double",
+          "minimum": 0.0
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
+          "format": "time-span",
+          "default": "00:01:00"
+        }
+      }
+    },
+    "ThreadpoolQueueLengthOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "GreaterThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or higher) for the specified duration.",
+          "format": "double",
+          "default": 200.0,
+          "minimum": 0.0
+        },
+        "LessThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.",
+          "format": "double",
+          "minimum": 0.0
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
+          "format": "time-span",
+          "default": "00:01:00"
         }
       }
     },

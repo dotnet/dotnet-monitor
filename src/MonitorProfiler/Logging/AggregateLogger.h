@@ -28,6 +28,11 @@ public:
     // ILogger Members
 
     /// <summary>
+    /// Determines if any of the registered ILogger implementations have the specified LogLevel enabled.
+    /// </summary>
+    STDMETHOD_(bool, IsEnabled)(LogLevel level) override;
+
+    /// <summary>
     /// Invokes the Log method on each registered ILogger implementation.
     /// </summary>
     STDMETHOD(Log)(LogLevel level, const tstring format, va_list args) override;
