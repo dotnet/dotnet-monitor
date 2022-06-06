@@ -15,8 +15,6 @@ using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
 
-#define LogInformationV(format, ...) LogInformationV_(m_pLogger, format, __VA_ARGS__)
-
 GUID MainProfiler::GetClsid()
 {
     // {6A494330-5848-4A23-9D87-0E57BBF6DE79}
@@ -37,19 +35,27 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
     IfFailRet(InitializeLogging());
     IfFailRet(InitializeEnvironmentHelper());
 
-    IfFailLogRet(InitializeCommandServer());
-
     // Logging is initialized and can now be used
+
+    _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
+    IfNullRet(_threadDataManager);
+    _exceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, _threadDataManager, m_pCorProfilerInfo));
+    IfNullRet(_exceptionTracker);
+
+    IfFailLogRet(InitializeCommandServer());
 
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
     // communication channel's GetProcessEnvironment command to get this value.
     IfFailLogRet(_environmentHelper->SetProductVersion());
 
-#ifdef TARGET_WINDOWS
-    DWORD processId = GetCurrentProcessId();
-    LogInformationV(_T("Process Id: %d"), processId);
-#endif
+    DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
+    ThreadDataManager::AddProfilerEventMask(eventsLow);
+    _exceptionTracker->AddProfilerEventMask(eventsLow);
+
+    IfFailRet(m_pCorProfilerInfo->SetEventMask2(
+        eventsLow,
+        COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
 
     return S_OK;
 }
@@ -62,6 +68,60 @@ STDMETHODIMP MainProfiler::Shutdown()
     _commandServer.reset();
 
     return ProfilerBase::Shutdown();
+}
+
+STDMETHODIMP MainProfiler::ThreadCreated(ThreadID threadId)
+{
+    HRESULT hr = S_OK;
+
+    IfFailLogRet(_threadDataManager->ThreadCreated(threadId));
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ThreadDestroyed(ThreadID threadId)
+{
+    HRESULT hr = S_OK;
+
+    IfFailLogRet(_threadDataManager->ThreadDestroyed(threadId));
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ExceptionThrown(ObjectID thrownObjectId)
+{
+    HRESULT hr = S_OK;
+
+    ThreadID threadId;
+    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+
+    IfFailLogRet(_exceptionTracker->ExceptionThrown(threadId, thrownObjectId));
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ExceptionSearchCatcherFound(FunctionID functionId)
+{
+    HRESULT hr = S_OK;
+
+    ThreadID threadId;
+    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+
+    IfFailLogRet(_exceptionTracker->ExceptionSearchCatcherFound(threadId, functionId));
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ExceptionUnwindFunctionEnter(FunctionID functionId)
+{
+    HRESULT hr = S_OK;
+
+    ThreadID threadId;
+    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+
+    IfFailLogRet(_exceptionTracker->ExceptionUnwindFunctionEnter(threadId, functionId));
+
+    return S_OK;
 }
 
 STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
