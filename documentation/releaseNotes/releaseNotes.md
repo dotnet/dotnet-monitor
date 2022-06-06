@@ -1,6 +1,10 @@
 Today we are releasing the next official preview of the `dotnet monitor` tool. This release includes:
 
-- ⚠️ [Here is a breaking change we did and its work item] (#737)
-- [Here is a new feature we added and its work item] (#737)
-
-\*⚠️ **_indicates a breaking change_**
+- Added collection rule templates (#1797)
+- Added CPU usage, GC heap size, and threadpool queue length triggers (#1751)
+- Added Managed Service Identity support for egress (#1928)
+- Added Process.RuntimeId token for collection rule action properties (#1947)
+- Fix egress operations to report failed egress to operation service (#1928)
+- Prevent process enumeration from pruning processes that are capturing gcdumps (#1932)
+- Show warning when using collection rules in `connect` mode (#1830)
+- Prevent auth configuration warnings when using `--no-auth` switch (#1838)
