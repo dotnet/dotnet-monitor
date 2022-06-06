@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 #endif
 {
-    partial class CollectTraceOptions :
+    partial record class CollectTraceOptions :
         IValidatableObject
     {
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)

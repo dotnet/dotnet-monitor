@@ -9,6 +9,7 @@
 #include "../Logging/DebugLogger.h"
 #include "corhlpr.h"
 #include "macros.h"
+#include <memory>
 
 using namespace std;
 
@@ -28,16 +29,22 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     HRESULT hr = S_OK;
 
+    //These should always be initialized first
     IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
+
+    //These are created in dependency order!
     IfFailRet(InitializeEnvironment());
     IfFailRet(InitializeLogging());
+    IfFailRet(InitializeEnvironmentHelper());
+
+    IfFailLogRet(InitializeCommandServer());
 
     // Logging is initialized and can now be used
 
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
     // communication channel's GetProcessEnvironment command to get this value.
-    IfFailLogRet(EnvironmentHelper::SetProductVersion(m_pEnvironment, m_pLogger));
+    IfFailLogRet(_environmentHelper->SetProductVersion());
 
 #ifdef TARGET_WINDOWS
     DWORD processId = GetCurrentProcessId();
@@ -51,6 +58,8 @@ STDMETHODIMP MainProfiler::Shutdown()
 {
     m_pLogger.reset();
     m_pEnvironment.reset();
+    _commandServer->Shutdown();
+    _commandServer.reset();
 
     return ProfilerBase::Shutdown();
 }
@@ -66,14 +75,27 @@ STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
 
 HRESULT MainProfiler::InitializeEnvironment()
 {
+    if (m_pEnvironment)
+    {
+        return E_UNEXPECTED;
+    }
     m_pEnvironment = make_shared<ProfilerEnvironment>(m_pCorProfilerInfo);
+    return S_OK;
+}
+
+HRESULT MainProfiler::InitializeEnvironmentHelper()
+{
     IfNullRet(m_pEnvironment);
+
+    _environmentHelper = make_shared<EnvironmentHelper>(m_pEnvironment, m_pLogger);
 
     return S_OK;
 }
 
 HRESULT MainProfiler::InitializeLogging()
 {
+    HRESULT hr = S_OK;
+
     // Create an aggregate logger to allow for multiple logging implementations
     unique_ptr<AggregateLogger> pAggregateLogger(new (nothrow) AggregateLogger());
     IfNullRet(pAggregateLogger);
@@ -81,7 +103,7 @@ HRESULT MainProfiler::InitializeLogging()
 #ifdef _DEBUG
 #ifdef TARGET_WINDOWS
     // Add the debug output logger for when debugging on Windows
-    shared_ptr<DebugLogger> pDebugLogger = make_shared<DebugLogger>();
+    shared_ptr<DebugLogger> pDebugLogger = make_shared<DebugLogger>(m_pEnvironment);
     IfNullRet(pDebugLogger);
     pAggregateLogger->Add(pDebugLogger);
 #endif
@@ -89,5 +111,35 @@ HRESULT MainProfiler::InitializeLogging()
 
     m_pLogger.reset(pAggregateLogger.release());
 
+    return S_OK;
+}
+
+HRESULT MainProfiler::InitializeCommandServer()
+{
+    HRESULT hr = S_OK;
+
+    tstring instanceId;
+    IfFailRet(_environmentHelper->GetRuntimeInstanceId(instanceId));
+
+#if TARGET_UNIX
+    tstring separator = _T("/");
+#else
+    tstring separator = _T("\\");
+#endif
+
+    tstring tmpDir;
+    IfFailRet(_environmentHelper->GetTempFolder(tmpDir));
+
+    _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger));
+    tstring socketPath = tmpDir + separator + instanceId + _T(".sock");
+
+    IfFailRet(_commandServer->Start(to_string(socketPath), [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); }));
+
+    return S_OK;
+}
+
+HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
+{
+    m_pLogger->Log(LogLevel::Information, _T("Message received from client: %d %d"), message.MessageType, message.Parameters);
     return S_OK;
 }
