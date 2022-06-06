@@ -1,6 +1,6 @@
 Today we are releasing the 6.1.2 build of the `dotnet monitor` tool. This release includes:
 
-- ⚠️ [Here is a breaking change we did and its work item] (#737)
-- [Here is a new feature we added and its work item] (#737)
-
-\*⚠️ **_indicates a breaking change_**
+- Ensure unexpected egress failures complete operations (#1935)
+- Prevent process enumeration from pruning processes that are capturing gcdumps (#1933)
+- Prevent auth configuration warnings when using `--no-auth` switch (#1851)
+- Show warning when using collection rules in `connect` mode (#1852)
