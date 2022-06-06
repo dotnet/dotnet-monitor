@@ -333,6 +333,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ExperienceSurvey);
 
+        private static readonly Action<ILogger, Exception> _diagnosticPortNotInListenModeForCollectionRules =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.DiagnosticPortNotInListenModeForCollectionRules.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortNotInListenModeForCollectionRules);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -611,6 +617,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExperienceSurvey(this ILogger logger)
         {
             _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
+        }
+
+        public static void DiagnosticPortNotInListenModeForCollectionRules(this ILogger logger)
+        {
+            _diagnosticPortNotInListenModeForCollectionRules(logger, null);
         }
     }
 }

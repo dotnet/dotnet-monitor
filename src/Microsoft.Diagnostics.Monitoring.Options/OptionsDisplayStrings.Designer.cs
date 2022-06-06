@@ -241,6 +241,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientI" +
+                        "d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The URI of the Azure queue account..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri {
@@ -731,6 +741,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The threshold level as a percentage that the counter must maintain (or higher) for the specified duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_CPUUsageOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CPUUsageOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level as a percentage that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null..
+        /// </summary>
+        public static string DisplayAttributeDescription_CPUUsageOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CPUUsageOptions_LessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In &apos;Connect&apos; mode, dotnet-monitor connects to the application for diagnostics. In &apos;Listen&apos; mode, the application connects to dotnet-monitor via EndpointName..
         /// </summary>
         public static string DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode {
@@ -863,6 +891,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectory" +
                         "Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level in MBs that the counter must maintain (or higher) for the specified duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_GCHeapSizeOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GCHeapSizeOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level in MBs that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null..
+        /// </summary>
+        public static string DisplayAttributeDescription_GCHeapSizeOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GCHeapSizeOptions_LessThan", resourceCulture);
             }
         }
         
@@ -1209,6 +1255,32 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The threshold level the counter must maintain (or higher) for the specified duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_ThreadpoolQueueLengthOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ThreadpoolQueueLengthOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null..
+        /// </summary>
+        public static string DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan", resourceCulture);
+            }
+        }
+        
+        ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
+        /// </summary>
+        public static string ErrorMessage_CredentialsMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CredentialsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A value is required for the process filter..
         /// </summary>
         public static string ErrorMessage_FilterValueMissing {
@@ -1250,15 +1322,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_StatusCodesRegularExpressionDoesNotMatch {
             get {
                 return ResourceManager.GetString("ErrorMessage_StatusCodesRegularExpressionDoesNotMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} field or the {1} field is required..
-        /// </summary>
-        public static string ErrorMessage_TwoFieldsMissing {
-            get {
-                return ResourceManager.GetString("ErrorMessage_TwoFieldsMissing", resourceCulture);
             }
         }
     }

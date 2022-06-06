@@ -8,49 +8,65 @@ using Microsoft.Tools.Common;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Builder;
-using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+using System.CommandLine.Binding;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     class Program
     {
-        private static Command GenerateApiKeyCommand() =>
-            new Command(
+        private static Command GenerateApiKeyCommand()
+        {
+            Command command = new Command(
                 name: "generatekey",
-                description: Strings.HelpDescription_CommandGenerateKey)
-            {
-                CommandHandler.Create(GenerateApiKeyCommandHandler.Invoke),
-                Output()
-            };
+                description: Strings.HelpDescription_CommandGenerateKey);
 
-        private static Command CollectCommand() =>
-            new Command(
+            command.Add(Output());
+
+            command.SetHandler<CancellationToken, OutputFormat, IConsole>(GenerateApiKeyCommandHandler.Invoke, command.Children.OfType<IValueDescriptor>().ToArray());
+
+            return command;
+        }
+
+        private static Command CollectCommand()
+        {
+            Command command = new Command(
                 name: "collect",
                 description: Strings.HelpDescription_CommandCollect)
             {
-                // Handler
-                CommandHandler.Create(CollectCommandHandler.Invoke),
                 SharedOptions()
             };
 
-        private static Command ConfigCommand() =>
-            new Command(
+            command.SetHandler<CancellationToken, string[], string[], bool, string, bool, bool, bool>(CollectCommandHandler.Invoke, command.Children.OfType<IValueDescriptor>().ToArray());
+ 
+            return command;
+        }
+
+        private static Command ConfigCommand()
+        {
+            Command showCommand = new Command(
+                name: "show",
+                description: Strings.HelpDescription_CommandShow)
+            {
+                SharedOptions(),
+                ConfigLevel(),
+                ShowSources()
+            };
+
+            showCommand.SetHandler<string[], string[], bool, string, bool, bool, bool, ConfigDisplayLevel, bool>(ConfigShowCommandHandler.Invoke, showCommand.Children.OfType<IValueDescriptor>().ToArray());
+
+            Command configCommand = new Command(
                 name: "config",
                 description: Strings.HelpDescription_CommandConfig)
             {
-                new Command(
-                    name: "show",
-                    description: Strings.HelpDescription_CommandShow)
-                {
-                    // Handler
-                    CommandHandler.Create(ConfigShowCommandHandler.Invoke),
-                    SharedOptions(),
-                    ConfigLevel(),
-                    ShowSources()
-                }
+                showCommand
             };
+
+            return configCommand;
+        }
 
         private static IEnumerable<Option> SharedOptions() => new Option[]
         {
@@ -58,96 +74,105 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         };
         
         private static Option Urls() =>
-            new Option(
+            new Option<string[]>(
                 aliases: new[] { "-u", "--urls" },
-                description: Strings.HelpDescription_OptionUrls)
+                description: Strings.HelpDescription_OptionUrls,
+                getDefaultValue: () => new[] { "https://localhost:52323" })
             {
-                Argument = new Argument<string[]>(name: "urls", getDefaultValue: () => new[] { "https://localhost:52323" })
+                ArgumentHelpName = "urls"
             };
 
         private static Option MetricUrls() =>
-            new Option(
+            new Option<string[]>(
                 aliases: new[] { "--metricUrls" },
-                description: Strings.HelpDescription_OptionMetricsUrls)
+                description: Strings.HelpDescription_OptionMetricsUrls,
+                getDefaultValue: () => new[] { "http://localhost:52325" })
             {
-                Argument = new Argument<string[]>(name: "metricUrls", getDefaultValue: () => new[] { "http://localhost:52325" })
+                ArgumentHelpName = "metricUrls"
             };
 
         private static Option ProvideMetrics() =>
-            new Option(
+            new Option<bool>(
                 aliases: new[] { "-m", "--metrics" },
-                description: Strings.HelpDescription_OptionMetrics)
+                description: Strings.HelpDescription_OptionMetrics,
+                getDefaultValue: () => true)
             {
-                Argument = new Argument<bool>(name: "metrics", getDefaultValue: () => true)
+                ArgumentHelpName = "metrics"
             };
 
         private static Option DiagnosticPort() =>
-            new Option(
-                alias: "--diagnostic-port",
+            new Option<string>(
+                name: "--diagnostic-port",
                 description: Strings.HelpDescription_OptionDiagnosticPort)
             {
-                Argument = new Argument<string>(name: "diagnosticPort")
+                ArgumentHelpName = "diagnosticPort"
             };
 
         private static Option NoAuth() =>
-            new Option(
-                alias: "--no-auth",
-                description: Strings.HelpDescription_OptionNoAuth
-                )
+            new Option<bool>(
+                name: "--no-auth",
+                description: Strings.HelpDescription_OptionNoAuth,
+                getDefaultValue: () => false)
             {
-                Argument = new Argument<bool>(name: "noAuth", getDefaultValue: () => false)
+                ArgumentHelpName = "noAuth"
             };
 
         private static Option NoHttpEgress() =>
-            new Option(
-                alias: "--no-http-egress",
-                description: Strings.HelpDescription_OptionNoHttpEgress
-                )
+            new Option<bool>(
+                name: "--no-http-egress",
+                description: Strings.HelpDescription_OptionNoHttpEgress,
+                getDefaultValue: () => false)
             {
-                Argument = new Argument<bool>(name: "noHttpEgress", getDefaultValue: () => false)
+                ArgumentHelpName = "noHttpEgress"
             };
 
         private static Option TempApiKey() =>
-            new Option(
-                alias: "--temp-apikey",
-                description: Strings.HelpDescription_OptionTempApiKey
-                )
+            new Option<bool>(
+                name: "--temp-apikey",
+                description: Strings.HelpDescription_OptionTempApiKey,
+                getDefaultValue: () => false)
             {
-                Argument = new Argument<bool>(name: "tempApiKey", getDefaultValue: () => false)
+                ArgumentHelpName = "tempApiKey"
             };
 
         private static Option Output() =>
-            new Option(
+            new Option<OutputFormat>(
                 aliases: new[] { "-o", "--output" },
-                description: Strings.HelpDescription_OutputFormat)
+                description: Strings.HelpDescription_OutputFormat,
+                getDefaultValue: () => OutputFormat.Json)
             {
-                Argument = new Argument<OutputFormat>(name: "output", getDefaultValue: () => OutputFormat.Json)
+                ArgumentHelpName = "output"
             };
 
         private static Option ConfigLevel() =>
-            new Option(
-                alias: "--level",
-                description: Strings.HelpDescription_OptionLevel)
+            new Option<ConfigDisplayLevel>(
+                name: "--level",
+                description: Strings.HelpDescription_OptionLevel,
+                getDefaultValue: () => ConfigDisplayLevel.Redacted)
             {
-                Argument = new Argument<ConfigDisplayLevel>(name: "level", getDefaultValue: () => ConfigDisplayLevel.Redacted)
+                ArgumentHelpName = "level"
             };
 
         private static Option ShowSources() =>
-            new Option(
-                alias: "--show-sources",
-                description: Strings.HelpDescription_OptionShowSources)
+            new Option<bool>(
+                name: "--show-sources",
+                description: Strings.HelpDescription_OptionShowSources,
+                getDefaultValue: () => false)
             {
-                Argument = new Argument<bool>(name: "showSources", getDefaultValue: () => false)
+                ArgumentHelpName = "showSources"
             };
 
         public static Task<int> Main(string[] args)
         {
-            var parser = new CommandLineBuilder()
-                .AddCommand(CollectCommand())
-                .AddCommand(ConfigCommand())
-                .AddCommand(GenerateApiKeyCommand())
-                .UseDefaults()
-                .Build();
+            var parser = new CommandLineBuilder(new RootCommand()
+            {
+                CollectCommand(),
+                ConfigCommand(),
+                GenerateApiKeyCommand()
+            })
+            .UseDefaults()
+            .Build();
+
             return parser.InvokeAsync(args);
         }
     }

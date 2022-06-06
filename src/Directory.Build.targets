@@ -12,118 +12,15 @@
   </ItemGroup>
 
   <!-- Creates artifact files related to the package that will be uploaded to blob storage during publish. -->
-  <Target Name="GeneratePackageArtifactFiles"
+  <Target Name="GeneratePackageProjectPathFile"
           AfterTargets="Pack"
-          Condition="'$(IsPackable)' == 'true' and '$(PublishToBlob)' == 'true'">
-    <PropertyGroup>
-      <!--
-        These properties take a package version and transform it into a blob group name so that
-        all builds from the same product and release version are grouped together. This code has
-        to consider when the version is a release version (e.g. 7.0.0) or has a prerelease label
-        (e.g. 7.0.0-preview.1). The former is transformed into '7.0/release' whereas
-        the latter is transformed into '7.0/preview.1'. It also accounts for the
-        BlobGroupBuildQuality defined in Version.props, which determines if the prerelease information
-        should be used in the final blob group name.
-        -->
-      <_PreReleaseSeperatorIndex>$(PackageVersion.IndexOf('-'))</_PreReleaseSeperatorIndex>
-      
-      <!-- Prerelease: '7.0.0-preview.8' -> '7.0.0' and 'preview.8' -->
-      <_BlobGroupVersion Condition="'$(_PreReleaseSeperatorIndex)' != '-1'">$(PackageVersion.Substring(0, $(_PreReleaseSeperatorIndex)))</_BlobGroupVersion>
-      <_BlobGroupPreRelease Condition="'$(_PreReleaseSeperatorIndex)' != '-1'">$(PackageVersion.Substring($([MSBuild]::Add($(_PreReleaseSeperatorIndex), 1))))</_BlobGroupPreRelease>
-      
-      <!-- Release: take the package version as-is. -->
-      <_BlobGroupVersion Condition="'$(_PreReleaseSeperatorIndex)' == '-1'">$(PackageVersion)</_BlobGroupVersion>
-
-      <!--
-        Prerelease may contain additional fields; only want the label and first number
-        (e.g. 'preview.1.12345' -> 'preview' and '1').
-        -->
-      <_BlobGroupPreReleaseLabel Condition="'$(_BlobGroupPreRelease)' != ''">$(_BlobGroupPreRelease.Split('.')[0])</_BlobGroupPreReleaseLabel>
-      <_BlobGroupPreReleaseIteration Condition="'$(_BlobGroupPreRelease)' != ''">$(_BlobGroupPreRelease.Split('.')[1])</_BlobGroupPreReleaseIteration>
-    </PropertyGroup>
-    <!-- These are the valid BlobGroupBuildQuality values. -->
-    <ItemGroup>
-      <_BlobGroupBuildQualityName Include="daily" ReleaseName="daily" />
-      <_BlobGroupBuildQualityName Include="prerelease" ReleaseName="$(_BlobGroupPreReleaseLabel).$(_BlobGroupPreReleaseIteration)" />
-      <_BlobGroupBuildQualityName Include="release" ReleaseName="release" />
-    </ItemGroup>
-    <!-- Select the blob group build quality based on the specified property. -->
-    <ItemGroup>
-      <_SelectedBlobGroupQualityName Include="@(_BlobGroupBuildQualityName)" Condition="'%(Identity)' == '$(BlobGroupBuildQuality)'" />
-    </ItemGroup>
-    <PropertyGroup>
-      <!-- Extract major and minor version fields from version number. -->
-      <_BlobGroupVersionMajor>$(_BlobGroupVersion.Split('.')[0])</_BlobGroupVersionMajor>
-      <_BlobGroupVersionMinor>$(_BlobGroupVersion.Split('.')[1])</_BlobGroupVersionMinor>
-      <!-- Get release name from blob group build quality. -->
-      <_BlobGroupReleaseName>@(_SelectedBlobGroupQualityName->'%(ReleaseName)')</_BlobGroupReleaseName>
-    </PropertyGroup>
-    <!-- Validate the selected and calculated values. -->
-    <Error Text="BlobGroupBuildQuality must be set to a valid value: @(_BlobGroupBuildQualityName, ', ')" Condition="'@(_SelectedBlobGroupQualityName)' == ''" />
-    <Error Text="Unable to calculate _BlobGroupVersionMajor" Condition="'$(_BlobGroupVersionMajor)' == ''" />
-    <Error Text="Unable to calculate _BlobGroupVersionMinor" Condition="'$(_BlobGroupVersionMinor)' == ''" />
-    <Error Text="Unable to calculate _BlobGroupReleaseName" Condition="'$(_BlobGroupReleaseName)' == ''" />
-    <PropertyGroup>
-      <!--
-        Combine all parts to create blob group name.
-        Daily: '7.0.0-preview.1.12345' -> '7.0/daily'
-        Prerelease: '7.0.0-preview.1.12345' -> '7.0/preview.1'
-        Release: '7.0.0' -> '7.0/release'
-        -->
-      <_BlobGroupName>$(_BlobGroupVersionMajor).$(_BlobGroupVersionMinor)/$(_BlobGroupReleaseName)</_BlobGroupName>
-      <!--
-        This computes the original version without considering the effect of DotNetFinalVersionKind.
-        This can be used to uniquely identify a version of a specific build even if the build produces
-        stable package versions.
-        -->
-      <_BuildVersion>$(_OriginalVersionPrefix)-$(_PreReleaseLabel)$(_BuildNumberLabels)</_BuildVersion>
-      <!-- Name of the package file. Used as a prefix for the following files. -->
-      <_PackageFileName>$(PackageId).$(PackageVersion).nupkg</_PackageFileName>
-      <_PackageWithBuildVersionFileName>$(PackageId).$(_BuildVersion).nupkg</_PackageWithBuildVersionFileName>
-    </PropertyGroup>
-    <!-- A file that contains the blob group so that publishing can use it in the blob path calculation. -->
-    <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageFileName).blobgroup"
-                      Lines="$(_BlobGroupName)"
-                      Overwrite="true" />
-
-    <!--
-      A file that contains the name of another file that contains the package version. It effectively
-      states that "for a given package and version, the named file contains the package version". This
-      file is used by publishing to determine which package version file to upload to blob storage. The
-      file itself is not uploaded to blob storage.
-      Example name: dotnet-monitor.7.0.0.nupkg.versionfile
-      -->
-    <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageFileName).versionfile"
-                      Lines="$(_PackageWithBuildVersionFileName).version"
-                      Overwrite="true" />
-
-    <!--
-      A file that contains the version of the nuget package.
-      Example name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.version
-      -->
-    <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageWithBuildVersionFileName).version"
-                      Lines="$(PackageVersion)"
-                      Overwrite="true" />
-
-    <!--
-      A file that contains the name of another file that contains the build version. It effectively
-      states that "for a given package and version, the named file contains the build version". This
-      file is used by publishing to determine which build version file to upload to blob storage. The
-      file itself is not uploaded to blob storage.
-      Example name: dotnet-monitor.7.0.0.nupkg.buildversionfile
-      -->
-    <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageFileName).buildversionfile"
-                      Lines="$(_PackageWithBuildVersionFileName).buildversion"
-                      Overwrite="true" />
-
-    <!--
-      A file that contains the build version of the package. The name of this file contains the build
-      version in order to avoid collisions when uploaded to blob storage.
-      Example name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.buildversion
-      -->
-    <WriteLinesToFile File="$(PackageOutputPath)\$(_PackageWithBuildVersionFileName).buildversion"
-                      Lines="$(_BuildVersion)"
+          Condition="'$(IsPackable)' == 'true' and '$(IsShipping)' == 'true'">
+    <WriteLinesToFile File="$(PackageOutputPath)\$(PackageId).$(PackageVersion).nupkg.projectpath"
+                      Lines="$(MSBuildProjectFullPath)"
                       Overwrite="true" />
   </Target>
+
+  <Target Name="GetPackageVersion"
+          Returns="$(PackageVersion)" />
 
 </Project>

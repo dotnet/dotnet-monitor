@@ -13,21 +13,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
     {
         /// <summary>
         /// Provides extra validation to ensure that either the
-        /// <see cref="AccountKey"/> or the <see cref="SharedAccessSignature"/> have been set.
+        /// <see cref="AccountKey"/>, <see cref="SharedAccessSignature"/>, or <see cref="ManagedIdentityClientId"/> have been set.
         /// </summary>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             IList<ValidationResult> results = new List<ValidationResult>();
 
             // One of the authentication keys/tokens is required
-            if (string.IsNullOrEmpty(AccountKey) && string.IsNullOrEmpty(SharedAccessSignature))
+            if (string.IsNullOrEmpty(AccountKey) && string.IsNullOrEmpty(SharedAccessSignature) && string.IsNullOrEmpty(ManagedIdentityClientId))
             {
                 results.Add(
                     new ValidationResult(
                         string.Format(
-                            OptionsDisplayStrings.ErrorMessage_TwoFieldsMissing,
+                            OptionsDisplayStrings.ErrorMessage_CredentialsMissing,
                             nameof(AccountKey),
-                            nameof(SharedAccessSignature))));
+                            nameof(SharedAccessSignature),
+                            nameof(ManagedIdentityClientId))));
             }
 
             return results;
