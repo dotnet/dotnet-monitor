@@ -42,6 +42,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId))]
+        public string ManagedIdentityClientId { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName))]
         [Required]
         public string ContainerName { get; set; }

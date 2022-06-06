@@ -17,6 +17,7 @@ set(SOURCES
     Environment/EnvironmentHelper.cpp
     Environment/ProfilerEnvironment.cpp
     Logging/AggregateLogger.cpp
+    Logging/NullLogger.cpp
     MainProfiler/ExceptionTracker.cpp
     MainProfiler/MainProfiler.cpp
     MainProfiler/ThreadData.cpp

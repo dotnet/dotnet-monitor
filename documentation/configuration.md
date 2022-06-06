@@ -407,6 +407,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | accountKey | string | false | The account key used to access the Azure blob storage account; must be specified if `accountKeyName` is not specified.|
 | sharedAccessSignature | string | false | The shared access signature (SAS) used to access the azure blob storage account; if using SAS, must be specified if `sharedAccessSignatureName` is not specified.|
 | accountKeyName | string | false | Name of the property in the Properties section that will contain the account key; must be specified if `accountKey` is not specified.|
+| managedIdentityClientId | string | false | The ClientId of the ManagedIdentity that can be used to authorize egress. Note this identity must be used by the hosting environment (such as Kubernetes) and must also have a Storage role with appropriate permissions. |
 | sharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the SAS token; if using SAS, must be specified if `sharedAccessSignature` is not specified.|
 | queueName | string | false | The name of the queue to which a message will be dispatched upon writing to a blob.|
 | queueAccountUri | string | false | The URI of the Azure queue account.|
@@ -657,6 +658,10 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
   "SlidingWindowDuration": "00:00:10"
 }
 ```
+
+#### Built-In Default Triggers
+
+These [trigger shortcuts](collectionrules/triggershortcuts.md) simplify configuration for several common `EventCounter` providers.
 
 #### ASP.NET Request Path Wildcards and Globbing
 

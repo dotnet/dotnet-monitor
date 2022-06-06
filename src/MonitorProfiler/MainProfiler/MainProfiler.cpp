@@ -29,8 +29,11 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     //These should always be initialized first
     IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
+
+    //These are created in dependency order!
     IfFailRet(InitializeEnvironment());
     IfFailRet(InitializeLogging());
+    IfFailRet(InitializeEnvironmentHelper());
 
     // Logging is initialized and can now be used
 
@@ -44,7 +47,7 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
     // communication channel's GetProcessEnvironment command to get this value.
-    IfFailLogRet(EnvironmentHelper::SetProductVersion(m_pEnvironment, m_pLogger));
+    IfFailLogRet(_environmentHelper->SetProductVersion());
 
     DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
     ThreadDataManager::AddProfilerEventMask(eventsLow);
@@ -132,8 +135,19 @@ STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
 
 HRESULT MainProfiler::InitializeEnvironment()
 {
+    if (m_pEnvironment)
+    {
+        return E_UNEXPECTED;
+    }
     m_pEnvironment = make_shared<ProfilerEnvironment>(m_pCorProfilerInfo);
+    return S_OK;
+}
+
+HRESULT MainProfiler::InitializeEnvironmentHelper()
+{
     IfNullRet(m_pEnvironment);
+
+    _environmentHelper = make_shared<EnvironmentHelper>(m_pEnvironment, m_pLogger);
 
     return S_OK;
 }
@@ -164,17 +178,8 @@ HRESULT MainProfiler::InitializeCommandServer()
 {
     HRESULT hr = S_OK;
 
-    //TODO For now we are using the process id to generate the unique server name. We should use the environment
-    //value with the runtime instance id once it's available.
-    unsigned long pid =
-#if TARGET_WINDOWS
-        GetCurrentProcessId();
-#else
-        getpid();
-#endif
-
-    tstring instanceId = to_tstring(to_string(pid));
-    //IfFailRet(EnvironmentHelper::GetRuntimeInstanceId(m_pEnvironment, m_pLogger, instanceId));
+    tstring instanceId;
+    IfFailRet(_environmentHelper->GetRuntimeInstanceId(instanceId));
 
 #if TARGET_UNIX
     tstring separator = _T("/");
@@ -183,7 +188,7 @@ HRESULT MainProfiler::InitializeCommandServer()
 #endif
 
     tstring tmpDir;
-    IfFailRet(EnvironmentHelper::GetTempFolder(m_pEnvironment, m_pLogger, tmpDir));
+    IfFailRet(_environmentHelper->GetTempFolder(tmpDir));
 
     _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger));
     tstring socketPath = tmpDir + separator + instanceId + _T(".sock");

@@ -333,6 +333,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_WritingMessageToQueueFailed);
 
+        private static readonly Action<ILogger, Exception> _diagnosticPortNotInListenModeForCollectionRules =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.DiagnosticPortNotInListenModeForCollectionRules.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortNotInListenModeForCollectionRules);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -611,6 +617,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 @"https://go.microsoft.com/fwlink/?linkid={0}&clcid=0x{1:x}",
                 fwlinkId,
                 CultureInfo.CurrentUICulture.LCID);
+        }
+
+        public static void DiagnosticPortNotInListenModeForCollectionRules(this ILogger logger)
+        {
+            _diagnosticPortNotInListenModeForCollectionRules(logger, null);
         }
     }
 }

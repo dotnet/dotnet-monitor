@@ -6,6 +6,7 @@
 
 #include "../ProfilerBase.h"
 #include "../Environment/Environment.h"
+#include "../Environment/EnvironmentHelper.h"
 #include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
 #include <memory>
@@ -17,6 +18,7 @@ class MainProfiler final :
 {
 private:
     std::shared_ptr<IEnvironment> m_pEnvironment;
+    std::shared_ptr<EnvironmentHelper> _environmentHelper;
     std::shared_ptr<ILogger> m_pLogger;
     std::shared_ptr<ThreadDataManager> _threadDataManager;
     std::unique_ptr<ExceptionTracker> _exceptionTracker;
@@ -35,6 +37,7 @@ public:
 
 private:
     HRESULT InitializeEnvironment();
+    HRESULT InitializeEnvironmentHelper();
     HRESULT InitializeLogging();
     HRESULT InitializeCommandServer();
     HRESULT MessageCallback(const IpcMessage& message);

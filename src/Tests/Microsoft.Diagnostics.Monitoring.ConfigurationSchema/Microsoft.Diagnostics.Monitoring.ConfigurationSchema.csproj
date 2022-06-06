@@ -14,6 +14,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleTriggers.cs" Link="Options\CollectionRules\KnownCollectionRuleTriggers.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ActionOptionsConstants.cs" Link="Options\CollectionRules\Actions\ActionOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ActionOptionsDependencyPropertyAttribute.cs" Link="Options\CollectionRules\Actions\ActionOptionsTokenAttribute.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\BaseRecordOptions.cs" Link="Options\CollectionRules\Actions\BaseRecordOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectDumpOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectDumpOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectGCDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectGCDumpOptions.cs" />
@@ -40,6 +41,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleOptionsConstants.cs" Link="Options\CollectionRules\CollectionRuleOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleTriggerDefaultsOptions.cs" Link="Options\CollectionRules\CollectionRuleTriggerDefaultsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\CollectionRuleTriggerOptions.cs" Link="Options\CollectionRules\CollectionRuleTriggerOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\TemplateOptions.cs" Link="Options\CollectionRules\TemplateOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\RegularExpressionsAttribute.cs" Link="Options\RegularExpressionsAttribute.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetRequestCountOptions.cs" Link="Options\CollectionRules\Triggers\AspNetRequestCountOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetRequestCountOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\AspNetRequestCountOptionsDefaults.cs" />
@@ -49,6 +51,14 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetResponseStatusOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\AspNetResponseStatusOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\CPUUsageOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\CPUUsageOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\CPUUsageOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\CPUUsageOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\GCHeapSizeOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\GCHeapSizeOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\GCHeapSizeOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\GCHeapSizeOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\IEventCounterShortcuts.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\IEventCounterShortcuts.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\KnownEventCounterConstants.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\KnownEventCounterConstants.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\IAspNetActionPathFilters.cs" Link="Options\CollectionRules\Triggers\IAspNetActionPathFilters.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\TriggerOptionsConstants.cs" Link="Options\CollectionRules\Triggers\TriggerOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />

@@ -69,6 +69,17 @@
       "Limits": {
         "ActionCountSlidingWindowDuration": "5:00:00"
       }
+    },
+    "Rule4": {
+      "Trigger": "TriggerTemplate",
+      "Actions": [
+        "ActionTemplate1",
+        "ActionTemplate2"
+      ],
+      "Limits": "LimitTemplate",
+      "Filters": [
+        "FilterTemplate"
+      ]
     }
   }
 }

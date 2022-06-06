@@ -33,5 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Limits))]
         public CollectionRuleLimitsOptions Limits { get; set; }
+
+        internal List<ValidationResult> ErrorList { get; } = new List<ValidationResult>();
     }
 }
