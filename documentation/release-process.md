@@ -58,7 +58,7 @@ The following variables for [dotnet-docker-update-dependencies](https://dev.azur
 
 ### Updating tags
 
-If you are releasing a new patch version, you may need to update the current/preview tags as well as the shared tag pool.
+If you are releasing a new minor version, you may need to update the current/preview tags as well as the shared tag pool.
 1. Update https://github.com/dotnet/dotnet-docker/blob/nightly/eng/mcr-tags-metadata-templates/monitor-tags.yml.
 1. Update https://github.com/dotnet/dotnet-docker/blob/main/manifest.json.
 1. Run update-dependencies as described [here](#manually-updating-docker-versions).
