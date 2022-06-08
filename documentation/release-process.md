@@ -4,7 +4,7 @@
 
 1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`). Note that for patch releases, fixes should be made directly to the appropriate release branch and we do not merge from the `main` branch. Note that it is acceptable to use a release/major.x branch. Alternatively, you can create a new release branch for the minor version. See [additional branch steps](#additional-steps-when-creating-a-new-release-branch) below.
 
-1. In `/eng/Versions.props`, update `dotnet/diagnostics` dependencies to versions from the corresponding release of the `dotnet/diagnostics` repo. Note this should be done using darc. See [updating depdendencies](#updating-dependencies).
+1. In `/eng/Versions.props`, update `dotnet/diagnostics` dependencies to versions from the corresponding release of the `dotnet/diagnostics` repo. Note this should be done using darc. See [updating dependencies](#updating-dependencies).
 1. In `/eng/Version.props`, ensure that `<BlobGroupBuildQuality>` is set appropriately. See the documentation next to this setting for the appropriate values. In release branches, its value should be `release`. This setting, in combination with the version settings, determine for which 'channel' the aks.ms links are created. You may also need to update `PreReleaseVersionLabel` to `rtm`, the `DotnetFinalVersionKind` to 'release' or 'servicing' and remove the `PreReleaseVersionIteration`. See https://github.com/dotnet/dotnet-monitor/pull/1970/files for an example.
 
 1. Complete at least one successful [release build](#build-release-branch).
