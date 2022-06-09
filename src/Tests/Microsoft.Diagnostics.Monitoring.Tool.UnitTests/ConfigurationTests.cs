@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private const string SampleConfigurationsDirectory = "SampleConfigurations";
 
-        private const string UserProvidedSettingsFileName = "UserSpecifiedFile.json";
+        private const string UserProvidedSettingsFileName = "UserSpecifiedFile.json"; // Note: if this name is updated, it must also be updated in the expected show sources configuration files
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -161,10 +161,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
             if (level >= ConfigurationLevel.UserProvidedFileSettings)
             {
-                // This is the settings.json file in the shared configuration directory that is visible
-                // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
+                // This is the user-provided file in the directory specified on the command-line
                 string userSpecifiedFileSettingsContent = JsonSerializer.Serialize(UserProvidedFileSettingsContent);
-
                 File.WriteAllText(userProvidedConfigFullPath, userSpecifiedFileSettingsContent);
             }
 
@@ -268,7 +266,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             settings.Urls = new[] { "https://localhost:44444" }; // This corresponds to the value in SampleConfigurations/URLs.json
 
-            // This is the settings.json file in the user profile directory.
+            // This is the user-provided file in the directory specified on the command-line
             File.WriteAllText(userProvidedConfigFullPath, ConstructSettingsJson("Egress.json"));
 
             // This is the settings.json file in the user profile directory.
