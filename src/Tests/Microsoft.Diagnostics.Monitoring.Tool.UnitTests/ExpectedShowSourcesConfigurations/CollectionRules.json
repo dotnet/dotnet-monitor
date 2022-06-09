@@ -1,11 +1,14 @@
 {
-  "LargeGCHeap": {
+  "Rule1": {
     "Actions": [
       {
-        "Settings": {
-          "Egress": "artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
-        },
         "Type": "CollectGCDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      },
+      {
+        "Settings": {
+          "Egress": "monitorBlob" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+        },
+        "Type": "CollectDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
       }
     ],
     "Filters": [
@@ -15,16 +18,66 @@
       }
     ],
     "Limits": {
-      "ActionCount": "2" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-      "ActionCountSlidingWindowDuration": "1:00:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      "ActionCount": "3" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "ActionCountSlidingWindowDuration": "1:00:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "RuleDuration": "00:00:05" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    },
+    "Trigger": {
+      "Type": "AspNetRequestCount" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    }
+  },
+  "Rule2": {
+    "Actions": [
+      {
+        "Settings": {
+          "Type": "Mini" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+        },
+        "Type": "CollectDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      }
+    ],
+    "Filters": [
+      {
+        "Key": "ProcessName" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+        "Value": "FirstWebApp" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      }
+    ],
+    "Trigger": {
+      "Settings": {
+        "StatusCodes": [ "400-409" /*JsonConfigurationProvider for 'settings.json' (Optional)*/ ]
+      },
+      "Type": "AspNetResponseStatus" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    }
+  },
+  "Rule3": {
+    "Actions": [
+      {
+        "Settings": {
+          "Duration": "00:01:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+          "Profile": "Cpu" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+        },
+        "Type": "CollectTrace" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      }
+    ],
+    "Limits": {
+      "ActionCountSlidingWindowDuration": "5:00:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     },
     "Trigger": {
       "Settings": {
-        "CounterName": "gc-heap-size" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-        "GreaterThan": "10" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-        "ProviderName": "System.Runtime" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+        "RequestCount": "123" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+        "SlidingWindowDuration": "00:00:02" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
       },
-      "Type": "EventCounter" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      "Type": "AspNetRequestDuration" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
     }
+  },
+  "Rule4": {
+    "Actions": [
+      "ActionTemplate1" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "ActionTemplate2" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    ],
+    "Filters": [
+      "FilterTemplate" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    ],
+    "Limits": "LimitTemplate" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+    "Trigger": "TriggerTemplate" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
   }
 }

@@ -57,5 +57,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Default timeout for environment variable manipulation.
         /// </summary>
         public static readonly TimeSpan EnvVarsTimeout = TimeSpan.FromSeconds(10);
+
+        /// <summary>
+        /// Default timeout for loading a profiler into a target process.
+        /// </summary>
+        public static readonly TimeSpan LoadProfilerTimeout = TimeSpan.FromSeconds(10);
     }
 }

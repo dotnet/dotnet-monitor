@@ -221,17 +221,17 @@
     <value>The type of action to execute.</value>
     <comment>The description provided for the Type parameter on CollectionRuleActionOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount" xml:space="preserve">
-    <value>The number of times the action list may be executed before being throttled.</value>
-    <comment>The description provided for the ActionCount parameter on CollectionRuleLimitsOptions.</comment>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCount" xml:space="preserve">
+    <value>The default number of times the action list may be executed before being throttled.</value>
+    <comment>The description provided for the ActionCount parameter on CollectionRuleLimitsDefaultsOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCountSlidingWindowDuration" xml:space="preserve">
-    <value>The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.</value>
-    <comment>The description provided for the ActionCountSlidingWindowDuration parameter on CollectionRuleLimitsOptions.</comment>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCountSlidingWindowDuration" xml:space="preserve">
+    <value>The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed.</value>
+    <comment>The description provided for the ActionCountSlidingWindowDuration parameter on CollectionRuleLimitsDefaultsOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_RuleDuration" xml:space="preserve">
-    <value>The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.</value>
-    <comment>The description provided for the RuleDuration parameter on CollectionRuleLimitsOptions.</comment>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_RuleDuration" xml:space="preserve">
+    <value>The default amount of time before the rule will stop monitoring a process after it has been applied to a process.</value>
+    <comment>The description provided for the RuleDuration parameter on CollectionRuleLimitsDefaultsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleOptions_Actions" xml:space="preserve">
     <value>The list of actions to be executed when the trigger raises its notification.</value>
@@ -529,12 +529,13 @@
     <value>The location for temporary dump files. Defaults to the temp folder.</value>
     <comment>The description provided for the DumpTempFolder parameter on StorageOptions.</comment>
   </data>
-  <data name="ErrorMessage_TwoFieldsMissing" xml:space="preserve">
-    <value>The {0} field or the {1} field is required.</value>
-    <comment>Gets the format string for rejecting validation due to 2 missing fields where at least one is required.
-2 Format Parameters:
+  <data name="ErrorMessage_CredentialsMissing" xml:space="preserve">
+    <value>The {0} field, {1} field, or {2} field is required.</value>
+    <comment>Gets the format string for rejecting validation due to 3 missing fields where at least one is required.
+3 Format Parameters:
 0. fieldNameOne: The name of the first field that is missing
-1. fieldNameTwo: The name of the second field that is missing</comment>
+1. fieldNameTwo: The name of the second field that is missing
+2. fieldNameThree: The name of the third field that is missing</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectLogsOptions_Format" xml:space="preserve">
     <value>The format of the logs artifact.</value>
@@ -595,10 +596,89 @@
     <value>A value is required for the process filter.</value>
     <comment>Gets the format string for rejecting validation due to no value being provided for a process filter.</comment>
   </data>
+  <data name="DisplayAttributeDescription_CollectionRuleActionDefaultsOptions_Egress" xml:space="preserve">
+    <value>The name of the default Egress Provider.</value>
+    <comment>The description provided for the Egress parameter on CollectionRuleActionDefaultsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_SlidingWindowDuration" xml:space="preserve">
+    <value>The default sliding window duration.</value>
+    <comment>The description provided for the SlidingWindowDuration parameter on CollectionRuleTriggerDefaultsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_RequestCount" xml:space="preserve">
+    <value>The default threshold of the number of requests that start within the sliding window of time.</value>
+    <comment>The description provided for the RequestCount parameter on CollectionRuleTriggerDefaultsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_ResponseCount" xml:space="preserve">
+    <value>The default threshold number of responses with matching status codes.</value>
+    <comment>The description provided for the ResponseCount parameter on CollectionRuleTriggerDefaultsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCount" xml:space="preserve">
+    <value>The number of times the action list may be executed before being throttled.</value>
+    <comment>The description provided for the ActionCount parameter on CollectionRuleLimitsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_ActionCountSlidingWindowDuration" xml:space="preserve">
+    <value>The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.</value>
+    <comment>The description provided for the ActionCountSlidingWindowDuration parameter on CollectionRuleLimitsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleLimitsOptions_RuleDuration" xml:space="preserve">
+    <value>The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.</value>
+    <comment>The description provided for the RuleDuration parameter on CollectionRuleLimitsOptions.</comment>
+  </data>
+  <data name="ErrorMessage_NoDefaultEgressProvider" xml:space="preserve">
+    <value>An egress provider must be specified if there is no default egress provider.</value>
+    <comment>Gets the format string for egress provider failure when there isn't one specified and no default exists. </comment>
+  </data>
+  <data name="ErrorMessage_NoDefaultRequestCount" xml:space="preserve">
+    <value>A request count must be specified if there is no default request count.</value>
+    <comment>Gets the format string for request count failure when there isn't one specified and no default exists. </comment>
+  </data>
+  <data name="ErrorMessage_NoDefaultResponseCount" xml:space="preserve">
+    <value>A response count must be specified if there is no default response count.</value>
+    <comment>Gets the format string for response count failure when there isn't one specified and no default exists. </comment>
+  </data>
   <data name="ErrorMessage_StatusCodesRegularExpressionDoesNotMatch" xml:space="preserve">
     <value>The field {0} must be a status code or status code range between 1xx and 5xx. E.g. 200, 400-500.</value>
     <comment>Gets the format string for rejecting validation due to the field not matching the expected regular expression.
 1 Format Parameter:
 0. fieldName: The name of the field that does not match the regular expression</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions" xml:space="preserve">
+    <value>The Collection Rule Defaults that can be applied to actions.</value>
+    <comment>The description provided for the Actions parameter on CollectionRuleDefaultsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits" xml:space="preserve">
+    <value>The Collection Rule Defaults that can be applied to limits.</value>
+    <comment>The description provided for the Limits parameter on CollectionRuleDefaultsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers" xml:space="preserve">
+    <value>The Collection Rule Defaults that can be applied to triggers.</value>
+    <comment>The description provided for the Triggers parameter on CollectionRuleDefaultsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CPUUsageOptions_GreaterThan" xml:space="preserve">
+    <value>The threshold level as a percentage that the counter must maintain (or higher) for the specified duration.</value>
+    <comment>The description provided for the GreaterThan parameter on CPUUsageOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CPUUsageOptions_LessThan" xml:space="preserve">
+    <value>The threshold level as a percentage that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.</value>
+    <comment>The description provided for the LessThan parameter on CPUUsageOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_GCHeapSizeOptions_GreaterThan" xml:space="preserve">
+    <value>The threshold level in MBs that the counter must maintain (or higher) for the specified duration.</value>
+    <comment>The description provided for the GreaterThan parameter on GCHeapSizeOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_GCHeapSizeOptions_LessThan" xml:space="preserve">
+    <value>The threshold level in MBs that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.</value>
+    <comment>The description provided for the LessThan parameter on GCHeapSizeOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ThreadpoolQueueLengthOptions_GreaterThan" xml:space="preserve">
+    <value>The threshold level the counter must maintain (or higher) for the specified duration.</value>
+    <comment>The description provided for the GreaterThan parameter on ThreadpoolQueueLengthOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan" xml:space="preserve">
+    <value>The threshold level the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.</value>
+    <comment>The description provided for the LessThan parameter on ThreadpoolQueueLengthOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId" xml:space="preserve">
+    <value>Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage.</value>
   </data>
 </root>

@@ -274,7 +274,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Result(
                     Utilities.ArtifactType_GCDump,
                     egressProvider,
-                    (stream, token) => GCDumpUtilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token),
+                    async (stream, token) =>
+                    {
+                        IDisposable operationRegistration = null;
+                        try
+                        {
+                            if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
+                            {
+                                operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
+                            }
+                            await GCDumpUtilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token);
+                        }
+                        finally
+                        {
+                            operationRegistration?.Dispose();
+                        }
+                    },
                     fileName,
                     ContentTypes.ApplicationOctetStream,
                     processInfo.EndpointInfo);

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    internal class EndpointInfo : IEndpointInfo
+    internal sealed class EndpointInfo : EndpointInfoBase
     {
         public static async Task<EndpointInfo> FromProcessIdAsync(int processId, CancellationToken token)
         {
@@ -85,17 +85,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
         }
 
-        public IpcEndpoint Endpoint { get; private set; }
+        public override IpcEndpoint Endpoint { get; protected set; }
 
-        public int ProcessId { get; private set; }
+        public override int ProcessId { get; protected set; }
 
-        public Guid RuntimeInstanceCookie { get; private set; }
+        public override Guid RuntimeInstanceCookie { get; protected set; }
 
-        public string CommandLine { get; private set; }
+        public override string CommandLine { get; protected set; }
 
-        public string OperatingSystem { get; private set; }
+        public override string OperatingSystem { get; protected set; }
 
-        public string ProcessArchitecture { get; private set; }
+        public override string ProcessArchitecture { get; protected set; }
 
         internal string DebuggerDisplay => FormattableString.Invariant($"PID={ProcessId}, Cookie={RuntimeInstanceCookie}");
     }

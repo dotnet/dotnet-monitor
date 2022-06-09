@@ -8,12 +8,14 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NJsonSchema;
 using NJsonSchema.Generation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 {
@@ -144,13 +146,15 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             AddCollectionRuleTriggerSchema<AspNetRequestDurationOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.AspNetRequestDuration);
             AddCollectionRuleTriggerSchema<AspNetResponseStatusOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.AspNetResponseStatus);
             AddCollectionRuleTriggerSchema<EventCounterOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.EventCounter);
+            AddCollectionRuleTriggerSchema<CPUUsageOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.CPUUsage);
+            AddCollectionRuleTriggerSchema<GCHeapSizeOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.GCHeapSize);
+            AddCollectionRuleTriggerSchema<ThreadpoolQueueLengthOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.ThreadpoolQueueLength);
             AddCollectionRuleTriggerSchema(context, triggerTypeSchema, KnownCollectionRuleTriggers.Startup);
         }
 
         private static void AddCollectionRuleActionSchema<TOptions>(GenerationContext context, JsonSchema actionTypeSchema, string actionType)
         {
             JsonSchema subSchema = new JsonSchema();
-            subSchema.RequiredProperties.Add(nameof(CollectionRuleActionOptions.Settings));
 
             JsonSchemaProperty settingsProperty = AddDiscriminatedSubSchema(
                 context.Schema.Definitions[nameof(CollectionRuleActionOptions)],
@@ -160,6 +164,19 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 subSchema);
 
             settingsProperty.Reference = context.AddTypeIfNotExist<TOptions>();
+
+            var propertyNames = GetCollectionRuleDefaultsPropertyNames();
+
+            // Don't require properties that have a corresponding collection rule default
+            foreach (var propName in propertyNames)
+            {
+                settingsProperty.Reference.RequiredProperties.Remove(propName);
+            }
+
+            if (settingsProperty.Reference.RequiredProperties.Count > 0)
+            {
+                subSchema.RequiredProperties.Add(nameof(CollectionRuleActionOptions.Settings));
+            }
 
             actionTypeSchema.Enumeration.Add(actionType);
         }
@@ -180,7 +197,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
         private static void AddCollectionRuleTriggerSchema<TOptions>(GenerationContext context, JsonSchema triggerTypeSchema, string triggerType)
         {
             JsonSchema subSchema = new JsonSchema();
-            subSchema.RequiredProperties.Add(nameof(CollectionRuleTriggerOptions.Settings));
 
             JsonSchemaProperty settingsProperty = AddDiscriminatedSubSchema(
                 context.Schema.Definitions[nameof(CollectionRuleTriggerOptions)],
@@ -191,7 +207,32 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
             settingsProperty.Reference = context.AddTypeIfNotExist<TOptions>();
 
+            IEnumerable<string> propertyNames = GetCollectionRuleDefaultsPropertyNames();
+
+            // Don't require properties that have a corresponding collection rule default
+            foreach (var propName in propertyNames)
+            {
+                settingsProperty.Reference.RequiredProperties.Remove(propName);
+            }
+
+            if (settingsProperty.Reference.RequiredProperties.Count > 0)
+            {
+                subSchema.RequiredProperties.Add(nameof(CollectionRuleTriggerOptions.Settings));
+            }
+
             triggerTypeSchema.Enumeration.Add(triggerType);
+        }
+
+        private static IEnumerable<string> GetCollectionRuleDefaultsPropertyNames()
+        {
+            List<string> propertyNames = new();
+
+            foreach (var defaultsType in typeof(CollectionRuleDefaultsOptions).GetProperties())
+            {
+                propertyNames.AddRange(defaultsType.PropertyType.GetProperties().Select(x => x.Name));
+            }
+
+            return propertyNames;
         }
 
         private static JsonSchemaProperty AddDiscriminatedSubSchema(

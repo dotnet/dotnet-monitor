@@ -377,6 +377,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             yield return new object[] { TargetFrameworkMoniker.Net50 };
             yield return new object[] { TargetFrameworkMoniker.Net60 };
+#if INCLUDE_NEXT_DOTNET
+            yield return new object[] { TargetFrameworkMoniker.Net70 };
+#endif
         }
     }
 }

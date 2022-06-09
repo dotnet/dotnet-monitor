@@ -9,6 +9,7 @@ For Dockerfiles and repository information, see [Running in Docker](./docker.md)
 The following example demonstrates a deployment of the dotnet-monitor container image monitoring two application containers within the same pod.
 
 ```yaml
+# Tell us about your experience using dotnet monitor: https://aka.ms/dotnet-monitor-survey
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,12 +33,10 @@ spec:
         - name: ASPNETCORE_URLS
           value: http://+:80
         - name: DOTNET_DiagnosticPorts
-          value: /diag/port
+          value: /diag/port.sock
         volumeMounts:
         - mountPath: /diag
           name: diagvol
-        - mountPath: /dumps
-          name: dumpsvol
         resources:
           limits:
             cpu: 250m
@@ -49,12 +48,10 @@ spec:
         - name: ASPNETCORE_URLS
           value: http://+:81
         - name: DOTNET_DiagnosticPorts
-          value: /diag/port
+          value: /diag/port.sock
         volumeMounts:
         - mountPath: /diag
           name: diagvol
-        - mountPath: /dumps
-          name: dumpsvol
         resources:
           limits:
             cpu: 250m
@@ -69,9 +66,9 @@ spec:
         - name: DOTNETMONITOR_DiagnosticPort__ConnectionMode
           value: Listen
         - name: DOTNETMONITOR_DiagnosticPort__EndpointName
-          value: /diag/port
+          value: /diag/port.sock
         - name: DOTNETMONITOR_Storage__DumpTempFolder
-          value: /dumps
+          value: /diag/dumps
         # ALWAYS use the HTTPS form of the URL for deployments in production; the removal of HTTPS is done for
         # demonstration purposes only in this example. Please continue reading after this example for further details.
         - name: DOTNETMONITOR_Urls
@@ -79,8 +76,6 @@ spec:
         volumeMounts:
         - mountPath: /diag
           name: diagvol
-        - mountPath: /dumps
-          name: dumpsvol
         resources:
           requests:
             cpu: 50m
@@ -90,8 +85,6 @@ spec:
             memory: 256Mi
       volumes:
       - name: diagvol
-        emptyDir: {}
-      - name: dumpsvol
         emptyDir: {}
 ```
 

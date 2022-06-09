@@ -8,11 +8,11 @@ When running a dotnet application, differences in diverse local and production e
 
 - [Releases](./releases.md)
 - [Setup](./setup.md)
-- [Getting Started](#)
+- Getting Started
     - [Running on a local machine](./localmachine.md)
     - [Running in Docker](./docker.md)
     - [Running in Kubernetes](./kubernetes.md)
-    - [Enabling SSL](#)
+    - Enabling SSL
 - [API Endpoints](./api/README.md)
     - [OpenAPI document](./openapi.json)
     - [`/processes`](./api/processes.md)
@@ -30,7 +30,9 @@ When running a dotnet application, differences in diverse local and production e
     - [API Key (Recommended)](./authentication.md#api-key-authentication)
       - [API Key Setup Guide](./api-key-setup.md)
     - [Windows](./authentication.md#windows-authentication)
-- [Collection Rules](./collectionrules.md)
+- [Collection Rules](./collectionrules/collectionrules.md)
+    - [Collection Rules examples](./collectionrules/collectionruleexamples.md)
+    - [Trigger shortcut](./collectionrules/triggershortcuts.md)
 - [Egress Providers](./egress.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Clone, build, and test the repo](./building.md)

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions
 {
-    internal sealed class CallbackActionFactory : ICollectionRuleActionFactory<object>
+    internal sealed class CallbackActionFactory : ICollectionRuleActionFactory<BaseRecordOptions>
     {
         private readonly CallbackActionService _service;
 
@@ -23,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, object options)
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, BaseRecordOptions options)
         {
             return new CallbackAction(_service);
         }
@@ -51,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         }
     }
 
-    internal sealed class DelayedCallbackActionFactory : ICollectionRuleActionFactory<object>
+    internal sealed class DelayedCallbackActionFactory : ICollectionRuleActionFactory<BaseRecordOptions>
     {
         private readonly CallbackActionService _service;
 
@@ -60,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, object options)
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, BaseRecordOptions options)
         {
             return new DelayedCallbackAction(_service);
         }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -13,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// Options for the AspNetResponseStatus trigger.
     /// </summary>
     internal sealed class AspNetResponseStatusOptions :
-        IAspNetActionPathFilters
+        IAspNetActionPathFilters, ISlidingWindowDurationProperties
     {
         private const string StatusCodeRegex = "[1-5][0-9]{2}";
         private const string StatusCodesRegex = StatusCodeRegex + "(-" + StatusCodeRegex + ")?";
@@ -31,7 +32,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_ResponseCount))]
-        [Required]
+
+        [Required(
+            ErrorMessageResourceType = typeof(OptionsDisplayStrings),
+            ErrorMessageResourceName = nameof(OptionsDisplayStrings.ErrorMessage_NoDefaultResponseCount))]
         [Range(1, int.MaxValue)]
         public int ResponseCount { get; set; }
 
@@ -39,7 +43,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]
-        [DefaultValue(AspNetResponseStatusOptionsDefaults.SlidingWindowDuration)]
         public TimeSpan? SlidingWindowDuration { get; set; }
 
         // CONSIDER: Currently described that paths have to exactly match one item in the list.

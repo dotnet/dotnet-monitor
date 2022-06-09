@@ -241,6 +241,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientI" +
+                        "d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The URI of the Azure queue account..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri {
@@ -305,6 +315,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the default Egress Provider..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleActionDefaultsOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionDefaultsOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name used to refer to the action..
         /// </summary>
         public static string DisplayAttributeDescription_CollectionRuleActionOptions_Name {
@@ -337,6 +356,61 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectionRuleActionOptions_WaitForCompletion {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleActionOptions_WaitForCompletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to actions..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to limits..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_Limits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection Rule Defaults that can be applied to triggers..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleDefaultsOptions_Triggers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default number of times the action list may be executed before being throttled..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCountSlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_ActionCountSlidin" +
+                        "gWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default amount of time before the rule will stop monitoring a process after it has been applied to a process..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_RuleDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleLimitsDefaultsOptions_RuleDuration", resourceCulture);
             }
         }
         
@@ -401,6 +475,34 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectionRuleOptions_Trigger {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleOptions_Trigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default threshold of the number of requests that start within the sliding window of time..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_RequestCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_RequestCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default threshold number of responses with matching status codes..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_ResponseCount {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_ResponseCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default sliding window duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_SlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_SlidingWindowDur" +
+                        "ation", resourceCulture);
             }
         }
         
@@ -639,6 +741,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The threshold level as a percentage that the counter must maintain (or higher) for the specified duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_CPUUsageOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CPUUsageOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level as a percentage that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null..
+        /// </summary>
+        public static string DisplayAttributeDescription_CPUUsageOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CPUUsageOptions_LessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In &apos;Connect&apos; mode, dotnet-monitor connects to the application for diagnostics. In &apos;Listen&apos; mode, the application connects to dotnet-monitor via EndpointName..
         /// </summary>
         public static string DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode {
@@ -771,6 +891,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectory" +
                         "Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level in MBs that the counter must maintain (or higher) for the specified duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_GCHeapSizeOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GCHeapSizeOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level in MBs that the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null..
+        /// </summary>
+        public static string DisplayAttributeDescription_GCHeapSizeOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GCHeapSizeOptions_LessThan", resourceCulture);
             }
         }
         
@@ -1117,6 +1255,32 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The threshold level the counter must maintain (or higher) for the specified duration..
+        /// </summary>
+        public static string DisplayAttributeDescription_ThreadpoolQueueLengthOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ThreadpoolQueueLengthOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null..
+        /// </summary>
+        public static string DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan", resourceCulture);
+            }
+        }
+        
+        ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
+        /// </summary>
+        public static string ErrorMessage_CredentialsMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CredentialsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A value is required for the process filter..
         /// </summary>
         public static string ErrorMessage_FilterValueMissing {
@@ -1126,20 +1290,38 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An egress provider must be specified if there is no default egress provider..
+        /// </summary>
+        public static string ErrorMessage_NoDefaultEgressProvider {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoDefaultEgressProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A request count must be specified if there is no default request count..
+        /// </summary>
+        public static string ErrorMessage_NoDefaultRequestCount {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoDefaultRequestCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A response count must be specified if there is no default response count..
+        /// </summary>
+        public static string ErrorMessage_NoDefaultResponseCount {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NoDefaultResponseCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The field {0} must be a status code or status code range between 1xx and 5xx. E.g. 200, 400-500..
         /// </summary>
         public static string ErrorMessage_StatusCodesRegularExpressionDoesNotMatch {
             get {
                 return ResourceManager.GetString("ErrorMessage_StatusCodesRegularExpressionDoesNotMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} field or the {1} field is required..
-        /// </summary>
-        public static string ErrorMessage_TwoFieldsMissing {
-            get {
-                return ResourceManager.GetString("ErrorMessage_TwoFieldsMissing", resourceCulture);
             }
         }
     }

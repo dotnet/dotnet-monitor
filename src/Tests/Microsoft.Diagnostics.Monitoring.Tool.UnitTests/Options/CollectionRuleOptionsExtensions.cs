@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress, DumpType? type = null)
+        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress = null, DumpType? type = null)
         {
             return options.AddAction(
                 KnownCollectionRuleActions.CollectDump,
@@ -223,6 +224,62 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleOptions SetCPUUsageTrigger(this CollectionRuleOptions options, Action<CPUUsageOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.CPUUsage,
+                triggerOptions =>
+                {
+                    CPUUsageOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
+        public static CollectionRuleOptions SetThreadpoolQueueLengthTrigger(this CollectionRuleOptions options, Action<ThreadpoolQueueLengthOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.ThreadpoolQueueLength,
+                triggerOptions =>
+                {
+                    ThreadpoolQueueLengthOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
+        public static CollectionRuleOptions SetGCHeapSizeTrigger(this CollectionRuleOptions options, Action<GCHeapSizeOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.GCHeapSize,
+                triggerOptions =>
+                {
+                    GCHeapSizeOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
+        public static CollectionRuleOptions SetIEventCounterTrigger(this CollectionRuleOptions options, Type triggerType, string triggerName, Action<IEventCounterShortcuts> callback = null)
+        {
+            return options.SetTrigger(
+                triggerName,
+                triggerOptions =>
+                {
+                    var settings = Activator.CreateInstance(triggerType);
+
+                    callback?.Invoke((IEventCounterShortcuts)settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
         public static CollectionRuleOptions SetEventCounterTrigger(this CollectionRuleOptions options, Action<EventCounterOptions> callback = null)
         {
             return options.SetTrigger(
@@ -296,10 +353,48 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleOptions SetLimits(this CollectionRuleOptions options, Action<CollectionRuleLimitsOptions> callback = null)
+        {
+            CollectionRuleLimitsOptions limitsOptions = new();
+
+            callback?.Invoke(limitsOptions);
+
+            options.Limits = limitsOptions;
+
+            return options;
+        }
+
         public static EventCounterOptions VerifyEventCounterTrigger(this CollectionRuleOptions ruleOptions)
         {
             ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.EventCounter);
             return Assert.IsType<EventCounterOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static CPUUsageOptions VerifyCPUUsageTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.CPUUsage);
+            return Assert.IsType<CPUUsageOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static GCHeapSizeOptions VerifyGCHeapSizeTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.GCHeapSize);
+            return Assert.IsType<GCHeapSizeOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static ThreadpoolQueueLengthOptions VerifyThreadpoolQueueLengthTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.ThreadpoolQueueLength);
+            return Assert.IsType<ThreadpoolQueueLengthOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static IEventCounterShortcuts VerifyIEventCounterTrigger(this CollectionRuleOptions ruleOptions, Type triggerType, string triggerName)
+        {
+            ruleOptions.VerifyTrigger(triggerName);
+
+            Assert.IsType(triggerType, ruleOptions.Trigger.Settings);
+
+            return (IEventCounterShortcuts)ruleOptions.Trigger.Settings;
         }
 
         public static AspNetRequestCountOptions VerifyAspNetRequestCountTrigger(this CollectionRuleOptions ruleOptions)

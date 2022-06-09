@@ -1,0 +1,40 @@
+{
+  "CollectionRuleActions": {
+    "ActionTemplate1": {
+      "Settings": {
+        "Egress": "artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      },
+      "Type": "CollectGCDump" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    },
+    "ActionTemplate2": {
+      "Settings": {
+        "Egress": "monitorBlob" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+        "Profile": "Cpu" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      },
+      "Type": "CollectTrace" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    }
+  },
+  "CollectionRuleFilters": {
+    "FilterTemplate": {
+      "Key": "ProcessName" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "MatchType": "Exact" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "Value": "FirstWebApp1" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    }
+  },
+  "CollectionRuleLimits": {
+    "LimitTemplate": {
+      "ActionCount": "1" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "ActionCountSlidingWindowDuration": "00:00:30" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "RuleDuration": "00:05:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    }
+  },
+  "CollectionRuleTriggers": {
+    "TriggerTemplate": {
+      "Settings": {
+        "RequestCount": "20" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+        "SlidingWindowDuration": "00:01:00" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+      },
+      "Type": "AspNetRequestCount" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    }
+  }
+}

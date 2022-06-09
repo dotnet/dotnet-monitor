@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -14,7 +15,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the CollectDump action.
     /// </summary>
     [DebuggerDisplay("CollectDump")]
-    internal sealed partial class CollectDumpOptions
+#if SCHEMAGEN
+    [NJsonSchema.Annotations.JsonSchemaFlatten]
+#endif
+    internal sealed partial record class CollectDumpOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -26,7 +30,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectDumpOptions_Egress))]
-        [Required]
+        [Required(
+            ErrorMessageResourceType = typeof(OptionsDisplayStrings),
+            ErrorMessageResourceName = nameof(OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider))]
 #if !UNITTEST && !SCHEMAGEN
         [ValidateEgressProvider]
 #endif
