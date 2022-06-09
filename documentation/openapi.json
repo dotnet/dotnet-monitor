@@ -914,10 +914,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "$ref": "#/components/schemas/CollectionRuleDescription"
-                  }
+                  "$ref": "#/components/schemas/CollectionRuleDetailedDescription"
                 }
               }
             }
@@ -1505,6 +1502,105 @@
             "type": "string",
             "description": "Human-readable explanation for the current state of the collection rule.",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeSpan": {
+        "type": "object",
+        "properties": {
+          "ticks": {
+            "type": "integer",
+            "format": "int64",
+            "readOnly": true
+          },
+          "days": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "hours": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "milliseconds": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "minutes": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "seconds": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "totalDays": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalHours": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalMilliseconds": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalMinutes": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalSeconds": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CollectionRuleDetailedDescription": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/CollectionRuleState"
+          },
+          "stateReason": {
+            "type": "string",
+            "description": "Human-readable explanation for the current state of the collection rule.",
+            "nullable": true
+          },
+          "lifetimeOccurrences": {
+            "type": "integer",
+            "description": "The number of times the trigger has executed for a process in its lifetime.",
+            "format": "int32"
+          },
+          "slidingWindowOccurrences": {
+            "type": "integer",
+            "description": "The number of times the trigger has executed for a process in the current sliding window duration (as defined by Limits).",
+            "format": "int32"
+          },
+          "actionCountLimit": {
+            "type": "integer",
+            "description": "The number of times the trigger can execute for a process before being limited (as defined by Limits).",
+            "format": "int32"
+          },
+          "actionCountSlidingWindowDurationLimit": {
+            "$ref": "#/components/schemas/TimeSpan"
+          },
+          "slidingWindowDurationCountdown": {
+            "$ref": "#/components/schemas/TimeSpan"
+          },
+          "ruleFinishedCountdown": {
+            "$ref": "#/components/schemas/TimeSpan"
           }
         },
         "additionalProperties": false

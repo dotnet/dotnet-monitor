@@ -118,8 +118,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     options.CreateCollectionRule(TestRuleName)
                         .SetManualTrigger()
-                        .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider) // Having this seems to stabilize the test (presumably since it doesn't happen instantly)...don't trust the timing
-                        .AddAction(CallbackAction.ActionName)
+                        .AddAction(DelayedCallbackAction.ActionName)
                         .SetActionLimits(count: ExpectedActionExecutionCount);
 
                     options.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
@@ -160,6 +159,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         StateReason = Strings.Message_CollectionRuleStateReason_ExecutingActions
                     }, TestRuleName);
 
+                    clock.Increment(ClockIncrementDuration);
+
                     await startedSource.WithCancellation(cancellationSource.Token);
 
                     CompareCollectionRuleDetailedDescriptions(pipeline, new()
@@ -182,7 +183,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     services.AddSingleton<ISystemClock>(clock);
                     services.RegisterManualTrigger(triggerService);
-                    services.RegisterTestAction(callbackService);
+                    services.RegisterDelayedTestAction(callbackService);
                 });
         }
 
@@ -432,7 +433,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             CollectionRuleDetailedDescription actualDetailedDescription = CollectionRuleService.GetCollectionRuleDetailedDescription(pipeline);
 
-            Assert.Equal(actualDetailedDescription, expectedDetailedDescription);
+            Assert.Equal(expectedDetailedDescription, actualDetailedDescription);
         }
     }
 }

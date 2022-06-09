@@ -543,8 +543,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         [HttpGet("collectionrules/{collectionrulename}", Name = nameof(GetCollectionRuleDetailedDescription))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(Dictionary<string, CollectionRuleDescription>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
+        [ProducesResponseType(typeof(CollectionRuleDetailedDescription), StatusCodes.Status200OK)]
+        public Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
             string collectionRuleName,
             [FromQuery]
             int? pid = null,
@@ -553,26 +553,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            // For the initial pass, we get the Url decoding of the collection rule name (e.g. My/Rule would be entered as My%2FRule).
-            // If a collection rule is not found with this name, we try again with the raw collection rule name (e.g. check for a rule with the name My%2FRule)
-            // There is one rare edge case that this cannot distinguish between (e.g. the user has rules named My/Rule AND My%2FRule; we will return the state of My/Rule).
-
-            string decodedCollectionRuleName = System.Net.WebUtility.UrlDecode(collectionRuleName);
-
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
-
-            ActionResult<CollectionRuleDetailedDescription> description = await GetCollectionRuleDetailedDescription(decodedCollectionRuleName, processKey);
-
-            return (null != description.Value) ? description : await GetCollectionRuleDetailedDescription(collectionRuleName, processKey);
-        }
-
-        private Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(string collectionRuleName, ProcessKey? processKey)
-        {
             return InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
             {
                 return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
-            processKey);
+            GetProcessKey(pid, uid, name));
         }
 
         private static string GetDotnetMonitorVersion()

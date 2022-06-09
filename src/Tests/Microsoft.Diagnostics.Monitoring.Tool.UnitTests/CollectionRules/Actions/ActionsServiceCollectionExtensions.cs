@@ -15,6 +15,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         {
             services.AddSingleton(callback);
             services.RegisterCollectionRuleAction<CallbackActionFactory, object>(CallbackAction.ActionName);
+
+            return services;
+        }
+
+        public static IServiceCollection RegisterDelayedTestAction(this IServiceCollection services, CallbackActionService callback)
+        {
+            services.AddSingleton(callback);
+
+            services.RegisterCollectionRuleAction<DelayedCallbackActionFactory, object>(DelayedCallbackAction.ActionName);
+
             return services;
         }
 

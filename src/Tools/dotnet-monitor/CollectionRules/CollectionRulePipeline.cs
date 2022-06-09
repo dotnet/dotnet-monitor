@@ -31,11 +31,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Flag used to guard against multiple invocations of _startCallback.
         private bool _invokedStartCallback = false;
 
-        public Queue<DateTime> ExecutionTimestamps { get; private set; }
+        private Queue<DateTime> _executionTimestamps { get; set; }
         public List<DateTime> AllExecutionTimestamps { get; private set; }
         public DateTime PipelineStartTime { get; private set; }
 
         private CollectionRuleStateHolder _stateHolder = new();
+
+        private TimeSpan? _actionCountWindowDuration;
+
+        private int _actionCountLimit;
 
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
@@ -71,10 +75,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             CancellationToken linkedToken = linkedCancellationSource.Token;
 
-            TimeSpan? actionCountWindowDuration = Context.Options.Limits?.ActionCountSlidingWindowDuration;
-            int actionCountLimit = (Context.Options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
-            ExecutionTimestamps = new(actionCountLimit);
-            AllExecutionTimestamps = new();
+            _actionCountWindowDuration = Context.Options.Limits?.ActionCountSlidingWindowDuration;
+            _actionCountLimit = (Context.Options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
+            _executionTimestamps = new Queue<DateTime>(_actionCountLimit);
+            AllExecutionTimestamps = new List<DateTime>();
             PipelineStartTime = Context.Clock.UtcNow.UtcDateTime;
 
             // Start cancellation timer for graceful stop of the collection rule
@@ -146,14 +150,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     DateTime currentTimestamp = Context.Clock.UtcNow.UtcDateTime;
 
-                    DequeueOldTimestamps(actionCountWindowDuration, currentTimestamp);
+                    lock (_executionTimestamps)
+                    {
+                        DequeueOldTimestamps(_executionTimestamps, _actionCountWindowDuration, currentTimestamp);
+                    }
 
                     // Check if executing actions has been throttled due to count limit
-                    if (!CheckForThrottling(actionCountLimit, actionCountWindowDuration))
+                    if (!CheckForThrottling(_actionCountLimit, _actionCountWindowDuration, _executionTimestamps.Count))
                     {
                         _stateHolder.EndThrottled();
 
-                        ExecutionTimestamps.Enqueue(currentTimestamp);
+                        lock (_executionTimestamps)
+                        {
+                            _executionTimestamps.Enqueue(currentTimestamp);
+                        }
+
                         AllExecutionTimestamps.Add(currentTimestamp);
 
                         bool actionsCompleted = false;
@@ -185,7 +196,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                                 Context.Logger.CollectionRuleActionsCompleted(Context.Name);
                             }
 
-                            if (CheckForThrottling(actionCountLimit, actionCountWindowDuration))
+                            if (CheckForThrottling(_actionCountLimit, _actionCountWindowDuration, _executionTimestamps.Count))
                             {
                                 _stateHolder.BeginThrottled();
                             }
@@ -194,8 +205,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             // number of times as specified by the limits and the action count
                             // window was not specified. Since the pipeline can no longer execute
                             // actions, the pipeline can complete.
-                            completePipeline = actionCountLimit <= ExecutionTimestamps.Count &&
-                                !actionCountWindowDuration.HasValue;
+                            completePipeline = _actionCountLimit <= _executionTimestamps.Count &&
+                                !_actionCountWindowDuration.HasValue;
 
                             if (completePipeline)
                             {
@@ -242,18 +253,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        public void DequeueOldTimestamps(TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
+        public static void DequeueOldTimestamps(Queue<DateTime> executionTimestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
         {
             // If rule has an action count window, remove all execution timestamps that fall outside the window.
             if (actionCountWindowDuration.HasValue)
             {
                 DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
-                while (ExecutionTimestamps.Count > 0)
+
+                while (executionTimestamps.Count > 0)
                 {
-                    DateTime executionTimestamp = ExecutionTimestamps.Peek();
+                    DateTime executionTimestamp = executionTimestamps.Peek();
                     if (executionTimestamp < windowStartTimestamp)
                     {
-                        ExecutionTimestamps.Dequeue();
+                        executionTimestamps.Dequeue();
                     }
                     else
                     {
@@ -264,9 +276,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        internal bool CheckForThrottling(int actionCountLimit, TimeSpan? actionCountSWD)
+        internal static bool CheckForThrottling(int actionCountLimit, TimeSpan? actionCountSWD, int executionTimestampsCount)
         {
-            return actionCountSWD.HasValue && actionCountLimit <= ExecutionTimestamps.Count;
+            return actionCountSWD.HasValue && actionCountLimit <= executionTimestampsCount;
         }
 
         // Temporary until Pipeline APIs are public or get an InternalsVisibleTo for the tests
@@ -293,19 +305,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         protected override async Task OnCleanup()
         {
-            TimeSpan? ruleDuration = Context.Options.Limits?.RuleDuration;
-
-            if (ruleDuration.HasValue && Context.Clock.UtcNow.UtcDateTime - (PipelineStartTime + ruleDuration.Value) > TimeSpan.Zero)
-            {
-                _stateHolder.RuleDurationReached();
-            }
-
             await base.OnCleanup();
         }
 
-        public CollectionRuleStateHolder GetStateHolderCopy()
+        public CollectionRulePipelineStateHolder GetPipelineStateHolder()
         {
-            return new CollectionRuleStateHolder(_stateHolder);
+            CollectionRulePipelineStateHolder pipelineStateHolder = new();
+
+            lock (_stateHolder)
+            {
+                pipelineStateHolder.StateHolder = new CollectionRuleStateHolder(_stateHolder);
+            }
+
+            lock (_executionTimestamps)
+            {
+                pipelineStateHolder.ExecutionTimestamps = new Queue<DateTime>(_executionTimestamps);
+            }
+
+            DequeueOldTimestamps(pipelineStateHolder.ExecutionTimestamps, _actionCountWindowDuration, Context.Clock.UtcNow.UtcDateTime);
+
+            if (CheckForThrottling(_actionCountLimit, _actionCountWindowDuration, pipelineStateHolder.ExecutionTimestamps.Count))
+            {
+                pipelineStateHolder.StateHolder.BeginThrottled();
+            }
+            else
+            {
+                pipelineStateHolder.StateHolder.EndThrottled();
+            }
+
+            return pipelineStateHolder;
         }
     }
 }
