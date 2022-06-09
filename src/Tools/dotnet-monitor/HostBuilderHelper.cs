@@ -73,7 +73,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         try
                         {
-
                             File.OpenRead(userFilePath).Dispose(); // If this succeeds, we have read-permissions
                             builder.AddJsonFile(userFilePath, optional: true, reloadOnChange: true);
                         }
