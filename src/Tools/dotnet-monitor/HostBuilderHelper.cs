@@ -69,10 +69,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
                     string userFilePath = settings.UserProvidedConfigFilePath;
 
-                    if (File.Exists(userFilePath))
+                    if (File.Exists(userFilePath) && Path.GetExtension(userFilePath).ToLower().Equals(".json"))
                     {
                         try
                         {
+
                             File.OpenRead(userFilePath).Dispose(); // If this succeeds, we have read-permissions
                             builder.AddJsonFile(userFilePath, optional: true, reloadOnChange: true);
                         }
