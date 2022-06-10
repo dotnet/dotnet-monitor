@@ -2,9 +2,11 @@
 
 ## Merge to Release Branch
 
-1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`). Note that for patch releases, fixes should be made directly to the appropriate release branch and we do not merge from the `main` branch.
-1. In `/eng/Versions.props`, update `dotnet/diagnostics` dependencies to versions from the corresponding release of the `dotnet/diagnostics` repo.
-1. In `/eng/Version.props`, ensure that `<BlobGroupBuildQuality>` is set appropriately. See the documentation next to this setting for the appropriate values. In release branches, its value should be `release`. This setting, in combination with the version settings, determine for which 'channel' the aks.ms links are created.
+1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`). Note that for patch releases, fixes should be made directly to the appropriate release branch and we do not merge from the `main` branch. Note that it is acceptable to use a release/major.x branch. Alternatively, you can create a new release branch for the minor version. See [additional branch steps](#additional-steps-when-creating-a-new-release-branch) below.
+
+1. In `/eng/Versions.props`, update `dotnet/diagnostics` dependencies to versions from the corresponding release of the `dotnet/diagnostics` repo. Note this should be done using darc. See [updating dependencies](#updating-dependencies).
+1. In `/eng/Version.props`, ensure that `<BlobGroupBuildQuality>` is set appropriately. See the documentation next to this setting for the appropriate values. In release branches, its value should be `release`. This setting, in combination with the version settings, determine for which 'channel' the aks.ms links are created. You may also need to update `PreReleaseVersionLabel` to `rtm`, the `DotnetFinalVersionKind` to 'release' or 'servicing' and remove the `PreReleaseVersionIteration`. See https://github.com/dotnet/dotnet-monitor/pull/1970/files for an example.
+
 1. Complete at least one successful [release build](#build-release-branch).
 1. [Update dotnet-docker pipeline variables](#update-pipeline-variable-for-release) to pick up builds from the release branch.
 1. Bump the version number in the `main` branch and reset release notes. [Example Pull Request](https://github.com/dotnet/dotnet-monitor/pull/1560). 
@@ -26,6 +28,7 @@ The official build will not automatically trigger for release branches. Each tim
 
 1. Wait for changes to be mirrored from [GitHub repository](https://github.com/dotnet/dotnet-monitor) to the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor).
 1. Invoke the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) for the release branch.
+1. Bump the versions across feature branches. See https://github.com/dotnet/dotnet-monitor/pull/1973/files for an example.
 
 The result of the successful build pushes packages to the [dotnet-tools](https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json) feed, pushes symbols to symbol feeds, and generates aka.ms links for the following:
 - `aka.ms/dotnet/diagnostics/monitor{channel}/dotnet-monitor.nupkg.version`
@@ -42,16 +45,33 @@ The `channel` value is used by the `dotnet-docker` repository to consume the cor
 
 The `dotnet-docker` repository runs an update process each day that detects the latest version of a given `dotnet-monitor` channel. During the stabilization/testing/release period for a release of `dotnet-monitor`, the update process should be changed to pick up builds for the release branch.
 
+**Known issues**
+* You may not have permissions to change these variables.
+* Currently docker only supports updating one major version. We have to manually update any additional versions. See [instructions](#manually-updating-docker-versions) for manually updating.
+
 The following variables for [dotnet-docker-update-dependencies](https://dev.azure.com/dnceng/internal/_build?definitionId=470) need to be updated for release:
 * `monitorXMinorVersion`: Make sure these are set to the correct values.
 * `monitorXQuality`: Normally this is daily, but should be set to release.
-* `monitorXStableBranding`: Normally this is false, but should be set to true when the package version is stable e.g. `dotnet-monitor.8.0.0.nupkg` (does not have a prerelease label on it such as `-preview.X` or `-rtm.X`.
+* `monitorXStableBranding`: Normally this is false, but should be set to true when the package version is stable e.g. `dotnet-monitor.8.0.0.nupkg` (does not have a prerelease label on it such as `-preview.X` or `-rtm.X`).
 * `update-monitor-enabled`: Make sure this is true.
 * `update-dotnet-enabled`: When doing an ad-hoc run, make sure to **disable** this.
+
+### Updating tags
+
+If you are releasing a new minor version, you may need to update the current/preview tags as well as the shared tag pool.
+1. Update https://github.com/dotnet/dotnet-docker/blob/nightly/eng/mcr-tags-metadata-templates/monitor-tags.yml.
+1. Update https://github.com/dotnet/dotnet-docker/blob/nightly/manifest.json.
+1. Run update-dependencies as described [here](#manually-updating-docker-versions).
+1. See https://github.com/dotnet/dotnet-docker/pull/3830/files for an example.
 
 ### Revert Pipeline Variable After Release
 
 After the release has been completed, this pipeline variable should be changed to the appropriate daily channel (e.g. `6.0/daily`).
+
+### Manually updating docker versions
+1. In the dotnet-docker repo, dotnet build eng\update-dependencies.
+1. In the repo root, run update-dependencies. If you are updating 6.1, you would run `eng\update-dependencies\bin\Debug\net6.0\update-dependencies.exe 6.1 --product-version monitor=6.1.2-servicing.22306.3 --channel-name 6.1/release --stable-branding true --version-source-name dotnet/dotnet-monitor/6.1`
+1. See https://github.com/dotnet/dotnet-docker/pull/3828 for sample result.
 
 ### Updating dependencies
 
