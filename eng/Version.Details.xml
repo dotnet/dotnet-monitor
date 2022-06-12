@@ -14,9 +14,9 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="7.0.0-preview.6.22310.10">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="7.0.0-preview.6.22311.2">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>ae281e90e424da6f0ee86c37b0f7666a15d59da9</Sha>
+      <Sha>c1b5758c171f96c1cbe6df5c07ba0826d4c4ac6f</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22310.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
@@ -30,17 +30,17 @@
       <Uri>https://github.com/dotnet/symstore</Uri>
       <Sha>d26a72e2831b59f98820c2342d3e639fb90bee1c</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="7.0.0-preview.6.22309.9" CoherentParentDependency="Microsoft.AspNetCore.App.Runtime.win-x64">
+    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="7.0.0-preview.6.22310.12" CoherentParentDependency="Microsoft.AspNetCore.App.Runtime.win-x64">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>e026f392b2bb93bc9509ac5403d3e8cd7d3eee72</Sha>
+      <Sha>b1c2854d3bd078460a8094b4481795443e87c9c3</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.6.22310.10">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.6.22311.2">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>ae281e90e424da6f0ee86c37b0f7666a15d59da9</Sha>
+      <Sha>c1b5758c171f96c1cbe6df5c07ba0826d4c4ac6f</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.6.22309.9" CoherentParentDependency="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.6.22310.12" CoherentParentDependency="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>e026f392b2bb93bc9509ac5403d3e8cd7d3eee72</Sha>
+      <Sha>b1c2854d3bd078460a8094b4481795443e87c9c3</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
