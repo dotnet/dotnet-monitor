@@ -37,16 +37,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public CollectionRulePipelineState(int actionCountLimit, TimeSpan? actionCountSlidingWindowDuration, TimeSpan? ruleDuration)
         {
-            ActionCountLimit = actionCountLimit;
-            ActionCountSlidingWindowDuration = actionCountSlidingWindowDuration;
-            RuleDuration = ruleDuration;
-            ExecutionTimestamps = new Queue<DateTime>(ActionCountLimit);
-            AllExecutionTimestamps = new List<DateTime>();
-
             lock (_lock)
             {
                 Debug.Assert(CurrentState != CollectionRuleState.Finished);
 
+                ActionCountLimit = actionCountLimit;
+                ActionCountSlidingWindowDuration = actionCountSlidingWindowDuration;
+                RuleDuration = ruleDuration;
+                ExecutionTimestamps = new Queue<DateTime>(ActionCountLimit);
+                AllExecutionTimestamps = new List<DateTime>();
                 CurrentState = CollectionRuleState.Running;
                 CurrentStateReason = Strings.Message_CollectionRuleStateReason_Running;
             }
