@@ -301,20 +301,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         internal static CollectionRuleDetailedDescription GetCollectionRuleDetailedDescription(CollectionRulePipeline pipeline)
         {
-            CollectionRuleLimitsOptions limitsOptions = pipeline.Context.Options.Limits;
-
             CollectionRulePipelineState pipelineState = pipeline.GetPipelineState();
-
-            int actionCountLimit = (limitsOptions?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount);
 
             CollectionRuleDetailedDescription description = new()
             {
                 State = pipelineState.CurrentState,
                 StateReason = pipelineState.CurrentStateReason,
                 LifetimeOccurrences = pipelineState.AllExecutionTimestamps.Count,
-                ActionCountLimit = actionCountLimit,
+                ActionCountLimit = pipelineState.ActionCountLimit,
                 SlidingWindowOccurrences = pipelineState.ExecutionTimestamps.Count,
-                ActionCountSlidingWindowDurationLimit = limitsOptions?.ActionCountSlidingWindowDuration
+                ActionCountSlidingWindowDurationLimit = pipelineState.ActionCountSlidingWindowDuration
             };
 
             if (description.State != CollectionRuleState.Finished)
@@ -322,7 +318,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 DateTime currentTime = pipeline.Context.Clock.UtcNow.UtcDateTime;
 
                 description.SlidingWindowDurationCountdown = GetSWDCountdown(pipelineState.ExecutionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
-                description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline.PipelineStartTime, limitsOptions?.RuleDuration, currentTime);
+                description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline.PipelineStartTime, pipelineState.RuleDuration, currentTime);
             }
 
             return description;
