@@ -2,28 +2,34 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class CollectionRuleStateHolder
+    internal class CollectionRulePipelineState
     {
         public CollectionRuleState CurrentState { get; private set; } = CollectionRuleState.Running;
         public string CurrentStateReason { get; private set; } = Strings.Message_CollectionRuleStateReason_Running;
+        public Queue<DateTime> ExecutionTimestamps { get; set; }
+
+        public List<DateTime> AllExecutionTimestamps { get; set; }
+
 
         private readonly object _lock = new object();
 
-        public CollectionRuleStateHolder(CollectionRuleStateHolder other)
+        public CollectionRulePipelineState(CollectionRulePipelineState other)
         {
-            lock (_lock)
+            lock (other._lock)
             {
                 CurrentState = other.CurrentState;
                 CurrentStateReason = other.CurrentStateReason;
             }
         }
 
-        public CollectionRuleStateHolder()
+        public CollectionRulePipelineState()
         {
             lock (_lock)
             {
@@ -130,6 +136,34 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 CurrentState = CollectionRuleState.Finished;
                 CurrentStateReason = string.Format(CultureInfo.InvariantCulture, Strings.Message_CollectionRuleStateReason_Finished_Failure, errorMessage);
             }
+        }
+
+        public static void DequeueOldTimestamps(Queue<DateTime> executionTimestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
+        {
+            // If rule has an action count window, remove all execution timestamps that fall outside the window.
+            if (actionCountWindowDuration.HasValue)
+            {
+                DateTime windowStartTimestamp = currentTimestamp - actionCountWindowDuration.Value;
+
+                while (executionTimestamps.Count > 0)
+                {
+                    DateTime executionTimestamp = executionTimestamps.Peek();
+                    if (executionTimestamp < windowStartTimestamp)
+                    {
+                        executionTimestamps.Dequeue();
+                    }
+                    else
+                    {
+                        // Stop clearing out previous executions
+                        break;
+                    }
+                }
+            }
+        }
+
+        internal static bool CheckForThrottling(int actionCountLimit, TimeSpan? actionCountSWD, int executionTimestampsCount)
+        {
+            return actionCountSWD.HasValue && actionCountLimit <= executionTimestampsCount;
         }
     }
 }

@@ -12,9 +12,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
     internal class CollectionRuleEndpointInfoSourceCallbacks :
         IEndpointInfoSourceCallbacks
     {
-        private readonly ICollectionRuleService _service;
+        private readonly CollectionRuleService _service;
 
-        public CollectionRuleEndpointInfoSourceCallbacks(ICollectionRuleService service)
+        public CollectionRuleEndpointInfoSourceCallbacks(CollectionRuleService service)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }

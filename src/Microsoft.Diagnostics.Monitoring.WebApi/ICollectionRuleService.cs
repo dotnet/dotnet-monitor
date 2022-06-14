@@ -13,14 +13,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal interface ICollectionRuleService : IHostedService, IAsyncDisposable
     {
-        Task ApplyRules(
-            IEndpointInfo endpointInfo,
-            CancellationToken token);
-
-        Task RemoveRules(
-            IEndpointInfo endpointInfo,
-            CancellationToken token);
-
         Dictionary<string, CollectionRuleDescription> GetCollectionRulesDescriptions(IEndpointInfo endpointInfo);
 
         CollectionRuleDetailedDescription GetCollectionRuleDetailedDescription(string collectionRuleName, IEndpointInfo endpointInfo);
