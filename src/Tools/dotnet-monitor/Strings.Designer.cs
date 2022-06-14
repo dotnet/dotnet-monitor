@@ -457,7 +457,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The fully qualified path and filename of the configuration file you&apos;d like to add to the list of configuration sources..
+        ///   Looks up a localized string similar to The fully qualified path and filename of the json configuration file you&apos;d like to add to the list of configuration sources..
         /// </summary>
         internal static string HelpDescription_OptionConfigurationFilePath {
             get {
