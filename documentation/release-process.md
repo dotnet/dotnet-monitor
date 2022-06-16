@@ -69,8 +69,12 @@ If you are releasing a new minor version, you may need to update the current/pre
 After the release has been completed, this pipeline variable should be changed to the appropriate daily channel (e.g. `6.0/daily`).
 
 ### Manually updating docker versions
-1. In the dotnet-docker repo, dotnet build eng\update-dependencies.
-1. In the repo root, run update-dependencies. If you are updating 6.1, you would run `eng\update-dependencies\bin\Debug\net6.0\update-dependencies.exe 6.1 --product-version monitor=6.1.2-servicing.22306.3 --channel-name 6.1/release --stable-branding true --version-source-name dotnet/dotnet-monitor/6.1`
+1. Run `\eng\Set-DotnetVersions.ps1`. Example:
+``` powershell
+.\Set-DotnetVersions.ps1 6.1 -MonitorVersion 6.1.2-servicing.22306.3 -UseStableBranding
+.\Set-DotnetVersions.ps1 6.2 -MonitorVersion 6.2.0-rtm.22306.2 -UseStableBranding
+.\Set-DotnetVersions.ps1 7.0 -MonitorVersion 7.0.0-preview.5.22306.5
+```
 1. See https://github.com/dotnet/dotnet-docker/pull/3828 for sample result.
 
 ### Updating dependencies
@@ -123,3 +127,6 @@ The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https:/
 1. Update [releases.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releases.md) with the latest version.
 1. When necessary, update [docker.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/docker.md).
 1. When necessary, update this document if its instructions were unclear or incorrect.
+1. When releasing a new minor version, include an announcement that the previous version will soon be out of support. For example, https://github.com/dotnet/dotnet-monitor/discussions/1871
+1. Make sure you [Revert](#revert-pipeline-variable-after-release) the nightly build pipeline.
+
