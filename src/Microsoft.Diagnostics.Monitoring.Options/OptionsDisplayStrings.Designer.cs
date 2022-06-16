@@ -1284,6 +1284,60 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the bucket used for storage.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The password used to login.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path to secrets file containing the password to login on S3.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_Password {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the S3 region.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The endpoint of S3 storage.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user-name used to login.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_UserName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the environment variable to set..
         /// </summary>
         public static string DisplayAttributeDescription_SetEnvironmentVariableOptions_Name {

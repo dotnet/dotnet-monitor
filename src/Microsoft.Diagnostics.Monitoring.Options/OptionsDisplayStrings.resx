@@ -681,6 +681,30 @@
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId" xml:space="preserve">
     <value>Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage.</value>
   </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName" xml:space="preserve">
+    <value>The name of the bucket used for storage</value>
+    <comment>The description provided for the BucketName parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint" xml:space="preserve">
+    <value>The password used to login</value>
+    <comment>The description provided for the Password parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_Password" xml:space="preserve">
+    <value>The path to secrets file containing the password to login on S3</value>
+    <comment>The description provided for the Password parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName" xml:space="preserve">
+    <value>The name of the S3 region</value>
+    <comment>The descirption provided for the RegionName paramter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile" xml:space="preserve">
+    <value>The endpoint of S3 storage</value>
+    <comment>The description provided for the SecretsFile parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_UserName" xml:space="preserve">
+    <value>The user-name used to login</value>
+    <comment>The description provided for the UserName parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Duration" xml:space="preserve">
     <value>The duration of time in which live metrics are collected.</value>
     <comment>The description provided for the Duration parameter on CollectLiveMetricsOptions.</comment>

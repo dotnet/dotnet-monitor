@@ -849,6 +849,75 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`; using the above example with an artifact named `mydump.dmp`, this would be `artifacts/mydump.dmp`) that is being egressed to blob storage. This is designed to be easily integrated into an Azure Function that triggers whenever a new message is added to the queue, providing you with the contents of the artifact as a stream. See [Azure Blob storage input binding for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-input?tabs=csharp#example) for an example.
 
+### S3 storage egress provider
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| endpoint | string | true | The URI of the S3 storage service |
+| bucketName | string | true | The name of the s3 Bucket to which the blob will be egressed |
+| userName | string | true | The user credential for accessing the s3 service |
+| secretsFile | string | false | Path to a file on disk which holds the user's password for accessing the s3 storage. If not provided the `password` property must be set. |
+| password | string | false | The user's password for accessing the s3 storage. If not provided the `SecretsFile` must be specified. |
+| copyBufferSize | string | false | The buffer size to use when copying data from the original artifact to the blob stream.|
+
+### Example S3 storage provider
+
+<details>
+  <summary>JSON with secret file</summary>
+
+  ```json
+  {
+      "Egress": {
+          "S3Storage": {
+              "monitorS3Blob": {
+                  "endpoint": "http://localhost:9000",
+                  "bucketName": "myS3Bucket",
+                  "userName": "minioUser",
+                  "secretsFile": "C:\\Temp\\s3secret",
+                  "regionName": "us-east-1",
+                  "copyBufferSize": 1024
+              }
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>JSON with password</summary>
+
+  ```json
+  {
+      "Egress": {
+          "S3Storage": {
+              "monitorS3Blob": {
+                  "endpoint": "http://localhost:9000",
+                  "bucketName": "myS3Bucket",
+                  "userName": "minioUser",
+                  "password": "mySecretPassword",
+                  "regionName": "us-east-1",
+                  "copyBufferSize": 1024
+              }
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Secret</summary>
+  
+  ```sh
+  #!/bin/sh
+  kubectl create secret generic my-s3-secrets \
+  --from-literal=Egress__S3Storage__monitorS3Blob__bucketName=myS3Bucket \
+  --from-literal=Egress__S3Storage__monitorS3Blob__userName=minioUser \
+  --from-literal=Egress__S3Storage__monitorS3Blob__password=mySecretPassword \
+  --from-literal=Egress__S3Storage__monitorS3Blob__regionName=us-east-1 \
+  --dry-run=client -o yaml | kubectl apply -f -
+ ```
+</details>
+
 ### Filesystem egress provider
 
 | Name | Type | Description |

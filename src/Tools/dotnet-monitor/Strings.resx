@@ -176,6 +176,18 @@
 1 Format Parameter:
 0. providerType: The type of the provider that could not be found.</comment>
   </data>
+  <data name="ErrorMessage_EgressS3FailedBucketNotExists" xml:space="preserve">
+    <value>S3 storage egress failed: the configured bucket does not exist.</value>
+  </data>
+  <data name="ErrorMessage_EgressS3FailedDetailed" xml:space="preserve">
+    <value>S3 storage egress failed: {0}</value>
+    <comment>Gets the format string for egress failure to S3 storage (with an inner message).
+1 Format Parameter:
+0. innerMessage: The detailed inner message with additional error context.</comment>
+  </data>
+  <data name="ErrorMessage_EgressS3FailedMissingSecretsOrPassword" xml:space="preserve">
+    <value>S3 storage egress failed: Neither the secrets file nor the password are specified.</value>
+  </data>
   <data name="ErrorMessage_EgressUnableToCreateIntermediateFile" xml:space="preserve">
     <value>Unable to create unique intermediate file in '{0}' directory.</value>
     <comment>Gets the format string for file system egress provider failure due to inability to create an intermediate file.
@@ -687,6 +699,10 @@
     <comment>Gets the format string that is printed in the 59:WritingMessageToQueueFailed event.
 1 Format Parameter:
 1. queueName: The name of the Azure Queue where messages are egressed</comment>
+  </data>
+  <data name="Message_EgressS3NoContent" xml:space="preserve">
+    <value>There was no content which can be upload.</value>
+    <comment>Message logged when the content to upload is empty.</comment>
   </data>
   <data name="Message_ConfigurationFileDoesNotExist" xml:space="preserve">
     <value>The provided configuration file '{0}' could not be found.</value>

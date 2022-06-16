@@ -178,6 +178,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to S3 storage egress failed: the configured bucket does not exist..
+        /// </summary>
+        internal static string ErrorMessage_EgressS3FailedBucketNotExists {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedBucketNotExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S3 storage egress failed: {0}.
+        /// </summary>
+        internal static string ErrorMessage_EgressS3FailedDetailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedDetailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S3 storage egress failed: Neither the secrets file nor the password are specified..
+        /// </summary>
+        internal static string ErrorMessage_EgressS3FailedMissingSecretsOrPassword {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingSecretsOrPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to create unique intermediate file in &apos;{0}&apos; directory..
         /// </summary>
         internal static string ErrorMessage_EgressUnableToCreateIntermediateFile {
@@ -1158,6 +1185,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to There was no content which can be upload..
+        /// </summary>
+        internal static string Message_EgressS3NoContent {
+            get {
+                return ResourceManager.GetString("Message_EgressS3NoContent", resourceCulture);
+            }
+        }
         /// <summary>
         ///   Looks up a localized string similar to The provided configuration file &apos;{0}&apos; could not be found..
         /// </summary>
