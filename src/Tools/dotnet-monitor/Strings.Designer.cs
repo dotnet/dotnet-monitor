@@ -1051,6 +1051,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided configuration file could not be found..
+        /// </summary>
+        internal static string Message_ConfigurationFileDoesNotExist {
+            get {
+                return ResourceManager.GetString("Message_ConfigurationFileDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided configuration file must have the .json extension..
+        /// </summary>
+        internal static string Message_ConfigurationFileNotJson {
+            get {
+                return ResourceManager.GetString("Message_ConfigurationFileNotJson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tell us about your experience with dotnet monitor: {0}.
         /// </summary>
         internal static string Message_ExperienceSurvey {

@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 })
                 .ConfigureDefaults(args: null)
                 .UseContentRoot(settings.ContentRootDirectory)
-                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
+                .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
                 {
                     string userSettingsPath = Path.Combine(settings.UserConfigDirectory, SettingsFileName);
                     builder.AddJsonFile(userSettingsPath, optional: true, reloadOnChange: true);
@@ -67,19 +67,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     }
 
                     // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
-                    string userFilePath = settings.UserProvidedConfigFilePath;
+                    FileInfo userFilePath = settings.UserProvidedConfigFilePath;
 
-                    if (File.Exists(userFilePath) && Path.GetExtension(userFilePath).ToLower().Equals(".json"))
+                    if (null != userFilePath && userFilePath.Exists && userFilePath.Extension.ToLower().Equals(".json"))
                     {
                         try
                         {
-                            File.OpenRead(userFilePath).Dispose(); // If this succeeds, we have read-permissions
-                            builder.AddJsonFile(userFilePath, optional: true, reloadOnChange: true);
+                            builder.AddJsonFile(userFilePath.FullName, optional: true, reloadOnChange: true);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-                            // Don't currently log to tell the user that their configuration file was not loaded
+                            context.Properties.Add(ex, ex.Message);
                         }
+                    }
+                    else if (null != userFilePath && !userFilePath.Exists)
+                    {
+                        context.Properties.Add(nameof(Strings.Message_ConfigurationFileDoesNotExist), Strings.Message_ConfigurationFileDoesNotExist);
+                    }
+                    else if (null != userFilePath && !userFilePath.Extension.ToLower().Equals(".json"))
+                    {
+                        context.Properties.Add(nameof(Strings.Message_ConfigurationFileNotJson), Strings.Message_ConfigurationFileNotJson);
                     }
                 })
                 //Note this is necessary for config only because Kestrel configuration

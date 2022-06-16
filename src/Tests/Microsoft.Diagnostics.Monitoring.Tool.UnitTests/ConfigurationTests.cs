@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName,
-                UserProvidedConfigFilePath = level >= ConfigurationLevel.UserProvidedFileSettings ? userProvidedConfigFullPath : null
+                UserProvidedConfigFilePath = level >= ConfigurationLevel.UserProvidedFileSettings ? new FileInfo(userProvidedConfigFullPath) : null
             };
             if (level >= ConfigurationLevel.HostBuilderSettingsUrl)
             {
@@ -261,7 +261,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName,
-                UserProvidedConfigFilePath = userProvidedConfigFullPath
+                UserProvidedConfigFilePath = new FileInfo(userProvidedConfigFullPath)
             };
 
             settings.Urls = new[] { "https://localhost:44444" }; // This corresponds to the value in SampleConfigurations/URLs.json

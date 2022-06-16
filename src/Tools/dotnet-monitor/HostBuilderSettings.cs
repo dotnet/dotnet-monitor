@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public string UserConfigDirectory { get; set; }
 
-        public string UserProvidedConfigFilePath { get; set; }
+        public FileInfo UserProvidedConfigFilePath { get; set; }
 
         /// <summary>
         /// Create settings for dotnet-monitor hosting.
@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             bool metrics,
             string diagnosticPort,
             IAuthConfiguration authConfiguration,
-            string userProvidedConfigFilePath)
+            FileInfo userProvidedConfigFilePath)
         {
             return new HostBuilderSettings()
             {
