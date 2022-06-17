@@ -118,9 +118,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logger.UnableToListenToAddress(result.Url, result.Exception);
             }
 
-            foreach (var warningMessage in hostBuilderContext.Properties)
+            if (hostBuilderContext.Properties.TryGetValue(Strings.Key_WarningMessages, out object warningMessages))
             {
-                logger.LogWarning(warningMessage.Value.ToString());
+                foreach (string message in warningMessages as List<string>)
+                {
+                    logger.LogWarning(message);
+                }
             }
 
             // If we end up not listening on any ports, Kestrel defaults to port 5000. Make sure we don't attempt this.

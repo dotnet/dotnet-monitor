@@ -384,6 +384,10 @@
     <value>The output format of the API Key configuration.</value>
     <comment>Gets the string to display in help that explains what the '--output' option does.</comment>
   </data>
+  <data name="Key_WarningMessages" xml:space="preserve">
+    <value>WarningMessages</value>
+    <comment>Gets a string similar to "WarningMessages"</comment>
+  </data>
   <data name="LogFormatString_ActionSettingsTokenizationNotSupported" xml:space="preserve">
     <value>Collection rule action options '{settingsType}' must implement ICloneable to support property tokenization.</value>
   </data>

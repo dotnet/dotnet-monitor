@@ -69,24 +69,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
                     FileInfo userFilePath = settings.UserProvidedConfigFilePath;
 
-                    if (null != userFilePath && userFilePath.Exists && userFilePath.Extension.ToLower().Equals(".json"))
+                    if (null != userFilePath)
                     {
-                        try
+                        if (!userFilePath.Exists)
                         {
-                            builder.AddJsonFile(userFilePath.FullName, optional: true, reloadOnChange: true);
+                            UpdatePropertiesWarningList(context, Strings.Message_ConfigurationFileDoesNotExist);
                         }
-                        catch (Exception ex)
+                        else if (!".json".Equals(userFilePath.Extension, StringComparison.OrdinalIgnoreCase))
                         {
-                            context.Properties.Add(ex, ex.Message);
+                            UpdatePropertiesWarningList(context, Strings.Message_ConfigurationFileNotJson);
                         }
-                    }
-                    else if (null != userFilePath && !userFilePath.Exists)
-                    {
-                        context.Properties.Add(nameof(Strings.Message_ConfigurationFileDoesNotExist), Strings.Message_ConfigurationFileDoesNotExist);
-                    }
-                    else if (null != userFilePath && !userFilePath.Extension.ToLower().Equals(".json"))
-                    {
-                        context.Properties.Add(nameof(Strings.Message_ConfigurationFileNotJson), Strings.Message_ConfigurationFileNotJson);
+                        else
+                        {
+                            try
+                            {
+                                builder.AddJsonFile(userFilePath.FullName, optional: true, reloadOnChange: true);
+                            }
+                            catch (Exception ex)
+                            {
+                                UpdatePropertiesWarningList(context, ex.Message);
+                            }
+                        }
                     }
                 })
                 //Note this is necessary for config only because Kestrel configuration
@@ -133,6 +136,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     })
                     .UseStartup<Startup>();
                 });
+        }
+
+        private static void UpdatePropertiesWarningList(HostBuilderContext context, string warningMessage)
+        {
+            if (context.Properties.TryGetValue(Strings.Key_WarningMessages, out object errorList))
+            {
+                if (errorList is List<string>)
+                {
+                    ((List<string>)errorList).Add(warningMessage);
+                    context.Properties[Strings.Key_WarningMessages] = errorList;
+                }
+            }
+            else
+            {
+                context.Properties.Add(Strings.Key_WarningMessages, new List<string>() { warningMessage });
+            }
         }
 
         public static AuthConfiguration CreateAuthConfiguration(bool noAuth, bool tempApiKey)

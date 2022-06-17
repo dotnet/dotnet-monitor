@@ -556,6 +556,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to WarningMessages.
+        /// </summary>
+        internal static string Key_WarningMessages {
+            get {
+                return ResourceManager.GetString("Key_WarningMessages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Collection rule action options &apos;{settingsType}&apos; must implement ICloneable to support property tokenization..
         /// </summary>
         internal static string LogFormatString_ActionSettingsTokenizationNotSupported {
