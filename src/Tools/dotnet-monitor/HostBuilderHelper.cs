@@ -140,17 +140,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void UpdatePropertiesWarningList(HostBuilderContext context, string warningMessage)
         {
-            if (context.Properties.TryGetValue(Strings.Key_WarningMessages, out object errorList))
+            if (context.Properties.TryGetValue(HostBuilderResults.ResultKey, out object resultsObject))
             {
-                if (errorList is List<string>)
+                if (resultsObject is HostBuilderResults)
                 {
-                    ((List<string>)errorList).Add(warningMessage);
-                    context.Properties[Strings.Key_WarningMessages] = errorList;
+                    ((HostBuilderResults)resultsObject).Warnings.Add(warningMessage);
                 }
             }
             else
             {
-                context.Properties.Add(Strings.Key_WarningMessages, new List<string>() { warningMessage });
+                HostBuilderResults results = new HostBuilderResults();
+                results.Warnings.Add(warningMessage);
+                context.Properties.Add(HostBuilderResults.ResultKey, results);
             }
         }
 
