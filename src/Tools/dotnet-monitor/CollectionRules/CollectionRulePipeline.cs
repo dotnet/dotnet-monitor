@@ -146,12 +146,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     if (_stateHolder.CanExecuteActions(currentTimestamp))
                     {
-                        lock (_stateHolder.ExecutionTimestamps)
-                        {
-                            _stateHolder.ExecutionTimestamps.Enqueue(currentTimestamp);
-                        }
-
-                        _stateHolder.AllExecutionTimestamps.Add(currentTimestamp);
+                        _stateHolder.AddTimestamp(currentTimestamp);
 
                         bool actionsCompleted = false;
                         try
@@ -182,13 +177,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             // number of times as specified by the limits and the action count
                             // window was not specified. Since the pipeline can no longer execute
                             // actions, the pipeline can complete.
-                            completePipeline = _stateHolder.ActionCountLimit <= _stateHolder.ExecutionTimestamps.Count &&
-                                !_stateHolder.ActionCountSlidingWindowDuration.HasValue;
 
-                            if (completePipeline)
-                            {
-                                _stateHolder.ActionCountReached();
-                            }
+                            completePipeline = _stateHolder.CheckForActionCountLimitReached();
                         }
                     }
                     else
@@ -252,17 +242,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public CollectionRulePipelineState GetPipelineState()
         {
-            CollectionRulePipelineState pipelineStateCopy = new(_stateHolder.ActionCountLimit, _stateHolder.ActionCountSlidingWindowDuration, _stateHolder.RuleDuration);
-
-            lock (_stateHolder)
-            {
-                pipelineStateCopy = new CollectionRulePipelineState(_stateHolder);
-            }
-
-            lock (_stateHolder.ExecutionTimestamps)
-            {
-                pipelineStateCopy.ExecutionTimestamps = new Queue<DateTime>(_stateHolder.ExecutionTimestamps);
-            }
+            CollectionRulePipelineState pipelineStateCopy = new CollectionRulePipelineState(_stateHolder);
 
             pipelineStateCopy.CanExecuteActions(Context.Clock.UtcNow.UtcDateTime);
 

@@ -23,13 +23,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public CollectionRulePipelineState(CollectionRulePipelineState other)
         {
+            // Gets a deep copy of the CollectionRulePipelineState
             lock (other._lock)
             {
                 ActionCountLimit = other.ActionCountLimit;
                 ActionCountSlidingWindowDuration = other.ActionCountSlidingWindowDuration;
                 RuleDuration = other.RuleDuration;
-                ExecutionTimestamps = other.ExecutionTimestamps;
-                AllExecutionTimestamps = other.AllExecutionTimestamps;
+                ExecutionTimestamps = new Queue<DateTime>(other.ExecutionTimestamps);
+                AllExecutionTimestamps = new List<DateTime>(other.AllExecutionTimestamps);
                 CurrentState = other.CurrentState;
                 CurrentStateReason = other.CurrentStateReason;
             }
@@ -124,12 +125,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public void ActionCountReached()
+        private void ActionCountReached()
         {
             lock (_lock)
             {
                 CurrentState = CollectionRuleState.Finished;
                 CurrentStateReason = Strings.Message_CollectionRuleStateReason_Finished_ActionCount;
+            }
+        }
+
+        public void AddTimestamp(DateTime currentTimestamp)
+        {
+            lock (_lock)
+            {
+                ExecutionTimestamps.Enqueue(currentTimestamp);
+                AllExecutionTimestamps.Add(currentTimestamp);
             }
         }
 
@@ -146,12 +156,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public bool CanExecuteActions(DateTime currentTime)
         {
-            lock (ExecutionTimestamps)
+            lock (_lock)
             {
                 DequeueOldTimestamps(ExecutionTimestamps, ActionCountSlidingWindowDuration, currentTime);
             }
             bool canExecuteActions = !CheckForThrottling(ActionCountLimit, ActionCountSlidingWindowDuration, ExecutionTimestamps.Count);
-        
+
             if (canExecuteActions)
             {
                 EndThrottled();
@@ -176,6 +186,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return success;
+        }
+
+        public bool CheckForActionCountLimitReached()
+        {
+            bool limitReached = ActionCountLimit <= ExecutionTimestamps.Count && !ActionCountSlidingWindowDuration.HasValue;
+
+            if (limitReached)
+            {
+                ActionCountReached();
+            }
+
+            return limitReached;
         }
 
         private static void DequeueOldTimestamps(Queue<DateTime> executionTimestamps, TimeSpan? actionCountWindowDuration, DateTime currentTimestamp)
