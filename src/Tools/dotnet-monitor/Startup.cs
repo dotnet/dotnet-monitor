@@ -155,9 +155,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         address = BindingAddress.Parse(url);
                     }
-                    catch (Exception)
+                    catch (FormatException ex)
                     {
-                        continue;
+                        logger.LogInformation(ex.Message);
                     }
 
                     if (string.Equals(Uri.UriSchemeHttp, address.Scheme, StringComparison.OrdinalIgnoreCase))
