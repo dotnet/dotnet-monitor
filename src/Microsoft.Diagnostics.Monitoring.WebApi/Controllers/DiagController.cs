@@ -75,14 +75,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     defaultProcessInfo = await _diagnosticServices.GetProcessAsync(null, HttpContext.RequestAborted);
                 }
-                catch (ArgumentException ex)
+                catch (ArgumentException)
                 {
                     // Unable to locate a default process; no action required
-                    _logger.LogInformation(ex.Message);
                 }
-                catch (InvalidOperationException ex)
+                catch (InvalidOperationException)
                 {
-                    _logger.LogInformation(ex.Message);
                 }
 
                 IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
