@@ -77,6 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 catch (ArgumentException ex)
                 {
+                    // Unable to locate a default process; no action required
                     _logger.LogInformation(ex.Message);
                 }
                 catch (InvalidOperationException ex)
