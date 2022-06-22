@@ -144,7 +144,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     DateTime currentTimestamp = Context.Clock.UtcNow.UtcDateTime;
 
-                    if (_stateHolder.CanExecuteActions(currentTimestamp))
+                    if (!_stateHolder.CheckForThrottling(currentTimestamp))
                     {
                         _stateHolder.AddTimestamp(currentTimestamp);
 
@@ -170,8 +170,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                             {
                                 Context.Logger.CollectionRuleActionsCompleted(Context.Name);
                             }
-
-                            _stateHolder.CanExecuteActions(Context.Clock.UtcNow.UtcDateTime);
 
                             // The collection rule has executed the action list the maximum
                             // number of times as specified by the limits and the action count
@@ -244,7 +242,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             CollectionRulePipelineState pipelineStateCopy = new CollectionRulePipelineState(_stateHolder);
 
-            pipelineStateCopy.CanExecuteActions(Context.Clock.UtcNow.UtcDateTime);
+            _ = pipelineStateCopy.CheckForThrottling(Context.Clock.UtcNow.UtcDateTime);
 
             return pipelineStateCopy;
         }

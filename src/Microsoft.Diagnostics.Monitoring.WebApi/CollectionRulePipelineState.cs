@@ -154,15 +154,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public bool CanExecuteActions(DateTime currentTime)
+        public bool CheckForThrottling(DateTime currentTime)
         {
+            bool isThrottled;
+
             lock (_lock)
             {
                 DequeueOldTimestamps(ExecutionTimestamps, ActionCountSlidingWindowDuration, currentTime);
+                isThrottled = CheckForThrottling(ActionCountLimit, ActionCountSlidingWindowDuration, ExecutionTimestamps.Count);
             }
-            bool canExecuteActions = !CheckForThrottling(ActionCountLimit, ActionCountSlidingWindowDuration, ExecutionTimestamps.Count);
 
-            if (canExecuteActions)
+            if (!isThrottled)
             {
                 EndThrottled();
             }
@@ -171,7 +173,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 BeginThrottled();
             }
 
-            return canExecuteActions;
+            return isThrottled;
         }
 
         public bool ActionExecutionSucceeded(bool success)
@@ -190,7 +192,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public bool CheckForActionCountLimitReached()
         {
-            bool limitReached = ActionCountLimit <= ExecutionTimestamps.Count && !ActionCountSlidingWindowDuration.HasValue;
+            bool limitReached;
+
+            lock (_lock)
+            {
+                limitReached = ActionCountLimit <= ExecutionTimestamps.Count && !ActionCountSlidingWindowDuration.HasValue;
+            }
 
             if (limitReached)
             {
