@@ -118,11 +118,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logger.UnableToListenToAddress(result.Url, result.Exception);
             }
 
-            if (hostBuilderContext.Properties.TryGetValue(HostBuilderResults.ResultKey, out object hostBuilderResult))
+            if (hostBuilderContext.Properties.TryGetValue(HostBuilderResults.ResultKey, out object resultsObject))
             {
-                if (hostBuilderResult is HostBuilderResults)
+                if (resultsObject is HostBuilderResults hostBuilderResults)
                 {
-                    foreach (string message in ((HostBuilderResults)hostBuilderResult).Warnings)
+                    foreach (string message in hostBuilderResults.Warnings)
                     {
                         logger.LogWarning(message);
                     }

@@ -142,9 +142,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             if (context.Properties.TryGetValue(HostBuilderResults.ResultKey, out object resultsObject))
             {
-                if (resultsObject is HostBuilderResults)
+                if (resultsObject is HostBuilderResults hostBuilderResults)
                 {
-                    ((HostBuilderResults)resultsObject).Warnings.Add(warningMessage);
+                    hostBuilderResults.Warnings.Add(warningMessage);
                 }
             }
             else
