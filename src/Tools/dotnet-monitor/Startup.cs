@@ -158,6 +158,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     catch (FormatException ex)
                     {
                         logger.LogInformation(ex.Message);
+                        continue;
                     }
 
                     if (string.Equals(Uri.UriSchemeHttp, address.Scheme, StringComparison.OrdinalIgnoreCase))
