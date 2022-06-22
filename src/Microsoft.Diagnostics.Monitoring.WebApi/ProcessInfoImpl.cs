@@ -104,6 +104,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 catch (ArgumentException)
                 {
                 }
+                catch (OperationCanceledException)
+                {
+                }
                 finally
                 {
                     if (null != pipeline)
