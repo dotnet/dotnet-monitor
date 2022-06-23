@@ -71,13 +71,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     if (null != userFilePath)
                     {
+                        HostBuilderResults hostBuilderResults = new HostBuilderResults();
+                        context.Properties.Add(HostBuilderResults.ResultKey, hostBuilderResults);
+
                         if (!userFilePath.Exists)
                         {
-                            UpdatePropertiesWarningList(context, Strings.Message_ConfigurationFileDoesNotExist);
+                            hostBuilderResults.Warnings.Add(Strings.Message_ConfigurationFileDoesNotExist);
                         }
                         else if (!".json".Equals(userFilePath.Extension, StringComparison.OrdinalIgnoreCase))
                         {
-                            UpdatePropertiesWarningList(context, Strings.Message_ConfigurationFileNotJson);
+                            hostBuilderResults.Warnings.Add(Strings.Message_ConfigurationFileNotJson);
                         }
                         else
                         {
@@ -87,7 +90,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             }
                             catch (Exception ex)
                             {
-                                UpdatePropertiesWarningList(context, ex.Message);
+                                hostBuilderResults.Warnings.Add(ex.Message);
                             }
                         }
                     }
@@ -136,23 +139,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     })
                     .UseStartup<Startup>();
                 });
-        }
-
-        private static void UpdatePropertiesWarningList(HostBuilderContext context, string warningMessage)
-        {
-            if (context.Properties.TryGetValue(HostBuilderResults.ResultKey, out object resultsObject))
-            {
-                if (resultsObject is HostBuilderResults hostBuilderResults)
-                {
-                    hostBuilderResults.Warnings.Add(warningMessage);
-                }
-            }
-            else
-            {
-                HostBuilderResults results = new HostBuilderResults();
-                results.Warnings.Add(warningMessage);
-                context.Properties.Add(HostBuilderResults.ResultKey, results);
-            }
         }
 
         public static AuthConfiguration CreateAuthConfiguration(bool noAuth, bool tempApiKey)
