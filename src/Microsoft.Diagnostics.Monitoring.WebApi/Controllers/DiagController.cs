@@ -82,6 +82,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 catch (InvalidOperationException)
                 {
                 }
+                catch (Exception ex) when (!(ex is OperationCanceledException))
+                {
+                    _logger.LogWarning(ex.Message);
+                }
 
                 IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
                 foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(processFilter: null, HttpContext.RequestAborted))

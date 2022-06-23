@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 catch (Exception ex)
                 {
-                    clientSourceLogger.LogTrace(ex.Message);
+                    clientSourceLogger.RuntimeInstanceCookieFailedToFilterSelf(ex);
                 }
 
                 // If connecting to runtime instances, filter self out. In listening mode, it's likely
