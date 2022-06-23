@@ -916,7 +916,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The intermediate file at the following path could not be deleted: {0}.
+        ///   Looks up a localized string similar to The intermediate file at the following path could not be deleted: {path}.
         /// </summary>
         internal static string LogFormatString_IntermediateFileDeletionFailed {
             get {
@@ -997,7 +997,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The provided url could not be parsed: {0}.
+        ///   Looks up a localized string similar to The provided url could not be parsed: {url}.
         /// </summary>
         internal static string LogFormatString_ParsingUrlFailed {
             get {
@@ -1033,7 +1033,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The runtime instance cookie failed to filter out the current process..
+        ///   Looks up a localized string similar to Unable to get the runtime instance cookie of the current process..
         /// </summary>
         internal static string LogFormatString_RuntimeInstanceCookieFailedToFilterSelf {
             get {
