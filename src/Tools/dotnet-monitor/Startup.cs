@@ -157,7 +157,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     }
                     catch (FormatException ex)
                     {
-                        logger.LogInformation(ex.Message);
+                        logger.ParsingUrlFailed(url, ex);
                         continue;
                     }
 

@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogTrace(ex.Message);
+                        _logger.IntermediateFileDeletionFailed(intermediateFilePath, ex);
                     }
                 }
             }
