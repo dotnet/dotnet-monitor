@@ -318,7 +318,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 DateTime currentTime = pipeline.Context.Clock.UtcNow.UtcDateTime;
 
                 description.SlidingWindowDurationCountdown = GetSWDCountdown(pipelineState.ExecutionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
-                description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipeline.PipelineStartTime, pipelineState.RuleDuration, currentTime);
+                description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipelineState.PipelineStartTime, pipelineState.RuleDuration, currentTime);
             }
 
             return description;

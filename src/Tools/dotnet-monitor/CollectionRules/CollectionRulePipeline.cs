@@ -31,8 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Flag used to guard against multiple invocations of _startCallback.
         private bool _invokedStartCallback = false;
 
-        public DateTime PipelineStartTime { get; private set; }
-
         private CollectionRulePipelineState _stateHolder;
 
         public CollectionRulePipeline(
@@ -72,9 +70,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             _stateHolder = new CollectionRulePipelineState(
                 (Context.Options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount),
                 Context.Options.Limits?.ActionCountSlidingWindowDuration,
-                Context.Options.Limits?.RuleDuration);
-
-            PipelineStartTime = Context.Clock.UtcNow.UtcDateTime;
+                Context.Options.Limits?.RuleDuration,
+                Context.Clock.UtcNow.UtcDateTime);
 
             // Start cancellation timer for graceful stop of the collection rule
             // when the rule duration has been specified. Conditionally enable this
@@ -144,15 +141,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                     DateTime currentTimestamp = Context.Clock.UtcNow.UtcDateTime;
 
-                    if (!_stateHolder.CheckForThrottling(currentTimestamp))
+                    if (_stateHolder.BeginActionExecution(currentTimestamp))
                     {
-                        _stateHolder.AddTimestamp(currentTimestamp);
-
                         bool actionsCompleted = false;
                         try
                         {
-                            _stateHolder.BeginActionExecution();
-
                             // Intentionally not using the linkedToken. Allow the action list to execute gracefully
                             // unless forced by a caller to cancel or stop the running of the pipeline.
                             await _actionListExecutor.ExecuteActions(Context, InvokeStartCallback, token);
@@ -166,7 +159,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         }
                         finally
                         {
-                            if (_stateHolder.ActionExecutionSucceeded(actionsCompleted))
+                            if (_stateHolder.ActionExecutionCompleted(actionsCompleted))
                             {
                                 Context.Logger.CollectionRuleActionsCompleted(Context.Name);
                             }
@@ -199,7 +192,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         // for collection rules with startup triggers.
                         completePipeline = true;
 
-                        _stateHolder.StartupTriggerCompleted();
+                        _stateHolder.CollectionRuleFinished(CollectionRuleFinishedStates.Startup);
                     }
                 }
             }
@@ -207,7 +200,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 // This exception is caused by the pipeline duration expiring.
                 // Handle it to allow pipeline to be in completed state.
-                _stateHolder.RuleDurationReached();
+                _stateHolder.CollectionRuleFinished(CollectionRuleFinishedStates.RuleDurationReached);
             }
             catch (Exception ex)
             {

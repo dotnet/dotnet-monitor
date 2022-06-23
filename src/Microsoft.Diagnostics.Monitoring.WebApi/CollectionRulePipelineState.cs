@@ -18,7 +18,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public TimeSpan? ActionCountSlidingWindowDuration { get; private set; }
         public TimeSpan? RuleDuration { get; private set; }
         public int ActionCountLimit { get; private set; }
+        public DateTime PipelineStartTime { get; private set; }
 
+        // By locking here, the caller isn't forced to remember to lock when updating the state.
+        // Locking here means that we will lock unnecessarily on the copy of the state; however,
+        // given the scale of API calls, this should not be a performance issue.
         private readonly object _lock = new object();
 
         public CollectionRulePipelineState(CollectionRulePipelineState other)
@@ -31,31 +35,43 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 RuleDuration = other.RuleDuration;
                 ExecutionTimestamps = new Queue<DateTime>(other.ExecutionTimestamps);
                 AllExecutionTimestamps = new List<DateTime>(other.AllExecutionTimestamps);
+                PipelineStartTime = other.PipelineStartTime;
                 CurrentState = other.CurrentState;
                 CurrentStateReason = other.CurrentStateReason;
             }
         }
 
-        public CollectionRulePipelineState(int actionCountLimit, TimeSpan? actionCountSlidingWindowDuration, TimeSpan? ruleDuration)
+        public CollectionRulePipelineState(int actionCountLimit, TimeSpan? actionCountSlidingWindowDuration, TimeSpan? ruleDuration, DateTime pipelineStartTime)
         {
             ActionCountLimit = actionCountLimit;
             ActionCountSlidingWindowDuration = actionCountSlidingWindowDuration;
             RuleDuration = ruleDuration;
             ExecutionTimestamps = new Queue<DateTime>(ActionCountLimit);
             AllExecutionTimestamps = new List<DateTime>();
+            PipelineStartTime = pipelineStartTime;
             CurrentState = CollectionRuleState.Running;
             CurrentStateReason = Strings.Message_CollectionRuleStateReason_Running;
         }
 
-        public void BeginActionExecution()
+        public bool BeginActionExecution(DateTime currentTime)
         {
-            lock (_lock)
+            if (!CheckForThrottling(currentTime))
             {
-                Debug.Assert(CurrentState != CollectionRuleState.Finished);
+                lock (_lock)
+                {
+                    Debug.Assert(CurrentState != CollectionRuleState.Finished);
 
-                CurrentState = CollectionRuleState.ActionExecuting;
-                CurrentStateReason = Strings.Message_CollectionRuleStateReason_ExecutingActions;
+                    ExecutionTimestamps.Enqueue(currentTime);
+                    AllExecutionTimestamps.Add(currentTime);
+
+                    CurrentState = CollectionRuleState.ActionExecuting;
+                    CurrentStateReason = Strings.Message_CollectionRuleStateReason_ExecutingActions;
+                }
+
+                return true;
             }
+
+            return false;
         }
 
         private void ActionExecutionSucceeded()
@@ -103,43 +119,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public void StartupTriggerCompleted()
+        public void CollectionRuleFinished(CollectionRuleFinishedStates finishedState)
         {
+            string finishedStateReason = "";
+
+            switch (finishedState)
+            {
+                case CollectionRuleFinishedStates.Startup:
+                    finishedStateReason = Strings.Message_CollectionRuleStateReason_Finished_Startup;
+                    break;
+                case CollectionRuleFinishedStates.ActionCountReached:
+                    finishedStateReason = Strings.Message_CollectionRuleStateReason_Finished_ActionCount;
+                    break;
+                case CollectionRuleFinishedStates.RuleDurationReached:
+                    finishedStateReason = Strings.Message_CollectionRuleStateReason_Finished_RuleDuration;
+                    break;
+            }
+
             lock (_lock)
             {
                 Debug.Assert(CurrentState != CollectionRuleState.Finished);
 
                 CurrentState = CollectionRuleState.Finished;
-                CurrentStateReason = Strings.Message_CollectionRuleStateReason_Finished_Startup;
-            }
-        }
-
-        public void RuleDurationReached()
-        {
-            lock (_lock)
-            {
-                Debug.Assert(CurrentState != CollectionRuleState.Finished);
-
-                CurrentState = CollectionRuleState.Finished;
-                CurrentStateReason = Strings.Message_CollectionRuleStateReason_Finished_RuleDuration;
-            }
-        }
-
-        private void ActionCountReached()
-        {
-            lock (_lock)
-            {
-                CurrentState = CollectionRuleState.Finished;
-                CurrentStateReason = Strings.Message_CollectionRuleStateReason_Finished_ActionCount;
-            }
-        }
-
-        public void AddTimestamp(DateTime currentTimestamp)
-        {
-            lock (_lock)
-            {
-                ExecutionTimestamps.Enqueue(currentTimestamp);
-                AllExecutionTimestamps.Add(currentTimestamp);
+                CurrentStateReason = finishedStateReason;
             }
         }
 
@@ -176,7 +178,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return isThrottled;
         }
 
-        public bool ActionExecutionSucceeded(bool success)
+        public bool ActionExecutionCompleted(bool success)
         {
             if (!success)
             {
@@ -201,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             if (limitReached)
             {
-                ActionCountReached();
+                CollectionRuleFinished(CollectionRuleFinishedStates.ActionCountReached);
             }
 
             return limitReached;
