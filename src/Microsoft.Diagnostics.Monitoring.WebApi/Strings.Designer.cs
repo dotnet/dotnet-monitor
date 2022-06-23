@@ -223,6 +223,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred while getting the default process..
+        /// </summary>
+        internal static string LogFormatString_DefaultProcessUnexpectedFailure {
+            get {
+                return ResourceManager.GetString("LogFormatString_DefaultProcessUnexpectedFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Egressed artifact to {location}.
         /// </summary>
         internal static string LogFormatString_EgressedArtifact {

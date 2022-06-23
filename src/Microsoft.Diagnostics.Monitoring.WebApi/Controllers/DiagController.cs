@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 catch (Exception ex) when (!(ex is OperationCanceledException))
                 {
-                    _logger.LogWarning(ex.Message);
+                    _logger.DefaultProcessUnexpectedFailure(ex);
                 }
 
                 IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
