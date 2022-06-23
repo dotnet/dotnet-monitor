@@ -167,8 +167,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         address = BindingAddress.Parse(url);
                     }
-                    catch (Exception)
+                    catch (FormatException ex)
                     {
+                        logger.ParsingUrlFailed(url, ex);
                         continue;
                     }
 
