@@ -101,6 +101,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IAuthConfiguration options,
             AddressListenResults listenResults,
             MonitorApiKeyConfigurationObserver optionsObserver,
+            HostBuilderContext hostBuilderContext,
             ILogger<Startup> logger)
         {
             logger.ExperienceSurvey();
@@ -115,6 +116,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             foreach (AddressListenResult result in listenResults.Errors)
             {
                 logger.UnableToListenToAddress(result.Url, result.Exception);
+            }
+
+            if (hostBuilderContext.Properties.TryGetValue(HostBuilderResults.ResultKey, out object resultsObject))
+            {
+                if (resultsObject is HostBuilderResults hostBuilderResults)
+                {
+                    foreach (string message in hostBuilderResults.Warnings)
+                    {
+                        logger.LogWarning(message);
+                    }
+                }
             }
 
             // If we end up not listening on any ports, Kestrel defaults to port 5000. Make sure we don't attempt this.

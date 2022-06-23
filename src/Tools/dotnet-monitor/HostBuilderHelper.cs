@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 })
                 .ConfigureDefaults(args: null)
                 .UseContentRoot(settings.ContentRootDirectory)
-                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
+                .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
                 {
                     string userSettingsPath = Path.Combine(settings.UserConfigDirectory, SettingsFileName);
                     builder.AddJsonFile(userSettingsPath, optional: true, reloadOnChange: true);
@@ -64,6 +64,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     if (settings.Authentication.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {
                         ConfigureTempApiHashKey(builder, settings.Authentication);
+                    }
+
+                    // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
+                    FileInfo userFilePath = settings.UserProvidedConfigFilePath;
+
+                    if (null != userFilePath)
+                    {
+                        HostBuilderResults hostBuilderResults = new HostBuilderResults();
+                        context.Properties.Add(HostBuilderResults.ResultKey, hostBuilderResults);
+
+                        if (!userFilePath.Exists)
+                        {
+                            hostBuilderResults.Warnings.Add(Strings.Message_ConfigurationFileDoesNotExist);
+                        }
+                        else if (!".json".Equals(userFilePath.Extension, StringComparison.OrdinalIgnoreCase))
+                        {
+                            hostBuilderResults.Warnings.Add(Strings.Message_ConfigurationFileNotJson);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                builder.AddJsonFile(userFilePath.FullName, optional: true, reloadOnChange: true);
+                            }
+                            catch (Exception ex)
+                            {
+                                hostBuilderResults.Warnings.Add(ex.Message);
+                            }
+                        }
                     }
                 })
                 //Note this is necessary for config only because Kestrel configuration

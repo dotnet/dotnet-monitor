@@ -1,25 +1,25 @@
 {
   "Properties": {
-    "MonitorBlobAccountKey": ":REDACTED:" /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+    "MonitorBlobAccountKey": ":REDACTED:" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/
   },
   "AzureBlobStorage": {
     "monitorBlob": {
-      "AccountUri": "https://exampleaccount.blob.core.windows.net" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-      "BlobPrefix": "artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
-      "ContainerName": "dotnet-monitor" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "AccountUri": "https://exampleaccount.blob.core.windows.net" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/,
+      "BlobPrefix": "artifacts" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/,
+      "ContainerName": "dotnet-monitor" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/,
       "CopyBufferSize": ":NOT PRESENT:",
       "QueueName": ":NOT PRESENT:",
       "QueueAccountUri": ":NOT PRESENT:",
       "SharedAccessSignature": ":NOT PRESENT:",
       "AccountKey": ":NOT PRESENT:",
       "SharedAccessSignatureName": ":NOT PRESENT:",
-      "AccountKeyName": "MonitorBlobAccountKey" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "AccountKeyName": "MonitorBlobAccountKey" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/,
       "ManagedIdentityClientId": ":NOT PRESENT:"
     }
   },
   "FileSystem": {
     "artifacts": {
-      "DirectoryPath": " /artifacts" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
+      "DirectoryPath": " /artifacts" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/,
       "IntermediateDirectoryPath": ":NOT PRESENT:",
       "CopyBufferSize": ":NOT PRESENT:"
     }
