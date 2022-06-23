@@ -195,7 +195,7 @@
     <comment>Gets a string similar to "Value must be of type string.".</comment>
   </data>
   <data name="LogFormatString_DefaultProcessUnexpectedFailure" xml:space="preserve">
-    <value>An unexpected error occurred while getting the default process.</value>
+    <value>Failed to determine the default process.</value>
     <comment>Gets the format string that is printed in the 7:DefaultProcessUnexpectedFailure event.
 0 Format Parameters</comment>
   </data>

@@ -223,7 +223,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An unexpected error occurred while getting the default process..
+        ///   Looks up a localized string similar to Failed to determine the default process..
         /// </summary>
         internal static string LogFormatString_DefaultProcessUnexpectedFailure {
             get {
