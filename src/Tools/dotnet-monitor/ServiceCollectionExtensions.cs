@@ -126,8 +126,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IOptionsMonitorCache<CollectionRuleOptions>, DynamicNamedOptionsCache<CollectionRuleOptions>>();
 
             services.AddSingleton<ActionListExecutor>();
+            services.AddSingletonForwarder<ICollectionRuleService, CollectionRuleService>();
             services.AddSingleton<CollectionRuleService>();
             services.AddHostedServiceForwarder<CollectionRuleService>();
+
             services.AddSingleton<IEndpointInfoSourceCallbacks, CollectionRuleEndpointInfoSourceCallbacks>();
 
             return services;

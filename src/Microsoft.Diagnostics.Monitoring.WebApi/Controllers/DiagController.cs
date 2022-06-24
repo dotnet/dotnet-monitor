@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly EgressOperationStore _operationsStore;
         private readonly IDumpService _dumpService;
         private readonly OperationTrackerService _operationTrackerService;
+        private readonly ICollectionRuleService _collectionRuleService;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -58,6 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _dumpService = serviceProvider.GetRequiredService<IDumpService>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
+            _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
         }
 
         /// <summary>
@@ -527,6 +530,56 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 _logger.WrittenToHttpStream();
                 return new ActionResult<Models.DotnetMonitorInfo>(dotnetMonitorInfo);
             }, _logger);
+        }
+
+        /// <summary>
+        /// Gets a brief summary about the current state of the collection rules.
+        /// </summary>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
+        [HttpGet("collectionrules", Name = nameof(GetCollectionRulesDescription))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(Dictionary<string, CollectionRuleDescription>), StatusCodes.Status200OK)]
+        public Task<ActionResult<Dictionary<string, CollectionRuleDescription>>> GetCollectionRulesDescription(
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null)
+        {
+            return InvokeForProcess<Dictionary<string, CollectionRuleDescription>>(processInfo =>
+            {
+                return _collectionRuleService.GetCollectionRulesDescriptions(processInfo.EndpointInfo);
+            },
+            GetProcessKey(pid, uid, name));
+        }
+
+        /// <summary>
+        /// Gets detailed information about the current state of the specified collection rule.
+        /// </summary>
+        /// <param name="collectionRuleName">The name of the collection rule for which a detailed description should be provided.</param>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
+        [HttpGet("collectionrules/{collectionrulename}", Name = nameof(GetCollectionRuleDetailedDescription))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(CollectionRuleDetailedDescription), StatusCodes.Status200OK)]
+        public Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
+            string collectionRuleName,
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null)
+        {
+            return InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
+            {
+                return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
+            },
+            GetProcessKey(pid, uid, name));
         }
 
         private static string GetDotnetMonitorVersion()
