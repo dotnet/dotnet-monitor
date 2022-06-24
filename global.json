@@ -5,12 +5,12 @@
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp31Version)",
         "$(MicrosoftAspNetCoreApp50Version)",
-        "$(VSRedistCommonAspNetCoreSharedFrameworkx6460Version)"
+        "$(MicrosoftAspNetCoreApp60Version)"
       ],
       "dotnet": [
         "$(MicrosoftNETCoreApp31Version)",
         "$(MicrosoftNETCoreApp50Version)",
-        "$(VSRedistCommonNetCoreSharedFrameworkx6460Version)"
+        "$(MicrosoftNETCoreApp60Version)"
       ]
     }
   },
