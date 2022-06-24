@@ -50,12 +50,12 @@
     <MicrosoftFileFormatsVersion>1.0.250401</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
-    <MicrosoftNETCoreApp31Version>3.1.20</MicrosoftNETCoreApp31Version>
+    <MicrosoftNETCoreApp31Version>3.1.26</MicrosoftNETCoreApp31Version>
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
-    <MicrosoftNETCoreApp50Version>5.0.11</MicrosoftNETCoreApp50Version>
+    <MicrosoftNETCoreApp50Version>5.0.17</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
-    <MicrosoftNETCoreApp60Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp60Version>
-    <MicrosoftAspNetCoreApp60Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp60Version>
+    <MicrosoftNETCoreApp60Version>6.0.6</MicrosoftNETCoreApp60Version>
+    <MicrosoftAspNetCoreApp60Version>$(MicrosoftNETCoreApp60Version)</MicrosoftAspNetCoreApp60Version>
   </PropertyGroup>
   <PropertyGroup Label="Manual">
     <AzureIdentityVersion>1.6.0</AzureIdentityVersion>
