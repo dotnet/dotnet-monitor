@@ -10,6 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         public const string CollectGCDump = nameof(CollectGCDump);
         public const string CollectLogs = nameof(CollectLogs);
         public const string CollectTrace = nameof(CollectTrace);
+        public const string CollectLiveMetrics = nameof(CollectLiveMetrics);
         public const string Execute = nameof(Execute);
         public const string LoadProfiler = nameof(LoadProfiler);
         public const string SetEnvironmentVariable = nameof(SetEnvironmentVariable);
