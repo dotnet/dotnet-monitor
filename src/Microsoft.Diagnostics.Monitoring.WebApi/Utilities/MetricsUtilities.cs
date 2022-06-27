@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.NETCore.Client;
 using System;
 using System.IO;
 using System.Threading;
@@ -11,25 +14,37 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class MetricsUtilities
     {
-        public static async Task CaptureLiveMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, Stream outputStream, CancellationToken token)
+        public static async Task CaptureLiveCustomMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, GlobalCounterOptions counterOptions, int durationSeconds, EventMetricsConfiguration configuration, Stream outputStream, CancellationToken token)
         {
-            /*
-            using var loggerFactory = new LoggerFactory();
-
-            loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
-
             var client = new DiagnosticsClient(endpointInfo.Endpoint);
 
-            await using EventLogsPipeline pipeline = new EventLogsPipeline(client, settings, loggerFactory);
+            EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                counterOptions,
+                durationSeconds,
+                configuration);
 
-            Task runTask = await pipeline.StartAsync(token);
+            await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
+                settings,
+                loggers:
+                new[] { new JsonCounterLogger(outputStream) });
 
-            if (null != startCompletionSource)
-            {
-                startCompletionSource.TrySetResult(null);
-            }
+            await eventCounterPipeline.RunAsync(token);
+        }
 
-            await runTask;*/
+        public static async Task CaptureLiveMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, GlobalCounterOptions counterOptions, int durationSeconds, Stream outputStream, CancellationToken token)
+        {
+            var client = new DiagnosticsClient(endpointInfo.Endpoint);
+            EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                counterOptions,
+                includeDefaults: true,
+                durationSeconds: durationSeconds);
+
+            await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
+                settings,
+                loggers:
+                new[] { new JsonCounterLogger(outputStream) });
+
+            await eventCounterPipeline.RunAsync(token);
         }
 
         public static string GetMetricFilename(IEndpointInfo endpointInfo) =>

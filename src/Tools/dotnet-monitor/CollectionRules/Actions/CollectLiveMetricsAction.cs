@@ -55,70 +55,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 TaskCompletionSource<object> startCompletionSource,
                 CancellationToken token)
             {
-                TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLogsOptionsDefaults.Duration));
+                TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLiveMetricsOptionsDefaults.Duration));
                 string egressProvider = Options.Egress;
-
-
-                /*
-                 * 
-                 * 
-                return InvokeForProcess(async (processInfo) =>
-                {
-                    string fileName = GetMetricFilename(processInfo);
-
-                    Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-                    {
-                        var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-                        EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                            _counterOptions.CurrentValue,
-                            includeDefaults: true,
-                            durationSeconds: durationSeconds);
-
-                        await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
-                            settings,
-                            loggers:
-                            new[] { new JsonCounterLogger(outputStream) });
-
-                        await eventCounterPipeline.RunAsync(token);
-                    };
-
-                    return await Result(Utilities.ArtifactType_Metrics,
-                        egressProvider,
-                        action,
-                        fileName,
-                        ContentTypes.ApplicationJsonSequence,
-                        processInfo.EndpointInfo);
-                }, processKey, Utilities.ArtifactType_Metrics);
-                 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                var settings = new EventLogsPipelineSettings()
-                {
-                    Duration = duration,
-                    LogLevel = defaultLevel,
-                    UseAppFilters = useAppFilters,
-                    FilterSpecs = filterSpecs
-                };
 
                 string fileName = MetricsUtilities.GetMetricFilename(EndpointInfo);
 
-                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, EndpointInfo);
+                KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Metrics, EndpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(startCompletionSource, EndpointInfo, outputStream, token),
+                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(startCompletionSource, EndpointInfo, counterOptions, durationSeconds, outputStream, token),
                     egressProvider,
                     fileName,
                     EndpointInfo,
@@ -130,13 +75,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 {
                     throw new CollectionRuleActionException(result.Exception);
                 }
-                string logsFilePath = result.Result.Value;
+                string liveMetricsFilePath = result.Result.Value;
 
                 return new CollectionRuleActionResult()
                 {
                     OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
-                        { CollectionRuleActionConstants.EgressPathOutputValueName, logsFilePath }
+                        { CollectionRuleActionConstants.EgressPathOutputValueName, liveMetricsFilePath }
                     }
                 };
             }
