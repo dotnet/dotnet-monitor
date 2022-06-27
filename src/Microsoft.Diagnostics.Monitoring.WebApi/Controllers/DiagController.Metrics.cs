@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async (processInfo) =>
             {
-                string fileName = GetMetricFilename(processInfo);
+                string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
                 Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
                 {
@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async (processInfo) =>
             {
-                string fileName = GetMetricFilename(processInfo);
+                string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
                 Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
                 {
@@ -137,8 +137,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     processInfo.EndpointInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
         }
-
-        private static string GetMetricFilename(IProcessInfo processInfo) =>
-            FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.metrics.json");
     }
 }
