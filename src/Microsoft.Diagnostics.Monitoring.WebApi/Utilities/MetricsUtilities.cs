@@ -14,30 +14,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class MetricsUtilities
     {
-        public static async Task CaptureLiveCustomMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, GlobalCounterOptions counterOptions, int durationSeconds, EventMetricsConfiguration configuration, Stream outputStream, CancellationToken token)
-        {
-            var client = new DiagnosticsClient(endpointInfo.Endpoint);
-
-            EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                counterOptions,
-                durationSeconds,
-                configuration);
-
-            await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
-                settings,
-                loggers:
-                new[] { new JsonCounterLogger(outputStream) });
-
-            Task runPipeline = eventCounterPipeline.RunAsync(token);
-
-            if (null != startCompletionSource)
-            {
-                startCompletionSource.TrySetResult(null);
-            }
-
-            await runPipeline;
-        }
-
         public static async Task CaptureLiveMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, GlobalCounterOptions counterOptions, int durationSeconds, Stream outputStream, CancellationToken token)
         {
             var client = new DiagnosticsClient(endpointInfo.Endpoint);

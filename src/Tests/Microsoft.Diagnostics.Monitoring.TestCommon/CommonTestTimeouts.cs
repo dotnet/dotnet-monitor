@@ -27,9 +27,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Default timeout for acquiring a trace.
         /// </summary>
         public static readonly TimeSpan TraceTimeout = TimeSpan.FromMinutes(2);
-        /// <summary>
 
-        /// 
+        /// <summary>
         /// Default timeout for live metrics collection.
         /// </summary>
         public static readonly TimeSpan LiveMetricsTimeout = TimeSpan.FromMinutes(2);

@@ -87,10 +87,28 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async (processInfo) =>
             {
+                string fileName = GetMetricFilename(processInfo);
+
+                Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
+                {
+                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
+                    EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                        _counterOptions.CurrentValue,
+                        durationSeconds,
+                        configuration);
+
+                    await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
+                        settings,
+                        loggers:
+                        new[] { new JsonCounterLogger(outputStream) });
+
+                    await eventCounterPipeline.RunAsync(token);
+                };
                 string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
+                    action,
                     (outputStream, token) => MetricsUtilities.CaptureLiveCustomMetricsAsync(null, processInfo.EndpointInfo, _counterOptions.CurrentValue, durationSeconds, configuration, outputStream, token),
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
