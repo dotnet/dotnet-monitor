@@ -1174,9 +1174,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(2, failures.Length);
-                    VerifyEgressNotExistMessage(failures, 0, UnknownEgressName);
-                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(CollectTraceOptions.Duration),
+                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(CollectTraceOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
+                    VerifyEgressNotExistMessage(failures, 1, UnknownEgressName);
                 });
         }
 
