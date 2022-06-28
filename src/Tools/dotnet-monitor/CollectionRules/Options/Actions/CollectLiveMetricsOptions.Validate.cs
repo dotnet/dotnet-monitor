@@ -12,37 +12,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 #endif
 {
-    partial record class CollectLogsOptions :
+    partial record class CollectLiveMetricsOptions :
         IValidatableObject
     {
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             List<ValidationResult> results = new();
 
-            if (null != FilterSpecs)
-            {
-                RequiredAttribute requiredAttribute = new();
-                EnumDataTypeAttribute enumValidationAttribute = new(typeof(LogLevel));
-
-                ValidationContext filterSpecsContext = new(FilterSpecs, validationContext, validationContext.Items);
-                filterSpecsContext.MemberName = nameof(FilterSpecs);
-
-                // Validate that the category is not null and that the level is a valid level value.
-                foreach ((string category, LogLevel? level) in FilterSpecs)
-                {
-                    ValidationResult result = requiredAttribute.GetValidationResult(category, filterSpecsContext);
-                    if (result != ValidationResult.Success)
-                    {
-                        results.Add(result);
-                    }
-
-                    result = enumValidationAttribute.GetValidationResult(level, filterSpecsContext);
-                    if (result != ValidationResult.Success)
-                    {
-                        results.Add(result);
-                    }
-                }
-            }
 
             return results;
         }

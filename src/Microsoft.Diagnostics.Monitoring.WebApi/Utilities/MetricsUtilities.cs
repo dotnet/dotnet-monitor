@@ -28,7 +28,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 loggers:
                 new[] { new JsonCounterLogger(outputStream) });
 
-            await eventCounterPipeline.RunAsync(token);
+            Task runPipeline = eventCounterPipeline.RunAsync(token);
+
+            if (null != startCompletionSource)
+            {
+                startCompletionSource.TrySetResult(null);
+            }
+
+            await runPipeline;
         }
 
         public static async Task CaptureLiveMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, GlobalCounterOptions counterOptions, int durationSeconds, Stream outputStream, CancellationToken token)
@@ -44,7 +51,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 loggers:
                 new[] { new JsonCounterLogger(outputStream) });
 
-            await eventCounterPipeline.RunAsync(token);
+            Task runTask = await eventCounterPipeline.StartAsync(token);
+
+            if (null != startCompletionSource)
+            {
+                startCompletionSource.TrySetResult(null);
+            }
+
+            await runTask;
         }
 
         public static string GetMetricFilename(IEndpointInfo endpointInfo) =>
