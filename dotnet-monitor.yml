@@ -57,7 +57,6 @@ stages:
       configuration: Release
       publishArtifactsSubPaths:
       - source: 'bin'
-      - source: 'obj'
       testGroup: ${{ parameters.TestGroup }}
   - template: /eng/build.yml
     parameters:
