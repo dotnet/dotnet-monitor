@@ -961,36 +961,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-<<<<<<< HEAD
-=======
-        ///   Looks up a localized string similar to The provided url could not be parsed: {url}.
-        /// </summary>
-        internal static string LogFormatString_ParsingUrlFailed {
-            get {
-                return ResourceManager.GetString("LogFormatString_ParsingUrlFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
-        /// </summary>
-        internal static string LogFormatString_QueueDoesNotExist {
-            get {
-                return ResourceManager.GetString("LogFormatString_QueueDoesNotExist", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Queue message egress requires {queueName} and {queueAccountUri} to be set.
-        /// </summary>
-        internal static string LogFormatString_QueueOptionsPartiallySet {
-            get {
-                return ResourceManager.GetString("LogFormatString_QueueOptionsPartiallySet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
->>>>>>> 6159f811 (Address "Swallow Everything" Exceptions (#2022))
         ///   Looks up a localized string similar to The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes).
         /// </summary>
         internal static string LogFormatString_RunningElevated {
