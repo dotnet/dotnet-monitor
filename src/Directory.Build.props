@@ -34,10 +34,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Restore specified version but do not include dependency by default. -->
-    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)">
-      <ExcludeAssets>all</ExcludeAssets>
-    </PackageReference>
     <PackageReference Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
   </ItemGroup>
 
