@@ -63,8 +63,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         _runtimeInstanceCookieToFilterOut = runtimeInstanceCookie;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    clientSourceLogger.RuntimeInstanceCookieFailedToFilterSelf(ex);
                 }
 
                 // If connecting to runtime instances, filter self out. In listening mode, it's likely

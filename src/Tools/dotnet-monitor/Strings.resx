@@ -121,6 +121,10 @@
     <value>API key authentication not configured.</value>
     <comment>Gets a string similar to "API key authentication not configured.".</comment>
   </data>
+  <data name="ErrorMessage_CollectionRuleNotFound" xml:space="preserve">
+    <value>Unable to find a collection rule with name {0}.</value>
+    <comment>Gets the format string for an unexpected collection rule name.</comment>
+  </data>
   <data name="ErrorMessage_CouldNotMapToAction" xml:space="preserve">
     <value>The '{0}' action was not registered correctly.</value>
     <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleActionProxy.</comment>
@@ -339,6 +343,10 @@
   <data name="HelpDescription_CommandShow" xml:space="preserve">
     <value>Shows configuration, as if dotnet-monitor collect was executed with these parameters.</value>
     <comment>Gets the string to display in help that explains what the 'show' command does.</comment>
+  </data>
+  <data name="HelpDescription_OptionConfigurationFilePath" xml:space="preserve">
+    <value>The fully qualified path and filename of the json configuration file you'd like to add to the list of configuration sources.</value>
+    <comment>Gets the string to display in help that explains what the '--configuration-file-path' option does.</comment>
   </data>
   <data name="HelpDescription_OptionDiagnosticPort" xml:space="preserve">
     <value>The fully qualified path and filename of the diagnostic port to which runtime instances can connect.</value>
@@ -565,6 +573,9 @@
     <comment>Gets the format string that is printed in the 14:InsecureAutheticationConfiguration event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_IntermediateFileDeletionFailed" xml:space="preserve">
+    <value>The intermediate file at the following path could not be deleted: {path}</value>
+  </data>
   <data name="LogFormatString_InvalidActionReference" xml:space="preserve">
     <value>Invalid action reference '{actionReference}'.</value>
   </data>
@@ -605,6 +616,9 @@
 1 Format Parameter:
 1. failure: The failure message from validation</comment>
   </data>
+  <data name="LogFormatString_ParsingUrlFailed" xml:space="preserve">
+    <value>The provided url could not be parsed: {url}</value>
+  </data>
   <data name="LogFormatString_QueueDoesNotExist" xml:space="preserve">
     <value>The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly.</value>
     <comment>Gets the format string that is printed in the 57:QueueDoesNotExist event.
@@ -625,6 +639,9 @@
     <comment>Gets the format string that is printed in the 19:RunningElevated event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_RuntimeInstanceCookieFailedToFilterSelf" xml:space="preserve">
+    <value>Unable to get the runtime instance cookie of the current process.</value>
+  </data>
   <data name="LogFormatString_SetEnvironmentVariable" xml:space="preserve">
     <value>Setting the environment variable {variableName} in process {processId}.</value>
     <comment>Gets the format string that is printed in the 54:SetEnvironmentVariable event.
@@ -643,6 +660,14 @@
     <comment>Gets the format string that is printed in the 59:WritingMessageToQueueFailed event.
 1 Format Parameter:
 1. queueName: The name of the Azure Queue where messages are egressed</comment>
+  </data>
+  <data name="Message_ConfigurationFileDoesNotExist" xml:space="preserve">
+    <value>The provided configuration file could not be found.</value>
+    <comment>Gets a string similar to "The provided configuration file could not be found."</comment>
+  </data>
+  <data name="Message_ConfigurationFileNotJson" xml:space="preserve">
+    <value>The provided configuration file must have the .json extension.</value>
+    <comment>Gets a string similar to "The provided configuration file must have the .json extension."</comment>
   </data>
   <data name="Message_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {0}</value>

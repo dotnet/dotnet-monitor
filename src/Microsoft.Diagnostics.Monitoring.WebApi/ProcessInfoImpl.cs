@@ -92,7 +92,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                     commandLine = await commandLineSource.Task;
                 }
-                catch
+                catch (PipelineException)
+                {
+                }
+                catch (OperationCanceledException)
                 {
                 }
                 finally

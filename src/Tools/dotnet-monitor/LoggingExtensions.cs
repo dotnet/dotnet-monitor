@@ -339,6 +339,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortNotInListenModeForCollectionRules);
 
+        private static readonly Action<ILogger, Exception> _runtimeInstanceCookieFailedToFilterSelf =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.RuntimeInstanceCookieFailedToFilterSelf.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_RuntimeInstanceCookieFailedToFilterSelf);
+
+        private static readonly Action<ILogger, string, Exception> _parsingUrlFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ParsingUrlFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ParsingUrlFailed);
+
+        private static readonly Action<ILogger, string, Exception> _intermediateFileDeletionFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.IntermediateFileDeletionFailed.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_IntermediateFileDeletionFailed);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -622,6 +640,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticPortNotInListenModeForCollectionRules(this ILogger logger)
         {
             _diagnosticPortNotInListenModeForCollectionRules(logger, null);
+        }
+
+        public static void RuntimeInstanceCookieFailedToFilterSelf(this ILogger logger, Exception ex)
+        {
+            _runtimeInstanceCookieFailedToFilterSelf(logger, ex);
+        }
+
+        public static void ParsingUrlFailed(this ILogger logger, string url, Exception ex)
+        {
+            _parsingUrlFailed(logger, url, ex);
+        }
+
+        public static void IntermediateFileDeletionFailed(this ILogger logger, string intermediateFilePath, Exception ex)
+        {
+            _intermediateFileDeletionFailed(logger, intermediateFilePath, ex);
         }
     }
 }

@@ -70,6 +70,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find a collection rule with name {0}..
+        /// </summary>
+        internal static string ErrorMessage_CollectionRuleNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CollectionRuleNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;{0}&apos; action was not registered correctly..
         /// </summary>
         internal static string ErrorMessage_CouldNotMapToAction {
@@ -453,6 +462,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string HelpDescription_CommandShow {
             get {
                 return ResourceManager.GetString("HelpDescription_CommandShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The fully qualified path and filename of the json configuration file you&apos;d like to add to the list of configuration sources..
+        /// </summary>
+        internal static string HelpDescription_OptionConfigurationFilePath {
+            get {
+                return ResourceManager.GetString("HelpDescription_OptionConfigurationFilePath", resourceCulture);
             }
         }
         
@@ -916,6 +934,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The intermediate file at the following path could not be deleted: {path}.
+        /// </summary>
+        internal static string LogFormatString_IntermediateFileDeletionFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_IntermediateFileDeletionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid action reference &apos;{actionReference}&apos;..
         /// </summary>
         internal static string LogFormatString_InvalidActionReference {
@@ -988,6 +1015,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided url could not be parsed: {url}.
+        /// </summary>
+        internal static string LogFormatString_ParsingUrlFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_ParsingUrlFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
         /// </summary>
         internal static string LogFormatString_QueueDoesNotExist {
@@ -1015,6 +1051,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to get the runtime instance cookie of the current process..
+        /// </summary>
+        internal static string LogFormatString_RuntimeInstanceCookieFailedToFilterSelf {
+            get {
+                return ResourceManager.GetString("LogFormatString_RuntimeInstanceCookieFailedToFilterSelf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Setting the environment variable {variableName} in process {processId}..
         /// </summary>
         internal static string LogFormatString_SetEnvironmentVariable {
@@ -1038,6 +1083,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_WritingMessageToQueueFailed {
             get {
                 return ResourceManager.GetString("LogFormatString_WritingMessageToQueueFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided configuration file could not be found..
+        /// </summary>
+        internal static string Message_ConfigurationFileDoesNotExist {
+            get {
+                return ResourceManager.GetString("Message_ConfigurationFileDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided configuration file must have the .json extension..
+        /// </summary>
+        internal static string Message_ConfigurationFileNotJson {
+            get {
+                return ResourceManager.GetString("Message_ConfigurationFileNotJson", resourceCulture);
             }
         }
         
