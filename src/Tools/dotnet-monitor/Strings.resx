@@ -545,6 +545,9 @@
     <comment>Gets the format string that is printed in the 14:InsecureAutheticationConfiguration event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_IntermediateFileDeletionFailed" xml:space="preserve">
+    <value>The intermediate file at the following path could not be deleted: {path}</value>
+  </data>
   <data name="LogFormatString_InvalidActionReference" xml:space="preserve">
     <value>Invalid action reference '{actionReference}'.</value>
   </data>
@@ -585,10 +588,16 @@
 1 Format Parameter:
 1. failure: The failure message from validation</comment>
   </data>
+  <data name="LogFormatString_ParsingUrlFailed" xml:space="preserve">
+    <value>The provided url could not be parsed: {url}</value>
+  </data>
   <data name="LogFormatString_RunningElevated" xml:space="preserve">
     <value>The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes)</value>
     <comment>Gets the format string that is printed in the 19:RunningElevated event.
 0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_RuntimeInstanceCookieFailedToFilterSelf" xml:space="preserve">
+    <value>Unable to get the runtime instance cookie of the current process.</value>
   </data>
   <data name="LogFormatString_SetEnvironmentVariable" xml:space="preserve">
     <value>Setting the environment variable {variableName} in process {processId}.</value>
