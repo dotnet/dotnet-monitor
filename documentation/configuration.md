@@ -4,7 +4,7 @@
 
 ## Configuration Sources
 
-`dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (Environment variables are highest precedence) :
+`dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (User-specified json file is highest precedence) :
 
 - Command line parameters
 - User settings path
@@ -16,6 +16,8 @@
     - On \*nix, `/etc/dotnet-monitor`
 
 - Environment variables
+- User-Specified json file
+  - Use the `--configuration-file-path` flag from the command line to specify your own configuration file (using its full path).
 
 ### Translating configuration between providers
 

@@ -340,6 +340,10 @@
     <value>Shows configuration, as if dotnet-monitor collect was executed with these parameters.</value>
     <comment>Gets the string to display in help that explains what the 'show' command does.</comment>
   </data>
+  <data name="HelpDescription_OptionConfigurationFilePath" xml:space="preserve">
+    <value>The fully qualified path and filename of the json configuration file you'd like to add to the list of configuration sources.</value>
+    <comment>Gets the string to display in help that explains what the '--configuration-file-path' option does.</comment>
+  </data>
   <data name="HelpDescription_OptionDiagnosticPort" xml:space="preserve">
     <value>The fully qualified path and filename of the diagnostic port to which runtime instances can connect.</value>
     <comment>Gets the string to display in help that explains what the '--diagnostic-port' option does.</comment>
@@ -652,6 +656,14 @@
     <comment>Gets the format string that is printed in the 59:WritingMessageToQueueFailed event.
 1 Format Parameter:
 1. queueName: The name of the Azure Queue where messages are egressed</comment>
+  </data>
+  <data name="Message_ConfigurationFileDoesNotExist" xml:space="preserve">
+    <value>The provided configuration file could not be found.</value>
+    <comment>Gets a string similar to "The provided configuration file could not be found."</comment>
+  </data>
+  <data name="Message_ConfigurationFileNotJson" xml:space="preserve">
+    <value>The provided configuration file must have the .json extension.</value>
+    <comment>Gets a string similar to "The provided configuration file must have the .json extension."</comment>
   </data>
   <data name="Message_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {0}</value>
