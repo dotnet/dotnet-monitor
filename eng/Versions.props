@@ -46,6 +46,8 @@
     <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22327.2</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.7.22328.8</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>7.0.0-preview.7.22328.8</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>7.0.0-preview.7.22328.8</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
     <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.7.22328.8</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22328.1</MicrosoftDiagnosticsMonitoringVersion>
@@ -70,8 +72,8 @@
     <AzureIdentityVersion>1.6.0</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.12.0</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.10.0</AzureStorageQueuesVersion>
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>6.0.5</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion60>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersion60>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion60>6.0.5</MicrosoftAspNetCoreAuthenticationNegotiateVersion60>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
@@ -94,5 +96,14 @@
     <MicrosoftBclAsyncInterfacesVersion>1.1.0</MicrosoftBclAsyncInterfacesVersion>
     <MicrosoftDiagnosticsTracingTraceEventVersion>2.0.64</MicrosoftDiagnosticsTracingTraceEventVersion>
     <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
+  </PropertyGroup>
+  <!-- Pivot versions depending on TFM -->
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionForTargetFramework>$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion60)</MicrosoftAspNetCoreAuthenticationJwtBearerVersionForTargetFramework>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersionForTargetFramework>$(MicrosoftAspNetCoreAuthenticationNegotiateVersion60)</MicrosoftAspNetCoreAuthenticationNegotiateVersionForTargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionForTargetFramework>$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)</MicrosoftAspNetCoreAuthenticationJwtBearerVersionForTargetFramework>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersionForTargetFramework>$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)</MicrosoftAspNetCoreAuthenticationNegotiateVersionForTargetFramework>
   </PropertyGroup>
 </Project>

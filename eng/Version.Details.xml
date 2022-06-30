@@ -4,6 +4,14 @@
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>166610c56ff732093f0145a2911d4f6c40b786da</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0-preview.7.22328.8">
+      <Uri>https://github.com/dotnet/aspnetcore</Uri>
+      <Sha>f4f4835635a812cfe24b724b8a1c4aab6cee8705</Sha>
+    </Dependency>
+    <Dependency Name="Microsoft.AspNetCore.Authentication.Negotiate" Version="7.0.0-preview.7.22328.8">
+      <Uri>https://github.com/dotnet/aspnetcore</Uri>
+      <Sha>f4f4835635a812cfe24b724b8a1c4aab6cee8705</Sha>
+    </Dependency>
     <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.22328.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>5ad37d8dc3128a21d6070aa23fa706c26930ee8c</Sha>
