@@ -588,6 +588,9 @@
 1 Format Parameter:
 1. failure: The failure message from validation</comment>
   </data>
+  <data name="LogFormatString_ParsingUrlFailed" xml:space="preserve">
+    <value>The provided url could not be parsed: {url}</value>
+  </data>
   <data name="LogFormatString_RunningElevated" xml:space="preserve">
     <value>The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes)</value>
     <comment>Gets the format string that is printed in the 19:RunningElevated event.

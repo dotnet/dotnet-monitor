@@ -961,6 +961,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided url could not be parsed: {url}.
+        /// </summary>
+        internal static string LogFormatString_ParsingUrlFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_ParsingUrlFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The process was launched elevated and will have access to all processes on the system. Do not run elevated unless you need to monitor processes launched by another user (e.g., IIS worker processes).
         /// </summary>
         internal static string LogFormatString_RunningElevated {
