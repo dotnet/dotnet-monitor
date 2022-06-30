@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             writer.WriteLine();
             writer.Flush();
 
-            Write(Console.OpenStandardOutput(), urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configurationFilePath, level, showSources);
+            Write(stream, urls, metricUrls, metrics, diagnosticPort, noAuth, tempApiKey, configurationFilePath, level, showSources);
         }
 
         public static void Write(Stream stream, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, FileInfo configurationFilePath, ConfigDisplayLevel level, bool showSources)
