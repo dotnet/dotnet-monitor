@@ -67,6 +67,25 @@ DECLARE_INTERFACE(ILogger)
         } \
     } while (0)
 
+// Checks if EXPR is false
+// If false, logs the failure and returns the provided HRESULT
+#define IfFalseLogRet_(pLogger, EXPR, hr) \
+    do { \
+        if(!(EXPR)) { \
+            if (nullptr != pLogger) { \
+                if (pLogger->IsEnabled(LogLevel::Error)) \
+                { \
+                    pLogger->Log(\
+                        LogLevel::Error, \
+                        _T("IfFalseLogRet(" #EXPR ") is false in function %s: 0x%08x"), \
+                        to_tstring(__func__).c_str(), \
+                        hr); \
+                } \
+            } \
+            return hr; \
+        } \
+    } while (0)
+
 // Checks if EXPR is nullptr
 // If nullptr, logs the failure and returns E_POINTER
 #define IfNullLogRetPtr_(pLogger, EXPR) \

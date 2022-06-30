@@ -786,6 +786,142 @@
         }
       }
     },
+    "/collectionrules": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Gets a brief summary about the current state of the collection rules.",
+        "operationId": "GetCollectionRulesDescription",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/CollectionRuleDescription"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collectionrules/{collectionrulename}": {
+      "get": {
+        "tags": [
+          "Diag"
+        ],
+        "summary": "Gets detailed information about the current state of the specified collection rule.",
+        "operationId": "GetCollectionRuleDetailedDescription",
+        "parameters": [
+          {
+            "name": "collectionRuleName",
+            "in": "path",
+            "description": "The name of the collection rule for which a detailed description should be provided.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The name of the collection rule for which a detailed description should be provided.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionRuleDetailedDescription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/livemetrics": {
       "get": {
         "tags": [
@@ -1343,6 +1479,128 @@
             "type": "string",
             "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CollectionRuleState": {
+        "enum": [
+          "Running",
+          "ActionExecuting",
+          "Throttled",
+          "Finished"
+        ],
+        "type": "string"
+      },
+      "CollectionRuleDescription": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/CollectionRuleState"
+          },
+          "stateReason": {
+            "type": "string",
+            "description": "Human-readable explanation for the current state of the collection rule.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeSpan": {
+        "type": "object",
+        "properties": {
+          "ticks": {
+            "type": "integer",
+            "format": "int64",
+            "readOnly": true
+          },
+          "days": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "hours": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "milliseconds": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "minutes": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "seconds": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "totalDays": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalHours": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalMilliseconds": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalMinutes": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalSeconds": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CollectionRuleDetailedDescription": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/CollectionRuleState"
+          },
+          "stateReason": {
+            "type": "string",
+            "description": "Human-readable explanation for the current state of the collection rule.",
+            "nullable": true
+          },
+          "lifetimeOccurrences": {
+            "type": "integer",
+            "description": "The number of times the trigger has executed for a process in its lifetime.",
+            "format": "int32"
+          },
+          "slidingWindowOccurrences": {
+            "type": "integer",
+            "description": "The number of times the trigger has executed for a process in the current sliding window duration (as defined by Limits).",
+            "format": "int32"
+          },
+          "actionCountLimit": {
+            "type": "integer",
+            "description": "The number of times the trigger can execute for a process before being limited (as defined by Limits).",
+            "format": "int32"
+          },
+          "actionCountSlidingWindowDurationLimit": {
+            "$ref": "#/components/schemas/TimeSpan"
+          },
+          "slidingWindowDurationCountdown": {
+            "$ref": "#/components/schemas/TimeSpan"
+          },
+          "ruleFinishedCountdown": {
+            "$ref": "#/components/schemas/TimeSpan"
           }
         },
         "additionalProperties": false

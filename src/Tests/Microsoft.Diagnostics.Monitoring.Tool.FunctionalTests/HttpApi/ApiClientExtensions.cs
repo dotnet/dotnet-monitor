@@ -334,6 +334,44 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.GetInfoAsync(timeoutSource.Token).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Capable of getting every combination of process query: PID, UID, and/or Name
+        /// GET /collectionrules?pid={pid}&uid={uid}&name={name}
+        /// </summary>
+        public static Task<Dictionary<string, CollectionRuleDescription>> GetCollectionRulesDescriptionAsync(this ApiClient client, int? pid, Guid? uid, string name)
+        {
+            return client.GetCollectionRulesDescriptionAsync(pid, uid, name, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// Capable of getting every combination of process query: PID, UID, and/or Name
+        /// GET /collectionrules?pid={pid}&uid={uid}&name={name}
+        /// </summary>
+        public static async Task<Dictionary<string, CollectionRuleDescription>> GetCollectionRulesDescriptionAsync(this ApiClient client, int? pid, Guid? uid, string name, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.GetCollectionRulesDescriptionAsync(pid, uid, name, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Capable of getting every combination of process query: PID, UID, and/or Name
+        /// GET /collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name}
+        /// </summary>
+        public static Task<CollectionRuleDetailedDescription> GetCollectionRuleDetailedDescriptionAsync(this ApiClient client, string collectionRuleName, int? pid, Guid? uid, string name)
+        {
+            return client.GetCollectionRuleDetailedDescriptionAsync(collectionRuleName, pid, uid, name, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// Capable of getting every combination of process query: PID, UID, and/or Name
+        /// GET /collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name}
+        /// </summary>
+        public static async Task<CollectionRuleDetailedDescription> GetCollectionRuleDetailedDescriptionAsync(this ApiClient client, string collectionRuleName, int? pid, Guid? uid, string name, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.GetCollectionRuleDetailedDescriptionAsync(collectionRuleName, pid, uid, name, timeoutSource.Token).ConfigureAwait(false);
+        }
+
         public static async Task<OperationResponse> EgressTraceAsync(this ApiClient client, int processId, int durationSeconds, string egressProvider)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
