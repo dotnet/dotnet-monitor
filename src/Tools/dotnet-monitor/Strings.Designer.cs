@@ -916,6 +916,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The intermediate file at the following path could not be deleted: {path}.
+        /// </summary>
+        internal static string LogFormatString_IntermediateFileDeletionFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_IntermediateFileDeletionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid action reference &apos;{actionReference}&apos;..
         /// </summary>
         internal static string LogFormatString_InvalidActionReference {
@@ -988,6 +997,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided url could not be parsed: {url}.
+        /// </summary>
+        internal static string LogFormatString_ParsingUrlFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_ParsingUrlFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
         /// </summary>
         internal static string LogFormatString_QueueDoesNotExist {
@@ -1011,6 +1029,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_RunningElevated {
             get {
                 return ResourceManager.GetString("LogFormatString_RunningElevated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to get the runtime instance cookie of the current process..
+        /// </summary>
+        internal static string LogFormatString_RuntimeInstanceCookieFailedToFilterSelf {
+            get {
+                return ResourceManager.GetString("LogFormatString_RuntimeInstanceCookieFailedToFilterSelf", resourceCulture);
             }
         }
         
