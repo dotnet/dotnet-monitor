@@ -1284,6 +1284,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The path to secrets file containing the password to login on S3.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKey {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user-name used to login.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKeyName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKeyName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the bucket used for storage.
         /// </summary>
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName {
@@ -1293,20 +1311,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The password used to login.
+        ///   Looks up a localized string similar to The endpoint of S3 to connect to. This is optional in case of using AWS storage..
         /// </summary>
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The path to secrets file containing the password to login on S3.
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_Password {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_Password", resourceCulture);
             }
         }
         
@@ -1320,20 +1329,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The endpoint of S3 storage.
+        ///   Looks up a localized string similar to The path to secrets file to get the value for accountKey to connect to S3 storage.
         /// </summary>
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The user-name used to login.
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_UserName {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_UserName", resourceCulture);
             }
         }
         
@@ -1406,6 +1406,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_CredentialsMissing {
             get {
                 return ResourceManager.GetString("ErrorMessage_CredentialsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field is required..
+        /// </summary>
+        public static string ErrorMessage_EgressS3FailedMissingOption {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S3 storage egress failed: Neither the secrets file nor the password are specified..
+        /// </summary>
+        public static string ErrorMessage_EgressS3FailedMissingSecrets {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingSecrets", resourceCulture);
             }
         }
         

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Generic;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,12 +12,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
     /// Egress provider options for file system egress.
     /// </summary>
     internal sealed class S3StorageEgressProviderOptions :
-        IEgressProviderCommonOptions
+        IEgressProviderCommonOptions, IValidatableObject
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint))]
-        [Required]
         public string Endpoint { get; set; }
 
         [Display(
@@ -31,8 +31,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_UserName))]
-        public string UserName { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKeyName))]
+        public string AccountKeyName { get; set; }
         
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -41,13 +41,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
         
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_Password))]
-        public string Password { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKey))]
+        public string AccountKey { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize))]
         [Range(1, int.MaxValue)]
         public int? CopyBufferSize => 1024 * 1024 * 50;
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (string.IsNullOrEmpty(SecretsFile) && string.IsNullOrEmpty(AccountKey))
+                yield return new ValidationResult(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingSecrets);
+
+            if (string.IsNullOrEmpty(BucketName))
+                yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(BucketName)));
+
+            if (string.IsNullOrEmpty(RegionName))
+                yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(RegionName)));
+        }
     }
 }

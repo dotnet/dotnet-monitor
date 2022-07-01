@@ -8,7 +8,6 @@ using System.Linq;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -161,15 +160,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         private static async Task<IAmazonS3> CreateClientAsync(S3StorageEgressProviderOptions options, CancellationToken cancellationToken)
         {
-            string password;
+            string accountKey;
             if (!string.IsNullOrEmpty(options.SecretsFile) && File.Exists(options.SecretsFile))
-                password = await WrapException(async () => (await File.ReadAllTextAsync(options.SecretsFile, cancellationToken)).Trim());
-            else if (!string.IsNullOrEmpty(options.Password))
-                password = options.Password;
-            else
-                throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedMissingSecretsOrPassword));
+                accountKey = await WrapException(async () => (await File.ReadAllTextAsync(options.SecretsFile, cancellationToken)).Trim());
+            else 
+                accountKey = options.AccountKey;
             
-            var credentials = new BasicAWSCredentials(options.UserName, password);
+            var credentials = new BasicAWSCredentials(options.AccountKeyName, accountKey);
             var config = new AmazonS3Config
             {
                 ServiceURL = options.Endpoint,

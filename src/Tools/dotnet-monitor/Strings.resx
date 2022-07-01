@@ -185,9 +185,6 @@
 1 Format Parameter:
 0. innerMessage: The detailed inner message with additional error context.</comment>
   </data>
-  <data name="ErrorMessage_EgressS3FailedMissingSecretsOrPassword" xml:space="preserve">
-    <value>S3 storage egress failed: Neither the secrets file nor the password are specified.</value>
-  </data>
   <data name="ErrorMessage_EgressUnableToCreateIntermediateFile" xml:space="preserve">
     <value>Unable to create unique intermediate file in '{0}' directory.</value>
     <comment>Gets the format string for file system egress provider failure due to inability to create an intermediate file.

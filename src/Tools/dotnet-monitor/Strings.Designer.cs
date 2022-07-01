@@ -196,15 +196,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to S3 storage egress failed: Neither the secrets file nor the password are specified..
-        /// </summary>
-        internal static string ErrorMessage_EgressS3FailedMissingSecretsOrPassword {
-            get {
-                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingSecretsOrPassword", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to create unique intermediate file in &apos;{0}&apos; directory..
         /// </summary>
         internal static string ErrorMessage_EgressUnableToCreateIntermediateFile {
