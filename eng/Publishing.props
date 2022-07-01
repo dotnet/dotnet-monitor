@@ -97,23 +97,33 @@
           Inputs="@(PackageToPublish)"
           Outputs="%(PackageToPublish.Identity).notexist">
 
-    <!-- Find the artifact files next to the package file. -->
-    <PropertyGroup>
-      <_ChecksumFilePath>%(PackageToPublish.FullPath).sha512</_ChecksumFilePath>
-      <_BuildVersionFilePath>%(PackageToPublish.FullPath).buildversion</_BuildVersionFilePath>
-      <_PackageVersionFilePath>%(PackageToPublish.FullPath).version</_PackageVersionFilePath>
-    </PropertyGroup>
-
     <!-- Read in project file name -->
     <ReadLinesFromFile File="%(PackageToPublish.FullPath).projectpath">
       <Output TaskParameter="Lines" PropertyName="_ProjectPath"/>
     </ReadLinesFromFile>
+
+    <!-- Get package name from project as if its version was set to the build version -->
+    <MSBuild Projects="$(_ProjectPath)"
+             Targets="GetPackageFileName"
+             Properties="Version=$(_BuildVersion)">
+      <Output ItemName="_PackageWithBuildVersionFileName" TaskParameter="TargetOutputs" />
+    </MSBuild>
 
     <!-- Get package version from project -->
     <MSBuild Projects="$(_ProjectPath)"
              Targets="GetPackageVersion">
       <Output ItemName="_PackageVersion" TaskParameter="TargetOutputs" />
     </MSBuild>
+
+    <!-- Package artifact file paths -->
+    <PropertyGroup>
+      <!-- Example file name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg -->
+      <_PackageWithBuildVersionFileName>@(_PackageWithBuildVersionFileName)</_PackageWithBuildVersionFileName>
+      <_PackageWithBuildVersionFilePath>%(PackageToPublish.RootDir)%(PackageToPublish.Directory)$(_PackageWithBuildVersionFileName)</_PackageWithBuildVersionFilePath>
+      <_ChecksumFilePath>%(PackageToPublish.FullPath).sha512</_ChecksumFilePath>
+      <_BuildVersionFilePath>$(_PackageWithBuildVersionFilePath).buildversion</_BuildVersionFilePath>
+      <_PackageVersionFilePath>$(_PackageWithBuildVersionFilePath).version</_PackageVersionFilePath>
+    </PropertyGroup>
 
     <!--
       A file that contains the version of the package.
