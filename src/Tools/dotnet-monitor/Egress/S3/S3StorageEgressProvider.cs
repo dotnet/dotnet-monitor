@@ -107,7 +107,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                 else // copy temporary to memory stream locally
                 {
                     var uploadId = await InitMultiPartUploadAsync(client, options.BucketName, artifactSettings, token);
-                    buffer = ArrayPool<byte>.Shared.Rent(options.CopyBufferSize!.Value);
+                    var bufferSize = Math.Max(options.CopyBufferSize!.Value, MultiPartUploadStream.MinimumSize);
+                    buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
                     var readBytes = await stream.ReadAsync(buffer, 0, buffer.Length, token);
                     var parts = new List<PartETag>();
                     while (readBytes > 0)

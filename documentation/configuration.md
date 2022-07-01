@@ -853,12 +853,12 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| endpoint | string | true | The URI of the S3 storage service |
+| endpoint | string | true | An optional endpoint of S3 storage service. Can be left empty in case of using AWS. |
 | bucketName | string | true | The name of the s3 Bucket to which the blob will be egressed |
-| userName | string | true | The user credential for accessing the s3 service |
+| accountKeyName | string | true | The user credential for accessing the s3 service |
 | secretsFile | string | false | Path to a file on disk which holds the user's password for accessing the s3 storage. If not provided the `password` property must be set. |
-| password | string | false | The user's password for accessing the s3 storage. If not provided the `SecretsFile` must be specified. |
-| copyBufferSize | string | false | The buffer size to use when copying data from the original artifact to the blob stream.|
+| accountKey | string | false | The user's password for accessing the s3 storage. If not provided the `SecretsFile` must be specified. |
+| copyBufferSize | int | false | The buffer size to use when copying data from the original artifact to the blob stream. There is a minimum size of 5 MB which is set when the given value is lower.|
 
 ### Example S3 storage provider
 
@@ -872,7 +872,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
               "monitorS3Blob": {
                   "endpoint": "http://localhost:9000",
                   "bucketName": "myS3Bucket",
-                  "userName": "minioUser",
+                  "accountKeyName": "minioUser",
                   "secretsFile": "C:\\Temp\\s3secret",
                   "regionName": "us-east-1",
                   "copyBufferSize": 1024
@@ -893,8 +893,8 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
               "monitorS3Blob": {
                   "endpoint": "http://localhost:9000",
                   "bucketName": "myS3Bucket",
-                  "userName": "minioUser",
-                  "password": "mySecretPassword",
+                  "accountKeyName": "minioUser",
+                  "accountKey": "mySecretPassword",
                   "regionName": "us-east-1",
                   "copyBufferSize": 1024
               }
@@ -911,8 +911,8 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
   #!/bin/sh
   kubectl create secret generic my-s3-secrets \
   --from-literal=Egress__S3Storage__monitorS3Blob__bucketName=myS3Bucket \
-  --from-literal=Egress__S3Storage__monitorS3Blob__userName=minioUser \
-  --from-literal=Egress__S3Storage__monitorS3Blob__password=mySecretPassword \
+  --from-literal=Egress__S3Storage__monitorS3Blob__accountKeyName=minioUser \
+  --from-literal=Egress__S3Storage__monitorS3Blob__accountKey=mySecretPassword \
   --from-literal=Egress__S3Storage__monitorS3Blob__regionName=us-east-1 \
   --dry-run=client -o yaml | kubectl apply -f -
  ```

@@ -22,7 +22,7 @@ internal class MultiPartUploadStream : Stream
     public List<PartETag> Parts => _parts.ToList();
     public bool Disposed { get; private set; }
     private int _position;
-    private const int MinimumSize = 5 * 1024 * 1024; // the minimum size of an upload part (except for the last part)
+    public const int MinimumSize = 5 * 1024 * 1024; // the minimum size of an upload part (except for the last part)
 
     public MultiPartUploadStream(IAmazonS3 client, string bucketName, string objectKey, string uploadId, int bufferSize)
     {
@@ -55,7 +55,7 @@ internal class MultiPartUploadStream : Stream
 
     public override void Flush()
     {
-        FlushAsync(CancellationToken.None).GetAwaiter().GetResult();
+        throw new NotSupportedException();
     }
 
     public override int Read(byte[] buffer, int offset, int count)
@@ -111,7 +111,7 @@ internal class MultiPartUploadStream : Stream
 
     public override void Write(byte[] buffer, int offset, int count)
     {
-        WriteAsync(buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
+        throw new NotSupportedException();
     }
 
     public override bool CanRead => false;
