@@ -24,7 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         public static TargetFrameworkMoniker[] tfmsToTest = new TargetFrameworkMoniker[]
         {
-            TargetFrameworkMoniker.Net50,
             TargetFrameworkMoniker.Net60,
 #if INCLUDE_NEXT_DOTNET
             TargetFrameworkMoniker.Net70
