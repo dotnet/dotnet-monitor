@@ -43,15 +43,15 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22354.1</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22355.4</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.7.22354.2</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.7.22354.2</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0-preview.7.22355.19</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-preview.7.22355.19</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.22326.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22354.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22354.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>5.0.0-preview.22355.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.0-preview.22355.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0-preview.6.22329.5</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-preview.6.22329.5</VSRedistCommonNetCoreSharedFrameworkx6470Version>
