@@ -4,7 +4,7 @@ You can contribute to .NET Monitor with issues and PRs. Simply filing issues for
 
 ## Reporting Issues
 
-We always welcome bug reports, API proposals and overall feedback. Here are a few tips on how you can make reporting your issue as effective as possible.
+We always welcome bug reports, proposals and overall feedback. Here are a few tips on how you can make reporting your issue as effective as possible.
 
 ### Finding Existing Issues
 
@@ -22,29 +22,16 @@ Good bug reports make it easier for maintainers to verify and root cause the und
 * Information on the environment: OS/distro, CPU arch, SDK version, etc.
 * Additional information, e.g. is it a regression from previous versions? are there any known workarounds?
 
-#### Why are Minimal Reproductions Important?
-
-A reproduction lets maintainers verify the presence of a bug, and diagnose the issue using a debugger. A _minimal_ reproduction is the smallest possible console application demonstrating that bug. Minimal reproductions are generally preferable since they:
-
-1. Focus debugging efforts on a simple code snippet,
-2. Ensure that the problem is not caused by unrelated dependencies/configuration,
-3. Avoid the need to share production codebases.
-
-#### Are Minimal Reproductions Required?
-
-In certain cases, creating a minimal reproduction might not be practical (e.g. due to nondeterministic factors, external dependencies). In such cases you would be asked to provide as much information as possible, for example by sharing a memory dump of the failing application. If maintainers are unable to root cause the problem, they might still close the issue as not actionable. While not required, minimal reproductions are strongly encouraged and will significantly improve the chances of your issue being prioritized and fixed by the maintainers.
-
 ### DOs and DON'Ts
 
 Please do:
 
-* **DO** follow our [coding style](docs/coding-guidelines/coding-style.md) (C# code-specific)
-* **DO** give priority to the current style of the project or file you're changing even if it diverges from the general guidelines.
+* **DO** follow our coding style.
 * **DO** include tests when adding new features. When fixing bugs, start with
   adding a test that highlights how the current behavior is broken.
 * **DO** keep the discussions focused. When a new or related topic comes up
   it's often better to create a new issue than to side track the discussion.
-* **DO** feel free to blog and tweet (or whatever) about your contributions, frequently!
+* **DO** feel free to blog, tweet, or share anywhere else about your contributions!
 
 Please do not:
 
@@ -55,10 +42,6 @@ Please do not:
 * **DON'T** commit code that you didn't write. If you find code that you think is a good fit to add to .NET Monitor, file an issue and start a discussion before proceeding.
 * **DON'T** submit PRs that alter licensing related files or headers. If you believe there's a problem with them, file an issue and we'll be happy to discuss it.
 
-### Breaking Changes
-
-Contributions must maintain [API signature](docs/coding-guidelines/breaking-changes.md#bucket-1-public-contract) and behavioral compatibility. Contributions that include [breaking changes](docs/coding-guidelines/breaking-changes.md) will be rejected. Please file an issue to discuss your idea or change if you believe that it may affect managed code compatibility.
-
 ### Suggested Workflow
 
 We use and recommend the following workflow:
@@ -67,31 +50,23 @@ We use and recommend the following workflow:
     - You can skip this step for trivial changes.
     - Reuse an existing issue on the topic, if there is one.
     - Get agreement from the team and the community that your proposed change is a good one.
-    - If your change adds a new API, follow the [API Review Process](docs/project/api-review-process.md).
     - Clearly state that you are going to take on implementing it, if that's the case. You can request that the issue be assigned to you. Note: The issue filer and the implementer don't have to be the same person.
 2. Create a personal fork of the repository on GitHub (if you don't already have one).
 3. In your fork, create a branch off of main (`git checkout -b mybranch`).
     - Name the branch so that it clearly communicates your intentions, such as issue-123 or githubhandle-issue.
     - Branches are useful since they isolate your changes from incoming changes from upstream. They also enable you to create multiple PRs from the same fork.
 4. Make and commit your changes to your branch.
-    - [Workflow Instructions](docs/workflow/README.md) explains how to build and test.
-    - Please follow our [Commit Messages](#commit-messages) guidance.
 5. Add new tests corresponding to your change, if applicable.
 6. Build the repository with your changes.
     - Make sure that the builds are clean.
     - Make sure that the tests are all passing, including your new tests.
-7. Create a pull request (PR) against the dotnet/runtime repository's **main** branch.
+7. Create a pull request (PR) against the dotnet/dotnet-monitor repository's **main** branch.
     - State in the description what issue or improvement your change is addressing.
-    - Check if all the Continuous Integration checks are passing.
-8. Wait for feedback or approval of your changes from the [area owners](docs/area-owners.md).
-    - Details about the pull request [review procedure](docs/pr-guide.md).
-9. When area owners have signed off, and all checks are green, your PR will be merged.
-    - The next official build will automatically include your change.
+    - Check if all the tests are passing.
+8. Wait for feedback or approval of your changes from the team.
+9. When the team has signed off, and all checks are green, your PR will be merged.
+    - The next official build will include your change.
     - You can delete the branch you used for making the change.
-
-### Up for Grabs
-
-The team marks the most straightforward issues as [up for grabs](https://github.com/dotnet/runtime/labels/up-for-grabs). This set of issues is the place to start if you are interested in contributing but new to the codebase.
 
 ### Contributor License Agreement
 
@@ -123,4 +98,4 @@ Microsoft team and community members will provide feedback on your change. Commu
 
 One or more Microsoft team members will review every PR prior to merge. That means that the PR will be merged once the feedback is resolved. "LGTM" == "looks good to me".
 
-There are lots of thoughts and [approaches](https://github.com/antlr/antlr4-cpp/blob/master/CONTRIBUTING.md#emoji) for how to efficiently discuss changes. It is best to be clear and explicit with your feedback. Please be patient with people who might not understand the finer details about your approach to feedback.
+There are lots of thoughts and approaches for how to efficiently discuss changes. It is best to be clear and explicit with your feedback. Please be patient with people who might not understand the finer details about your approach to feedback.
