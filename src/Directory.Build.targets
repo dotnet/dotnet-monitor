@@ -23,4 +23,7 @@
   <Target Name="GetPackageVersion"
           Returns="$(PackageVersion)" />
 
+  <Target Name="GetPackageFileName"
+          Returns="$(PackageId).$(PackageVersion).nupkg" />
+
 </Project>
