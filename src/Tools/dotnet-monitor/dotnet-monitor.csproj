@@ -36,10 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Common\CommandExtensions.cs" Link="Commands\CommandExtensions.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
   </ItemGroup>
