@@ -6,26 +6,28 @@
 #include "LogLevelHelper.h"
 #include "../Environment/EnvironmentHelper.h"
 #include "NullLogger.h"
+#include "macros.h"
+
 using namespace std;
 
-DebugLogger::DebugLogger(const shared_ptr<IEnvironment>& pEnvironment)
+DebugLogger::DebugLogger(const shared_ptr<IEnvironment>& environment)
 {
     // Try to get log level from environment
 
-    EnvironmentHelper helper(pEnvironment, NullLogger::Instance);
-    if (FAILED(helper.GetDebugLoggerLevel(m_level)))
+    EnvironmentHelper helper(environment, NullLogger::Instance);
+    if (FAILED(helper.GetDebugLoggerLevel(_level)))
     {
         // Fallback to default level
-        m_level = s_DefaultLevel;
+        _level = DefaultLevel;
     }
 }
 
 STDMETHODIMP_(bool) DebugLogger::IsEnabled(LogLevel level)
 {
-    return LogLevelHelper::IsEnabled(level, m_level);
+    return LogLevelHelper::IsEnabled(level, _level);
 }
 
-STDMETHODIMP DebugLogger::Log(LogLevel level, const tstring format, va_list args)
+STDMETHODIMP DebugLogger::Log(LogLevel level, const lstring& message)
 {
     if (!IsEnabled(level))
     {
@@ -34,28 +36,36 @@ STDMETHODIMP DebugLogger::Log(LogLevel level, const tstring format, va_list args
 
     HRESULT hr = S_OK;
 
-    WCHAR wszMessage[s_nMaxEntrySize];
-    _vsnwprintf_s(
-        wszMessage,
-        s_nMaxEntrySize,
-        _TRUNCATE,
-        format.c_str(),
-        args);
+    lstring levelStr;
+    IfFailRet(LogLevelHelper::GetShortName(level, levelStr));
 
-    tstring tstrLevel;
-    if (FAILED(LogLevelHelper::GetShortName(level, tstrLevel)))
-    {
-        tstrLevel.assign(_T("ukwn"));
-    }
+    WCHAR wszString[MaxEntrySize];
 
-    WCHAR wszString[s_nMaxEntrySize];
-    _snwprintf_s(
+    // The result of the string formatting APIs will return a negative
+    // number when truncation occurs, however this is not an error condition.
+    // Clear errno in order to use it to indicate if an actual error occurs.
+    int previousError = errno;
+    errno = 0;
+
+    int result = _snwprintf_s(
         wszString,
-        s_nMaxEntrySize,
         _TRUNCATE,
         _T("[profiler]%s: %s\r\n"),
-        tstrLevel.c_str(),
-        wszMessage);
+        levelStr.c_str(),
+        message.c_str());
+
+    // Result may be negative if truncation occurs, however this is not an
+    // error condition. Check the value of errno before assuming an error
+    // occurred.
+    if (result < 0 && errno != 0)
+    {
+        return HRESULT_FROM_ERRNO(errno);
+    }
+
+    // Successful invocations of platform APIs typically do not modify errno
+    // if no failure occurs. To maintain this behavior, restore the value of
+    // errno prior to invoking the string formatting API.
+    errno = previousError;
 
     OutputDebugStringW(wszString);
 
