@@ -97,7 +97,7 @@ HRESULT ExceptionTracker::ExceptionThrown(ThreadID threadId, ObjectID objectId)
 
         if (FAILED(hr) && hr != CORPROF_E_STACKSNAPSHOT_ABORTED)
         {
-            LogErrorV(_T("DoStackSnapshot failed in function %s: 0x%08x"), to_tstring(__func__).c_str(), hr);
+            LogErrorV("DoStackSnapshot failed in function %s: 0x%08x", __func__, hr);
             return hr;
         }
     }
@@ -127,7 +127,7 @@ HRESULT ExceptionTracker::ExceptionUnwindFunctionEnter(ThreadID threadId, Functi
     {
         tstring methodName;
         IfFailLogRet(GetFullyQualifiedMethodName(functionId, methodName));
-        LogInformationV(_T("Exception unhandled: %s"), methodName.c_str());
+        LogInformationV("Exception unhandled: %s", methodName);
 
         // Future: Block thread until collection is initiated of the desired artifact.
         // Possible serialization of some context of the exception and surrounding method
@@ -142,7 +142,7 @@ HRESULT ExceptionTracker::ExceptionUnwindFunctionEnter(ThreadID threadId, Functi
         {
             tstring methodName;
             IfFailLogRet(GetFullyQualifiedMethodName(functionId, methodName));
-            LogDebugV(_T("Exception handled: %s"), methodName.c_str());
+            LogDebugV("Exception handled: %s", methodName);
         }
     }
 
@@ -365,7 +365,7 @@ HRESULT ExceptionTracker::LogExceptionThrownFrame(FunctionID functionId, COR_PRF
 
     tstring methodName;
     IfFailLogRet(GetFullyQualifiedMethodName(functionId, frameInfo, methodName));
-    LogDebugV(_T("Exception thrown: %s"), methodName.c_str());
+    LogDebugV("Exception thrown: %s", methodName);
 
     return S_OK;
 }
