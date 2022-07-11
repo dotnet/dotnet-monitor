@@ -4,7 +4,6 @@
 
 using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using System.CommandLine;
-using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 
