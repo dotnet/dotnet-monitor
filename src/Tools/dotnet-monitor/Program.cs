@@ -4,7 +4,6 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Commands;
 using System.CommandLine;
-using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.IO;
 using System.Threading.Tasks;
