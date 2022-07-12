@@ -63,34 +63,42 @@ STDMETHODIMP StdErrLogger::Log(LogLevel level, const lstring& message)
 
     if (result < 0)
     {
+        // Determine appropriate HRESULT for failure.
+        HRESULT hr = S_OK;
+
         // Writing errors will set errno to non-zero value
         if (0 != errno)
         {
-            return HRESULT_FROM_ERRNO(errno);
+            hr = HRESULT_FROM_ERRNO(errno);
         }
         else
         {
-            // errno was not set; restore its previous value.
-            errno = previousError;
-
             // Multibyte encoding errors will set the stream to an error state.
             // Get the error indicator from the stream.
             result = ferror(stderr);
             if (0 != result)
             {
-                return HRESULT_FROM_ERRNO(result);
+                hr = HRESULT_FROM_ERRNO(result);
             }
             else
             {
                 // This is an undocumented condition.
-                return E_UNEXPECTED;
+                hr = E_UNEXPECTED;
             }
+
+            // While there was a failure to write to the stream, errno was not
+            // updated by the platform API call. Restore the value of errno prior
+            // to invoking the string formatting API. This is done after ferror
+            // is invoked in case ferror sets errno.
+            errno = previousError;
         }
+
+        return hr;
     }
 
     // Successful invocations of platform APIs typically do not modify errno
     // if no failure occurs. To maintain this behavior, restore the value of
-    // errno prior to invoking the string formatting API.
+    // errno prior to invoking the stream writing API.
     errno = previousError;
 
     return S_OK;

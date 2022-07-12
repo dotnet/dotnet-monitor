@@ -7,7 +7,7 @@
 
 using namespace std;
 
-const LCHAR* ILogger::ConvertArg(const char*& str, std::vector<lstring>& argStrings)
+const LCHAR* ILogger::ConvertArg(const char* str, std::vector<lstring>& argStrings)
 {
 #ifdef TARGET_WINDOWS
     return ConvertArg(std::string(str), argStrings);
@@ -40,6 +40,13 @@ const LCHAR* ILogger::ConvertArg(const tstring& str, std::vector<lstring>& argSt
 
 STDMETHODIMP ILogger::LogV(LogLevel level, const lstring format, ...)
 {
+    // CONSIDER: The current approach of formatting the format string before
+    // sending it off to the individual logger implementations prevents
+    // structured logging. The was already precluded because of the use of va_list
+    // without knowledge of the arguments types. If structured logging is desired,
+    // consider some way of capturing individual format arguments and passing
+    // their information and values in an alternative manner than using va_list.
+
     va_list args;
     va_start(args, format);
     LCHAR message[MaxEntrySize];

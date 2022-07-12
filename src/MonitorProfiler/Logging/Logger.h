@@ -62,6 +62,9 @@ public:
         // A cache of strings that were converted from their original width
         // to the string width for the target platform. This prevents freeing of the
         // converted strings before logging can complete.
+        // CONSIDER: Make this a static thread local so that the vector does not
+        // need to be allocated for each log call. Reserve the new size before calling
+        // LogV and clear it after calling LogV.
         std::vector<lstring> argStrings;
         argStrings.reserve(sizeof...(args));
 
@@ -74,7 +77,7 @@ private:
     /// <summary>
     /// Convert char* strings to logging string width for the target platform.
     /// </summary>
-    static const LCHAR* ConvertArg(const char*& str, std::vector<lstring>& argStrings);
+    static const LCHAR* ConvertArg(const char* str, std::vector<lstring>& argStrings);
 
     /// <summary>
     /// Convert narrow strings to logging string width for the target platform.
