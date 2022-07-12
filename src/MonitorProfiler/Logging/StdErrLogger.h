@@ -17,7 +17,7 @@ class StdErrLogger final :
 {
 private:
     const static LogLevel DefaultLevel = LogLevel::None;
-    const static int MaxEntrySize = 1000;
+    const static size_t MaxEntrySize = 1000;
 
     LogLevel _level = DefaultLevel;
 
