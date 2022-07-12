@@ -4,8 +4,12 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.NETCore.Client;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -87,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async (processInfo) =>
             {
-                string fileName = GetMetricFilename(processInfo);
+                string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
                 Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
                 {
@@ -104,12 +108,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                     await eventCounterPipeline.RunAsync(token);
                 };
-                string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
                     action,
-                    (outputStream, token) => MetricsUtilities.CaptureLiveCustomMetricsAsync(null, processInfo.EndpointInfo, _counterOptions.CurrentValue, durationSeconds, configuration, outputStream, token),
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
