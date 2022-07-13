@@ -1136,7 +1136,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task CollectionRuleOptions_CollectLiveMetricsAction_RoundTrip()
         {
             const string ExpectedEgressProvider = "TmpEgressProvider";
+            const bool ExpectedIncludeDefaultProviders = false;
+
             TimeSpan ExpectedDuration = TimeSpan.FromSeconds(45);
+
+            const string providerName = EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName;
+            var counterNames = new[] { "cpu-usage", "working-set" };
+
+            EventMetricsProvider[] ExpectedProviders = new[]
+            {
+                new EventMetricsProvider
+                {
+                    ProviderName = providerName,
+                    CounterNames = counterNames,
+                }
+            };
 
             return ValidateSuccess(
                 rootOptions =>
@@ -1146,6 +1160,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .AddCollectLiveMetricsAction(ExpectedEgressProvider, options =>
                         {
                             options.Duration = ExpectedDuration;
+                            options.IncludeDefaultProviders = ExpectedIncludeDefaultProviders;
+                            options.Providers = ExpectedProviders;
                         });
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },
@@ -1154,6 +1170,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     CollectLiveMetricsOptions collectLiveMetricsOptions = ruleOptions.VerifyCollectLiveMetricsAction(0, ExpectedEgressProvider);
 
                     Assert.Equal(ExpectedDuration, collectLiveMetricsOptions.Duration);
+                    Assert.Equal(ExpectedIncludeDefaultProviders, collectLiveMetricsOptions.IncludeDefaultProviders);
+                    Assert.Equal(ExpectedProviders.Select(x => x.CounterNames.ToHashSet()), collectLiveMetricsOptions.Providers.Select(x => x.CounterNames.ToHashSet()));
+                    Assert.Equal(ExpectedProviders.Select(x => x.ProviderName), collectLiveMetricsOptions.Providers.Select(x => x.ProviderName));
                 });
         }
 
