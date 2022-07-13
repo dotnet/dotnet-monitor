@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models
 {
-    internal class CounterPayload
+    internal class xCounterPayload
     {
         [JsonPropertyName("provider")]
         public string Provider { get; set; }

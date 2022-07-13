@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -31,6 +32,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 {
                     { name, egressProvider }
                 }
+            };
+
+            return options;
+        }
+
+        public static RootOptions AddGlobalCounter(this RootOptions options, int intervalSeconds)
+        {
+            options.GlobalCounter = new GlobalCounterOptions
+            {
+                IntervalSeconds = intervalSeconds
             };
 
             return options;

@@ -681,4 +681,20 @@
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId" xml:space="preserve">
     <value>Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage.</value>
   </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Duration" xml:space="preserve">
+    <value>The duration of time in which live metrics are collected.</value>
+    <comment>The description provided for the Duration parameter on CollectLiveMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the live metrics are egressed.</value>
+    <comment>The description provided for the Egress parameter on CollectLiveMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders" xml:space="preserve">
+    <value>Determines if the default counter providers should be used</value>
+    <comment>The description provided for the IncludeDefaultParameters parameter on CollectLiveMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Providers" xml:space="preserve">
+    <value>The array of providers for metrics to collect</value>
+    <comment>The description provided for the Providers parameter on CollectLiveMetricsOptions.</comment>
+  </data>
 </root>

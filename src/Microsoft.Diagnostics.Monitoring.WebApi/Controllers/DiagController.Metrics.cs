@@ -49,9 +49,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
+                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                    _counterOptions.CurrentValue,
+                    includeDefaults: true,
+                    durationSeconds: durationSeconds);
+
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
-                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, _counterOptions.CurrentValue, durationSeconds, outputStream, token),
+                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
@@ -93,25 +98,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
-                Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-                {
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-                    EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                        _counterOptions.CurrentValue,
-                        durationSeconds,
-                        configuration);
-
-                    await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
-                        settings,
-                        loggers:
-                        new[] { new JsonCounterLogger(outputStream) });
-
-                    await eventCounterPipeline.RunAsync(token);
-                };
+                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                    _counterOptions.CurrentValue,
+                    durationSeconds,
+                    configuration);
 
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
-                    action,
+                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);

@@ -6,6 +6,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 {
     internal static class CollectLiveMetricsOptionsDefaults
     {
+        public const bool IncludeDefaultProviders = true;
         public const string Duration = "00:00:30";
     }
 }
