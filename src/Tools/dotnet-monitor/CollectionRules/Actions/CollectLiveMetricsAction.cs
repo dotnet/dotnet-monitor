@@ -5,8 +5,10 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -59,15 +61,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 TaskCompletionSource<object> startCompletionSource,
                 CancellationToken token)
             {
+                // These need to get integrated
+                EventMetricsProvider[] providers = Options.Providers;
+                bool includeDefaultProviders = Options.IncludeDefaultProviders.GetValueOrDefault(CollectLiveMetricsOptionsDefaults.IncludeDefaultProviders);
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLiveMetricsOptionsDefaults.Duration));
                 string egressProvider = Options.Egress;
+
+                EventMetricsConfiguration configuration = new EventMetricsConfiguration()
+                {
+                    IncludeDefaultProviders = includeDefaultProviders,
+                    Providers = providers
+                };
+
+                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                    _counterOptions.CurrentValue,
+                    (int)duration.TotalSeconds,
+                    configuration);
 
                 string fileName = MetricsUtilities.GetMetricFilename(EndpointInfo);
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Metrics, EndpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(startCompletionSource, EndpointInfo, _counterOptions.CurrentValue, ((int)duration.TotalSeconds), outputStream, token),
+                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(startCompletionSource, EndpointInfo, settings, outputStream, token),
                     egressProvider,
                     fileName,
                     EndpointInfo,

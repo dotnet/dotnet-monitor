@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DumpType.cs" Link="Models\DumpType.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\EventMetricsConfiguration.cs" Link="Models\EventMetricsConfiguration.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\EventPipeProvider.cs" Link="Models\EventPipeProvider.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\TraceProfile.cs" Link="Models\TraceProfile.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleActions.cs" Link="Options\CollectionRules\KnownCollectionRuleActions.cs" />

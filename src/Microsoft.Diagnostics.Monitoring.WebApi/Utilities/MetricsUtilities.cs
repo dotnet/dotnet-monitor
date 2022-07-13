@@ -5,8 +5,11 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,14 +17,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class MetricsUtilities
     {
-        public static async Task CaptureLiveMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, GlobalCounterOptions counterOptions, int durationSeconds, Stream outputStream, CancellationToken token)
+        public static async Task CaptureLiveMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, EventPipeCounterPipelineSettings settings, Stream outputStream, CancellationToken token)
         {
             var client = new DiagnosticsClient(endpointInfo.Endpoint);
-            EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                counterOptions,
-                includeDefaults: true,
-                durationSeconds: durationSeconds);
-
+         
             await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
                 settings,
                 loggers:

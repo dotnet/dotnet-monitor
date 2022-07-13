@@ -525,6 +525,42 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The duration of time in which live metrics are collected..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Duration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the live metrics are egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines if the default counter providers should be used.
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The array of providers for metrics to collect.
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Providers {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Providers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLogsOptions_DefaultLevel {
@@ -1272,6 +1308,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             }
         }
         
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
         /// </summary>
         public static string ErrorMessage_CredentialsMissing {
