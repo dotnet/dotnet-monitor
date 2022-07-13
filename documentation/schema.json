@@ -1413,7 +1413,7 @@
             "boolean",
             "null"
           ],
-          "description": "Determines if the default counter providers should be used",
+          "description": "Determines if the default counter providers should be used.",
           "default": true
         },
         "Providers": {
@@ -1421,7 +1421,7 @@
             "array",
             "null"
           ],
-          "description": "The array of providers for metrics to collect",
+          "description": "The array of providers for metrics to collect.",
           "items": {
             "$ref": "#/definitions/EventMetricsProvider"
           }

@@ -543,7 +543,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Determines if the default counter providers should be used.
+        ///   Looks up a localized string similar to Determines if the default counter providers should be used..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders {
             get {
@@ -552,7 +552,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The array of providers for metrics to collect.
+        ///   Looks up a localized string similar to The array of providers for metrics to collect..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Providers {
             get {

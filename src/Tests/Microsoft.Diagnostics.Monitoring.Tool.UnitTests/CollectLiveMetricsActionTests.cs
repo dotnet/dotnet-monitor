@@ -11,7 +11,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -68,51 +67,41 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     .SetStartupTrigger();
             }, async host =>
             {
-                await CollectLiveMetrics(host, tfm, new[] { providerName }, counterNames);
+                CollectLiveMetricsOptions options = ActionTestsHelper.GetActionOptions<CollectLiveMetricsOptions>(host, DefaultRuleName);
+
+                ICollectionRuleActionFactoryProxy factory;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLiveMetrics, out factory));
+
+                EndpointInfoSourceCallback callback = new(_outputHelper);
+                await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
+
+                AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+
+                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
+                {
+                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
+                    CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.LiveMetricsTimeout);
+
+                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
+
+                    using FileStream liveMetricsStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                    Assert.NotNull(liveMetricsStream);
+
+                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(liveMetricsStream);
+
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { providerName },
+                        counterNames,
+                        metrics,
+                        strict: true);
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                });
             });
-        }
-
-        private async Task CollectLiveMetrics(IHost host, TargetFrameworkMoniker tfm, string[] providerNames, string[] counterNames)
-        {
-            CollectLiveMetricsOptions options = ActionTestsHelper.GetActionOptions<CollectLiveMetricsOptions>(host, DefaultRuleName);
-
-            ICollectionRuleActionFactoryProxy factory;
-            Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLiveMetrics, out factory));
-
-            EndpointInfoSourceCallback callback = new(_outputHelper);
-            await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
-
-            AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
-
-            Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
-            await runner.ExecuteAsync(async () =>
-            {
-                IEndpointInfo endpointInfo = await newEndpointInfoTask;
-
-                ICollectionRuleAction action = factory.Create(endpointInfo, options);
-
-                CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.LiveMetricsTimeout);
-
-                string egressPath = ActionTestsHelper.ValidateEgressPath(result);
-
-                using FileStream liveMetricsStream = new(egressPath, FileMode.Open, FileAccess.Read);
-                Assert.NotNull(liveMetricsStream);
-
-                await ValidateLiveMetrics(liveMetricsStream, providerNames, counterNames);
-
-                await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-            });
-        }
-
-        private static async Task ValidateLiveMetrics(Stream liveMetricsStream, string[] providerNames, string[] counterNames)
-        {
-            var metrics = LiveMetricsTestUtilities.GetAllMetrics(liveMetricsStream);
-
-            await LiveMetricsTestUtilities.ValidateMetrics(providerNames,
-                counterNames,
-                metrics,
-                strict: true);
         }
     }
 }
