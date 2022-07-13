@@ -13,10 +13,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,38 +27,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private const string DefaultRuleName = "LiveMetricsTestRule";
         private const int IntervalSeconds = 2;
-        private int DurationSeconds = IntervalSeconds + 1;
+        private const int DurationSeconds = IntervalSeconds + 1;
 
         public CollectLiveMetricsActionTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
             _endpointUtilities = new(_outputHelper);
         }
-
-        /*
-        [Theory]
-        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
-        public async Task CollectLiveMetricsAction_Default(TargetFrameworkMoniker tfm)
-        {
-            using TemporaryDirectory tempDirectory = new(_outputHelper);
-
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
-            {
-                rootOptions.AddGlobalCounter(IntervalSeconds);
-
-                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
-
-                rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectLiveMetricsAction(ActionTestsConstants.ExpectedEgressProvider, options =>
-                    {
-                        options.Duration = TimeSpan.FromSeconds(DurationSeconds);
-                    })
-                    .SetStartupTrigger();
-            }, async host =>
-            {
-                await CollectLiveMetrics(host, tfm);
-            });
-        }*/
 
         [Theory]
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
@@ -72,15 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const string providerName = EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName;
 
             var counterNames = new[] { "cpu-usage", "working-set" };
-
-            var providers = new[]
-            {
-                new EventMetricsProvider
-                {
-                    ProviderName = providerName,
-                    CounterNames = counterNames,
-                }
-            };
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
@@ -93,7 +56,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     {
                         options.Duration = TimeSpan.FromSeconds(DurationSeconds);
                         options.IncludeDefaultProviders = false;
-                        options.Providers = providers;
+                        options.Providers = new[]
+                        {
+                            new EventMetricsProvider
+                            {
+                                ProviderName = providerName,
+                                CounterNames = counterNames,
+                            }
+                        };
                     })
                     .SetStartupTrigger();
             }, async host =>
@@ -129,13 +99,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using FileStream liveMetricsStream = new(egressPath, FileMode.Open, FileAccess.Read);
                 Assert.NotNull(liveMetricsStream);
 
-                await ValidateLiveMetrics(liveMetricsStream, providerNames, counterNames, _outputHelper);
+                await ValidateLiveMetrics(liveMetricsStream, providerNames, counterNames);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
         }
 
-        private static async Task ValidateLiveMetrics(Stream liveMetricsStream, string[] providerNames, string[] counterNames, ITestOutputHelper outputHelper)
+        private static async Task ValidateLiveMetrics(Stream liveMetricsStream, string[] providerNames, string[] counterNames)
         {
             var metrics = LiveMetricsTestUtilities.GetAllMetrics(liveMetricsStream);
 

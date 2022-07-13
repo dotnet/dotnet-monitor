@@ -7,7 +7,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Models;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -54,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
                         durationSeconds: 10);
                     
-                    var metrics = GetAllMetrics(holder.Stream);
+                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
                     await LiveMetricsTestUtilities.ValidateMetrics(new []{ EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
                         new []
                         {
@@ -96,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             }
                         });
 
-                    var metrics = GetAllMetrics(holder.Stream);
+                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
                     await LiveMetricsTestUtilities.ValidateMetrics(new []{ EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
                         counterNames,
                         metrics,
@@ -104,18 +103,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
-        }
-
-        private static async IAsyncEnumerable<CounterPayload> GetAllMetrics(Stream liveMetricsStream)
-        {
-            using var reader = new StreamReader(liveMetricsStream);
-
-            string entry = string.Empty;
-            while ((entry = await reader.ReadLineAsync()) != null)
-            {
-                Assert.Equal(StreamingLogger.JsonSequenceRecordSeparator, (byte)entry[0]);
-                yield return JsonSerializer.Deserialize<CounterPayload>(entry.Substring(1));
-            }
         }
     }
 }

@@ -94,6 +94,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\" />
     <Folder Include="Options\CollectionRules\Actions\" />
     <Folder Include="Options\CollectionRules\Triggers\" />
   </ItemGroup>
