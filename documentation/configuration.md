@@ -760,10 +760,10 @@ An action that collects live metrics for the process that the collection rule is
 
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
-| `IncludeDefaultProviders` | bool | false | Determines if the default counter providers should be used.. | `true` | | |
-| `Providers` | [EventMetricsProvider](api/definitions.md#EventMetricsConfiguration)?[] | false | The array of providers for metrics to collect. | `PlainText` | | |
-| `Duration` | TimeSpan? | false | The duration of the logs operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
-| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected logs. | | | |
+| `IncludeDefaultProviders` | bool | false | Determines if the default counter providers should be used. | `true` | | |
+| `Providers` | [EventMetricsProvider](api/definitions.md#EventMetricsProvider)[] | false | The array of providers for metrics to collect. | | | |
+| `Duration` | TimeSpan? | false | The duration of the live metrics operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected live metrics. | | | |
 
 ##### Outputs
 
@@ -827,6 +827,9 @@ Usage that collects live metrics for the `cpu-usage` counter on `System.Runtime`
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
+  CollectionRules__RuleName__Actions__0__Settings__UseDefaultProviders: "false"
+  CollectionRules__RuleName__Actions__0__Settings__Providers__0__ProviderName: "System.Runtime"
+  CollectionRules__RuleName__Actions__0__Settings__Providers__0__CounterNames__0: "cpu-usage"
   CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
   ```
 </details>
@@ -835,6 +838,12 @@ Usage that collects live metrics for the `cpu-usage` counter on `System.Runtime`
   <summary>Kubernetes Environment Variables</summary>
   
   ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__UseDefaultProviders
+    value: "false"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Providers__0__ProviderName
+    value: "System.Runtime"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Providers__0__CounterNames__0
+    value: "cpu-usage"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
     value: "TmpDir"
   ```
@@ -1030,7 +1039,7 @@ Collection rule defaults are specified in configuration as a named item under th
 
 | Name | Section | Type | Applies To |
 |---|---|---|---|
-| `Egress` | `Actions` | string | [CollectDump](#collectdump-action), [CollectGCDump](#collectgcdump-action), [CollectTrace](#collecttrace-action), [CollectLogs](#collectlogs-action) |
+| `Egress` | `Actions` | string | [CollectDump](#collectdump-action), [CollectGCDump](#collectgcdump-action), [CollectTrace](#collecttrace-action), [CollectLiveMetrics](#collectlivemetrics-action), [CollectLogs](#collectlogs-action) |
 | `SlidingWindowDuration` | `Triggers` | TimeSpan? | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger), [AspNetResponseStatus](#aspnetresponsestatus-trigger), [EventCounter](#eventcounter-trigger) |
 | `RequestCount` | `Triggers` | int | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger) |
 | `ResponseCount` | `Triggers` | int | [AspNetResponseStatus](#aspnetresponsestatus-trigger) |
