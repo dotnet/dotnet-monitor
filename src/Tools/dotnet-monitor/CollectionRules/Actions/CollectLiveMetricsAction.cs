@@ -61,7 +61,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 TaskCompletionSource<object> startCompletionSource,
                 CancellationToken token)
             {
-                // These need to get integrated
                 EventMetricsProvider[] providers = Options.Providers;
                 bool includeDefaultProviders = Options.IncludeDefaultProviders.GetValueOrDefault(CollectLiveMetricsOptionsDefaults.IncludeDefaultProviders);
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLiveMetricsOptionsDefaults.Duration));

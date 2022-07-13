@@ -752,6 +752,94 @@ Usage that collects a CPU trace for 30 seconds and egresses it to a provider nam
 }
 ```
 
+#### `CollectLiveMetrics` Action
+
+An action that collects live metrics for the process that the collection rule is targeting.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `IncludeDefaultProviders` | bool | false | Determines if the default counter providers should be used.. | `true` | | |
+| `Providers` | [EventMetricsProvider](api/definitions.md#EventMetricsConfiguration)?[] | false | The array of providers for metrics to collect. | `PlainText` | | |
+| `Duration` | TimeSpan? | false | The duration of the logs operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected logs. | | | |
+
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
+
+##### Example
+
+Usage that collects live metrics with the default providers for 30 seconds and egresses it to a provider named "TmpDir".
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Egress": "TmpDir"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
+    value: "TmpDir"
+  ```
+</details>
+
+##### Example
+
+Usage that collects live metrics for the `cpu-usage` counter on `System.Runtime` for 20 seconds and egresses it to a provider named "TmpDir".
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "UseDefaultProviders": false,
+    "Providers": [
+      {
+        "ProviderName": "System.Runtime",
+        "CounterNames": [ "cpu-usage" ]
+      }
+    ],
+    "Egress": "TmpDir"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
+    value: "TmpDir"
+  ```
+</details>
+
 #### `CollectLogs` Action
 
 An action that collects logs for the process that the collection rule is targeting.

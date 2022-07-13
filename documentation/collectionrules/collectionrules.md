@@ -54,6 +54,7 @@ The following are the currently available actions:
 |---|---|
 | [CollectDump](./../configuration.md#collectdump-action) | Collects a memory dump of the target process. |
 | [CollectGCDump](./../configuration.md#collectgcdump-action) | Collects a gcdump of the target process. |
+| [CollectLiveMetrics](./../configuration.md#collectlivemetrics-action) | Collects live metrics from the target process. |
 | [CollectLogs](./../configuration.md#collectlogs-action) | Collects logs from the target process. |
 | [CollectTrace](./../configuration.md#collecttrace-action) | Collects an event trace of the target process. |
 | [Execute](./../configuration.md#execute-action) | Executes an external executable with command line parameters. |
