@@ -727,6 +727,16 @@
         {
           "properties": {
             "Type": {
+              "const": "CollectLiveMetrics"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectLiveMetricsOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
               "const": "CollectLogs"
             },
             "Settings": {
@@ -1335,6 +1345,7 @@
       "enum": [
         "CollectDump",
         "CollectGCDump",
+        "CollectLiveMetrics",
         "CollectLogs",
         "CollectTrace",
         "Execute",
@@ -1390,6 +1401,66 @@
           "type": "string",
           "description": "The name of the egress provider to which the GC dump is egressed.",
           "minLength": 1
+        }
+      }
+    },
+    "CollectLiveMetricsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "IncludeDefaultProviders": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Determines if the default counter providers should be used",
+          "default": true
+        },
+        "Providers": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The array of providers for metrics to collect",
+          "items": {
+            "$ref": "#/definitions/EventMetricsProvider"
+          }
+        },
+        "Duration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The duration of time in which live metrics are collected.",
+          "format": "time-span",
+          "default": "00:00:30"
+        },
+        "Egress": {
+          "type": "string",
+          "description": "The name of the egress provider to which the live metrics are egressed.",
+          "minLength": 1
+        }
+      }
+    },
+    "EventMetricsProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ProviderName"
+      ],
+      "properties": {
+        "ProviderName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "CounterNames": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

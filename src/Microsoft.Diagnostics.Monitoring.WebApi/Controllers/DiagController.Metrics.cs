@@ -5,13 +5,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using Microsoft.Diagnostics.NETCore.Client;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
