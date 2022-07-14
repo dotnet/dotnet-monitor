@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #include "Logger.h"
+#include "LoggerHelper.h"
 #include "macros.h"
 
 using namespace std;
@@ -46,45 +47,21 @@ STDMETHODIMP ILogger::LogV(LogLevel level, const lstring format, ...)
     // without knowledge of the arguments types. If structured logging is desired,
     // consider some way of capturing individual format arguments and passing
     // their information and values in an alternative manner than using va_list.
+    HRESULT hr = S_OK;
+
+    LCHAR message[MaxEntrySize];
+    LoggerHelper::Zero(message);
 
     va_list args;
     va_start(args, format);
-    LCHAR message[MaxEntrySize];
 
-    // The result of the string formatting APIs will return a negative
-    // number when truncation occurs, however this is not an error condition.
-    // Clear errno in order to use it to indicate if an actual error occurs.
-    int result = 0;
-    int previousError = errno;
-    errno = 0;
+    hr = LoggerHelper::FormatTruncate(message, format.c_str(), args);
 
-#ifdef TARGET_WINDOWS
-    result = _vsnwprintf_s(
-        message,
-        _TRUNCATE,
-        format.c_str(),
-        args);
-#else
-    result = vsnprintf(
-        message,
-        MaxEntrySize,
-        format.c_str(),
-        args);
-#endif
     va_end(args);
 
-    // Result may be negative if truncation occurs, however this is not an
-    // error condition. Check the value of errno before assuming an error
-    // occurred.
-    if (result < 0 && errno != 0)
-    {
-        return HRESULT_FROM_ERRNO(errno);
-    }
+    IfFailRet(hr);
 
-    // Successful invocations of platform APIs typically do not modify errno
-    // if no failure occurs. To maintain this behavior, restore the value of
-    // errno prior to invoking the string formatting API.
-    errno = previousError;
+    IfFailRet(Log(level, message));
 
-    return Log(level, message);
+    return S_OK;
 }
