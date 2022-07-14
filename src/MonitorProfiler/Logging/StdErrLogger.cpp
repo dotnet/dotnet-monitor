@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #include "StdErrLogger.h"
+#include "LoggerHelper.h"
 #include "LogLevelHelper.h"
 #include "../Environment/EnvironmentHelper.h"
 #include "NullLogger.h"
@@ -39,67 +40,11 @@ STDMETHODIMP StdErrLogger::Log(LogLevel level, const lstring& message)
     lstring levelStr;
     IfFailRet(LogLevelHelper::GetShortName(level, levelStr));
 
-    // The result of the stream writing APIs will return a negative
-    // number when an error occurs, however errno may or may not be
-    // set depending on the type of error. Clear errno in order to
-    // use it to indicate if an actual error occurs.
-    int result = 0;
-    int previousError = errno;
-    errno = 0;
-
-#ifdef TARGET_WINDOWS
-    result = fwprintf_s(
+    IfFailRet(LoggerHelper::Write(
         stderr,
         L"[profiler]%s: %s\r\n",
         levelStr.c_str(),
-        message.c_str());
-#else
-    result = fprintf(
-        stderr,
-        "[profiler]%s: %s\r\n",
-        levelStr.c_str(),
-        message.c_str());
-#endif
-
-    if (result < 0)
-    {
-        // Determine appropriate HRESULT for failure.
-        HRESULT hr = S_OK;
-
-        // Writing errors will set errno to non-zero value
-        if (0 != errno)
-        {
-            hr = HRESULT_FROM_ERRNO(errno);
-        }
-        else
-        {
-            // Multibyte encoding errors will set the stream to an error state.
-            // Get the error indicator from the stream.
-            result = ferror(stderr);
-            if (0 != result)
-            {
-                hr = HRESULT_FROM_ERRNO(result);
-            }
-            else
-            {
-                // This is an undocumented condition.
-                hr = E_UNEXPECTED;
-            }
-
-            // While there was a failure to write to the stream, errno was not
-            // updated by the platform API call. Restore the value of errno prior
-            // to invoking the string formatting API. This is done after ferror
-            // is invoked in case ferror sets errno.
-            errno = previousError;
-        }
-
-        return hr;
-    }
-
-    // Successful invocations of platform APIs typically do not modify errno
-    // if no failure occurs. To maintain this behavior, restore the value of
-    // errno prior to invoking the stream writing API.
-    errno = previousError;
+        message.c_str()));
 
     return S_OK;
 }

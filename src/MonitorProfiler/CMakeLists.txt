@@ -18,6 +18,7 @@ set(SOURCES
     Environment/ProfilerEnvironment.cpp
     Logging/AggregateLogger.cpp
     Logging/Logger.cpp
+    Logging/LoggerHelper.cpp
     Logging/NullLogger.cpp
     Logging/StdErrLogger.cpp
     MainProfiler/ExceptionTracker.cpp

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #include "DebugLogger.h"
+#include "LoggerHelper.h"
 #include "LogLevelHelper.h"
 #include "../Environment/EnvironmentHelper.h"
 #include "NullLogger.h"
@@ -39,35 +40,16 @@ STDMETHODIMP DebugLogger::Log(LogLevel level, const lstring& message)
     lstring levelStr;
     IfFailRet(LogLevelHelper::GetShortName(level, levelStr));
 
-    WCHAR wszString[MaxEntrySize];
+    WCHAR output[MaxEntrySize];
+    LoggerHelper::Zero(output);
 
-    // The result of the string formatting APIs will return a negative
-    // number when truncation occurs, however this is not an error condition.
-    // Clear errno in order to use it to indicate if an actual error occurs.
-    int previousError = errno;
-    errno = 0;
-
-    int result = _snwprintf_s(
-        wszString,
-        _TRUNCATE,
+    IfFailRet(LoggerHelper::FormatTruncate(
+        output,
         _T("[profiler]%s: %s\r\n"),
         levelStr.c_str(),
-        message.c_str());
+        message.c_str()));
 
-    // Result may be negative if truncation occurs, however this is not an
-    // error condition. Check the value of errno before assuming an error
-    // occurred.
-    if (result < 0 && errno != 0)
-    {
-        return HRESULT_FROM_ERRNO(errno);
-    }
-
-    // Successful invocations of platform APIs typically do not modify errno
-    // if no failure occurs. To maintain this behavior, restore the value of
-    // errno prior to invoking the string formatting API.
-    errno = previousError;
-
-    OutputDebugStringW(wszString);
+    OutputDebugStringW(output);
 
     return S_OK;
 }
