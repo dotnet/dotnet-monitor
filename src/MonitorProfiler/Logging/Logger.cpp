@@ -49,8 +49,7 @@ STDMETHODIMP ILogger::LogV(LogLevel level, const lstring format, ...)
     // their information and values in an alternative manner than using va_list.
     HRESULT hr = S_OK;
 
-    LCHAR message[MaxEntrySize];
-    LoggerHelper::Zero(message);
+    LCHAR message[MaxEntrySize] = {};
 
     va_list args;
     va_start(args, format);

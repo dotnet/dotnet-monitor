@@ -64,23 +64,6 @@ public:
         const LCHAR* format,
         ...);
 
-    /// <summary>
-    /// Fills a block of memory with zeros.
-    /// </summary>
-    static LCHAR* Zero(
-        LCHAR* buffer,
-        size_t size);
-
-    /// <summary>
-    /// Fills an array of memory with zeros.
-    /// </summary>
-    template <size_t size>
-    inline static LCHAR* Zero(
-        LCHAR (&buffer)[size])
-    {
-        return Zero(buffer, size);
-    }
-
 private:
     /// <summary>
     /// _vsnwprintf_s / vsnprintf
