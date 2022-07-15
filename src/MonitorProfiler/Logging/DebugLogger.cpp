@@ -40,8 +40,7 @@ STDMETHODIMP DebugLogger::Log(LogLevel level, const lstring& message)
     lstring levelStr;
     IfFailRet(LogLevelHelper::GetShortName(level, levelStr));
 
-    WCHAR output[MaxEntrySize];
-    LoggerHelper::Zero(output);
+    WCHAR output[MaxEntrySize] = {};
 
     IfFailRet(LoggerHelper::FormatTruncate(
         output,

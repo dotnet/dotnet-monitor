@@ -63,15 +63,6 @@ HRESULT LoggerHelper::Write(FILE* stream, const LCHAR* format, ...)
     return S_OK;
 }
 
-LCHAR* LoggerHelper::Zero(LCHAR* buffer, size_t size)
-{
-#if TARGET_WINDOWS
-    return wmemset(buffer, 0, size);
-#else
-    return memset(buffer, 0, size);
-#endif
-}
-
 int LoggerHelper::FormatTruncateImpl(LCHAR* buffer, size_t size, const LCHAR* format, va_list args)
 {
 #ifdef TARGET_WINDOWS
@@ -128,7 +119,7 @@ int LoggerHelper::WriteImpl(FILE* stream, const LCHAR* format, va_list args)
         format,
         args);
 #else
-    return = vfprintf(
+    return vfprintf(
         stream,
         format,
         args);
