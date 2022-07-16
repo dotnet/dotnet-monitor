@@ -19,9 +19,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private bool _disposed;
         private IDisposable _limitTracker;
 
-        public EgressRequest(Guid operationId, IEgressOperation egressOperation, IDisposable limitTracker)
+        public EgressRequest(Guid operationId, EgressProcessInfo processInfo, IEgressOperation egressOperation, IDisposable limitTracker)
         {
             OperationId = operationId;
+            ProcessInfo = processInfo;
             EgressOperation = egressOperation;
             _limitTracker = limitTracker;
         }
@@ -29,6 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public CancellationTokenSource CancellationTokenSource { get; } = new();
 
         public Guid OperationId { get; }
+
+        public EgressProcessInfo  ProcessInfo { get; }
 
         public IEgressOperation EgressOperation { get; }
 

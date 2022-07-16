@@ -238,7 +238,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
                         egressProvider,
                         dumpFileName,
-                        processInfo.EndpointInfo,
+                        processInfo,
                         ContentTypes.ApplicationOctetStream,
                         scope), limitKey: Utilities.ArtifactType_Dump);
                 }

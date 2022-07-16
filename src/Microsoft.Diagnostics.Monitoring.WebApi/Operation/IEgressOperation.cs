@@ -13,5 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token);
 
         void Validate(IServiceProvider serviceProvider);
+
+        EgressProcessInfo GetEgressProcessInfo();
     }
 }

@@ -2,14 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -58,7 +61,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new TooManyRequestsException();
             }
 
-            var request = new EgressRequest(operationId, egressOperation, limitTracker);
+            EgressProcessInfo processInfo = egressOperation.GetEgressProcessInfo();
+
+            var request = new EgressRequest(operationId, processInfo, egressOperation, limitTracker);
             lock (_requests)
             {
                 //Add operation object to central table.
@@ -128,16 +133,26 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             lock (_requests)
             {
-                return _requests.Select((kvp) => new Models.OperationSummary
+                return _requests.Select((kvp) =>
                 {
-                    OperationId = kvp.Key,
-                    CreatedDateTime = kvp.Value.CreatedDateTime,
-                    Status = kvp.Value.State
+                    EgressProcessInfo processInfo = kvp.Value.EgressRequest.ProcessInfo;
+                    return new Models.OperationSummary
+                    {
+                        OperationId = kvp.Key,
+                        CreatedDateTime = kvp.Value.CreatedDateTime,
+                        Status = kvp.Value.State,
+                        ProcessInfo = new Models.OperationProcessInfo
+                        {
+                            ProcessName = processInfo.ProcessName,
+                            ProcessID = processInfo.ProcessId,
+                            UID = processInfo.RuntimeInstanceCookie
+                        }
+                    };
                 }).ToList();
             }
         }
 
-        public Models.OperationStatus GetOperationStatus(Guid operationId)
+    public Models.OperationStatus GetOperationStatus(Guid operationId)
         {
             lock (_requests)
             {
@@ -145,12 +160,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
+                EgressProcessInfo processInfo = entry.EgressRequest.ProcessInfo;
 
                 var status = new Models.OperationStatus()
                 {
                     OperationId = entry.EgressRequest.OperationId,
                     Status = entry.State,
                     CreatedDateTime = entry.CreatedDateTime,
+                    ProcessInfo = new Models.OperationProcessInfo
+                    {
+                        ProcessName = processInfo.ProcessName,
+                        ProcessID = processInfo.ProcessId,
+                        UID = processInfo.RuntimeInstanceCookie
+                    }
                 };
 
                 if (entry.State == Models.OperationState.Succeeded)

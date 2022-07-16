@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,12 +17,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly Func<IEgressService, CancellationToken, Task<EgressResult>> _egress;
         private readonly string _egressProvider;
         private readonly KeyValueLogScope _scope;
+        private readonly EgressProcessInfo _egressProcessInfo;
 
-        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope)
+        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope)
         {
-            _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, token);
+            _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, token);
             _egressProvider = endpointName;
             _scope = scope;
+
+            _egressProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }
 
         public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope)
@@ -29,6 +33,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, token);
             _egressProvider = endpointName;
             _scope = scope;
+            _egressProcessInfo = new EgressProcessInfo(null, source.ProcessId, source.RuntimeInstanceCookie);
+        }
+
+        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope)
+        {
+            _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, token);
+            _egressProvider = endpointName;
+            _scope = scope;
+            _egressProcessInfo = new EgressProcessInfo(null, source.ProcessId, source.RuntimeInstanceCookie);
         }
 
         public async Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token)
@@ -57,11 +70,30 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }, logger, token);
         }
 
+        public EgressProcessInfo GetEgressProcessInfo()
+        {
+            return _egressProcessInfo;
+        }
+
         public void Validate(IServiceProvider serviceProvider)
         {
             serviceProvider
                 .GetRequiredService<IEgressService>()
                 .ValidateProvider(_egressProvider);
+        }
+    }
+
+    internal readonly struct EgressProcessInfo
+    {
+        public readonly string ProcessName;
+        public readonly int ProcessId;
+        public readonly Guid RuntimeInstanceCookie;
+
+        public EgressProcessInfo(string processName, int processId, Guid runtimeInstanceCookie) : this()
+        {
+            this.ProcessName = processName;
+            this.ProcessId = processId;
+            this.RuntimeInstanceCookie = runtimeInstanceCookie;
         }
     }
 }
