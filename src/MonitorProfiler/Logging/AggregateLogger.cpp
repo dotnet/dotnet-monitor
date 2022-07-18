@@ -30,7 +30,7 @@ STDMETHODIMP_(bool) AggregateLogger::IsEnabled(LogLevel level)
     return false;
 }
 
-STDMETHODIMP AggregateLogger::Log(LogLevel level, const tstring format, va_list args)
+STDMETHODIMP AggregateLogger::Log(LogLevel level, const lstring& message)
 {
     HRESULT hr = S_OK;
 
@@ -42,7 +42,7 @@ STDMETHODIMP AggregateLogger::Log(LogLevel level, const tstring format, va_list 
         // not need to check if the level is enabled for each Log call.
         if (pLogger->IsEnabled(level))
         {
-            IfFailRet(pLogger->Log(level, format, args));
+            IfFailRet(pLogger->Log(level, message));
         }
     }
 

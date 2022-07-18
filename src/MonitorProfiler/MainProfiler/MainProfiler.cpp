@@ -7,6 +7,7 @@
 #include "../Environment/ProfilerEnvironment.h"
 #include "../Logging/AggregateLogger.h"
 #include "../Logging/DebugLogger.h"
+#include "../Logging/StdErrLogger.h"
 #include "corhlpr.h"
 #include "macros.h"
 #include <memory>
@@ -160,6 +161,10 @@ HRESULT MainProfiler::InitializeLogging()
     unique_ptr<AggregateLogger> pAggregateLogger(new (nothrow) AggregateLogger());
     IfNullRet(pAggregateLogger);
 
+    shared_ptr<StdErrLogger> pStdErrLogger = make_shared<StdErrLogger>(m_pEnvironment);
+    IfNullRet(pStdErrLogger);
+    pAggregateLogger->Add(pStdErrLogger);
+
 #ifdef _DEBUG
 #ifdef TARGET_WINDOWS
     // Add the debug output logger for when debugging on Windows
@@ -200,6 +205,6 @@ HRESULT MainProfiler::InitializeCommandServer()
 
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
-    m_pLogger->Log(LogLevel::Information, _T("Message received from client: %d %d"), message.MessageType, message.Parameters);
+    m_pLogger->Log(LogLevel::Information, _LS("Message received from client: %d %d"), message.MessageType, message.Parameters);
     return S_OK;
 }

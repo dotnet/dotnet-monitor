@@ -25,7 +25,7 @@ public:
     }
 
     /// <inheritdoc />
-    STDMETHOD(Log)(LogLevel level, const tstring format, va_list args) override
+    STDMETHOD(Log)(LogLevel level, const lstring& message) override
     {
         return S_OK;
     }
