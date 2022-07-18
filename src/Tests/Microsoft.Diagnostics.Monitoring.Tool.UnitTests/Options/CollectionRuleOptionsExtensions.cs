@@ -128,6 +128,21 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 });
         }
 
+        public static CollectionRuleOptions AddCollectLiveMetricsAction(this CollectionRuleOptions options, string egress = null, Action<CollectLiveMetricsOptions> callback = null)
+        {
+            return options.AddAction(
+                KnownCollectionRuleActions.CollectLiveMetrics,
+                actionOptions =>
+                {
+                    CollectLiveMetricsOptions collectLiveMetricsOptions = new();
+                    collectLiveMetricsOptions.Egress = egress;
+
+                    callback?.Invoke(collectLiveMetricsOptions);
+
+                    actionOptions.Settings = collectLiveMetricsOptions;
+                });
+        }
+
         public static CollectionRuleOptions AddExecuteAction(this CollectionRuleOptions options, string path, string arguments = null, bool? waitForCompletion = null)
         {
             return options.AddAction(
@@ -503,6 +518,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             }
 
             return collectTraceOptions;
+        }
+
+        public static CollectLiveMetricsOptions VerifyCollectLiveMetricsAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedEgress)
+        {
+            CollectLiveMetricsOptions collectLiveMetricsOptions = ruleOptions.VerifyAction<CollectLiveMetricsOptions>(
+                actionIndex, KnownCollectionRuleActions.CollectLiveMetrics);
+
+            Assert.Equal(expectedEgress, collectLiveMetricsOptions.Egress);
+
+            return collectLiveMetricsOptions;
         }
 
         public static ExecuteOptions VerifyExecuteAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedPath, string expectedArguments = null)
