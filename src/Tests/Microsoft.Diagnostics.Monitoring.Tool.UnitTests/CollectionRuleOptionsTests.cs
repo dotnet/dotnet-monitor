@@ -1133,6 +1133,73 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
+        public Task CollectionRuleOptions_CollectLiveMetricsAction_RoundTrip()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+            const bool ExpectedIncludeDefaultProviders = false;
+
+            TimeSpan ExpectedDuration = TimeSpan.FromSeconds(45);
+
+            const string providerName = EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName;
+            var counterNames = new[] { "cpu-usage", "working-set" };
+
+            EventMetricsProvider[] ExpectedProviders = new[]
+            {
+                new EventMetricsProvider
+                {
+                    ProviderName = providerName,
+                    CounterNames = counterNames,
+                }
+            };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectLiveMetricsAction(ExpectedEgressProvider, options =>
+                        {
+                            options.Duration = ExpectedDuration;
+                            options.IncludeDefaultProviders = ExpectedIncludeDefaultProviders;
+                            options.Providers = ExpectedProviders;
+                        });
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                },
+                ruleOptions =>
+                {
+                    CollectLiveMetricsOptions collectLiveMetricsOptions = ruleOptions.VerifyCollectLiveMetricsAction(0, ExpectedEgressProvider);
+
+                    Assert.Equal(ExpectedDuration, collectLiveMetricsOptions.Duration);
+                    Assert.Equal(ExpectedIncludeDefaultProviders, collectLiveMetricsOptions.IncludeDefaultProviders);
+                    Assert.Equal(ExpectedProviders.Select(x => x.CounterNames.ToHashSet()), collectLiveMetricsOptions.Providers.Select(x => x.CounterNames.ToHashSet()));
+                    Assert.Equal(ExpectedProviders.Select(x => x.ProviderName), collectLiveMetricsOptions.Providers.Select(x => x.ProviderName));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CollectLiveMetricsAction_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectLiveMetricsAction(UnknownEgressName, options =>
+                        {
+                            options.Duration = TimeSpan.FromDays(3);
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Equal(2, failures.Length);
+                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(CollectTraceOptions.Duration),
+                        ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
+                    VerifyEgressNotExistMessage(failures, 1, UnknownEgressName);
+                });
+        }
+
+        [Fact]
         public Task CollectionRuleOptions_ExecuteAction_MinimumOptions()
         {
             const string ExpectedExePath = "cmd.exe";

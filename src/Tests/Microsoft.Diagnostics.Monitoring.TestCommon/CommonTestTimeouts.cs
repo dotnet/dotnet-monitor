@@ -28,6 +28,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// </summary>
         public static readonly TimeSpan TraceTimeout = TimeSpan.FromMinutes(2);
 
+        /// <summary>
+        /// Default timeout for live metrics collection.
+        /// </summary>
+        public static readonly TimeSpan LiveMetricsTimeout = TimeSpan.FromMinutes(2);
+
         /// Default timeout for gcdump collection.
         /// </summary>
         /// <remarks>

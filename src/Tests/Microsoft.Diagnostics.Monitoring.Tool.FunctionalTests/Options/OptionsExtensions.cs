@@ -36,6 +36,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions AddGlobalCounter(this RootOptions options, int intervalSeconds)
+        {
+            options.GlobalCounter = new GlobalCounterOptions
+            {
+                IntervalSeconds = intervalSeconds
+            };
+
+            return options;
+        }
+
         public static CollectionRuleOptions CreateCollectionRule(this RootOptions rootOptions, string name)
         {
             CollectionRuleOptions options = new();
