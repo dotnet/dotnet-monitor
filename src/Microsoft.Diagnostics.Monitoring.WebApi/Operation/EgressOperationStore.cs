@@ -61,9 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new TooManyRequestsException();
             }
 
-            EgressProcessInfo processInfo = egressOperation.GetEgressProcessInfo();
-
-            var request = new EgressRequest(operationId, processInfo, egressOperation, limitTracker);
+            var request = new EgressRequest(operationId, egressOperation.GetEgressProcessInfo(), egressOperation, limitTracker);
             lock (_requests)
             {
                 //Add operation object to central table.
