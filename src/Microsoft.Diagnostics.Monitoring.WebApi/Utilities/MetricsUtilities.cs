@@ -24,10 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             Task runTask = await eventCounterPipeline.StartAsync(token);
 
-            if (null != startCompletionSource)
-            {
-                startCompletionSource.TrySetResult(null);
-            }
+            startCompletionSource?.TrySetResult(null);
 
             await runTask;
         }
