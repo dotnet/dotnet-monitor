@@ -28,12 +28,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _egressProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }
 
+        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope)
+        {
+            _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, token);
+            _egressProvider = endpointName;
+            _scope = scope;
+
+            _egressProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
+        }
+
+        // The below constructors don't need EgressProcessInfo as their callers don't store to the operations table.
         public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, token);
             _egressProvider = endpointName;
             _scope = scope;
-            _egressProcessInfo = new EgressProcessInfo(null, source.ProcessId, source.RuntimeInstanceCookie);
         }
 
         public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope)
@@ -41,7 +50,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, token);
             _egressProvider = endpointName;
             _scope = scope;
-            _egressProcessInfo = new EgressProcessInfo(null, source.ProcessId, source.RuntimeInstanceCookie);
         }
 
         public async Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token)
@@ -85,9 +93,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal readonly struct EgressProcessInfo
     {
-        public readonly string ProcessName;
-        public readonly int ProcessId;
-        public readonly Guid RuntimeInstanceCookie;
+        public readonly string ProcessName { get; }
+        public readonly int ProcessId { get; }
+        public readonly Guid RuntimeInstanceCookie { get; }
 
         public EgressProcessInfo(string processName, int processId, Guid runtimeInstanceCookie) : this()
         {

@@ -25,6 +25,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public OperationProcessInfo ProcessInfo { get; set; }
     }
 
+    /// <summary>
+    /// Represents the details of a given process used in an operation.
+    /// </summary>
     public class OperationProcessInfo
     {
         [JsonPropertyName("pid")]

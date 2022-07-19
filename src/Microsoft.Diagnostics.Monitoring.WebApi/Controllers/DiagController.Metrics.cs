@@ -74,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     action,
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
-                    processInfo.EndpointInfo);
+                    processInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
         }
 
@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     action,
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
-                    processInfo.EndpointInfo);
+                    processInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
         }
 

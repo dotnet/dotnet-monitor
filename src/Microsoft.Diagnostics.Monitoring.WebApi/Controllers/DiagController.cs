@@ -299,7 +299,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     },
                     fileName,
                     ContentTypes.ApplicationOctetStream,
-                    processInfo.EndpointInfo);
+                    processInfo);
             }, processKey, Utilities.ArtifactType_GCDump);
         }
 
@@ -632,7 +632,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 },
                 fileName,
                 ContentTypes.ApplicationOctetStream,
-                processInfo.EndpointInfo);
+                processInfo);
         }
 
         private Task<ActionResult> StartLogs(
@@ -655,7 +655,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 (outputStream, token) => LogsUtilities.CaptureLogsAsync(null, format.Value, processInfo.EndpointInfo, settings, outputStream, token),
                 fileName,
                 contentType,
-                processInfo.EndpointInfo,
+                processInfo,
                 format != LogFormat.PlainText);
         }
 
@@ -704,10 +704,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Func<Stream, CancellationToken, Task> action,
             string fileName,
             string contentType,
-            IEndpointInfo endpointInfo,
+            IProcessInfo processInfo,
             bool asAttachment = true)
         {
-            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, endpointInfo);
+            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
             {
@@ -723,7 +723,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     action,
                     providerName,
                     fileName,
-                    endpointInfo,
+                    processInfo,
                     contentType,
                     scope),
                     limitKey: artifactType);

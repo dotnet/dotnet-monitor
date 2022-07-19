@@ -2,17 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -21,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private sealed class EgressEntry
         {
             public ExecutionResult<EgressResult> ExecutionResult { get; set; }
-            public Models.OperationState State { get; set;}
+            public Models.OperationState State { get; set; }
 
             public EgressRequest EgressRequest { get; set; }
 
@@ -61,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new TooManyRequestsException();
             }
 
-            var request = new EgressRequest(operationId, egressOperation.GetEgressProcessInfo(), egressOperation, limitTracker);
+            var request = new EgressRequest(operationId, egressOperation, limitTracker);
             lock (_requests)
             {
                 //Add operation object to central table.
@@ -133,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 return _requests.Select((kvp) =>
                 {
-                    EgressProcessInfo processInfo = kvp.Value.EgressRequest.ProcessInfo;
+                    EgressProcessInfo processInfo = kvp.Value.EgressRequest.EgressOperation.GetEgressProcessInfo();
                     return new Models.OperationSummary
                     {
                         OperationId = kvp.Key,
@@ -150,7 +144,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-    public Models.OperationStatus GetOperationStatus(Guid operationId)
+        public Models.OperationStatus GetOperationStatus(Guid operationId)
         {
             lock (_requests)
             {
@@ -158,7 +152,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
-                EgressProcessInfo processInfo = entry.EgressRequest.ProcessInfo;
+                EgressProcessInfo processInfo = entry.EgressRequest.EgressOperation.GetEgressProcessInfo();
 
                 var status = new Models.OperationStatus()
                 {
