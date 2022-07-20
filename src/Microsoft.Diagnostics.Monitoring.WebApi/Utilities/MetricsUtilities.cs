@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static async Task CaptureLiveMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, EventPipeCounterPipelineSettings settings, Stream outputStream, CancellationToken token)
         {
             var client = new DiagnosticsClient(endpointInfo.Endpoint);
-         
+
             await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
                 settings,
                 loggers:

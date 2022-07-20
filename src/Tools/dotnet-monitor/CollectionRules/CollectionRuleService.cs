@@ -238,7 +238,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private void CheckForListenDiagnosticMode()
         {
-            if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen 
+            if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen
                 && _provider.GetCollectionRuleNames().Any())
             {
                 _logger.DiagnosticPortNotInListenModeForCollectionRules();
@@ -328,7 +328,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             if (actionCountWindowDuration.HasValue && timestamps.Count >= actionCount)
             {
-                TimeSpan countdown =  timestamps.Peek() - (currentTime - actionCountWindowDuration.Value);
+                TimeSpan countdown = timestamps.Peek() - (currentTime - actionCountWindowDuration.Value);
                 return GetTruncatedPositiveTimeSpan(countdown);
             }
 

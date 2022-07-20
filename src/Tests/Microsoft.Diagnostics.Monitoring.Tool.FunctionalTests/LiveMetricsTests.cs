@@ -52,10 +52,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
                         durationSeconds: 10);
-                    
+
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
-                    await LiveMetricsTestUtilities.ValidateMetrics(new []{ EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
-                        new []
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
+                        new[]
                         {
                             "cpu-usage",
                             "working-set",
@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         });
 
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
-                    await LiveMetricsTestUtilities.ValidateMetrics(new []{ EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
                         counterNames,
                         metrics,
                         strict: true);

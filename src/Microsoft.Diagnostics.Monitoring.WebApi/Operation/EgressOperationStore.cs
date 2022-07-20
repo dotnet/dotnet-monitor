@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private sealed class EgressEntry
         {
             public ExecutionResult<EgressResult> ExecutionResult { get; set; }
-            public Models.OperationState State { get; set;}
+            public Models.OperationState State { get; set; }
 
             public EgressRequest EgressRequest { get; set; }
 

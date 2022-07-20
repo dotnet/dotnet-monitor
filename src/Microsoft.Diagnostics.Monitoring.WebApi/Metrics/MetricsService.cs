@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _optionsMonitor = optionsMonitor;
             _counterOptions = counterOptions;
         }
-        
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)

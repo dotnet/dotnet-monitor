@@ -162,10 +162,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 outputHelper: _outputHelper,
                 setup: (Tools.Monitor.RootOptions rootOptions) =>
                 {
-                rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .SetStartupTrigger()
-                    .AddSetEnvironmentVariableAction(DefaultVarName, DefaultVarValue)
-                    .AddGetEnvironmentVariableAction(DefaultVarName);
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddSetEnvironmentVariableAction(DefaultVarName, DefaultVarValue)
+                        .AddGetEnvironmentVariableAction(DefaultVarName);
                 },
                 hostCallback: async (Extensions.Hosting.IHost host) =>
                 {

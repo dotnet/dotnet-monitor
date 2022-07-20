@@ -156,10 +156,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
 
             settings = _tokenParser.SubstituteOptionValues(settings, new TokenContext
-                {
-                    CloneOnSubstitution = ReferenceEquals(originalSettings, settings),
-                    RuntimeId = _ruleContext.EndpointInfo?.RuntimeInstanceCookie ?? Guid.Empty
-                });
+            {
+                CloneOnSubstitution = ReferenceEquals(originalSettings, settings),
+                RuntimeId = _ruleContext.EndpointInfo?.RuntimeInstanceCookie ?? Guid.Empty
+            });
 
             return settings;
         }

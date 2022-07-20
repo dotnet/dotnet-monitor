@@ -175,7 +175,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             // Note: This deviates slightly from the simple console format in that the event name
             // is also logged as a suffix on the first line whereas the simple console format does
             // not log the event name at all.
-            
+
             // Timestamp Level: Category[EventId][EventName]
             //       => Scope1Name1:Scope1Value1, Scope1Name2:Scope1Value2 => Scope2Name1:Scope2Value2
             //       Message

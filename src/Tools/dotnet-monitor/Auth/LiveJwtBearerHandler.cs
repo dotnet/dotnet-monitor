@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// </summary>
     internal sealed class LiveJwtBearerHandler : JwtBearerHandler
     {
-        public LiveJwtBearerHandler(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) 
+        public LiveJwtBearerHandler(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
             options.OnChange((JwtBearerOptions opts, string name) =>

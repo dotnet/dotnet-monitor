@@ -66,7 +66,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, EndpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    token => {
+                    token =>
+                    {
                         startCompletionSource.TrySetResult(null);
                         return _dumpService.DumpAsync(EndpointInfo, dumpType, token);
                     },

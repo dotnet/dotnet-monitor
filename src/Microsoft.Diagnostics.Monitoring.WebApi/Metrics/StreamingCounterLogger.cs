@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         protected abstract void SerializeCounter(Stream stream, ICounterPayload counter);
 
-        protected virtual void Cleanup() {}
+        protected virtual void Cleanup() { }
 
         protected StreamingCounterLogger(Stream stream)
         {

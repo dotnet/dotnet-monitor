@@ -16,13 +16,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public bool EnableKeyAuth => (KeyAuthenticationMode == KeyAuthenticationMode.StoredKey) ||
                                      (KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey);
-        
+
         public GeneratedJwtKey TemporaryJwtKey { get; }
 
         public AuthConfiguration(KeyAuthenticationMode mode)
         {
             KeyAuthenticationMode = mode;
-            
+
             if (mode == KeyAuthenticationMode.TemporaryKey)
             {
                 TemporaryJwtKey = GeneratedJwtKey.Create();
