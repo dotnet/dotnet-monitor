@@ -8,7 +8,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  spec-lint:
+  lint-csharp:
     name: 'C# Linting'
     runs-on: ubuntu-latest
 
