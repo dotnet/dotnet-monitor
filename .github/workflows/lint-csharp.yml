@@ -1,7 +1,7 @@
 name: 'C# linting'
 on:
   pull_request:
-    paths: ['**.cs,', '.editorconfig']
+    paths: ['**.cs']
     branches: [main]
 
 permissions:
