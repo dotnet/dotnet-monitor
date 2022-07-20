@@ -6,9 +6,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 

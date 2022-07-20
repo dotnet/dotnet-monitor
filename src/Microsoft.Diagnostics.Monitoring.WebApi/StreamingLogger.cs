@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi

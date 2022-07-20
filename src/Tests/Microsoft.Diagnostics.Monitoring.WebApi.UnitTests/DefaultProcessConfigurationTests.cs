@@ -2,17 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
