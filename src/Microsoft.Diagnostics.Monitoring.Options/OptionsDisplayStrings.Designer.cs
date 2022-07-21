@@ -653,7 +653,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format used to display the callstacks..
+        ///   Looks up a localized string similar to The format used to display the call stacks..
         /// </summary>
         public static string DisplayAttributeDescription_CollectStacksOptions_Format {
             get {
@@ -892,6 +892,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_EgressOptions_AzureBlobStorage {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_AzureBlobStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional egress providers that can be loaded from their file paths..
+        /// </summary>
+        public static string DisplayAttributeDescription_EgressOptions_Extensions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_Extensions", resourceCulture);
             }
         }
         

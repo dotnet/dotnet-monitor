@@ -745,4 +745,8 @@
     <value>A mapping of event payload field names to their expected value. A subset of the payload fields may be specified.</value>
     <comment>The description provided for the PayloadFilter parameter on TraceEventFilter.</comment>
   </data>
+  <data name="DisplayAttributeDescription_EgressOptions_Extensions" xml:space="preserve">
+    <value>Additional egress providers that can be loaded from their file paths.</value>
+    <comment>The description provided for the Extensions parameter on EgressOptions.</comment>
+  </data>
 </root>

@@ -27,6 +27,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         {
             if (optionsType == typeof(ExtensionEgressProviderOptions))
             {
+                // Not an efficient way to do this, but just experimenting
+                foreach (IConfigurationSection providerTypeSection in _egressSection.GetChildren())
+                {
+                    if (providerTypeSection.Exists() && providerTypeSection.Key.Equals("Extensions")) // should only return the Extensions one
+                    {
+                        yield return providerTypeSection;
+                    }
+                }
+                yield break;
+                /*
                 foreach (IConfigurationSection providerTypeSection in _egressSection.GetChildren())
                 {
                     if (providerTypeSection.Exists() && !IsBuiltInSection(providerTypeSection))
@@ -34,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
                         yield return providerTypeSection;
                     }
                 }
-                yield break;
+                yield break;*/
             }
             else if (optionsType == typeof(AzureBlobEgressProviderOptions))
             {
