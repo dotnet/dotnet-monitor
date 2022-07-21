@@ -14,7 +14,7 @@ class ProfilerBase :
     public ICorProfilerCallback11
 {
 protected:
-    ComPtr<ICorProfilerInfo11> m_pCorProfilerInfo;
+    ComPtr<ICorProfilerInfo12> m_pCorProfilerInfo;
 
 public:
     ProfilerBase();

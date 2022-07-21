@@ -6,6 +6,9 @@
 
 #include "IpcCommServer.h"
 #include "Messages.h"
+#include "cor.h"
+#include "corprof.h"
+#include "com.h"
 #include <functional>
 #include <string>
 #include <atomic>
@@ -16,7 +19,7 @@
 class CommandServer final
 {
 public:
-    CommandServer(const std::shared_ptr<ILogger>& logger);
+    CommandServer(const std::shared_ptr<ILogger>& logger, ICorProfilerInfo12* profilerInfo);
     HRESULT Start(const std::string& path, std::function<HRESULT (const IpcMessage& message)> callback);
     void Shutdown();
 
@@ -34,4 +37,6 @@ private:
 
     std::thread _listeningThread;
     std::thread _clientThread;
+
+    ComPtr<ICorProfilerInfo12> _profilerInfo;
 };
