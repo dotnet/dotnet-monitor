@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal class RealSystemClock : ISystemClock
     {
-        public DateTimeOffset UtcNow    => DateTimeOffset.UtcNow;
+        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
 
         public static ISystemClock Instance { get; } = new RealSystemClock();
     }

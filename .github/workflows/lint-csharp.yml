@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 permissions:
-  pull-requests: write
+  pull-requests: read
 
 jobs:
   lint-csharp:
@@ -44,7 +44,13 @@ jobs:
       - name: Run dotnet format
         run: dotnet dotnet-format --include ${{ env.updated_files }}
 
-      - name: Submit formatting suggestions
-        uses: reviewdog/action-suggester@v1
+      - name: Generate diff artifact
+        run: |
+          mkdir -p ./pr
+          git diff > ./pr/linter.diff
+
+      - name: Upload diff artifact
+        uses: actions/upload-artifact@v2
         with:
-          tool_name: 'dotnet format'
+          name: pr-linter
+          path: pr/
