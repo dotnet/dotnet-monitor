@@ -6,7 +6,10 @@
 #include <thread>
 #include "../Logging/Logger.h"
 
-CommandServer::CommandServer(const std::shared_ptr<ILogger>& logger) : _shutdown(false), _logger(logger)
+CommandServer::CommandServer(const std::shared_ptr<ILogger>& logger, ICorProfilerInfo12* profilerInfo) :
+    _shutdown(false),
+    _logger(logger),
+    _profilerInfo(profilerInfo)
 {
 }
 
@@ -91,10 +94,18 @@ void CommandServer::ListeningThread()
 
 void CommandServer::ClientProcessingThread()
 {
+    HRESULT hr = _profilerInfo->InitializeCurrentThread();
+    _logger->Log(LogLevel::Error, _LS("Unable to initialize thread: 0x%08x"), hr);
+
+    if (FAILED(hr))
+    {
+        return;
+    }
+
     while (true)
     {
         IpcMessage message;
-        HRESULT hr = _clientQueue.BlockingDequeue(message);
+        hr = _clientQueue.BlockingDequeue(message);
         if (hr != S_OK)
         {
             //We are complete, discard all messages

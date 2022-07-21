@@ -6,7 +6,7 @@
 
 using namespace std;
 
-ProfilerEnvironment::ProfilerEnvironment(ICorProfilerInfo11* pCorProfilerInfo) :
+ProfilerEnvironment::ProfilerEnvironment(ICorProfilerInfo12* pCorProfilerInfo) :
     m_pCorProfilerInfo(pCorProfilerInfo)
 {
 }
