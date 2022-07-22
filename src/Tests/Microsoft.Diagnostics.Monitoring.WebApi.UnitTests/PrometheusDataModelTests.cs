@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
         [InlineData("Asp-Net-Provider", "Requests!Received", "0$customs", "aspnetprovider_Requests_Received___customs")]
         [InlineData("a", "b", null, "a_b")]
         [InlineData("UnicodeάήΰLetter", "Unicode\u0befDigit", null, "unicodeletter_Unicode_Digit")]
-        public void TestPrometheusNormalization(string metricProvider, string metricName, string metricUnit, string expectedName)
+        public void TestGetPrometheusNormalizedName(string metricProvider, string metricName, string metricUnit, string expectedName)
         {
             var normalizedMetricName = PrometheusDataModel.GetPrometheusNormalizedName(metricProvider, metricName, metricUnit);
             Assert.Equal(expectedName, normalizedMetricName);
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
         [InlineData("%", 2, "2")]
         [InlineData("%", 0.691783039570667, "0.691783039570667")]
         [InlineData("%", 0, "0")]
-        public void TestPrometheusNormalizationValue(string metricUnit, double metricValue, string expectedValue)
+        public void TestGetPrometheusNormalizedValue(string metricUnit, double metricValue, string expectedValue)
         {
             var normalizedValue = PrometheusDataModel.GetPrometheusNormalizedValue(metricUnit, metricValue);
             Assert.Equal(normalizedValue, expectedValue);
