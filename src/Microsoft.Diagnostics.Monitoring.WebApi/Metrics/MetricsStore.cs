@@ -118,7 +118,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     string metricValue)
         {
             await writer.WriteAsync(metricName);
-            await writer.WriteLineAsync(FormattableString.Invariant($" {metric.Value} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+            await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
         }
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)
