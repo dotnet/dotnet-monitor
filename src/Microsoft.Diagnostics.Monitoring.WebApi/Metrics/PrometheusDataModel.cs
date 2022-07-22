@@ -26,14 +26,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {"%", "ratio" },
         };
 
-        public static string Normalize(string metricProvider, string metric, string unit, double value, out string metricValue)
+        public static string Normalize(string metricProvider, string metric, string unit)
         {
             string baseUnit = null;
             if ((unit != null) && (!KnownUnits.TryGetValue(unit, out baseUnit)))
             {
                 baseUnit = unit;
             }
-            metricValue = NormalizeValue(unit, ref value);
 
             bool hasUnit = !string.IsNullOrEmpty(baseUnit);
 
@@ -53,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return builder.ToString();
         }
 
-        private static string NormalizeValue(string unit, ref double value)
+        public static string NormalizeValue(string unit, double value)
         {
             string metricValue;
             if (string.Equals(unit, "MB", StringComparison.OrdinalIgnoreCase))
