@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
 {
-    public class MetricsExportTests
+    public class PrometheusDataModelTests
     {
         [Theory()]
         [InlineData("System.Runtime", "cpu-usage", "%", "systemruntime_cpu_usage_ratio")]
