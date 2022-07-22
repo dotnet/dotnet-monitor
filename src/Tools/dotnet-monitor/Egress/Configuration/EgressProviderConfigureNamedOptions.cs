@@ -28,25 +28,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 
         public void Configure(string name, TOptions options)
         {
-            /*
-            IConfigurationSection providerTypeSection = _provider.GetConfigurationSection("Extensions");
-            IConfigurationSection providerOptionsSection = providerTypeSection.GetSection(name);
-            if (providerOptionsSection.Exists())
-            {
-                providerOptionsSection.Bind(options);
-                return;
-            }
-
-            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, name));
-            */
-            
             foreach (string providerType in _provider.ProviderTypes)
             {
                 IConfigurationSection providerTypeSection = _provider.GetConfigurationSection(providerType);
                 IConfigurationSection providerOptionsSection = providerTypeSection.GetSection(name);
                 if (providerOptionsSection.Exists())
                 {
-                    options[name] = providerOptionsSection[name]; // Need to get the file path since it's a value and not nested...
                     providerOptionsSection.Bind(options);
                     return;
                 }
