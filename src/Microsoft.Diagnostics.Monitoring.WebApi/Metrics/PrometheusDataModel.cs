@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {"%", "ratio" },
         };
 
-        public static string Normalize(string metricProvider, string metric, string unit)
+        public static string GetPrometheusNormalizedName(string metricProvider, string metric, string unit)
         {
             string baseUnit = null;
             if ((unit != null) && (!KnownUnits.TryGetValue(unit, out baseUnit)))
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return builder.ToString();
         }
 
-        public static string NormalizeValue(string unit, double value)
+        public static string GetPrometheusNormalizedValue(string unit, double value)
         {
             string metricValue;
             if (string.Equals(unit, "MB", StringComparison.OrdinalIgnoreCase))
