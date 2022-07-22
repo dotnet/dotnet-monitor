@@ -54,13 +54,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static string GetPrometheusNormalizedValue(string unit, double value)
         {
-            string metricValue;
             if (string.Equals(unit, "MB", StringComparison.OrdinalIgnoreCase))
             {
                 value *= 1_000_000; //Note that the metric uses MB not MiB
             }
-            metricValue = value.ToString(CultureInfo.InvariantCulture);
-            return metricValue;
+            return value.ToString(CultureInfo.InvariantCulture);
         }
 
         private static void NormalizeString(StringBuilder builder, string entity, bool isProvider)
