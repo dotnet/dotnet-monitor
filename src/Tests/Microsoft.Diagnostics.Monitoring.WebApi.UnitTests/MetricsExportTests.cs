@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
         [InlineData("UnicodeάήΰLetter", "Unicode\u0befDigit", null, "unicodeletter_Unicode_Digit")]
         public void TestPrometheusNormalization(string metricProvider, string metricName, string metricUnit, string expectedName)
         {
-            var normalizedMetricName = PrometheusDataModel.Normalize(metricProvider, metricName, metricUnit);
+            var normalizedMetricName = PrometheusDataModel.GetPrometheusNormalizedName(metricProvider, metricName, metricUnit);
             Assert.Equal(expectedName, normalizedMetricName);
         }
 
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
         [InlineData("System.Runtime", "exception-count", "count", 0, "0")]
         public void TestPrometheusNormalizationValue(string metricProvider, string metricName, string metricUnit, double metricValue, string expectedValue)
         {
-            var normalizedValue = PrometheusDataModel.NormalizeValue(metricUnit, metricValue);
+            var normalizedValue = PrometheusDataModel.GetPrometheusNormalizedValue(metricUnit, metricValue);
             Assert.Equal(normalizedValue, expectedValue);
             Assert.NotEmpty(metricProvider);
             Assert.NotEmpty(metricName);
