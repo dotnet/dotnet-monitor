@@ -95,8 +95,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             foreach (var metricGroup in copy)
             {
                 ICounterPayload metricInfo = metricGroup.Value.First();
-                string metricName = PrometheusDataModel.Normalize(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
-                string metricValue = PrometheusDataModel.NormalizeValue(metricInfo.Unit, metricInfo.Value);
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
+                string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metricInfo.Unit, metricInfo.Value);
 
                 string metricType = "gauge";
 
