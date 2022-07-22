@@ -1,8 +1,8 @@
 name: 'C# linting'
 on:
   pull_request:
-    paths: ['**.cs']
-    branches: [main]
+    paths: ['src/**.cs']
+    branches: ['main', 'release/6.x']
 
 permissions:
   pull-requests: read

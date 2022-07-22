@@ -21,6 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      # Download the artifact from the workflow that kicked off this one.
+      # The default artifact download action doesn't support cross-workflow
+      # artifacts, so use a 3rd party one.
       - name: 'Download linting results'
         uses: dawidd6/action-download-artifact@v2
         with:
