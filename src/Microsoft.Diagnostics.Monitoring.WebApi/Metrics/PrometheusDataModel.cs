@@ -33,11 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 baseUnit = unit;
             }
-            if (string.Equals(unit, "MB", StringComparison.OrdinalIgnoreCase))
-            {
-                value *= 1_000_000; //Note that the metric uses MB not MiB
-            }
-            metricValue = value.ToString(CultureInfo.InvariantCulture);
+            metricValue = NormalizeValue(unit, ref value);
 
             bool hasUnit = !string.IsNullOrEmpty(baseUnit);
 
@@ -55,6 +51,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return builder.ToString();
+        }
+
+        private static string NormalizeValue(string unit, ref double value)
+        {
+            string metricValue;
+            if (string.Equals(unit, "MB", StringComparison.OrdinalIgnoreCase))
+            {
+                value *= 1_000_000; //Note that the metric uses MB not MiB
+            }
+            metricValue = value.ToString(CultureInfo.InvariantCulture);
+            return metricValue;
         }
 
         private static void NormalizeString(StringBuilder builder, string entity, bool isProvider)
