@@ -898,6 +898,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attemping to delete endpoint address &apos;{0}&apos;..
+        /// </summary>
+        internal static string LogFormatString_EndpointDeleteAttempt {
+            get {
+                return ResourceManager.GetString("LogFormatString_EndpointDeleteAttempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to delete endpoint address &apos;{0}&apos;..
+        /// </summary>
+        internal static string LogFormatString_EndpointDeleteFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_EndpointDeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected timeout from process {processId}. Process will no longer be monitored..
         /// </summary>
         internal static string LogFormatString_EndpointTimeout {

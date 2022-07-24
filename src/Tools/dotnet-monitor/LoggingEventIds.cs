@@ -74,7 +74,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         DiagnosticPortNotInListenModeForCollectionRules = 61,
         RuntimeInstanceCookieFailedToFilterSelf = 62,
         ParsingUrlFailed = 63,
-        IntermediateFileDeletionFailed = 64
+        IntermediateFileDeletionFailed = 64,
+        EndpointDeleteAttempt = 65,
+        EndpointDeleteFailed = 66
     }
 
     internal static class LoggingEventIdsExtensions

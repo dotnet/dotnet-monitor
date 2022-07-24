@@ -902,6 +902,13 @@
           ],
           "description": "In 'Listen' mode, the maximum amount of connections to accept.",
           "format": "int32"
+        },
+        "ClearEndpointOnStartup": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "In reverse connection mode, deletes the domain socket file used for Diagnostic Port communication."
         }
       }
     },
