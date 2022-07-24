@@ -24,5 +24,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections))]
         public int? MaxConnections { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_ClearEndpointOnStartup))]
+        public bool? ClearEndpointOnStartup { get; set; }
     }
 }

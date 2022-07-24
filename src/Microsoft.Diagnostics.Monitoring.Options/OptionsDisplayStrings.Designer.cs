@@ -795,6 +795,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to In reverse connection mode, deletes the domain socket file used for Diagnostic Port communication..
+        /// </summary>
+        public static string DisplayAttributeDescription_DiagnosticPortOptions_ClearEndpointOnStartup {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_DiagnosticPortOptions_ClearEndpointOnStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In &apos;Connect&apos; mode, dotnet-monitor connects to the application for diagnostics. In &apos;Listen&apos; mode, the application connects to dotnet-monitor via EndpointName..
         /// </summary>
         public static string DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode {

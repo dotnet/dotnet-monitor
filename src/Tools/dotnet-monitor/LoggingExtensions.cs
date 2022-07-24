@@ -357,6 +357,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_IntermediateFileDeletionFailed);
 
+        private static readonly Action<ILogger, string, Exception> _endpointDeleteAttempt =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.EndpointDeleteAttempt.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EndpointDeleteAttempt);
+
+        private static readonly Action<ILogger, string, Exception> _endpointDeleteFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.EndpointDeleteFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EndpointDeleteFailed);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -655,6 +667,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void IntermediateFileDeletionFailed(this ILogger logger, string intermediateFilePath, Exception ex)
         {
             _intermediateFileDeletionFailed(logger, intermediateFilePath, ex);
+        }
+
+        public static void EndpointDeleteAttempt(this ILogger logger, string endpoint)
+        {
+            _endpointDeleteAttempt(logger, endpoint, null);
+        }
+
+        public static void EndpointDeleteFailed(this ILogger logger, string endpoint, Exception ex)
+        {
+            _endpointDeleteFailed(logger, endpoint, ex);
         }
     }
 }
