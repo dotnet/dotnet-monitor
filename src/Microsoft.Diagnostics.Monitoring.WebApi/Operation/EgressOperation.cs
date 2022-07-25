@@ -91,13 +91,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
     }
 
-    internal readonly struct EgressProcessInfo
+    internal class EgressProcessInfo
     {
-        public readonly string ProcessName { get; }
-        public readonly int ProcessId { get; }
-        public readonly Guid RuntimeInstanceCookie { get; }
+        public string ProcessName { get; }
+        public int ProcessId { get; }
+        public Guid RuntimeInstanceCookie { get; }
 
-        public EgressProcessInfo(string processName, int processId, Guid runtimeInstanceCookie) : this()
+        public EgressProcessInfo(string processName, int processId, Guid runtimeInstanceCookie)
         {
             this.ProcessName = processName;
             this.ProcessId = processId;

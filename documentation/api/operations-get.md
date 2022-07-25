@@ -49,7 +49,11 @@ Content-Type: application/json
     "error": null,
     "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
     "createdDateTime": "2021-07-21T06:21:15.315861Z",
-    "status": "Succeeded"  
+    "status": "Succeeded",
+    "processInfo":
+    {
+        "pid":1 "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783","processName":"dotnet-monitor-demo"
+    }
 }
 ```
 

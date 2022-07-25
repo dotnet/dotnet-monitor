@@ -46,10 +46,18 @@ Content-Type: application/json
 
 [
     {
-        "operationId": "67f07e40-5cca-4709-9062-26302c484f18","createdDateTime": "2021-07-21T06:21:15.315861Z","status": "Succeeded"
+        "operationId": "67f07e40-5cca-4709-9062-26302c484f18","createdDateTime": "2021-07-21T06:21:15.315861Z","status": "Succeeded", 
+        "processInfo":
+        {
+            "pid":1 "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783","processName":"dotnet-monitor-demo"
+        }
     },
     {
-        "operationId": "26e74e52-0a16-4e84-84bb-27f904bfaf85","createdDateTime": "2021-07-21T23:30:22.3058272Z","status": "Failed"
+        "operationId": "26e74e52-0a16-4e84-84bb-27f904bfaf85","createdDateTime": "2021-07-21T23:30:22.3058272Z","status": "Failed", 
+        "processInfo":
+        {
+            "pid":11782 "uid":"23c289b3-b5ce-428a-aaa8-c864b3766bc2","processName":"dotnet-monitor-demo2"
+        }
     }
 ]
 ```
