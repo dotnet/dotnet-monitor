@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static DiagnosticPortConnectionMode GetConnectionMode(this DiagnosticPortOptions options) =>
             options.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode);
 
-        public static bool GetClearEndpointOnStartup(this DiagnosticPortOptions options)
-            => options.ClearEndpointOnStartup.GetValueOrDefault(DiagnosticPortOptionsDefaults.ClearEndpointOnStartup);
+        public static bool GetDeleteEndpointOnStartup(this DiagnosticPortOptions options)
+            => options.DeleteEndpointOnStartup.GetValueOrDefault(DiagnosticPortOptionsDefaults.DeleteEndpointOnStartup);
     }
 }
