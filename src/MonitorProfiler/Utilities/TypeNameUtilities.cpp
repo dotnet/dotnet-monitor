@@ -65,7 +65,7 @@ HRESULT TypeNameUtilities::GetFunctionInfo(NameCache& nameCache, FunctionID id, 
 
     IfFailRet(GetModuleInfo(nameCache, moduleId));
 
-    nameCache.AddFunctionData(moduleId, id, std::move(std::wstring(funcName)), classId, classToken, typeArgs, typeArgsCount);
+    nameCache.AddFunctionData(moduleId, id, tstring(funcName), classId, classToken, typeArgs, typeArgsCount);
 
     // If the ClassID returned from GetFunctionInfo is 0, then the function is a shared generic function.
     if (classId != 0)
@@ -188,7 +188,7 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
         {
             IfFailRet(pMDImport->GetNestedClassProps(tokenToProcess, &outerTokenType));
         }
-        nameCache.AddTokenData(moduleId, tokenToProcess, outerTokenType, std::wstring(wName));
+        nameCache.AddTokenData(moduleId, tokenToProcess, outerTokenType, tstring(wName));
         tokenToProcess = outerTokenType;
     }
 

@@ -40,8 +40,8 @@ private:
     template<size_t index, typename T, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const T& first, TArgs... rest);
 
-    template<size_t index, typename T = std::wstring, typename... TArgs>
-    HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const std::wstring& first, TArgs... rest);
+    template<size_t index, typename T = tstring, typename... TArgs>
+    HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const tstring& first, TArgs... rest);
 
     template<size_t index, typename T = std::vector<typename T::value_type>, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest);
@@ -107,7 +107,7 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const T& 
 
 template<typename... Args>
 template<size_t index, typename T, typename... TArgs>
-HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const std::wstring& first, TArgs... rest)
+HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const tstring& first, TArgs... rest)
 {
     if (first.size() == 0)
     {
@@ -124,31 +124,31 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const std
     return WritePayload<index + 1, TArgs...>(data, rest...);
 }
 
-template<typename... Args>
-template<size_t index, typename T, typename... TArgs>
-HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest)
-{
-    std::vector<BYTE> buffer(0);
+ template<typename... Args>
+ template<size_t index, typename T, typename... TArgs>
+ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest)
+ {
+     std::vector<BYTE> buffer(0);
 
-    if (first.size() == 0)
-    {
-        data[index].ptr = 0;
-        data[index].size = 0;
-        data[index].reserved = 0;
-    }
-    else
-    {
-        buffer = std::move(GetEventBuffer(first));
-        data[index].ptr = reinterpret_cast<UINT64>(buffer.data());
-        data[index].size = static_cast<UINT32>(buffer.size());
-        data[index].reserved = 0;
-    }
-    return WritePayload<index + 1, TArgs...>(data, rest...);
-}
+     if (first.size() == 0)
+     {
+         data[index].ptr = 0;
+         data[index].size = 0;
+         data[index].reserved = 0;
+     }
+     else
+     {
+         buffer = std::move(GetEventBuffer(first));
+         data[index].ptr = reinterpret_cast<UINT64>(buffer.data());
+         data[index].size = static_cast<UINT32>(buffer.size());
+         data[index].reserved = 0;
+     }
+     return WritePayload<index + 1, TArgs...>(data, rest...);
+ }
 
 template<typename... Args>
 template<typename T>
-static std::vector<BYTE> ProfilerEvent<Args...>::GetEventBuffer(const std::vector<T>& data)
+std::vector<BYTE> ProfilerEvent<Args...>::GetEventBuffer(const std::vector<T>& data)
 {
     size_t offset = 0;
     size_t bufferSize = 2 + (data.size() * sizeof(T));
@@ -165,7 +165,7 @@ static std::vector<BYTE> ProfilerEvent<Args...>::GetEventBuffer(const std::vecto
 
 template<typename... Args>
 template<typename T>
-static void ProfilerEvent<Args...>::WriteToBuffer(BYTE* pBuffer, size_t bufferLength, size_t* pOffset, const T& value)
+void ProfilerEvent<Args...>::WriteToBuffer(BYTE* pBuffer, size_t bufferLength, size_t* pOffset, const T& value)
 {
     *(T*)(pBuffer + *pOffset) = value;
     *pOffset += sizeof(T);
