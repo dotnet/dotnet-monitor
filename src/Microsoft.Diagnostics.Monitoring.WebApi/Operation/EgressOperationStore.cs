@@ -133,12 +133,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         OperationId = kvp.Key,
                         CreatedDateTime = kvp.Value.CreatedDateTime,
                         Status = kvp.Value.State,
-                        ProcessInfo = new Models.OperationProcessInfo
-                        {
-                            ProcessName = processInfo.ProcessName,
-                            ProcessID = processInfo.ProcessId,
-                            UID = processInfo.RuntimeInstanceCookie
-                        }
+                        ProcessInfo = processInfo != null ?
+                            new Models.OperationProcessInfo
+                            {
+                                ProcessName = processInfo.ProcessName,
+                                ProcessID = processInfo.ProcessId,
+                                UID = processInfo.RuntimeInstanceCookie
+                            } : null
                     };
                 }).ToList();
             }
@@ -159,12 +160,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     OperationId = entry.EgressRequest.OperationId,
                     Status = entry.State,
                     CreatedDateTime = entry.CreatedDateTime,
-                    ProcessInfo = new Models.OperationProcessInfo
-                    {
-                        ProcessName = processInfo.ProcessName,
-                        ProcessID = processInfo.ProcessId,
-                        UID = processInfo.RuntimeInstanceCookie
-                    }
+                    ProcessInfo = processInfo != null ?
+                        new Models.OperationProcessInfo
+                        {
+                            ProcessName = processInfo.ProcessName,
+                            ProcessID = processInfo.ProcessId,
+                            UID = processInfo.RuntimeInstanceCookie
+                        } : null
                 };
 
                 if (entry.State == Models.OperationState.Succeeded)
