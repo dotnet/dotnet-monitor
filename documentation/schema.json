@@ -908,7 +908,7 @@
             "boolean",
             "null"
           ],
-          "description": "In 'listen' connection mode, deletes the domain socket file used for Diagnostic Port communication.",
+          "description": "In 'listen' connection mode, deletes the domain socket file used for diagnostic port communication.",
           "default": false
         }
       }
