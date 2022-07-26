@@ -697,7 +697,7 @@
     <value>The array of providers for metrics to collect.</value>
     <comment>The description provided for the Providers parameter on CollectLiveMetricsOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_DiagnosticPortOptions_ClearEndpointOnStartup" xml:space="preserve">
-    <value>In reverse connection mode, deletes the domain socket file used for Diagnostic Port communication.</value>
+  <data name="DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup" xml:space="preserve">
+    <value>In 'listen' connection mode, deletes the domain socket file used for diagnostic port communication.</value>
   </data>
 </root>

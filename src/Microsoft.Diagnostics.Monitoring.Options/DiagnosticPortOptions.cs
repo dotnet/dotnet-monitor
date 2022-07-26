@@ -27,7 +27,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_ClearEndpointOnStartup))]
-        public bool? ClearEndpointOnStartup { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup))]
+        [DefaultValue(DiagnosticPortOptionsDefaults.DeleteEndpointOnStartup)]
+        public bool? DeleteEndpointOnStartup { get; set; }
     }
 }

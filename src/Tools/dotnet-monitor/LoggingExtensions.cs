@@ -357,17 +357,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_IntermediateFileDeletionFailed);
 
-        private static readonly Action<ILogger, string, Exception> _endpointDeleteAttempt =
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortDeleteAttempt =
             LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.EndpointDeleteAttempt.EventId(),
+                eventId: LoggingEventIds.DiagnosticPortDeleteAttempt.EventId(),
                 logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EndpointDeleteAttempt);
+                formatString: Strings.LogFormatString_DiagnosticPortDeleteAttempt);
 
-        private static readonly Action<ILogger, string, Exception> _endpointDeleteFailed =
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortDeleteFailed =
             LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.EndpointDeleteFailed.EventId(),
+                eventId: LoggingEventIds.DiagnosticPortDeleteFailed.EventId(),
                 logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EndpointDeleteFailed);
+                formatString: Strings.LogFormatString_DiagnosticPortDeleteFailed);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
@@ -669,14 +669,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _intermediateFileDeletionFailed(logger, intermediateFilePath, ex);
         }
 
-        public static void EndpointDeleteAttempt(this ILogger logger, string endpoint)
+        public static void DiagnosticPortDeleteAttempt(this ILogger logger, string diagnosticPort)
         {
-            _endpointDeleteAttempt(logger, endpoint, null);
+            _diagnosticPortDeleteAttempt(logger, diagnosticPort, null);
         }
 
-        public static void EndpointDeleteFailed(this ILogger logger, string endpoint, Exception ex)
+        public static void DiagnosticPortDeleteFailed(this ILogger logger, string diagnosticPort, Exception ex)
         {
-            _endpointDeleteFailed(logger, endpoint, ex);
+            _diagnosticPortDeleteFailed(logger, diagnosticPort, ex);
         }
     }
 }

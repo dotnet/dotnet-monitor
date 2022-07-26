@@ -781,6 +781,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attemping to delete diagnostic port file at &apos;{0}&apos;..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticPortDeleteAttempt {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticPortDeleteAttempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to delete diagnostic port file at &apos;{0}&apos;..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticPortDeleteFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticPortDeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to When using collection rules, the diagnostic port must be in &apos;Listen&apos; mode. Please correct the configuration and restart dotnet monitor..
         /// </summary>
         internal static string LogFormatString_DiagnosticPortNotInListenModeForCollectionRules {
@@ -894,24 +912,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_EgressProvideUnableToFindPropertyKey {
             get {
                 return ResourceManager.GetString("LogFormatString_EgressProvideUnableToFindPropertyKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Attemping to delete endpoint address &apos;{0}&apos;..
-        /// </summary>
-        internal static string LogFormatString_EndpointDeleteAttempt {
-            get {
-                return ResourceManager.GetString("LogFormatString_EndpointDeleteAttempt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to delete endpoint address &apos;{0}&apos;..
-        /// </summary>
-        internal static string LogFormatString_EndpointDeleteFailed {
-            get {
-                return ResourceManager.GetString("LogFormatString_EndpointDeleteFailed", resourceCulture);
             }
         }
         
