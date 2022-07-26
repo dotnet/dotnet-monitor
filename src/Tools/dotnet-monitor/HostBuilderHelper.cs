@@ -182,8 +182,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
             builder.AddInMemoryCollection(new Dictionary<string, string> {
-
-
                 {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
             });
