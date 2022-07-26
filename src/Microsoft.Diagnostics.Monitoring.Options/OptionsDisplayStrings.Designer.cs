@@ -768,6 +768,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to In &apos;listen&apos; connection mode, deletes the domain socket file used for diagnostic port communication..
+        /// </summary>
+        public static string DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In &apos;Listen&apos; mode, specifies the name of the named pipe or unix domain socket to use for connecting to the diagnostic server..
         /// </summary>
         public static string DisplayAttributeDescription_DiagnosticPortOptions_EndpointName {

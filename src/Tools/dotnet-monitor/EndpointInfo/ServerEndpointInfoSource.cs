@@ -9,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -82,6 +84,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             if (_portOptions.ConnectionMode == DiagnosticPortConnectionMode.Listen)
             {
+                if (_portOptions.GetDeleteEndpointOnStartup() &&
+                   !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+                    File.Exists(_portOptions.EndpointName))
+                {
+                    // In some circumstances stale files from previous instances of dotnet-monitor cause
+                    // the new instance to fail binding. We need to delete the file in this situation.
+                    try
+                    {
+                        _logger.DiagnosticPortDeleteAttempt(_portOptions.EndpointName);
+                        File.Delete(_portOptions.EndpointName);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.DiagnosticPortDeleteFailed(_portOptions.EndpointName, ex);
+                    }
+                }
+
                 await using ReversedDiagnosticsServer server = new(_portOptions.EndpointName);
 
                 server.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));

@@ -357,6 +357,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_IntermediateFileDeletionFailed);
 
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortDeleteAttempt =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortDeleteAttempt.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortDeleteAttempt);
+
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortDeleteFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortDeleteFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortDeleteFailed);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -655,6 +667,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void IntermediateFileDeletionFailed(this ILogger logger, string intermediateFilePath, Exception ex)
         {
             _intermediateFileDeletionFailed(logger, intermediateFilePath, ex);
+        }
+
+        public static void DiagnosticPortDeleteAttempt(this ILogger logger, string diagnosticPort)
+        {
+            _diagnosticPortDeleteAttempt(logger, diagnosticPort, null);
+        }
+
+        public static void DiagnosticPortDeleteFailed(this ILogger logger, string diagnosticPort, Exception ex)
+        {
+            _diagnosticPortDeleteFailed(logger, diagnosticPort, ex);
         }
     }
 }
