@@ -892,6 +892,14 @@
           ],
           "description": "In 'Listen' mode, the maximum amount of connections to accept.",
           "format": "int32"
+        },
+        "DeleteEndpointOnStartup": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "In 'listen' connection mode, deletes the domain socket file used for diagnostic port communication.",
+          "default": false
         }
       }
     },
