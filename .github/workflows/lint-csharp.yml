@@ -38,11 +38,8 @@ jobs:
           dotnet-version: ${{ env.dotnet_version }}
           include-prerelease: true
 
-      - name: Restore dotnet tools
-        run: dotnet tool restore
-
       - name: Run dotnet format
-        run: dotnet dotnet-format --include ${{ env.updated_files }}
+        run: dotnet format --include ${{ env.updated_files }}
 
       - name: Generate diff artifact
         run: |
