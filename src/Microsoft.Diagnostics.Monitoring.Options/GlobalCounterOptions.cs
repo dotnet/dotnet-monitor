@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     public class GlobalCounterOptions
     {
-        public const float IntervalMinSeconds = 1;
+        public const float IntervalMinSeconds    = 1;
         public const float IntervalMaxSeconds = 60 * 60 * 24; // One day
 
         [Display(
