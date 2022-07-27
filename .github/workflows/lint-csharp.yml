@@ -50,7 +50,7 @@ jobs:
           git diff > ./pr/linter.diff
 
       - name: Upload diff artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: pr-linter
           path: pr/
