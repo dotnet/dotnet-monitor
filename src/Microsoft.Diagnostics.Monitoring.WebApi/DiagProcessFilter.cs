@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// </summary>
     internal sealed class DiagProcessFilter
     {
-        public IList<DiagProcessFilterEntry> Filters { get; set; } = new List<DiagProcessFilterEntry>();
+        public IList<DiagProcessFilterEntry>    Filters { get; set; } = new List<DiagProcessFilterEntry>();
 
         public static DiagProcessFilter FromProcessKey(ProcessKey processKey)
         {
