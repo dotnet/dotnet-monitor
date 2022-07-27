@@ -6,9 +6,18 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+
+/* Unmerged change from project 'Microsoft.Diagnostics.Monitoring.WebApi(net6.0)'
+Before:
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+After:
+using System;
+using System.Threading;
+*/
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _optionsMonitor = optionsMonitor;
             _counterOptions = counterOptions;
         }
-        
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)

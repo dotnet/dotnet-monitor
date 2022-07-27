@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
                 {
                     _executionTimestamps.Add(_clock.UtcNow.UtcDateTime);
                 }
-                
+
                 _outputHelper.WriteLine("[Callback] Completing {0} source(s).", _entries.Count);
 
                 foreach (var entry in _entries)

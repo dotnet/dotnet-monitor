@@ -231,7 +231,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private void CheckForListenDiagnosticMode()
         {
-            if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen 
+            if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen
                 && _provider.GetCollectionRuleNames().Any())
             {
                 _logger.DiagnosticPortNotInListenModeForCollectionRules();

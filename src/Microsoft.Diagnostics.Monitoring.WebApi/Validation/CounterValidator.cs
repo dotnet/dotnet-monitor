@@ -3,9 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation

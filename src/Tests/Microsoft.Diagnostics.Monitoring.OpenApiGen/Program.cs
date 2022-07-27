@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 throw new InvalidOperationException("Expected single argument for the output path.");
             }
             string outputPath = args[0];
-            
+
             // Create directory if it does not exist
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 

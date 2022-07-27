@@ -4,7 +4,22 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.Options;
+
+/* Unmerged change from project 'Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests(net5.0)'
+Before:
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+After:
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+*/
+
+/* Unmerged change from project 'Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests(net6.0)'
+Before:
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+After:
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+*/
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -134,7 +149,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<Dictionary<string, string>> GetProcessEnvironmentAsync(int pid, CancellationToken token)
         {
-            return GetProcessEnvironmentAsync(GetProcessQuery(pid:pid), token);
+            return GetProcessEnvironmentAsync(GetProcessQuery(pid: pid), token);
         }
 
         /// <summary>
@@ -142,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<Dictionary<string, string>> GetProcessEnvironmentAsync(Guid uid, CancellationToken token)
         {
-            return GetProcessEnvironmentAsync(GetProcessQuery(uid:uid), token);
+            return GetProcessEnvironmentAsync(GetProcessQuery(uid: uid), token);
         }
 
         private async Task<Dictionary<string, string>> GetProcessEnvironmentAsync(string processQuery, CancellationToken token)
@@ -204,7 +219,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(int pid, DumpType dumpType, CancellationToken token)
         {
-            return CaptureDumpAsync(GetProcessQuery(pid:pid), dumpType, token);
+            return CaptureDumpAsync(GetProcessQuery(pid: pid), dumpType, token);
         }
 
         /// <summary>
@@ -212,7 +227,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(Guid uid, DumpType dumpType, CancellationToken token)
         {
-            return CaptureDumpAsync(GetProcessQuery(uid:uid), dumpType, token);
+            return CaptureDumpAsync(GetProcessQuery(uid: uid), dumpType, token);
         }
 
         private async Task<ResponseStreamHolder> CaptureDumpAsync(string processQuery, DumpType dumpType, CancellationToken token)
@@ -249,7 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(GetProcessQuery(pid:pid), duration, logLevel, logFormat, token);
+            return CaptureLogsAsync(GetProcessQuery(pid: pid), duration, logLevel, logFormat, token);
         }
 
         /// <summary>
@@ -257,7 +272,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(GetProcessQuery(uid:uid), duration, logLevel, logFormat, token);
+            return CaptureLogsAsync(GetProcessQuery(uid: uid), duration, logLevel, logFormat, token);
         }
 
         private Task<ResponseStreamHolder> CaptureLogsAsync(string processQuery, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
@@ -275,7 +290,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(GetProcessQuery(pid:pid), duration, configuration, logFormat, token);
+            return CaptureLogsAsync(GetProcessQuery(pid: pid), duration, configuration, logFormat, token);
         }
 
         private Task<ResponseStreamHolder> CaptureLogsAsync(string processQuery, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, CancellationToken token)
@@ -481,7 +496,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         {
             using HttpRequestMessage request = new(HttpMethod.Delete, operation.ToString());
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
-            
+
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:

@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal sealed class MetricsStoreService : IDisposable
     {
         public MetricsStore MetricsStore { get; }
-        
+
         public MetricsStoreService(
             IOptions<MetricsOptions> options)
         {

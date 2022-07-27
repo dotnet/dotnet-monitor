@@ -11,7 +11,14 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+
+/* Unmerged change from project 'Microsoft.Diagnostics.Monitoring.Tool.UnitTests(net6.0)'
+Before:
 using System.Threading;
+using System.Threading.Tasks;
+After:
+using System.Threading.Tasks;
+*/
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -162,10 +169,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 outputHelper: _outputHelper,
                 setup: (Tools.Monitor.RootOptions rootOptions) =>
                 {
-                rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .SetStartupTrigger()
-                    .AddSetEnvironmentVariableAction(DefaultVarName, DefaultVarValue)
-                    .AddGetEnvironmentVariableAction(DefaultVarName);
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddSetEnvironmentVariableAction(DefaultVarName, DefaultVarValue)
+                        .AddGetEnvironmentVariableAction(DefaultVarName);
                 },
                 hostCallback: async (Extensions.Hosting.IHost host) =>
                 {

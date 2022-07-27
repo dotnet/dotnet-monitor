@@ -12,7 +12,14 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+
+/* Unmerged change from project 'Microsoft.Diagnostics.Monitoring.Tool.UnitTests(net6.0)'
+Before:
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
+After:
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
+*/
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -491,7 +498,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly(), tfm: tfm);
             runner.ConnectionMode = DiagnosticPortConnectionMode.Connect;
             runner.DiagnosticPortPath = sourceHolder.TransportName;
-            runner.ScenarioName = scenarioName;            
+            runner.ScenarioName = scenarioName;
 
             Task<IEndpointInfo> endpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 

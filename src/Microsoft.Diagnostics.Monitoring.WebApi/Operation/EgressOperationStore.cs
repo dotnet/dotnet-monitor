@@ -2,13 +2,27 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+
+/* Unmerged change from project 'Microsoft.Diagnostics.Monitoring.WebApi(net6.0)'
+Before:
 using Microsoft.Extensions.DependencyInjection;
+using System;
+After:
+using System;
+*/
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+
+/* Unmerged change from project 'Microsoft.Diagnostics.Monitoring.WebApi(net6.0)'
+Before:
 using System.Threading;
 using System.Threading.Channels;
+using System.Threading.Tasks;
+After:
+using System.Threading.Tasks;
+*/
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -18,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private sealed class EgressEntry
         {
             public ExecutionResult<EgressResult> ExecutionResult { get; set; }
-            public Models.OperationState State { get; set;}
+            public Models.OperationState State { get; set; }
 
             public EgressRequest EgressRequest { get; set; }
 

@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         // Task completion source for signalling when the pipeline has finished starting.
         private readonly Action _startCallback;
-        
+
         // Operations for getting trigger information.
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 

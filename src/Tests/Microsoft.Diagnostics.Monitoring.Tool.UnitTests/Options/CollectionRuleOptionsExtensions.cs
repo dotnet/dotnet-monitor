@@ -174,14 +174,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 
         public static CollectionRuleOptions AddLoadProfilerAction(this CollectionRuleOptions options, Action<LoadProfilerOptions> configureOptions)
         {
-           return options.AddAction(
-                KnownCollectionRuleActions.LoadProfiler,
-                callback: actionOptions =>
-                {
-                    LoadProfilerOptions loadProfilerOptions = new();
-                    configureOptions?.Invoke(loadProfilerOptions);
-                    actionOptions.Settings = loadProfilerOptions;
-                });
+            return options.AddAction(
+                 KnownCollectionRuleActions.LoadProfiler,
+                 callback: actionOptions =>
+                 {
+                     LoadProfilerOptions loadProfilerOptions = new();
+                     configureOptions?.Invoke(loadProfilerOptions);
+                     actionOptions.Settings = loadProfilerOptions;
+                 });
         }
 
         public static CollectionRuleOptions AddSetEnvironmentVariableAction(this CollectionRuleOptions options, string name, string value = null)
@@ -232,7 +232,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             {
                 options.Limits = new CollectionRuleLimitsOptions();
             }
-            
+
             options.Limits.RuleDuration = duration;
 
             return options;
