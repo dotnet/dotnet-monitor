@@ -76,7 +76,8 @@ template<size_t index, typename T, typename... TArgs>
 HRESULT ProfilerEvent<Args...>::Initialize(const WCHAR* (&names)[sizeof...(Args)])
 {
     _descriptor[index].name = names[index];
-    EventTypeMapping::GetType<T>(_descriptor[index]);
+    EventTypeMapping<T> typeMapper;
+    typeMapper.GetType(_descriptor[index]);
     return Initialize<index + 1, TArgs...>(names);
 }
 
