@@ -3,11 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -17,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         protected abstract void SerializeCounter(Stream stream, ICounterPayload counter);
 
-        protected virtual void Cleanup() {}
+        protected virtual void Cleanup() { }
 
         protected StreamingCounterLogger(Stream stream)
         {

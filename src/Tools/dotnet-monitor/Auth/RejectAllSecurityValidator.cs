@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -15,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public bool CanValidateToken => true;
 
-        public int MaximumTokenSizeInBytes 
+        public int MaximumTokenSizeInBytes
         {
             // We need to provide a maximum token size, so we pick the same as the default used by everything derived from TokenHandler
             get => TokenValidationParameters.DefaultMaximumTokenSizeInBytes;
