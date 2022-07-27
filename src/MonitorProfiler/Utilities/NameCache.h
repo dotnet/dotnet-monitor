@@ -62,7 +62,7 @@ private:
 template<typename T, typename U>
 bool NameCache::GetData(std::unordered_map<T, std::shared_ptr<U>> map, T id, std::shared_ptr<U>& name)
 {
-    std::unordered_map<T, std::shared_ptr<U>>::iterator it = map.find(id);
+    typename std::unordered_map<T, std::shared_ptr<U>>::iterator it = map.find(id);
 
     if (it != map.end())
     {
