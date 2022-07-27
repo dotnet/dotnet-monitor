@@ -34,7 +34,7 @@ HRESULT ProfilerEventProvider::DefineEvent(const WCHAR* eventName, std::unique_p
     EVENTPIPE_EVENT event = 0;
     HRESULT hr;
 
-    auto newEvent = std::unique_ptr<ProfilerEvent<TArgs...>>(new ProfilerEvent<TArgs...>(_profilerInfo));
+    auto newEvent = typename std::unique_ptr<ProfilerEvent<TArgs...>>(new ProfilerEvent<TArgs...>(_profilerInfo));
     hr = newEvent->Initialize<0, TArgs...>(names);
     IfFailRet(hr);
 
