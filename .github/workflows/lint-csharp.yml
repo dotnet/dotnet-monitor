@@ -38,8 +38,12 @@ jobs:
           dotnet-version: ${{ env.dotnet_version }}
           include-prerelease: true
 
+      # Workaround for a bug in the dotnet-format build shipped in .NET 7.0 Preview 5. Ref: https://github.com/dotnet/core/blob/main/release-notes/7.0/known-issues.md#unhandled-exception-in-dotnet-format-app-in-net-70-preview-5
+      - name: Setup dotnet format
+        run: dotnet tool install -g dotnet-format --version "7.*" --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json
+
       - name: Run dotnet format
-        run: dotnet format --include ${{ env.updated_files }}
+        run: dotnet-format --include ${{ env.updated_files }}
 
       - name: Generate diff artifact
         run: |
