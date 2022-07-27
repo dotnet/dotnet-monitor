@@ -29,13 +29,13 @@ class ProfilerEventProvider
 };
 
 template<typename... TArgs>
-HRESULT ProfilerEventProvider::DefineEvent(const WCHAR* eventName, std::unique_ptr<ProfilerEvent<TArgs...>>& profilerEventDescriptor, const WCHAR* (&names)[sizeof...(TArgs)])
+HRESULT ProfilerEventProvider::DefineEvent(const WCHAR* eventName, typename std::unique_ptr<ProfilerEvent<TArgs...>>& profilerEventDescriptor, const WCHAR* (&names)[sizeof...(TArgs)])
 {
     EVENTPIPE_EVENT event = 0;
     HRESULT hr;
 
     auto newEvent = typename std::unique_ptr<ProfilerEvent<TArgs...>>(new ProfilerEvent<TArgs...>(_profilerInfo));
-    hr = newEvent->Initialize<0, TArgs...>(names);
+    hr = newEvent->template Initialize<0, TArgs...>(names);
     IfFailRet(hr);
 
     IfFailRet(_profilerInfo->EventPipeDefineEvent(
