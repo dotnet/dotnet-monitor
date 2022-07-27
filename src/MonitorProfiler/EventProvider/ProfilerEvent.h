@@ -43,7 +43,7 @@ private:
     template<size_t index, typename T = tstring, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const tstring& first, TArgs... rest);
 
-    template<size_t index, typename T = std::vector<typename T::value_type>, typename... TArgs>
+    template<size_t index, typename T, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest);
 
     template<typename T>

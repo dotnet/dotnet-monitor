@@ -3,6 +3,7 @@
 #include "cor.h"
 #include "corprof.h"
 #include "com.h"
+#include "tstring.h"
 #include <vector>
 #include <string>
 
@@ -17,16 +18,16 @@ public:
     static void GetType(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor);
 
     template<>
-    static void GetType<UINT32>(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor);
+    void GetType<UINT32>(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor);
 
     template<>
-    static void GetType<UINT64>(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor);
+    void GetType<UINT64>(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor);
 
     template<>
-    static void GetType<std::wstring>(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor);
+    void GetType<std::wstring>(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor);
 
     template<>
-    static void GetType<std::vector<UINT64>>(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor);
+    void GetType<std::vector<UINT64>>(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor);
 };
 
 template<typename T>
