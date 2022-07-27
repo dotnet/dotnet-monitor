@@ -53,7 +53,7 @@ jobs:
 
       # Build OSX Pool
       ${{ if in(parameters.osGroup, 'MacOS') }}:
-        vmImage: macOS-10.15
+        vmImage: macos-11
 
       # Public Windows Build Pool
       ${{ if eq(parameters.osGroup, 'Windows') }}:
