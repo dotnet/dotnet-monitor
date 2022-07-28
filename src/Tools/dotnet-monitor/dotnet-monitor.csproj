@@ -10,6 +10,11 @@
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <RollForward>Major</RollForward>
+    <!--
+      Workaround for https://github.com/dotnet/aspnetcore/issues/42200
+      Required as of 7.0 Preview 5 SDK
+      -->
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,10 +33,6 @@
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' != ''">
     <ProjectReference Include="$(DIAGNOSTICS_REPO_ROOT)\src\Microsoft.Diagnostics.Monitoring\Microsoft.Diagnostics.Monitoring.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\Common\CommandExtensions.cs" Link="Commands\CommandExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>

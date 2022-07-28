@@ -3,13 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 
-using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -26,18 +23,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {"%", "ratio" },
         };
 
-        public static string Normalize(string metricProvider, string metric, string unit, double value, out string metricValue)
+        public static string GetPrometheusNormalizedName(string metricProvider, string metric, string unit)
         {
             string baseUnit = null;
             if ((unit != null) && (!KnownUnits.TryGetValue(unit, out baseUnit)))
             {
                 baseUnit = unit;
             }
-            if (string.Equals(unit, "MB", StringComparison.OrdinalIgnoreCase))
-            {
-                value *= 1_000_000; //Note that the metric uses MB not MiB
-            }
-            metricValue = value.ToString(CultureInfo.InvariantCulture);
 
             bool hasUnit = !string.IsNullOrEmpty(baseUnit);
 
@@ -55,6 +47,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return builder.ToString();
+        }
+
+        public static string GetPrometheusNormalizedValue(string unit, double value)
+        {
+            if (string.Equals(unit, "MB", StringComparison.OrdinalIgnoreCase))
+            {
+                value *= 1_000_000; //Note that the metric uses MB not MiB
+            }
+            return value.ToString(CultureInfo.InvariantCulture);
         }
 
         private static void NormalizeString(StringBuilder builder, string entity, bool isProvider)

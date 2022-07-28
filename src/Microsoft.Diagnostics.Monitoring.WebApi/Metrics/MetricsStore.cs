@@ -4,12 +4,9 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -95,9 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             foreach (var metricGroup in copy)
             {
                 ICounterPayload metricInfo = metricGroup.Value.First();
-                string metricName = PrometheusDataModel.Normalize(metricInfo.Provider, metricInfo.Name,
-                    metricInfo.Unit, metricInfo.Value, out string metricValue);
-
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
                 string metricType = "gauge";
 
                 //TODO Some clr metrics claim to be incrementing, but are really gauges.
@@ -107,6 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 foreach (var metric in metricGroup.Value)
                 {
+                    string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, metric.Value);
                     await WriteMetricDetails(writer, metric, metricName, metricValue);
                 }
             }

@@ -5,5 +5,6 @@
 # However, we need /eng/ and global.json excluded for automatic updates
 # but there's no include syntax. At least make sure source and documentation
 # have proper ownership.
+/.github/                   @dotnet/dotnet-monitor
 /src/                       @dotnet/dotnet-monitor
 /documentation/             @dotnet/dotnet-monitor @IEvangelist

@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         overrideSource.ForEach(source => builder.Sources.Add(source));
                     }
                 })
-                .ConfigureLogging( loggingBuilder =>
+                .ConfigureLogging(loggingBuilder =>
                 {
                     loggingCallback?.Invoke(loggingBuilder);
 

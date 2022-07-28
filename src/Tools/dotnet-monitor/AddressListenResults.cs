@@ -14,7 +14,7 @@ using System.Net;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    
+
     // Consolidates the configuration of addresses in Kestrel and recording which address
     // is which type (default vs metrics). The recording logic uses the count of each type
     // of correctly configured address so it makes sense to keep this logic within the same
