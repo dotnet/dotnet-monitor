@@ -22,7 +22,8 @@ public:
     void GetType(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor)
     {
         //If we got here, it means we do not know how to convert the type to a COR_PRF_EVENTPIPE_PARAM_DESC
-        static_assert(false, "Invalid type");
+        // We are not allowed to say static_assert(false), even if we never bind to this specialization.
+        static_assert(sizeof(T) != sizeof(T), "Invalid type");
     }
 };
 
@@ -47,7 +48,6 @@ public:
         descriptor.elementType = 0;
     }
 };
-
 
 template<>
 class EventTypeMapping<tstring>
