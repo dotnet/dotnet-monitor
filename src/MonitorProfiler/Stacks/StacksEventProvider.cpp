@@ -42,12 +42,23 @@ HRESULT StacksEventProvider::WriteCallstack(const Stack& stack)
 
 HRESULT StacksEventProvider::WriteClassData(ClassID classId, const ClassData& classData)
 {
-    return _classEvent->WritePayload(classId, classData.GetModuleId(), classData.GetToken(), (UINT32)classData.GetFlags(), classData.GetTypeArgs());
+    return _classEvent->WritePayload(
+        static_cast<UINT64>(classId),
+        static_cast<UINT64>(classData.GetModuleId()),
+        classData.GetToken(),
+        static_cast<UINT32>(classData.GetFlags()),
+        classData.GetTypeArgs());
 }
 
 HRESULT StacksEventProvider::WriteFunctionData(FunctionID functionId, const FunctionData& functionData)
 {
-    return _functionEvent->WritePayload(functionId, functionData.GetClass(), functionData.GetClassToken(), functionData.GetModuleId(), functionData.GetName(), functionData.GetTypeArgs());
+    return _functionEvent->WritePayload(
+        static_cast<UINT64>(functionId),
+        static_cast<UINT64>(functionData.GetClass()),
+        functionData.GetClassToken(),
+        static_cast<UINT64>(functionData.GetModuleId()),
+        functionData.GetName(),
+        functionData.GetTypeArgs());
 }
 
 HRESULT StacksEventProvider::WriteModuleData(ModuleID moduleId, const ModuleData& moduleData)

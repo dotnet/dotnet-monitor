@@ -72,7 +72,7 @@ HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)
             }
 
             tstring genericParamName;
-            IfFailRet(GetFullyQualifiedClassName(functionData->GetTypeArgs()[i], genericParamName));
+            IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(functionData->GetTypeArgs()[i]), genericParamName));
             name += genericParamName;
 
             if (i == (functionData->GetTypeArgs().size() - 1))
@@ -134,7 +134,7 @@ HRESULT NameCache::GetFullyQualifiedClassName(ClassID classId, tstring& name)
             }
 
             tstring genericParamName;
-            IfFailRet(GetFullyQualifiedClassName(classData->GetTypeArgs()[i], genericParamName));
+            IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(classData->GetTypeArgs()[i]), genericParamName));
             name += genericParamName;
 
             if (i == (classData->GetTypeArgs().size() - 1))
