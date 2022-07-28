@@ -1684,7 +1684,7 @@
           "status": {
             "$ref": "#/components/schemas/OperationState"
           },
-          "processInfo": {
+          "process": {
             "$ref": "#/components/schemas/OperationProcessInfo"
           }
         },
@@ -1719,7 +1719,7 @@
           "status": {
             "$ref": "#/components/schemas/OperationState"
           },
-          "processInfo": {
+          "process": {
             "$ref": "#/components/schemas/OperationProcessInfo"
           },
           "resourceLocation": {
