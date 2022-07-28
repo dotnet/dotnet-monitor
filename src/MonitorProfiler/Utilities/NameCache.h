@@ -44,7 +44,7 @@ private:
     static const tstring ArrayClassName;
     static const tstring UnknownName;
     static const tstring ModuleSeparator;
-    static const tstring FunctionSeperator;
+    static const tstring FunctionSeparator;
     static const tstring NestedSeparator;
     static const tstring GenericBegin;
     static const tstring GenericSeparator;

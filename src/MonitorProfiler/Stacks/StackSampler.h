@@ -31,8 +31,8 @@ class StackSampler
         HRESULT CreateCallstack(std::vector<std::unique_ptr<StackSamplerState>>& stackStates, std::shared_ptr<NameCache>& nameCache);
         static void AddProfilerEventMask(DWORD& eventsLow);
     private:
-        static HRESULT __stdcall DoStackSnapshotStackSnapShotCallbackWrapper(
-            FunctionID funcId,
+        static HRESULT __stdcall DoStackSnapshotCallbackWrapper(
+            FunctionID funcionId,
             UINT_PTR ip,
             COR_PRF_FRAME_INFO frameInfo,
             ULONG32 contextSize,

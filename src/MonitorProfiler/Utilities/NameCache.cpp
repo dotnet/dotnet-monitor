@@ -10,7 +10,7 @@ const tstring NameCache::CompositeClassName = _T("_CompositeClass_");
 const tstring NameCache::ArrayClassName = _T("_ArrayClass_");
 const tstring NameCache::UnknownName = _T("_Unknown_");
 const tstring NameCache::ModuleSeparator = _T("!");
-const tstring NameCache::FunctionSeperator = _T(".");
+const tstring NameCache::FunctionSeparator = _T(".");
 const tstring NameCache::NestedSeparator = _T("+");
 const tstring NameCache::GenericBegin = _T("<");
 const tstring NameCache::GenericSeparator = _T(",");
@@ -49,47 +49,53 @@ HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)
 {
     HRESULT hr;
 
-    std::shared_ptr<FunctionData> functionData;
-    if (GetFunctionData(id, functionData))
+    if (id == 0)
     {
-        std::shared_ptr<ClassData> classData;
-        if (functionData->GetClass() != 0)
+        return E_INVALIDARG;
+    }
+
+    std::shared_ptr<FunctionData> functionData;
+    if (!GetFunctionData(id, functionData))
+    {
+        return E_NOT_SET;
+    }
+
+    if (functionData->GetClass() != 0)
+    {
+        IfFailRet(GetFullyQualifiedClassName(functionData->GetClass(), name));
+    }
+    else
+    {
+        IfFailRet(GetFullyQualifiedClassName(functionData->GetModuleId(), functionData->GetClassToken(), name));
+    }
+
+    name += FunctionSeparator + functionData->GetName();
+
+    for (size_t i = 0; i < functionData->GetTypeArgs().size(); i++)
+    {
+        if (i == 0)
         {
-            IfFailRet(GetFullyQualifiedClassName(functionData->GetClass(), name));
+            name += GenericBegin;
+        }
+
+        tstring genericParamName;
+        IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(functionData->GetTypeArgs()[i]), genericParamName));
+        name += genericParamName;
+
+        if (i == (functionData->GetTypeArgs().size() - 1))
+        {
+            name += GenericEnd;
         }
         else
         {
-            IfFailRet(GetFullyQualifiedClassName(functionData->GetModuleId(), functionData->GetClassToken(), name));
+            name += GenericSeparator;
         }
+    }
 
-        name += FunctionSeperator + functionData->GetName();
-
-        for (size_t i = 0; i < functionData->GetTypeArgs().size(); i++)
-        {
-            if (i == 0)
-            {
-                name += GenericBegin;
-            }
-
-            tstring genericParamName;
-            IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(functionData->GetTypeArgs()[i]), genericParamName));
-            name += genericParamName;
-
-            if (i == (functionData->GetTypeArgs().size() - 1))
-            {
-                name += GenericEnd;
-            }
-            else
-            {
-                name += GenericSeparator;
-            }
-        }
-
-        std::shared_ptr<ModuleData> moduleData;
-        if (GetModuleData(functionData->GetModuleId(), moduleData))
-        {
-            name = moduleData->GetName() + ModuleSeparator + name;
-        }
+    std::shared_ptr<ModuleData> moduleData;
+    if (GetModuleData(functionData->GetModuleId(), moduleData))
+    {
+        name = moduleData->GetName() + ModuleSeparator + name;
     }
 
     return S_OK;
@@ -99,52 +105,53 @@ HRESULT NameCache::GetFullyQualifiedClassName(ClassID classId, tstring& name)
 {
     HRESULT hr;
 
-    std::shared_ptr<ClassData> classData;
-    if (classId != 0 && GetClassData(classId, classData))
+    if (classId == 0)
     {
-        mdTypeDef token = classData->GetToken();
+        return E_INVALIDARG;
+    }
 
-        if (classData->GetFlags() == ClassFlags::None)
-        {
+    std::shared_ptr<ClassData> classData;
+    if (!GetClassData(classId, classData))
+    {
+        return E_NOT_SET;
+    }
+
+    switch (classData->GetFlags())
+    {
+        case ClassFlags::None:
             IfFailRet(GetFullyQualifiedClassName(classData->GetModuleId(), classData->GetToken(), name));
+            break;
+        case ClassFlags::Array:
+            name = ArrayClassName;
+            break;
+        case ClassFlags::Composite:
+            name = CompositeClassName;
+            break;
+        case ClassFlags::IncompleteData:
+        case ClassFlags::Error:
+        default:
+            name = UnknownName;
+            break;
+    }
+
+    for (size_t i = 0; i < classData->GetTypeArgs().size(); i++)
+    {
+        if (i == 0)
+        {
+            name += GenericBegin;
+        }
+
+        tstring genericParamName;
+        IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(classData->GetTypeArgs()[i]), genericParamName));
+        name += genericParamName;
+
+        if (i == (classData->GetTypeArgs().size() - 1))
+        {
+            name += GenericEnd;
         }
         else
         {
-            switch (classData->GetFlags())
-            {
-                case ClassFlags::Array:
-                    name = ArrayClassName;
-                    break;
-                case ClassFlags::Composite:
-                    name = CompositeClassName;
-                    break;
-                case ClassFlags::IncompleteData:
-                case ClassFlags::Error:
-                default:
-                    name = UnknownName;
-                    break;
-            }
-        }
-
-        for (size_t i = 0; i < classData->GetTypeArgs().size(); i++)
-        {
-            if (i == 0)
-            {
-                name += GenericBegin;
-            }
-
-            tstring genericParamName;
-            IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(classData->GetTypeArgs()[i]), genericParamName));
-            name += genericParamName;
-
-            if (i == (classData->GetTypeArgs().size() - 1))
-            {
-                name += GenericEnd;
-            }
-            else
-            {
-                name += GenericSeparator;
-            }
+            name += GenericSeparator;
         }
     }
 
@@ -172,7 +179,6 @@ HRESULT NameCache::GetFullyQualifiedClassName(ModuleID moduleId, mdTypeDef token
     }
 
     return S_OK;
-
 }
 
 const std::unordered_map<ClassID, std::shared_ptr<ClassData>>& NameCache::GetClasses()

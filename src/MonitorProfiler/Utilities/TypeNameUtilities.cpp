@@ -90,32 +90,30 @@ HRESULT TypeNameUtilities::GetFunctionInfo(NameCache& nameCache, FunctionID id, 
 
 HRESULT TypeNameUtilities::GetClassInfo(NameCache& nameCache, ClassID classId)
 {
+    if (classId == 0)
+    {
+        return E_INVALIDARG;
+    }
+
     std::shared_ptr<ClassData> classData;
     if (nameCache.GetClassData(classId, classData))
     {
         return S_OK;
     }
 
-    if (classId == 0)
-    {
-        return E_INVALIDARG;
-    }
-
     ModuleID modId = 0;
     mdTypeDef classToken = mdTokenNil;
-    ULONG32 nTypeArgs = 0;
+    ULONG32 typeArgsCount = 0;
     ClassID typeArgs[32];
     HRESULT hr = S_OK;
     ClassFlags flags = ClassFlags::None;
-
-    tstring placeholderName;
 
     IfFailRet(_profilerInfo->GetClassIDInfo2(classId,
         &modId,
         &classToken,
         nullptr,
         32,
-        &nTypeArgs,
+        &typeArgsCount,
         typeArgs));
 
     if (CORPROF_E_CLASSID_IS_ARRAY == hr)
@@ -141,7 +139,7 @@ HRESULT TypeNameUtilities::GetClassInfo(NameCache& nameCache, ClassID classId)
     {
         IfFailRet(GetTypeDefName(nameCache, modId, classToken));
 
-        for (ULONG32 i = 0; i < nTypeArgs; i++)
+        for (ULONG32 i = 0; i < typeArgsCount; i++)
         {
             if (typeArgs[i] != 0)
             {
@@ -150,7 +148,7 @@ HRESULT TypeNameUtilities::GetClassInfo(NameCache& nameCache, ClassID classId)
         }
     }
 
-    nameCache.AddClassData(modId, classId, classToken, flags, typeArgs, nTypeArgs);
+    nameCache.AddClassData(modId, classId, classToken, flags, typeArgs, typeArgsCount);
 
     return S_OK;
 }
@@ -223,24 +221,24 @@ HRESULT TypeNameUtilities::GetModuleInfo(NameCache& nameCache, ModuleID moduleId
 
     WCHAR* ptr = nullptr;
 
-    int index = nameLength - 1;
-    while (index >= 0)
+    int pathSeparatorIndex = nameLength - 1;
+    while (pathSeparatorIndex >= 0)
     {
-        if (moduleFullName[index] == '\\' || moduleFullName[index] == '/')
+        if (moduleFullName[pathSeparatorIndex] == '\\' || moduleFullName[pathSeparatorIndex] == '/')
         {
             break;
         }
-        index--;
+        pathSeparatorIndex--;
     }
 
     tstring moduleName;
-    if (index < 0)
+    if (pathSeparatorIndex < 0)
     {
         moduleName = moduleFullName;
     }
     else
     {
-        moduleName = tstring(moduleFullName, index + 1, nameLength - index - 1);
+        moduleName = tstring(moduleFullName, pathSeparatorIndex + 1, nameLength - pathSeparatorIndex - 1);
     }
 
     nameCache.AddModuleData(moduleId, std::move(moduleName));
