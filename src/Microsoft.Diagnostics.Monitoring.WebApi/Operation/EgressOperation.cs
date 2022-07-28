@@ -17,9 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly Func<IEgressService, CancellationToken, Task<EgressResult>> _egress;
         private readonly string _egressProvider;
         private readonly KeyValueLogScope _scope;
-
         public EgressProcessInfo ProcessInfo { get; private set; }
-
 
         public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope)
         {
