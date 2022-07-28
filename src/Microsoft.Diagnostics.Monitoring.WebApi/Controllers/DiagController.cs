@@ -20,8 +20,10 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -452,7 +454,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     settings.UseAppFilters = true;
                 }
 
-                return StartLogs(processInfo, settings, egressProvider);
+                ActionResult result;
+
+                try
+                {
+                    result = StartLogs(processInfo, settings, egressProvider).Result;
+                }
+                catch (Exception)
+                {
+                    string encodedEgressProvider = System.Net.WebUtility.UrlEncode(egressProvider);
+
+                    result = StartLogs(processInfo, settings, encodedEgressProvider).Result;
+                }
+
+                return result;
+
+                //return StartLogs(processInfo, settings, egressProvider);
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
@@ -500,7 +517,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     UseAppFilters = configuration.UseAppFilters
                 };
 
-                return StartLogs(processInfo, settings, egressProvider);
+                ActionResult result = StartLogs(processInfo, settings, egressProvider).Result;
+
+                if (result == null)
+                {
+                    string encodedEgressProvider = System.Net.WebUtility.UrlEncode(egressProvider);
+
+                    result = StartLogs(processInfo, settings, encodedEgressProvider).Result;
+                }
+
+                return result;
+
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
@@ -556,6 +583,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             GetProcessKey(pid, uid, name));
         }
 
+        private Task<ActionResult<Dictionary<string, CollectionRuleDescription>>> GetCollectionRuleDescription(ProcessKey? processKey)
+        {
+            return InvokeForProcess<Dictionary<string, CollectionRuleDescription>>(processInfo =>
+            {
+                return _collectionRuleService.GetCollectionRulesDescriptions(processInfo.EndpointInfo);
+            },
+            processKey);
+        }
+
         /// <summary>
         /// Gets detailed information about the current state of the specified collection rule.
         /// </summary>
@@ -566,7 +602,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet("collectionrules/{collectionrulename}", Name = nameof(GetCollectionRuleDetailedDescription))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(CollectionRuleDetailedDescription), StatusCodes.Status200OK)]
-        public Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
+        public async Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
             string collectionRuleName,
             [FromQuery]
             int? pid = null,
@@ -575,11 +611,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
+            string encodedCollectionRuleName = System.Net.WebUtility.UrlEncode(collectionRuleName);
+
+            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+
+            ActionResult<CollectionRuleDetailedDescription> result = await GetCollectionRuleDetailedDescription(collectionRuleName, processKey);
+
+            if (result.Value == null)
+            {
+                result = await GetCollectionRuleDetailedDescription(encodedCollectionRuleName, processKey);
+            }
+
+            return result;
+        }
+
+        private Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(string collectionRuleName, ProcessKey? processKey)
+        {
             return InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
             {
                 return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
-            GetProcessKey(pid, uid, name));
+            processKey);
         }
 
         private static string GetDotnetMonitorVersion()
