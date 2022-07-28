@@ -40,6 +40,7 @@ private:
     template<size_t index, typename T, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const T& first, TArgs... rest);
 
+    // In order to specialize with variadic templates, all the overloads have to declare their template parameters
     template<size_t index, typename T = tstring, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const tstring& first, TArgs... rest);
 
@@ -50,7 +51,7 @@ private:
     static std::vector<BYTE> GetEventBuffer(const std::vector<T>& data);
 
     template<typename T>
-    static void WriteToBuffer(BYTE* pBuffer, size_t bufferLength, size_t* pOffset, const T& value);
+    static void WriteToBuffer(BYTE* pBuffer, size_t* pOffset, const T& value);
 
     template<size_t index>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data);
@@ -129,6 +130,7 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const tst
  template<size_t index, typename T, typename... TArgs>
  HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest)
  {
+     // This value must stay in scope during all the WritePayload functions.
      std::vector<BYTE> buffer(0);
 
      if (first.size() == 0)
@@ -152,13 +154,14 @@ template<typename T>
 std::vector<BYTE> ProfilerEvent<Args...>::GetEventBuffer(const std::vector<T>& data)
 {
     size_t offset = 0;
-    size_t bufferSize = 2 + (data.size() * sizeof(T));
+    //2 byte length prefix
+    size_t bufferSize = sizeof(UINT16) + (data.size() * sizeof(T));
     std::vector<BYTE> buffer = std::vector<BYTE>(bufferSize);
-    WriteToBuffer<UINT16>(buffer.data(), bufferSize, &offset, (UINT16)data.size());
+    WriteToBuffer<UINT16>(buffer.data(), &offset, (UINT16)data.size());
 
     for (const T& element : data)
     {
-        WriteToBuffer<T>(buffer.data(), bufferSize, &offset, element);
+        WriteToBuffer<T>(buffer.data(), &offset, element);
     }
 
     return buffer;
@@ -166,7 +169,7 @@ std::vector<BYTE> ProfilerEvent<Args...>::GetEventBuffer(const std::vector<T>& d
 
 template<typename... Args>
 template<typename T>
-void ProfilerEvent<Args...>::WriteToBuffer(BYTE* pBuffer, size_t bufferLength, size_t* pOffset, const T& value)
+void ProfilerEvent<Args...>::WriteToBuffer(BYTE* pBuffer, size_t* pOffset, const T& value)
 {
     *(T*)(pBuffer + *pOffset) = value;
     *pOffset += sizeof(T);

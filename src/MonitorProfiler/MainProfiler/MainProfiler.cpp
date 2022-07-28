@@ -227,10 +227,6 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 
         for (auto& entry : nameCache->GetFunctions())
         {
-            // tstring name;
-            // IfFailLogRet(nameCache->GetFullyQualifiedName(entry.first, name));
-            // m_pLogger->Log(LogLevel::Information, name);
-
             IfFailLogRet(eventProvider->WriteFunctionData(entry.first, *entry.second.get()));
         }
         for (auto& entry : nameCache->GetClasses())

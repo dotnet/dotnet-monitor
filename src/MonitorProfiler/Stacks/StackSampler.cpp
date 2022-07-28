@@ -63,7 +63,7 @@ HRESULT StackSampler::CreateCallstack(std::vector<std::unique_ptr<StackSamplerSt
         stackState->GetStack().SetThreadId(threadID);
 
         //TODO According to docs, need to block ThreadDestroyed while stack walking. Is this still a  requirement?
-        hr = _profilerInfo->DoStackSnapshot(threadID, DoStackSnapshotStackSnapShotCallbackWrapper, COR_PRF_SNAPSHOT_REGISTER_CONTEXT, stackState.get(), nullptr, 0);
+        hr = _profilerInfo->DoStackSnapshot(threadID, DoStackSnapshotCallbackWrapper, COR_PRF_SNAPSHOT_REGISTER_CONTEXT, stackState.get(), nullptr, 0);
 
         stackStates.push_back(std::move(stackState));
     }
@@ -71,17 +71,17 @@ HRESULT StackSampler::CreateCallstack(std::vector<std::unique_ptr<StackSamplerSt
     return S_OK;
 }
 
-HRESULT __stdcall StackSampler::DoStackSnapshotStackSnapShotCallbackWrapper(FunctionID funcId, UINT_PTR ip, COR_PRF_FRAME_INFO frameInfo, ULONG32 contextSize, BYTE context[], void* clientData)
+HRESULT __stdcall StackSampler::DoStackSnapshotCallbackWrapper(FunctionID funcionId, UINT_PTR ip, COR_PRF_FRAME_INFO frameInfo, ULONG32 contextSize, BYTE context[], void* clientData)
 {
     HRESULT hr;
 
     StackSamplerState* state = reinterpret_cast<StackSamplerState*>(clientData);
     Stack& stack = state->GetStack();
-    stack.AddFrame(funcId, ip);
+    stack.AddFrame(funcionId, ip);
 
     std::shared_ptr<NameCache> nameCache = state->GetNameCache();
     TypeNameUtilities nameUtilities(state->GetProfilerInfo());
-    IfFailRet(nameUtilities.CacheNames(funcId, frameInfo, *nameCache));
+    IfFailRet(nameUtilities.CacheNames(funcionId, frameInfo, *nameCache));
 
     return S_OK;
 }
