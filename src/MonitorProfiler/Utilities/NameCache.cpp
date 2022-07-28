@@ -64,7 +64,7 @@ HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)
 
         name += FunctionSeperator + functionData->GetName();
 
-        for (int i = 0; i < functionData->GetTypeArgs().size(); i++)
+        for (size_t i = 0; i < functionData->GetTypeArgs().size(); i++)
         {
             if (i == 0)
             {
@@ -126,7 +126,7 @@ HRESULT NameCache::GetFullyQualifiedClassName(ClassID classId, tstring& name)
             }
         }
 
-        for (int i = 0; i < classData->GetTypeArgs().size(); i++)
+        for (size_t i = 0; i < classData->GetTypeArgs().size(); i++)
         {
             if (i == 0)
             {
