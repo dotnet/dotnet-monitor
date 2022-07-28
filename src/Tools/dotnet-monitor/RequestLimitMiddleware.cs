@@ -5,12 +5,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
-using System.Net;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor

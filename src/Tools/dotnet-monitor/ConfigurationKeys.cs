@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string Metrics = nameof(RootOptions.Metrics);
 
         public const string Storage = nameof(RootOptions.Storage);
-        
+
         public const string DefaultProcess = nameof(DefaultProcess);
 
         public const string Logging = nameof(Logging);

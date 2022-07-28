@@ -5,17 +5,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
-using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -51,27 +43,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async (processInfo) =>
             {
-                string fileName = GetMetricFilename(processInfo);
+                string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
-                Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-                {
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-                    EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                        _counterOptions.CurrentValue,
-                        includeDefaults: true,
-                        durationSeconds: durationSeconds);
-
-                    await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
-                        settings,
-                        loggers:
-                        new[] { new JsonCounterLogger(outputStream) });
-
-                    await eventCounterPipeline.RunAsync(token);
-                };
+                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                    _counterOptions.CurrentValue,
+                    includeDefaults: true,
+                    durationSeconds: durationSeconds);
 
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
-                    action,
+                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
@@ -111,34 +92,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(async (processInfo) =>
             {
-                string fileName = GetMetricFilename(processInfo);
+                string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
-                Func<Stream, CancellationToken, Task> action = async (outputStream, token) =>
-                {
-                    var client = new DiagnosticsClient(processInfo.EndpointInfo.Endpoint);
-                    EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                        _counterOptions.CurrentValue,
-                        durationSeconds,
-                        configuration);
-
-                    await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
-                        settings,
-                        loggers:
-                        new[] { new JsonCounterLogger(outputStream) });
-
-                    await eventCounterPipeline.RunAsync(token);
-                };
+                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                    _counterOptions.CurrentValue,
+                    durationSeconds,
+                    configuration);
 
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
-                    action,
+                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
         }
-
-        private static string GetMetricFilename(IProcessInfo processInfo) =>
-            FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.metrics.json");
     }
 }

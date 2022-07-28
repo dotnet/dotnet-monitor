@@ -383,7 +383,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                foreach(Models.EventPipeProvider provider in configuration.Providers)
+                foreach (Models.EventPipeProvider provider in configuration.Providers)
                 {
                     if (!CounterValidator.ValidateProvider(_counterOptions.CurrentValue,
                         provider, out string errorMessage))
@@ -505,7 +505,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         /// <summary>
-        /// Gets versioning and listening mode information about Dotnet-Monitor 
+        /// Gets versioning and listening mode information about Dotnet-Monitor
         /// </summary>
         [HttpGet("info", Name = nameof(GetInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]

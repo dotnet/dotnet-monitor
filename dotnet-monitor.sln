@@ -11,11 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-monitor", "src\Tools
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.WebApi", "src\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj", "{B54DE8DD-6591-45C2-B9F7-22C4A23A384C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{B24CD8F2-D809-4DB8-89A1-D45FA9218020}"
-	ProjectSection(SolutionItems) = preProject
-		src\Tools\Common\CommandExtensions.cs = src\Tools\Common\CommandExtensions.cs
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C7568468-1C79-4944-8136-18812A7F9EA7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.TestCommon", "src\Tests\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj", "{863AA12D-0918-49CE-9E76-45A22680268B}"
@@ -39,6 +34,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests.csproj", "{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", "src\Tests\Microsoft.Diagnostics.Monitoring.ExecuteActionApp\Microsoft.Diagnostics.Monitoring.ExecuteActionApp.csproj", "{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D8427A5A-810A-4664-9B68-FB64B5E18178}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,7 +106,6 @@ Global
 		{B62728C8-1267-4043-B46F-5537BBAEC692} = {19FAB78C-3351-4911-8F0C-8C6056401740}
 		{C57F7656-6663-4A3C-BE38-B75C6C57E77D} = {B62728C8-1267-4043-B46F-5537BBAEC692}
 		{B54DE8DD-6591-45C2-B9F7-22C4A23A384C} = {19FAB78C-3351-4911-8F0C-8C6056401740}
-		{B24CD8F2-D809-4DB8-89A1-D45FA9218020} = {19FAB78C-3351-4911-8F0C-8C6056401740}
 		{C7568468-1C79-4944-8136-18812A7F9EA7} = {19FAB78C-3351-4911-8F0C-8C6056401740}
 		{863AA12D-0918-49CE-9E76-45A22680268B} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{5AB5A4B4-3A13-4D42-B42C-B9193E60F426} = {C7568468-1C79-4944-8136-18812A7F9EA7}
