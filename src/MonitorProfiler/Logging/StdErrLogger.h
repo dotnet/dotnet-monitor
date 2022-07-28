@@ -10,19 +10,19 @@
 #include "../Environment/Environment.h"
 
 /// <summary>
-/// Logs messages to the debug output window when running under a debugger.
+/// Logs messages to the stderr stream.
 /// </summary>
-class DebugLogger final :
+class StdErrLogger final :
     public ILogger
 {
 private:
-    const static LogLevel DefaultLevel = LogLevel::Information;
+    const static LogLevel DefaultLevel = LogLevel::None;
     const static size_t MaxEntrySize = 1000;
 
     LogLevel _level = DefaultLevel;
 
 public:
-    DebugLogger(const std::shared_ptr<IEnvironment>& environment);
+    StdErrLogger(const std::shared_ptr<IEnvironment>& pEnvironment);
 
 public:
     // ILogger Members
