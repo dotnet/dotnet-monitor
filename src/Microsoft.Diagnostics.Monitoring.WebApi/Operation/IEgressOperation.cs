@@ -10,10 +10,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal interface IEgressOperation
     {
+        public EgressProcessInfo ProcessInfo { get; }
+
         Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token);
 
         void Validate(IServiceProvider serviceProvider);
-
-        EgressProcessInfo GetEgressProcessInfo();
     }
 }

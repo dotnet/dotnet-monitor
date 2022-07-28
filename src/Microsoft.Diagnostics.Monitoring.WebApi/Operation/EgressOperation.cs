@@ -17,7 +17,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly Func<IEgressService, CancellationToken, Task<EgressResult>> _egress;
         private readonly string _egressProvider;
         private readonly KeyValueLogScope _scope;
-        private readonly EgressProcessInfo _egressProcessInfo;
+
+        public EgressProcessInfo ProcessInfo { get; private set; }
+
 
         public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope)
         {
@@ -25,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _egressProvider = endpointName;
             _scope = scope;
 
-            _egressProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
+            ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }
 
         public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope)
@@ -34,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _egressProvider = endpointName;
             _scope = scope;
 
-            _egressProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
+            ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }
 
         // The below constructors don't need EgressProcessInfo as their callers don't store to the operations table.
@@ -77,12 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return ExecutionResult<EgressResult>.Succeeded(egressResult);
             }, logger, token);
         }
-
-        public EgressProcessInfo GetEgressProcessInfo()
-        {
-            return _egressProcessInfo;
-        }
-
+        
         public void Validate(IServiceProvider serviceProvider)
         {
             serviceProvider

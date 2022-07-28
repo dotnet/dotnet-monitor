@@ -21,8 +21,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("status")]
         public OperationState Status { get; set; }
 
-        [JsonPropertyName("processInfo")]
-        public OperationProcessInfo ProcessInfo { get; set; }
+        [JsonPropertyName("process")]
+        public OperationProcessInfo Process { get; set; }
     }
 
     /// <summary>
@@ -31,10 +31,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class OperationProcessInfo
     {
         [JsonPropertyName("pid")]
-        public int? ProcessID { get; set; }
+        public int? ProcessId { get; set; }
 
         [JsonPropertyName("uid")]
-        public Guid? UID { get; set; }
+        public Guid? Uid { get; set; }
 
         [JsonPropertyName("processName")]
         public string ProcessName { get; set; }
