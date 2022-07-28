@@ -43,14 +43,14 @@ public:
     const ModuleID GetModuleId() const { return _moduleId; }
     const mdTypeDef GetToken() const { return _token; }
     const ClassFlags GetFlags() const { return _flags; }
-    const std::vector<ClassID>& GetTypeArgs() const { return _typeArgs; }
-    void AddTypeArg(ClassID id) { _typeArgs.push_back(id); }
+    const std::vector<UINT64>& GetTypeArgs() const { return _typeArgs; }
+    void AddTypeArg(ClassID id) { _typeArgs.push_back(static_cast<UINT64>(id)); }
 
 private:
     ModuleID _moduleId;
     mdTypeDef _token;
     ClassFlags _flags;
-    std::vector<ClassID> _typeArgs;
+    std::vector<UINT64> _typeArgs;
 };
 
 class TokenData
@@ -79,13 +79,13 @@ public:
     const tstring& GetName() const { return _functionName; }
     const ClassID GetClass() const { return _class; }
     const mdTypeDef GetClassToken() const { return _classToken; }
-    const std::vector<ClassID>& GetTypeArgs() const { return _typeArgs; }
-    void AddTypeArg(ClassID classID) { _typeArgs.push_back(classID); }
+    const std::vector<UINT64>& GetTypeArgs() const { return _typeArgs; }
+    void AddTypeArg(ClassID classID) { _typeArgs.push_back(static_cast<UINT64>(classID)); }
 
 private:
     ModuleID _moduleId;
     ClassID _class;
     tstring _functionName;
     mdTypeDef _classToken;
-    std::vector<ClassID> _typeArgs;
+    std::vector<UINT64> _typeArgs;
 };
