@@ -51,7 +51,7 @@ HRESULT ProfilerEventProvider::DefineEvent(const WCHAR* eventName, typename std:
         newEvent->_descriptor,
         &event));
 
-    profilerEventDescriptor = std::move(newEvent);
+    profilerEventDescriptor.reset(newEvent.release());
     profilerEventDescriptor->_event = event;
     _currentEventId++;
     return S_OK;

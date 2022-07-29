@@ -11,7 +11,7 @@ HRESULT ProfilerEventProvider::CreateProvider(const WCHAR* providerName, ICorPro
     HRESULT hr;
 
     IfFailRet(profilerInfo->EventPipeCreateProvider(providerName, &eventProvider));
-    provider = std::unique_ptr<ProfilerEventProvider>(new ProfilerEventProvider(profilerInfo, eventProvider));
+    provider.reset(new ProfilerEventProvider(profilerInfo, eventProvider));
 
     return S_OK;
 }

@@ -210,46 +210,52 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
     m_pLogger->Log(LogLevel::Information, _LS("Message received from client: %d %d"), message.MessageType, message.Parameters);
 
-    HRESULT hr;
-
     if (message.MessageType == MessageType::Callstack)
     {
         //Currently we do not have any options for this message
-
-        StackSampler stackSampler(m_pCorProfilerInfo);
-        std::vector<std::unique_ptr<StackSamplerState>> stackStates;
-        std::shared_ptr<NameCache> nameCache;
-
-        IfFailLogRet(stackSampler.CreateCallstack(stackStates, nameCache));
-
-        std::unique_ptr<StacksEventProvider> eventProvider;
-        IfFailLogRet(StacksEventProvider::CreateProvider(m_pCorProfilerInfo, eventProvider));
-
-        for (auto& entry : nameCache->GetFunctions())
-        {
-            IfFailLogRet(eventProvider->WriteFunctionData(entry.first, *entry.second.get()));
-        }
-        for (auto& entry : nameCache->GetClasses())
-        {
-            IfFailLogRet(eventProvider->WriteClassData(entry.first, *entry.second.get()));
-        }
-        for (auto& entry : nameCache->GetModules())
-        {
-            IfFailLogRet(eventProvider->WriteModuleData(entry.first, *entry.second.get()));
-        }
-        for (auto& entry : nameCache->GetTypeNames())
-        {
-            //first: (Module,TypeDef)
-            IfFailLogRet(eventProvider->WriteTokenData(entry.first.first, entry.first.second, *entry.second.get()));
-        }
-
-        for (std::unique_ptr<StackSamplerState>& stackState : stackStates)
-        {
-            IfFailLogRet(eventProvider->WriteCallstack(stackState->GetStack()));
-        }
-
-        IfFailLogRet(eventProvider->WriteEndEvent());
+        return ProcessCallstackMessage();
     }
+
+    return S_OK;
+}
+
+HRESULT MainProfiler::ProcessCallstackMessage()
+{
+    HRESULT hr;
+
+    StackSampler stackSampler(m_pCorProfilerInfo);
+    std::vector<std::unique_ptr<StackSamplerState>> stackStates;
+    std::shared_ptr<NameCache> nameCache;
+
+    IfFailLogRet(stackSampler.CreateCallstack(stackStates, nameCache));
+
+    std::unique_ptr<StacksEventProvider> eventProvider;
+    IfFailLogRet(StacksEventProvider::CreateProvider(m_pCorProfilerInfo, eventProvider));
+
+    for (auto& entry : nameCache->GetFunctions())
+    {
+        IfFailLogRet(eventProvider->WriteFunctionData(entry.first, *entry.second.get()));
+    }
+    for (auto& entry : nameCache->GetClasses())
+    {
+        IfFailLogRet(eventProvider->WriteClassData(entry.first, *entry.second.get()));
+    }
+    for (auto& entry : nameCache->GetModules())
+    {
+        IfFailLogRet(eventProvider->WriteModuleData(entry.first, *entry.second.get()));
+    }
+    for (auto& entry : nameCache->GetTypeNames())
+    {
+        //first: (Module,TypeDef)
+        IfFailLogRet(eventProvider->WriteTokenData(entry.first.first, entry.first.second, *entry.second.get()));
+    }
+
+    for (std::unique_ptr<StackSamplerState>& stackState : stackStates)
+    {
+        IfFailLogRet(eventProvider->WriteCallstack(stackState->GetStack()));
+    }
+
+    IfFailLogRet(eventProvider->WriteEndEvent());
 
     return S_OK;
 }
