@@ -1654,13 +1654,11 @@
         "properties": {
           "pid": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "uid": {
             "type": "string",
-            "format": "uuid",
-            "nullable": true
+            "format": "uuid"
           },
           "processName": {
             "type": "string",

@@ -31,10 +31,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class OperationProcessInfo
     {
         [JsonPropertyName("pid")]
-        public int? ProcessId { get; set; }
+        public int ProcessId { get; set; }
 
         [JsonPropertyName("uid")]
-        public Guid? Uid { get; set; }
+        public Guid Uid { get; set; }
 
         [JsonPropertyName("processName")]
         public string ProcessName { get; set; }
