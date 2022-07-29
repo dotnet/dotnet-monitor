@@ -12,7 +12,7 @@ TypeNameUtilities::TypeNameUtilities(ICorProfilerInfo12* profilerInfo) : _profil
 HRESULT TypeNameUtilities::CacheNames(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo, NameCache& nameCache)
 {
     std::shared_ptr<FunctionData> functionData;
-    if (!nameCache.GetFunctionData(functionId, functionData))
+    if (!nameCache.TryGetFunctionData(functionId, functionData))
     {
         return GetFunctionInfo(nameCache, functionId, frameInfo);
     }
@@ -96,7 +96,7 @@ HRESULT TypeNameUtilities::GetClassInfo(NameCache& nameCache, ClassID classId)
     }
 
     std::shared_ptr<ClassData> classData;
-    if (nameCache.GetClassData(classId, classData))
+    if (nameCache.TryGetClassData(classId, classData))
     {
         return S_OK;
     }
@@ -166,7 +166,7 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
     while (tokenToProcess != mdTokenNil)
     {
         std::shared_ptr<TokenData> tokenData;
-        if (nameCache.GetTokenData(moduleId, tokenToProcess, tokenData))
+        if (nameCache.TryGetTokenData(moduleId, tokenToProcess, tokenData))
         {
             //We already processed this type (and therefore all of its outer classes)
             break;
@@ -203,7 +203,7 @@ HRESULT TypeNameUtilities::GetModuleInfo(NameCache& nameCache, ModuleID moduleId
     HRESULT hr;
 
     std::shared_ptr<ModuleData> mod;
-    if (nameCache.GetModuleData(moduleId, mod))
+    if (nameCache.TryGetModuleData(moduleId, mod))
     {
         return S_OK;
     }

@@ -16,19 +16,19 @@ const tstring NameCache::GenericBegin = _T("<");
 const tstring NameCache::GenericSeparator = _T(",");
 const tstring NameCache::GenericEnd = _T(">");
 
-bool NameCache::GetFunctionData(FunctionID id, std::shared_ptr<FunctionData>& data)
+bool NameCache::TryGetFunctionData(FunctionID id, std::shared_ptr<FunctionData>& data)
 {
     return GetData(_functionNames, id, data);
 }
-bool NameCache::GetClassData(ClassID id, std::shared_ptr<ClassData>& data)
+bool NameCache::TryGetClassData(ClassID id, std::shared_ptr<ClassData>& data)
 {
     return GetData(_classNames, id, data);
 }
-bool NameCache::GetModuleData(ModuleID id, std::shared_ptr<ModuleData>& data)
+bool NameCache::TryGetModuleData(ModuleID id, std::shared_ptr<ModuleData>& data)
 {
     return GetData(_moduleNames, id, data);
 }
-bool NameCache::GetTokenData(ModuleID modId, mdTypeDef token, std::shared_ptr<TokenData>& data)
+bool NameCache::TryGetTokenData(ModuleID modId, mdTypeDef token, std::shared_ptr<TokenData>& data)
 {
     auto const& it = _names.find(std::make_pair(modId, token));
 
@@ -55,7 +55,7 @@ HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)
     }
 
     std::shared_ptr<FunctionData> functionData;
-    if (!GetFunctionData(id, functionData))
+    if (!TryGetFunctionData(id, functionData))
     {
         return E_NOT_SET;
     }
@@ -76,7 +76,7 @@ HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)
     IfFailRet(GetGenericParameterNames(functionData->GetTypeArgs(), name));
 
     std::shared_ptr<ModuleData> moduleData;
-    if (GetModuleData(functionData->GetModuleId(), moduleData))
+    if (TryGetModuleData(functionData->GetModuleId(), moduleData))
     {
         name = moduleData->GetName() + ModuleSeparator + name;
     }
@@ -94,7 +94,7 @@ HRESULT NameCache::GetFullyQualifiedClassName(ClassID classId, tstring& name)
     }
 
     std::shared_ptr<ClassData> classData;
-    if (!GetClassData(classId, classData))
+    if (!TryGetClassData(classId, classData))
     {
         return E_NOT_SET;
     }
@@ -127,7 +127,7 @@ HRESULT NameCache::GetFullyQualifiedClassName(ModuleID moduleId, mdTypeDef token
     while (token != 0)
     {
         std::shared_ptr<TokenData> tokenData;
-        if (GetTokenData(moduleId, token, tokenData))
+        if (TryGetTokenData(moduleId, token, tokenData))
         {
             if (name.size() > 0)
             {

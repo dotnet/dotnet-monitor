@@ -20,10 +20,10 @@
 class NameCache
 {
 public:
-    bool GetFunctionData(FunctionID id, std::shared_ptr<FunctionData>& data);
-    bool GetClassData(ClassID id, std::shared_ptr<ClassData>& data);
-    bool GetModuleData(ModuleID id, std::shared_ptr<ModuleData>& data);
-    bool GetTokenData(ModuleID modId, mdTypeDef token, std::shared_ptr<TokenData>& data);
+    bool TryGetFunctionData(FunctionID id, std::shared_ptr<FunctionData>& data);
+    bool TryGetClassData(ClassID id, std::shared_ptr<ClassData>& data);
+    bool TryGetModuleData(ModuleID id, std::shared_ptr<ModuleData>& data);
+    bool TryGetTokenData(ModuleID modId, mdTypeDef token, std::shared_ptr<TokenData>& data);
 
     void AddModuleData(ModuleID moduleId, tstring&& name);
     void AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount);
