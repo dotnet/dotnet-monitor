@@ -60,6 +60,8 @@ HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)
         return E_NOT_SET;
     }
 
+    //TODO Consider making each naming function append to a sstream and consider adding flags to disable certain parts of the name such as the module.
+    // Currently some functions append name information while others assign it.
     if (functionData->GetClass() != 0)
     {
         IfFailRet(GetFullyQualifiedClassName(functionData->GetClass(), name));
@@ -71,26 +73,7 @@ HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)
 
     name += FunctionSeparator + functionData->GetName();
 
-    for (size_t i = 0; i < functionData->GetTypeArgs().size(); i++)
-    {
-        if (i == 0)
-        {
-            name += GenericBegin;
-        }
-
-        tstring genericParamName;
-        IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(functionData->GetTypeArgs()[i]), genericParamName));
-        name += genericParamName;
-
-        if (i == (functionData->GetTypeArgs().size() - 1))
-        {
-            name += GenericEnd;
-        }
-        else
-        {
-            name += GenericSeparator;
-        }
-    }
+    IfFailRet(GetGenericParameterNames(functionData->GetTypeArgs(), name));
 
     std::shared_ptr<ModuleData> moduleData;
     if (GetModuleData(functionData->GetModuleId(), moduleData))
@@ -134,26 +117,7 @@ HRESULT NameCache::GetFullyQualifiedClassName(ClassID classId, tstring& name)
             break;
     }
 
-    for (size_t i = 0; i < classData->GetTypeArgs().size(); i++)
-    {
-        if (i == 0)
-        {
-            name += GenericBegin;
-        }
-
-        tstring genericParamName;
-        IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(classData->GetTypeArgs()[i]), genericParamName));
-        name += genericParamName;
-
-        if (i == (classData->GetTypeArgs().size() - 1))
-        {
-            name += GenericEnd;
-        }
-        else
-        {
-            name += GenericSeparator;
-        }
-    }
+    IfFailRet(GetGenericParameterNames(classData->GetTypeArgs(), name));
 
     return S_OK;
 }
@@ -175,6 +139,34 @@ HRESULT NameCache::GetFullyQualifiedClassName(ModuleID moduleId, mdTypeDef token
         else
         {
             token = 0;
+        }
+    }
+
+    return S_OK;
+}
+
+HRESULT NameCache::GetGenericParameterNames(const std::vector<UINT64>& typeArgs, tstring& name)
+{
+    HRESULT hr;
+
+    for (size_t i = 0; i < typeArgs.size(); i++)
+    {
+        if (i == 0)
+        {
+            name += GenericBegin;
+        }
+
+        tstring genericParamName;
+        IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(typeArgs[i]), genericParamName));
+        name += genericParamName;
+
+        if (i == (typeArgs.size() - 1))
+        {
+            name += GenericEnd;
+        }
+        else
+        {
+            name += GenericSeparator;
         }
     }
 

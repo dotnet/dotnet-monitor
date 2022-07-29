@@ -33,6 +33,7 @@ public:
     HRESULT GetFullyQualifiedName(FunctionID id, tstring& name);
     HRESULT GetFullyQualifiedClassName(ClassID classId, tstring& name);
     HRESULT GetFullyQualifiedClassName(ModuleID moduleId, mdTypeDef token, tstring& name);
+    HRESULT GetGenericParameterNames(const std::vector<UINT64>& typeArgs, tstring& name);
 
     const std::unordered_map<ClassID, std::shared_ptr<ClassData>>& GetClasses();
     const std::unordered_map<FunctionID, std::shared_ptr<FunctionData>>& GetFunctions();
