@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 #include "ExceptionTracker.h"
+#include "../Utilities/NameCache.h"
+#include "../Utilities/TypeNameUtilities.h"
 
 using namespace std;
 
@@ -60,7 +62,7 @@ using namespace std;
 ExceptionTracker::ExceptionTracker(
     const shared_ptr<ILogger>& logger,
     const shared_ptr<ThreadDataManager> threadDataManager,
-    ICorProfilerInfo2* corProfilerInfo)
+    ICorProfilerInfo12* corProfilerInfo)
 {
     _corProfilerInfo = corProfilerInfo;
     _logger = logger;
@@ -162,201 +164,13 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, COR
 {
     HRESULT hr = S_OK;
 
-    ClassID classId;
-    ModuleID moduleId;
-    mdToken token;
-    IfFailLogRet(_corProfilerInfo->GetFunctionInfo2(
-        functionId,
-        frameInfo,
-        &classId,
-        &moduleId,
-        &token,
-        0,
-        nullptr,
-        nullptr
-    ));
+    NameCache cache;
+    TypeNameUtilities typeNameUtilities(_corProfilerInfo);
 
-    IfFalseLogRet(0 != (token & mdtMethodDef), E_UNEXPECTED);
-
-    IfFailRet(GetFullyQualifiedMethodName(moduleId, classId, token, fullMethodName));
+    IfFailRet(typeNameUtilities.CacheNames(functionId, frameInfo, cache));
+    IfFailRet(cache.GetFullyQualifiedName(functionId, fullMethodName));
 
     return S_OK;
-}
-
-HRESULT ExceptionTracker::GetFullyQualifiedMethodName(ModuleID moduleId, ClassID classId, mdMethodDef token, tstring& fullMethodName)
-{
-    HRESULT hr = S_OK;
-
-    ComPtr<IMetaDataImport2> metadataImport;
-    IfFailLogRet(_corProfilerInfo->GetModuleMetaData(
-        moduleId,
-        CorOpenFlags::ofRead,
-        IID_IMetaDataImport2,
-        (IUnknown**)&metadataImport
-    ));
-
-    // Get Module Name: typically the full path to the assembly
-    ULONG modulePathCount = 0; // Includes null-terminater
-    IfFailLogRet(_corProfilerInfo->GetModuleInfo(
-        moduleId,
-        nullptr,
-        0,
-        &modulePathCount,
-        nullptr,
-        nullptr
-    ));
-
-    unique_ptr<WCHAR[]> modulePath(new (nothrow) WCHAR[modulePathCount]);
-    IfNullRet(modulePath);
-
-    IfFailLogRet(_corProfilerInfo->GetModuleInfo(
-        moduleId,
-        nullptr,
-        modulePathCount,
-        nullptr,
-        modulePath.get(),
-        nullptr
-    ));
-
-    tstring classNameStr;
-    IfFailRet(GetFullClassName(classId, classNameStr));
-
-    // Get Method Name
-    ULONG methodNameCount = 0; // Includes null-terminater
-    IfFailLogRet(metadataImport->GetMethodProps(
-        token,
-        nullptr,
-        nullptr,
-        0,
-        &methodNameCount,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr
-    ));
-
-    unique_ptr<WCHAR[]> methodName(new (nothrow) WCHAR[methodNameCount]);
-    IfNullRet(methodName);
-
-    IfFailLogRet(metadataImport->GetMethodProps(
-        token,
-        nullptr,
-        methodName.get(),
-        methodNameCount,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr
-    ));
-
-    // CONSIDER: If generic parameters should be replaced with actual types, do that
-    // as part of calculating the method name. Requires calling GetMethodProps to get
-    // the method signature, parsing the method signature, and resolving type names
-    // from the various type tokens.
-
-    tstring modulePathStr(modulePath.get());
-
-    // The full method name should be in the following format: <ModuleName>!<Namespace>.<TypeName>.<MethodName>
-    // Example: System.Private.CoreLib.dll!System.Collections.Generic.Dictionary`2+Enumerator.MoveNext
-    fullMethodName.clear();
-    fullMethodName.append(modulePathStr.substr(modulePathStr.find_last_of(_T("/\\")) + 1));
-    fullMethodName.append(_T("!"));
-    fullMethodName.append(classNameStr);
-    fullMethodName.append(_T("."));
-    fullMethodName.append(methodName.get());
-
-    return S_OK;
-}
-
-HRESULT ExceptionTracker::GetFullClassName(ClassID classId, tstring& fullClassName)
-{
-    HRESULT hr = S_OK;
-
-    ModuleID moduleId;
-    mdTypeDef typeDefToken;
-    IfFailLogRet(_corProfilerInfo->GetClassIDInfo2(
-        classId,
-        &moduleId,
-        &typeDefToken,
-        nullptr,
-        0,
-        nullptr,
-        nullptr
-    ));
-
-    ComPtr<IMetaDataImport2> metadataImport;
-    IfFailLogRet(_corProfilerInfo->GetModuleMetaData(
-        moduleId,
-        CorOpenFlags::ofRead,
-        IID_IMetaDataImport2,
-        (IUnknown**)&metadataImport
-    ));
-
-    // CONSIDER: If generic parameters should be replaced with actual types, do that
-    // as part of calculating the full type name. Requires calling GetClassIDInfo2 to
-    // get the generic parameter ClassID values and getting their full type name.
-
-    IfFailLogRet(GetFullTypeName(metadataImport, typeDefToken, fullClassName));
-
-    return S_OK;
-}
-
-HRESULT ExceptionTracker::GetFullTypeName(IMetaDataImport2* metadataImport, mdTypeDef typeDefToken, tstring& fullTypeName)
-{
-    HRESULT hr = S_OK;
-
-    ULONG typeNameCount = 0; // Includes null-terminater
-    DWORD typeDefFlags = 0;
-    IfFailLogRet(metadataImport->GetTypeDefProps(
-        typeDefToken,
-        nullptr,
-        0,
-        &typeNameCount,
-        &typeDefFlags,
-        nullptr
-    ));
-    
-    tstring parentTypeName;
-    if (IsNestedType(static_cast<CorTypeAttr>(typeDefFlags)))
-    {
-        mdTypeDef parentTypeDefToken;
-        IfFailLogRet(metadataImport->GetNestedClassProps(typeDefToken, &parentTypeDefToken));
-
-        IfFailLogRet(GetFullTypeName(metadataImport, parentTypeDefToken, parentTypeName));
-    }
-
-    unique_ptr<WCHAR[]> className(new (nothrow) WCHAR[typeNameCount]);
-    IfNullRet(className);
-
-    IfFailLogRet(metadataImport->GetTypeDefProps(
-        typeDefToken,
-        className.get(),
-        typeNameCount,
-        nullptr,
-        nullptr,
-        nullptr
-    ));
-
-    // The full type name should be in the following format: <OuterTypeNamespace>.<OuterType>+<InnerType>
-    // Example: System.Collections.Generic.Dictionary`2+Enumerator
-    fullTypeName.clear();
-    if (parentTypeName.length() > 0)
-    {
-        fullTypeName.append(parentTypeName);
-        fullTypeName.append(_T("+"));
-    }
-    fullTypeName.append(className.get());
-
-    return S_OK;
-}
-
-bool ExceptionTracker::IsNestedType(CorTypeAttr attributes)
-{
-    CorTypeAttr visibility = static_cast<CorTypeAttr>(attributes & CorTypeAttr::tdVisibilityMask);
-    return CorTypeAttr::tdNestedPublic <= visibility && visibility <= CorTypeAttr::tdNestedFamORAssem;
 }
 
 HRESULT ExceptionTracker::LogExceptionThrownFrame(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo)

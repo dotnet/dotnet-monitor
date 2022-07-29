@@ -29,10 +29,10 @@ class ProfilerEnvironment final :
     public IEnvironment
 {
 private:
-    ComPtr<ICorProfilerInfo11> m_pCorProfilerInfo;
+    ComPtr<ICorProfilerInfo12> m_pCorProfilerInfo;
 
 public:
-    ProfilerEnvironment(ICorProfilerInfo11* pCorProfilerInfo);
+    ProfilerEnvironment(ICorProfilerInfo12* pCorProfilerInfo);
 
 public:
     // IEnvironment
