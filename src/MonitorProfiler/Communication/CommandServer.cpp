@@ -95,10 +95,10 @@ void CommandServer::ListeningThread()
 void CommandServer::ClientProcessingThread()
 {
     HRESULT hr = _profilerInfo->InitializeCurrentThread();
-    _logger->Log(LogLevel::Error, _LS("Unable to initialize thread: 0x%08x"), hr);
 
     if (FAILED(hr))
     {
+        _logger->Log(LogLevel::Error, _LS("Unable to initialize thread: 0x%08x"), hr);
         return;
     }
 

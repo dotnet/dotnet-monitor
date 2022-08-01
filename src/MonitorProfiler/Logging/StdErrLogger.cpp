@@ -42,7 +42,7 @@ STDMETHODIMP StdErrLogger::Log(LogLevel level, const lstring& message)
 
     IfFailRet(LoggerHelper::Write(
         stderr,
-        _LS("[profiler]%s: %s\r\n"),
+        _LS("[profiler]%s: %s\n"),
         levelStr.c_str(),
         message.c_str()));
 
