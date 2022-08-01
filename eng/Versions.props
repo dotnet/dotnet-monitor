@@ -71,7 +71,7 @@
   <PropertyGroup Label="Manual">
     <AzureIdentityVersion>1.6.0</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.13.0</AzureStorageBlobsVersion>
-    <AzureStorageQueuesVersion>12.10.0</AzureStorageQueuesVersion>
+    <AzureStorageQueuesVersion>12.11.0</AzureStorageQueuesVersion>
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>6.0.5</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
