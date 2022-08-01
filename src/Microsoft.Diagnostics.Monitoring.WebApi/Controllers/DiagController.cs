@@ -10,7 +10,6 @@ using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,10 +20,8 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -247,7 +244,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                             ContentTypes.ApplicationOctetStream,
                             scope), limitKey: Utilities.ArtifactType_Dump);
                     }
-                    catch (Exception)
+                    catch (EgressException)
                     {
                         return await SendToEgress(new EgressOperation(
                             token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
@@ -321,7 +318,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         ContentTypes.ApplicationOctetStream,
                         processInfo.EndpointInfo);
                 }
-                catch (Exception)
+                catch (EgressException)
                 {
                     return await Result(
                         Utilities.ArtifactType_GCDump,
@@ -495,7 +492,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return StartLogs(processInfo, settings, egressProvider).Result;
             }
-            catch (Exception)
+            catch (EgressException)
             {
                 return StartLogs(processInfo, settings, Encode(egressProvider)).Result;
             }
@@ -507,7 +504,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return StartTrace(processInfo, configuration, duration, egressProvider).Result;
             }
-            catch (Exception)
+            catch (EgressException)
             {
                 return StartTrace(processInfo, configuration, duration, Encode(egressProvider)).Result;
             }
@@ -653,7 +650,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
                 }
-                catch (Exception)
+                catch (EgressException)
                 {
                     return _collectionRuleService.GetCollectionRuleDetailedDescription(Encode(collectionRuleName), processInfo.EndpointInfo);
                 }

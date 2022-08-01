@@ -56,7 +56,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
                     processInfo.EndpointInfo);
-
             }, processKey, Utilities.ArtifactType_Metrics);
         }
 
@@ -104,7 +103,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
                     processInfo.EndpointInfo);
-
             }, processKey, Utilities.ArtifactType_Metrics);
         }
 
@@ -123,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     ContentTypes.ApplicationJsonSequence,
                     endpointInfo);
             }
-            catch (Exception)
+            catch (EgressException)
             {
                 return await Result(Utilities.ArtifactType_Metrics,
                     Encode(providerName),
