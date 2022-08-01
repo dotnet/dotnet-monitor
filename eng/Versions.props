@@ -57,7 +57,7 @@
     <MicrosoftAspNetCoreApp60Version>$(MicrosoftNETCoreApp60Version)</MicrosoftAspNetCoreApp60Version>
   </PropertyGroup>
   <PropertyGroup Label="Manual">
-    <AzureStorageBlobsVersion>12.12.0</AzureStorageBlobsVersion>
+    <AzureStorageBlobsVersion>12.13.0</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.10.0</AzureStorageQueuesVersion>
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>3.1.26</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>3.1.26</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
