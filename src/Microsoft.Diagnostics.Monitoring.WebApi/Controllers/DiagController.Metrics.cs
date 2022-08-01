@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
@@ -50,12 +52,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     includeDefaults: true,
                     durationSeconds: durationSeconds);
 
-                return await Result(Utilities.ArtifactType_Metrics,
-                    egressProvider,
+                return await CollectMetricsHelper(egressProvider,
                     (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
-                    ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
+
             }, processKey, Utilities.ArtifactType_Metrics);
         }
 
@@ -99,13 +100,38 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     durationSeconds,
                     configuration);
 
-                return await Result(Utilities.ArtifactType_Metrics,
-                    egressProvider,
+                return await CollectMetricsHelper(egressProvider,
                     (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
-                    ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
+
             }, processKey, Utilities.ArtifactType_Metrics);
+        }
+
+        private async Task<ActionResult> CollectMetricsHelper(
+            string providerName,
+            Func<Stream, CancellationToken, Task> action,
+            string fileName,
+            IEndpointInfo endpointInfo)
+        {
+            try
+            {
+                return await Result(Utilities.ArtifactType_Metrics,
+                    providerName,
+                    action,
+                    fileName,
+                    ContentTypes.ApplicationJsonSequence,
+                    endpointInfo);
+            }
+            catch (Exception)
+            {
+                return await Result(Utilities.ArtifactType_Metrics,
+                    Encode(providerName),
+                    action,
+                    fileName,
+                    ContentTypes.ApplicationJsonSequence,
+                    endpointInfo);
+            }
         }
     }
 }

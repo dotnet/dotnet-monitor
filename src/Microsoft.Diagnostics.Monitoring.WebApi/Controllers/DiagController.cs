@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -236,13 +237,26 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
 
-                    return await SendToEgress(new EgressOperation(
-                        token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
-                        egressProvider,
-                        dumpFileName,
-                        processInfo.EndpointInfo,
-                        ContentTypes.ApplicationOctetStream,
-                        scope), limitKey: Utilities.ArtifactType_Dump);
+                    try
+                    {
+                        return await SendToEgress(new EgressOperation(
+                            token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
+                            egressProvider,
+                            dumpFileName,
+                            processInfo.EndpointInfo,
+                            ContentTypes.ApplicationOctetStream,
+                            scope), limitKey: Utilities.ArtifactType_Dump);
+                    }
+                    catch (Exception)
+                    {
+                        return await SendToEgress(new EgressOperation(
+                            token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
+                            Encode(egressProvider),
+                            dumpFileName,
+                            processInfo.EndpointInfo,
+                            ContentTypes.ApplicationOctetStream,
+                            scope), limitKey: Utilities.ArtifactType_Dump);
+                    }
                 }
             }, processKey, Utilities.ArtifactType_Dump);
         }
@@ -276,32 +290,48 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
-            return InvokeForProcess(processInfo =>
+            return InvokeForProcess(async processInfo =>
             {
                 string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
-                return Result(
-                    Utilities.ArtifactType_GCDump,
-                    egressProvider,
-                    async (stream, token) =>
+                Func<Stream, CancellationToken, Task> action = async (stream, token) =>
+                {
+                    IDisposable operationRegistration = null;
+                    try
                     {
-                        IDisposable operationRegistration = null;
-                        try
+                        if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
                         {
-                            if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
-                            {
-                                operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
-                            }
-                            await GCDumpUtilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token);
+                            operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
                         }
-                        finally
-                        {
-                            operationRegistration?.Dispose();
-                        }
-                    },
-                    fileName,
-                    ContentTypes.ApplicationOctetStream,
-                    processInfo.EndpointInfo);
+                        await GCDumpUtilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token);
+                    }
+                    finally
+                    {
+                        operationRegistration?.Dispose();
+                    }
+                };
+
+                try
+                {
+                    return await Result(
+                        Utilities.ArtifactType_GCDump,
+                        egressProvider,
+                        action,
+                        fileName,
+                        ContentTypes.ApplicationOctetStream,
+                        processInfo.EndpointInfo);
+                }
+                catch (Exception)
+                {
+                    return await Result(
+                        Utilities.ArtifactType_GCDump,
+                        Encode(egressProvider),
+                        action,
+                        fileName,
+                        ContentTypes.ApplicationOctetStream,
+                        processInfo.EndpointInfo);
+                }
+
             }, processKey, Utilities.ArtifactType_GCDump);
         }
 
@@ -345,7 +375,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 var aggregateConfiguration = TraceUtilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.GetIntervalSeconds());
 
-                return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
+                return StartTraceHelper(processInfo, aggregateConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
@@ -398,7 +428,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 var traceConfiguration = TraceUtilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
 
-                return StartTrace(processInfo, traceConfiguration, duration, egressProvider);
+                return StartTraceHelper(processInfo, traceConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
@@ -454,23 +484,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     settings.UseAppFilters = true;
                 }
 
-                ActionResult result;
+                return StartLogsHelper(processInfo, settings, egressProvider);
 
-                try
-                {
-                    result = StartLogs(processInfo, settings, egressProvider).Result;
-                }
-                catch (Exception)
-                {
-                    string encodedEgressProvider = System.Net.WebUtility.UrlEncode(egressProvider);
-
-                    result = StartLogs(processInfo, settings, encodedEgressProvider).Result;
-                }
-
-                return result;
-
-                //return StartLogs(processInfo, settings, egressProvider);
             }, processKey, Utilities.ArtifactType_Logs);
+        }
+
+        private ActionResult StartLogsHelper(IProcessInfo processInfo, EventLogsPipelineSettings settings, string egressProvider)
+        {
+            try
+            {
+                return StartLogs(processInfo, settings, egressProvider).Result;
+            }
+            catch (Exception)
+            {
+                return StartLogs(processInfo, settings, Encode(egressProvider)).Result;
+            }
+        }
+
+        private ActionResult StartTraceHelper(IProcessInfo processInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, string egressProvider)
+        {
+            try
+            {
+                return StartTrace(processInfo, configuration, duration, egressProvider).Result;
+            }
+            catch (Exception)
+            {
+                return StartTrace(processInfo, configuration, duration, Encode(egressProvider)).Result;
+            }
         }
 
         /// <summary>
@@ -517,18 +557,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     UseAppFilters = configuration.UseAppFilters
                 };
 
-                ActionResult result = StartLogs(processInfo, settings, egressProvider).Result;
-
-                if (result == null)
-                {
-                    string encodedEgressProvider = System.Net.WebUtility.UrlEncode(egressProvider);
-
-                    result = StartLogs(processInfo, settings, encodedEgressProvider).Result;
-                }
-
-                return result;
+                return StartLogsHelper(processInfo, settings, egressProvider);
 
             }, processKey, Utilities.ArtifactType_Logs);
+        }
+
+        private static string Encode(string decodedString)
+        {
+            return System.Net.WebUtility.UrlEncode(decodedString);
         }
 
         /// <summary>
@@ -611,27 +647,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            string encodedCollectionRuleName = System.Net.WebUtility.UrlEncode(collectionRuleName);
-
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
-
-            ActionResult<CollectionRuleDetailedDescription> result = await GetCollectionRuleDetailedDescription(collectionRuleName, processKey);
-
-            if (result.Value == null)
+            return await InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
             {
-                result = await GetCollectionRuleDetailedDescription(encodedCollectionRuleName, processKey);
-            }
-
-            return result;
-        }
-
-        private Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(string collectionRuleName, ProcessKey? processKey)
-        {
-            return InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
-            {
-                return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
+                try
+                {
+                    return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
+                }
+                catch (Exception)
+                {
+                    return _collectionRuleService.GetCollectionRuleDetailedDescription(Encode(collectionRuleName), processInfo.EndpointInfo);
+                }
             },
-            processKey);
+            GetProcessKey(pid, uid, name));
         }
 
         private static string GetDotnetMonitorVersion()
