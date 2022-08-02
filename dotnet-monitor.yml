@@ -8,6 +8,12 @@ pr:
     - release/*
     - internal/release/*
     - feature/*
+  paths:
+    include:
+    - '*'
+    exclude:
+    - .github
+    - '**.md'
 
 schedules:
 - cron: 15 11 * * 6
