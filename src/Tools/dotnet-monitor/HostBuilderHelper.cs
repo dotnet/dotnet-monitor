@@ -143,7 +143,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
             catch (Exception ex)
             {
-                hostBuilderResults.Warnings.Add(ex.Message);
+                if (ex is UnauthorizedAccessException || ex is FileNotFoundException)
+                {
+                    hostBuilderResults.Warnings.Add(ex.Message);
+                    return;
+                }
+
+                throw;
             }
         }
 
