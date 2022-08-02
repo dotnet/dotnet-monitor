@@ -668,12 +668,12 @@
 1. queueName: The name of the Azure Queue where messages are egressed</comment>
   </data>
   <data name="Message_ConfigurationFileDoesNotExist" xml:space="preserve">
-    <value>The provided configuration file {0} could not be found.</value>
-    <comment>Gets a string similar to "The provided configuration file {0] could not be found."</comment>
+    <value>The provided configuration file {filePath} could not be found.</value>
+    <comment>Gets a string similar to "The provided configuration file {filePath] could not be found."</comment>
   </data>
   <data name="Message_ConfigurationFileNotJson" xml:space="preserve">
-    <value>The provided configuration file {0} must have the .json extension.</value>
-    <comment>Gets a string similar to "The provided configuration file {0} must have the .json extension."</comment>
+    <value>The provided configuration file {filePath} must have the .json extension.</value>
+    <comment>Gets a string similar to "The provided configuration file {filePath} must have the .json extension."</comment>
   </data>
   <data name="Message_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {0}</value>
