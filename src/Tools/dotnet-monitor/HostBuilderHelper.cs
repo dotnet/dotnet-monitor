@@ -76,11 +76,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         if (!userFilePath.Exists)
                         {
-                            hostBuilderResults.Warnings.Add(string.Format(Strings.Message_ConfigurationFileDoesNotExist, userFilePath));
+                            hostBuilderResults.Warnings.Add(string.Format(Strings.Message_ConfigurationFileDoesNotExist, userFilePath.FullName));
                         }
                         else if (!".json".Equals(userFilePath.Extension, StringComparison.OrdinalIgnoreCase))
                         {
-                            hostBuilderResults.Warnings.Add(string.Format(Strings.Message_ConfigurationFileNotJson, userFilePath));
+                            hostBuilderResults.Warnings.Add(string.Format(Strings.Message_ConfigurationFileNotJson, userFilePath.FullName));
                         }
                         else
                         {
