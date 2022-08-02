@@ -20,6 +20,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("status")]
         public OperationState Status { get; set; }
+
+        [JsonPropertyName("process")]
+        public OperationProcessInfo Process { get; set; }
+    }
+
+    /// <summary>
+    /// Represents the details of a given process used in an operation.
+    /// </summary>
+    public class OperationProcessInfo
+    {
+        [JsonPropertyName("pid")]
+        public int ProcessId { get; set; }
+
+        [JsonPropertyName("uid")]
+        public Guid Uid { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
     }
 
     /// <summary>
