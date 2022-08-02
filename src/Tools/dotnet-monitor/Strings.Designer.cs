@@ -1105,7 +1105,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The provided configuration file {0} could not be found..
+        ///   Looks up a localized string similar to The provided configuration file {filePath} could not be found..
         /// </summary>
         internal static string Message_ConfigurationFileDoesNotExist {
             get {
@@ -1114,7 +1114,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The provided configuration file {0} must have the .json extension..
+        ///   Looks up a localized string similar to The provided configuration file {filePath} must have the .json extension..
         /// </summary>
         internal static string Message_ConfigurationFileNotJson {
             get {
