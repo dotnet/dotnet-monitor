@@ -45,12 +45,14 @@ jobs:
       - name: Run dotnet format
         run: dotnet-format --include ${{ env.updated_files }}
 
-      - name: Generate diff artifact
+      - name: Generate artifacts
         run: |
           mkdir -p ./pr
+          cp $GITHUB_EVENT_PATH ./pr/pr-event.json
+          echo -n $GITHUB_EVENT_NAME > ./pr/pr-event-name
           git diff > ./pr/linter.diff
 
-      - name: Upload diff artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: pr-linter
