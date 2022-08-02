@@ -36,10 +36,10 @@ jobs:
         uses: reviewdog/action-setup@v1
 
       # Manually supply the triggering PR event information since when a PR is from a fork,
-      # this workflow running in the base repo will not know about it.
+      # this workflow running in the base repo will not be given information about it.
       #
       # Also patch the fork's owner id in the event file, since reviewdog has as fail-fast path that
-      # checks the head vs base owner id to determine if the PR is from a fork.
+      # checks the head vs base repo owner id to determine if the PR is from a fork.
       # If so, it assumes that it doesn't have permissions to write comments on the PR.
       #
       # This isn't the case in our setup since we are using two workflows (lint-csharp and this one)
