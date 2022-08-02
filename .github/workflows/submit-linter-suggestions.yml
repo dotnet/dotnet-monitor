@@ -35,8 +35,8 @@ jobs:
       - name: 'Setup reviewdog'
         uses: reviewdog/action-setup@v1
 
-      # Manually supply the triggering PR event information, since when
-      # a PR is from a fork, this workflow running in the base repo will not know about it.
+      # Manually supply the triggering PR event information since when a PR is from a fork,
+      # this workflow running in the base repo will not know about it.
       #
       # Also patch the fork's owner id in the event file, since reviewdog has as fail-fast path that
       # checks the head vs base owner id to determine if the PR is from a fork.
