@@ -36,8 +36,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("uid")]
         public Guid Uid { get; set; }
 
-        [JsonPropertyName("processName")]
-        public string ProcessName { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
     }
 
     /// <summary>

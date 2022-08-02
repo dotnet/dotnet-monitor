@@ -54,7 +54,7 @@ Content-Type: application/json
     {
         "pid":1,
         "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783",
-        "processName":"dotnet-monitor-demo"
+        "name":"dotnet-monitor-demo"
     }
 }
 ```

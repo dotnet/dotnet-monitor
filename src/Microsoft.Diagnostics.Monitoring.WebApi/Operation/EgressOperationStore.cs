@@ -136,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         Process = processInfo != null ?
                             new Models.OperationProcessInfo
                             {
-                                ProcessName = processInfo.ProcessName,
+                                Name = processInfo.ProcessName,
                                 ProcessId = processInfo.ProcessId,
                                 Uid = processInfo.RuntimeInstanceCookie
                             } : null
@@ -163,7 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     Process = processInfo != null ?
                         new Models.OperationProcessInfo
                         {
-                            ProcessName = processInfo.ProcessName,
+                            Name = processInfo.ProcessName,
                             ProcessId = processInfo.ProcessId,
                             Uid = processInfo.RuntimeInstanceCookie
                         } : null

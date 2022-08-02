@@ -53,7 +53,7 @@ Content-Type: application/json
         {
             "pid":1,
             "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783",
-            "processName":"dotnet-monitor-demo"
+            "name":"dotnet-monitor-demo"
         }
     },
     {
@@ -64,7 +64,7 @@ Content-Type: application/json
         {
             "pid":11782,
             "uid":"23c289b3-b5ce-428a-aaa8-c864b3766bc2",
-            "processName":"dotnet-monitor-demo2"
+            "name":"dotnet-monitor-demo2"
         }
     }
 ]
