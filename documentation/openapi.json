@@ -1660,7 +1660,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "processName": {
+          "name": {
             "type": "string",
             "nullable": true
           }
