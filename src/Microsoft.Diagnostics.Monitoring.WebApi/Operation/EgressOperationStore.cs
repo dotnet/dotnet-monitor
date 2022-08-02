@@ -125,11 +125,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             lock (_requests)
             {
-                return _requests.Select((kvp) => new Models.OperationSummary
+                return _requests.Select((kvp) =>
                 {
-                    OperationId = kvp.Key,
-                    CreatedDateTime = kvp.Value.CreatedDateTime,
-                    Status = kvp.Value.State
+                    EgressProcessInfo processInfo = kvp.Value.EgressRequest.EgressOperation.ProcessInfo;
+                    return new Models.OperationSummary
+                    {
+                        OperationId = kvp.Key,
+                        CreatedDateTime = kvp.Value.CreatedDateTime,
+                        Status = kvp.Value.State,
+                        Process = processInfo != null ?
+                            new Models.OperationProcessInfo
+                            {
+                                Name = processInfo.ProcessName,
+                                ProcessId = processInfo.ProcessId,
+                                Uid = processInfo.RuntimeInstanceCookie
+                            } : null
+                    };
                 }).ToList();
             }
         }
@@ -142,12 +153,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
+                EgressProcessInfo processInfo = entry.EgressRequest.EgressOperation.ProcessInfo;
 
                 var status = new Models.OperationStatus()
                 {
                     OperationId = entry.EgressRequest.OperationId,
                     Status = entry.State,
                     CreatedDateTime = entry.CreatedDateTime,
+                    Process = processInfo != null ?
+                        new Models.OperationProcessInfo
+                        {
+                            Name = processInfo.ProcessName,
+                            ProcessId = processInfo.ProcessId,
+                            Uid = processInfo.RuntimeInstanceCookie
+                        } : null
                 };
 
                 if (entry.State == Models.OperationState.Succeeded)
