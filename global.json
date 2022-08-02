@@ -4,12 +4,10 @@
     "runtimes": {
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp31Version)",
-        "$(MicrosoftAspNetCoreApp50Version)",
         "$(MicrosoftAspNetCoreApp60Version)"
       ],
       "dotnet": [
         "$(MicrosoftNETCoreApp31Version)",
-        "$(MicrosoftNETCoreApp50Version)",
         "$(MicrosoftNETCoreApp60Version)"
       ]
     }
