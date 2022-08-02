@@ -1,6 +1,6 @@
 # Users referenced in this file will automatically be requested as reviewers for PRs that modify the given paths.
 # See https://help.github.com/articles/about-code-owners/
+*                           @dotnet/dotnet-monitor
+/documentation/             @dotnet/dotnet-monitor @IEvangelist
 /eng/
 global.json
-/documentation/             @dotnet/dotnet-monitor @IEvangelist
-*                           @dotnet/dotnet-monitor
