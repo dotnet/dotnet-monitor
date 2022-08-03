@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return new EgressResult(value);
         }
 
-        private IEgressProviderInternal GetProvider(string providerName)
+        public Type GetEgressOptionsType(string providerName)
         {
             if (!_providerTypeMap.TryGetValue(providerName, out string providerType))
             {
@@ -95,6 +95,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderTypeNotRegistered, providerName));
             }
+
+            return optionsType;
+        }
+
+        private IEgressProviderInternal GetProvider(string providerName)
+        {
+            Type optionsType = GetEgressOptionsType(providerName);
 
             // Get the egress provider that matches the options type and return the weaker-typed
             // interface in order to allow egressing from the service without having to use reflection

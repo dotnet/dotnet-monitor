@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -50,6 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IDumpService _dumpService;
         private readonly OperationTrackerService _operationTrackerService;
         private readonly ICollectionRuleService _collectionRuleService;
+        private readonly IEgressService _egressService;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -62,6 +64,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
+            _egressService = serviceProvider.GetRequiredService<IEgressService>();
+
         }
 
         /// <summary>
@@ -237,10 +241,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                     string encodedEgressProvider = Encode(egressProvider);
 
-                    if (!encodedEgressProvider.Equals(egressProvider))
+                    if (encodedEgressProvider != egressProvider)
                     {
                         try
                         {
+                            Type egressResult = _egressService.GetEgressOptionsType(encodedEgressProvider);
+
                             return await SendToEgress(new EgressOperation(
                                 token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
                                 encodedEgressProvider,
@@ -251,7 +257,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         }
                         catch (EgressException)
                         {
-                            // Do nothing - will attempt the same operation with the URL decoded provider
+                            // Do nothing - will attempt the same operation with the decoded name
                         }
                     }
 
@@ -295,7 +301,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = GetProcessKey(pid, uid, name);
 
-            return InvokeForProcess(async processInfo =>
+            return InvokeForProcess(processInfo =>
             {
                 string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
@@ -316,27 +322,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     }
                 };
 
-                string encodedEgressProvider = Encode(egressProvider);
-
-                if (!encodedEgressProvider.Equals(egressProvider))
-                {
-                    try
-                    {
-                        return await Result(
-                            Utilities.ArtifactType_GCDump,
-                            encodedEgressProvider,
-                            action,
-                            fileName,
-                            ContentTypes.ApplicationOctetStream,
-                            processInfo.EndpointInfo);
-                    }
-                    catch (EgressException)
-                    {
-                        // Do nothing - will attempt the same operation with the URL decoded provider
-                    }
-                }
-
-                return await Result(
+                return Result(
                     Utilities.ArtifactType_GCDump,
                     egressProvider,
                     action,
@@ -386,7 +372,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 var aggregateConfiguration = TraceUtilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.GetIntervalSeconds());
 
-                return StartTraceHelper(processInfo, aggregateConfiguration, duration, egressProvider);
+                return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
@@ -439,27 +425,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 var traceConfiguration = TraceUtilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
 
-                return StartTraceHelper(processInfo, traceConfiguration, duration, egressProvider);
+                return StartTrace(processInfo, traceConfiguration, duration, egressProvider);
             }, processKey, Utilities.ArtifactType_Trace);
-        }
-
-        private ActionResult StartTraceHelper(IProcessInfo processInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, string egressProvider)
-        {
-            string encodedEgressProvider = Encode(egressProvider);
-
-            if (!encodedEgressProvider.Equals(egressProvider))
-            {
-                try
-                {
-                    return StartTrace(processInfo, configuration, duration, encodedEgressProvider).Result;
-                }
-                catch (EgressException)
-                {
-                    // Do nothing - will attempt the same operation with the URL decoded provider
-                }
-            }
-
-            return StartTrace(processInfo, configuration, duration, egressProvider).Result;
         }
 
         /// <summary>
@@ -514,7 +481,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     settings.UseAppFilters = true;
                 }
 
-                return StartLogsHelper(processInfo, settings, egressProvider);
+                return StartLogs(processInfo, settings, egressProvider);
 
             }, processKey, Utilities.ArtifactType_Logs);
         }
@@ -563,28 +530,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     UseAppFilters = configuration.UseAppFilters
                 };
 
-                return StartLogsHelper(processInfo, settings, egressProvider);
+                return StartLogs(processInfo, settings, egressProvider);
 
             }, processKey, Utilities.ArtifactType_Logs);
-        }
-
-        private ActionResult StartLogsHelper(IProcessInfo processInfo, EventLogsPipelineSettings settings, string egressProvider)
-        {
-            string encodedEgressProvider = Encode(egressProvider);
-
-            if (!encodedEgressProvider.Equals(egressProvider))
-            {
-                try
-                {
-                    return StartLogs(processInfo, settings, encodedEgressProvider).Result;
-                }
-                catch (EgressException)
-                {
-                    // Do nothing - will attempt the same operation with the URL decoded provider
-                }
-            }
-
-            return StartLogs(processInfo, settings, egressProvider).Result;
         }
 
         private static string Encode(string decodedString)
@@ -644,15 +592,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             GetProcessKey(pid, uid, name));
         }
 
-        private Task<ActionResult<Dictionary<string, CollectionRuleDescription>>> GetCollectionRuleDescription(ProcessKey? processKey)
-        {
-            return InvokeForProcess<Dictionary<string, CollectionRuleDescription>>(processInfo =>
-            {
-                return _collectionRuleService.GetCollectionRulesDescriptions(processInfo.EndpointInfo);
-            },
-            processKey);
-        }
-
         /// <summary>
         /// Gets detailed information about the current state of the specified collection rule.
         /// </summary>
@@ -663,7 +602,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet("collectionrules/{collectionrulename}", Name = nameof(GetCollectionRuleDetailedDescription))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(CollectionRuleDetailedDescription), StatusCodes.Status200OK)]
-        public async Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
+        public Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
             string collectionRuleName,
             [FromQuery]
             int? pid = null,
@@ -672,11 +611,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            return await InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
+            return InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
             {
                 string encodedCollectionRuleName = Encode(collectionRuleName);
 
-                if (!encodedCollectionRuleName.Equals(collectionRuleName))
+                if (encodedCollectionRuleName != collectionRuleName)
                 {
                     try
                     {
@@ -830,6 +769,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
             else
             {
+                string encodedProviderName = Encode(providerName);
+
+                if (encodedProviderName != providerName)
+                {
+                    try
+                    {
+                        Type egressResult = _egressService.GetEgressOptionsType(encodedProviderName);
+
+                        return SendToEgress(new EgressOperation(
+                            action,
+                            encodedProviderName,
+                            fileName,
+                            endpointInfo,
+                            contentType,
+                            scope),
+                            limitKey: artifactType);
+                    }
+                    catch (EgressException)
+                    {
+                        // Do nothing - will attempt the same operation with the decoded name
+                    }
+                }
+
                 return SendToEgress(new EgressOperation(
                     action,
                     providerName,

@@ -5,12 +5,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -53,9 +53,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     includeDefaults: true,
                     durationSeconds: durationSeconds);
 
-                return await CollectMetricsHelper(egressProvider,
+                return await Result(Utilities.ArtifactType_Metrics,
+                    egressProvider,
                     (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
+                    ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
         }
@@ -100,44 +102,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     durationSeconds,
                     configuration);
 
-                return await CollectMetricsHelper(egressProvider,
+                return await Result(Utilities.ArtifactType_Metrics,
+                    egressProvider,
                     (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
+                    ContentTypes.ApplicationJsonSequence,
                     processInfo.EndpointInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
-        }
-
-        private async Task<ActionResult> CollectMetricsHelper(
-            string egressProvider,
-            Func<Stream, CancellationToken, Task> action,
-            string fileName,
-            IEndpointInfo endpointInfo)
-        {
-            string encodedEgressProvider = Encode(egressProvider);
-
-            if (!encodedEgressProvider.Equals(egressProvider))
-            {
-                try
-                {
-                    return await Result(Utilities.ArtifactType_Metrics,
-                        encodedEgressProvider,
-                        action,
-                        fileName,
-                        ContentTypes.ApplicationJsonSequence,
-                        endpointInfo);
-                }
-                catch (EgressException)
-                {
-                    // Do nothing - will attempt the same operation with the URL decoded provider
-                }
-            }
-
-            return await Result(Utilities.ArtifactType_Metrics,
-                egressProvider,
-                action,
-                fileName,
-                ContentTypes.ApplicationJsonSequence,
-                endpointInfo);
         }
     }
 }
