@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -107,29 +108,36 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         private async Task<ActionResult> CollectMetricsHelper(
-            string providerName,
+            string egressProvider,
             Func<Stream, CancellationToken, Task> action,
             string fileName,
             IEndpointInfo endpointInfo)
         {
-            try
+            string encodedEgressProvider = Encode(egressProvider);
+
+            if (!encodedEgressProvider.Equals(egressProvider))
             {
-                return await Result(Utilities.ArtifactType_Metrics,
-                    providerName,
-                    action,
-                    fileName,
-                    ContentTypes.ApplicationJsonSequence,
-                    endpointInfo);
+                try
+                {
+                    return await Result(Utilities.ArtifactType_Metrics,
+                        encodedEgressProvider,
+                        action,
+                        fileName,
+                        ContentTypes.ApplicationJsonSequence,
+                        endpointInfo);
+                }
+                catch (EgressException)
+                {
+                    // Do nothing - will attempt the same operation with the URL decoded provider
+                }
             }
-            catch (EgressException)
-            {
-                return await Result(Utilities.ArtifactType_Metrics,
-                    Encode(providerName),
-                    action,
-                    fileName,
-                    ContentTypes.ApplicationJsonSequence,
-                    endpointInfo);
-            }
+
+            return await Result(Utilities.ArtifactType_Metrics,
+                egressProvider,
+                action,
+                fileName,
+                ContentTypes.ApplicationJsonSequence,
+                endpointInfo);
         }
     }
 }

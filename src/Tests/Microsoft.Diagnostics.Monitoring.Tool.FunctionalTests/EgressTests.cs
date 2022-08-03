@@ -77,6 +77,67 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         [Fact]
+        public async Task EgressDecodedProviderTest()
+        {
+            string decodedFileProviderName = "files&test";
+            string encodedFileProviderName = "files%26test";
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+
+                    OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: 5, encodedFileProviderName);
+                    Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+
+                    OperationStatusResponse operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.Created, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Succeeded, operationResult.OperationStatus.Status);
+                    Assert.True(File.Exists(operationResult.OperationStatus.ResourceLocation));
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(decodedFileProviderName, _tempDirectory.FullName));
+                });
+        }
+
+        [Fact]
+        public async Task EgressEncodedProviderTest()
+        {
+            string encodedFileProviderName = "files%26test";
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+
+                    OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: 5, encodedFileProviderName);
+                    Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+
+                    OperationStatusResponse operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.Created, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Succeeded, operationResult.OperationStatus.Status);
+                    Assert.True(File.Exists(operationResult.OperationStatus.ResourceLocation));
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(encodedFileProviderName, _tempDirectory.FullName));
+                });
+        }
+
+        [Fact]
         public async Task EgressCancelTest()
         {
             await ScenarioRunner.SingleTarget(

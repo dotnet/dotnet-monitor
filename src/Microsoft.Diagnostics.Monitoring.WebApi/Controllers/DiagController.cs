@@ -22,6 +22,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -234,26 +235,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
 
-                    try
+                    string encodedEgressProvider = Encode(egressProvider);
+
+                    if (!encodedEgressProvider.Equals(egressProvider))
                     {
-                        return await SendToEgress(new EgressOperation(
-                            token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
-                            egressProvider,
-                            dumpFileName,
-                            processInfo.EndpointInfo,
-                            ContentTypes.ApplicationOctetStream,
-                            scope), limitKey: Utilities.ArtifactType_Dump);
+                        try
+                        {
+                            return await SendToEgress(new EgressOperation(
+                                token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
+                                encodedEgressProvider,
+                                dumpFileName,
+                                processInfo.EndpointInfo,
+                                ContentTypes.ApplicationOctetStream,
+                                scope), limitKey: Utilities.ArtifactType_Dump);
+                        }
+                        catch (EgressException)
+                        {
+                            // Do nothing - will attempt the same operation with the URL decoded provider
+                        }
                     }
-                    catch (EgressException)
-                    {
-                        return await SendToEgress(new EgressOperation(
-                            token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
-                            Encode(egressProvider),
-                            dumpFileName,
-                            processInfo.EndpointInfo,
-                            ContentTypes.ApplicationOctetStream,
-                            scope), limitKey: Utilities.ArtifactType_Dump);
-                    }
+
+                    return await SendToEgress(new EgressOperation(
+                        token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
+                        egressProvider,
+                        dumpFileName,
+                        processInfo.EndpointInfo,
+                        ContentTypes.ApplicationOctetStream,
+                        scope), limitKey: Utilities.ArtifactType_Dump);
                 }
             }, processKey, Utilities.ArtifactType_Dump);
         }
@@ -308,27 +316,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     }
                 };
 
-                try
+                string encodedEgressProvider = Encode(egressProvider);
+
+                if (!encodedEgressProvider.Equals(egressProvider))
                 {
-                    return await Result(
-                        Utilities.ArtifactType_GCDump,
-                        egressProvider,
-                        action,
-                        fileName,
-                        ContentTypes.ApplicationOctetStream,
-                        processInfo.EndpointInfo);
-                }
-                catch (EgressException)
-                {
-                    return await Result(
-                        Utilities.ArtifactType_GCDump,
-                        Encode(egressProvider),
-                        action,
-                        fileName,
-                        ContentTypes.ApplicationOctetStream,
-                        processInfo.EndpointInfo);
+                    try
+                    {
+                        return await Result(
+                            Utilities.ArtifactType_GCDump,
+                            encodedEgressProvider,
+                            action,
+                            fileName,
+                            ContentTypes.ApplicationOctetStream,
+                            processInfo.EndpointInfo);
+                    }
+                    catch (EgressException)
+                    {
+                        // Do nothing - will attempt the same operation with the URL decoded provider
+                    }
                 }
 
+                return await Result(
+                    Utilities.ArtifactType_GCDump,
+                    egressProvider,
+                    action,
+                    fileName,
+                    ContentTypes.ApplicationOctetStream,
+                    processInfo.EndpointInfo);
             }, processKey, Utilities.ArtifactType_GCDump);
         }
 
@@ -429,6 +443,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
+        private ActionResult StartTraceHelper(IProcessInfo processInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, string egressProvider)
+        {
+            string encodedEgressProvider = Encode(egressProvider);
+
+            if (!encodedEgressProvider.Equals(egressProvider))
+            {
+                try
+                {
+                    return StartTrace(processInfo, configuration, duration, encodedEgressProvider).Result;
+                }
+                catch (EgressException)
+                {
+                    // Do nothing - will attempt the same operation with the URL decoded provider
+                }
+            }
+
+            return StartTrace(processInfo, configuration, duration, egressProvider).Result;
+        }
+
         /// <summary>
         /// Capture a stream of logs from a process.
         /// </summary>
@@ -486,30 +519,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
-        private ActionResult StartLogsHelper(IProcessInfo processInfo, EventLogsPipelineSettings settings, string egressProvider)
-        {
-            try
-            {
-                return StartLogs(processInfo, settings, egressProvider).Result;
-            }
-            catch (EgressException)
-            {
-                return StartLogs(processInfo, settings, Encode(egressProvider)).Result;
-            }
-        }
-
-        private ActionResult StartTraceHelper(IProcessInfo processInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, string egressProvider)
-        {
-            try
-            {
-                return StartTrace(processInfo, configuration, duration, egressProvider).Result;
-            }
-            catch (EgressException)
-            {
-                return StartTrace(processInfo, configuration, duration, Encode(egressProvider)).Result;
-            }
-        }
-
         /// <summary>
         /// Capture a stream of logs from a process.
         /// </summary>
@@ -557,6 +566,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return StartLogsHelper(processInfo, settings, egressProvider);
 
             }, processKey, Utilities.ArtifactType_Logs);
+        }
+
+        private ActionResult StartLogsHelper(IProcessInfo processInfo, EventLogsPipelineSettings settings, string egressProvider)
+        {
+            string encodedEgressProvider = Encode(egressProvider);
+
+            if (!encodedEgressProvider.Equals(egressProvider))
+            {
+                try
+                {
+                    return StartLogs(processInfo, settings, encodedEgressProvider).Result;
+                }
+                catch (EgressException)
+                {
+                    // Do nothing - will attempt the same operation with the URL decoded provider
+                }
+            }
+
+            return StartLogs(processInfo, settings, egressProvider).Result;
         }
 
         private static string Encode(string decodedString)
@@ -646,14 +674,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return await InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
             {
-                try
+                string encodedCollectionRuleName = Encode(collectionRuleName);
+
+                if (!encodedCollectionRuleName.Equals(collectionRuleName))
                 {
-                    return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
+                    try
+                    {
+                        return _collectionRuleService.GetCollectionRuleDetailedDescription(encodedCollectionRuleName, processInfo.EndpointInfo);
+                    }
+                    catch (ArgumentException)
+                    {
+                        // Do nothing - will attempt the same operation with the URL decoded name
+                    }
                 }
-                catch (EgressException)
-                {
-                    return _collectionRuleService.GetCollectionRuleDetailedDescription(Encode(collectionRuleName), processInfo.EndpointInfo);
-                }
+
+                return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
             GetProcessKey(pid, uid, name));
         }
