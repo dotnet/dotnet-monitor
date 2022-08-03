@@ -19,11 +19,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -65,7 +63,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
             _egressService = serviceProvider.GetRequiredService<IEgressService>();
-
         }
 
         /// <summary>
@@ -245,7 +242,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     {
                         try
                         {
-                            Type egressResult = _egressService.GetEgressOptionsType(encodedEgressProvider);
+                            _ = _egressService.GetEgressOptionsType(encodedEgressProvider);
 
                             return await SendToEgress(new EgressOperation(
                                 token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
@@ -305,27 +302,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
 
-                Func<Stream, CancellationToken, Task> action = async (stream, token) =>
-                {
-                    IDisposable operationRegistration = null;
-                    try
-                    {
-                        if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
-                        {
-                            operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
-                        }
-                        await GCDumpUtilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token);
-                    }
-                    finally
-                    {
-                        operationRegistration?.Dispose();
-                    }
-                };
-
                 return Result(
                     Utilities.ArtifactType_GCDump,
                     egressProvider,
-                    action,
+                    async (stream, token) =>
+                    {
+                        IDisposable operationRegistration = null;
+                        try
+                        {
+                            if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
+                            {
+                                operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
+                            }
+                            await GCDumpUtilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token);
+                        }
+                        finally
+                        {
+                            operationRegistration?.Dispose();
+                        }
+                    },
                     fileName,
                     ContentTypes.ApplicationOctetStream,
                     processInfo.EndpointInfo);
@@ -482,7 +477,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
 
                 return StartLogs(processInfo, settings, egressProvider);
-
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
@@ -531,13 +525,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 };
 
                 return StartLogs(processInfo, settings, egressProvider);
-
             }, processKey, Utilities.ArtifactType_Logs);
-        }
-
-        private static string Encode(string decodedString)
-        {
-            return System.Net.WebUtility.UrlEncode(decodedString);
         }
 
         /// <summary>
@@ -775,7 +763,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     try
                     {
-                        Type egressResult = _egressService.GetEgressOptionsType(encodedProviderName);
+                        _ = _egressService.GetEgressOptionsType(encodedProviderName);
 
                         return SendToEgress(new EgressOperation(
                             action,
@@ -801,6 +789,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     scope),
                     limitKey: artifactType);
             }
+        }
+
+        private static string Encode(string decodedString)
+        {
+            return System.Net.WebUtility.UrlEncode(decodedString);
         }
 
         private async Task<ActionResult> SendToEgress(EgressOperation egressStreamResult, string limitKey)

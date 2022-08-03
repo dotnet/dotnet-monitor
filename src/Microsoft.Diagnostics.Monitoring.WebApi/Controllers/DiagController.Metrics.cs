@@ -7,10 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {

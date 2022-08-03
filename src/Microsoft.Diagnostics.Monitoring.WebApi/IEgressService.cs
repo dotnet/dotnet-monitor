@@ -29,6 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             IEndpointInfo source,
             CancellationToken token);
 
-        public Type GetEgressOptionsType(string providerName);
+        Type GetEgressOptionsType(string providerName);
     }
 }
