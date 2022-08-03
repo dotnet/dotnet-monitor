@@ -236,31 +236,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
 
-                    string encodedEgressProvider = Encode(egressProvider);
-
-                    if (encodedEgressProvider != egressProvider)
-                    {
-                        try
-                        {
-                            _ = _egressService.GetEgressOptionsType(encodedEgressProvider);
-
-                            return await SendToEgress(new EgressOperation(
-                                token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
-                                encodedEgressProvider,
-                                dumpFileName,
-                                processInfo.EndpointInfo,
-                                ContentTypes.ApplicationOctetStream,
-                                scope), limitKey: Utilities.ArtifactType_Dump);
-                        }
-                        catch (EgressException)
-                        {
-                            // Do nothing - will attempt the same operation with the decoded name
-                        }
-                    }
-
                     return await SendToEgress(new EgressOperation(
                         token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
-                        egressProvider,
+                        GetEgressProviderToUse(egressProvider),
                         dumpFileName,
                         processInfo.EndpointInfo,
                         ContentTypes.ApplicationOctetStream,
@@ -757,38 +735,36 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
             else
             {
-                string encodedProviderName = Encode(providerName);
-
-                if (encodedProviderName != providerName)
-                {
-                    try
-                    {
-                        _ = _egressService.GetEgressOptionsType(encodedProviderName);
-
-                        return SendToEgress(new EgressOperation(
-                            action,
-                            encodedProviderName,
-                            fileName,
-                            endpointInfo,
-                            contentType,
-                            scope),
-                            limitKey: artifactType);
-                    }
-                    catch (EgressException)
-                    {
-                        // Do nothing - will attempt the same operation with the decoded name
-                    }
-                }
-
                 return SendToEgress(new EgressOperation(
                     action,
-                    providerName,
+                    GetEgressProviderToUse(providerName),
                     fileName,
                     endpointInfo,
                     contentType,
                     scope),
                     limitKey: artifactType);
             }
+        }
+
+        private string GetEgressProviderToUse(string providerName)
+        {
+            string encodedProviderName = Encode(providerName);
+
+            if (encodedProviderName != providerName)
+            {
+                try
+                {
+                    _ = _egressService.GetEgressOptionsType(encodedProviderName);
+
+                    return encodedProviderName;
+                }
+                catch (EgressException)
+                {
+                    // Do nothing - will attempt the same operation with the decoded name
+                }
+            }
+
+            return providerName;
         }
 
         private static string Encode(string decodedString)
