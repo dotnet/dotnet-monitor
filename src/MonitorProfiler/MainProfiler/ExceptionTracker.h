@@ -15,7 +15,7 @@
 class ExceptionTracker
 {
 private:
-    ComPtr<ICorProfilerInfo2> _corProfilerInfo;
+    ComPtr<ICorProfilerInfo12> _corProfilerInfo;
     std::shared_ptr<ILogger> _logger;
     std::shared_ptr<ThreadDataManager> _threadDataManager;
 
@@ -23,7 +23,7 @@ public:
     ExceptionTracker(
         const std::shared_ptr<ILogger>& logger,
         const std::shared_ptr<ThreadDataManager> threadDataManager,
-        ICorProfilerInfo2* corProfilerInfo);
+        ICorProfilerInfo12* corProfilerInfo);
 
     /// <summary>
     /// Adds profiler event masks needed by class.
@@ -39,10 +39,6 @@ private:
     // Method and type name utilities
     HRESULT GetFullyQualifiedMethodName(FunctionID functionId, tstring& fullMethodName);
     HRESULT GetFullyQualifiedMethodName(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo, tstring& fullMethodName);
-    HRESULT GetFullyQualifiedMethodName(ModuleID moduleId, ClassID classId, mdMethodDef token, tstring& fullMethodName);
-    HRESULT GetFullClassName(ClassID classId, tstring& fullClassName);
-    HRESULT GetFullTypeName(IMetaDataImport2* metadataImport, mdTypeDef typeDefToken, tstring& fullTypeName);
-    static bool IsNestedType(CorTypeAttr attributes);
 
     // ExceptionThrown frame logging utilities
     HRESULT LogExceptionThrownFrame(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo);

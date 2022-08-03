@@ -41,6 +41,7 @@ private:
     HRESULT InitializeLogging();
     HRESULT InitializeCommandServer();
     HRESULT MessageCallback(const IpcMessage& message);
+    HRESULT ProcessCallstackMessage();
 private:
     std::unique_ptr<CommandServer> _commandServer;
 };
