@@ -61,6 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                     }
 
+                    // If a file at this path does not have read permissions, the application will fail to launch.
                     builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ConfigPrefix);
 
@@ -141,15 +142,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 File.OpenRead(filePath).Dispose(); // If this succeeds, we have read permissions
                 builder.AddJsonFile(filePath, optional: true, reloadOnChange: true);
             }
+            catch (FileNotFoundException)
+            {
+                // JSON configuration files are optional; not logging if a file isn't found
+            }
             catch (Exception ex)
             {
-                if (ex is UnauthorizedAccessException || ex is FileNotFoundException)
-                {
-                    hostBuilderResults.Warnings.Add(ex.Message);
-                    return;
-                }
-
-                throw;
+                hostBuilderResults.Warnings.Add(ex.Message);
             }
         }
 
