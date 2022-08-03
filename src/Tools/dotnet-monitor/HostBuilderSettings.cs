@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// </summary>
         public static HostBuilderSettings CreateMonitor(
             string[] urls,
-            string[] metricUrls, 
+            string[] metricUrls,
             bool metrics,
             string diagnosticPort,
             IAuthConfiguration authConfiguration,

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
@@ -11,17 +10,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -52,10 +41,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
                         durationSeconds: 10);
-                    
+
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
-                    await LiveMetricsTestUtilities.ValidateMetrics(new []{ EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
-                        new []
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
+                        new[]
                         {
                             "cpu-usage",
                             "working-set",
@@ -96,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         });
 
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
-                    await LiveMetricsTestUtilities.ValidateMetrics(new []{ EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
                         counterNames,
                         metrics,
                         strict: true);

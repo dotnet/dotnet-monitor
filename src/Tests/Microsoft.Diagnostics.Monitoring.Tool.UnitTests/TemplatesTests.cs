@@ -43,43 +43,43 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => {}, host =>
-            {
-                IOptionsMonitor<CollectionRuleOptions> optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => { }, host =>
+             {
+                 IOptionsMonitor<CollectionRuleOptions> optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
 
-                CollectionRuleOptions options = optionsMonitor.Get("ValidRule");
+                 CollectionRuleOptions options = optionsMonitor.Get("ValidRule");
 
                 // Trigger Comparison
                 Assert.Equal(KnownCollectionRuleTriggers.AspNetRequestCount, options.Trigger.Type);
-                Assert.Equal(20, ((AspNetRequestCountOptions)options.Trigger.Settings).RequestCount);
-                Assert.Equal(TimeSpan.Parse("00:01:00"), ((AspNetRequestCountOptions)options.Trigger.Settings).SlidingWindowDuration);
+                 Assert.Equal(20, ((AspNetRequestCountOptions)options.Trigger.Settings).RequestCount);
+                 Assert.Equal(TimeSpan.Parse("00:01:00"), ((AspNetRequestCountOptions)options.Trigger.Settings).SlidingWindowDuration);
 
                 // Actions Comparison
                 Assert.Equal(4, options.Actions.Count);
-                Assert.Equal(KnownCollectionRuleActions.CollectGCDump, options.Actions[0].Type);
-                Assert.Equal("artifacts", ((CollectGCDumpOptions)options.Actions[0].Settings).Egress);
-                Assert.Equal(KnownCollectionRuleActions.CollectGCDump, options.Actions[1].Type);
-                Assert.Equal("artifacts2", ((CollectGCDumpOptions)options.Actions[1].Settings).Egress);
-                Assert.Equal(KnownCollectionRuleActions.CollectTrace, options.Actions[2].Type);
-                Assert.Equal("monitorBlob", ((CollectTraceOptions)options.Actions[2].Settings).Egress);
-                Assert.Equal(WebApi.Models.TraceProfile.Cpu, ((CollectTraceOptions)options.Actions[2].Settings).Profile);
-                Assert.Equal(KnownCollectionRuleActions.CollectDump, options.Actions[3].Type);
-                Assert.Equal("monitorBlob", ((CollectDumpOptions)options.Actions[3].Settings).Egress);
+                 Assert.Equal(KnownCollectionRuleActions.CollectGCDump, options.Actions[0].Type);
+                 Assert.Equal("artifacts", ((CollectGCDumpOptions)options.Actions[0].Settings).Egress);
+                 Assert.Equal(KnownCollectionRuleActions.CollectGCDump, options.Actions[1].Type);
+                 Assert.Equal("artifacts2", ((CollectGCDumpOptions)options.Actions[1].Settings).Egress);
+                 Assert.Equal(KnownCollectionRuleActions.CollectTrace, options.Actions[2].Type);
+                 Assert.Equal("monitorBlob", ((CollectTraceOptions)options.Actions[2].Settings).Egress);
+                 Assert.Equal(WebApi.Models.TraceProfile.Cpu, ((CollectTraceOptions)options.Actions[2].Settings).Profile);
+                 Assert.Equal(KnownCollectionRuleActions.CollectDump, options.Actions[3].Type);
+                 Assert.Equal("monitorBlob", ((CollectDumpOptions)options.Actions[3].Settings).Egress);
 
                 // Filters Comparison
                 Assert.Equal(2, options.Filters.Count);
-                Assert.Equal(WebApi.ProcessFilterKey.ProcessName, options.Filters[0].Key);
-                Assert.Equal("FirstWebApp", options.Filters[0].Value);
-                Assert.Equal(WebApi.ProcessFilterKey.ProcessName, options.Filters[1].Key);
-                Assert.Equal("FirstWebApp1", options.Filters[1].Value);
-                Assert.Equal(WebApi.ProcessFilterType.Exact, options.Filters[1].MatchType);
+                 Assert.Equal(WebApi.ProcessFilterKey.ProcessName, options.Filters[0].Key);
+                 Assert.Equal("FirstWebApp", options.Filters[0].Value);
+                 Assert.Equal(WebApi.ProcessFilterKey.ProcessName, options.Filters[1].Key);
+                 Assert.Equal("FirstWebApp1", options.Filters[1].Value);
+                 Assert.Equal(WebApi.ProcessFilterType.Exact, options.Filters[1].MatchType);
 
                 // Limits Comparison
                 Assert.Equal(1, options.Limits.ActionCount);
-                Assert.Equal(TimeSpan.Parse("00:00:30"), options.Limits.ActionCountSlidingWindowDuration);
-                Assert.Equal(TimeSpan.Parse("00:05:00"), options.Limits.RuleDuration);
+                 Assert.Equal(TimeSpan.Parse("00:00:30"), options.Limits.ActionCountSlidingWindowDuration);
+                 Assert.Equal(TimeSpan.Parse("00:05:00"), options.Limits.RuleDuration);
 
-            }, overrideSource: GetConfigurationSources());
+             }, overrideSource: GetConfigurationSources());
         }
 
         /// <summary>

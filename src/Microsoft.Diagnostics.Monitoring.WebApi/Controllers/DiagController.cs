@@ -383,7 +383,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                foreach(Models.EventPipeProvider provider in configuration.Providers)
+                foreach (Models.EventPipeProvider provider in configuration.Providers)
                 {
                     if (!CounterValidator.ValidateProvider(_counterOptions.CurrentValue,
                         provider, out string errorMessage))

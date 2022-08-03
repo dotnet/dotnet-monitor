@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -19,12 +21,10 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using Microsoft.Diagnostics.Tools.Monitor;
-using System.Threading;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         public async Task DefaultAddressTest()
         {
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
-            
+
             await toolRunner.StartAsync();
 
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);

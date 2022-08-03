@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     context.ParseResult.GetValueForOption(NoHttpEgressOption),
                     context.ParseResult.GetValueForOption(ConfigurationFilePathOption));
             });
- 
+
             return command;
         }
 
@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             return configCommand;
         }
-        
+
         private static Option<string[]> UrlsOption =
             new Option<string[]>(
                 aliases: new[] { "-u", "--urls" },

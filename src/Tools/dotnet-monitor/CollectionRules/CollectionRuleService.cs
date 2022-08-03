@@ -2,13 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -238,7 +235,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private void CheckForListenDiagnosticMode()
         {
-            if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen 
+            if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen
                 && _provider.GetCollectionRuleNames().Any())
             {
                 _logger.DiagnosticPortNotInListenModeForCollectionRules();
@@ -328,7 +325,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             if (actionCountWindowDuration.HasValue && timestamps.Count >= actionCount)
             {
-                TimeSpan countdown =  timestamps.Peek() - (currentTime - actionCountWindowDuration.Value);
+                TimeSpan countdown = timestamps.Peek() - (currentTime - actionCountWindowDuration.Value);
                 return GetTruncatedPositiveTimeSpan(countdown);
             }
 
