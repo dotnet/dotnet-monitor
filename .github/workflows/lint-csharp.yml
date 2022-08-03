@@ -1,0 +1,59 @@
+name: 'C# linting'
+on:
+  pull_request:
+    paths: ['src/**.cs']
+    branches: ['main', 'release/6.x']
+
+permissions:
+  pull-requests: read
+
+jobs:
+  lint-csharp:
+    name: 'C# Linting'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get base commit for the PR
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          echo "base_sha=$(git rev-parse origin/${{ github.base_ref }})" >> $GITHUB_ENV
+          echo "Merging ${{ github.sha }} into ${{ github.base_ref }}"
+
+      - name: Get changed files
+        run: |
+          echo "Files changed: '$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }})'"
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }} | { grep "**.cs$" || test $? = 1; })
+          echo "Files to validate: '${changed_source_files}'"
+          echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
+
+      - name: Get dotnet version
+        run: echo 'dotnet_version='$(jq -r '.tools.dotnet' global.json) >> $GITHUB_ENV
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.dotnet_version }}
+          include-prerelease: true
+
+      # Workaround for a bug in the dotnet-format build shipped in .NET 7.0 Preview 5. Ref: https://github.com/dotnet/core/blob/main/release-notes/7.0/known-issues.md#unhandled-exception-in-dotnet-format-app-in-net-70-preview-5
+      - name: Setup dotnet format
+        run: dotnet tool install -g dotnet-format --version "7.*" --configfile ./NuGet.config
+
+      - name: Run dotnet format
+        run: dotnet-format --include ${{ env.updated_files }}
+
+      - name: Generate artifacts
+        run: |
+          mkdir -p ./pr
+          cp $GITHUB_EVENT_PATH ./pr/pr-event.json
+          echo -n $GITHUB_EVENT_NAME > ./pr/pr-event-name
+          git diff > ./pr/linter.diff
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: pr-linter
+          path: pr/
