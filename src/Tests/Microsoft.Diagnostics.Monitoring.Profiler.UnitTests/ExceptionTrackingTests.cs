@@ -20,8 +20,11 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
 {
     public sealed class ExceptionTrackingTests
     {
-        private const string IngoreOutputPrefix = "[ignore]";
+        private const string IgnoreOutputPrefix = "[ignore]";
         private const string ProfilerOutputPrefix = "[profiler]";
+
+        private const string BaselinesFolderName = "Baselines";
+        private const string OutputsFolderName = "Outputs";
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -76,13 +79,16 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             {
                 if (!string.IsNullOrEmpty(line))
                 {
+                    // Only care to capture lines that start with "[profiler]". Other lines
+                    // will have "[ignore]" prepended to allow for capture, but ignored during
+                    // analysis.
                     if (line.StartsWith(ProfilerOutputPrefix, StringComparison.Ordinal))
                     {
                         outputLines.Add(line);
                     }
                     else
                     {
-                        outputLines.Add($"{IngoreOutputPrefix}{line}");
+                        outputLines.Add($"{IgnoreOutputPrefix}{line}");
                     }
                 }
             };
@@ -97,10 +103,12 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
 
             adapter.ReceivedStandardErrorLine -= receivedStdErrLine;
 
-            Directory.CreateDirectory("Outputs");
-            File.WriteAllLines(Path.Combine("Outputs", $"{scenarioName}.txt"), outputLines);
+            string fileName = $"{scenarioName}.txt";
 
-            string[] baselineLines = File.ReadAllLines(Path.Combine("Baselines", $"{scenarioName}.txt"));
+            Directory.CreateDirectory(OutputsFolderName);
+            File.WriteAllLines(Path.Combine(OutputsFolderName, fileName), outputLines);
+
+            string[] baselineLines = File.ReadAllLines(Path.Combine(BaselinesFolderName, fileName));
 
             try
             {
@@ -126,7 +134,8 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                     }
                     catch (XunitException)
                     {
-                        _outputHelper.WriteLine($"Difference on line {baselineIndex + 1} of baseline.");
+                        // baselineIndex is already incremented, thus in terms of line numbers, it is already correct
+                        _outputHelper.WriteLine($"Difference on line {baselineIndex} of baseline.");
 
                         throw;
                     }
@@ -160,7 +169,8 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                 string candidate = lines[index];
                 index++;
 
-                if (string.IsNullOrEmpty(candidate) || !candidate.StartsWith(IngoreOutputPrefix))
+                // Anything that doesn't start with "[ignore]" is considered a valid line for analysis
+                if (string.IsNullOrEmpty(candidate) || !candidate.StartsWith(IgnoreOutputPrefix))
                 {
                     lineCount++;
 
