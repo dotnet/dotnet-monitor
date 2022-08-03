@@ -574,9 +574,9 @@
 1. variableName: The name of the environment variable being read
 2. processId: The id of the process to which the variable is being read</comment>
   </data>
-  <data name="LogFormatString_InsecureAutheticationConfiguration" xml:space="preserve">
+  <data name="LogFormatString_InsecureAuthenticationConfiguration" xml:space="preserve">
     <value>WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.</value>
-    <comment>Gets the format string that is printed in the 14:InsecureAutheticationConfiguration event.
+    <comment>Gets the format string that is printed in the 14:InsecureAuthenticationConfiguration event.
 0 Format Parameters</comment>
   </data>
   <data name="LogFormatString_IntermediateFileDeletionFailed" xml:space="preserve">
