@@ -369,6 +369,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortDeleteFailed);
 
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortAlteredWhileInUse =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortAlteredWhileInUse.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortAlteredWhileInUse);
+
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortMonitoringFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortMonitoringError.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortMonitoringFailed);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -677,6 +689,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticPortDeleteFailed(this ILogger logger, string diagnosticPort, Exception ex)
         {
             _diagnosticPortDeleteFailed(logger, diagnosticPort, ex);
+        }
+
+        public static void DiagnosticPortAlteredWhileInUse(this ILogger logger, string diagnosticPort)
+        {
+            _diagnosticPortAlteredWhileInUse(logger, diagnosticPort, null);
+        }
+
+        public static void DiagnosticPortMonitoringFailed(this ILogger logger, string diagnosticPort, Exception ex)
+        {
+            _diagnosticPortMonitoringFailed(logger, diagnosticPort, ex);
         }
     }
 }

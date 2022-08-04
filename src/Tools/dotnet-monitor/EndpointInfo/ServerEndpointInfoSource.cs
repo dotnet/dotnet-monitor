@@ -105,6 +105,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 server.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));
 
+                using FileSystemWatcher watcher = new(Path.GetDirectoryName(_portOptions.EndpointName));
+                void onDiagnosticPortAltered()
+                {
+                    _logger.DiagnosticPortAlteredWhileInUse(_portOptions.EndpointName);
+                    watcher.EnableRaisingEvents = false;
+                }
+
+                watcher.Filter = Path.GetFileName(_portOptions.EndpointName);
+                watcher.NotifyFilter = NotifyFilters.FileName;
+                watcher.Deleted += (object _, FileSystemEventArgs _) => onDiagnosticPortAltered();
+                watcher.Renamed += (object _, RenamedEventArgs _) => onDiagnosticPortAltered();
+                watcher.Error += (object _, ErrorEventArgs e) => _logger.DiagnosticPortMonitoringFailed(_portOptions.EndpointName, e.GetException());
+                watcher.EnableRaisingEvents = true;
+
                 await Task.WhenAll(
                     ListenAsync(server, stoppingToken),
                     MonitorEndpointsAsync(stoppingToken),
