@@ -1,9 +1,7 @@
 ﻿using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
 {

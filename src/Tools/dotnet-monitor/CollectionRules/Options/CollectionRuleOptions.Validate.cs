@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             ValidationHelper.TryValidateItems(Actions, actionsContext, results);
 
             var actionNames = new HashSet<string>(StringComparer.Ordinal);
-            foreach(CollectionRuleActionOptions option in Actions)
+            foreach (CollectionRuleActionOptions option in Actions)
             {
                 if (!string.IsNullOrEmpty(option.Name) && !actionNames.Add(option.Name))
                 {
