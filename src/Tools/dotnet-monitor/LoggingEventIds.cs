@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         DiagnosticPortDeleteAttempt = 65,
         DiagnosticPortDeleteFailed = 66,
         DiagnosticPortAlteredWhileInUse = 67,
-        DiagnosticPortWatchingError = 68
+        DiagnosticPortWatchingFailed = 68
     }
 
     internal static class LoggingEventIdsExtensions

@@ -377,7 +377,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly Action<ILogger, string, Exception> _diagnosticPortWatchingFailed =
             LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.DiagnosticPortWatchingError.EventId(),
+                eventId: LoggingEventIds.DiagnosticPortWatchingFailed.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
 
