@@ -375,11 +375,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortAlteredWhileInUse);
 
-        private static readonly Action<ILogger, string, Exception> _diagnosticPortMonitoringFailed =
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortWatchingFailed =
             LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.DiagnosticPortMonitoringError.EventId(),
+                eventId: LoggingEventIds.DiagnosticPortWatchingError.EventId(),
                 logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_DiagnosticPortMonitoringFailed);
+                formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
@@ -696,9 +696,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _diagnosticPortAlteredWhileInUse(logger, diagnosticPort, null);
         }
 
-        public static void DiagnosticPortMonitoringFailed(this ILogger logger, string diagnosticPort, Exception ex)
+        public static void DiagnosticPortWatchingFailed(this ILogger logger, string diagnosticPort, Exception ex)
         {
-            _diagnosticPortMonitoringFailed(logger, diagnosticPort, ex);
+            _diagnosticPortWatchingFailed(logger, diagnosticPort, ex);
         }
     }
 }

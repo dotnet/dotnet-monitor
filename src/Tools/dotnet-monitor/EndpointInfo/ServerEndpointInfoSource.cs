@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 watcher.NotifyFilter = NotifyFilters.FileName;
                 watcher.Deleted += (object _, FileSystemEventArgs _) => onDiagnosticPortAltered();
                 watcher.Renamed += (object _, RenamedEventArgs _) => onDiagnosticPortAltered();
-                watcher.Error += (object _, ErrorEventArgs e) => _logger.DiagnosticPortMonitoringFailed(_portOptions.EndpointName, e.GetException());
+                watcher.Error += (object _, ErrorEventArgs e) => _logger.DiagnosticPortWatchingFailed(_portOptions.EndpointName, e.GetException());
                 watcher.EnableRaisingEvents = true;
 
                 await Task.WhenAll(
