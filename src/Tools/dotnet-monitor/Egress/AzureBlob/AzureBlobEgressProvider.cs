@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -42,6 +43,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             try
             {
+                string hostName = Dns.GetHostName();
+
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
                 string blobName = GetBlobName(options, artifactSettings);
@@ -86,6 +89,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             try
             {
+                string hostName = Dns.GetHostName();
+
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
                 string blobName = GetBlobName(options, artifactSettings);

@@ -92,7 +92,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                         try
                         {
-                            await action.StartAsync(cancellationToken);
+                            await action.StartAsync(cancellationToken); // Want actionIndex, context.Name, actionOption.Name
 
                             // Check if the action completion should be awaited synchronously (in respect to
                             // starting the next action). If not, add a deferred entry so that it can be completed
