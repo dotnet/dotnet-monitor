@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File system egress failed&quot; {0}.
+        ///   Looks up a localized string similar to File system egress failed: {0}.
         /// </summary>
         internal static string ErrorMessage_EgressFileFailedDetailed {
             get {
