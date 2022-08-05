@@ -76,7 +76,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return ExecutionResult<EgressResult>.Succeeded(egressResult);
             }, logger, token);
         }
-        
         public void Validate(IServiceProvider serviceProvider)
         {
             serviceProvider
