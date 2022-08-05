@@ -89,6 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             while (_service.Clock.UtcNow == currentTime)
             {
                 // waiting for clock to be ticked (simulated time)
+                token.ThrowIfCancellationRequested();
             }
 
             return Task.FromResult(new CollectionRuleActionResult());
