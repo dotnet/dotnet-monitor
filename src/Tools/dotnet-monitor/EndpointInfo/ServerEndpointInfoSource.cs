@@ -313,13 +313,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return null;
             }
 
+            FileSystemWatcher watcher = null;
             try
             {
-                FileSystemWatcher watcher = new(Path.GetDirectoryName(_portOptions.EndpointName));
+                watcher = new(Path.GetDirectoryName(_portOptions.EndpointName));
                 void onDiagnosticPortAltered()
                 {
                     _logger.DiagnosticPortAlteredWhileInUse(_portOptions.EndpointName);
-                    watcher.EnableRaisingEvents = false;
+                    try
+                    {
+                        watcher.EnableRaisingEvents = false;
+                    }
+                    catch
+                    {
+                    }
                 }
 
                 watcher.Filter = Path.GetFileName(_portOptions.EndpointName);
@@ -334,6 +341,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             catch (Exception ex)
             {
                 _logger.DiagnosticPortWatchingFailed(_portOptions.EndpointName, ex);
+                watcher?.Dispose();
             }
 
             return null;
