@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,23 +63,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             GetProvider(providerName);
         }
 
-        public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
+        public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             string value = await GetProvider(providerName).EgressAsync(
                 providerName,
                 action,
-                CreateSettings(source, fileName, contentType),
+                CreateSettings(source, fileName, contentType, collectionRuleMetadata),
                 token);
 
             return new EgressResult(value);
         }
 
-        public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CancellationToken token)
+        public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             string value = await GetProvider(providerName).EgressAsync(
                 providerName,
                 action,
-                CreateSettings(source, fileName, contentType),
+                CreateSettings(source, fileName, contentType, collectionRuleMetadata),
                 token);
 
             return new EgressResult(value);
@@ -103,7 +104,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 typeof(IEgressProviderInternal<>).MakeGenericType(optionsType));
         }
 
-        private static EgressArtifactSettings CreateSettings(IEndpointInfo source, string fileName, string contentType)
+        private static EgressArtifactSettings CreateSettings(IEndpointInfo source, string fileName, string contentType, CollectionRuleMetadata collectionRuleMetadata)
         {
             EgressArtifactSettings settings = new();
             settings.Name = fileName;
@@ -122,6 +123,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 settings.Metadata.Add(
                     ActivityMetadataNames.TraceId,
                     activity.GetTraceId());
+            }
+
+            if (null != collectionRuleMetadata)
+            {
+                settings.Metadata.Add(
+                    "CollectionRuleName", // use constant name
+                    collectionRuleMetadata.CollectionRuleName);
+
+                settings.Metadata.Add(
+                    "ActionListIndex", // use constant name
+                    collectionRuleMetadata.ActionListIndex.ToString());
+
+                settings.Metadata.Add(
+                    "ActionName", // use constant name
+                    collectionRuleMetadata.ActionName);
             }
 
             // Artifact metadata

@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
-        public Task StartAsync(CancellationToken token)
+        public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             return _service.NotifyListeners(token);
         }
@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
-        public Task StartAsync(CancellationToken token)
+        public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             return _service.NotifyListeners(token);
         }

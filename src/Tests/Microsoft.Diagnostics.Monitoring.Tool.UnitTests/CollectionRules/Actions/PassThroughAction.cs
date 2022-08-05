@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System.Collections.Generic;
@@ -26,7 +27,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         {
         }
 
-        protected override Task<CollectionRuleActionResult> ExecuteCoreAsync(TaskCompletionSource<object> startCompletionSource, CancellationToken token)
+        protected override Task<CollectionRuleActionResult> ExecuteCoreAsync(
+            TaskCompletionSource<object> startCompletionSource,
+            CollectionRuleMetadata collectionRuleMetadata,
+            CancellationToken token)
         {
             startCompletionSource.TrySetResult(null);
 

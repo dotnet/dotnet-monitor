@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 async (action, token) =>
                 {
-                    await action.StartAsync(token);
+                    await action.StartAsync(null, token);
 
                     CollectionRuleActionResult result = await action.WaitForCompletionAsync(token);
 
@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 async (action, token) =>
                 {
-                    await action.StartAsync(token);
+                    await action.StartAsync(null, token);
 
                     CollectionRuleActionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                         () => action.WaitForCompletionAsync(token));
@@ -82,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 async (action, token) =>
                 {
-                    await action.StartAsync(token);
+                    await action.StartAsync(null, token);
 
                     // Start a separate cancellation source for the completion timeout since it needs
                     // to be much shorter than the default test timeout.
@@ -110,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 async (action, token) =>
                 {
-                    await action.StartAsync(token);
+                    await action.StartAsync(null, token);
 
                     CollectionRuleActionResult result = await action.WaitForCompletionAsync(token);
 
@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 async (action, token) =>
                 {
                     CollectionRuleActionException fileNotFoundException = await Assert.ThrowsAsync<CollectionRuleActionException>(
-                        () => action.StartAsync(token));
+                        () => action.StartAsync(null, token));
 
                     Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
                 });
@@ -152,7 +152,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 async (action, token) =>
                 {
-                    await action.StartAsync(token);
+                    await action.StartAsync(null, token);
 
                     CollectionRuleActionResult result = await action.WaitForCompletionAsync(token);
 
