@@ -105,43 +105,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 server.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));
 
-                FileSystemWatcher socketWatcher = null;
-                try
-                {
-                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    {
-                        try
-                        {
-                            socketWatcher = new(Path.GetDirectoryName(_portOptions.EndpointName));
-                            void onDiagnosticPortAltered()
-                            {
-                                _logger.DiagnosticPortAlteredWhileInUse(_portOptions.EndpointName);
-                                socketWatcher.EnableRaisingEvents = false;
-                            }
+                using var _ = SetupDiagnosticPortWatcher();
 
-                            socketWatcher.Filter = Path.GetFileName(_portOptions.EndpointName);
-                            socketWatcher.NotifyFilter = NotifyFilters.FileName;
-                            socketWatcher.Deleted += (_, _) => onDiagnosticPortAltered();
-                            socketWatcher.Renamed += (_, _) => onDiagnosticPortAltered();
-                            socketWatcher.Error += (object _, ErrorEventArgs e) => _logger.DiagnosticPortWatchingFailed(_portOptions.EndpointName, e.GetException());
-                            socketWatcher.EnableRaisingEvents = true;
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.DiagnosticPortWatchingFailed(_portOptions.EndpointName, ex);
-                        }
-                    }
-
-                    await Task.WhenAll(
-                        ListenAsync(server, stoppingToken),
-                        MonitorEndpointsAsync(stoppingToken),
-                        NotifyAndRemoveAsync(server, stoppingToken)
-                        );
-                }
-                finally
-                {
-                    socketWatcher?.Dispose();
-                }
+                await Task.WhenAll(
+                    ListenAsync(server, stoppingToken),
+                    MonitorEndpointsAsync(stoppingToken),
+                    NotifyAndRemoveAsync(server, stoppingToken)
+                    );
             }
         }
 
@@ -333,6 +303,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             return true;
+        }
+
+        private IDisposable SetupDiagnosticPortWatcher()
+        {
+            // If running on Windows, a named pipe is used so there is no need to watch it.
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return null;
+            }
+
+            try
+            {
+                FileSystemWatcher watcher = new(Path.GetDirectoryName(_portOptions.EndpointName));
+                void onDiagnosticPortAltered()
+                {
+                    _logger.DiagnosticPortAlteredWhileInUse(_portOptions.EndpointName);
+                    watcher.EnableRaisingEvents = false;
+                }
+
+                watcher.Filter = Path.GetFileName(_portOptions.EndpointName);
+                watcher.NotifyFilter = NotifyFilters.FileName;
+                watcher.Deleted += (_, _) => onDiagnosticPortAltered();
+                watcher.Renamed += (_, _) => onDiagnosticPortAltered();
+                watcher.Error += (object _, ErrorEventArgs e) => _logger.DiagnosticPortWatchingFailed(_portOptions.EndpointName, e.GetException());
+                watcher.EnableRaisingEvents = true;
+
+                return watcher;
+            }
+            catch (Exception ex)
+            {
+                _logger.DiagnosticPortWatchingFailed(_portOptions.EndpointName, ex);
+            }
+
+            return null;
         }
     }
 }
