@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static string GetSpanId(this Activity activity)
         {
-            switch (activity.IdFormat)
+                switch (activity.IdFormat)
             {
                 case ActivityIdFormat.Hierarchical:
                     return activity.Id;
