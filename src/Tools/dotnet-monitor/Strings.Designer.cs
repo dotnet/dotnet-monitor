@@ -781,6 +781,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Diagnostic port file at &apos;{0}&apos; was either deleted or moved while it was still being used..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticPortAlteredWhileInUse {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticPortAlteredWhileInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attemping to delete diagnostic port file at &apos;{0}&apos;..
         /// </summary>
         internal static string LogFormatString_DiagnosticPortDeleteAttempt {
@@ -804,6 +813,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_DiagnosticPortNotInListenModeForCollectionRules {
             get {
                 return ResourceManager.GetString("LogFormatString_DiagnosticPortNotInListenModeForCollectionRules", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to watch diagnostic port file at &apos;{0}&apos;..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticPortWatchingFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticPortWatchingFailed", resourceCulture);
             }
         }
         

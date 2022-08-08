@@ -482,6 +482,9 @@
   <data name="LogFormatString_CollectionRuleUnmatchedFilters" xml:space="preserve">
     <value>Collection rule '{ruleName}' filters do not match the process.</value>
   </data>
+  <data name="LogFormatString_DiagnosticPortAlteredWhileInUse" xml:space="preserve">
+    <value>Diagnostic port file at '{0}' was either deleted or moved while it was still being used.</value>
+  </data>
   <data name="LogFormatString_DiagnosticPortDeleteAttempt" xml:space="preserve">
     <value>Attemping to delete diagnostic port file at '{0}'.</value>
   </data>
@@ -490,6 +493,9 @@
   </data>
   <data name="LogFormatString_DiagnosticPortNotInListenModeForCollectionRules" xml:space="preserve">
     <value>When using collection rules, the diagnostic port must be in 'Listen' mode. Please correct the configuration and restart dotnet monitor.</value>
+  </data>
+  <data name="LogFormatString_DiagnosticPortWatchingFailed" xml:space="preserve">
+    <value>Failed to watch diagnostic port file at '{0}'.</value>
   </data>
   <data name="LogFormatString_DiagnosticRequestCancelled" xml:space="preserve">
     <value>Cancelled waiting for diagnostic response from runtime in process {processId}.</value>
