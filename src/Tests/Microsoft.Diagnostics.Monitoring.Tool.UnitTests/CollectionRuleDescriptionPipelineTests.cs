@@ -98,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Test for Executing Action state.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/2241")]
         [MemberData(nameof(CollectionRulePipelineTests.GetTfmsSupportingPortListener), MemberType = typeof(CollectionRulePipelineTests))]
         public Task CollectionRuleDescriptionPipeline_ExecutingAction(TargetFrameworkMoniker appTfm)
         {
