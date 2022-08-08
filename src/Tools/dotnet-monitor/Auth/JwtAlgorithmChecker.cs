@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly string[] AllowedJwtAlgos = new string[]
         {            
             // ECDSA using curves P-X and SHA-X
-            SecurityAlgorithms.EcdsaSha256, SecurityAlgorithms.EcdsaSha256Signature, 
+            SecurityAlgorithms.EcdsaSha256, SecurityAlgorithms.EcdsaSha256Signature,
             SecurityAlgorithms.EcdsaSha384, SecurityAlgorithms.EcdsaSha384Signature,
             SecurityAlgorithms.EcdsaSha512, SecurityAlgorithms.EcdsaSha512Signature,
 

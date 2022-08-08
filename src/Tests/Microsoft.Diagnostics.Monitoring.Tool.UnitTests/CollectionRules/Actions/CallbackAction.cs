@@ -89,6 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             while (_service.Clock.UtcNow == currentTime)
             {
                 // waiting for clock to be ticked (simulated time)
+                token.ThrowIfCancellationRequested();
             }
 
             return Task.FromResult(new CollectionRuleActionResult());
@@ -120,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
                 {
                     _executionTimestamps.Add(Clock.UtcNow.UtcDateTime);
                 }
-                
+
                 _outputHelper.WriteLine("[Callback] Completing {0} source(s).", _entries.Count);
 
                 foreach (var entry in _entries)

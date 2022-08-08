@@ -2,13 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -18,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private sealed class EgressEntry
         {
             public ExecutionResult<EgressResult> ExecutionResult { get; set; }
-            public Models.OperationState State { get; set;}
+            public Models.OperationState State { get; set; }
 
             public EgressRequest EgressRequest { get; set; }
 
@@ -128,11 +125,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             lock (_requests)
             {
-                return _requests.Select((kvp) => new Models.OperationSummary
+                return _requests.Select((kvp) =>
                 {
-                    OperationId = kvp.Key,
-                    CreatedDateTime = kvp.Value.CreatedDateTime,
-                    Status = kvp.Value.State
+                    EgressProcessInfo processInfo = kvp.Value.EgressRequest.EgressOperation.ProcessInfo;
+                    return new Models.OperationSummary
+                    {
+                        OperationId = kvp.Key,
+                        CreatedDateTime = kvp.Value.CreatedDateTime,
+                        Status = kvp.Value.State,
+                        Process = processInfo != null ?
+                            new Models.OperationProcessInfo
+                            {
+                                Name = processInfo.ProcessName,
+                                ProcessId = processInfo.ProcessId,
+                                Uid = processInfo.RuntimeInstanceCookie
+                            } : null
+                    };
                 }).ToList();
             }
         }
@@ -145,12 +153,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
+                EgressProcessInfo processInfo = entry.EgressRequest.EgressOperation.ProcessInfo;
 
                 var status = new Models.OperationStatus()
                 {
                     OperationId = entry.EgressRequest.OperationId,
                     Status = entry.State,
                     CreatedDateTime = entry.CreatedDateTime,
+                    Process = processInfo != null ?
+                        new Models.OperationProcessInfo
+                        {
+                            Name = processInfo.ProcessName,
+                            ProcessId = processInfo.ProcessId,
+                            Uid = processInfo.RuntimeInstanceCookie
+                        } : null
                 };
 
                 if (entry.State == Models.OperationState.Succeeded)

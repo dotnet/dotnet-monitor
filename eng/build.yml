@@ -19,8 +19,6 @@ parameters:
   testResultTfms:
   - key: netcoreapp3.1
     value: Core 3.1
-  - key: net5.0
-    value: .NET 5
   - key: net6.0
     value: .NET 6
 
@@ -59,11 +57,11 @@ jobs:
       ${{ if eq(parameters.osGroup, 'Windows') }}:
         ${{ if eq(variables['System.TeamProject'], 'public') }}:
           name: NetCore1ESPool-Public
-          demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019.Open
+          demands: ImageOverride -equals windows.vs2019.amd64.open
 
         ${{ if ne(variables['System.TeamProject'], 'public') }}:
           name: NetCore1ESPool-Internal
-          demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
+          demands: ImageOverride -equals windows.vs2019.amd64
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
       ${{ if eq(parameters.architecture, 'arm64') }}:

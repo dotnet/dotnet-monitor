@@ -51,11 +51,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 .UseContentRoot(settings.ContentRootDirectory)
                 .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
                 {
+                    HostBuilderResults hostBuilderResults = new HostBuilderResults();
+                    context.Properties.Add(HostBuilderResults.ResultKey, hostBuilderResults);
+
                     string userSettingsPath = Path.Combine(settings.UserConfigDirectory, SettingsFileName);
-                    builder.AddJsonFile(userSettingsPath, optional: true, reloadOnChange: true);
+                    AddJsonFileHelper(builder, hostBuilderResults, userSettingsPath);
 
                     string sharedSettingsPath = Path.Combine(settings.SharedConfigDirectory, SettingsFileName);
-                    builder.AddJsonFile(sharedSettingsPath, optional: true, reloadOnChange: true);
+                    AddJsonFileHelper(builder, hostBuilderResults, sharedSettingsPath);
 
                     //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
                     //KeyPerFile provider uses a file system watcher to trigger changes.
@@ -73,6 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                     }
 
+                    // If a file at this path does not have read permissions, the application will fail to launch.
                     builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ConfigPrefix);
 
@@ -86,27 +90,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     if (null != userFilePath)
                     {
-                        HostBuilderResults hostBuilderResults = new HostBuilderResults();
-                        context.Properties.Add(HostBuilderResults.ResultKey, hostBuilderResults);
-
                         if (!userFilePath.Exists)
                         {
-                            hostBuilderResults.Warnings.Add(Strings.Message_ConfigurationFileDoesNotExist);
+                            hostBuilderResults.Warnings.Add(string.Format(Strings.Message_ConfigurationFileDoesNotExist, userFilePath.FullName));
                         }
                         else if (!".json".Equals(userFilePath.Extension, StringComparison.OrdinalIgnoreCase))
                         {
-                            hostBuilderResults.Warnings.Add(Strings.Message_ConfigurationFileNotJson);
+                            hostBuilderResults.Warnings.Add(string.Format(Strings.Message_ConfigurationFileNotJson, userFilePath.FullName));
                         }
                         else
                         {
-                            try
-                            {
-                                builder.AddJsonFile(userFilePath.FullName, optional: true, reloadOnChange: true);
-                            }
-                            catch (Exception ex)
-                            {
-                                hostBuilderResults.Warnings.Add(ex.Message);
-                            }
+                            AddJsonFileHelper(builder, hostBuilderResults, userFilePath.FullName);
                         }
                     }
                 })
@@ -155,6 +149,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     })
                     .UseStartup<Startup>();
                 });
+        }
+
+        private static void AddJsonFileHelper(IConfigurationBuilder builder, HostBuilderResults hostBuilderResults, string filePath)
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    File.OpenRead(filePath).Dispose(); // If this succeeds, we have read permissions
+                    builder.AddJsonFile(filePath, optional: true, reloadOnChange: true);
+                }
+            }
+            catch (Exception ex)
+            {
+                hostBuilderResults.Warnings.Add(ex.Message);
+            }
         }
 
         public static AuthConfiguration CreateAuthConfiguration(bool noAuth, bool tempApiKey)

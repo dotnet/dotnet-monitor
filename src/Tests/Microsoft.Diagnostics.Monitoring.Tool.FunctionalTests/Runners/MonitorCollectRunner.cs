@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             {
                 argsList.Add("--no-auth");
             }
-            
+
             if (DisableHttpEgress)
             {
                 argsList.Add("--no-http-egress");

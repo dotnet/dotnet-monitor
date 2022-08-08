@@ -20,9 +20,9 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>4822e3c3aa77eb82b2fb33c9321f923cf11ddde6</Sha>
     </Dependency>
-    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.22380.1">
+    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.22402.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
-      <Sha>f1f43df159ce8ae80c46bf6017a6a8e4e90c4037</Sha>
+      <Sha>4b605851d45131db2374ba711f2443040521d702</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -30,13 +30,13 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>ae1a6cbe225b99c0bf38b7e31bf60cb653b73a52</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.22377.11">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.22404.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>22076b1b68a4a70eca9c965e93234ff79580d541</Sha>
+      <Sha>fe24607062f8a1b99d4e90140da1da655679a895</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="6.0.0-beta.22377.11">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="6.0.0-beta.22404.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>22076b1b68a4a70eca9c965e93234ff79580d541</Sha>
+      <Sha>fe24607062f8a1b99d4e90140da1da655679a895</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0">
       <Uri>https://github.com/dotnet/runtime</Uri>

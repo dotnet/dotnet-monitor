@@ -127,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 _message = message;
                 _keys = keys ?? throw new ArgumentNullException(nameof(keys));
                 _values = values ?? throw new ArgumentNullException(nameof(values));
-                
+
                 if (_keys.Length != _values.Length)
                 {
                     throw new ArgumentException($"{nameof(keys)} and {nameof(values)} must have the same length.");

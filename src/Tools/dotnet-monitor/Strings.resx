@@ -482,6 +482,9 @@
   <data name="LogFormatString_CollectionRuleUnmatchedFilters" xml:space="preserve">
     <value>Collection rule '{ruleName}' filters do not match the process.</value>
   </data>
+  <data name="LogFormatString_DiagnosticPortAlteredWhileInUse" xml:space="preserve">
+    <value>Diagnostic port file at '{0}' was either deleted or moved while it was still being used.</value>
+  </data>
   <data name="LogFormatString_DiagnosticPortDeleteAttempt" xml:space="preserve">
     <value>Attemping to delete diagnostic port file at '{0}'.</value>
   </data>
@@ -490,6 +493,9 @@
   </data>
   <data name="LogFormatString_DiagnosticPortNotInListenModeForCollectionRules" xml:space="preserve">
     <value>When using collection rules, the diagnostic port must be in 'Listen' mode. Please correct the configuration and restart dotnet monitor.</value>
+  </data>
+  <data name="LogFormatString_DiagnosticPortWatchingFailed" xml:space="preserve">
+    <value>Failed to watch diagnostic port file at '{0}'.</value>
   </data>
   <data name="LogFormatString_DiagnosticRequestCancelled" xml:space="preserve">
     <value>Cancelled waiting for diagnostic response from runtime in process {processId}.</value>
@@ -668,12 +674,12 @@
 1. queueName: The name of the Azure Queue where messages are egressed</comment>
   </data>
   <data name="Message_ConfigurationFileDoesNotExist" xml:space="preserve">
-    <value>The provided configuration file could not be found.</value>
-    <comment>Gets a string similar to "The provided configuration file could not be found."</comment>
+    <value>The provided configuration file '{0}' could not be found.</value>
+    <comment>Gets a string similar to "The provided configuration file '{0}' could not be found."</comment>
   </data>
   <data name="Message_ConfigurationFileNotJson" xml:space="preserve">
-    <value>The provided configuration file must have the .json extension.</value>
-    <comment>Gets a string similar to "The provided configuration file must have the .json extension."</comment>
+    <value>The provided configuration file '{0}' must have the .json extension.</value>
+    <comment>Gets a string similar to "The provided configuration file '{0}' must have the .json extension."</comment>
   </data>
   <data name="Message_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {0}</value>

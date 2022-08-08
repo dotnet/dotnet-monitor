@@ -1649,6 +1649,25 @@
         ],
         "type": "string"
       },
+      "OperationProcessInfo": {
+        "type": "object",
+        "properties": {
+          "pid": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "uid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the details of a given process used in an operation."
+      },
       "OperationSummary": {
         "type": "object",
         "properties": {
@@ -1662,6 +1681,9 @@
           },
           "status": {
             "$ref": "#/components/schemas/OperationState"
+          },
+          "process": {
+            "$ref": "#/components/schemas/OperationProcessInfo"
           }
         },
         "additionalProperties": false,
@@ -1694,6 +1716,9 @@
           },
           "status": {
             "$ref": "#/components/schemas/OperationState"
+          },
+          "process": {
+            "$ref": "#/components/schemas/OperationProcessInfo"
           },
           "resourceLocation": {
             "type": "string",

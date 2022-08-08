@@ -87,12 +87,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         overrideSource.ForEach(source => builder.Sources.Add(source));
                     }
                 })
-                .ConfigureLogging( loggingBuilder =>
-                {
-                    loggingCallback?.Invoke(loggingBuilder);
+                .ConfigureLogging(loggingBuilder =>
+               {
+                   loggingCallback?.Invoke(loggingBuilder);
 
-                    loggingBuilder.Services.AddSingleton<ILoggerProvider, TestOutputLoggerProvider>();
-                })
+                   loggingBuilder.Services.AddSingleton<ILoggerProvider, TestOutputLoggerProvider>();
+               })
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
                     services.AddSingleton<ITestOutputHelper>(outputHelper);

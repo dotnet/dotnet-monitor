@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class DiagnosticPortPostConfigureOptions :
         IPostConfigureOptions<DiagnosticPortOptions>
     {
-        private readonly IConfiguration  _configuration;
+        private readonly IConfiguration _configuration;
 
         public DiagnosticPortPostConfigureOptions(
             IConfiguration configuration)
