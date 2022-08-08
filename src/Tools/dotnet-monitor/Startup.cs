@@ -74,13 +74,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 configureOptions.MimeTypes = new List<string> { ContentTypes.ApplicationOctetStream };
             });
 
-            // This is needed to allow the StreamingLogger to synchronously write to the output stream.
-            // Eventually should switch StreamingLoggger to something that allows for async operations.
-            services.Configure<KestrelServerOptions>(options =>
-            {
-                options.AllowSynchronousIO = true;
-            });
-
             var metricsOptions = new MetricsOptions();
             Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
             if (metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled))
