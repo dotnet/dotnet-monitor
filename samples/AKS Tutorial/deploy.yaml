@@ -41,8 +41,6 @@ spec:
         # demonstration purposes only in this example. Please continue reading after this example for further details.
         - name: DOTNETMONITOR_Urls
           value: 'http://localhost:52323'
-        - name: DotnetMonitor_Egress__FileSystem__monitorFile__directoryPath
-          value: "/diag"
         - name: DotnetMonitor_Storage__DumpTempFolder
           value: /diag/dumps
         - name: DotnetMonitor_Logging__Console__FormatterName
