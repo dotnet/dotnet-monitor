@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.NETCore.Client;
@@ -39,7 +40,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             using var loggerFactory = new LoggerFactory();
 
-            loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, format, logLevel: null));
+            await using FileBufferingWriteStream bufferingStream = new();
+
+            loggerFactory.AddProvider(new StreamingLoggerProvider(bufferingStream, format, logLevel: null));
 
             var client = new DiagnosticsClient(endpointInfo.Endpoint);
 
@@ -53,6 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             await runTask;
+            await bufferingStream.DrainBufferAsync(outputStream, token);
         }
 
         public static string GenerateLogsFileName(IEndpointInfo endpointInfo)
