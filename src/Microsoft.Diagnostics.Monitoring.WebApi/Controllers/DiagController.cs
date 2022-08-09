@@ -647,6 +647,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
+            // This is needed to allow the StreamingLogger to synchronously write to the output stream.
+            // Eventually should switch StreamingLoggger to something that allows for async operations.
             var syncIOFeature = HttpContext.Features.Get<IHttpBodyControlFeature>();
             if (syncIOFeature != null)
             {
