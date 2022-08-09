@@ -717,7 +717,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | accountUri | string | true | | The URI of the Azure blob storage account.|
 | containerName | string | true | | The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.|
 | blobPrefix | string | false | | Optional path prefix for the artifacts to egress.|
-| copyBufferSize | string | false | The buffer size to use when copying data from the original artifact to the blob stream.|
+| copyBufferSize | string | false | | The buffer size to use when copying data from the original artifact to the blob stream.|
 | accountKey | string | false | | The account key used to access the Azure blob storage account; must be specified if `accountKeyName` is not specified.|
 | sharedAccessSignature | string | false | | The shared access signature (SAS) used to access the azure blob storage account; if using SAS, must be specified if `sharedAccessSignatureName` is not specified.|
 | accountKeyName | string | false | | Name of the property in the Properties section that will contain the account key; must be specified if `accountKey` is not specified.|
