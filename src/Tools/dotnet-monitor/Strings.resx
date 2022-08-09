@@ -522,6 +522,10 @@
 2. providerType: The type of provider that the new provider was attempting to be registered.
 3. existingProviderType: The type of provider that the new provider name was already registered.</comment>
   </data>
+  <data name="LogFormatString_DuplicateKeyInMetadata" xml:space="preserve">
+    <value>Metadata cannot include duplicate keys; please use a different key.</value>
+    <comment>Gets a string similar to "Metadata cannot include duplicate keys; please use a different key.".</comment>
+  </data>
   <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
     <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
     <comment>Gets the format string that is printed in the 5:EgressCopyActionStreamToEgressStream event.
@@ -587,6 +591,10 @@
   </data>
   <data name="LogFormatString_InvalidActionResultReference" xml:space="preserve">
     <value>Invalid result refrence '{actionToken}'.</value>
+  </data>
+  <data name="LogFormatString_InvalidMetadata" xml:space="preserve">
+    <value>Invalid metadata; custom metadata keys must be valid C# identifiers.</value>
+    <comment>Gets a string similar to "Invalid metadata; custom metadata keys must be valid C# identifiers.".</comment>
   </data>
   <data name="LogFormatString_InvalidToken" xml:space="preserve">
     <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>

@@ -261,7 +261,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A mapping of metadata keys to environment variable names..
+        ///   Looks up a localized string similar to A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata {
             get {

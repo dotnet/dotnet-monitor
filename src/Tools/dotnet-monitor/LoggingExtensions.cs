@@ -369,6 +369,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortDeleteFailed);
 
+        private static readonly Action<ILogger, Exception> _invalidMetadata =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.InvalidMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_InvalidMetadata);
+
+        private static readonly Action<ILogger, Exception> _duplicateKeyInMetadata =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -677,6 +689,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticPortDeleteFailed(this ILogger logger, string diagnosticPort, Exception ex)
         {
             _diagnosticPortDeleteFailed(logger, diagnosticPort, ex);
+        }
+
+        public static void InvalidMetadata(this ILogger logger, Exception ex)
+        {
+            _invalidMetadata(logger, ex);
+        }
+
+        public static void DuplicateKeyInMetadata(this ILogger logger, Exception ex)
+        {
+            _duplicateKeyInMetadata(logger, ex);
         }
     }
 }

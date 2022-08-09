@@ -76,7 +76,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ParsingUrlFailed = 63,
         IntermediateFileDeletionFailed = 64,
         DiagnosticPortDeleteAttempt = 65,
-        DiagnosticPortDeleteFailed = 66
+        DiagnosticPortDeleteFailed = 66,
+        InvalidMetadata = 67,
+        DuplicateKeyInMetadata = 68
     }
 
     internal static class LoggingEventIdsExtensions

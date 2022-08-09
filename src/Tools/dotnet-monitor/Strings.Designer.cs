@@ -862,6 +862,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Metadata cannot include duplicate keys; please use a different key..
+        /// </summary>
+        internal static string LogFormatString_DuplicateKeyInMetadata {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateKeyInMetadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copying action stream to egress stream with buffer size {bufferSize}.
         /// </summary>
         internal static string LogFormatString_EgressCopyActionStreamToEgressStream {
@@ -975,6 +984,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_InvalidActionResultReference {
             get {
                 return ResourceManager.GetString("LogFormatString_InvalidActionResultReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid metadata; custom metadata keys must be valid C# identifiers..
+        /// </summary>
+        internal static string LogFormatString_InvalidMetadata {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidMetadata", resourceCulture);
             }
         }
         
