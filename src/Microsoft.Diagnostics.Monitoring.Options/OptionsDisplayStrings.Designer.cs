@@ -261,6 +261,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A mapping of metadata keys to environment variable names..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The URI of the Azure queue account..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri {

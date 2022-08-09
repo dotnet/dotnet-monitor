@@ -1047,6 +1047,21 @@
           ],
           "description": "The URI of the Azure queue account.",
           "format": "uri"
+        },
+        "IncludeHostNameAsMetadata": {
+          "type": "boolean",
+          "description": "Determines if the host name should be included as blob metadata.",
+          "default": false
+        },
+        "Metadata": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of metadata keys to environment variable names.",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

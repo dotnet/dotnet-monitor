@@ -79,6 +79,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         [DefaultValue(false)]
         public bool IncludeHostNameAsMetadata { get; set; }
 
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata))]
         public IDictionary<string, string> Metadata { get; }
             = new Dictionary<string, string>(0);
     }

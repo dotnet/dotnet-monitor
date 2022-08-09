@@ -704,4 +704,8 @@
     <value>Determines if the host name should be included as blob metadata.</value>
     <comment>The description provided for the IncludeHostNameAsMetadata parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata" xml:space="preserve">
+    <value>A mapping of metadata keys to environment variable names.</value>
+    <comment>The description provided for the Metadata parameter on AzureBlobEgressProviderOptions</comment>
+  </data>
 </root>
