@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
 using System;
@@ -17,16 +18,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             var client = new DiagnosticsClient(endpointInfo.Endpoint);
 
+            await using FileBufferingWriteStream bufferingStream = new();
+
             await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
                 settings,
                 loggers:
-                new[] { new JsonCounterLogger(outputStream) });
+                new[] { new JsonCounterLogger(bufferingStream) });
 
             Task runTask = await eventCounterPipeline.StartAsync(token);
 
             startCompletionSource?.TrySetResult(null);
 
             await runTask;
+            await bufferingStream.DrainBufferAsync(outputStream, token);
         }
 
         public static string GetMetricFilename(IEndpointInfo endpointInfo) =>
