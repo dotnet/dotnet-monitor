@@ -30,20 +30,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
     {
         private int BlobStorageBufferSize = 4 * 1024 * 1024;
 
-        public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
-            : base(logger)
+        public AzureBlobEgressProvider(IServiceProvider serviceProvider, ILogger<AzureBlobEgressProvider> logger)
+        : base(logger)
         {
         }
 
         public override async Task<string> EgressAsync(
-            AzureBlobEgressProviderOptions options,
+        AzureBlobEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
             try
             {
-                string hostName = Dns.GetHostName();
+                Environment.SetEnvironmentVariable("TEST_ENV_VAR", "container name goes here");
+
+                AddConfiguredMetadata(options, artifactSettings);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
@@ -89,7 +91,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             try
             {
-                string hostName = Dns.GetHostName();
+                AddConfiguredMetadata(options, artifactSettings);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
@@ -145,6 +147,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             catch (CredentialUnavailableException ex)
             {
                 throw CreateException(ex);
+            }
+        }
+
+        public void AddConfiguredMetadata(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings)
+        {
+            if (options.IncludeHostNameAsMetadata)
+            {
+                artifactSettings.Metadata.Add("HostName", Dns.GetHostName()); // Make this a constant
+            }
+
+            foreach (var pair in options.Metadata)
+            {
+                artifactSettings.Metadata.Add(pair.Key, Environment.GetEnvironmentVariable(pair.Value));
             }
         }
 
