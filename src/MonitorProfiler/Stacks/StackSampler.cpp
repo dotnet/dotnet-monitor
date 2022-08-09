@@ -81,7 +81,7 @@ HRESULT __stdcall StackSampler::DoStackSnapshotCallbackWrapper(FunctionID funcio
 
     std::shared_ptr<NameCache> nameCache = state->GetNameCache();
     TypeNameUtilities nameUtilities(state->GetProfilerInfo());
-    IfFailRet(nameUtilities.CacheNames(funcionId, frameInfo, *nameCache));
+    IfFailRet(nameUtilities.CacheNames(*nameCache, funcionId, frameInfo));
 
     return S_OK;
 }
