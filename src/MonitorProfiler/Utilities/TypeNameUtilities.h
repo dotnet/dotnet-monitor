@@ -17,7 +17,8 @@ class TypeNameUtilities
 {
     public:
         TypeNameUtilities(ICorProfilerInfo12* profilerInfo);
-        HRESULT CacheNames(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo, NameCache& nameCache);
+        HRESULT CacheNames(NameCache& nameCache, ClassID classId);
+        HRESULT CacheNames(NameCache& nameCache, FunctionID functionId, COR_PRF_FRAME_INFO frameInfo);
     private:
         HRESULT GetFunctionInfo(NameCache& nameCache, FunctionID id, COR_PRF_FRAME_INFO frameInfo);
         HRESULT GetClassInfo(NameCache& nameCache, ClassID classId);

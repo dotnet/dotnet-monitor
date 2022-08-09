@@ -9,7 +9,18 @@ TypeNameUtilities::TypeNameUtilities(ICorProfilerInfo12* profilerInfo) : _profil
 {
 }
 
-HRESULT TypeNameUtilities::CacheNames(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo, NameCache& nameCache)
+HRESULT TypeNameUtilities::CacheNames(NameCache& nameCache, ClassID classId)
+{
+    std::shared_ptr<ClassData> classData;
+    if (!nameCache.TryGetClassData(classId, classData))
+    {
+        return GetClassInfo(nameCache, classId);
+    }
+
+    return S_OK;
+}
+
+HRESULT TypeNameUtilities::CacheNames(NameCache& nameCache, FunctionID functionId, COR_PRF_FRAME_INFO frameInfo)
 {
     std::shared_ptr<FunctionData> functionData;
     if (!nameCache.TryGetFunctionData(functionId, functionData))
