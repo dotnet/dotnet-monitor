@@ -243,7 +243,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     CollectionRuleActionResult result;
                     try
                     {
-                        await action.StartAsync(null, cancellationTokenSource.Token);
+                        await action.StartAsync(cancellationTokenSource.Token);
 
                         await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
 

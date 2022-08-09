@@ -240,8 +240,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         dumpFileName,
                         processInfo,
                         ContentTypes.ApplicationOctetStream,
-                        scope,
-                        null), limitKey: Utilities.ArtifactType_Dump);
+                        scope), limitKey: Utilities.ArtifactType_Dump);
                 }
             }, processKey, Utilities.ArtifactType_Dump);
         }
@@ -726,8 +725,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     fileName,
                     processInfo,
                     contentType,
-                    scope,
-                    null),
+                    scope),
                     limitKey: artifactType);
             }
         }

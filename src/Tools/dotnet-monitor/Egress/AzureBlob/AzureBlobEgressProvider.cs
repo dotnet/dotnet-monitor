@@ -29,8 +29,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         EgressProvider<AzureBlobEgressProviderOptions>
     {
         private int BlobStorageBufferSize = 4 * 1024 * 1024;
+        private readonly string HostNameMetadataKey = "HostName";
 
-        public AzureBlobEgressProvider(IServiceProvider serviceProvider, ILogger<AzureBlobEgressProvider> logger)
+        public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
         : base(logger)
         {
         }
@@ -43,8 +44,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             try
             {
-                Environment.SetEnvironmentVariable("TEST_ENV_VAR", "container name goes here");
-
                 AddConfiguredMetadata(options, artifactSettings);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);
@@ -154,7 +153,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             if (options.IncludeHostNameAsMetadata)
             {
-                artifactSettings.Metadata.Add("HostName", Dns.GetHostName()); // Make this a constant
+                artifactSettings.Metadata.Add(HostNameMetadataKey, Dns.GetHostName());
             }
 
             foreach (var pair in options.Metadata)

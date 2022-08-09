@@ -57,6 +57,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             await startCompleteSource.WithCancellation(token);
         }
 
+        public async Task StartAsync(CancellationToken token)
+        {
+            await StartAsync(null, token);
+        }
+
         public async Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
         {
             ThrowIfDisposed();

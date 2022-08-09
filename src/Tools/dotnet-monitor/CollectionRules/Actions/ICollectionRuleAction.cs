@@ -13,6 +13,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     {
         Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token);
 
+        Task StartAsync(CancellationToken token);
+
         Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token);
     }
 

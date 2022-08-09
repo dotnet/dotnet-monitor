@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly KeyValueLogScope _scope;
         public EgressProcessInfo ProcessInfo { get; private set; }
 
-        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
+        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata = null)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, collectionRuleMetadata, token);
             _egressProvider = endpointName;
@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }
 
-        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
+        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata = null)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, collectionRuleMetadata, token);
             _egressProvider = endpointName;

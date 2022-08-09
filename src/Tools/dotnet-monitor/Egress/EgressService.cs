@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -128,15 +127,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             if (null != collectionRuleMetadata)
             {
                 settings.Metadata.Add(
-                    "CollectionRuleName", // use constant name
+                    CollectionRuleMetadataNames.CollectionRuleName,
                     collectionRuleMetadata.CollectionRuleName);
 
                 settings.Metadata.Add(
-                    "ActionListIndex", // use constant name
+                    CollectionRuleMetadataNames.ActionListIndex,
                     collectionRuleMetadata.ActionListIndex.ToString());
 
                 settings.Metadata.Add(
-                    "ActionName", // use constant name
+                    CollectionRuleMetadataNames.ActionName,
                     collectionRuleMetadata.ActionName);
             }
 
