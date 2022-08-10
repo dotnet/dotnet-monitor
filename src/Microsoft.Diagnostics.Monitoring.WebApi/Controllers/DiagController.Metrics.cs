@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
@@ -49,6 +50,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     _counterOptions.CurrentValue,
                     includeDefaults: true,
                     durationSeconds: durationSeconds);
+
+                // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
+                var syncIOFeature = HttpContext.Features.Get<IHttpBodyControlFeature>();
+                if (null != syncIOFeature)
+                {
+                    syncIOFeature.AllowSynchronousIO = true;
+                }
 
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
@@ -98,6 +106,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     _counterOptions.CurrentValue,
                     durationSeconds,
                     configuration);
+
+                // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
+                var syncIOFeature = HttpContext.Features.Get<IHttpBodyControlFeature>();
+                if (null != syncIOFeature)
+                {
+                    syncIOFeature.AllowSynchronousIO = true;
+                }
 
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,

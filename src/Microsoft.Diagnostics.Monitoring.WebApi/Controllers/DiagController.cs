@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.Options;
@@ -644,6 +645,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             if (null == format)
             {
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
+            }
+
+            // Allow sync I/O on logging routes due to StreamLogger's usage.
+            var syncIOFeature = HttpContext.Features.Get<IHttpBodyControlFeature>();
+            if (null != syncIOFeature)
+            {
+                syncIOFeature.AllowSynchronousIO = true;
             }
 
             string fileName = LogsUtilities.GenerateLogsFileName(processInfo.EndpointInfo);
