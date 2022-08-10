@@ -33,9 +33,9 @@ spec:
         image: mcr.microsoft.com/dotnet/monitor:6.2.0
         imagePullPolicy: Always
         env:
-        - name: DOTNETMONITOR_DiagnosticPort__ConnectionMode
+        - name: DotnetMonitor_DiagnosticPort__ConnectionMode
           value: 'Listen'
-        - name: DOTNETMONITOR_DiagnosticPort__EndpointName
+        - name: DotnetMonitor_DiagnosticPort__EndpointName
           value: /diag/port.sock
         # ALWAYS use the HTTPS form of the URL for deployments in production; the removal of HTTPS is done for
         # demonstration purposes only in this example. Please continue reading after this example for further details.
