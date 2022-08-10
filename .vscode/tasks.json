@@ -1,0 +1,52 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "windows":{ "command": ".\\build.cmd"},
+            "linux":{"command": "./build.sh"},
+            "osx":{"command": "./build.sh"},
+            "args": [
+                "-c",
+                "${input:configuration}"
+            ],
+            "group": {
+              "kind": "build",
+              "isDefault": true
+            },
+            "problemMatcher": ["$msCompile"]
+        },
+        {
+            "label": "Test",
+            "type": "shell",
+            "windows":{ "command": ".\\test.cmd" },
+            "linux":{"command": "./test.sh"},
+            "osx":{"command": "./test.sh"},
+            "args": [
+                "-c",
+                "${input:configuration}",
+                "/p:TestGroup=${input:testgroup}"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "configuration",
+            "type": "pickString",
+            "default": "Debug",
+            "description": "The build configuration",
+            "options": [ "Debug", "Release" ]
+        },
+        {
+            "id": "testgroup",
+            "type": "pickString",
+            "default": "PR",
+            "description": "The test group",
+            "options": [ "CI", "PR", "All" ]
+        }
+    ]
+}
