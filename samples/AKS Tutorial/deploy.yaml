@@ -39,7 +39,7 @@ spec:
           value: /diag/port.sock
         # ALWAYS use the HTTPS form of the URL for deployments in production; the removal of HTTPS is done for
         # demonstration purposes only in this example. Please continue reading after this example for further details.
-        - name: DOTNETMONITOR_Urls
+        - name: DotnetMonitor_Urls
           value: 'http://localhost:52323'
         - name: DotnetMonitor_Storage__DumpTempFolder
           value: /diag/dumps
