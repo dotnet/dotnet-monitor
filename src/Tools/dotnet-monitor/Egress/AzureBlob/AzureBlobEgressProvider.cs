@@ -34,12 +34,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         private readonly string HostNameMetadataKey = "HostName";
 
         public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
-        : base(logger)
+            : base(logger)
         {
         }
 
         public override async Task<string> EgressAsync(
-        AzureBlobEgressProviderOptions options,
+            AzureBlobEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
@@ -173,9 +173,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 artifactSettings.Metadata.Add(HostNameMetadataKey, Dns.GetHostName());
             }
 
-            foreach (var pair in options.Metadata)
+            foreach (var metadataPair in options.Metadata)
             {
-                artifactSettings.CustomMetadata.Add(pair.Key, Environment.GetEnvironmentVariable(pair.Value));
+                artifactSettings.CustomMetadata.Add(metadataPair.Key, Environment.GetEnvironmentVariable(metadataPair.Value));
             }
         }
 
