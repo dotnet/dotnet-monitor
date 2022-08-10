@@ -380,7 +380,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.DiagnosticPortWatchingFailed.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
-                
         private static readonly Action<ILogger, Exception> _invalidMetadata =
             LoggerMessage.Define(
                 eventId: LoggingEventIds.InvalidMetadata.EventId(),
