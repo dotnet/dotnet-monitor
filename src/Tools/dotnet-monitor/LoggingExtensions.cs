@@ -380,6 +380,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.DiagnosticPortWatchingFailed.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
+
         private static readonly Action<ILogger, Exception> _invalidMetadata =
             LoggerMessage.Define(
                 eventId: LoggingEventIds.InvalidMetadata.EventId(),
@@ -391,6 +392,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
+
+        private static readonly Action<ILogger, Exception> _getHostNameFailed =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.GetHostNameFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_GetHostNameFailed);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
@@ -719,6 +726,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DuplicateKeyInMetadata(this ILogger logger, Exception ex)
         {
             _duplicateKeyInMetadata(logger, ex);
+        }
+
+        public static void GetHostNameFailed(this ILogger logger, Exception ex)
+        {
+            _getHostNameFailed(logger, ex);
         }
     }
 }

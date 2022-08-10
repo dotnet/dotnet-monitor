@@ -16,6 +16,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -170,7 +171,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             if (options.IncludeHostNameAsMetadata)
             {
-                artifactSettings.Metadata.Add(HostNameMetadataKey, Dns.GetHostName());
+                try
+                {
+                    artifactSettings.Metadata.Add(HostNameMetadataKey, Dns.GetHostName());
+                }
+                catch (SocketException ex)
+                {
+                    Logger.GetHostNameFailed(ex);
+                }
             }
 
             foreach (var metadataPair in options.Metadata)

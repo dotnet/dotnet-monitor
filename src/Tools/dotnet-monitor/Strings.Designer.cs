@@ -970,6 +970,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The host name could not be added to the metadata because there was an error resolving it..
+        /// </summary>
+        internal static string LogFormatString_GetHostNameFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_GetHostNameFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments..
         /// </summary>
         internal static string LogFormatString_InsecureAutheticationConfiguration {
