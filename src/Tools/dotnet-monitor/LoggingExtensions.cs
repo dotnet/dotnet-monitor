@@ -712,7 +712,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             _diagnosticPortWatchingFailed(logger, diagnosticPort, ex);
         }
-        
         public static void InvalidMetadata(this ILogger logger, Exception ex)
         {
             _invalidMetadata(logger, ex);
