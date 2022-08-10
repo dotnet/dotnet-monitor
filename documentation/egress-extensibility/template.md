@@ -15,12 +15,12 @@ Templates are designed to make it easy for users to interact with extensions wit
     "AzureEgressProviders": {
       "PROVIDER_NAME_GOES_HERE": {
         "AccountKey": "", /*REQUIRED - The account key used to access the Azure blob storage account; must be specified if `accountKeyName` is not specified.*/
-	      "AccountUri": "", /*The URI of the Azure blob storage account.*/
-	      "ContainerName": "", /*REQUIRED - The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.*/
-	      "BlobPrefix": "", /*OPTIONAL - Optional path prefix for the artifacts to egress.*/
+	"AccountUri": "", /*The URI of the Azure blob storage account.*/
+	"ContainerName": "", /*REQUIRED - The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.*/
+	"BlobPrefix": "", /*OPTIONAL - Optional path prefix for the artifacts to egress.*/
         ... Add the rest here
-	    }
-	  }
+      }
+    }
   }
 }
 ```
