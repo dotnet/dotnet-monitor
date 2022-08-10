@@ -4,7 +4,7 @@ metadata:
   name: dotnet-monitor-egress
 data:
   Egress__FileSystem__monitorFile__directoryPath: /diag
-  Egress__AzureBlobStorage__monitorBlob__accountUri: "https://kkeirsteadsa.blob.core.windows.net"
+  Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
   Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
   Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
-  Egress__AzureBlobStorage__monitorBlob__managedIdentityClientId: "c52a4230-0b35-4f8d-a77b-5935076879e5"
+  Egress__AzureBlobStorage__monitorBlob__managedIdentityClientId: "ffffffff-ffff-ffff-ffff-ffffffffffff"
