@@ -76,6 +76,18 @@
             "parameters": {
               "comment": "Automatically approving dependency update."
             }
+          },
+          {
+            "name": "addLabel",
+            "parameters": {
+              "label": "automatic-pr"
+            }
+          },
+          {
+            "name": "addLabel",
+            "parameters": {
+              "label": "dependencies"
+            }
           }
         ]
       },

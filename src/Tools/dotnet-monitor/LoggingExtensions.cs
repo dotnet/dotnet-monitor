@@ -369,6 +369,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortDeleteFailed);
 
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortAlteredWhileInUse =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortAlteredWhileInUse.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortAlteredWhileInUse);
+
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortWatchingFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortWatchingFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
+                
         private static readonly Action<ILogger, Exception> _invalidMetadata =
             LoggerMessage.Define(
                 eventId: LoggingEventIds.InvalidMetadata.EventId(),
@@ -691,6 +703,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _diagnosticPortDeleteFailed(logger, diagnosticPort, ex);
         }
 
+        public static void DiagnosticPortAlteredWhileInUse(this ILogger logger, string diagnosticPort)
+        {
+            _diagnosticPortAlteredWhileInUse(logger, diagnosticPort, null);
+        }
+
+        public static void DiagnosticPortWatchingFailed(this ILogger logger, string diagnosticPort, Exception ex)
+        {
+            _diagnosticPortWatchingFailed(logger, diagnosticPort, ex);
+        }
+        
         public static void InvalidMetadata(this ILogger logger, Exception ex)
         {
             _invalidMetadata(logger, ex);
