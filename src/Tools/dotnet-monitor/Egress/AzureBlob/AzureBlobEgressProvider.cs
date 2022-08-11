@@ -9,14 +9,13 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Queues;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +31,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         EgressProvider<AzureBlobEgressProviderOptions>
     {
         private int BlobStorageBufferSize = 4 * 1024 * 1024;
-        private readonly string HostNameMetadataKey = "HostName";
+        private readonly string HostNameMetadataKey = "HOSTNAME";
+        private readonly string ComputerNameMetadataKey = "COMPUTERNAME";
 
         public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
             : base(logger)
@@ -43,11 +43,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             AzureBlobEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
+            IEndpointInfo source,
             CancellationToken token)
         {
             try
             {
-                AddConfiguredMetadata(options, artifactSettings);
+                await AddConfiguredMetadataAsync(options, artifactSettings, source, token);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
@@ -89,11 +90,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
+            IEndpointInfo source,
             CancellationToken token)
         {
             try
             {
-                AddConfiguredMetadata(options, artifactSettings);
+                await AddConfiguredMetadataAsync(options, artifactSettings, source, token);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
@@ -125,21 +127,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 // Write blob headers
                 await blobClient.SetHttpHeadersAsync(CreateHttpHeaders(artifactSettings), cancellationToken: token);
 
+                Dictionary<string, string> mergedMetadata = new Dictionary<string, string>(artifactSettings.Metadata);
+
+                foreach (var metadataPair in artifactSettings.CustomMetadata)
+                {
+                    if (!mergedMetadata.ContainsKey(metadataPair.Key))
+                    {
+                        mergedMetadata[metadataPair.Key] = metadataPair.Value;
+                    }
+                    else
+                    {
+                        Logger.DuplicateKeyInMetadata(metadataPair.Key);
+                    }
+                }
+
                 try
                 {
-                    Dictionary<string, string> mergedMetadata = artifactSettings.Metadata.Union(artifactSettings.CustomMetadata).ToDictionary(pair => pair.Key, pair => pair.Value);
-
                     // Write blob metadata
                     await blobClient.SetMetadataAsync(mergedMetadata, cancellationToken: token);
                 }
                 catch (Exception ex) when (ex is InvalidOperationException || ex is RequestFailedException)
                 {
                     Logger.InvalidMetadata(ex);
-                    await blobClient.SetMetadataAsync(artifactSettings.Metadata, cancellationToken: token);
-                }
-                catch (ArgumentException ex)
-                {
-                    Logger.DuplicateKeyInMetadata(ex);
                     await blobClient.SetMetadataAsync(artifactSettings.Metadata, cancellationToken: token);
                 }
 
@@ -167,23 +176,34 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
         }
 
-        public void AddConfiguredMetadata(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings)
+        public async Task AddConfiguredMetadataAsync(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings, IEndpointInfo endpointInfo, CancellationToken token)
         {
+            DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
+
+            Dictionary<string, string> envBlock = await client.GetProcessEnvironmentAsync(token);
+
             if (options.IncludeHostNameAsMetadata)
             {
-                try
+                if (envBlock.TryGetValue(HostNameMetadataKey, out string hostNameValue))
                 {
-                    artifactSettings.Metadata.Add(HostNameMetadataKey, Dns.GetHostName());
+                    artifactSettings.Metadata.Add(HostNameMetadataKey, hostNameValue);
                 }
-                catch (SocketException ex)
+                else if (envBlock.TryGetValue(ComputerNameMetadataKey, out string computerNameValue))
                 {
-                    Logger.GetHostNameFailed(ex);
+                    artifactSettings.Metadata.Add(ComputerNameMetadataKey, computerNameValue);
                 }
             }
 
             foreach (var metadataPair in options.Metadata)
             {
-                artifactSettings.CustomMetadata.Add(metadataPair.Key, Environment.GetEnvironmentVariable(metadataPair.Value));
+                if (envBlock.TryGetValue(metadataPair.Value, out string envVarValue))
+                {
+                    artifactSettings.CustomMetadata.Add(metadataPair.Key, envVarValue);
+                }
+                else
+                {
+                    Logger.EnvironmentVariableNotFound(metadataPair.Value);
+                }
             }
         }
 

@@ -880,7 +880,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Metadata cannot include duplicate keys; please use a different key..
+        ///   Looks up a localized string similar to Metadata cannot include duplicate keys; please change or remove the key &apos;{0}&apos;.
         /// </summary>
         internal static string LogFormatString_DuplicateKeyInMetadata {
             get {
@@ -948,6 +948,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_EndpointTimeout {
             get {
                 return ResourceManager.GetString("LogFormatString_EndpointTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The environment variable &apos;{0}&apos; could not be found on the target process..
+        /// </summary>
+        internal static string LogFormatString_EnvironmentVariableNotFound {
+            get {
+                return ResourceManager.GetString("LogFormatString_EnvironmentVariableNotFound", resourceCulture);
             }
         }
         

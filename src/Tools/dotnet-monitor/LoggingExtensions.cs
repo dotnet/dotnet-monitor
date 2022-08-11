@@ -387,8 +387,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_InvalidMetadata);
 
-        private static readonly Action<ILogger, Exception> _duplicateKeyInMetadata =
-            LoggerMessage.Define(
+        private static readonly Action<ILogger, string, Exception> _duplicateKeyInMetadata =
+            LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
@@ -398,6 +398,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.GetHostNameFailed.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_GetHostNameFailed);
+
+        private static readonly Action<ILogger, string, Exception> _environmentVariableNotFound =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.EnvironmentVariableNotFound.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
 
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
@@ -723,14 +729,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _invalidMetadata(logger, ex);
         }
 
-        public static void DuplicateKeyInMetadata(this ILogger logger, Exception ex)
+        public static void DuplicateKeyInMetadata(this ILogger logger, string duplicateKey)
         {
-            _duplicateKeyInMetadata(logger, ex);
+            _duplicateKeyInMetadata(logger, duplicateKey, null);
         }
 
         public static void GetHostNameFailed(this ILogger logger, Exception ex)
         {
             _getHostNameFailed(logger, ex);
+        }
+
+        public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
+        {
+            _environmentVariableNotFound(logger, environmentVariable, null);
         }
     }
 }

@@ -68,6 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 providerName,
                 action,
                 CreateSettings(source, fileName, contentType, collectionRuleMetadata),
+                source,
                 token);
 
             return new EgressResult(value);
@@ -79,6 +80,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 providerName,
                 action,
                 CreateSettings(source, fileName, contentType, collectionRuleMetadata),
+                source,
                 token);
 
             return new EgressResult(value);

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
@@ -30,6 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             FileSystemEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
+            IEndpointInfo source,
             CancellationToken token)
         {
             if (!Directory.Exists(options.DirectoryPath))

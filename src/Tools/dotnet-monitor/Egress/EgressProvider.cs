@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -60,6 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             TOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
+            IEndpointInfo source,
             CancellationToken token)
         {
             Func<Stream, CancellationToken, Task> wrappingAction = async (targetStream, token) =>
@@ -80,6 +82,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 options,
                 wrappingAction,
                 artifactSettings,
+                source,
                 token);
         }
 
@@ -97,6 +100,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             TOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
+            IEndpointInfo source,
             CancellationToken token);
 
         protected ILogger Logger { get; }

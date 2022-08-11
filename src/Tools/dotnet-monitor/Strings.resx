@@ -529,8 +529,8 @@
 3. existingProviderType: The type of provider that the new provider name was already registered.</comment>
   </data>
   <data name="LogFormatString_DuplicateKeyInMetadata" xml:space="preserve">
-    <value>Metadata cannot include duplicate keys; please use a different key.</value>
-    <comment>Gets a string similar to "Metadata cannot include duplicate keys; please use a different key.".</comment>
+    <value>Metadata cannot include duplicate keys; please change or remove the key '{0}'</value>
+    <comment>Gets a string similar to "Metadata cannot include duplicate keys; please change or remove the key '{0}'".</comment>
   </data>
   <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
     <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
@@ -573,6 +573,10 @@
   </data>
   <data name="LogFormatString_EndpointTimeout" xml:space="preserve">
     <value>Unexpected timeout from process {processId}. Process will no longer be monitored.</value>
+  </data>
+  <data name="LogFormatString_EnvironmentVariableNotFound" xml:space="preserve">
+    <value>The environment variable '{0}' could not be found on the target process.</value>
+    <comment>Gets a string similar to "The environment variable '{0}' could not be found on the target process.".</comment>
   </data>
   <data name="LogFormatString_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {link}</value>
