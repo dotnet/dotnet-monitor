@@ -94,7 +94,7 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 ## Stabilization
 
 1. Fix issues for the release in the release branch. Backport fixes to `main` branch and other prior release branches as needed.
-1. Invoke [build](<#Build Release Branch>) pipeline as needed.
+1. Invoke [build](#build-release-branch) pipeline as needed.
 1. After successful build, test changes from [dotnet-tools](https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json) feed. Images from the `nightly` branch of the `dotnet-docker` repository will be recreated the next day after the successful build of the release branch.
 
 ## Release to nuget.org and Add GitHub Release
@@ -116,7 +116,7 @@ The remainder of the release will automatically push NuGet packages to nuget.org
 ## Release Docker Images
 
 1. Contact `dotnet-docker` team with final version that should be released. This version should be latest version in the `nightly` branch.
-1. Docker image build from main branch requires assets to be published to `dotnetcli` and `dotnetclichecksums` storage accounts. See [Release to Storage Accounts](#Release-to-Storage-Accounts).
+1. Docker image build from main branch requires assets to be published to `dotnetcli` and `dotnetclichecksums` storage accounts. See [Release to Storage Accounts](#release-to-storage-accounts).
 1. The `dotnet-docker` team will merge from `nightly` branch to `main` branch and wait for `dotnet-monitor` team approval. Typically, these changes are completed the day before the release date.
 1. The `dotnet-docker` team will start the build ahead of the release and wait for the all-clear from `dotnet-monitor` team before publishing the images.
 

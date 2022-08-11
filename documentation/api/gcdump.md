@@ -29,7 +29,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `name` | query | false | string | The name of the process. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected GC dump. When not specified, the GC dump is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
+See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
 If none of `pid`, `uid`, or `name` are specified, a GC dump of the [default process](defaultprocess.md) will be captured. Attempting to capture a GC dump of the default process when the default process cannot be resolved will fail.
 
@@ -47,7 +47,7 @@ Allowed schemes:
 |---|---|---|---|
 | 200 OK | stream | A GC dump of the process. | `application/octet-stream` |
 | 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
-| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many GC dump requests at this time. Try to request a GC dump at a later time. | `application/problem+json` |
 

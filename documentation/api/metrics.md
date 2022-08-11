@@ -9,7 +9,7 @@ The metrics are collected from the following providers by default:
 
 All of the counters for each of these providers are collected by default.
 
-> **NOTE:** This route collects metrics only from a single process. If there are no processes or more than one process, the endpoint will not return information. In order to facilitate observing a single process, the tool can be configured to listen for connections from a target process; see [Default Process Configuration](<../configuration.md#Default-Process-Configuration>) and [Diagnostic Port Configuration](<../configuration.md#Diagnostic-Port-Configuration>) for more details.
+> **NOTE:** This route collects metrics only from a single process. If there are no processes or more than one process, the endpoint will not return information. In order to facilitate observing a single process, the tool can be configured to listen for connections from a target process; see [Default Process Configuration](<../configuration.md#default-process-configuration>) and [Diagnostic Port Configuration](<../configuration.md#diagnostic-port-configuration>) for more details.
 
 ## HTTP Route
 
@@ -32,7 +32,7 @@ Authentication is not enforced for this route.
 | Name | Type | Description | Content Type |
 |---|---|---|---|
 | 200 OK | | A list of metrics for a single process in the Prometheus exposition format. | `text/plain` |
-| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples
@@ -160,4 +160,4 @@ systemruntime_active_timer_count 0 1618889186313
 
 ### Custom Metrics
 
-The metrics providers and counter names to return from this route can be specified via configuration. See [Metrics Configuration](<../configuration.md#Metrics-Configuration>) for more information.
+The metrics providers and counter names to return from this route can be specified via configuration. See [Metrics Configuration](<../configuration.md#metrics-configuration>) for more information.
