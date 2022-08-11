@@ -4,6 +4,9 @@ on:
     paths: ['**.md']
     branches: ['main']
 
+permissions:
+  pull-requests: read
+
 jobs:
   check-markdown-links:
     name: 'Check markdown links'
