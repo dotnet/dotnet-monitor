@@ -6,30 +6,48 @@
         {
             "label": "Build",
             "type": "shell",
-            "windows":{ "command": ".\\build.cmd"},
-            "linux":{"command": "./build.sh"},
-            "osx":{"command": "./build.sh"},
+            "windows": {
+                "command": ".\\build.cmd"
+            },
+            "linux": {
+                "command": "./build.sh"
+            },
+            "osx": {
+                "command": "./build.sh"
+            },
             "args": [
                 "-c",
                 "${input:configuration}"
             ],
             "group": {
-              "kind": "build",
-              "isDefault": true
+                "kind": "build",
+                "isDefault": true
             },
-            "problemMatcher": ["$msCompile"]
+            "problemMatcher": [
+                "$msCompile"
+            ]
         },
         {
             "label": "Test",
             "type": "shell",
-            "windows":{ "command": ".\\test.cmd" },
-            "linux":{"command": "./test.sh"},
-            "osx":{"command": "./test.sh"},
+            "windows": {
+                "command": ".\\test.cmd"
+            },
+            "linux": {
+                "command": "./test.sh"
+            },
+            "osx": {
+                "command": "./test.sh"
+            },
             "args": [
                 "-c",
                 "${input:configuration}",
                 "/p:TestGroup=${input:testgroup}"
             ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
             "problemMatcher": []
         }
     ],
@@ -39,14 +57,21 @@
             "type": "pickString",
             "default": "Debug",
             "description": "The build configuration",
-            "options": [ "Debug", "Release" ]
+            "options": [
+                "Debug",
+                "Release"
+            ]
         },
         {
             "id": "testgroup",
             "type": "pickString",
             "default": "PR",
             "description": "The test group",
-            "options": [ "CI", "PR", "All" ]
+            "options": [
+                "CI",
+                "PR",
+                "All"
+            ]
         }
     ]
 }
