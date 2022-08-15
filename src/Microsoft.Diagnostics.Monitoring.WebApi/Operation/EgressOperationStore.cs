@@ -121,13 +121,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public IEnumerable<Models.OperationSummary> GetOperations()
+        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey)
         {
             lock (_requests)
             {
                 return _requests.Select((kvp) =>
                 {
                     EgressProcessInfo processInfo = kvp.Value.EgressRequest.EgressOperation.ProcessInfo;
+
+                    if (processKey != null)
+                    {
+                        if (processInfo.ProcessName != processKey.Value.ProcessName
+                            && processInfo.ProcessId != processKey.Value.ProcessId
+                            && processInfo.RuntimeInstanceCookie != processKey.Value.RuntimeInstanceCookie)
+                        {
+                            return null;
+                        }
+                    }
+
                     return new Models.OperationSummary
                     {
                         OperationId = kvp.Key,
@@ -141,7 +152,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                                 Uid = processInfo.RuntimeInstanceCookie
                             } : null
                     };
-                }).ToList();
+                }).Where(summary => summary != null).ToList();
             }
         }
 

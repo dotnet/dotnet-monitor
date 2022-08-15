@@ -30,14 +30,28 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
         }
 
+        /// <summary>
+        /// Gets the operations list for the specified process (or all processes if left unspecified).
+        /// </summary>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
         [HttpGet]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(IEnumerable<Models.OperationSummary>), StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<Models.OperationSummary>> GetOperations()
+        public ActionResult<IEnumerable<Models.OperationSummary>> GetOperations(
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null)
         {
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
+
             return this.InvokeService(() =>
             {
-                return new ActionResult<IEnumerable<Models.OperationSummary>>(_operationsStore.GetOperations());
+                return new ActionResult<IEnumerable<Models.OperationSummary>>(_operationsStore.GetOperations(processKey));
             }, _logger);
         }
 

@@ -34,5 +34,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             scope.AddArtifactEndpointInfo(endpointInfo);
             return scope;
         }
+
+        public static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
+        {
+            return (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+        }
     }
 }
