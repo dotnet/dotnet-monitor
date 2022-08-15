@@ -151,7 +151,7 @@
     <comment>Gets a string similar to "Azure blob egress failed.".</comment>
   </data>
   <data name="ErrorMessage_EgressFileFailedDetailed" xml:space="preserve">
-    <value>File system egress failed" {0}</value>
+    <value>File system egress failed: {0}</value>
     <comment>Gets the format string for egress failure to File (with an inner message).
 1 Format Parameter:
 0. innerMessage: The detailed inner message with additional error context.</comment>
@@ -580,9 +580,9 @@
 1. variableName: The name of the environment variable being read
 2. processId: The id of the process to which the variable is being read</comment>
   </data>
-  <data name="LogFormatString_InsecureAutheticationConfiguration" xml:space="preserve">
+  <data name="LogFormatString_InsecureAuthenticationConfiguration" xml:space="preserve">
     <value>WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.</value>
-    <comment>Gets the format string that is printed in the 14:InsecureAutheticationConfiguration event.
+    <comment>Gets the format string that is printed in the 14:InsecureAuthenticationConfiguration event.
 0 Format Parameters</comment>
   </data>
   <data name="LogFormatString_IntermediateFileDeletionFailed" xml:space="preserve">
