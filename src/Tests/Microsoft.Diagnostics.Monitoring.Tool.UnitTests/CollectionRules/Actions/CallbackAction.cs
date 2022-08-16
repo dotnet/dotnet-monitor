@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
 
         public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
-            throw new NotImplementedException();
+            return StartAsync(token); // We don't care about collectionRuleMetadata for testing (yet)
         }
 
         public Task StartAsync(CancellationToken token)
@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
 
         public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
-            throw new NotImplementedException();
+            return StartAsync(token); // We don't care about collectionRuleMetadata for testing (yet)
         }
 
         public Task StartAsync(CancellationToken token)
