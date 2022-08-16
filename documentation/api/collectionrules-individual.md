@@ -23,7 +23,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `name` | query | false | string | The name of the process. |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
+See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
 If none of `pid`, `uid`, or `name` are specified, the detailed description of the collection rule for the [default process](defaultprocess.md) will be provided. Attempting to get the detailed description from the default process when the default process cannot be resolved will fail.
 
@@ -39,8 +39,8 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [CollectionRuleDetailedDescription](definitions.md#CollectionRuleDetailedDescription) | The detailed information about the current state of the specified collection rule. | `application/json` |
-| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 200 OK | [CollectionRuleDetailedDescription](definitions.md#collectionruledetaileddescription) | The detailed information about the current state of the specified collection rule. | `application/json` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples

@@ -26,8 +26,8 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [ProcessIdentifier](definitions.md#ProcessIdentifier)[] | An array of process identifier objects. | `application/json` |
-| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 200 OK | [ProcessIdentifier](definitions.md#processidentifier)[] | An array of process identifier objects. | `application/json` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples
