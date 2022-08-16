@@ -1,0 +1,28 @@
+{
+    "$schema": "https://raw.githubusercontent.com/dotnet/dotnet-monitor/main/documentation/schema.json",
+    "CollectionRules":{
+        "BadResponseStatus": {
+            "Trigger": {
+                "Type": "AspNetResponseStatus",
+                "Settings": {
+                    "ResponseCount": 1,
+                    "StatusCodes": [
+                        "400-499"
+                    ]
+                }
+            },
+            "Actions": [
+                {
+                    "Type": "CollectDump",
+                    "Settings": {
+                    "Egress": "monitorBlob",
+                    "Type": "Mini"
+                    }
+                }
+            ],
+            "Limits": {
+                "ActionCount": 1
+            }
+        }
+    }
+}

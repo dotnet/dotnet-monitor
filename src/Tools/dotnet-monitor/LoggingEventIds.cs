@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         EgressProviderInvokeStreamAction = 11,
         EgressProviderSavedStream = 12,
         NoAuthentication = 13,
-        InsecureAutheticationConfiguration = 14,
+        InsecureAuthenticationConfiguration = 14,
         UnableToListenToAddress = 15,
         BoundDefaultAddress = 16,
         BoundMetricsAddress = 17,

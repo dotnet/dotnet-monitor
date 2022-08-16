@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
@@ -72,13 +71,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 configureOptions.Providers.Add<BrotliCompressionProvider>();
                 configureOptions.MimeTypes = new List<string> { ContentTypes.ApplicationOctetStream };
-            });
-
-            // This is needed to allow the StreamingLogger to synchronously write to the output stream.
-            // Eventually should switch StreamingLoggger to something that allows for async operations.
-            services.Configure<KestrelServerOptions>(options =>
-            {
-                options.AllowSynchronousIO = true;
             });
 
             var metricsOptions = new MetricsOptions();

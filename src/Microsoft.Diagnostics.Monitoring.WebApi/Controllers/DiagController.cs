@@ -646,6 +646,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
+            // Allow sync I/O on logging routes due to StreamLogger's usage.
+            HttpContext.AllowSynchronousIO();
+
             string fileName = LogsUtilities.GenerateLogsFileName(processInfo.EndpointInfo);
             string contentType = LogsUtilities.GetLogsContentType(format.Value);
 
