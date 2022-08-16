@@ -111,20 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             if (!string.IsNullOrEmpty(commandLine))
             {
                 // Get the process name from the command line
-                bool isWindowsProcess = false;
-                if (string.IsNullOrEmpty(endpointInfo.OperatingSystem))
-                {
-                    // If operating system is null, the process is likely .NET Core 3.1 (which doesn't have the GetProcessInfo command).
-                    // Since the underlying diagnostic communication channel used by the .NET runtime requires that the diagnostic process
-                    // must be running on the same type of operating system as the target process (e.g. dotnet-monitor must be running on Windows
-                    // if the target process is running on Windows), then checking the local operating system should be a sufficient heuristic
-                    // to determine the operating system of the target process.
-                    isWindowsProcess = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-                }
-                else
-                {
-                    isWindowsProcess = ProcessOperatingSystemWindowsValue.Equals(endpointInfo.OperatingSystem, StringComparison.OrdinalIgnoreCase);
-                }
+                bool isWindowsProcess = IsWindowsProcess(endpointInfo);
 
                 string processPath = CommandLineHelper.ExtractExecutablePath(commandLine, isWindowsProcess);
                 if (!string.IsNullOrEmpty(processPath))
@@ -142,6 +129,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 endpointInfo,
                 commandLine,
                 processName);
+        }
+
+        public static bool IsWindowsProcess(IEndpointInfo endpointInfo)
+        {
+            if (string.IsNullOrEmpty(endpointInfo.OperatingSystem))
+            {
+                // If operating system is null, the process is likely .NET Core 3.1 (which doesn't have the GetProcessInfo command).
+                // Since the underlying diagnostic communication channel used by the .NET runtime requires that the diagnostic process
+                // must be running on the same type of operating system as the target process (e.g. dotnet-monitor must be running on Windows
+                // if the target process is running on Windows), then checking the local operating system should be a sufficient heuristic
+                // to determine the operating system of the target process.
+                return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            }
+            else
+            {
+                return ProcessOperatingSystemWindowsValue.Equals(endpointInfo.OperatingSystem, StringComparison.OrdinalIgnoreCase);
+            }
         }
 
         public IEndpointInfo EndpointInfo { get; }

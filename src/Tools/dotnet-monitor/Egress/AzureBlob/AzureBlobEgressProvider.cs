@@ -184,13 +184,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             if (options.IncludeHostNameAsMetadata)
             {
-                if (envBlock.TryGetValue(HostNameMetadataKey, out string hostNameValue))
-                {
-                    artifactSettings.Metadata.Add(HostNameMetadataKey, hostNameValue);
-                }
-                else if (envBlock.TryGetValue(ComputerNameMetadataKey, out string computerNameValue))
+                if (ProcessInfoImpl.IsWindowsProcess(endpointInfo) && envBlock.TryGetValue(ComputerNameMetadataKey, out string computerNameValue))
                 {
                     artifactSettings.Metadata.Add(ComputerNameMetadataKey, computerNameValue);
+                }
+                else if (envBlock.TryGetValue(HostNameMetadataKey, out string hostNameValue))
+                {
+                    artifactSettings.Metadata.Add(HostNameMetadataKey, hostNameValue);
                 }
             }
 
