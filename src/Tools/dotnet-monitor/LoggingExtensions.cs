@@ -393,12 +393,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
 
-        private static readonly Action<ILogger, Exception> _getHostNameFailed =
-            LoggerMessage.Define(
-                eventId: LoggingEventIds.GetHostNameFailed.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_GetHostNameFailed);
-
         private static readonly Action<ILogger, string, Exception> _environmentVariableNotFound =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.EnvironmentVariableNotFound.EventId(),
@@ -732,11 +726,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DuplicateKeyInMetadata(this ILogger logger, string duplicateKey)
         {
             _duplicateKeyInMetadata(logger, duplicateKey, null);
-        }
-
-        public static void GetHostNameFailed(this ILogger logger, Exception ex)
-        {
-            _getHostNameFailed(logger, ex);
         }
 
         public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
