@@ -21,7 +21,6 @@ x64/
 .dotnet-test/
 .packages/
 .tools/
-.vscode/
 
 # Per-user project properties
 launchSettings.json

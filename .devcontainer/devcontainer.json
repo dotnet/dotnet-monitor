@@ -1,0 +1,72 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+    "name": "C# (.NET)",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            "VARIANT": "6.0-bullseye"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-dotnettools.csharp",
+                "EditorConfig.EditorConfig",
+                "ms-vscode.powershell",
+                "tintoy.msbuild-project-tools",
+                "streetsidesoftware.code-spell-checker"
+            ],
+            "settings": {
+                "files.associations": {
+                    "*.csproj": "msbuild",
+                    "*.targets": "msbuild",
+                    "*.vbproj": "msbuild",
+                    "*.props": "msbuild",
+                    "*.resx": "xml"
+                },
+
+                // ms-dotnettools.csharp settings
+                "csharp.format.enable": true,
+                "csharp.semanticHighlighting.enabled": true,
+
+                // ms-dotnettools.csharp settings
+                "omnisharp.path": "latest",
+                "omnisharp.defaultLaunchSolution": "dotnet-monitor.sln",
+                "omnisharp.disableMSBuildDiagnosticWarning": true,
+                "omnisharp.useModernNet": true,
+                "omnisharp.enableAsyncCompletion": true,
+                "omnisharp.enableEditorConfigSupport": true,
+                "omnisharp.enableImportCompletion": true,
+                "omnisharp.enableRoslynAnalyzers": true,
+                "omnisharp.organizeImportsOnFormat": true,
+                "omnisharp.autoStart": true,
+
+                // ms-vscode.powershell settings
+                "powershell.promptToUpdatePowerShell": false,
+                "powershell.integratedConsole.showOnStartup": false,
+                "powershell.startAutomatically": false
+            }
+        }
+    },
+    "postCreateCommand": "bash -i ${containerWorkspaceFolder}/.devcontainer/scripts/container-creation.sh",
+    "remoteUser": "vscode",
+    "features": {
+        "github-cli": "latest",
+        "azure-cli": "latest",
+        "powershell": "latest"
+    },
+    "remoteEnv": {
+        "PATH": "${containerWorkspaceFolder}/.dotnet:${containerEnv:PATH}",
+        "DOTNET_ROOT": "${containerWorkspaceFolder}/.dotnet",
+        "DOTNET_MULTILEVEL_LOOKUP": "0"
+    },
+    "portsAttributes": {
+        "52323": {
+            "label": "dotnet-monitor"
+        },
+        "52325": {
+            "label": "dotnet-monitor: metrics"
+        }
+    }
+}
