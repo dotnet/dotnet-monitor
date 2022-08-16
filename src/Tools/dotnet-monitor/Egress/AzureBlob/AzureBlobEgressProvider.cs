@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -187,15 +188,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             try
             {
                 QueueClient queueClient = await GetQueueClientAsync(options, token);
-
-                if (queueClient.Exists())
-                {
-                    await queueClient.SendMessageAsync(blobName, cancellationToken: token);
-                }
-                else
-                {
-                    Logger.QueueDoesNotExist(options.QueueName);
-                }
+                await queueClient.SendMessageAsync(blobName, cancellationToken: token);
+            }
+            catch (RequestFailedException ex) when (ex.Status == ((int)HttpStatusCode.NotFound))
+            {
+                Logger.QueueDoesNotExist(options.QueueName);
             }
             catch (Exception ex)
             {
@@ -211,6 +208,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             };
 
             QueueServiceClient serviceClient;
+            bool mayHaveLimitedPermissions = false;
             if (!string.IsNullOrWhiteSpace(options.SharedAccessSignature))
             {
                 var serviceUriBuilder = new UriBuilder(options.QueueAccountUri)
@@ -219,6 +217,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 };
 
                 serviceClient = new QueueServiceClient(serviceUriBuilder.Uri, clientOptions);
+                mayHaveLimitedPermissions = true;
             }
             else if (!string.IsNullOrEmpty(options.AccountKey))
             {
@@ -247,11 +246,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             QueueClient queueClient = serviceClient.GetQueueClient(options.QueueName);
 
-            // This is done for instances where a SAS token may not have permission to create queues,
-            // but is allowed to write a message out to one that already exists
-            if (!await queueClient.ExistsAsync())
+            try
             {
                 await queueClient.CreateIfNotExistsAsync(cancellationToken: token);
+            }
+            catch (RequestFailedException ex) when (mayHaveLimitedPermissions && ex.Status == ((int)HttpStatusCode.Forbidden))
+            {
+                // Ignore forbidden exceptions from trying to ensure the queue exists when dealing with potentially restrictive permissions
+                // as checking if a queue exists requires account-level access.
             }
 
             return queueClient;
@@ -259,6 +261,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
         private async Task<BlobContainerClient> GetBlobContainerClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
         {
+            bool mayHaveLimitedPermissions = false;
             BlobServiceClient serviceClient;
             if (!string.IsNullOrWhiteSpace(options.SharedAccessSignature))
             {
@@ -268,6 +271,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 };
 
                 serviceClient = new BlobServiceClient(serviceUriBuilder.Uri);
+                mayHaveLimitedPermissions = true;
             }
             else if (!string.IsNullOrEmpty(options.AccountKey))
             {
@@ -295,7 +299,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
 
             BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(options.ContainerName);
-            await containerClient.CreateIfNotExistsAsync(cancellationToken: token);
+
+            try
+            {
+                await containerClient.CreateIfNotExistsAsync(cancellationToken: token);
+            }
+            catch (RequestFailedException ex) when (mayHaveLimitedPermissions && ex.Status == ((int)HttpStatusCode.Forbidden))
+            {
+                // Ignore forbidden exceptions from trying to ensure the blob container exists when dealing with potentially restrictive permissions
+                // as checking if a container exists requires account-level access.
+            }
 
             return containerClient;
         }
