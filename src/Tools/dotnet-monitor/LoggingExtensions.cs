@@ -59,9 +59,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly Action<ILogger, Exception> _insecureAuthenticationConfiguration =
             LoggerMessage.Define(
-                eventId: LoggingEventIds.InsecureAutheticationConfiguration.EventId(),
+                eventId: LoggingEventIds.InsecureAuthenticationConfiguration.EventId(),
                 logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_InsecureAutheticationConfiguration);
+                formatString: Strings.LogFormatString_InsecureAuthenticationConfiguration);
 
         private static readonly Action<ILogger, string, Exception> _unableToListenToAddress =
             LoggerMessage.Define<string>(
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_BoundMetricsAddress);
 
-        private static readonly Action<ILogger, string, Exception> _optionsValidationFalure =
+        private static readonly Action<ILogger, string, Exception> _optionsValidationFailure =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.OptionsValidationFailure.EventId(),
                 logLevel: LogLevel.Critical,
@@ -463,7 +463,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void OptionsValidationFailure(this ILogger logger, OptionsValidationException exception)
         {
             foreach (string failure in exception.Failures)
-                _optionsValidationFalure(logger, failure, null);
+                _optionsValidationFailure(logger, failure, null);
         }
 
         public static void RunningElevated(this ILogger logger)

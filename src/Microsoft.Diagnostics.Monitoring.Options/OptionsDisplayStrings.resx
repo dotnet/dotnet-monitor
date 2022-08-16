@@ -698,7 +698,7 @@
     <comment>The description provided for the Providers parameter on CollectLiveMetricsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup" xml:space="preserve">
-    <value>In 'listen' connection mode, deletes the domain socket file used for diagnostic port communication.</value>
+    <value>In 'Listen' connection mode, deletes the domain socket file used for diagnostic port communication.</value>
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_IncludeHostNameAsMetadata" xml:space="preserve">
     <value>Determines if the host name should be included as blob metadata.</value>

@@ -82,16 +82,29 @@
             "parameters": {
               "label": "automatic-pr"
             }
-          },
-          {
-            "name": "addLabel",
-            "parameters": {
-              "label": "dependencies"
-            }
           }
         ]
       },
       "id": "PUcyzKaH6va"
+    },
+    {
+      "taskType": "trigger",
+      "capabilityId": "PrAutoLabel",
+      "subCapability": "Path",
+      "version": "1.0",
+      "config": {
+        "taskName": "Add tags (paths)",
+        "configs": [
+          {
+            "label": "dependencies",
+            "pathFilter": [
+              "global.json",
+              "eng/Versions.props",
+              "eng/Version.Details.xml"
+            ]
+          }
+        ]
+      }
     }
   ],
   "userGroups": []
