@@ -5,7 +5,7 @@ set -e
 # Install SDK and tool dependencies before container starts
 # Also run the full restore on the repo so that go-to definition
 # and other language features will be available in C# files
-./restore.sh
+./restore.sh -ci
 
 # Add the .NET dev certs by default for dotnet-monitor's usage on launch.
 # Do **NOT** do this in base images.
