@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File system egress failed&quot; {0}.
+        ///   Looks up a localized string similar to File system egress failed: {0}.
         /// </summary>
         internal static string ErrorMessage_EgressFileFailedDetailed {
             get {
@@ -963,9 +963,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         /// <summary>
         ///   Looks up a localized string similar to WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments..
         /// </summary>
-        internal static string LogFormatString_InsecureAutheticationConfiguration {
+        internal static string LogFormatString_InsecureAuthenticationConfiguration {
             get {
-                return ResourceManager.GetString("LogFormatString_InsecureAutheticationConfiguration", resourceCulture);
+                return ResourceManager.GetString("LogFormatString_InsecureAuthenticationConfiguration", resourceCulture);
             }
         }
         

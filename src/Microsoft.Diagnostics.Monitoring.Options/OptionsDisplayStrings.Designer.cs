@@ -804,7 +804,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In &apos;listen&apos; connection mode, deletes the domain socket file used for diagnostic port communication..
+        ///   Looks up a localized string similar to In &apos;Listen&apos; connection mode, deletes the domain socket file used for diagnostic port communication..
         /// </summary>
         public static string DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup {
             get {
