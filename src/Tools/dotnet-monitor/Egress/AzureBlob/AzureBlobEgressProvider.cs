@@ -31,8 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         EgressProvider<AzureBlobEgressProviderOptions>
     {
         private int BlobStorageBufferSize = 4 * 1024 * 1024;
-        private readonly string HostNameMetadataKey = "HOSTNAME";
-        private readonly string ComputerNameMetadataKey = "COMPUTERNAME";
 
         public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
             : base(logger)
@@ -181,18 +179,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
 
             Dictionary<string, string> envBlock = await client.GetProcessEnvironmentAsync(token);
-
-            if (options.IncludeHostNameAsMetadata)
-            {
-                if (ProcessInfoImpl.IsWindowsProcess(endpointInfo) && envBlock.TryGetValue(ComputerNameMetadataKey, out string computerNameValue))
-                {
-                    artifactSettings.Metadata.Add(ComputerNameMetadataKey, computerNameValue);
-                }
-                else if (envBlock.TryGetValue(HostNameMetadataKey, out string hostNameValue))
-                {
-                    artifactSettings.Metadata.Add(HostNameMetadataKey, hostNameValue);
-                }
-            }
 
             foreach (var metadataPair in options.Metadata)
             {
