@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -30,7 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly EgressOperationQueue _taskQueue;
         private readonly RequestLimitTracker _requestLimits;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IDiagnosticServices _diagnosticServices;
 
         public EgressOperationStore(
             EgressOperationQueue queue,
@@ -40,7 +37,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _taskQueue = queue;
             _requestLimits = requestLimits;
             _serviceProvider = serviceProvider;
-            _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
         }
 
         public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
@@ -125,25 +121,38 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public async Task<IEnumerable<Models.OperationSummary>> GetOperationsAsync(ProcessKey? processKey, CancellationToken token)
+        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey)
         {
-            IProcessInfo processInfo = null;
-            if (processKey != null)
-            {
-                processInfo = await _diagnosticServices.GetProcessAsync(processKey, token);
-            }
-
             lock (_requests)
             {
                 return _requests.Select((kvp) =>
                 {
-                    EgressProcessInfo egressProcessInfo = kvp.Value.EgressRequest.EgressOperation.ProcessInfo;
+                    EgressProcessInfo processInfo = kvp.Value.EgressRequest.EgressOperation.ProcessInfo;
 
-                    if (processInfo != null)
+                    if (processKey != null)
                     {
-                        if (egressProcessInfo.ProcessName != processInfo.ProcessName
-                            || egressProcessInfo.ProcessId != processInfo.EndpointInfo.ProcessId
-                            || egressProcessInfo.RuntimeInstanceCookie != processInfo.EndpointInfo.RuntimeInstanceCookie)
+                        bool isValid = true;
+
+                        // Check that if a field is specified, it meets the conditions.
+                        if (!string.IsNullOrEmpty(processKey.Value.ProcessName)
+                            && processInfo.ProcessName != processKey.Value.ProcessName)
+                        {
+                            isValid = false;
+                        }
+
+                        if (processKey.Value.ProcessId.HasValue
+                            && processInfo.ProcessId != processKey.Value.ProcessId.Value)
+                        {
+                            isValid = false;
+                        }
+
+                        if (processKey.Value.RuntimeInstanceCookie.HasValue
+                            && processInfo.RuntimeInstanceCookie != processKey.Value.RuntimeInstanceCookie.Value)
+                        {
+                            isValid = false;
+                        }
+
+                        if (!isValid)
                         {
                             return null;
                         }
@@ -154,12 +163,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         OperationId = kvp.Key,
                         CreatedDateTime = kvp.Value.CreatedDateTime,
                         Status = kvp.Value.State,
-                        Process = egressProcessInfo != null ?
+                        Process = processInfo != null ?
                             new Models.OperationProcessInfo
                             {
-                                Name = egressProcessInfo.ProcessName,
-                                ProcessId = egressProcessInfo.ProcessId,
-                                Uid = egressProcessInfo.RuntimeInstanceCookie
+                                Name = processInfo.ProcessName,
+                                ProcessId = processInfo.ProcessId,
+                                Uid = processInfo.RuntimeInstanceCookie
                             } : null
                     };
                 }).Where(summary => summary != null).ToList();
