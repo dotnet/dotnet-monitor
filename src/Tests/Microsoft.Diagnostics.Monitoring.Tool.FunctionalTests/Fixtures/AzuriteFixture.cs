@@ -33,8 +33,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
     /// - Creates accounts pool, so that each test has own account, bump up pool size if you're running out of accounts
     /// - Starts Azurite process
     /// - Tears down Azurite process after test class is run
-    /// It requires Azurite V3. See instalation insturctions here https://github.com/Azure/Azurite.
-    /// After installing Azuirte define env variable AZURE_AZURITE_LOCATION that points to azurite installation (e.g. C:\Users\kasobol.REDMOND\AppData\Roaming\npm)
+    /// It requires Azurite V3. See installation instructions here https://github.com/Azure/Azurite.
+    /// After installing Azurite define env variable AZURE_AZURITE_LOCATION that points to azurite installation
     /// </summary>
     public class AzuriteFixture : IDisposable
     {
