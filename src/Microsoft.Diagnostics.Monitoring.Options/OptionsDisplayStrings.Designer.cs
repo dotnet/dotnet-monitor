@@ -241,16 +241,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Determines if the host name should be included as blob metadata..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_IncludeHostNameAsMetadata {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_IncludeHostNameAsMetad" +
-                        "ata", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId {
