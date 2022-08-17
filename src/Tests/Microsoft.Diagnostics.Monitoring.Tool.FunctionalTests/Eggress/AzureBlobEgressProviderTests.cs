@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Eggress
         {
             List<BlobItem> blobs = new List<BlobItem>();
 
-            var resultSegment = containerClient.GetBlobsAsync().AsPages(default);
+            var resultSegment = containerClient.GetBlobsAsync(BlobTraits.All).AsPages(default);
             await foreach (Page<BlobItem> blobPage in resultSegment)
             {
                 foreach (BlobItem blob in blobPage.Values)
