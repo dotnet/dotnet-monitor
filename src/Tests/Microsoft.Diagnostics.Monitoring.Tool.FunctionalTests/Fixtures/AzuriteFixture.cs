@@ -35,7 +35,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
     /// - Tears down Azurite process after test class is run
     /// It requires Azurite V3. See instalation insturctions here https://github.com/Azure/Azurite.
     /// After installing Azuirte define env variable AZURE_AZURITE_LOCATION that points to azurite installation (e.g. C:\Users\kasobol.REDMOND\AppData\Roaming\npm)
-    /// NodeJS installation is also required and node should be in the $PATH.
     /// </summary>
     public class AzuriteFixture : IDisposable
     {
