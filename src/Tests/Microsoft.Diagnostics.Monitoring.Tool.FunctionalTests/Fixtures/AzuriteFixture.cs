@@ -153,7 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
             return startInfo;
         }
 
-        public void SkipTestIfNotInitialized()
+        public void SkipTestIfNotAvailable()
         {
             if (_startupError != null)
             {
