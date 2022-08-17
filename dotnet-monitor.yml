@@ -8,6 +8,12 @@ pr:
     - release/*
     - internal/release/*
     - feature/*
+  paths:
+    exclude:
+    - .devcontainer
+    - .github
+    - .vscode
+    - '**.md'
 
 schedules:
 - cron: 15 11 * * 6
