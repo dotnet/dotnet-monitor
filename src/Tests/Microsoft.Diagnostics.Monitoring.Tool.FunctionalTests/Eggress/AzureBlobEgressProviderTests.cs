@@ -11,6 +11,10 @@ using Xunit.Abstractions;
 using System;
 using Azure.Storage.Sas;
 using System.Threading;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Azure.Storage.Blobs.Models;
+using Azure;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Eggress
 {
@@ -48,8 +52,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Eggress
             // Act
 
             // Assert
-            var foo = await containerClient.GetBlobsAsync(cancellationToken: cancellationToken);
+            List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
+
+
             Assert.True(true);
+        }
+
+        private async Task<List<BlobItem>> GetAllBlobsAsync(BlobContainerClient containerClient)
+        {
+            List<BlobItem> blobs = new List<BlobItem>();
+
+            var resultSegment = containerClient.GetBlobsAsync().AsPages(default);
+            await foreach (Page<BlobItem> blobPage in resultSegment)
+            {
+                foreach (BlobItem blob in blobPage.Values)
+                {
+                    blobs.Add(blob);
+                }
+            }
+
+            return blobs;
         }
     }
 }
