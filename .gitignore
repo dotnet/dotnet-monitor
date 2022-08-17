@@ -96,6 +96,11 @@ ClientBin/
 App_Data/*.mdf
 App_Data/*.ldf
 
+# Azurite folders/files
+**/__*storage__/
+**/__azurite*
+.azurite
+
 # =========================
 # Windows detritus
 # =========================
