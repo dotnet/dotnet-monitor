@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -40,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(IEnumerable<Models.OperationSummary>), StatusCodes.Status200OK)]
-        public Task<ActionResult<IEnumerable<Models.OperationSummary>>> GetOperations(
+        public ActionResult<IEnumerable<Models.OperationSummary>> GetOperations(
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -50,10 +49,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            return this.InvokeService(async () =>
+            return this.InvokeService(() =>
             {
-                var operations = await _operationsStore.GetOperationsAsync(processKey, HttpContext.RequestAborted);
-                return new ActionResult<IEnumerable<Models.OperationSummary>>(operations);
+                return new ActionResult<IEnumerable<Models.OperationSummary>>(_operationsStore.GetOperations(processKey));
             }, _logger);
         }
 
