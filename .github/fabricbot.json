@@ -4,7 +4,7 @@
     {
       "taskType": "trigger",
       "capabilityId": "AutoMerge",
-      "subCapability": "AutoMerge",
+         "subCapability": "AutoMerge",
       "version": "1.0",
       "config": {
         "taskName": "Automatically merge pull requests",
