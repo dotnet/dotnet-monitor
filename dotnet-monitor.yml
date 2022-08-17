@@ -13,7 +13,7 @@ pr:
     - .devcontainer
     - .github
     - .vscode
-    - **.md
+    - '**.md'
 
 schedules:
 - cron: 15 11 * * 6
