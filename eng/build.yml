@@ -158,9 +158,10 @@ jobs:
             Token: $(dn-bot-dnceng-artifact-feeds-rw)
 
     - task: Npm@1
+      displayName: Install Azurite
       inputs:
         command: custom
-        customCommand: install -g azurite
+        customCommand: install azurite -g
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
