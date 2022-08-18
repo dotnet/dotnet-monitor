@@ -34,11 +34,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Eggress
         [ConditionalFact]
         public async Task RestrictiveSasTokenTest()
         {
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TestTimeouts.OperationTimeout);
-            CancellationToken cancellationToken = cancellationTokenSource.Token;
+            _azuriteFixture.SkipTestIfNotAvailable();
 
             // Arrange
-            _azuriteFixture.SkipTestIfNotAvailable();
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TestTimeouts.OperationTimeout);
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
 
             BlobServiceClient serviceClient = new(_azuriteFixture.Account.ConnectionString);
 

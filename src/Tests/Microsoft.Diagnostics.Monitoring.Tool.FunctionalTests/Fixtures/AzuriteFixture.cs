@@ -163,45 +163,44 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
 
         private void ParseAzuriteStartupOutput(object sender, DataReceivedEventArgs e)
         {
-            if (e.Data == null)
+            if (e.Data == null || _startupCountdownEvent.IsSet)
             {
                 return;
             }
 
-            if (!_startupCountdownEvent.IsSet)
-            {
-                _azuriteStartupStdout.AppendLine(e.Data);
+            _azuriteStartupStdout.AppendLine(e.Data);
 
-                if (e.Data.Contains("Azurite Blob service is successfully listening at"))
-                {
-                    Account.BlobsPort = ParseAzuritePort(e.Data);
-                    _startupCountdownEvent.Signal();
-                }
-                else if (e.Data.Contains("Azurite Queue service is successfully listening at"))
-                {
-                    Account.QueuesPort = ParseAzuritePort(e.Data);
-                    _startupCountdownEvent.Signal();
-                }
+            if (e.Data.Contains("Azurite Blob service is successfully listening at"))
+            {
+                Account.BlobsPort = ParseAzuritePort(e.Data);
+                _startupCountdownEvent.Signal();
+            }
+            else if (e.Data.Contains("Azurite Queue service is successfully listening at"))
+            {
+                Account.QueuesPort = ParseAzuritePort(e.Data);
+                _startupCountdownEvent.Signal();
             }
         }
 
         private void ParseAzuriteStartupError(object sender, DataReceivedEventArgs e)
         {
-            if (e.Data == null)
+            if (e.Data == null || _startupCountdownEvent.IsSet)
             {
                 return;
             }
 
-            if (!_startupCountdownEvent.IsSet)
-            {
-                _azuriteStartupStderr.AppendLine(e.Data);
-            }
+            _azuriteStartupStderr.AppendLine(e.Data);
         }
 
         private int ParseAzuritePort(string outputLine)
         {
-            int indexFrom = outputLine.LastIndexOf(':') + 1;
-            return int.Parse(outputLine.Substring(indexFrom));
+            int portDelimiterIndex = outputLine.LastIndexOf(':') + 1;
+            if (portDelimiterIndex == 0 || portDelimiterIndex >= outputLine.Length)
+            {
+                throw new InvalidOperationException($"azurite stdout did not follow the expected format, cannot parse port information. Unexpected output: {outputLine}")
+            }
+
+            return int.Parse(outputLine[portDelimiterIndex..]);
         }
 
         private string ErrorMessage(string specificReason)
