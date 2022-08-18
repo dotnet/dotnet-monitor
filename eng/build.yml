@@ -157,6 +157,11 @@ jobs:
           env:
             Token: $(dn-bot-dnceng-artifact-feeds-rw)
 
+    - task: NodeTool@0
+      displayName: Install Node.js
+      inputs:
+        versionSpec: '16.x'
+
     - task: Npm@1
       displayName: Install Azurite
       inputs:
