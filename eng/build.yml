@@ -157,6 +157,11 @@ jobs:
           env:
             Token: $(dn-bot-dnceng-artifact-feeds-rw)
 
+    - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+      - ${{ if neq(parameters.architecture, 'arm64') }}:
+        - script: >-
+            apt-get -y remove nodejs
+  
     - task: NodeTool@0
       displayName: Install Node.js
       inputs:
@@ -166,7 +171,7 @@ jobs:
       displayName: Install Azurite
       inputs:
         command: custom
-        customCommand: install azurite -g
+        customCommand: install -g azurite
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
