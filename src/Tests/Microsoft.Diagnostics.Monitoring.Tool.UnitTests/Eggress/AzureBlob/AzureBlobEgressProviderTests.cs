@@ -17,10 +17,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -28,16 +29,53 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     [Collection(AzuriteCollectionFixture.Name)]
-    public class AzureBlobEgressProviderTests : IClassFixture<AzuriteFixture>
+    public class AzureBlobEgressProviderTests : IClassFixture<AzuriteFixture>, IDisposable
     {
         private readonly ITestOutputHelper _outputHelper;
         private readonly AzuriteFixture _azuriteFixture;
+        private readonly TemporaryDirectory _tempDirectory;
+
+        private readonly string _testUploadFile;
+        private readonly string _testUploadFileHash;
 
         public AzureBlobEgressProviderTests(ITestOutputHelper outputHelper, AzuriteFixture azuriteFixture)
         {
             _outputHelper = outputHelper;
             _azuriteFixture = azuriteFixture;
+            _tempDirectory = new TemporaryDirectory(outputHelper);
+
+            _testUploadFile = Path.Combine(_tempDirectory.FullName, Path.GetRandomFileName());
+            File.WriteAllText(_testUploadFile, "Sample Contents\n123");
+            _testUploadFileHash = GetFileSHA256(_testUploadFile);
         }
+
+        [ConditionalFact]
+        public async Task AzureBlobEgress_UploadsCorrectData()
+        {
+            _azuriteFixture.SkipTestIfNotAvailable();
+
+            // Arrange
+            TestOutputLoggerProvider loggerProvider = new(_outputHelper);
+            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+
+            BlobContainerClient containerClient = await ConstructBlobContainerClient(create: false);
+
+            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient);
+            EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
+
+            // Act
+            string identifier = await egressProvider.EgressAsync(providerOptions, UploadAction, artifactSettings, CancellationToken.None);
+
+            // Assert
+            List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
+            Assert.Single(blobs);
+
+            BlobItem resultingBlob = blobs.First();
+
+            string downloadedFile = await DownloadBlobAsync(containerClient, resultingBlob.Name, CancellationToken.None);
+            Assert.Equal(_testUploadFileHash, GetFileSHA256(downloadedFile));
+        }
+
 
         [ConditionalFact]
         public async Task AzureBlobEgress_Supports_QueueMessages()
@@ -48,27 +86,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
             AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
 
-            QueueClient queueClient = await ConstructNewQueueContainerClient(create: false);
-            BlobContainerClient containerClient = await ConstructNewBlobContainerClient(create: false);
+            BlobContainerClient containerClient = await ConstructBlobContainerClient(create: false);
+            QueueClient queueClient = await ConstructQueueContainerClient(create: false);
 
-            AzureBlobEgressProviderOptions providerOptions = new()
-            {
-                AccountUri = new Uri(_azuriteFixture.Account.BlobEndpoint),
-                AccountKey = _azuriteFixture.Account.Key,
-                ContainerName = containerClient.Name,
-                QueueAccountUri = new Uri(_azuriteFixture.Account.QueueEndpoint),
-                QueueName = queueClient.Name,
-                BlobPrefix = Guid.NewGuid().ToString("D")
-            };
-
-            EgressArtifactSettings artifactSettings = new()
-            {
-                ContentType = ContentTypes.ApplicationOctetStream,
-                Name = Guid.NewGuid().ToString("D")
-            };
-
-            artifactSettings.Metadata.Add("firstKey", Guid.NewGuid().ToString("D"));
-            artifactSettings.Metadata.Add("secondKey", Guid.NewGuid().ToString("D"));
+            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient, queueClient);
+            EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
             string identifier = await egressProvider.EgressAsync(providerOptions, UploadAction, artifactSettings, CancellationToken.None);
@@ -97,27 +119,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
             AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
 
-            BlobContainerClient containerClient = await ConstructNewBlobContainerClient();
+            BlobContainerClient containerClient = await ConstructBlobContainerClient();
 
             BlobSasBuilder sasBuilder = new(BlobContainerSasPermissions.Add | BlobContainerSasPermissions.Create, DateTimeOffset.MaxValue);
             Uri sasUri = containerClient.GenerateSasUri(sasBuilder);
 
-            AzureBlobEgressProviderOptions providerOptions = new()
-            {
-                AccountUri = new Uri(_azuriteFixture.Account.BlobEndpoint),
-                SharedAccessSignature = sasUri.Query,
-                ContainerName = containerClient.Name,
-                BlobPrefix = Guid.NewGuid().ToString("D")
-            };
-
-            EgressArtifactSettings artifactSettings = new()
-            {
-                ContentType = ContentTypes.ApplicationOctetStream,
-                Name = Guid.NewGuid().ToString("D")
-            };
-
-            artifactSettings.Metadata.Add("firstKey", Guid.NewGuid().ToString("D"));
-            artifactSettings.Metadata.Add("secondKey", Guid.NewGuid().ToString("D"));
+            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient, sasToken: sasUri.Query);
+            EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
             string identifier = await egressProvider.EgressAsync(providerOptions, UploadAction, artifactSettings, CancellationToken.None);
@@ -128,15 +136,35 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
 
             BlobItem resultingBlob = blobs.First();
             Assert.Equal($"{providerOptions.BlobPrefix}/{artifactSettings.Name}", resultingBlob.Name);
+        }
 
+        [ConditionalFact]
+        public async Task AzureBlobEgress_ThrowsWhen_ContainerDoesNotExistAndRestrictiveSasToken()
+        {
+            _azuriteFixture.SkipTestIfNotAvailable();
+
+            // Arrange
+            TestOutputLoggerProvider loggerProvider = new(_outputHelper);
+            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+
+            BlobContainerClient containerClient = await ConstructBlobContainerClient(create: false);
+
+            BlobSasBuilder sasBuilder = new(BlobContainerSasPermissions.Add, DateTimeOffset.MaxValue);
+            Uri sasUri = containerClient.GenerateSasUri(sasBuilder);
+
+            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient, sasToken: sasUri.Query);
+            EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
+
+            // Act & Assert
+            await Assert.ThrowsAsync<EgressException>(async () => await egressProvider.EgressAsync(providerOptions, UploadAction, artifactSettings, CancellationToken.None));
         }
 
         private Task<Stream> UploadAction(CancellationToken token)
         {
-            return Task.FromResult<Stream>(new FileStream(Assembly.GetExecutingAssembly().Location, FileMode.Open, FileAccess.Read));
+            return Task.FromResult<Stream>(new FileStream(_testUploadFile, FileMode.Open, FileAccess.Read));
         }
 
-        private async Task<BlobContainerClient> ConstructNewBlobContainerClient(string containerName = null, bool create = true)
+        private async Task<BlobContainerClient> ConstructBlobContainerClient(string containerName = null, bool create = true)
         {
             BlobServiceClient serviceClient = new(_azuriteFixture.Account.ConnectionString);
 
@@ -151,7 +179,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             return containerClient;
         }
 
-        private async Task<QueueClient> ConstructNewQueueContainerClient(string queueName = null, bool create = true)
+        private async Task<QueueClient> ConstructQueueContainerClient(string queueName = null, bool create = true)
         {
             QueueServiceClient serviceClient = new(_azuriteFixture.Account.ConnectionString);
 
@@ -166,17 +194,63 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             return queueClient;
         }
 
+        private EgressArtifactSettings ConstructArtifactSettings(int numberOfMetadataEntries = 2)
+        {
+            EgressArtifactSettings settings = new()
+            {
+                ContentType = ContentTypes.ApplicationOctetStream,
+                Name = Guid.NewGuid().ToString("D")
+            };
+
+            for (int i = 0; i < numberOfMetadataEntries; i++)
+            {
+                settings.Metadata.Add($"key_{i}", Guid.NewGuid().ToString("D"));
+            }
+
+            return settings;
+        }
+
+        private AzureBlobEgressProviderOptions ConstructEgressProviderSettings(BlobContainerClient containerClient, QueueClient queueClient = null, string sasToken = null)
+        {
+            AzureBlobEgressProviderOptions options = new()
+            {
+                AccountUri = new Uri(_azuriteFixture.Account.BlobEndpoint),
+                ContainerName = containerClient.Name,
+                QueueAccountUri = (queueClient == null) ? null : new Uri(_azuriteFixture.Account.QueueEndpoint),
+                QueueName = queueClient?.Name,
+                BlobPrefix = Guid.NewGuid().ToString("D")
+            };
+
+            if (sasToken == null)
+            {
+                options.AccountKey = _azuriteFixture.Account.Key;
+            }
+            else
+            {
+                options.SharedAccessSignature = sasToken;
+            }
+
+            return options;
+        }
+
         private async Task<List<BlobItem>> GetAllBlobsAsync(BlobContainerClient containerClient)
         {
-            List<BlobItem> blobs = new List<BlobItem>();
+            List<BlobItem> blobs = new();
 
-            var resultSegment = containerClient.GetBlobsAsync(BlobTraits.All).AsPages(default);
-            await foreach (Page<BlobItem> blobPage in resultSegment)
+            try
             {
-                foreach (BlobItem blob in blobPage.Values)
+                var resultSegment = containerClient.GetBlobsAsync(BlobTraits.All).AsPages(default);
+                await foreach (Page<BlobItem> blobPage in resultSegment)
                 {
-                    blobs.Add(blob);
+                    foreach (BlobItem blob in blobPage.Values)
+                    {
+                        blobs.Add(blob);
+                    }
                 }
+            }
+            catch (XmlException)
+            {
+                // Thrown when there are no blobs
             }
 
             return blobs;
@@ -200,5 +274,30 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             // - Re-encode the resulting byte array as UTF-8 text
             return Encoding.UTF8.GetString(Convert.FromBase64String(body.ToString()));
         }
+
+        private async Task<string> DownloadBlobAsync(BlobContainerClient containerClient, string blobName, CancellationToken token)
+        {
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+            string downloadPath = Path.Combine(_tempDirectory.FullName, Path.GetRandomFileName());
+
+            await using FileStream fs = File.OpenWrite(downloadPath);
+            await blobClient.DownloadToAsync(fs, token);
+
+            return downloadPath;
+        }
+
+        private string GetFileSHA256(string filePath)
+        {
+            using SHA256 sha = SHA256.Create();
+            using FileStream fileStream = File.OpenRead(filePath);
+            return BitConverter.ToString(sha.ComputeHash(fileStream));
+        }
+
+        public void Dispose()
+        {
+            //_tempDirectory.Dispose();
+        }
     }
+
 }
