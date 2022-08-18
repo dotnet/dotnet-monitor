@@ -13,10 +13,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 {
@@ -249,7 +246,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
             catch (RequestFailedException ex) when (ex.Status == ((int)HttpStatusCode.NotFound))
             {
-                Logger.QueueDoesNotExist(options.QueueName);
+                _logger.QueueDoesNotExist(options.QueueName);
             }
             catch (Exception ex)
             {

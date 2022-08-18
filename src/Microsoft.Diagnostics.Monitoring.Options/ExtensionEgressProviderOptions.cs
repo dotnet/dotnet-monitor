@@ -5,7 +5,6 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {

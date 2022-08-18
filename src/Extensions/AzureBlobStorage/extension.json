@@ -1,5 +1,5 @@
 {
-  "Id": "Microsoft.Diagnositcs.Monitoring.AzureStorage",
+  "Id": "Microsoft.Diagnostics.Monitoring.AzureStorage",
   "Version": "1.0.0",
   "Program": "AzureBlobStorage.exe",
   "SupportedExtensionTypes": [
