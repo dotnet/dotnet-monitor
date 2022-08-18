@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 using var stream = await action(token);
 
                 // Write blob content, headers, and metadata
-                var res = await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), artifactSettings.Metadata, cancellationToken: token);
+                await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), artifactSettings.Metadata, cancellationToken: token);
 
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);

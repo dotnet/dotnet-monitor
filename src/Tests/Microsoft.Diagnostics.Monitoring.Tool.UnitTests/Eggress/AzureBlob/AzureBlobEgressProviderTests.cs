@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
             AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
 
-            BlobContainerClient containerClient = await ConstructBlobContainerClient(create: false);
+            BlobContainerClient containerClient = await ConstructBlobContainerClientAsync(create: false);
 
             AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient);
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
@@ -76,7 +76,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             Assert.Equal(_testUploadFileHash, GetFileSHA256(downloadedFile));
         }
 
-
         [ConditionalFact]
         public async Task AzureBlobEgress_Supports_QueueMessages()
         {
@@ -86,8 +85,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
             AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
 
-            BlobContainerClient containerClient = await ConstructBlobContainerClient(create: false);
-            QueueClient queueClient = await ConstructQueueContainerClient(create: false);
+            BlobContainerClient containerClient = await ConstructBlobContainerClientAsync(create: false);
+            QueueClient queueClient = await ConstructQueueContainerClientAsync(create: false);
 
             AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient, queueClient);
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
@@ -119,7 +118,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
             AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
 
-            BlobContainerClient containerClient = await ConstructBlobContainerClient();
+            BlobContainerClient containerClient = await ConstructBlobContainerClientAsync();
 
             BlobSasBuilder sasBuilder = new(BlobContainerSasPermissions.Add | BlobContainerSasPermissions.Create, DateTimeOffset.MaxValue);
             Uri sasUri = containerClient.GenerateSasUri(sasBuilder);
@@ -139,7 +138,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
         }
 
         [ConditionalFact]
-        public async Task AzureBlobEgress_ThrowsWhen_ContainerDoesNotExistAndRestrictiveSasToken()
+        public async Task AzureBlobEgress_ThrowsWhen_ContainerDoesNotExistAndUsingRestrictiveSasToken()
         {
             _azuriteFixture.SkipTestIfNotAvailable();
 
@@ -147,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
             AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
 
-            BlobContainerClient containerClient = await ConstructBlobContainerClient(create: false);
+            BlobContainerClient containerClient = await ConstructBlobContainerClientAsync(create: false);
 
             BlobSasBuilder sasBuilder = new(BlobContainerSasPermissions.Add, DateTimeOffset.MaxValue);
             Uri sasUri = containerClient.GenerateSasUri(sasBuilder);
@@ -164,7 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             return Task.FromResult<Stream>(new FileStream(_testUploadFile, FileMode.Open, FileAccess.Read));
         }
 
-        private async Task<BlobContainerClient> ConstructBlobContainerClient(string containerName = null, bool create = true)
+        private async Task<BlobContainerClient> ConstructBlobContainerClientAsync(string containerName = null, bool create = true)
         {
             BlobServiceClient serviceClient = new(_azuriteFixture.Account.ConnectionString);
 
@@ -179,7 +178,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             return containerClient;
         }
 
-        private async Task<QueueClient> ConstructQueueContainerClient(string queueName = null, bool create = true)
+        private async Task<QueueClient> ConstructQueueContainerClientAsync(string queueName = null, bool create = true)
         {
             QueueServiceClient serviceClient = new(_azuriteFixture.Account.ConnectionString);
 
