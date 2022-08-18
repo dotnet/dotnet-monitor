@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
         }
 
         [ConditionalFact]
-        public async Task AzureBlobEgress_Supports_AccountLevelSasToken()
+        public async Task AzureBlobEgress_Supports_QueueMessages()
         {
             _azuriteFixture.SkipTestIfNotAvailable();
 
