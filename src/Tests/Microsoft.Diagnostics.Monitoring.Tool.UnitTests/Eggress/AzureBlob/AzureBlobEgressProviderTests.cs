@@ -296,7 +296,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
 
         public void Dispose()
         {
-            //_tempDirectory.Dispose();
+            _tempDirectory.Dispose();
         }
     }
 
