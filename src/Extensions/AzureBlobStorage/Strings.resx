@@ -165,6 +165,13 @@
     <value>Invalid metadata; custom metadata keys must be valid C# identifiers.</value>
     <comment>Gets a string similar to "Invalid metadata; custom metadata keys must be valid C# identifiers.".</comment>
   </data>
+  <data name="LogFormatString_EgressProviderUnableToFindPropertyKey" xml:space="preserve">
+    <value>Provider {providerType}: Unable to find '{keyName}' key in egress properties</value>
+    <comment>Gets the format string that is printed in the 10:EgressProviderUnableToFindPropertyKey event.
+2 Format Parameters:
+1. providerType: Type of the provider
+2. keyName: Name of the property that could not be found</comment>
+  </data>
   <data name="LogFormatString_QueueDoesNotExist" xml:space="preserve">
     <value>The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly.</value>
     <comment>Gets the format string that is printed in the 57:QueueDoesNotExist event.

@@ -1035,9 +1035,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         /// <summary>
         ///   Looks up a localized string similar to Provider {providerType}: Unable to find &apos;{keyName}&apos; key in egress properties.
         /// </summary>
-        internal static string LogFormatString_EgressProvideUnableToFindPropertyKey {
+        internal static string LogFormatString_EgressProviderUnableToFindPropertyKey {
             get {
-                return ResourceManager.GetString("LogFormatString_EgressProvideUnableToFindPropertyKey", resourceCulture);
+                return ResourceManager.GetString("LogFormatString_EgressProviderUnableToFindPropertyKey", resourceCulture);
             }
         }
         

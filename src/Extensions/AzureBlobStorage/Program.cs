@@ -8,6 +8,25 @@ using System.CommandLine;
 using System.CommandLine.Binding;
 using System.Text.Json;
 
+/*
+ *   <ItemGroup>
+    <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="ExternalRefs\LoggingEventIds.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressProvider.cs" Link="ExternalRefs\EgressProvider.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\IEgressProvider.cs" Link="ExternalRefs\IEgressProvider.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressProviderTypes.cs" Link="ExternalRefs\EgressProviderTypes.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressException.cs" Link="ExternalRefs\EgressException.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressArtifactSettings.cs" Link="ExternalRefs\EgressArtifactSettings.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProvider.cs" Link="ExternalRefs\AzureBlobEgressProvider.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProvider.AutoFlushStream.cs" Link="ExternalRefs\AzureBlobEgressProvider.AutoFlushStream.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\Extension\EgressArtifactResult.cs" Link="ExternalRefs\EgressArtifactResult.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\IEgressProviderCommonOptions.cs" Link="ExternalRefs\IEgressProviderCommonOptions.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\OptionsDisplayStrings.Designer.cs" Link="ExternalRefs\OptionsDisplayStrings.Designer.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Extensibility\IExtensionResult.cs" Link="ExternalRefs\IExtensionResult.cs" />
+    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\AzureBlobEgressProviderOptions.cs" Link="ExternalRefs\AzureBlobEgressProviderOptions.cs" />
+  </ItemGroup>
+*/
+
+
 namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
     internal class Program
@@ -42,11 +61,14 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
                 AzureBlobEgressProviderOptions options = BuildOptions(configPayload);
 
-                AzureBlobEgressProvider provider = new AzureBlobEgressProvider(logger: null); // TODO: Replace logger with real instance of console logger (console events on standard out will get forwarded to dotnet-monitor and written to it's console).
+                ILoggerFactory loggerFactory = new LoggerFactory();
+                ILogger<AzureBlobEgressProvider> myLogger = loggerFactory.CreateLogger<AzureBlobEgressProvider>();
+
+                AzureBlobEgressProvider provider = new AzureBlobEgressProvider(logger: myLogger); // TODO: Replace logger with real instance of console logger (console events on standard out will get forwarded to dotnet-monitor and written to its console).
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
-                result.ArtifactPath = await provider.EgressAsync(EgressProviderTypes.AzureBlobStorage, configPayload.ProfileName, options, GetStream, configPayload.Settings, CancelSource.Token);
+                result.ArtifactPath = await provider.EgressAsync(configPayload.ProfileName, options, GetStream, configPayload.Settings, CancelSource.Token);
                 result.Succeeded = true;
             }
             catch (Exception ex)

@@ -26,6 +26,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EgressProviderSavedStream);
 
+        private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.EgressProvideUnableToFindPropertyKey.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EgressProviderUnableToFindPropertyKey);
+
         private static readonly Action<ILogger, string, string, string, Exception> _queueDoesNotExist =
             LoggerMessage.Define<string, string, string>(
                 eventId: LoggingEventIds.QueueDoesNotExist.EventId(),
@@ -116,6 +122,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public static void EnvironmentBlockNotSupported(this ILogger logger)
         {
             _environmentBlockNotSupported(logger, null);
+        }
+
+        public static void EgressProviderUnableToFindPropertyKey(this ILogger logger, string providerName, string keyName)
+        {
+            _egressProviderUnableToFindPropertyKey(logger, providerName, keyName, null);
         }
     }
 }

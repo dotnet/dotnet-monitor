@@ -124,6 +124,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
         }
         
         /// <summary>
+<<<<<<< HEAD
         ///   Looks up a localized string similar to Target framework does not support custom egress metadata..
         /// </summary>
         internal static string LogFormatString_EnvironmentBlockNotSupported {
@@ -147,6 +148,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
         internal static string LogFormatString_InvalidMetadata {
             get {
                 return ResourceManager.GetString("LogFormatString_InvalidMetadata", resourceCulture);
+=======
+        ///   Looks up a localized string similar to Provider {providerType}: Unable to find &apos;{keyName}&apos; key in egress properties.
+        /// </summary>
+        internal static string LogFormatString_EgressProviderUnableToFindPropertyKey {
+            get {
+                return ResourceManager.GetString("LogFormatString_EgressProviderUnableToFindPropertyKey", resourceCulture);
+>>>>>>> 1db4d0eb (Completely broke off Azure Blob Storage extension from dotnet monitor - this did require (for now) some duplication of files)
             }
         }
         

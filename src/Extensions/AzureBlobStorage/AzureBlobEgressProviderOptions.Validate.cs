@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -23,12 +22,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             if (string.IsNullOrEmpty(AccountKey) && string.IsNullOrEmpty(SharedAccessSignature) && string.IsNullOrEmpty(ManagedIdentityClientId))
             {
                 results.Add(
+                    new ValidationResult("TEMPORARY"));
+                /*
+                results.Add(
                     new ValidationResult(
                         string.Format(
                             OptionsDisplayStrings.ErrorMessage_CredentialsMissing,
                             nameof(AccountKey),
                             nameof(SharedAccessSignature),
                             nameof(ManagedIdentityClientId))));
+                */
             }
 
             return results;

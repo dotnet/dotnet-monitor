@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -126,6 +125,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 processedSectionPaths.Add(propertiesSection.Path);
             }
 
+            /*
             IConfigurationSection azureBlobProviderSection = ProcessChildSection(egress, nameof(EgressOptions.AzureBlobStorage), skipNotPresent, includeChildSections: false, showSources: showSources);
             if (azureBlobProviderSection != null)
             {
@@ -155,7 +155,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                     }
                 }
-            }
+            }*/
 
             IConfigurationSection fileSystemProviderSection = ProcessChildSection(egress, nameof(EgressOptions.FileSystem), skipNotPresent, includeChildSections: false, showSources: showSources);
             if (fileSystemProviderSection != null)
