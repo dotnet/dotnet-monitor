@@ -38,15 +38,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Timeout for waiting for a collection rule to run its action list to completion.
         /// </summary>
         public static readonly TimeSpan CollectionRuleActionsCompletedTimeout = TimeSpan.FromSeconds(30);
-
-        /// <summary>
-        /// Default timeout for HTTP API calls
-        /// </summary>
-        public static readonly TimeSpan AzuriteInitializationTimeout = TimeSpan.FromSeconds(30);
-
-        /// <summary>
-        /// Default timeout for HTTP API calls
-        /// </summary>
-        public static readonly TimeSpan AzuriteTeardownTimeout = TimeSpan.FromSeconds(30);
     }
 }

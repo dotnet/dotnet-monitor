@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
 {
     /// <summary>
     /// This fixture allows injecting of a single <see cref="AzuriteFixture"/> instance

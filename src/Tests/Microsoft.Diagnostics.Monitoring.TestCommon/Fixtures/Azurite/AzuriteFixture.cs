@@ -4,16 +4,15 @@
 
 // https://github.com/Azure/azure-sdk-for-net/blob/4162f6fa2445b2127468b9cfd080f01c9da88eba/sdk/storage/Azure.Storage.Common/tests/Shared/AzuriteFixture.cs
 
+using Microsoft.DotNet.XUnitExtensions;
 using System;
-using System.Text;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Runtime.InteropServices;
-using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.DotNet.XUnitExtensions;
+using System.Text;
+using System.Threading;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
 {
     public class AzuriteAccount
     {
@@ -87,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
             _azuriteProcess.BeginOutputReadLine();
             _azuriteProcess.BeginErrorReadLine();
 
-            bool didAzuriteStart = _startupCountdownEvent.Wait(TestTimeouts.AzuriteInitializationTimeout);
+            bool didAzuriteStart = _startupCountdownEvent.Wait(CommonTestTimeouts.AzuriteInitializationTimeout);
             if (!didAzuriteStart)
             {
                 if (_azuriteProcess.HasExited)
@@ -97,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
                 else
                 {
                     _azuriteProcess.Kill();
-                    _azuriteProcess.WaitForExit(TestTimeouts.AzuriteTeardownTimeout.Milliseconds);
+                    _azuriteProcess.WaitForExit(CommonTestTimeouts.AzuriteTeardownTimeout.Milliseconds);
                     throw new InvalidOperationException($"azurite could not initialize within timeout with following output:\n{_azuriteStartupStdout}\nerror:\n{_azuriteStartupStderr}");
                 }
             }
@@ -197,7 +196,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
             int portDelimiterIndex = outputLine.LastIndexOf(':') + 1;
             if (portDelimiterIndex == 0 || portDelimiterIndex >= outputLine.Length)
             {
-                throw new InvalidOperationException($"azurite stdout did not follow the expected format, cannot parse port information. Unexpected output: {outputLine}")
+                throw new InvalidOperationException($"azurite stdout did not follow the expected format, cannot parse port information. Unexpected output: {outputLine}");
             }
 
             return int.Parse(outputLine[portDelimiterIndex..]);
@@ -218,7 +217,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
                 if (!_azuriteProcess.HasExited)
                 {
                     _azuriteProcess.Kill();
-                    _azuriteProcess.WaitForExit(TestTimeouts.AzuriteTeardownTimeout.Milliseconds);
+                    _azuriteProcess.WaitForExit(CommonTestTimeouts.AzuriteTeardownTimeout.Milliseconds);
                     _azuriteProcess.Dispose();
                     _azuriteProcess = null;
                 }
