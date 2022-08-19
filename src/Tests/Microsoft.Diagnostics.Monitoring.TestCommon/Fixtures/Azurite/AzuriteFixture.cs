@@ -144,30 +144,28 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
                 }
             }
 
-            string azuriteExecutablePath;
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                azuriteExecutablePath = Path.Combine(azuriteFolder ?? string.Empty, isVSCopy ? "azurite.exe" : "azurite.cmd");
-            }
-            else
-            {
-                azuriteExecutablePath = Path.Combine(azuriteFolder ?? string.Empty, "azurite");
-            }
-
-            if (!string.IsNullOrEmpty(azuriteFolder) && !File.Exists(azuriteExecutablePath))
-            {
-                throw new FileNotFoundException($"{azuriteExecutablePath} does not exist");
-            }
-
             ProcessStartInfo startInfo = new()
             {
-                FileName = azuriteExecutablePath,
                 UseShellExecute = false,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true
             };
+
+            if (isVSCopy)
+            {
+                startInfo.FileName = Path.Combine(azuriteFolder ?? string.Empty, "azurite.exe");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                startInfo.FileName = "cmd.exe";
+                startInfo.ArgumentList.Add("/c");
+                startInfo.ArgumentList.Add(Path.Combine(azuriteFolder ?? string.Empty, "azurite.cmd"));
+            }
+            else
+            {
+                startInfo.FileName = Path.Combine(azuriteFolder ?? string.Empty, "azurite");
+            }
 
             startInfo.ArgumentList.Add("--skipApiVersionCheck");
 
