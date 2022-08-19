@@ -173,6 +173,9 @@ jobs:
         command: custom
         customCommand: install -g azurite
 
+    - ${{ if and(ne(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
+      - script: echo ##vso[task.prependpath]/usr/share/node
+
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
         -configuration ${{ parameters.configuration }}
@@ -185,10 +188,10 @@ jobs:
       ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
         env:
           ROOTFS_DIR: '/crossrootfs/arm64'
-          MUST_RUN_AZURITE_TESTS: '1'
+          AZURITE_LOCATION: '1'
       ${{ else }}:
         env:
-          MUST_RUN_AZURITE_TESTS: '1'
+          AZURITE_LOCATION: '1'
 
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), gt(length(parameters.publishArtifactsSubPaths), 0)) }}:
       - ${{ each subPath in parameters.publishArtifactsSubPaths }}:
