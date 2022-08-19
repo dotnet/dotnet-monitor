@@ -160,6 +160,11 @@ jobs:
     - task: NodeTool@0
       displayName: Install Node.js
       inputs:
+        # Version requirements:
+        # - Azurite requires 8.x or higher.
+        # - The alpine containers have their own build of Node.js of 10.x but without supplemental tooling like npm.
+        # Since the alpine containers already have a Node.js build, match it's major version for a compatible version
+        # of npm across all build environments.
         versionSpec: '10.x'
 
     - task: Npm@1
@@ -180,6 +185,10 @@ jobs:
       ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
         env:
           ROOTFS_DIR: '/crossrootfs/arm64'
+          MUST_RUN_AZURITE_TESTS: '1'
+      ${{ else }}:
+        env:
+          MUST_RUN_AZURITE_TESTS: '1'
 
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), gt(length(parameters.publishArtifactsSubPaths), 0)) }}:
       - ${{ each subPath in parameters.publishArtifactsSubPaths }}:

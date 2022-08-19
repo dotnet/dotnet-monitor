@@ -33,12 +33,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
     /// - Starts Azurite process
     /// - Tears down Azurite process after test class is run
     /// It requires Azurite V3. See installation instructions here https://github.com/Azure/Azurite.
-    /// After installing Azurite define env variable AZURE_AZURITE_LOCATION that points to azurite installation
+    /// After installing Azurite define env variable AZURITE_LOCATION that points to azurite installation
     /// </summary>
     public class AzuriteFixture : IDisposable
     {
-        private const string AzuriteLocationKey = "AZURE_AZURITE_LOCATION";
-
         private Process _azuriteProcess;
         private readonly TemporaryDirectory _workspaceDirectory;
         private readonly CountdownEvent _startupCountdownEvent;
@@ -52,6 +50,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
 
         public AzuriteFixture()
         {
+            // Check if the tests are running on a pipeline build machine.
+            // If so, Azurite must succesfully initialize otherwise mark the dependent tests as failed
+            // to avoid hidding failures in our CI.
+            bool isPipelineBuildMachine = Environment.GetEnvironmentVariable("TF_BUILD") != null;
+
             Account = new AzuriteAccount()
             {
                 Name = Guid.NewGuid().ToString("N"),
@@ -60,10 +63,24 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
 
             _startupCountdownEvent = new CountdownEvent(initialCount: 2); // Wait for Port and Queue services
             _workspaceDirectory = new TemporaryDirectory(new ConsoleOutputHelper());
-            _azuriteProcess = new Process()
+
+            try
             {
-                StartInfo = ConstructAzuriteProcessStartInfo(Account, _workspaceDirectory.FullName)
-            };
+                _azuriteProcess = new Process()
+                {
+                    StartInfo = ConstructAzuriteProcessStartInfo(Account, _workspaceDirectory.FullName)
+                };
+            }
+            catch (FileNotFoundException ex)
+            {
+                _startupError = ErrorMessage(ex.Message);
+                if (isPipelineBuildMachine)
+                {
+                    throw new InvalidOperationException(_startupError, ex);
+                }
+
+                return;
+            }
 
             _azuriteStartupStdout = new();
             _azuriteStartupStderr = new();
@@ -78,8 +95,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
             catch (Exception ex)
             {
                 _startupError = ErrorMessage($"failed to start azurite with exception: {ex.Message}");
+
                 _azuriteProcess.Dispose();
                 _azuriteProcess = null;
+
+                if (isPipelineBuildMachine)
+                {
+                    throw new InvalidOperationException(_startupError, ex);
+                }
+
                 return;
             }
 
@@ -104,24 +128,29 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
 
         private static ProcessStartInfo ConstructAzuriteProcessStartInfo(AzuriteAccount authorizedAccount, string workspaceDirectory)
         {
-            string azuriteFolder = Environment.GetEnvironmentVariable(AzuriteLocationKey);
-            if (azuriteFolder == null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            string azuriteFolder = null;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                string defaultAzuriteFolder = Path.Combine(Environment.GetEnvironmentVariable("VSAPPIDDIR") ?? string.Empty, "Extensions", "Microsoft", "Azure Storage Emulator");
-                if (Directory.Exists(defaultAzuriteFolder))
+                string vsAppDir = Environment.GetEnvironmentVariable("VSAPPIDDIR");
+                if (vsAppDir != null)
                 {
-                    azuriteFolder = defaultAzuriteFolder;
+                    string vsAzuriteFolder = Path.Combine(vsAppDir, "Extensions", "Microsoft", "Azure Storage Emulator");
+                    if (Directory.Exists(vsAzuriteFolder))
+                    {
+                        azuriteFolder = vsAzuriteFolder;
+                    }
                 }
             }
 
-            string azuriteExecutablePath;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            string azuriteExecutablePath = Path.Combine(
+                azuriteFolder ?? string.Empty,
+                RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? "azurite.exe"
+                    : "azurite");
+
+            if (!string.IsNullOrEmpty(azuriteFolder) && !File.Exists(azuriteExecutablePath))
             {
-                azuriteExecutablePath = Path.Combine(azuriteFolder ?? string.Empty, "azurite.exe");
-            }
-            else
-            {
-                azuriteExecutablePath = Path.Combine(azuriteFolder ?? string.Empty, "azurite");
+                throw new FileNotFoundException($"{azuriteExecutablePath} does not exist");
             }
 
             ProcessStartInfo startInfo = new()
@@ -207,7 +236,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
             return $"Could not run Azurite based test: {specificReason}.\n" +
                 "Make sure that:\n" +
                 "- Azurite V3 is installed either via Visual Studio or NPM (see https://docs.microsoft.com/azure/storage/common/storage-use-azurite#install-azurite for instructions)\n" +
-                $"- {AzuriteLocationKey} envorinment is set and pointing to location of directory that has 'azurite' executable\n";
+                "- If installing through NPM, ensure that the directory that has 'azurite' executable is in the 'PATH' environment variable\n";
         }
 
         public void Dispose()
