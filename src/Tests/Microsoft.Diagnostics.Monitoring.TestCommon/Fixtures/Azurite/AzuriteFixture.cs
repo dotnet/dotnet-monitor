@@ -21,10 +21,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
         public int BlobsPort { get; set; }
         public int QueuesPort { get; set; }
 
+        public int TablesPort { get; set; }
+
         public string BlobEndpoint => $"http://127.0.0.1:{BlobsPort}/{Name}";
         public string QueueEndpoint => $"http://127.0.0.1:{QueuesPort}/{Name}";
+        public string TableEndpoint => $"http://127.0.0.1:{TablesPort}/{Name}";
 
-        public string ConnectionString => $"DefaultEndpointsProtocol=http;AccountName={Name};AccountKey={Key};BlobEndpoint={BlobEndpoint};QueueEndpoint={QueueEndpoint};";
+
+        public string ConnectionString => $"DefaultEndpointsProtocol=http;AccountName={Name};AccountKey={Key};BlobEndpoint={BlobEndpoint};QueueEndpoint={QueueEndpoint};TableEndpoint={TableEndpoint}";
     }
 
     /// <summary>
@@ -37,6 +41,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
     /// </summary>
     public class AzuriteFixture : IDisposable
     {
+        private const string AzuriteLocationKey = "AZURITE_LOCATION";
+
         private Process _azuriteProcess;
         private readonly TemporaryDirectory _workspaceDirectory;
         private readonly CountdownEvent _startupCountdownEvent;
@@ -54,14 +60,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
             // If so, Azurite must succesfully initialize otherwise mark the dependent tests as failed
             // to avoid hidding failures in our CI.
             bool isPipelineBuildMachine = Environment.GetEnvironmentVariable("TF_BUILD") != null;
-
+            isPipelineBuildMachine = true;
             Account = new AzuriteAccount()
             {
                 Name = Guid.NewGuid().ToString("N"),
                 Key = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString())),
             };
 
-            _startupCountdownEvent = new CountdownEvent(initialCount: 2); // Wait for Port and Queue services
+            _startupCountdownEvent = new CountdownEvent(initialCount: 3); // Wait for the Blob, Queue, and Table services to start
             _workspaceDirectory = new TemporaryDirectory(new ConsoleOutputHelper());
 
             try
@@ -126,11 +132,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
             }
         }
 
-        private static ProcessStartInfo ConstructAzuriteProcessStartInfo(AzuriteAccount authorizedAccount, string workspaceDirectory)
+        private ProcessStartInfo ConstructAzuriteProcessStartInfo(AzuriteAccount authorizedAccount, string workspaceDirectory)
         {
+            string azuriteFolder = Environment.GetEnvironmentVariable(AzuriteLocationKey);
+
             bool isVSCopy = false;
-            string azuriteFolder = null;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (azuriteFolder == null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 string vsAppDir = Environment.GetEnvironmentVariable("VSAPPIDDIR");
                 if (vsAppDir != null)
@@ -152,20 +159,21 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
                 RedirectStandardOutput = true
             };
 
+            string azuriteExecutable;
             if (isVSCopy)
             {
-                startInfo.FileName = Path.Combine(azuriteFolder ?? string.Empty, "azurite.exe");
+                azuriteExecutable = "azurite.exe";
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                startInfo.FileName = "cmd.exe";
-                startInfo.ArgumentList.Add("/c");
-                startInfo.ArgumentList.Add(Path.Combine(azuriteFolder ?? string.Empty, "azurite.cmd"));
+                azuriteExecutable = "azurite.cmd";
             }
             else
             {
-                startInfo.FileName = Path.Combine(azuriteFolder ?? string.Empty, "azurite");
+                azuriteExecutable = "azurite";
             }
+
+            startInfo.FileName = Path.Combine(azuriteFolder ?? string.Empty, azuriteExecutable);
 
             startInfo.ArgumentList.Add("--skipApiVersionCheck");
 
@@ -179,6 +187,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
 
             // Auto pick port
             startInfo.ArgumentList.Add("--queuePort");
+            startInfo.ArgumentList.Add("0");
+
+            // Auto pick port
+            startInfo.ArgumentList.Add("--tablePort");
             startInfo.ArgumentList.Add("0");
 
             startInfo.EnvironmentVariables.Add("AZURITE_ACCOUNTS", $"{authorizedAccount.Name}:{authorizedAccount.Key}");
@@ -211,6 +223,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
             else if (e.Data.Contains("Azurite Queue service is successfully listening at"))
             {
                 Account.QueuesPort = ParseAzuritePort(e.Data);
+                _startupCountdownEvent.Signal();
+            }
+            else if (e.Data.Contains("Azurite Table service is successfully listening at"))
+            {
+                Account.TablesPort = ParseAzuritePort(e.Data);
                 _startupCountdownEvent.Signal();
             }
         }
