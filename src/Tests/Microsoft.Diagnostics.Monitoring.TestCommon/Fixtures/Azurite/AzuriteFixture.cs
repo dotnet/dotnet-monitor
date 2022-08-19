@@ -128,6 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
 
         private static ProcessStartInfo ConstructAzuriteProcessStartInfo(AzuriteAccount authorizedAccount, string workspaceDirectory)
         {
+            bool isVSCopy = false;
             string azuriteFolder = null;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -138,15 +139,21 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
                     if (Directory.Exists(vsAzuriteFolder))
                     {
                         azuriteFolder = vsAzuriteFolder;
+                        isVSCopy = true;
                     }
                 }
             }
 
-            string azuriteExecutablePath = Path.Combine(
-                azuriteFolder ?? string.Empty,
-                RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                    ? "azurite.exe"
-                    : "azurite");
+            string azuriteExecutablePath;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                azuriteExecutablePath = Path.Combine(azuriteFolder ?? string.Empty, isVSCopy ? "azurite.exe" : "azurite.cmd");
+            }
+            else
+            {
+                azuriteExecutablePath = Path.Combine(azuriteFolder ?? string.Empty, "azurite");
+            }
 
             if (!string.IsNullOrEmpty(azuriteFolder) && !File.Exists(azuriteExecutablePath))
             {
