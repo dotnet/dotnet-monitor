@@ -8,19 +8,6 @@
 //
 
 
-/* Unmerged change from project 'Microsoft.Diagnostics.Monitoring.TestCommon (net6.0)'
-Before:
-using Microsoft.DotNet.XUnitExtensions;
-After:
-using Microsoft;
-using Microsoft.Diagnostics;
-using Microsoft.Diagnostics.Monitoring;
-using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite;
-using Microsoft.DotNet.XUnitExtensions;
-*/
 using Microsoft.DotNet.XUnitExtensions;
 using System;
 using System.Diagnostics;
