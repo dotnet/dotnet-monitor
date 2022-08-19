@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             _testUploadFileHash = GetFileSHA256(_testUploadFile);
         }
 
-        [ConditionalFact]
+        [ConditionalFact(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         public async Task AzureBlobEgress_UploadsCorrectData()
         {
             _azuriteFixture.SkipTestIfNotAvailable();
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             Assert.Equal(_testUploadFileHash, GetFileSHA256(downloadedFile));
         }
 
-        [ConditionalFact]
+        [ConditionalFact(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         public async Task AzureBlobEgress_Supports_QueueMessages()
         {
             _azuriteFixture.SkipTestIfNotAvailable();
@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             Assert.Equal(resultingBlob.Name, DecodeQueueMessageBody(resultingMessage.Body));
         }
 
-        [ConditionalFact]
+        [ConditionalFact(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         public async Task AzureBlobEgress_Supports_RestrictiveSasToken()
         {
             _azuriteFixture.SkipTestIfNotAvailable();
@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             Assert.Equal($"{providerOptions.BlobPrefix}/{artifactSettings.Name}", resultingBlob.Name);
         }
 
-        [ConditionalFact]
+        [ConditionalFact(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         public async Task AzureBlobEgress_ThrowsWhen_ContainerDoesNotExistAndUsingRestrictiveSasToken()
         {
             _azuriteFixture.SkipTestIfNotAvailable();

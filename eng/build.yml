@@ -175,6 +175,7 @@ jobs:
 
     - ${{ if and(ne(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
       - script: echo ##vso[task.prependpath]/usr/share/node
+        displayName: Add Azurite to PATH
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
@@ -188,10 +189,6 @@ jobs:
       ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
         env:
           ROOTFS_DIR: '/crossrootfs/arm64'
-          AZURITE_LOCATION: '1'
-      ${{ else }}:
-        env:
-          AZURITE_LOCATION: '1'
 
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), gt(length(parameters.publishArtifactsSubPaths), 0)) }}:
       - ${{ each subPath in parameters.publishArtifactsSubPaths }}:
