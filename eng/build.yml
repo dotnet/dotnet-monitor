@@ -180,7 +180,7 @@ jobs:
     #
     # Add the azurite installation location to PATH to workaround this.
     - ${{ if and(ne(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
-      - script: echo "##vso[task.prependpath]/usr/share/node"
+      - script: echo "##vso[task.prependpath]/usr/share/node/bin"
         displayName: Add Azurite to PATH
 
     - script: >-
