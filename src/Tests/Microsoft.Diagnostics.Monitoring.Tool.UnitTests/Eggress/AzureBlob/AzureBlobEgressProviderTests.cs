@@ -9,7 +9,7 @@ using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 using Azure.Storage.Sas;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
@@ -28,7 +28,6 @@ using Xunit.Abstractions;
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
-    [Collection(AzuriteCollectionFixture.Name)]
     public class AzureBlobEgressProviderTests : IClassFixture<AzuriteFixture>, IDisposable
     {
         private readonly ITestOutputHelper _outputHelper;
@@ -249,7 +248,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             }
             catch (XmlException)
             {
-                // Thrown when there are no blobs
+                // Can be thrown when there are no blobs
             }
 
             return blobs;

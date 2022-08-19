@@ -7,6 +7,20 @@
 // https://github.com/Azure/azure-sdk-for-net/blob/Azure.ResourceManager_1.3.1/sdk/storage/Azure.Storage.Common/tests/Shared/AzuriteFixture.cs
 //
 
+
+/* Unmerged change from project 'Microsoft.Diagnostics.Monitoring.TestCommon (net6.0)'
+Before:
+using Microsoft.DotNet.XUnitExtensions;
+After:
+using Microsoft;
+using Microsoft.Diagnostics;
+using Microsoft.Diagnostics.Monitoring;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite;
+using Microsoft.DotNet.XUnitExtensions;
+*/
 using Microsoft.DotNet.XUnitExtensions;
 using System;
 using System.Diagnostics;
@@ -15,7 +29,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
-namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
+namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
 {
     public class AzuriteAccount
     {
@@ -30,7 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
         public string QueueEndpoint => $"http://127.0.0.1:{QueuesPort}/{Name}";
         public string TableEndpoint => $"http://127.0.0.1:{TablesPort}/{Name}";
 
-
         public string ConnectionString => $"DefaultEndpointsProtocol=http;AccountName={Name};AccountKey={Key};BlobEndpoint={BlobEndpoint};QueueEndpoint={QueueEndpoint};TableEndpoint={TableEndpoint}";
     }
 
@@ -43,10 +56,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
         private Process _azuriteProcess;
 
         private readonly TemporaryDirectory _workspaceDirectory;
-        private readonly CountdownEvent _startupCountdownEvent;
+        private readonly CountdownEvent _startupCountdownEvent = new CountdownEvent(initialCount: 3); // Wait for the Blob, Queue, and Table services to start
 
-        private readonly StringBuilder _azuriteStartupStdout;
-        private readonly StringBuilder _azuriteStartupStderr;
+        private readonly StringBuilder _azuriteStartupStdout = new();
+        private readonly StringBuilder _azuriteStartupStderr = new();
         private readonly string _startupErrorMessage;
 
         public AzuriteAccount Account { get; }
@@ -64,16 +77,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures.Azurite
                 Key = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString())),
             };
 
-            _startupCountdownEvent = new CountdownEvent(initialCount: 3); // Wait for the Blob, Queue, and Table services to start
             _workspaceDirectory = new TemporaryDirectory(new ConsoleOutputHelper());
-
             _azuriteProcess = new Process()
             {
                 StartInfo = ConstructAzuriteProcessStartInfo(Account, _workspaceDirectory.FullName)
             };
-
-            _azuriteStartupStdout = new();
-            _azuriteStartupStderr = new();
 
             _azuriteProcess.OutputDataReceived += ParseAzuriteStartupOutput;
             _azuriteProcess.ErrorDataReceived += ParseAzuriteStartupError;
