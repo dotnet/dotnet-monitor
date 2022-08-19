@@ -48,6 +48,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
         private readonly StringBuilder _azuriteStartupStdout = new();
         private readonly StringBuilder _azuriteStartupStderr = new();
         private readonly string _startupErrorMessage;
+        private readonly bool _isPipelineBuildMachine;
+
 
         public AzuriteAccount Account { get; }
 
@@ -56,8 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             // Check if the tests are running on a pipeline build machine.
             // If so, Azurite must succesfully initialize otherwise mark the dependent tests as failed
             // to avoid hidding failures in our CI.
-            bool isPipelineBuildMachine = Environment.GetEnvironmentVariable("TF_BUILD") != null;
-            isPipelineBuildMachine = true;
+            _isPipelineBuildMachine = Environment.GetEnvironmentVariable("TF_BUILD") != null;
             Account = new AzuriteAccount()
             {
                 Name = Guid.NewGuid().ToString("N"),
@@ -81,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             {
                 _startupErrorMessage = ErrorMessage($"failed to start azurite with exception: {ex.Message}");
 
-                if (isPipelineBuildMachine)
+                if (_isPipelineBuildMachine)
                 {
                     throw new InvalidOperationException(_startupErrorMessage, ex);
                 }
@@ -115,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
         {
             bool isVSCopy = false;
             string azuriteFolder = null;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (!_isPipelineBuildMachine && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 string vsAppDir = Environment.GetEnvironmentVariable("VSAPPIDDIR");
                 if (vsAppDir != null)
