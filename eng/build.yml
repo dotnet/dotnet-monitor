@@ -76,7 +76,7 @@ jobs:
         container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine-20220312201346-538077f
       ${{ else }}:
         # CMake + Clang is broken on Alpine 3.14 prereqs image
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode-20211214164113-c401c85
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-20211214164113-c401c85
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
@@ -156,11 +156,6 @@ jobs:
             arguments: $(Build.SourcesDirectory)/NuGet.config $Token
           env:
             Token: $(dn-bot-dnceng-artifact-feeds-rw)
-
-    - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
-      - ${{ if neq(parameters.architecture, 'arm64') }}:
-        - script: >-
-            apt-get -y remove nodejs
   
     - task: NodeTool@0
       displayName: Install Node.js
