@@ -195,7 +195,7 @@ jobs:
             -TaskVariableName 'VsWherePath'
 
       - powershell: >-
-          vswhere.exe -latest
+          $(VsWherePath) -latest
           Write-Host "##vso[task.prependpath]$(Split-Path $($(VsWherePath) -latest -find **\azurite.exe))"
         displayName: Add Azurite to PATH
 
