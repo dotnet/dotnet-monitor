@@ -7,7 +7,6 @@
 // https://github.com/Azure/azure-sdk-for-net/blob/Azure.ResourceManager_1.3.1/sdk/storage/Azure.Storage.Common/tests/Shared/AzuriteFixture.cs
 //
 
-
 using Microsoft.DotNet.XUnitExtensions;
 using System;
 using System.Diagnostics;
@@ -58,6 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             // If so, Azurite must successfully initialize otherwise mark the dependent tests as failed
             // to avoid hiding failures in our CI.
             _isPipelineBuildMachine = Environment.GetEnvironmentVariable("TF_BUILD") != null;
+
             Account = new AzuriteAccount()
             {
                 Name = Guid.NewGuid().ToString("N"),
@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
 
                 if (_isPipelineBuildMachine && !isVSCopy)
                 {
-                    throw new InvalidOperationException($"COULD NOT FIND RIGHT AZURITE: {Environment.GetEnvironmentVariable("VSAPPIDDIR")}")
+                    throw new InvalidOperationException($"COULD NOT FIND RIGHT AZURITE: {Environment.GetEnvironmentVariable("VSAPPIDDIR")}");
                 }
             }
 
