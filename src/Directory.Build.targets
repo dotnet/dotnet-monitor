@@ -32,7 +32,7 @@
       These assets are Windows-specific native libraries and are not used in the trace event usage
       by dotnet-monitor. Removing them saves about 20 MBs from the unpacked dotnet-monitor installation.
       -->
-    <None Remove="$(NUGET_PACKAGES)Microsoft.Diagnostics.Tracing.TraceEvent\3.0.3\build\native\*" />
+    <None Remove="$(NUGET_PACKAGES)Microsoft.Diagnostics.Tracing.TraceEvent\3.0.3\build\native\**" />
   </ItemGroup>
 
 </Project>
