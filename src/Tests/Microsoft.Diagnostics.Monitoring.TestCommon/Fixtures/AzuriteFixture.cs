@@ -47,7 +47,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
         private readonly StringBuilder _azuriteStartupStdout = new();
         private readonly StringBuilder _azuriteStartupStderr = new();
         private readonly string _startupErrorMessage;
-        private readonly bool _isPipelineBuildMachine;
 
         public AzuriteAccount Account { get; }
 
@@ -56,7 +55,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             // Check if the tests are running on a pipeline build machine.
             // If so, Azurite must successfully initialize otherwise mark the dependent tests as failed
             // to avoid hiding failures in our CI.
-            _isPipelineBuildMachine = Environment.GetEnvironmentVariable("TF_BUILD") != null;
+            //
+            // Workaround: for now allow Windows environments to skip Azurite based tests due.
+            bool mustInitialize = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TF_BUILD"));
 
             Account = new AzuriteAccount()
             {
@@ -81,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             {
                 _startupErrorMessage = ErrorMessage($"failed to start azurite with exception: {ex.Message}");
 
-                if (_isPipelineBuildMachine)
+                if (mustInitialize)
                 {
                     throw new InvalidOperationException(_startupErrorMessage, ex);
                 }
@@ -145,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                azuriteExecutable = "azurite.exe";
+                azuriteExecutable = "azurite.cmd";
             }
             else
             {
