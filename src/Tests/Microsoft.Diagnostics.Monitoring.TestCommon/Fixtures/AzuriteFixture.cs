@@ -50,14 +50,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
         private readonly string _startupErrorMessage;
         private readonly bool _isPipelineBuildMachine;
 
-
         public AzuriteAccount Account { get; }
 
         public AzuriteFixture()
         {
             // Check if the tests are running on a pipeline build machine.
-            // If so, Azurite must succesfully initialize otherwise mark the dependent tests as failed
-            // to avoid hidding failures in our CI.
+            // If so, Azurite must successfully initialize otherwise mark the dependent tests as failed
+            // to avoid hiding failures in our CI.
             _isPipelineBuildMachine = Environment.GetEnvironmentVariable("TF_BUILD") != null;
             Account = new AzuriteAccount()
             {
@@ -74,6 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             _azuriteProcess.OutputDataReceived += ParseAzuriteStartupOutput;
             _azuriteProcess.ErrorDataReceived += ParseAzuriteStartupError;
 
+            Console.WriteLine("TRYING TO RUN START");
             try
             {
                 _azuriteProcess.Start();
@@ -89,6 +89,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
 
                 _azuriteProcess = null;
                 return;
+            }
+            finally
+            {
+                throw new InvalidOperationException("We ran start!");
             }
 
             _azuriteProcess.BeginOutputReadLine();
@@ -135,7 +139,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
                 UseShellExecute = false,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
             };
 
             string azuriteExecutable;
