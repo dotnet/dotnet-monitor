@@ -263,13 +263,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
 
         private string DecodeQueueMessageBody(BinaryData body)
         {
-            // Queue messages are either UTF-8 encoded XML, **OR**, in our case
-            // UTF-8 encoded text that is then Base64 encoded and stored as a byte array.
-            //
-            // To decode it
-            // - Use the BinaryData's built in `.ToString()` which will first re-encode the byte array as UTF-8 encoded text
-            // - Base64 Decode the resulting string
-            // - Re-encode the resulting byte array as UTF-8 text
+            // Our queue messages are UTF-8 encoded text that is then Base64 encoded and then stored as a byte array.
             return Encoding.UTF8.GetString(Convert.FromBase64String(body.ToString()));
         }
 
