@@ -167,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             BlobServiceClient serviceClient = new(_azuriteFixture.Account.ConnectionString);
 
             containerName ??= Guid.NewGuid().ToString("D");
-            BlobContainerClient containerClient = await serviceClient.CreateBlobContainerAsync(containerName);
+            BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(containerName);
 
             if (create)
             {
@@ -182,7 +182,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Eggress.AzureBlob
             QueueServiceClient serviceClient = new(_azuriteFixture.Account.ConnectionString);
 
             queueName ??= Guid.NewGuid().ToString("D");
-            QueueClient queueClient = await serviceClient.CreateQueueAsync(queueName);
+            QueueClient queueClient = serviceClient.GetQueueClient(queueName);
 
             if (create)
             {
