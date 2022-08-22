@@ -78,8 +78,6 @@
     <PackageReference Include="Microsoft.FileFormats" Version="$(MicrosoftFileFormatsVersion)" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="$(MicrosoftIdentityModelTokensVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelTokensJwtVersion)" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
-    <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
   </ItemGroup>
 
   <ItemGroup>

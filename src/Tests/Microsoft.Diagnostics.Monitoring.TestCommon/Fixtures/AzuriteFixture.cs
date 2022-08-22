@@ -23,7 +23,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
         public string Key { get; set; }
         public int BlobsPort { get; set; }
         public int QueuesPort { get; set; }
-
         public int TablesPort { get; set; }
 
         public string BlobEndpoint => $"http://127.0.0.1:{BlobsPort}/{Name}";
