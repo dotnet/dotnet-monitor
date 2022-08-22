@@ -157,11 +157,6 @@ jobs:
           env:
             Token: $(dn-bot-dnceng-artifact-feeds-rw)
 
-    - ${{ if eq(parameters.osGroup, 'Windows') }}:
-      - powershell: |
-          vswhere.exe -latest
-          Write-Host "##vso[task.prependpath]$(Split-Path $(.\vswhere.exe -latest -find **\azurite.exe))"
-
     - ${{ if ne(parameters.osGroup, 'Windows') }}:
       - task: NodeTool@0
         displayName: Install Node.js
@@ -185,6 +180,23 @@ jobs:
     # Add the azurite installation location to PATH to workaround this.
     - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       - script: echo "##vso[task.prependpath]/usr/share/node/bin"
+        displayName: Add Azurite to PATH
+
+    # On Windows containers we won't be using the VSTest runner to execute the tests,
+    # so the needed environment variables won't be available. Instead find the VS installation
+    # location and add the included azurite installation
+    - ${{ if eq(parameters.osGroup, 'Windows') }}:
+      - task: PowerShell@2
+        displayName: Install vswhere
+        inputs:
+          filePath: $(Build.SourcesDirectory)/eng/release/Scripts/InstallVsWhere.ps1
+          arguments: >-
+            -ToolsDirectory $(Agent.ToolsDirectory)
+            -TaskVariableName 'VsWherePath'
+
+      - powershell: >-
+          vswhere.exe -latest
+          Write-Host "##vso[task.prependpath]$(Split-Path $($(VsWherePath) -latest -find **\azurite.exe))"
         displayName: Add Azurite to PATH
 
     - script: >-
