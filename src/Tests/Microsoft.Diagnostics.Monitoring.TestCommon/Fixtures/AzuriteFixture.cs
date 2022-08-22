@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                azuriteExecutable = "azurite.cmd";
+                azuriteExecutable = "azurite.exe";
             }
             else
             {
