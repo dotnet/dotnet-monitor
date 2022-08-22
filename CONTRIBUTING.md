@@ -99,3 +99,7 @@ Microsoft team and community members will provide feedback on your change. Commu
 One or more Microsoft team members will review every PR prior to merge. That means that the PR will be merged once the feedback is resolved. "LGTM" == "looks good to me".
 
 There are lots of thoughts and approaches for how to efficiently discuss changes. It is best to be clear and explicit with your feedback. Please be patient with people who might not understand the finer details about your approach to feedback.
+
+### Stale PR Policy
+
+In an effort to prevent pull requests from becoming stale, the dotnet-monitor team will comment on pull requests that haven't had any activity in the last 4 weeks to ensure they are still under active development. After this point, if there are no updates on the pull request, the dotnet-monitor team will close the pull request 6 weeks after the notification. In the event that your pull request is closed, please feel free to re-open the pull request in the future to continue the review process, or open a new pull request with a link to the closed one.
