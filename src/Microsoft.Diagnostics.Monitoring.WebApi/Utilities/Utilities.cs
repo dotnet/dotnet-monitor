@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
         {
-            return (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
+            return (!pid.HasValue && !uid.HasValue && string.IsNullOrEmpty(name)) ? null : new ProcessKey(pid, uid, name);
         }
     }
 }
