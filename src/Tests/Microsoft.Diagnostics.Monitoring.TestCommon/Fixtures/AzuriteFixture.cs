@@ -56,7 +56,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             // If so, Azurite must successfully initialize otherwise mark the dependent tests as failed
             // to avoid hiding failures in our CI.
             //
-            // Workaround: for now allow Windows environments to skip Azurite based tests due.
+            // Workaround: for now allow Windows environments to skip Azurite based tests due to configuration
+            // issues in the Pipeline environment.
             bool mustInitialize = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TF_BUILD"));
 
             Account = new AzuriteAccount()
