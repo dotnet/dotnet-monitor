@@ -157,6 +157,10 @@ jobs:
           env:
             Token: $(dn-bot-dnceng-artifact-feeds-rw)
 
+    - ${{ if eq(parameters.osGroup, 'Windows') }}:
+      - powershell: |
+          dir env:
+
     - ${{ if ne(parameters.osGroup, 'Windows') }}:
       - task: NodeTool@0
         displayName: Install Node.js
@@ -172,15 +176,15 @@ jobs:
         inputs:
           command: custom
           customCommand: install -g azurite
-      # When using the Alpine build containers, the above npm install will install to the system's
-      # node directory instead of the agent's copy.
-      # The container doesn't have the node bin directory included in PATH by default, so global npm tool installations
-      # are not discoverable by the test infrastructure.
-      #
-      # Add the azurite installation location to PATH to workaround this.
-      - ${{ if and(ne(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
-        - script: echo "##vso[task.prependpath]/usr/share/node/bin"
-          displayName: Add Azurite to PATH
+    # When using the Alpine build containers, the above npm install will install to the system's
+    # node directory instead of the agent's copy.
+    # The container doesn't have the node bin directory included in PATH by default, so global npm tool installations
+    # are not discoverable by the test infrastructure.
+    #
+    # Add the azurite installation location to PATH to workaround this.
+    - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+      - script: echo "##vso[task.prependpath]/usr/share/node/bin"
+        displayName: Add Azurite to PATH
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
