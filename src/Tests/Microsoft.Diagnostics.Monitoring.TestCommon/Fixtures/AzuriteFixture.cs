@@ -127,11 +127,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
                         isVSCopy = true;
                     }
                 }
-
-                if (_isPipelineBuildMachine && !isVSCopy)
-                {
-                    throw new InvalidOperationException($"COULD NOT FIND RIGHT AZURITE: {Environment.GetEnvironmentVariable("VSAPPIDDIR")}");
-                }
             }
 
             ProcessStartInfo startInfo = new()
