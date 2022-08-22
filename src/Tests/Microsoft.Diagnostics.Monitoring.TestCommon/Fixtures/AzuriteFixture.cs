@@ -73,7 +73,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             _azuriteProcess.OutputDataReceived += ParseAzuriteStartupOutput;
             _azuriteProcess.ErrorDataReceived += ParseAzuriteStartupError;
 
-            Console.WriteLine("TRYING TO RUN START");
             try
             {
                 _azuriteProcess.Start();
@@ -89,10 +88,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
 
                 _azuriteProcess = null;
                 return;
-            }
-            finally
-            {
-                throw new InvalidOperationException("We ran start!");
             }
 
             _azuriteProcess.BeginOutputReadLine();
@@ -120,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
         {
             bool isVSCopy = false;
             string azuriteFolder = null;
-            if (!_isPipelineBuildMachine && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 string vsAppDir = Environment.GetEnvironmentVariable("VSAPPIDDIR");
                 if (vsAppDir != null)
@@ -131,6 +126,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
                         azuriteFolder = vsAzuriteFolder;
                         isVSCopy = true;
                     }
+                }
+
+                if (_isPipelineBuildMachine && !isVSCopy)
+                {
+                    throw new InvalidOperationException($"COULD NOT FIND RIGHT AZURITE: {Environment.GetEnvironmentVariable("VSAPPIDDIR")}")
                 }
             }
 
