@@ -159,7 +159,8 @@ jobs:
 
     - ${{ if eq(parameters.osGroup, 'Windows') }}:
       - powershell: |
-          dir env:
+          vswhere.exe -latest
+          Write-Host "##vso[task.prependpath]$(Split-Path $(.\vswhere.exe -latest -find **\azurite.exe))"
 
     - ${{ if ne(parameters.osGroup, 'Windows') }}:
       - task: NodeTool@0
