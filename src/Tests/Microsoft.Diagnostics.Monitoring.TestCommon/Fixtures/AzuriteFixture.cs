@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
@@ -59,10 +60,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             // issues in the Pipeline environment.
             bool mustInitialize = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TF_BUILD"));
 
+            byte[] key = new byte[32];
+            RandomNumberGenerator.Fill(key);
             Account = new AzuriteAccount()
             {
                 Name = Guid.NewGuid().ToString("N"),
-                Key = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString())),
+                Key = Convert.ToBase64String(key),
             };
 
             _workspaceDirectory = new TemporaryDirectory(new ConsoleOutputHelper());
