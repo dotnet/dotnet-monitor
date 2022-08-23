@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async (processInfo) =>
             {
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async (processInfo) =>
             {

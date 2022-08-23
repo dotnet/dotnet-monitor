@@ -121,11 +121,42 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public IEnumerable<Models.OperationSummary> GetOperations()
+        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey)
         {
             lock (_requests)
             {
-                return _requests.Select((kvp) =>
+                IEnumerable<KeyValuePair<Guid, EgressEntry>> requests = _requests;
+
+                if (null != processKey)
+                {
+                    requests = requests.Where((kvp) =>
+                    {
+                        EgressProcessInfo processInfo = kvp.Value.EgressRequest.EgressOperation.ProcessInfo;
+
+                        // Check that if a field is specified, it meets the conditions.
+                        if (!string.IsNullOrEmpty(processKey.Value.ProcessName)
+                            && processInfo.ProcessName != processKey.Value.ProcessName)
+                        {
+                            return false;
+                        }
+
+                        if (processKey.Value.ProcessId.HasValue
+                            && processInfo.ProcessId != processKey.Value.ProcessId.Value)
+                        {
+                            return false;
+                        }
+
+                        if (processKey.Value.RuntimeInstanceCookie.HasValue
+                            && processInfo.RuntimeInstanceCookie != processKey.Value.RuntimeInstanceCookie.Value)
+                        {
+                            return false;
+                        }
+
+                        return true;
+                    });
+                }
+
+                return requests.Select((kvp) =>
                 {
                     EgressProcessInfo processInfo = kvp.Value.EgressRequest.EgressOperation.ProcessInfo;
                     return new Models.OperationSummary
