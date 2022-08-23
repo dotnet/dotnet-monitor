@@ -4,4 +4,4 @@ ARG VARIANT="6.0-bullseye"
 FROM mcr.microsoft.com/vscode/devcontainers/dotnet:0-${VARIANT}
 
 RUN apt update && export DEBIAN_FRONTEND=noninteractive \
-     && apt install -y --no-install-recommends cmake clang
+     && apt install -y --no-install-recommends cmake clang llvm
