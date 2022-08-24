@@ -269,7 +269,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the azure blob storage account..
+        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the Azure queue account..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignature {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSigna" +
+                        "ture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignatureName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSigna" +
+                        "tureName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature {
             get {

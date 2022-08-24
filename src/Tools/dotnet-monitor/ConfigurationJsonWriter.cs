@@ -148,6 +148,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignatureName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKeyName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.ManagedIdentityClientId), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignature), skipNotPresent, includeChildSections: false, redact: true, showSources: showSources);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignatureName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
                         }
                     }
                 }
