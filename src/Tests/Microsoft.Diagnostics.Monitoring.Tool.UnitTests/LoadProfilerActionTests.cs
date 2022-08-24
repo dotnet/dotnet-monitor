@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddSetEnvironmentVariableAction(ProfilerHelper.ProfilerEnvVarRuntimeId, ConfigurationTokenParser.RuntimeIdReference)
+                    .AddSetEnvironmentVariableAction(ProfilerHelper.ProfilerEnvVarRuntimeInstanceId, ConfigurationTokenParser.RuntimeIdReference)
                     .AddLoadProfilerAction(options =>
                     {
                         options.Path = profilerPath;

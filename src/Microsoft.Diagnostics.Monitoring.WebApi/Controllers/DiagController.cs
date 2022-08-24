@@ -514,7 +514,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return this.InvokeService(() =>
             {
-                string version = GetDotnetMonitorVersion();
+                string version = Assembly.GetExecutingAssembly().GetInformationalVersionString();
                 string runtimeVersion = Environment.Version.ToString();
                 DiagnosticPortConnectionMode diagnosticPortMode = _diagnosticPortOptions.Value.GetConnectionMode();
                 string diagnosticPortName = GetDiagnosticPortName();
@@ -580,22 +580,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
             Utilities.GetProcessKey(pid, uid, name));
-        }
-
-        private static string GetDotnetMonitorVersion()
-        {
-            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-
-            var assemblyVersionAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-
-            if (assemblyVersionAttribute is null)
-            {
-                return assembly.GetName().Version.ToString();
-            }
-            else
-            {
-                return assemblyVersionAttribute.InformationalVersion;
-            }
         }
 
         private string GetDiagnosticPortName()

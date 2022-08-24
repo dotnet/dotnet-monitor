@@ -166,6 +166,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureStorage(context.Configuration);
                 services.ConfigureDefaultProcess(context.Configuration);
                 services.ConfigureCollectionRules();
+                services.ConfigureProfiler();
             });
         }
     }

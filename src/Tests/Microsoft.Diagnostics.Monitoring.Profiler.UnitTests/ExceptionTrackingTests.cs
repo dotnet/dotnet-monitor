@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerHelper.Clsid.ToString("B"));
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath64, profilerPath);
-            adapter.Environment.Add(ProfilerHelper.ProfilerEnvVarRuntimeId, Guid.NewGuid().ToString("D"));
+            adapter.Environment.Add(ProfilerHelper.ProfilerEnvVarRuntimeInstanceId, Guid.NewGuid().ToString("D"));
             adapter.Environment.Add(ProfilerHelper.ProfilerEnvVarStdErrLoggerLevel, LogLevel.Trace.ToString("G"));
 
             List<string> outputLines = new();

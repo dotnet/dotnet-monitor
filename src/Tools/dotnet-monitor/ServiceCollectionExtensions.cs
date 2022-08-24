@@ -20,6 +20,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -213,6 +214,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
             services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
 
+            return services;
+        }
+
+        public static IServiceCollection ConfigureProfiler(this IServiceCollection services)
+        {
+            services.AddSingleton<ProfilerService>();
+            services.AddHostedServiceForwarder<ProfilerService>();
+            services.AddSingleton<IEndpointInfoSourceCallbacks, ProfilerEndpointInfoSourceCallbacks>();
             return services;
         }
 

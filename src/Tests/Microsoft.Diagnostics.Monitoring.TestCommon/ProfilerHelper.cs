@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         // The value is determined BEFORE native build by the generation of the product version into the
         // _productversion.h header file.
         public const string ProfilerEnvVarProductVersion = ProfilerEnvVarPrefix + "ProductVersion";
-        public const string ProfilerEnvVarRuntimeId = ProfilerEnvVarPrefix + "RuntimeId";
+        public const string ProfilerEnvVarRuntimeInstanceId = ProfilerEnvVarPrefix + "RuntimeInstanceId";
         public const string ProfilerEnvVarStdErrLoggerLevel = ProfilerEnvVarPrefix + "StdErrLogger_Level";
 
         public static readonly Guid Clsid = new Guid("6A494330-5848-4A23-9D87-0E57BBF6DE79");

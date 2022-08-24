@@ -712,4 +712,8 @@
     <value>The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
     <comment>The description provided for the QueueSharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_StorageOptions_SharedLibraryPath" xml:space="preserve">
+    <value>The location to which libraries shared with target applications will be copied at startup.</value>
+    <comment>The description provided for the SharedLibraryPath parameter on StorageOptions.</comment>
+  </data>
 </root>
