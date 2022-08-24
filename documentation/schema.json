@@ -1047,6 +1047,16 @@
           ],
           "description": "The URI of the Azure queue account.",
           "format": "uri"
+        },
+        "Metadata": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

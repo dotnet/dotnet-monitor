@@ -381,6 +381,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
 
+        private static readonly Action<ILogger, Exception> _invalidMetadata =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.InvalidMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_InvalidMetadata);
+
+        private static readonly Action<ILogger, string, Exception> _duplicateKeyInMetadata =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
+
+        private static readonly Action<ILogger, string, Exception> _environmentVariableNotFound =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.EnvironmentVariableNotFound.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -699,6 +717,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticPortWatchingFailed(this ILogger logger, string diagnosticPort, Exception ex)
         {
             _diagnosticPortWatchingFailed(logger, diagnosticPort, ex);
+        }
+        public static void InvalidMetadata(this ILogger logger, Exception ex)
+        {
+            _invalidMetadata(logger, ex);
+        }
+
+        public static void DuplicateKeyInMetadata(this ILogger logger, string duplicateKey)
+        {
+            _duplicateKeyInMetadata(logger, duplicateKey, null);
+        }
+
+        public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
+        {
+            _environmentVariableNotFound(logger, environmentVariable, null);
         }
     }
 }
