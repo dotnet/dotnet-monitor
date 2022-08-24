@@ -22,6 +22,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             = new Dictionary<string, string>(StringComparer.Ordinal);
 
         /// <summary>
+        /// Custom metadata of the blob to be created.
+        /// </summary>
+        public Dictionary<string, string> CustomMetadata { get; }
+            = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        public Dictionary<string, string> EnvBlock { get; set; }
+            = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        /// <summary>
         /// The name of the artifact.
         /// </summary>
         public string Name { get; set; }
