@@ -17,7 +17,6 @@
       "ManagedIdentityClientId": ":NOT PRESENT:",
       "QueueSharedAccessSignature": ":NOT PRESENT:",
       "QueueSharedAccessSignatureName": ":NOT PRESENT:"
-
     }
   },
   "FileSystem": {
