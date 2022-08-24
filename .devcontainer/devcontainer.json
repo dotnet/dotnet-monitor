@@ -4,7 +4,10 @@
     "build": {
         "dockerfile": "Dockerfile",
         "args": {
-            "VARIANT": "6.0-bullseye"
+            "VARIANT": "6.0-bullseye",
+            "INSTALL_NODE": "true",
+            "INSTALL_AZURITE": "true",
+            "NODE_VERSION": "lts/*"
         }
     },
     "customizations": {
