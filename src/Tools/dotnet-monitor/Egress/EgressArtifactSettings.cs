@@ -27,6 +27,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public Dictionary<string, string> CustomMetadata { get; }
             = new Dictionary<string, string>(StringComparer.Ordinal);
 
+        public Dictionary<string, string> EnvBlock { get; set; }
+            = new Dictionary<string, string>(StringComparer.Ordinal);
+
         /// <summary>
         /// The name of the artifact.
         /// </summary>

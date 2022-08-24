@@ -61,7 +61,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             TOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
-            IEndpointInfo source,
             CancellationToken token)
         {
             Func<Stream, CancellationToken, Task> wrappingAction = async (targetStream, token) =>
@@ -82,7 +81,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 options,
                 wrappingAction,
                 artifactSettings,
-                source,
                 token);
         }
 
@@ -100,7 +98,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             TOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
-            IEndpointInfo source,
             CancellationToken token);
 
         protected ILogger Logger { get; }

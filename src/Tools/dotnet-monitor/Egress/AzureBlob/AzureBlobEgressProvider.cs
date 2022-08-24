@@ -9,8 +9,6 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Queues;
-using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -41,12 +39,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             AzureBlobEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
-            IEndpointInfo source,
             CancellationToken token)
         {
             try
             {
-                await AddConfiguredMetadataAsync(options, artifactSettings, source, token);
+                AddConfiguredMetadataAsync(options, artifactSettings);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
@@ -90,12 +87,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
-            IEndpointInfo source,
             CancellationToken token)
         {
             try
             {
-                await AddConfiguredMetadataAsync(options, artifactSettings, source, token);
+                AddConfiguredMetadataAsync(options, artifactSettings);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
@@ -181,15 +177,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
         }
 
-        public async Task AddConfiguredMetadataAsync(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings, IEndpointInfo endpointInfo, CancellationToken token)
+        public void AddConfiguredMetadataAsync(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings)
         {
-            DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
-
-            Dictionary<string, string> envBlock = await client.GetProcessEnvironmentAsync(token);
-
             foreach (var metadataPair in options.Metadata)
             {
-                if (envBlock.TryGetValue(metadataPair.Value, out string envVarValue))
+                if (artifactSettings.EnvBlock.TryGetValue(metadataPair.Value, out string envVarValue))
                 {
                     artifactSettings.CustomMetadata.Add(metadataPair.Key, envVarValue);
                 }

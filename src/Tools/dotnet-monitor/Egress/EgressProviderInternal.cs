@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -41,14 +40,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             string providerName,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
-            IEndpointInfo source,
             CancellationToken token)
         {
             return _provider.EgressAsync(
                 GetOptions(providerName),
                 action,
                 artifactSettings,
-                source,
                 token);
         }
 
@@ -57,14 +54,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             string providerName,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
-            IEndpointInfo source,
             CancellationToken token)
         {
             return _provider.EgressAsync(
                 GetOptions(providerName),
                 action,
                 artifactSettings,
-                source,
                 token);
         }
 
