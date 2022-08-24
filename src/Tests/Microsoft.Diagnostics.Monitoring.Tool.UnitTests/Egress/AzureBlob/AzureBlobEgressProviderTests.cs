@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -347,9 +348,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
 
         private async Task<List<QueueMessage>> GetAllMessagesAsync(QueueClient queueClient)
         {
-            const int MaxReceiveMessages = 32;
-            Response<QueueMessage[]> messages = await queueClient.ReceiveMessagesAsync(MaxReceiveMessages);
-            return messages.Value.ToList();
+            try
+            {
+                const int MaxReceiveMessages = 32;
+                Response<QueueMessage[]> messages = await queueClient.ReceiveMessagesAsync(MaxReceiveMessages);
+                return messages.Value.ToList();
+            }
+            catch (RequestFailedException ex) when (ex.Status == (int)HttpStatusCode.NotFound)
+            {
+
+            }
+
+            return new List<QueueMessage>();
         }
 
         private string DecodeQueueMessageBody(BinaryData body)
