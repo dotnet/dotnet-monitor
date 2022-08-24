@@ -58,6 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
                 TaskCompletionSource<object> startCompletionSource,
+                CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectTraceOptionsDefaults.Duration));
@@ -95,7 +96,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     fileName,
                     EndpointInfo,
                     ContentTypes.ApplicationOctetStream,
-                    scope);
+                    scope,
+                    collectionRuleMetadata);
 
                 ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
                 if (null != result.Exception)

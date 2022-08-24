@@ -11,6 +11,7 @@ using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Queues;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -43,6 +44,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             try
             {
+                AddConfiguredMetadataAsync(options, artifactSettings);
+
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
                 string blobName = GetBlobName(options, artifactSettings);
@@ -53,7 +56,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 using var stream = await action(token);
 
                 // Write blob content, headers, and metadata
-                await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), artifactSettings.Metadata, cancellationToken: token);
+                await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), cancellationToken: token);
+
+                await SetBlobClientMetadata(blobClient, artifactSettings, token);
 
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
@@ -87,6 +92,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             try
             {
+                AddConfiguredMetadataAsync(options, artifactSettings);
+
                 var containerClient = await GetBlobContainerClientAsync(options, token);
 
                 string blobName = GetBlobName(options, artifactSettings);
@@ -117,8 +124,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 // Write blob headers
                 await blobClient.SetHttpHeadersAsync(CreateHttpHeaders(artifactSettings), cancellationToken: token);
 
-                // Write blob metadata
-                await blobClient.SetMetadataAsync(artifactSettings.Metadata, cancellationToken: token);
+                await SetBlobClientMetadata(blobClient, artifactSettings, token);
 
                 string blobUriString = GetBlobUri(blobClient);
                 Logger?.EgressProviderSavedStream(EgressProviderTypes.AzureBlobStorage, blobUriString);
@@ -141,6 +147,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             catch (CredentialUnavailableException ex)
             {
                 throw CreateException(ex);
+            }
+        }
+
+        public async Task SetBlobClientMetadata(BlobBaseClient blobClient, EgressArtifactSettings artifactSettings, CancellationToken token)
+        {
+            Dictionary<string, string> mergedMetadata = new Dictionary<string, string>(artifactSettings.Metadata);
+
+            foreach (var metadataPair in artifactSettings.CustomMetadata)
+            {
+                if (!mergedMetadata.ContainsKey(metadataPair.Key))
+                {
+                    mergedMetadata[metadataPair.Key] = metadataPair.Value;
+                }
+                else
+                {
+                    Logger.DuplicateKeyInMetadata(metadataPair.Key);
+                }
+            }
+
+            try
+            {
+                // Write blob metadata
+                await blobClient.SetMetadataAsync(mergedMetadata, cancellationToken: token);
+            }
+            catch (Exception ex) when (ex is InvalidOperationException || ex is RequestFailedException)
+            {
+                Logger.InvalidMetadata(ex);
+                await blobClient.SetMetadataAsync(artifactSettings.Metadata, cancellationToken: token);
+            }
+        }
+
+        public void AddConfiguredMetadataAsync(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings)
+        {
+            foreach (var metadataPair in options.Metadata)
+            {
+                if (artifactSettings.EnvBlock.TryGetValue(metadataPair.Value, out string envVarValue))
+                {
+                    artifactSettings.CustomMetadata.Add(metadataPair.Key, envVarValue);
+                }
+                else
+                {
+                    Logger.EnvironmentVariableNotFound(metadataPair.Value);
+                }
             }
         }
 
