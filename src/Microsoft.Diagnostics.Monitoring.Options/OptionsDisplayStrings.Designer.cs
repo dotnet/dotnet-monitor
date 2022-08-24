@@ -251,7 +251,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The URI of the Azure queue account..
+        ///   Looks up a localized string similar to The URI of the Azure queue storage account..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri {
             get {
@@ -269,7 +269,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the Azure queue account..
+        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the Azure queue storage account..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignature {
             get {

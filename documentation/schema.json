@@ -1045,7 +1045,7 @@
             "null",
             "string"
           ],
-          "description": "The URI of the Azure queue account.",
+          "description": "The URI of the Azure queue storage account.",
           "format": "uri"
         },
         "QueueSharedAccessSignature": {
@@ -1053,7 +1053,7 @@
             "null",
             "string"
           ],
-          "description": "The shared access signature (SAS) used to access the Azure queue account."
+          "description": "The shared access signature (SAS) used to access the Azure queue storage account."
         },
         "QueueSharedAccessSignatureName": {
           "type": [
