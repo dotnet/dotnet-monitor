@@ -175,17 +175,17 @@
           {
             "name": "addLabel",
             "parameters": {
-              "label": "stale"
+              "label": "no-recent-activity"
             }
           },
           {
             "name": "addReply",
             "parameters": {
-              "comment": "The 'stale' label has been added to this pull request due to four weeks without any activity. If there is no activity in the next six weeks, this pull request will automatically be closed. You can learn more about our stale PR policy here: https://github.com/dotnet/dotnet-monitor/blob/main/CONTRIBUTING.md#stale-pr-policy"
+              "comment": "The 'no-recent-activity' label has been added to this pull request due to four weeks without any activity. If there is no activity in the next six weeks, this pull request will automatically be closed. You can learn more about our stale PR policy here: https://github.com/dotnet/dotnet-monitor/blob/main/CONTRIBUTING.md#stale-pr-policy"
             }
           }
         ],
-        "taskName": "Stale PR Search"
+        "taskName": "No Recent Activity PR Search"
       }
     },
     {
@@ -243,7 +243,7 @@
           {
             "name": "hasLabel",
             "parameters": {
-              "label": "stale"
+              "label": "no-recent-activity"
             }
           },
           {
@@ -265,7 +265,7 @@
             "parameters": {}
           }
         ],
-        "taskName": "Close Stale PR"
+        "taskName": "Close No Recent Activity PR"
       }
     },
     {
@@ -280,7 +280,7 @@
             {
               "name": "hasLabel",
               "parameters": {
-                "label": "stale"
+                "label": "no-recent-activity"
               }
             },
             {
@@ -316,12 +316,12 @@
           "issues",
           "project_card"
         ],
-        "taskName": "Remove Stale Label",
+        "taskName": "Remove No Recent Activity Label",
         "actions": [
           {
             "name": "removeLabel",
             "parameters": {
-              "label": "stale"
+              "label": "no-recent-activity"
             }
           }
         ]
