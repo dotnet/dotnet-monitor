@@ -719,12 +719,14 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | blobPrefix | string | false | Optional path prefix for the artifacts to egress.|
 | copyBufferSize | string | false | The buffer size to use when copying data from the original artifact to the blob stream.|
 | accountKey | string | false | The account key used to access the Azure blob storage account; must be specified if `accountKeyName` is not specified.|
-| sharedAccessSignature | string | false | The shared access signature (SAS) used to access the azure blob storage account; if using SAS, must be specified if `sharedAccessSignatureName` is not specified.|
+| sharedAccessSignature | string | false | The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts; if using SAS, must be specified if `sharedAccessSignatureName` is not specified.|
 | accountKeyName | string | false | Name of the property in the Properties section that will contain the account key; must be specified if `accountKey` is not specified.|
 | managedIdentityClientId | string | false | The ClientId of the ManagedIdentity that can be used to authorize egress. Note this identity must be used by the hosting environment (such as Kubernetes) and must also have a Storage role with appropriate permissions. |
 | sharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the SAS token; if using SAS, must be specified if `sharedAccessSignature` is not specified.|
 | queueName | string | false | The name of the queue to which a message will be dispatched upon writing to a blob.|
-| queueAccountUri | string | false | The URI of the Azure queue account.|
+| queueAccountUri | string | false | The URI of the Azure queue storage account.|
+| queueSharedAccessSignature | string | false | The shared access signature (SAS) used to access the Azure queue storage account; if using SAS, must be specified if `queueSharedAccessSignatureName` is not specified.|
+| queueSharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
 | metadata | Dictionary<string, string> | false | A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.|
 
 ***Note:*** Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.

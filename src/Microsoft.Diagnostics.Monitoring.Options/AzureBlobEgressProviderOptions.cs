@@ -74,6 +74,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignature))]
+        public string QueueSharedAccessSignature { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignatureName))]
+        public string QueueSharedAccessSignatureName { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata))]
         public IDictionary<string, string> Metadata { get; }
             = new Dictionary<string, string>(0);
