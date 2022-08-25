@@ -278,6 +278,17 @@
             {
               "name": "isAction",
               "parameters": {}
+            },
+            {
+              "operator": "not",
+              "operands": [
+                {
+                  "name": "isActivitySender",
+                  "parameters": {
+                    "user": "msftbot"
+                  }
+                }
+              ]
             }
           ]
         },
