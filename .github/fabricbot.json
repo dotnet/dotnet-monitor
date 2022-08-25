@@ -161,7 +161,13 @@
           {
             "name": "noActivitySince",
             "parameters": {
-              "days": 28
+              "days": 1
+            }
+          },
+          {
+            "name": "hasLabel",
+            "parameters": {
+              "label": "test-fabric-bot"
             }
           }
         ],
@@ -243,7 +249,13 @@
           {
             "name": "noActivitySince",
             "parameters": {
-              "days": 42
+              "days": 1
+            }
+          },
+          {
+            "name": "hasLabel",
+            "parameters": {
+              "label": "test-fabric-bot"
             }
           }
         ],
@@ -289,6 +301,12 @@
                   }
                 }
               ]
+            },
+            {
+              "name": "hasLabel",
+              "parameters": {
+                "label": "test-fabric-bot"
+              }
             }
           ]
         },
