@@ -22,7 +22,9 @@
     <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
     <TestTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(TestTargetFrameworks);net7.0</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
-    <SchemaTargetFramework>net6.0</SchemaTargetFramework>
+    <SchemaTargetFrameworks>net6.0</SchemaTargetFrameworks>
+    <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
+    <SchemaTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(SchemaTargetFramework);net7.0</SchemaTargetFrameworks>
     <!-- Defines for including the next .NET version -->
     <DefineConstants Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(DefineConstants);INCLUDE_NEXT_DOTNET</DefineConstants>
   </PropertyGroup>
