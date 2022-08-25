@@ -1,7 +1,7 @@
 <Project>
   <!-- Packages in this file have versions updated periodically by Dependabot.
   Versions managed by Maestro should be in ..\Versions.props.
-  Versions managed by Dependabot should be in .\Versions.props.
+  Versions managed by Dependabot should be in .\Directory.Build.props.
   -->
 
   <ItemGroup>

@@ -1,4 +1,2 @@
 <!-- This isn't a real project, but Dependabot requires a project. -->
-<Project>
-  <Import Project="Versions.props" />
-</Project>
+<Project/>
