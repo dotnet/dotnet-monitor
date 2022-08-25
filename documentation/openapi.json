@@ -1130,6 +1130,41 @@
         "tags": [
           "Operations"
         ],
+        "summary": "Gets the operations list for the specified process (or all processes if left unspecified).",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "description": "Process ID used to identify the target process.",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "The Runtime instance cookie used to identify the target process.",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "description": "Process name used to identify the target process.",
+              "nullable": true
+            }
+          }
+        ],
         "responses": {
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
