@@ -53,6 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
                 TaskCompletionSource<object> startCompleteSource,
+                CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
                 string egress = Options.Egress;
@@ -72,7 +73,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     gcdumpFileName,
                     EndpointInfo,
                     ContentTypes.ApplicationOctetStream,
-                    scope);
+                    scope,
+                    collectionRuleMetadata);
 
                 ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
                 if (null != result.Exception)

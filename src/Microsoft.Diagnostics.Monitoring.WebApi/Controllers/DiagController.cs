@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess<Models.ProcessInfo>(processInfo =>
             {
@@ -163,7 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess<Dictionary<string, string>>(async processInfo =>
             {
@@ -215,7 +215,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async processInfo =>
             {
@@ -272,7 +272,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -335,7 +335,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -379,7 +379,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -430,7 +430,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -486,7 +486,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -553,7 +553,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return _collectionRuleService.GetCollectionRulesDescriptions(processInfo.EndpointInfo);
             },
-            GetProcessKey(pid, uid, name));
+            Utilities.GetProcessKey(pid, uid, name));
         }
 
         /// <summary>
@@ -579,7 +579,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
-            GetProcessKey(pid, uid, name));
+            Utilities.GetProcessKey(pid, uid, name));
         }
 
         private static string GetDotnetMonitorVersion()
@@ -657,11 +657,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 contentType,
                 processInfo,
                 format != LogFormat.PlainText);
-        }
-
-        private static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
-        {
-            return (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
         }
 
         private static LogFormat? ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)

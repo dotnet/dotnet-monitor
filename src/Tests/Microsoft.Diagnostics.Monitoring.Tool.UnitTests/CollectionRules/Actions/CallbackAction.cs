@@ -41,6 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
+        public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        {
+            return StartAsync(token); // We don't care about collectionRuleMetadata for testing (yet)
+        }
+
         public Task StartAsync(CancellationToken token)
         {
             return _service.NotifyListeners(token);
@@ -76,6 +81,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         public DelayedCallbackAction(CallbackActionService service)
         {
             _service = service;
+        }
+
+        public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        {
+            return StartAsync(token); // We don't care about collectionRuleMetadata for testing (yet)
         }
 
         public Task StartAsync(CancellationToken token)

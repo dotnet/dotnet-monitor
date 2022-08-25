@@ -57,6 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
                 TaskCompletionSource<object> startCompletionSource,
+                CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
                 try
