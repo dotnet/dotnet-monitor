@@ -105,6 +105,198 @@
           }
         ]
       }
+    },
+    {
+      "taskType": "scheduled",
+      "capabilityId": "ScheduledSearch",
+      "subCapability": "ScheduledSearch",
+      "version": "1.1",
+      "config": {
+        "frequency": [
+          {
+            "weekDay": 0,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 1,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 2,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 3,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 4,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 5,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 6,
+            "hours": [],
+            "timezoneOffset": -7
+          }
+        ],
+        "searchTerms": [
+          {
+            "name": "isOpen",
+            "parameters": {}
+          },
+          {
+            "name": "isPr",
+            "parameters": {}
+          },
+          {
+            "name": "noActivitySince",
+            "parameters": {
+              "days": 28
+            }
+          }
+        ],
+        "actions": [
+          {
+            "name": "addLabel",
+            "parameters": {
+              "label": "stale"
+            }
+          },
+          {
+            "name": "addReply",
+            "parameters": {
+              "comment": "The 'stale' label has been added to this pull request due to four weeks without any activity. If there is no activity in the next six weeks, this pull request will automatically be closed."
+            }
+          }
+        ],
+        "taskName": "Stale PR Search"
+      }
+    },
+    {
+      "taskType": "scheduled",
+      "capabilityId": "ScheduledSearch",
+      "subCapability": "ScheduledSearch",
+      "version": "1.1",
+      "config": {
+        "frequency": [
+          {
+            "weekDay": 0,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 1,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 2,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 3,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 4,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 5,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 6,
+            "hours": [],
+            "timezoneOffset": -7
+          }
+        ],
+        "searchTerms": [
+          {
+            "name": "isOpen",
+            "parameters": {}
+          },
+          {
+            "name": "isPr",
+            "parameters": {}
+          },
+          {
+            "name": "hasLabel",
+            "parameters": {
+              "label": "stale"
+            }
+          },
+          {
+            "name": "noActivitySince",
+            "parameters": {
+              "days": 42
+            }
+          }
+        ],
+        "actions": [
+          {
+            "name": "closeIssue",
+            "parameters": {}
+          }
+        ],
+        "taskName": "Close Stale PR"
+      }
+    },
+    {
+      "taskType": "trigger",
+      "capabilityId": "IssueResponder",
+      "subCapability": "PullRequestResponder",
+      "version": "1.0",
+      "config": {
+        "conditions": {
+          "operator": "and",
+          "operands": [
+            {
+              "name": "hasLabel",
+              "parameters": {
+                "label": "stale"
+              }
+            },
+            {
+              "name": "isOpen",
+              "parameters": {}
+            },
+            {
+              "name": "isAction",
+              "parameters": {}
+            }
+          ]
+        },
+        "eventType": "pull_request",
+        "eventNames": [
+          "pull_request",
+          "issues",
+          "project_card"
+        ],
+        "taskName": "Remove Stale Label",
+        "actions": [
+          {
+            "name": "removeLabel",
+            "parameters": {
+              "label": "stale"
+            }
+          }
+        ]
+      }
     }
   ],
   "userGroups": []
