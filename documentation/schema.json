@@ -997,7 +997,7 @@
             "null",
             "string"
           ],
-          "description": "The shared access signature (SAS) used to access the azure blob storage account."
+          "description": "The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts."
         },
         "SharedAccessSignatureName": {
           "type": [
@@ -1045,8 +1045,32 @@
             "null",
             "string"
           ],
-          "description": "The URI of the Azure queue account.",
+          "description": "The URI of the Azure queue storage account.",
           "format": "uri"
+        },
+        "QueueSharedAccessSignature": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The shared access signature (SAS) used to access the Azure queue storage account."
+        },
+        "QueueSharedAccessSignatureName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map."
+        },
+        "Metadata": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

@@ -194,7 +194,7 @@
     <comment>The description provided for the ContainerName parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature" xml:space="preserve">
-    <value>The shared access signature (SAS) used to access the azure blob storage account.</value>
+    <value>The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts.</value>
     <comment>The description provided for the SharedAccessSignature parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureName" xml:space="preserve">
@@ -573,7 +573,7 @@
     <comment>The description provided for the Name parameter on GetEnvironmentVariableOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri" xml:space="preserve">
-    <value>The URI of the Azure queue account.</value>
+    <value>The URI of the Azure queue storage account.</value>
     <comment>The description provided for the QueueAccountUri parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName" xml:space="preserve">
@@ -699,5 +699,17 @@
   </data>
   <data name="DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup" xml:space="preserve">
     <value>In 'Listen' connection mode, deletes the domain socket file used for diagnostic port communication.</value>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata" xml:space="preserve">
+    <value>A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.</value>
+    <comment>The description provided for the Metadata parameter on AzureBlobEgressProviderOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignature" xml:space="preserve">
+    <value>The shared access signature (SAS) used to access the Azure queue storage account.</value>
+    <comment>The description provided for the QueueSharedAccessSignature parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignatureName" xml:space="preserve">
+    <value>The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
+    <comment>The description provided for the QueueSharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
 </root>

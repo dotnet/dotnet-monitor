@@ -56,6 +56,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                     _logger.EgressProviderUnableToFindPropertyKey(name, options.SharedAccessSignatureName);
                 }
             }
+
+            // If queue shared access signature (SAS) was not provided but the name was provided,
+            // lookup the SAS property value from EgressOptions.Properties
+            if (string.IsNullOrEmpty(options.QueueSharedAccessSignature) &&
+                !string.IsNullOrEmpty(options.QueueSharedAccessSignatureName))
+            {
+                if (_provider.TryGetPropertyValue(options.QueueSharedAccessSignatureName, out string signature))
+                {
+                    options.QueueSharedAccessSignature = signature;
+                }
+                else
+                {
+                    _logger.EgressProviderUnableToFindPropertyKey(name, options.QueueSharedAccessSignatureName);
+                }
+            }
         }
     }
 }
