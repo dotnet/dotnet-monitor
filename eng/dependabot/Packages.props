@@ -19,14 +19,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="$(MicrosoftExtensionsLoggingEventSourceVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationAbstractionsVersion)" />
 
-    <!-- Net 6 specific -->
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6)" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6)" />
-
-    <!-- Net 7 specific -->
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7)" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7)" />
-
     <!-- Third-party references -->
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />

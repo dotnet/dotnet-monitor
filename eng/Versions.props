@@ -70,11 +70,25 @@
     <MicrosoftNETCoreApp70Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp70Version>
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp70Version>
   </PropertyGroup>
+  <PropertyGroup Label="Manual">
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>7.0.0-preview.7.22376.6</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>6.0.5</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>7.0.0-preview.7.22376.6</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>
+  </PropertyGroup>
   <PropertyGroup Label="Dev Workflow">
     <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
          project references for command line builds. They should match the values in the diagnostics repo. -->
     <MicrosoftBclAsyncInterfacesVersion>1.1.0</MicrosoftBclAsyncInterfacesVersion>
     <MicrosoftDiagnosticsTracingTraceEventVersion>2.0.64</MicrosoftDiagnosticsTracingTraceEventVersion>
     <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
+  </PropertyGroup>
+  <PropertyGroup Label=".NET 6 Dependent" Condition=" '$(TargetFramework)' == 'net6.0' ">
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+  </PropertyGroup>
+  <PropertyGroup Label=".NET 7 Dependent" Condition=" '$(TargetFramework)' == 'net7.0' ">
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
   </PropertyGroup>
 </Project>
