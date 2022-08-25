@@ -51,6 +51,50 @@
                 "isDefault": true
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Regenerate schema.json",
+            "type": "shell",
+            "windows": {
+                "command": ".\\dotnet.cmd"
+            },
+            "linux": {
+                "command": "./dotnet.sh"
+            },
+            "osx": {
+                "command": "./dotnet.sh"
+            },
+            "args": [
+                "run",
+                "--project",
+                "./src/Tests/Microsoft.Diagnostics.Monitoring.ConfigurationSchema/Microsoft.Diagnostics.Monitoring.ConfigurationSchema.csproj",
+                "./documentation/schema.json"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Regenerate openapi.json",
+            "type": "shell",
+            "windows": {
+                "command": ".\\dotnet.cmd"
+            },
+            "linux": {
+                "command": "./dotnet.sh"
+            },
+            "osx": {
+                "command": "./dotnet.sh"
+            },
+            "args": [
+                "run",
+                "--project",
+                "./src/Tests/Microsoft.Diagnostics.Monitoring.OpenApiGen/Microsoft.Diagnostics.Monitoring.OpenApiGen.csproj",
+                "./documentation/openapi.json"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ]
         }
     ],
     "inputs": [
