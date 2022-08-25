@@ -89,6 +89,13 @@ HRESULT ExceptionTracker::ExceptionThrown(ThreadID threadId, ObjectID objectId)
     // Exception throwing is common; don't pay to calculate method name if it won't be logged.
     if (_logger->IsEnabled(LogLevel::Debug))
     {
+        ClassID classId;
+        IfFailLogRet(_corProfilerInfo->GetClassFromObject(objectId, &classId));
+
+        tstring className;
+        IfFailLogRet(GetFullyQualifiedClassName(classId, className));
+        LogDebugV("Exception thrown: %s", className);
+
         hr = _corProfilerInfo->DoStackSnapshot(
             threadId,
             LogExceptionThrownFrameCallback,
@@ -151,6 +158,19 @@ HRESULT ExceptionTracker::ExceptionUnwindFunctionEnter(ThreadID threadId, Functi
     return S_OK;
 }
 
+HRESULT ExceptionTracker::GetFullyQualifiedClassName(ClassID classId, tstring& fullTypeName)
+{
+    HRESULT hr = S_OK;
+
+    NameCache cache;
+    TypeNameUtilities typeNameUtilities(_corProfilerInfo);
+
+    IfFailRet(typeNameUtilities.CacheNames(cache, classId));
+    IfFailRet(cache.GetFullyQualifiedClassName(classId, fullTypeName));
+
+    return S_OK;
+}
+
 HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, tstring& fullMethodName)
 {
     HRESULT hr = S_OK;
@@ -167,7 +187,7 @@ HRESULT ExceptionTracker::GetFullyQualifiedMethodName(FunctionID functionId, COR
     NameCache cache;
     TypeNameUtilities typeNameUtilities(_corProfilerInfo);
 
-    IfFailRet(typeNameUtilities.CacheNames(functionId, frameInfo, cache));
+    IfFailRet(typeNameUtilities.CacheNames(cache, functionId, frameInfo));
     IfFailRet(cache.GetFullyQualifiedName(functionId, fullMethodName));
 
     return S_OK;
@@ -179,7 +199,7 @@ HRESULT ExceptionTracker::LogExceptionThrownFrame(FunctionID functionId, COR_PRF
 
     tstring methodName;
     IfFailLogRet(GetFullyQualifiedMethodName(functionId, frameInfo, methodName));
-    LogDebugV("Exception thrown: %s", methodName);
+    LogDebugV("Exception method: %s", methodName);
 
     return S_OK;
 }

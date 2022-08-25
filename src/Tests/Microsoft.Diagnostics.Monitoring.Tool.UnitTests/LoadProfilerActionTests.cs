@@ -26,12 +26,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const string DefaultRuleName = "ProfilerTestRule";
 
-        // This environment variable name is embedded into the profiler and set at profiler initialization.
-        // The value is determined BEFORE native build by the generation of the product version into the
-        // _productversion.h header file.
-        private const string ProductVersionEnvVarName = "DotnetMonitorProfiler_ProductVersion";
-        private const string MonitorProfilerInstanceIdEnvVarName = "DotnetMonitorProfiler_RuntimeId";
-
         private readonly ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
@@ -59,11 +53,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddSetEnvironmentVariableAction(MonitorProfilerInstanceIdEnvVarName, ConfigurationTokenParser.RuntimeIdReference)
+                    .AddSetEnvironmentVariableAction(ProfilerHelper.ProfilerEnvVarRuntimeId, ConfigurationTokenParser.RuntimeIdReference)
                     .AddLoadProfilerAction(options =>
                     {
                         options.Path = profilerPath;
-                        options.Clsid = NativeLibraryHelper.MonitorProfilerClsid;
+                        options.Clsid = ProfilerHelper.Clsid;
                     })
                     .SetStartupTrigger();
             }, async host =>
@@ -78,9 +72,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     // At this point, the profiler has already been initialized and managed code is already running.
                     // Use any of the initialization state of the profiler to validate that it is loaded.
-                    string productVersion = await runner.GetEnvironmentVariable(ProductVersionEnvVarName, CommonTestTimeouts.EnvVarsTimeout);
+                    string productVersion = await runner.GetEnvironmentVariable(ProfilerHelper.ProfilerEnvVarProductVersion, CommonTestTimeouts.EnvVarsTimeout);
                     Assert.False(string.IsNullOrEmpty(productVersion), "Expected product version to not be null or empty.");
-                    _outputHelper.WriteLine("{0} = {1}", ProductVersionEnvVarName, productVersion);
+                    _outputHelper.WriteLine("{0} = {1}", ProfilerHelper.ProfilerEnvVarProductVersion, productVersion);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });

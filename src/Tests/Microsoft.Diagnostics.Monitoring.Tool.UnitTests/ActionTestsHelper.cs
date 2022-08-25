@@ -104,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             static void AddTestCases(List<object[]> arguments, Architecture architecture)
             {
-                string profilerPath = NativeLibraryHelper.GetMonitorProfilerPath(architecture);
+                string profilerPath = ProfilerHelper.GetPath(architecture);
                 if (File.Exists(profilerPath))
                 {
                     foreach (TargetFrameworkMoniker tfm in ActionTestsHelper.tfms6PlusToTest)
