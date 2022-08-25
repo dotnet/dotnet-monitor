@@ -117,41 +117,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             Activity activity = Activity.Current;
             if (null != activity)
             {
-                settings.Metadata.Add(
-                    ActivityMetadataNames.ParentId,
-                    activity.GetParentId());
-                settings.Metadata.Add(
-                    ActivityMetadataNames.SpanId,
-                    activity.GetSpanId());
-                settings.Metadata.Add(
-                    ActivityMetadataNames.TraceId,
-                    activity.GetTraceId());
+                AddMetadata(settings, ActivityMetadataNames.ParentId, activity.GetParentId());
+                AddMetadata(settings, ActivityMetadataNames.SpanId, activity.GetSpanId());
+                AddMetadata(settings, ActivityMetadataNames.TraceId, activity.GetTraceId());
             }
 
             if (null != collectionRuleMetadata)
             {
-                settings.Metadata.Add(
-                    CollectionRuleMetadataNames.CollectionRuleName,
-                    collectionRuleMetadata.CollectionRuleName);
-
-                settings.Metadata.Add(
-                    CollectionRuleMetadataNames.ActionListIndex,
-                    collectionRuleMetadata.ActionListIndex.ToString());
-
-                settings.Metadata.Add(
-                    CollectionRuleMetadataNames.ActionName,
-                    collectionRuleMetadata.ActionName);
+                AddMetadata(settings, CollectionRuleMetadataNames.CollectionRuleName, collectionRuleMetadata.CollectionRuleName);
+                AddMetadata(settings, CollectionRuleMetadataNames.ActionListIndex, collectionRuleMetadata.ActionListIndex.ToString());
+                AddMetadata(settings, CollectionRuleMetadataNames.ActionName, collectionRuleMetadata.ActionName);
             }
 
             // Artifact metadata
-            settings.Metadata.Add(
-                ArtifactMetadataNames.ArtifactSource.ProcessId,
-                source.ProcessId.ToString(CultureInfo.InvariantCulture));
-            settings.Metadata.Add(
-                ArtifactMetadataNames.ArtifactSource.RuntimeInstanceCookie,
-                source.RuntimeInstanceCookie.ToString("N"));
+            AddMetadata(settings, ArtifactMetadataNames.ArtifactSource.ProcessId, source.ProcessId.ToString(CultureInfo.InvariantCulture));
+            AddMetadata(settings, ArtifactMetadataNames.ArtifactSource.RuntimeInstanceCookie, source.RuntimeInstanceCookie.ToString("N"));
 
             return settings;
+        }
+
+        private static void AddMetadata(EgressArtifactSettings settings, string key, string value)
+        {
+            settings.Metadata.Add($"DotnetMonitor_{key}", value);
         }
 
         private void Reload()

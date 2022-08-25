@@ -727,6 +727,8 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | queueAccountUri | string | false | The URI of the Azure queue account.|
 | metadata | Dictionary<string, string> | false | A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.|
 
+***Note:*** All built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.
+
 ### Example azureBlobStorage provider
 
 <details>
