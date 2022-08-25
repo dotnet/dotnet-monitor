@@ -1,9 +1,9 @@
 <Project>
-
-  <!-- Packages in this file have versions updated periodically by Dependabot. Versions managed by Maestro should be in ..\Versions.props.
-
-  Packages must be set to their package version property if it exists (ex. BenchmarkDotNetVersion) since source-build uses
-  these properties to override package versions if necessary. -->
+  <!-- Packages in this file have versions updated periodically by Dependabot.
+  Versions managed by Maestro should be in ..\Versions.props.
+  Versions managed by Dependabot should be in .\Versions.props.
+  -->
+  <Import Project="Versions.props" />
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
