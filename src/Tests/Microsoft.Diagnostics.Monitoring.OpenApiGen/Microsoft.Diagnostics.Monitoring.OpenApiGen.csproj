@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>$(SchemaTargetFrameworks)</TargetFrameworks>
+    <TargetFramework>$(SchemaTargetFramework)</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

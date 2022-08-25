@@ -66,8 +66,6 @@
             },
             "args": [
                 "run",
-                "--framework",
-                "${config:CUSTOM_DOTNET_TFM}",
                 "--project",
                 "./src/Tests/Microsoft.Diagnostics.Monitoring.ConfigurationSchema/Microsoft.Diagnostics.Monitoring.ConfigurationSchema.csproj",
                 "./documentation/schema.json"
@@ -90,8 +88,6 @@
             },
             "args": [
                 "run",
-                "--framework",
-                "${config:CUSTOM_DOTNET_TFM}",
                 "--project",
                 "./src/Tests/Microsoft.Diagnostics.Monitoring.OpenApiGen/Microsoft.Diagnostics.Monitoring.OpenApiGen.csproj",
                 "./documentation/openapi.json"
