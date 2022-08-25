@@ -1,0 +1,25 @@
+<Project>
+  <!-- Import references updated by Dependabot. -->
+
+  <PropertyGroup>
+    <AzureIdentityVersion>1.6.0</AzureIdentityVersion>
+    <AzureStorageBlobsVersion>12.13.0</AzureStorageBlobsVersion>
+    <AzureStorageQueuesVersion>12.11.0</AzureStorageQueuesVersion>
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
+    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
+    <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
+    <MicrosoftIdentityModelTokensVersion>6.17.0</MicrosoftIdentityModelTokensVersion>
+    <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
+    <SystemIdentityModelTokensJwtVersion>6.17.0</SystemIdentityModelTokensJwtVersion>
+    <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
+    <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
+
+    <!-- Third-party references -->
+    <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
+    <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
+    <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
+    <XunitAssertVersion>2.4.1</XunitAssertVersion>
+  </PropertyGroup>
+</Project>

@@ -1,4 +1,6 @@
 <Project>
+  <!-- Import references updated by Dependabot. This file is for package references updated manually or by Maestro. -->
+  <Import Project="dependabot/Versions.props" />
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>7.0.0</VersionPrefix>
@@ -69,28 +71,10 @@
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp70Version>
   </PropertyGroup>
   <PropertyGroup Label="Manual">
-    <AzureIdentityVersion>1.6.0</AzureIdentityVersion>
-    <AzureStorageBlobsVersion>12.13.0</AzureStorageBlobsVersion>
-    <AzureStorageQueuesVersion>12.11.0</AzureStorageQueuesVersion>
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>7.0.0-preview.7.22376.6</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>6.0.5</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>7.0.0-preview.7.22376.6</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>
-    <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
-    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
-    <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
-    <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
-    <MicrosoftIdentityModelTokensVersion>6.17.0</MicrosoftIdentityModelTokensVersion>
-    <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
-    <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
-    <SystemIdentityModelTokensJwtVersion>6.17.0</SystemIdentityModelTokensJwtVersion>
-    <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
-    <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
-    <!-- Third-party references -->
-    <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
-    <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
-    <XunitAssertVersion>2.4.1</XunitAssertVersion>
   </PropertyGroup>
   <PropertyGroup Label="Dev Workflow">
     <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
