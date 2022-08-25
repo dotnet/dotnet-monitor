@@ -105,6 +105,227 @@
           }
         ]
       }
+    },
+    {
+      "taskType": "scheduled",
+      "capabilityId": "ScheduledSearch",
+      "subCapability": "ScheduledSearch",
+      "version": "1.1",
+      "config": {
+        "frequency": [
+          {
+            "weekDay": 0,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 1,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 2,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 3,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 4,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 5,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 6,
+            "hours": [],
+            "timezoneOffset": -7
+          }
+        ],
+        "searchTerms": [
+          {
+            "name": "isOpen",
+            "parameters": {}
+          },
+          {
+            "name": "isPr",
+            "parameters": {}
+          },
+          {
+            "name": "noActivitySince",
+            "parameters": {
+              "days": 1
+            }
+          },
+          {
+            "name": "hasLabel",
+            "parameters": {
+              "label": "test-fabric-bot"
+            }
+          }
+        ],
+        "actions": [
+          {
+            "name": "addLabel",
+            "parameters": {
+              "label": "no-recent-activity"
+            }
+          },
+          {
+            "name": "addReply",
+            "parameters": {
+              "comment": "The 'no-recent-activity' label has been added to this pull request due to four weeks without any activity. If there is no activity in the next six weeks, this pull request will automatically be closed. You can learn more about our stale PR policy here: https://github.com/dotnet/dotnet-monitor/blob/main/CONTRIBUTING.md#stale-pr-policy"
+            }
+          }
+        ],
+        "taskName": "No Recent Activity PR Search"
+      }
+    },
+    {
+      "taskType": "scheduled",
+      "capabilityId": "ScheduledSearch",
+      "subCapability": "ScheduledSearch",
+      "version": "1.1",
+      "config": {
+        "frequency": [
+          {
+            "weekDay": 0,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 1,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 2,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 3,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 4,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 5,
+            "hours": [],
+            "timezoneOffset": -7
+          },
+          {
+            "weekDay": 6,
+            "hours": [],
+            "timezoneOffset": -7
+          }
+        ],
+        "searchTerms": [
+          {
+            "name": "isOpen",
+            "parameters": {}
+          },
+          {
+            "name": "isPr",
+            "parameters": {}
+          },
+          {
+            "name": "hasLabel",
+            "parameters": {
+              "label": "no-recent-activity"
+            }
+          },
+          {
+            "name": "noActivitySince",
+            "parameters": {
+              "days": 1
+            }
+          },
+          {
+            "name": "hasLabel",
+            "parameters": {
+              "label": "test-fabric-bot"
+            }
+          }
+        ],
+        "actions": [
+          {
+            "name": "closeIssue",
+            "parameters": {}
+          }
+        ],
+        "taskName": "Close No Recent Activity PR"
+      }
+    },
+    {
+      "taskType": "trigger",
+      "capabilityId": "IssueResponder",
+      "subCapability": "PullRequestResponder",
+      "version": "1.0",
+      "config": {
+        "conditions": {
+          "operator": "and",
+          "operands": [
+            {
+              "name": "hasLabel",
+              "parameters": {
+                "label": "no-recent-activity"
+              }
+            },
+            {
+              "name": "isOpen",
+              "parameters": {}
+            },
+            {
+              "name": "isAction",
+              "parameters": {}
+            },
+            {
+              "operator": "not",
+              "operands": [
+                {
+                  "name": "isActivitySender",
+                  "parameters": {
+                    "user": "msftbot"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "hasLabel",
+              "parameters": {
+                "label": "test-fabric-bot"
+              }
+            }
+          ]
+        },
+        "eventType": "pull_request",
+        "eventNames": [
+          "pull_request",
+          "issues",
+          "project_card"
+        ],
+        "taskName": "Remove No Recent Activity Label",
+        "actions": [
+          {
+            "name": "removeLabel",
+            "parameters": {
+              "label": "no-recent-activity"
+            }
+          }
+        ]
+      }
     }
   ],
   "userGroups": []
