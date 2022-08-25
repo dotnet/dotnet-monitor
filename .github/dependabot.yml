@@ -5,3 +5,15 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "main"
+  - package-ecosystem: "nuget"
+    directory: "/eng/dependabot"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+    ignore:
+      # For AspNetCore.Authentication ignore major version updates
+      # due to inability to roll forward the .NET 6 libraries
+      - dependency-name: "Microsoft.AspNetCore.Authentication.JwtBearer"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Microsoft.AspNetCore.Authentication.Negotiate"
+        update-types: ["version-update:semver-major"]
