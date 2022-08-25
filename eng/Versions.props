@@ -12,6 +12,12 @@
     -->
     <BlobGroupBuildQuality>release</BlobGroupBuildQuality>
   </PropertyGroup>
+  <PropertyGroup Label="TargetFrameworks">
+    <!-- The TFMs of the dotnet-monitor tool.  -->
+    <ToolTargetFrameworks>netcoreapp3.1;net6.0</ToolTargetFrameworks>
+    <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
+    <TestTargetFrameworks>$(ToolTargetFrameworks)</TestTargetFrameworks>
+  </PropertyGroup>
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
     <UsingToolNetFrameworkReferenceAssemblies>false</UsingToolNetFrameworkReferenceAssemblies>
