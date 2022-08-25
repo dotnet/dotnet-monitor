@@ -428,7 +428,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
                 BlobContainerSasPermissions.Add | BlobContainerSasPermissions.Write,
                 DateTimeOffset.MaxValue)
             {
-                StartsOn = DateTime.UtcNow
+                StartsOn = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5))
             };
             Uri sasUri = containerClient.GenerateSasUri(sasBuilder);
 
@@ -439,7 +439,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
         {
             QueueSasBuilder sasBuilder = new(QueueSasPermissions.Add, DateTimeOffset.MaxValue)
             {
-                StartsOn = DateTime.UtcNow
+                StartsOn = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5))
             };
             Uri sasUri = queueClient.GenerateSasUri(sasBuilder);
 
