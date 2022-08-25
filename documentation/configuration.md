@@ -725,7 +725,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | sharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the SAS token; if using SAS, must be specified if `sharedAccessSignature` is not specified.|
 | queueName | string | false | The name of the queue to which a message will be dispatched upon writing to a blob.|
 | queueAccountUri | string | false | The URI of the Azure queue storage account.|
-| queueSharedAccessSignature | string | false | The shared access signature (SAS) used to access the Azure queue  account; if using SAS, must be specified if `queueSharedAccessSignatureName` is not specified.|
+| queueSharedAccessSignature | string | false | The shared access signature (SAS) used to access the Azure queue storage account; if using SAS, must be specified if `queueSharedAccessSignatureName` is not specified.|
 | queueSharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
 | metadata | Dictionary<string, string> | false | A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.|
 
