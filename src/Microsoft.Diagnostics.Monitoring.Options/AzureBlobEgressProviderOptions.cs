@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
