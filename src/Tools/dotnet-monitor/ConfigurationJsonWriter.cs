@@ -150,6 +150,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.ManagedIdentityClientId), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignature), skipNotPresent, includeChildSections: false, redact: true, showSources: showSources);
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignatureName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.Metadata), skipNotPresent, includeChildSections: true, redact: false, showSources: showSources);
                         }
                     }
                 }

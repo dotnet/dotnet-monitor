@@ -16,7 +16,8 @@
       "AccountKeyName": "MonitorBlobAccountKey" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/,
       "ManagedIdentityClientId": ":NOT PRESENT:",
       "QueueSharedAccessSignature": ":NOT PRESENT:",
-      "QueueSharedAccessSignatureName": ":NOT PRESENT:"
+      "QueueSharedAccessSignatureName": ":NOT PRESENT:",
+      "Metadata": ":NOT PRESENT:"
     }
   },
   "FileSystem": {
