@@ -175,7 +175,7 @@
           {
             "name": "addReply",
             "parameters": {
-              "comment": "The 'stale' label has been added to this pull request due to four weeks without any activity. If there is no activity in the next six weeks, this pull request will automatically be closed."
+              "comment": "The 'stale' label has been added to this pull request due to four weeks without any activity. If there is no activity in the next six weeks, this pull request will automatically be closed. You can learn more about our stale PR policy here: https://github.com/dotnet/dotnet-monitor/blob/main/CONTRIBUTING.md#stale-pr-policy"
             }
           }
         ],
