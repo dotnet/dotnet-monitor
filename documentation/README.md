@@ -34,6 +34,7 @@ When running a dotnet application, differences in diverse local and production e
     - [Collection Rules examples](./collectionrules/collectionruleexamples.md)
     - [Trigger shortcut](./collectionrules/triggershortcuts.md)
 - [Egress Providers](./egress.md)
+- [Breaking Changes by Version](./compatibility/README.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Clone, build, and test the repo](./building.md)
 - [Official Build Instructions](./official-build-instructions.md)
