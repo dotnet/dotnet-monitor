@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
             List<QueueMessage> messages = await GetAllMessagesAsync(queueClient);
 
-            ValidateQueue(blobs, messages);
+            ValidateQueue(blobs, messages, expectedCount: 1);
         }
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
@@ -122,14 +122,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
 
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync();
 
-            BlobSasBuilder sasBuilder = new(
-                BlobContainerSasPermissions.Add |
-                BlobContainerSasPermissions.Create |
-                BlobContainerSasPermissions.Write,
-                DateTimeOffset.MaxValue);
-            Uri sasUri = containerClient.GenerateSasUri(sasBuilder);
-
-            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient, sasToken: sasUri.Query);
+            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(
+                containerClient,
+                sasToken: ConstructBlobContainerSasToken(containerClient));
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
@@ -156,13 +151,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync();
             QueueClient queueClient = await ConstructQueueContainerClientAsync(create: true);
 
-            QueueSasBuilder sasBuilder = new(QueueSasPermissions.Add, DateTimeOffset.MaxValue)
-            {
-                StartsOn = DateTime.UtcNow
-            };
-            Uri sasUri = queueClient.GenerateSasUri(sasBuilder);
-
-            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient, queueClient, queueSasToken: sasUri.Query);
+            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(
+                containerClient,
+                queueClient,
+                queueSasToken: ConstructQueueSasToken(queueClient));
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
@@ -172,7 +164,39 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
             List<QueueMessage> messages = await GetAllMessagesAsync(queueClient);
 
-            ValidateQueue(blobs, messages);
+            ValidateQueue(blobs, messages, expectedCount: 1);
+        }
+
+        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
+        [InlineData(UploadAction.ProvideUploadStream)]
+        [InlineData(UploadAction.WriteToProviderStream)]
+        public async Task AzureBlobEgress_Supports_OnlyRestrictiveSasTokens(UploadAction uploadAction)
+        {
+            _azuriteFixture.SkipTestIfNotAvailable();
+
+            // Arrange
+            TestOutputLoggerProvider loggerProvider = new(_outputHelper);
+            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+
+            BlobContainerClient containerClient = await ConstructBlobContainerClientAsync(create: true);
+            QueueClient queueClient = await ConstructQueueContainerClientAsync(create: true);
+
+            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(
+                containerClient,
+                queueClient,
+                sasToken: ConstructBlobContainerSasToken(containerClient),
+                queueSasToken: ConstructQueueSasToken(queueClient));
+
+            EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
+
+            // Act
+            string identifier = await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+
+            // Assert
+            List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
+            List<QueueMessage> messages = await GetAllMessagesAsync(queueClient);
+
+            ValidateQueue(blobs, messages, expectedCount: 1);
         }
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
@@ -188,10 +212,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
 
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync(create: false);
 
-            BlobSasBuilder sasBuilder = new(BlobContainerSasPermissions.Add, DateTimeOffset.MaxValue);
-            Uri sasUri = containerClient.GenerateSasUri(sasBuilder);
-
-            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient, sasToken: sasUri.Query);
+            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(
+                containerClient,
+                sasToken: ConstructBlobContainerSasToken(containerClient));
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act & Assert
@@ -212,13 +235,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync();
             QueueClient queueClient = await ConstructQueueContainerClientAsync(create: false);
 
-            QueueSasBuilder sasBuilder = new(QueueSasPermissions.Add, DateTimeOffset.MaxValue)
-            {
-                StartsOn = DateTime.UtcNow
-            };
-            Uri sasUri = queueClient.GenerateSasUri(sasBuilder);
-
-            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient, queueClient, queueSasToken: sasUri.Query);
+            AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(
+                containerClient,
+                queueClient,
+                queueSasToken: ConstructQueueSasToken(queueClient));
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
@@ -228,7 +248,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
             List<QueueMessage> messages = await GetAllMessagesAsync(queueClient);
 
-            Assert.NotEmpty(blobs);
+            Assert.Single(blobs);
             Assert.Empty(messages);
         }
 
@@ -387,17 +407,43 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             return BitConverter.ToString(sha.ComputeHash(fileStream));
         }
 
-        private void ValidateQueue(List<BlobItem> blobs, List<QueueMessage> messages)
+        private void ValidateQueue(List<BlobItem> blobs, List<QueueMessage> messages, int expectedCount)
         {
-            Assert.NotEmpty(messages);
-            Assert.Equal(blobs.Count, messages.Count);
+            Assert.Equal(expectedCount, messages.Count);
+            Assert.Equal(expectedCount, blobs.Count);
 
             HashSet<string> blobNames = new(blobs.Select((b) => b.Name));
-
             foreach (QueueMessage message in messages)
             {
                 Assert.Contains(DecodeQueueMessageBody(message.Body), blobNames);
             }
+        }
+
+        private string ConstructBlobContainerSasToken(BlobContainerClient containerClient)
+        {
+            // Requires:
+            // - Add for UploadAction.ProvideUploadStream
+            // - Write for UploadAction.WriteToProviderStream
+            BlobSasBuilder sasBuilder = new(
+                BlobContainerSasPermissions.Add | BlobContainerSasPermissions.Write,
+                DateTimeOffset.MaxValue)
+            {
+                StartsOn = DateTime.UtcNow
+            };
+            Uri sasUri = containerClient.GenerateSasUri(sasBuilder);
+
+            return sasUri.Query;
+        }
+
+        private string ConstructQueueSasToken(QueueClient queueClient)
+        {
+            QueueSasBuilder sasBuilder = new(QueueSasPermissions.Add, DateTimeOffset.MaxValue)
+            {
+                StartsOn = DateTime.UtcNow
+            };
+            Uri sasUri = queueClient.GenerateSasUri(sasBuilder);
+
+            return sasUri.Query;
         }
 
         public void Dispose()
