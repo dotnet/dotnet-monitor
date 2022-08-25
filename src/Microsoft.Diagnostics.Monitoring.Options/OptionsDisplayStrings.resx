@@ -700,4 +700,8 @@
   <data name="DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup" xml:space="preserve">
     <value>In 'Listen' connection mode, deletes the domain socket file used for diagnostic port communication.</value>
   </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata" xml:space="preserve">
+    <value>A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.</value>
+    <comment>The description provided for the Metadata parameter on AzureBlobEgressProviderOptions</comment>
+  </data>
 </root>

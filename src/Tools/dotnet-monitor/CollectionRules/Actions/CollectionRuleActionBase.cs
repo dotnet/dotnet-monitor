@@ -45,16 +45,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
         }
 
-        public async Task StartAsync(CancellationToken token)
+        public async Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             ThrowIfDisposed();
 
             TaskCompletionSource<object> startCompleteSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             CancellationToken disposalToken = _disposalTokenSource.Token;
-            _completionTask = Task.Run(() => ExecuteAsync(startCompleteSource, disposalToken), disposalToken);
+            _completionTask = Task.Run(() => ExecuteAsync(startCompleteSource, collectionRuleMetadata, disposalToken), disposalToken);
 
             await startCompleteSource.WithCancellation(token);
+        }
+
+        public async Task StartAsync(CancellationToken token)
+        {
+            await StartAsync(null, token);
         }
 
         public async Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
@@ -66,11 +71,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         private async Task<CollectionRuleActionResult> ExecuteAsync(
             TaskCompletionSource<object> startCompletionSource,
+            CollectionRuleMetadata collectionRuleMetadata,
             CancellationToken token)
         {
             try
             {
-                return await ExecuteCoreAsync(startCompletionSource, token);
+                return await ExecuteCoreAsync(startCompletionSource, collectionRuleMetadata, token);
             }
             catch (Exception ex) when (TrySetExceptionReturnFalse(startCompletionSource, ex, token))
             {
@@ -98,6 +104,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         protected abstract Task<CollectionRuleActionResult> ExecuteCoreAsync(
             TaskCompletionSource<object> startCompletionSource,
+            CollectionRuleMetadata collectionRuleMetadata,
             CancellationToken token);
     }
 }
