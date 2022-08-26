@@ -256,7 +256,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             QueueServiceClient serviceClient;
             bool mayHaveLimitedPermissions = false;
-            if (!string.IsNullOrWhiteSpace(options.SharedAccessSignature))
+            if (!string.IsNullOrWhiteSpace(options.QueueSharedAccessSignature))
+            {
+                var serviceUriBuilder = new UriBuilder(options.QueueAccountUri)
+                {
+                    Query = options.QueueSharedAccessSignature
+                };
+
+                serviceClient = new QueueServiceClient(serviceUriBuilder.Uri, clientOptions);
+                mayHaveLimitedPermissions = true;
+            }
+            else if (!string.IsNullOrWhiteSpace(options.SharedAccessSignature))
             {
                 var serviceUriBuilder = new UriBuilder(options.QueueAccountUri)
                 {
