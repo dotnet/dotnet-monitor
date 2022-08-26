@@ -1,12 +1,12 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.22424.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.22425.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>e3e1490a23f27a6e0ed30d323035660c3ffc52cd</Sha>
+      <Sha>e3c9f47fa3fd5be95dad367a2fe010bc55b23a38</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.22424.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.22425.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>e3e1490a23f27a6e0ed30d323035660c3ffc52cd</Sha>
+      <Sha>e3c9f47fa3fd5be95dad367a2fe010bc55b23a38</Sha>
     </Dependency>
     <Dependency Name="System.CommandLine" Version="2.0.0-beta4.22402.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
@@ -18,13 +18,13 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>0e0cb263176b2ff6f048aa48c7870986c37d894d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22424.3">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22425.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>258a37cd6a7884f771d0f991d9f24d29e292abd0</Sha>
+      <Sha>78805162979a2e31d8df1aa962c5657f988116a4</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.22424.3">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.22425.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>258a37cd6a7884f771d0f991d9f24d29e292abd0</Sha>
+      <Sha>78805162979a2e31d8df1aa962c5657f988116a4</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.342201">
       <Uri>https://github.com/dotnet/symstore</Uri>

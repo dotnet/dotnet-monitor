@@ -780,7 +780,7 @@
         }
       }
     },
-    "/collectionrules/{collectionrulename}": {
+    "/collectionrules/{collectionRuleName}": {
       "get": {
         "tags": [
           "Diag"
