@@ -4,3 +4,4 @@
 # We need /eng/ and global.json excluded for automatic updates
 /eng/
 global.json
+/eng/dependabot             @dotnet/dotnet-monitor
