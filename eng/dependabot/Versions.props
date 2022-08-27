@@ -18,7 +18,7 @@
 
     <!-- Third-party references -->
     <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
-    <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
+    <NJsonSchemaVersion>10.7.2</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>6.4.0</SwashbuckleAspNetCoreSwaggerGenVersion>
     <XunitAssertVersion>2.4.2</XunitAssertVersion>
   </PropertyGroup>
