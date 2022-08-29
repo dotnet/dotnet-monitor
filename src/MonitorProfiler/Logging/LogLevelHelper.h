@@ -16,35 +16,36 @@ public:
     /// <summary>
     /// Gets the short name of the log level.
     /// </summary>
-    static HRESULT GetShortName(LogLevel level, tstring& strName)
+    static HRESULT GetShortName(LogLevel level, lstring& strName)
     {
         // The log levels are intentionally four characters long
         // to allow for easy horizontal alignment.
         switch (level)
         {
         case LogLevel::Critical:
-            strName.assign(_T("crit"));
+            strName.assign(_LS("crit"));
             return S_OK;
         case LogLevel::Debug:
-            strName.assign(_T("dbug"));
+            strName.assign(_LS("dbug"));
             return S_OK;
         case LogLevel::Error:
-            strName.assign(_T("fail"));
+            strName.assign(_LS("fail"));
             return S_OK;
         case LogLevel::Information:
-            strName.assign(_T("info"));
+            strName.assign(_LS("info"));
             return S_OK;
         case LogLevel::None:
-            strName.assign(_T("none"));
+            strName.assign(_LS("none"));
             return S_OK;
         case LogLevel::Trace:
-            strName.assign(_T("trce"));
+            strName.assign(_LS("trce"));
             return S_OK;
         case LogLevel::Warning:
-            strName.assign(_T("warn"));
+            strName.assign(_LS("warn"));
             return S_OK;
         default:
-            return E_FAIL;
+            strName.assign(_LS("ukwn"));
+            return S_OK;
         }
     }
 

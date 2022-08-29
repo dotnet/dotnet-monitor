@@ -56,6 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
                 TaskCompletionSource<object> startCompletionSource,
+                CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
                 EventMetricsProvider[] providers = Options.Providers;
@@ -84,7 +85,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     fileName,
                     EndpointInfo,
                     ContentTypes.ApplicationOctetStream,
-                    scope);
+                    scope,
+                    collectionRuleMetadata);
 
                 ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
                 if (null != result.Exception)

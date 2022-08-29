@@ -16,12 +16,20 @@ set(SOURCES
     ${PROFILER_SOURCES}
     Environment/EnvironmentHelper.cpp
     Environment/ProfilerEnvironment.cpp
+    EventProvider/ProfilerEventProvider.cpp
     Logging/AggregateLogger.cpp
+    Logging/Logger.cpp
+    Logging/LoggerHelper.cpp
     Logging/NullLogger.cpp
+    Logging/StdErrLogger.cpp
     MainProfiler/ExceptionTracker.cpp
     MainProfiler/MainProfiler.cpp
     MainProfiler/ThreadData.cpp
     MainProfiler/ThreadDataManager.cpp
+    Stacks/StacksEventProvider.cpp
+    Stacks/StackSampler.cpp
+    Utilities/NameCache.cpp
+    Utilities/TypeNameUtilities.cpp
     ClassFactory.cpp
     DllMain.cpp
     ProfilerBase.cpp

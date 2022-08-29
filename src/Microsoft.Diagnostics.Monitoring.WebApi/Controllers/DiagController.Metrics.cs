@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async (processInfo) =>
             {
@@ -50,12 +50,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     includeDefaults: true,
                     durationSeconds: durationSeconds);
 
+                // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
+                HttpContext.AllowSynchronousIO();
+
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
                     (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
-                    processInfo.EndpointInfo);
+                    processInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
         }
 
@@ -88,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async (processInfo) =>
             {
@@ -99,12 +102,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     durationSeconds,
                     configuration);
 
+                // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
+                HttpContext.AllowSynchronousIO();
+
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
                     (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
                     fileName,
                     ContentTypes.ApplicationJsonSequence,
-                    processInfo.EndpointInfo);
+                    processInfo);
             }, processKey, Utilities.ArtifactType_Metrics);
         }
     }

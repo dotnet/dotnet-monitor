@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 case SecurityAlgorithms.HmacSha256:
                 case SecurityAlgorithms.HmacSha384:
                 case SecurityAlgorithms.HmacSha512:
-                    HMAC hmac = HMAC.Create(GetHmacAlgorithmFromName(algorithmName));
+                    HMAC hmac = GetHmacAlgorithmFromName(algorithmName);
                     SymmetricSecurityKey hmacSecKey = new SymmetricSecurityKey(hmac.Key);
                     signingCreds = new SigningCredentials(hmacSecKey, algorithmName);
                     exportableJwk = JsonWebKeyConverter.ConvertFromSymmetricSecurityKey(hmacSecKey);
@@ -162,16 +162,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        private static string GetHmacAlgorithmFromName(string algorithmName)
+        private static HMAC GetHmacAlgorithmFromName(string algorithmName)
         {
             switch (algorithmName)
             {
                 case SecurityAlgorithms.HmacSha256:
-                    return typeof(HMACSHA256).FullName;
+                    return new HMACSHA256();
                 case SecurityAlgorithms.HmacSha384:
-                    return typeof(HMACSHA384).FullName;
+                    return new HMACSHA384();
                 case SecurityAlgorithms.HmacSha512:
-                    return typeof(HMACSHA512).FullName;
+                    return new HMACSHA512();
                 default:
                     throw new ArgumentException($"Algorithm name '{algorithmName}' not supported", nameof(algorithmName));
             }

@@ -52,6 +52,21 @@ HRESULT EnvironmentHelper::GetRuntimeInstanceId(tstring& instanceId)
     return S_OK;
 }
 
+HRESULT EnvironmentHelper::GetStdErrLoggerLevel(LogLevel& level)
+{
+    HRESULT hr = S_OK;
+
+    tstring tstrLevel;
+    IfFailRet(_environment->GetEnvironmentVariable(
+        StdErrLoggerLevelEnvVar,
+        tstrLevel
+    ));
+
+    IfFailRet(LogLevelHelper::ToLogLevel(tstrLevel, level));
+
+    return S_OK;
+}
+
 HRESULT EnvironmentHelper::GetTempFolder(tstring& tempFolder)
 {
     HRESULT hr = S_OK;

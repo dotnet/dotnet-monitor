@@ -21,7 +21,6 @@ x64/
 .dotnet-test/
 .packages/
 .tools/
-.vscode/
 
 # Per-user project properties
 launchSettings.json
@@ -96,6 +95,11 @@ ClientBin/
 # SQL Server files
 App_Data/*.mdf
 App_Data/*.ldf
+
+# Azurite folders/files
+**/__*storage__/
+**/__azurite*
+.azurite
 
 # =========================
 # Windows detritus

@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File system egress failed&quot; {0}.
+        ///   Looks up a localized string similar to File system egress failed: {0}.
         /// </summary>
         internal static string ErrorMessage_EgressFileFailedDetailed {
             get {
@@ -781,6 +781,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Diagnostic port file at &apos;{0}&apos; was either deleted or moved while it was still being used..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticPortAlteredWhileInUse {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticPortAlteredWhileInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attemping to delete diagnostic port file at &apos;{0}&apos;..
         /// </summary>
         internal static string LogFormatString_DiagnosticPortDeleteAttempt {
@@ -804,6 +813,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_DiagnosticPortNotInListenModeForCollectionRules {
             get {
                 return ResourceManager.GetString("LogFormatString_DiagnosticPortNotInListenModeForCollectionRules", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to watch diagnostic port file at &apos;{0}&apos;..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticPortWatchingFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticPortWatchingFailed", resourceCulture);
             }
         }
         
@@ -858,6 +876,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_DuplicateEgressProviderIgnored {
             get {
                 return ResourceManager.GetString("LogFormatString_DuplicateEgressProviderIgnored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Metadata cannot include duplicate keys; please change or remove the key &apos;{key}&apos;.
+        /// </summary>
+        internal static string LogFormatString_DuplicateKeyInMetadata {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateKeyInMetadata", resourceCulture);
             }
         }
         
@@ -925,6 +952,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The environment variable &apos;{name}&apos; could not be found on the target process..
+        /// </summary>
+        internal static string LogFormatString_EnvironmentVariableNotFound {
+            get {
+                return ResourceManager.GetString("LogFormatString_EnvironmentVariableNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tell us about your experience with dotnet monitor: {link}.
         /// </summary>
         internal static string LogFormatString_ExperienceSurvey {
@@ -945,9 +981,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         /// <summary>
         ///   Looks up a localized string similar to WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments..
         /// </summary>
-        internal static string LogFormatString_InsecureAutheticationConfiguration {
+        internal static string LogFormatString_InsecureAuthenticationConfiguration {
             get {
-                return ResourceManager.GetString("LogFormatString_InsecureAutheticationConfiguration", resourceCulture);
+                return ResourceManager.GetString("LogFormatString_InsecureAuthenticationConfiguration", resourceCulture);
             }
         }
         
@@ -975,6 +1011,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_InvalidActionResultReference {
             get {
                 return ResourceManager.GetString("LogFormatString_InvalidActionResultReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid metadata; custom metadata keys must be valid C# identifiers..
+        /// </summary>
+        internal static string LogFormatString_InvalidMetadata {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidMetadata", resourceCulture);
             }
         }
         
@@ -1105,7 +1150,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The provided configuration file could not be found..
+        ///   Looks up a localized string similar to The provided configuration file &apos;{0}&apos; could not be found..
         /// </summary>
         internal static string Message_ConfigurationFileDoesNotExist {
             get {
@@ -1114,7 +1159,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The provided configuration file must have the .json extension..
+        ///   Looks up a localized string similar to The provided configuration file &apos;{0}&apos; must have the .json extension..
         /// </summary>
         internal static string Message_ConfigurationFileNotJson {
             get {
