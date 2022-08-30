@@ -53,11 +53,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddSetEnvironmentVariableAction(ProfilerHelper.ProfilerEnvVarRuntimeInstanceId, ConfigurationTokenParser.RuntimeIdReference)
+                    .AddSetEnvironmentVariableAction(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, ConfigurationTokenParser.RuntimeIdReference)
                     .AddLoadProfilerAction(options =>
                     {
                         options.Path = profilerPath;
-                        options.Clsid = ProfilerHelper.Clsid;
+                        options.Clsid = ProfilerIdentifiers.Clsid.Guid;
                     })
                     .SetStartupTrigger();
             }, async host =>
@@ -72,9 +72,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     // At this point, the profiler has already been initialized and managed code is already running.
                     // Use any of the initialization state of the profiler to validate that it is loaded.
-                    string productVersion = await runner.GetEnvironmentVariable(ProfilerHelper.ProfilerEnvVarProductVersion, CommonTestTimeouts.EnvVarsTimeout);
+                    string productVersion = await runner.GetEnvironmentVariable(ProfilerIdentifiers.EnvironmentVariables.ProductVersion, CommonTestTimeouts.EnvVarsTimeout);
                     Assert.False(string.IsNullOrEmpty(productVersion), "Expected product version to not be null or empty.");
-                    _outputHelper.WriteLine("{0} = {1}", ProfilerHelper.ProfilerEnvVarProductVersion, productVersion);
+                    _outputHelper.WriteLine("{0} = {1}", ProfilerIdentifiers.EnvironmentVariables.ProductVersion, productVersion);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });

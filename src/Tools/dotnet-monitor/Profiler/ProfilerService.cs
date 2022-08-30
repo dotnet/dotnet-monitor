@@ -19,12 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 {
     internal sealed class ProfilerService : BackgroundService
     {
-        private static readonly Guid ProfilerClsId = new Guid("6A494330-5848-4A23-9D87-0E57BBF6DE79");
-
         private static readonly string SharedLibrarySourcePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "shared");
-
-        private static readonly string DotnetMonitorProfiler_RuntimeIdentifier = nameof(DotnetMonitorProfiler_RuntimeIdentifier);
-        private static readonly string DotnetMonitorProfiler_RuntimeInstanceId = nameof(DotnetMonitorProfiler_RuntimeInstanceId);
 
         private readonly TaskCompletionSource<string> _libraryPathSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly ILogger<ProfilerService> _logger;
@@ -123,7 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 // - For Windows and OSX, build identifier from platform + architecture of target process.
                 // - Lookup same environment variable on dotnet-monitor itself.
                 // - Check libc type of dotnet-monitor.
-                env.TryGetValue(DotnetMonitorProfiler_RuntimeIdentifier, out string runtimeIdentifier);
+                env.TryGetValue(ProfilerIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string runtimeIdentifier);
 
                 if (string.IsNullOrEmpty(runtimeIdentifier))
                 {
@@ -157,12 +152,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                     }
 
                     await client.SetStartupProfilerAsync(
-                        ProfilerClsId,
+                        ProfilerIdentifiers.Clsid.Guid,
                         profilerFileInfo.PhysicalPath,
                         cancellationToken);
 
                     await client.SetEnvironmentVariableAsync(
-                        DotnetMonitorProfiler_RuntimeInstanceId,
+                        ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId,
                         endpointInfo.RuntimeInstanceCookie.ToString("D"),
                         cancellationToken);
                 }
