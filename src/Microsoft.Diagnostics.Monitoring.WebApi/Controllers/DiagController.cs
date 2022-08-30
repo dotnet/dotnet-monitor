@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess<Models.ProcessInfo>(processInfo =>
             {
@@ -163,7 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess<Dictionary<string, string>>(async processInfo =>
             {
@@ -215,7 +215,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async processInfo =>
             {
@@ -238,7 +238,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
                         egressProvider,
                         dumpFileName,
-                        processInfo.EndpointInfo,
+                        processInfo,
                         ContentTypes.ApplicationOctetStream,
                         scope), limitKey: Utilities.ArtifactType_Dump);
                 }
@@ -272,7 +272,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -299,7 +299,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     },
                     fileName,
                     ContentTypes.ApplicationOctetStream,
-                    processInfo.EndpointInfo);
+                    processInfo);
             }, processKey, Utilities.ArtifactType_GCDump);
         }
 
@@ -335,7 +335,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -379,7 +379,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -430,7 +430,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -486,7 +486,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            ProcessKey? processKey = GetProcessKey(pid, uid, name);
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(processInfo =>
             {
@@ -553,7 +553,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return _collectionRuleService.GetCollectionRulesDescriptions(processInfo.EndpointInfo);
             },
-            GetProcessKey(pid, uid, name));
+            Utilities.GetProcessKey(pid, uid, name));
         }
 
         /// <summary>
@@ -563,7 +563,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="pid">Process ID used to identify the target process.</param>
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
-        [HttpGet("collectionrules/{collectionrulename}", Name = nameof(GetCollectionRuleDetailedDescription))]
+        [HttpGet("collectionrules/{collectionRuleName}", Name = nameof(GetCollectionRuleDetailedDescription))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(CollectionRuleDetailedDescription), StatusCodes.Status200OK)]
         public Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
@@ -579,7 +579,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
-            GetProcessKey(pid, uid, name));
+            Utilities.GetProcessKey(pid, uid, name));
         }
 
         private static string GetDotnetMonitorVersion()
@@ -632,7 +632,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 },
                 fileName,
                 ContentTypes.ApplicationOctetStream,
-                processInfo.EndpointInfo);
+                processInfo);
         }
 
         private Task<ActionResult> StartLogs(
@@ -646,6 +646,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
+            // Allow sync I/O on logging routes due to StreamLogger's usage.
+            HttpContext.AllowSynchronousIO();
+
             string fileName = LogsUtilities.GenerateLogsFileName(processInfo.EndpointInfo);
             string contentType = LogsUtilities.GetLogsContentType(format.Value);
 
@@ -655,13 +658,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 (outputStream, token) => LogsUtilities.CaptureLogsAsync(null, format.Value, processInfo.EndpointInfo, settings, outputStream, token),
                 fileName,
                 contentType,
-                processInfo.EndpointInfo,
+                processInfo,
                 format != LogFormat.PlainText);
-        }
-
-        private static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
-        {
-            return (pid == null && uid == null && name == null) ? null : new ProcessKey(pid, uid, name);
         }
 
         private static LogFormat? ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
@@ -704,10 +702,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Func<Stream, CancellationToken, Task> action,
             string fileName,
             string contentType,
-            IEndpointInfo endpointInfo,
+            IProcessInfo processInfo,
             bool asAttachment = true)
         {
-            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, endpointInfo);
+            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
             {
@@ -723,7 +721,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     action,
                     providerName,
                     fileName,
-                    endpointInfo,
+                    processInfo,
                     contentType,
                     scope),
                     limitKey: artifactType);

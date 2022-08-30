@@ -41,6 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
+        public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        {
+            return StartAsync(token); // We don't care about collectionRuleMetadata for testing (yet)
+        }
+
         public Task StartAsync(CancellationToken token)
         {
             return _service.NotifyListeners(token);
@@ -78,6 +83,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
+        public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        {
+            return StartAsync(token); // We don't care about collectionRuleMetadata for testing (yet)
+        }
+
         public Task StartAsync(CancellationToken token)
         {
             return _service.NotifyListeners(token);
@@ -89,6 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             while (_service.Clock.UtcNow == currentTime)
             {
                 // waiting for clock to be ticked (simulated time)
+                token.ThrowIfCancellationRequested();
             }
 
             return Task.FromResult(new CollectionRuleActionResult());

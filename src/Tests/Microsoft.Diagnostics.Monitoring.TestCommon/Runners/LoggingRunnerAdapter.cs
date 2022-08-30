@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             if (!_runner.HasStarted)
             {
                 _outputHelper.WriteLine("Runner Never Started.");
-                throw new InvalidOperationException("The has runner has never been started, call StartAsync first.");
+                throw new InvalidOperationException("The runner has never been started, call StartAsync first.");
             }
             else if (_runner.HasExited)
             {

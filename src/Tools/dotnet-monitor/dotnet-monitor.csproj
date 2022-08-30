@@ -9,7 +9,6 @@
     <Description>.NET Core Diagnostic Monitoring Tool</Description>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
-    <RollForward>Major</RollForward>
     <!--
       Workaround for https://github.com/dotnet/aspnetcore/issues/42200
       Required as of 7.0 Preview 5 SDK

@@ -59,9 +59,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly Action<ILogger, Exception> _insecureAuthenticationConfiguration =
             LoggerMessage.Define(
-                eventId: LoggingEventIds.InsecureAutheticationConfiguration.EventId(),
+                eventId: LoggingEventIds.InsecureAuthenticationConfiguration.EventId(),
                 logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_InsecureAutheticationConfiguration);
+                formatString: Strings.LogFormatString_InsecureAuthenticationConfiguration);
 
         private static readonly Action<ILogger, string, Exception> _unableToListenToAddress =
             LoggerMessage.Define<string>(
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_BoundMetricsAddress);
 
-        private static readonly Action<ILogger, string, Exception> _optionsValidationFalure =
+        private static readonly Action<ILogger, string, Exception> _optionsValidationFailure =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.OptionsValidationFailure.EventId(),
                 logLevel: LogLevel.Critical,
@@ -369,6 +369,36 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortDeleteFailed);
 
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortAlteredWhileInUse =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortAlteredWhileInUse.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortAlteredWhileInUse);
+
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortWatchingFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortWatchingFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
+
+        private static readonly Action<ILogger, Exception> _invalidMetadata =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.InvalidMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_InvalidMetadata);
+
+        private static readonly Action<ILogger, string, Exception> _duplicateKeyInMetadata =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
+
+        private static readonly Action<ILogger, string, Exception> _environmentVariableNotFound =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.EnvironmentVariableNotFound.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -427,7 +457,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void OptionsValidationFailure(this ILogger logger, OptionsValidationException exception)
         {
             foreach (string failure in exception.Failures)
-                _optionsValidationFalure(logger, failure, null);
+                _optionsValidationFailure(logger, failure, null);
         }
 
         public static void RunningElevated(this ILogger logger)
@@ -677,6 +707,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticPortDeleteFailed(this ILogger logger, string diagnosticPort, Exception ex)
         {
             _diagnosticPortDeleteFailed(logger, diagnosticPort, ex);
+        }
+
+        public static void DiagnosticPortAlteredWhileInUse(this ILogger logger, string diagnosticPort)
+        {
+            _diagnosticPortAlteredWhileInUse(logger, diagnosticPort, null);
+        }
+
+        public static void DiagnosticPortWatchingFailed(this ILogger logger, string diagnosticPort, Exception ex)
+        {
+            _diagnosticPortWatchingFailed(logger, diagnosticPort, ex);
+        }
+        public static void InvalidMetadata(this ILogger logger, Exception ex)
+        {
+            _invalidMetadata(logger, ex);
+        }
+
+        public static void DuplicateKeyInMetadata(this ILogger logger, string duplicateKey)
+        {
+            _duplicateKeyInMetadata(logger, duplicateKey, null);
+        }
+
+        public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
+        {
+            _environmentVariableNotFound(logger, environmentVariable, null);
         }
     }
 }

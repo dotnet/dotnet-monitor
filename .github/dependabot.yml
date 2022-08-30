@@ -5,3 +5,8 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "main"
+  - package-ecosystem: "nuget"
+    directory: "/eng/dependabot"
+    schedule:
+      interval: "daily"
+    target-branch: "main"

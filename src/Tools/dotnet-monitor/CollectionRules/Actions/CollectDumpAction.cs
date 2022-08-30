@@ -54,6 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
                 TaskCompletionSource<object> startCompletionSource,
+                CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
                 DumpType dumpType = Options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
@@ -75,7 +76,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     dumpFileName,
                     EndpointInfo,
                     ContentTypes.ApplicationOctetStream,
-                    scope);
+                    scope,
+                    collectionRuleMetadata);
 
                 ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
                 if (null != result.Exception)

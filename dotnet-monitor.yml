@@ -8,6 +8,12 @@ pr:
     - release/*
     - internal/release/*
     - feature/*
+  paths:
+    exclude:
+    - .devcontainer
+    - .github
+    - .vscode
+    - '**.md'
 
 schedules:
 - cron: 15 11 * * 6
@@ -181,7 +187,7 @@ stages:
         - MacOS_arm64_Release
         pool:
           name: NetCore1ESPool-Internal
-          demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
+          demands: ImageOverride -equals 1es-windows-2019
         enablePublishUsingPipelines: true
         enableMicrobuild: true
         artifacts:
@@ -213,7 +219,7 @@ stages:
         publishUsingPipelines: true
         pool:
           name: NetCore1ESPool-Internal
-          demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
+          demands: ImageOverride -equals 1es-windows-2019
 # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - template: /eng/common/templates/post-build/post-build.yml

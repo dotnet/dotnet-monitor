@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
             }
 
-            using var writer = new StreamWriter(outputStream, EncodingCache.UTF8NoBOMNoThrow, bufferSize: 1024, leaveOpen: true);
+            await using var writer = new StreamWriter(outputStream, EncodingCache.UTF8NoBOMNoThrow, bufferSize: 1024, leaveOpen: true);
             writer.NewLine = "\n";
 
             foreach (var metricGroup in copy)

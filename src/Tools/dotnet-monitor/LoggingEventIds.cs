@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         EgressProviderInvokeStreamAction = 11,
         EgressProviderSavedStream = 12,
         NoAuthentication = 13,
-        InsecureAutheticationConfiguration = 14,
+        InsecureAuthenticationConfiguration = 14,
         UnableToListenToAddress = 15,
         BoundDefaultAddress = 16,
         BoundMetricsAddress = 17,
@@ -76,7 +76,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ParsingUrlFailed = 63,
         IntermediateFileDeletionFailed = 64,
         DiagnosticPortDeleteAttempt = 65,
-        DiagnosticPortDeleteFailed = 66
+        DiagnosticPortDeleteFailed = 66,
+        DiagnosticPortAlteredWhileInUse = 67,
+        DiagnosticPortWatchingFailed = 68,
+        InvalidMetadata = 69,
+        DuplicateKeyInMetadata = 70,
+        EnvironmentVariableNotFound = 71
     }
 
     internal static class LoggingEventIdsExtensions

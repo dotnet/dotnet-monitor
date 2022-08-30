@@ -26,7 +26,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `durationSeconds` | query | false | int | The duration of the log collection operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected logs. When not specified, the logs are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
+See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
 If none of `pid`, `uid`, or `name` are specified, logs for the [default process](defaultprocess.md) will be captured. Attempting to capture logs of the default process when the default process cannot be resolved will fail.
 
@@ -40,7 +40,7 @@ Allowed schemes:
 
 ## Request Body
 
-A request body of type [LogsConfiguration](definitions.md#LogsConfiguration) is required.
+A request body of type [LogsConfiguration](definitions.md#logsconfiguration) is required.
 
 The expected content type is `application/json`.
 
@@ -48,10 +48,10 @@ The expected content type is `application/json`.
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | | The logs from the process formatted as [newline delimited JSON](https://github.com/ndjson/ndjson-spec). Each JSON object is a [LogEntry](definitions.md#LogEntry) | `application/x-ndjson` |
+| 200 OK | | The logs from the process formatted as [newline delimited JSON](https://github.com/ndjson/ndjson-spec). Each JSON object is a [LogEntry](definitions.md#logentry) | `application/x-ndjson` |
 | 200 OK | | The logs from the process formatted as plain text, similar to the output of the JSON console formatter. | `text/plain` |
 | 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
-| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many logs requests at this time. Try to request logs at a later time. | `application/problem+json` |
 
