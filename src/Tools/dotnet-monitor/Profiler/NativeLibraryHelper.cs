@@ -13,15 +13,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return $"{rootName}.dll";
+                return FormattableString.Invariant($"{rootName}.dll");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return $"lib{rootName}.so";
+                return FormattableString.Invariant($"lib{rootName}.so");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                return $"lib{rootName}.dylib";
+                return FormattableString.Invariant($"lib{rootName}.dylib");
             }
             throw new PlatformNotSupportedException();
         }

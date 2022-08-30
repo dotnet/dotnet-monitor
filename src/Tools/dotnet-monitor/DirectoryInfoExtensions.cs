@@ -8,16 +8,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class DirectoryInfoExtensions
     {
-        public static void CopyContentsTo(this DirectoryInfo srcDirInfo, DirectoryInfo targetDirInfo)
+        public static void CopyContentsTo(this DirectoryInfo srcDirInfo, DirectoryInfo targetDirInfo, bool overwrite)
         {
-            foreach (DirectoryInfo subDirInfo in srcDirInfo.GetDirectories())
+            foreach (DirectoryInfo subDirInfo in srcDirInfo.GetDirectories("*", SearchOption.TopDirectoryOnly))
             {
-                CopyContentsTo(subDirInfo, targetDirInfo.CreateSubdirectory(subDirInfo.Name));
+                // Skip symbolic links
+                if (!string.IsNullOrEmpty(subDirInfo.LinkTarget))
+                {
+                    CopyContentsTo(subDirInfo, targetDirInfo.CreateSubdirectory(subDirInfo.Name), overwrite);
+                }
             }
 
-            foreach (FileInfo fileInfo in srcDirInfo.GetFiles())
+            foreach (FileInfo fileInfo in srcDirInfo.GetFiles("*", SearchOption.TopDirectoryOnly))
             {
-                fileInfo.CopyTo(Path.Combine(targetDirInfo.FullName, fileInfo.Name));
+                // Skip symbolic links
+                if (!string.IsNullOrEmpty(fileInfo.LinkTarget))
+                {
+                    fileInfo.CopyTo(Path.Combine(targetDirInfo.FullName, fileInfo.Name), overwrite);
+                }
             }
         }
     }

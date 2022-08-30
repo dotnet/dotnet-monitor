@@ -55,38 +55,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 {
                     try
                     {
-                        // CONSIDER: Rather than using a version file, copy the shared assemblies into a subpath that
-                        // contains the dotnet-monitor version number. This would prevent contention in scenarios that
-                        // use a rolling upgrade strategy but do not clear out the temporary mounted filesystems. However,
-                        // this would drastically increase the success bar for scenarios that require manual specification
-                        // of the absolute location of files within the shared path e.g. using DOTNET_STARTUP_HOOKS.
-                        FileInfo versionFileInfo = new FileInfo(Path.Combine(sharedLibraryTargetPath, "version.txt"));
                         string expectedVersion = Assembly.GetExecutingAssembly().GetInformationalVersionString();
-
-                        if (Directory.Exists(sharedLibraryTargetPath))
+                        // Remove '+' and commit hash from version string
+                        int hashSeparatorIndex = expectedVersion.IndexOf('+');
+                        if (hashSeparatorIndex > 0)
                         {
-                            if (!versionFileInfo.Exists)
-                            {
-                                throw new FileNotFoundException("Expected version file to exist.", versionFileInfo.FullName);
-                            }
-
-                            using StreamReader reader = versionFileInfo.OpenText();
-                            string version = await reader.ReadToEndAsync();
-                            if (!string.Equals(expectedVersion, version))
-                            {
-                                throw new InvalidOperationException("Assemblies at shared storage location are incompatible.");
-                            }
-                        }
-                        else
-                        {
-                            sharedLibrarySourceDir.CopyContentsTo(Directory.CreateDirectory(sharedLibraryTargetPath));
-
-                            using StreamWriter writer = versionFileInfo.CreateText();
-                            await writer.WriteAsync(expectedVersion.AsMemory(), stoppingToken);
-                            await writer.FlushAsync();
+                            expectedVersion = expectedVersion.Substring(0, hashSeparatorIndex);
                         }
 
-                        _libraryPathSource.SetResult(sharedLibraryTargetPath);
+                        string versionedSharedLibraryTargetPath = Path.Combine(sharedLibraryTargetPath, expectedVersion);
+                        string sentinelPath = Path.Combine(versionedSharedLibraryTargetPath, "completed");
+
+                        if (!File.Exists(sentinelPath))
+                        {
+                            sharedLibrarySourceDir.CopyContentsTo(Directory.CreateDirectory(versionedSharedLibraryTargetPath), overwrite: true);
+
+                            // Write a sentinel file to signal that staging of the directory completed. The lack of
+                            // this file signals that directory was partially staged and must be restaged.
+                            File.Create(sentinelPath).Dispose();
+                        }
+
+                        _libraryPathSource.SetResult(versionedSharedLibraryTargetPath);
                     }
                     catch (Exception ex)
                     {

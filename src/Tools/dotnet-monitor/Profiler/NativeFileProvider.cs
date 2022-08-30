@@ -11,25 +11,41 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 {
+    /// <summary>
+    /// An abstraction around how native library files are found in the file system.
+    /// </summary>
     internal sealed class NativeFileProvider : IFileProvider
     {
         private readonly string _nativeFileBasePath;
 
-        private NativeFileProvider(string osPlatform, string nativeFileBasePath)
+        private NativeFileProvider(string nativeFileBasePath)
         {
             _nativeFileBasePath = nativeFileBasePath;
         }
 
+        /// <summary>
+        /// Creates an <see cref="IFileProvider"/> that can return native files from the shared library layout.
+        /// The path of a returned file is {sharedLibraryPath}/{runtimeIdentifier}/native/{fileName}.
+        /// </summary>
         public static IFileProvider CreateShared(string runtimeIdentifier, string sharedLibraryPath)
         {
-            SplitRuntimeIdentifier(runtimeIdentifier, out string osPlatform, out string architecture);
-
-            return new NativeFileProvider(osPlatform, Path.Combine(sharedLibraryPath, runtimeIdentifier, "native"));
+            return new NativeFileProvider(Path.Combine(sharedLibraryPath, runtimeIdentifier, "native"));
         }
 
+        /// <summary>
+        /// Creates an <see cref="IFileProvider"/> that can return native files from the build output of a
+        /// local or CI build from the dotnet-monitor repository.
+        /// The path of a returned file is {repoRoot}/artifacts/bin/{nativePlatformFolder}/{fileName}.
+        /// </summary>
         public static IFileProvider CreateTest(string runtimeIdentifier)
         {
-            SplitRuntimeIdentifier(runtimeIdentifier, out string osPlatform, out string architecture);
+            int index = runtimeIdentifier.LastIndexOf('-');
+            if (index < 0)
+            {
+                throw new ArgumentException();
+            }
+            string osPlatform = runtimeIdentifier.Substring(0, index);
+            string architecture = runtimeIdentifier.Substring(index + 1);
 
             string nativePlatformFolderPrefix = null;
             switch (osPlatform)
@@ -59,14 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "..", "..")),
                 $"{nativePlatformFolderPrefix}.{architecture}.{configurationName}");
 
-            return new NativeFileProvider(osPlatform, nativeOutputPath);
-        }
-
-        private static void SplitRuntimeIdentifier(string runtimeIdentifier, out string osPlatform, out string architecture)
-        {
-            int index = runtimeIdentifier.LastIndexOf('-');
-            osPlatform = runtimeIdentifier.Substring(0, index);
-            architecture = runtimeIdentifier.Substring(index + 1);
+            return new NativeFileProvider(nativeOutputPath);
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
