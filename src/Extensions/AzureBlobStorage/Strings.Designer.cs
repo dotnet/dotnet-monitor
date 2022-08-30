@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provider {providerType}: Invoking stream action..
+        ///   Looks up a localized string similar to Provider {0}: Invoking stream action..
         /// </summary>
         internal static string LogFormatString_EgressProviderInvokeStreamAction {
             get {
@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provider {providerType}: Saved stream to {path}.
+        ///   Looks up a localized string similar to Provider {0}: Saved stream to {1}.
         /// </summary>
         internal static string LogFormatString_EgressProviderSavedStream {
             get {

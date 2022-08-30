@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
@@ -14,14 +13,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
     internal sealed class AzureBlobEgressPostConfigureOptions :
         IPostConfigureOptions<AzureBlobEgressProviderOptions>
     {
-        private readonly ILogger<AzureBlobEgressPostConfigureOptions> _logger;
         private readonly IEgressPropertiesProvider _provider;
 
         public AzureBlobEgressPostConfigureOptions(
-            ILogger<AzureBlobEgressPostConfigureOptions> logger,
             IEgressPropertiesProvider provider)
         {
-            _logger = logger;
             _provider = provider;
         }
 
@@ -38,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 }
                 else
                 {
-                    _logger.EgressProviderUnableToFindPropertyKey(name, options.AccountKeyName);
+                    Utilities.WriteWarningLogs(Strings.LogFormatString_EgressProviderUnableToFindPropertyKey, new string[] { name, options.AccountKeyName });
                 }
             }
 
@@ -53,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 }
                 else
                 {
-                    _logger.EgressProviderUnableToFindPropertyKey(name, options.SharedAccessSignatureName);
+                    Utilities.WriteWarningLogs(Strings.LogFormatString_EgressProviderUnableToFindPropertyKey, new string[] { name, options.SharedAccessSignatureName });
                 }
             }
 

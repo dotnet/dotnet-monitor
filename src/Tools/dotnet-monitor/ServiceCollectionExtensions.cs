@@ -220,6 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string nextToMeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
+            string dotnetToolsFolder = settings.ExtensionDirectory;
 
             if (string.IsNullOrWhiteSpace(progDataFolder))
             {
@@ -235,6 +236,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddExtensionRepository(1000, nextToMeFolder);
             services.AddExtensionRepository(2000, progDataFolder);
             services.AddExtensionRepository(3000, settingsFolder);
+            services.AddExtensionRepository(4000, dotnetToolsFolder);
 
             return services;
         }

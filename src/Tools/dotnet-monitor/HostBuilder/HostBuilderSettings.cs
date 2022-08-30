@@ -11,6 +11,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class HostBuilderSettings
     {
         private const string ProductFolderName = "dotnet-monitor";
+        private const string DotnetFolderName = "dotnet";
+        private const string ToolsFolderName = "tools";
 
         // Allows tests to override the shared configuration directory so there
         // is better control and access of what is visible during test.
@@ -39,8 +41,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             GetEnvironmentOverrideOrValue(
                 UserConfigDirectoryOverrideEnvironmentVariable,
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + ProductFolderName) :
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName));
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + ProductFolderName, ToolsFolderName) :
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName, ToolsFolderName));
+
+        // Location where extensions are stored by default.
+        // Windows: "%USERPROFILE%\.dotnet"
+        // Other: "%XDG_CONFIG_HOME%/dotnet" OR "%HOME%/.config/dotnet" -> IS THIS RIGHT?
+        private static readonly string ExtensionDirectoryPath =
+            GetEnvironmentOverrideOrValue(
+                UserConfigDirectoryOverrideEnvironmentVariable,
+                RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + DotnetFolderName) :
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DotnetFolderName));
 
         public string[] Urls { get; set; }
 
@@ -57,6 +69,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public string SharedConfigDirectory { get; set; }
 
         public string UserConfigDirectory { get; set; }
+
+        public string ExtensionDirectory { get; set; }
 
         public FileInfo UserProvidedConfigFilePath { get; set; }
 
@@ -81,7 +95,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ContentRootDirectory = AppContext.BaseDirectory,
                 SharedConfigDirectory = SharedConfigDirectoryPath,
                 UserConfigDirectory = UserConfigDirectoryPath,
-                UserProvidedConfigFilePath = userProvidedConfigFilePath
+                UserProvidedConfigFilePath = userProvidedConfigFilePath,
+                ExtensionDirectory = ExtensionDirectoryPath
             };
         }
 
