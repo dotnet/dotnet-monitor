@@ -574,6 +574,9 @@
   <data name="LogFormatString_EndpointTimeout" xml:space="preserve">
     <value>Unexpected timeout from process {processId}. Process will no longer be monitored.</value>
   </data>
+  <data name="LogFormatString_EnvironmentBlockNotSupported" xml:space="preserve">
+    <value>Target framework does not support custom egress metadata.</value>
+  </data>
   <data name="LogFormatString_EnvironmentVariableNotFound" xml:space="preserve">
     <value>The environment variable '{name}' could not be found on the target process.</value>
     <comment>Gets a string similar to "The environment variable '{name}' could not be found on the target process.".</comment>
