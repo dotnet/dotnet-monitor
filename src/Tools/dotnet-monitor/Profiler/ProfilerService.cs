@@ -122,7 +122,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
                 if (string.IsNullOrEmpty(runtimeIdentifier))
                 {
-                    throw new InvalidOperationException("Unable to determine platform of the target platform.");
+                    throw new InvalidOperationException("Unable to determine platform of the target process.");
                 }
                 else
                 {
@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                     IFileProvider nativeFileProvider;
                     if (string.IsNullOrEmpty(sharedLibraryPath))
                     {
-                        // CONSIDER: Allow some way to of specifying the build output location of the libraries
+                        // CONSIDER: Allow some way of specifying the build output location of the libraries
                         // without have to code it into the product.
                         nativeFileProvider = NativeFileProvider.CreateTest(runtimeIdentifier);
                     }
