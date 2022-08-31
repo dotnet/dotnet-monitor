@@ -3,13 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Diagnostics.Monitoring.TestHostingStartup;
+using Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: HostingStartup(typeof(HostingStartup))]
 
-namespace Microsoft.Diagnostics.Monitoring.TestHostingStartup
+namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 {
     public class HostingStartup : IHostingStartup
     {

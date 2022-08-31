@@ -207,6 +207,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static Task<int> Main(string[] args)
         {
+            TestAssemblies.SimulateStartupHook();
+
             var parser = new CommandLineBuilder(new RootCommand()
             {
                 CollectCommand(),

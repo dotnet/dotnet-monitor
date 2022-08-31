@@ -21,7 +21,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     /// </summary>
     internal class MonitorRunner : IAsyncDisposable
     {
-        private const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.TestHostingStartup";
+        private const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup";
+        private const string TestStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook";
 
         protected readonly object _lock = new();
 
@@ -58,10 +59,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 #endif
                 );
 
-        private static string TestHostingStartupPath =>
+        private static string TestStartupHookPath =>
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
-                TestHostingStartupAssemblyName,
+                TestStartupHookAssemblyName,
 #if NET7_0_OR_GREATER
                 TargetFrameworkMoniker.Net70
 #else
@@ -155,8 +156,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             // Override the user config directory
             _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
 
-            // Ensures that the TestHostingStartup assembly is already loaded in the tool when hosting startup executes
-            _adapter.Environment.Add("DOTNET_STARTUP_HOOKS", TestHostingStartupPath);
+            // Ensures that the TestStartupHook is loaded early so it helps resolve other test assemblies
+            _adapter.Environment.Add("DOTNET_STARTUP_HOOKS", TestStartupHookPath);
 
             // Allow TestHostingStartup to participate in host building in the tool
             _adapter.Environment.Add("ASPNETCORE_HOSTINGSTARTUPASSEMBLIES", TestHostingStartupAssemblyName);

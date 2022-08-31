@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

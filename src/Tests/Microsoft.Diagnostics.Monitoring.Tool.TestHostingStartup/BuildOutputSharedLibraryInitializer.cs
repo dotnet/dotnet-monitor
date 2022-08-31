@@ -5,7 +5,7 @@
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.FileProviders;
 
-namespace Microsoft.Diagnostics.Monitoring.TestHostingStartup
+namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 {
     internal sealed class BuildOutputSharedLibraryInitializer : ISharedLibraryInitializer
     {
