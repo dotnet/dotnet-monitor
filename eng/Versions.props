@@ -15,18 +15,19 @@
     <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
   </PropertyGroup>
   <PropertyGroup Label="TargetFrameworks">
+    <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
+    <ExcludeLatestTargetFramework>false</ExcludeLatestTargetFramework>
+    <!-- <ExcludeLatestTargetFramework Condition="'$(BuildingInsideVisualStudio)' == 'true'">true</ExcludeLatestTargetFramework> -->
     <!-- The TFMs of the dotnet-monitor tool.  -->
     <ToolTargetFrameworks>net6.0</ToolTargetFrameworks>
-    <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
-    <ToolTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(ToolTargetFrameworks);net7.0</ToolTargetFrameworks>
+    <ToolTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(ToolTargetFrameworks);net7.0</ToolTargetFrameworks>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
     <TestTargetFrameworks>netcoreapp3.1;net6.0</TestTargetFrameworks>
-    <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
-    <TestTargetFrameworks Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(TestTargetFrameworks);net7.0</TestTargetFrameworks>
+    <TestTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(TestTargetFrameworks);net7.0</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
     <SchemaTargetFramework>net6.0</SchemaTargetFramework>
     <!-- Defines for including the next .NET version -->
-    <DefineConstants Condition="'$(BuildingInsideVisualStudio)' != 'true'">$(DefineConstants);INCLUDE_NEXT_DOTNET</DefineConstants>
+    <DefineConstants Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(DefineConstants);INCLUDE_NEXT_DOTNET</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
