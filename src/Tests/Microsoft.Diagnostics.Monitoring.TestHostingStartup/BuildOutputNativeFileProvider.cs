@@ -12,24 +12,15 @@ using System.Reflection;
 namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 {
     /// <summary>
-    /// An abstraction around how native library files are found in the file system.
+    /// An abstraction around how native library files are found in the build output.
     /// </summary>
-    internal sealed class NativeFileProvider : IFileProvider
+    internal sealed class BuildOutputNativeFileProvider : IFileProvider
     {
         private readonly string _nativeFileBasePath;
 
-        private NativeFileProvider(string nativeFileBasePath)
+        private BuildOutputNativeFileProvider(string nativeFileBasePath)
         {
             _nativeFileBasePath = nativeFileBasePath;
-        }
-
-        /// <summary>
-        /// Creates an <see cref="IFileProvider"/> that can return native files from the shared library layout.
-        /// The path of a returned file is {sharedLibraryPath}/{runtimeIdentifier}/native/{fileName}.
-        /// </summary>
-        public static IFileProvider CreateShared(string runtimeIdentifier, string sharedLibraryPath)
-        {
-            return new NativeFileProvider(Path.Combine(sharedLibraryPath, runtimeIdentifier, "native"));
         }
 
         /// <summary>
@@ -37,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
         /// local or CI build from the dotnet-monitor repository.
         /// The path of a returned file is {repoRoot}/artifacts/bin/{nativePlatformFolder}/{fileName}.
         /// </summary>
-        public static IFileProvider CreateTest(string runtimeIdentifier)
+        public static IFileProvider Create(string runtimeIdentifier)
         {
             int index = runtimeIdentifier.LastIndexOf('-');
             if (index < 0)
@@ -71,11 +62,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             "Release";
 #endif
 
-        string nativeOutputPath = Path.Combine(
-                Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "..", "..")),
-                $"{nativePlatformFolderPrefix}.{architecture}.{configurationName}");
+            string nativeOutputPath = Path.Combine(
+                    Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "..", "..")),
+                    $"{nativePlatformFolderPrefix}.{architecture}.{configurationName}");
 
-            return new NativeFileProvider(nativeOutputPath);
+            return new BuildOutputNativeFileProvider(nativeOutputPath);
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)

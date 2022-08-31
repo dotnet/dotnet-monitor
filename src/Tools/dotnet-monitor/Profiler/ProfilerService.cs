@@ -7,11 +7,9 @@ using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,80 +17,34 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 {
     internal sealed class ProfilerService : BackgroundService
     {
-        private static readonly string SharedLibrarySourcePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "shared");
-
-        private readonly TaskCompletionSource<string> _libraryPathSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<INativeFileProviderFactory> _fileProviderFactorySource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly ISharedLibraryInitializer _sharedLibraryInitializer;
         private readonly ILogger<ProfilerService> _logger;
-        private readonly IOptions<StorageOptions> _storageOptions;
 
         public ProfilerService(
-            IOptions<StorageOptions> storageOptions,
+            ISharedLibraryInitializer sharedLibraryInitializer,
             ILogger<ProfilerService> logger)
         {
             _logger = logger;
-            _storageOptions = storageOptions;
+            _sharedLibraryInitializer = sharedLibraryInitializer;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using IDisposable _ = stoppingToken.Register(() => _libraryPathSource.TrySetCanceled(stoppingToken));
+            using IDisposable _ = stoppingToken.Register(() => _fileProviderFactorySource.TrySetCanceled(stoppingToken));
 
             // Yield to allow other hosting services to start
             await Task.Yield();
 
-            // Copy the shared libraries to the path specified by Storage:SharedLibraryPath.
-            // Copying, instead of linking or using them in-place, prevents file locks from the target process.
-            // If shared path is not specified, use the libraries in-place.
-            string sharedLibraryTargetPath = _storageOptions.Value.SharedLibraryPath;
-            DirectoryInfo sharedLibrarySourceDir = new DirectoryInfo(SharedLibrarySourcePath);
-            if (sharedLibrarySourceDir.Exists)
+            try
             {
-                if (string.IsNullOrEmpty(sharedLibraryTargetPath))
-                {
-                    _libraryPathSource.SetResult(SharedLibrarySourcePath);
-                }
-                else
-                {
-                    try
-                    {
-                        string expectedVersion = Assembly.GetExecutingAssembly().GetInformationalVersionString();
-                        // Remove '+' and commit hash from version string
-                        int hashSeparatorIndex = expectedVersion.IndexOf('+');
-                        if (hashSeparatorIndex > 0)
-                        {
-                            expectedVersion = expectedVersion.Substring(0, hashSeparatorIndex);
-                        }
-
-                        string versionedSharedLibraryTargetPath = Path.Combine(sharedLibraryTargetPath, expectedVersion);
-                        string sentinelPath = Path.Combine(versionedSharedLibraryTargetPath, "completed");
-
-                        if (!File.Exists(sentinelPath))
-                        {
-                            sharedLibrarySourceDir.CopyContentsTo(Directory.CreateDirectory(versionedSharedLibraryTargetPath), overwrite: true);
-
-                            // Write a sentinel file to signal that staging of the directory completed. The lack of
-                            // this file signals that directory was partially staged and must be restaged.
-                            File.Create(sentinelPath).Dispose();
-                        }
-
-                        _libraryPathSource.SetResult(versionedSharedLibraryTargetPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Failed to initialize shared storage.");
-
-                        _libraryPathSource.SetException(ex);
-                    }
-                }
+                _fileProviderFactorySource.SetResult(_sharedLibraryInitializer.Initialize());
             }
-            else
+            catch (Exception ex)
             {
-                // This condition occurs when runing dotnet-monitor from the build output because
-                // the shared libraries are colocated into the "shared" folder due to packaging, not
-                // at build time. This setting is valid for testing scenarios.
-                // CONSIDER: Remove test-specific code and conditions, if possible, and replace with
-                // some other extensible mechanism.
-                _libraryPathSource.SetResult(null);
+                _logger.LogError(ex, "Failed to initialize shared storage.");
+
+                _fileProviderFactorySource.SetException(ex);
             }
         }
 
@@ -115,21 +67,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 }
                 else
                 {
-                    // This may be null if running dotnet-monitor from build output instead of from
-                    // dotnet tool installation.
-                    string sharedLibraryPath = await _libraryPathSource.Task;
+                    INativeFileProviderFactory fileProviderFactory = await _fileProviderFactorySource.Task;
 
-                    IFileProvider nativeFileProvider;
-                    if (string.IsNullOrEmpty(sharedLibraryPath))
-                    {
-                        // CONSIDER: Allow some way of specifying the build output location of the libraries
-                        // without have to code it into the product.
-                        nativeFileProvider = NativeFileProvider.CreateTest(runtimeIdentifier);
-                    }
-                    else
-                    {
-                        nativeFileProvider = NativeFileProvider.CreateShared(runtimeIdentifier, sharedLibraryPath);
-                    }
+                    IFileProvider nativeFileProvider = fileProviderFactory.Create(runtimeIdentifier);
 
                     string libraryName = NativeLibraryHelper.GetSharedLibraryName("MonitorProfiler");
 
@@ -140,14 +80,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                         throw new FileNotFoundException("Could not find profiler assembly at determined path.", profilerFileInfo.Name);
                     }
 
-                    await client.SetStartupProfilerAsync(
-                        ProfilerIdentifiers.Clsid.Guid,
-                        profilerFileInfo.PhysicalPath,
-                        cancellationToken);
-
                     await client.SetEnvironmentVariableAsync(
                         ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId,
                         endpointInfo.RuntimeInstanceCookie.ToString("D"),
+                        cancellationToken);
+
+                    await client.SetStartupProfilerAsync(
+                        ProfilerIdentifiers.Clsid.Guid,
+                        profilerFileInfo.PhysicalPath,
                         cancellationToken);
                 }
             }

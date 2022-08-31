@@ -21,6 +21,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     /// </summary>
     internal class MonitorRunner : IAsyncDisposable
     {
+        private const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.TestHostingStartup";
+
         protected readonly object _lock = new();
 
         protected readonly ITestOutputHelper _outputHelper;
@@ -49,6 +51,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 "dotnet-monitor",
+#if NET7_0_OR_GREATER
+                TargetFrameworkMoniker.Net70
+#else
+                TargetFrameworkMoniker.Net60
+#endif
+                );
+
+        private static string TestHostingStartupPath =>
+            AssemblyHelper.GetAssemblyArtifactBinPath(
+                Assembly.GetExecutingAssembly(),
+                TestHostingStartupAssemblyName,
 #if NET7_0_OR_GREATER
                 TargetFrameworkMoniker.Net70
 #else
@@ -141,6 +154,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
             // Override the user config directory
             _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
+
+            // Ensures that the TestHostingStartup assembly is already loaded in the tool when hosting startup executes
+            _adapter.Environment.Add("DOTNET_STARTUP_HOOKS", TestHostingStartupPath);
+
+            // Allow TestHostingStartup to participate in host building in the tool
+            _adapter.Environment.Add("ASPNETCORE_HOSTINGSTARTUPASSEMBLIES", TestHostingStartupAssemblyName);
 
             // Set configuration via environment variables
             var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration(useDotnetMonitorPrefix: true);

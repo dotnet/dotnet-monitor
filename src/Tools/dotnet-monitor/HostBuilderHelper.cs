@@ -10,7 +10,10 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Loader;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -93,6 +96,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 //is not added until WebHostDefaults are added.
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+#if DEBUG
+                    // This code is to aid loading the TestHostingStartup assembly when debug launching dotnet-monitor
+                    // so that additional manual configuration is not necessary. The functional tests already bootstrap
+                    // loading this assembly and initialize the hosting startup using standard dotnet environment variables.
+                    const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.TestHostingStartup";
+
+                    Assembly thisAssembly = Assembly.GetExecutingAssembly();
+                    AssemblyLoadContext alc = AssemblyLoadContext.GetLoadContext(thisAssembly);
+                    // Skip attempting to load if it is already loaded
+                    if (!alc.Assemblies.Any(a => TestHostingStartupAssemblyName.Equals(a.GetName().Name)))
+                    {
+                        string assemblyName = thisAssembly.GetName().Name;
+                        string separator = Path.DirectorySeparatorChar + "artifacts" + Path.DirectorySeparatorChar;
+                        int artifactsIndex = thisAssembly.Location.IndexOf(separator);
+                        if (artifactsIndex != -1)
+                        {
+                            // This avoids accidentally renaming the "dotnet-monitor" folder that is the repository directory on disk.
+                            string hostingStartupAssemblyPath = Path.Combine(
+                                thisAssembly.Location.Substring(0, artifactsIndex),
+                                "artifacts",
+                                thisAssembly.Location.Substring(artifactsIndex + separator.Length).Replace(thisAssembly.GetName().Name, TestHostingStartupAssemblyName));
+
+                            if (File.Exists(hostingStartupAssemblyPath))
+                            {
+                                alc.LoadFromAssemblyPath(hostingStartupAssemblyPath);
+
+                                webBuilder.UseSetting(
+                                    WebHostDefaults.HostingStartupAssembliesKey,
+                                    TestHostingStartupAssemblyName);
+                            }
+                        }
+                    }
+#endif
+
                     AddressListenResults listenResults = new AddressListenResults();
                     webBuilder.ConfigureServices(services =>
                     {

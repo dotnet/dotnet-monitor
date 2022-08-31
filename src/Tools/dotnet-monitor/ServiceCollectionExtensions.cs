@@ -222,6 +222,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<ProfilerService>();
             services.AddHostedServiceForwarder<ProfilerService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, ProfilerEndpointInfoSourceCallbacks>();
+            services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
             return services;
         }
 
