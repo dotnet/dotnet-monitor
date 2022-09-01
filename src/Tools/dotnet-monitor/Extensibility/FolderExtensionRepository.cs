@@ -33,15 +33,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             // Azure Blob Storage version (guessing) -> would hold all the important stuff
             // .store\AzureBlobStorage\7.0.0\AzureBlobStorage\7.0.0\tools\net7.0\any
 
-            IDirectoryContents extensionDir = _fileSystem.GetDirectoryContents(extensionName);
+            IDirectoryContents extensionDir = null;
+
+            string extensionPath = string.Empty;
+
+            // Special case -> need to look in particular path
+            if (_targetFolder == HostBuilderSettings.ExtensionDirectoryPath)
+            {
+                string ver = "7.0.0-dev.22451.1"; // would need to get this somehow
+                extensionPath = Path.Combine(".store", extensionName, ver, extensionName, ver, "tools", "net7.0", "any");
+                extensionDir = _fileSystem.GetDirectoryContents(extensionPath);
+            }
+            else
+            {
+                extensionPath = extensionName;
+                extensionDir = _fileSystem.GetDirectoryContents(extensionName);
+            }
 
             if (extensionDir.Exists)
             {
-                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionName, ExtensionDefinitionFile));
+                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionPath, ExtensionDefinitionFile));
                 if (defFile.Exists && !defFile.IsDirectory)
                 {
                     ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
-                    extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionName, ExtensionDefinitionFile), logger);
+                    extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), logger);
                     return true;
                 }
             }

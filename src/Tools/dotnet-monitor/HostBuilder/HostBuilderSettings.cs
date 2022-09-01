@@ -41,18 +41,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             GetEnvironmentOverrideOrValue(
                 UserConfigDirectoryOverrideEnvironmentVariable,
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + ProductFolderName, ToolsFolderName) :
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName, ToolsFolderName));
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + ProductFolderName) :
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName));
 
         // Location where extensions are stored by default.
-        // Windows: "%USERPROFILE%\.dotnet"
-        // Other: "%XDG_CONFIG_HOME%/dotnet" OR "%HOME%/.config/dotnet" -> IS THIS RIGHT?
-        private static readonly string ExtensionDirectoryPath =
+        // Windows: "%USERPROFILE%\.dotnet\Tools"
+        // Other: "%XDG_CONFIG_HOME%/dotnet/tools" OR "%HOME%/.config/dotnet/tools" -> IS THIS RIGHT?
+        public static readonly string ExtensionDirectoryPath =
             GetEnvironmentOverrideOrValue(
                 UserConfigDirectoryOverrideEnvironmentVariable,
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + DotnetFolderName) :
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DotnetFolderName));
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + DotnetFolderName, ToolsFolderName) :
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DotnetFolderName, ToolsFolderName));
 
         public string[] Urls { get; set; }
 

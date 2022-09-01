@@ -245,7 +245,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             const string ExtensionFolder = "extensions";
 
-            string targetExtensionFolder = Path.Combine(path, ExtensionFolder);
+            string targetExtensionFolder = string.Empty;
+
+            // Kinda hacky special case
+            if (path != HostBuilderSettings.ExtensionDirectoryPath)
+            {
+                targetExtensionFolder = Path.Combine(path, ExtensionFolder);
+            }
+            else
+            {
+                targetExtensionFolder = path;
+            }
 
             if (Directory.Exists(targetExtensionFolder))
             {
