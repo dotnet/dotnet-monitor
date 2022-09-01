@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
         {
             public IFileProvider Create(string runtimeIdentifier)
             {
-                return BuildOutputNativeFileProvider.Create(SharedLibrarySourcePath, runtimeIdentifier);
+                return BuildOutputNativeFileProvider.Create(runtimeIdentifier, SharedLibrarySourcePath);
             }
         }
     }
