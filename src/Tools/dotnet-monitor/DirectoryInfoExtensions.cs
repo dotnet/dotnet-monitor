@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             foreach (DirectoryInfo subDirInfo in srcDirInfo.GetDirectories("*", SearchOption.TopDirectoryOnly))
             {
                 // Skip symbolic links
-                if (!string.IsNullOrEmpty(subDirInfo.LinkTarget))
+                if (string.IsNullOrEmpty(subDirInfo.LinkTarget))
                 {
                     CopyContentsTo(subDirInfo, targetDirInfo.CreateSubdirectory(subDirInfo.Name), overwrite);
                 }
@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             foreach (FileInfo fileInfo in srcDirInfo.GetFiles("*", SearchOption.TopDirectoryOnly))
             {
                 // Skip symbolic links
-                if (!string.IsNullOrEmpty(fileInfo.LinkTarget))
+                if (string.IsNullOrEmpty(fileInfo.LinkTarget))
                 {
                     fileInfo.CopyTo(Path.Combine(targetDirInfo.FullName, fileInfo.Name), overwrite);
                 }

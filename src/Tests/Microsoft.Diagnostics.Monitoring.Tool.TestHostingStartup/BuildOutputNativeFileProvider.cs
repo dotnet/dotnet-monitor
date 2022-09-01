@@ -7,7 +7,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using System.IO;
 using System;
-using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 {
@@ -26,9 +25,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
         /// <summary>
         /// Creates an <see cref="IFileProvider"/> that can return native files from the build output of a
         /// local or CI build from the dotnet-monitor repository.
-        /// The path of a returned file is {repoRoot}/artifacts/bin/{nativePlatformFolder}/{fileName}.
+        /// The path of a returned file is {sharedLibraryPath}/{nativePlatformFolder}/{fileName}.
         /// </summary>
-        public static IFileProvider Create(string runtimeIdentifier)
+        public static IFileProvider Create(string runtimeIdentifier, string sharedLibraryPath)
         {
             int index = runtimeIdentifier.LastIndexOf('-');
             if (index < 0)
@@ -62,9 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             "Release";
 #endif
 
-            string nativeOutputPath = Path.Combine(
-                    Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "..", "..")),
-                    $"{nativePlatformFolderPrefix}.{architecture}.{configurationName}");
+            string nativeOutputPath = Path.Combine(sharedLibraryPath, $"{nativePlatformFolderPrefix}.{architecture}.{configurationName}");
 
             return new BuildOutputNativeFileProvider(nativeOutputPath);
         }

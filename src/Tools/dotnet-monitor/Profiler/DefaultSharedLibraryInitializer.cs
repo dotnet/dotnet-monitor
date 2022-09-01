@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.IO;
 using System.Reflection;
@@ -15,11 +16,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
     {
         private static readonly string SharedLibrarySourcePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "shared");
 
-        private readonly string _sharedLibraryPath;
+        private readonly ILogger<DefaultSharedLibraryInitializer> _logger;
+        private readonly string _sharedLibraryTargetPath;
 
-        public DefaultSharedLibraryInitializer(IOptions<StorageOptions> _storageOptions)
+        public DefaultSharedLibraryInitializer(
+            IOptions<StorageOptions> _storageOptions,
+            ILogger<DefaultSharedLibraryInitializer> logger)
         {
-            _sharedLibraryPath = _storageOptions.Value.SharedLibraryPath;
+            _logger = logger;
+            _sharedLibraryTargetPath = _storageOptions.Value.SharedLibraryPath;
         }
 
         public INativeFileProviderFactory Initialize()
@@ -33,9 +38,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 throw new DirectoryNotFoundException();
             }
 
-            if (string.IsNullOrEmpty(_sharedLibraryPath))
+            string sharedLibraryPath;
+            if (string.IsNullOrEmpty(_sharedLibraryTargetPath))
             {
-                return new Factory(SharedLibrarySourcePath);
+                sharedLibraryPath = SharedLibrarySourcePath;
             }
             else
             {
@@ -47,7 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                     expectedVersion = expectedVersion.Substring(0, hashSeparatorIndex);
                 }
 
-                string versionedSharedLibraryTargetPath = Path.Combine(_sharedLibraryPath, expectedVersion);
+                string versionedSharedLibraryTargetPath = Path.Combine(_sharedLibraryTargetPath, expectedVersion);
                 string sentinelPath = Path.Combine(versionedSharedLibraryTargetPath, "completed");
 
                 if (!File.Exists(sentinelPath))
@@ -59,8 +65,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                     File.Create(sentinelPath).Dispose();
                 }
 
-                return new Factory(_sharedLibraryPath);
+                sharedLibraryPath = _sharedLibraryTargetPath;
             }
+
+            _logger.LogDebug("Shared Library Path: {path}", sharedLibraryPath);
+
+            return new Factory(sharedLibraryPath);
         }
 
         private sealed class Factory : INativeFileProviderFactory
