@@ -21,6 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly string _extensionName;
         private readonly string _targetFolder;
         private readonly string _declarationPath;
+        private readonly string _exePath;
         private readonly IFileProvider _fileSystem;
         private readonly ILogger<ProgramExtension> _logger;
         private Lazy<ExtensionDeclaration> _extensionDeclaration;
@@ -31,8 +32,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _targetFolder = targetFolder;
             _fileSystem = fileSystem;
             _declarationPath = declarationPath;
+            _exePath = declarationPath;
             _logger = logger;
             _extensionDeclaration = new Lazy<ExtensionDeclaration>(() => { return GetExtensionDeclaration(); }, LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, string exePath, ILogger<ProgramExtension> logger)
+            : this(extensionName, targetFolder, fileSystem, declarationPath, logger)
+        {
+            _exePath = exePath;
         }
 
         /// <inheritdoc/>
@@ -59,11 +67,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
             ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
 
-            string programRelPath = Path.Combine(Path.GetDirectoryName(_declarationPath), Declaration.Program);
+            string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), Declaration.Program);
             IFileInfo progInfo = _fileSystem.GetFileInfo(programRelPath);
             if (!progInfo.Exists || progInfo.IsDirectory || progInfo.PhysicalPath == null)
             {
-                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _declarationPath), Declaration.Program);
+                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _exePath), Declaration.Program);
                 ExtensionException.ThrowNotFound(_extensionName);
             }
 

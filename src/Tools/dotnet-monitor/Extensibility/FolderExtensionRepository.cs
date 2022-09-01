@@ -37,9 +37,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             string extensionPath = string.Empty;
 
+            bool isSpecialCase = false; // clean this up
+
             // Special case -> need to look in particular path
             if (_targetFolder == HostBuilderSettings.ExtensionDirectoryPath)
             {
+                isSpecialCase = true;
                 string ver = "7.0.0-dev.22451.1"; // would need to get this somehow
                 extensionPath = Path.Combine(".store", extensionName, ver, extensionName, ver, "tools", "net7.0", "any");
                 extensionDir = _fileSystem.GetDirectoryContents(extensionPath);
@@ -56,7 +59,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 if (defFile.Exists && !defFile.IsDirectory)
                 {
                     ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
-                    extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), logger);
+
+                    if (isSpecialCase)
+                    {
+                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), Path.Combine(extensionName), logger); // exe is not in the same location as extension.json
+                    }
+                    else
+                    {
+                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionName, ExtensionDefinitionFile), logger);
+                    }
+
                     return true;
                 }
             }
