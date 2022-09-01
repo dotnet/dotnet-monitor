@@ -41,7 +41,7 @@ jobs:
       # Public Linux Build Pool
       ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
         ${{ if eq(variables['System.TeamProject'], 'public') }}:
-          name: NetCore1ESPool-Public
+          name: NetCore-Public
           demands: ImageOverride -equals Build.Ubuntu.1804.Amd64.Open
 
         # Official Build Linux Pool
@@ -56,7 +56,7 @@ jobs:
       # Public Windows Build Pool
       ${{ if eq(parameters.osGroup, 'Windows') }}:
         ${{ if eq(variables['System.TeamProject'], 'public') }}:
-          name: NetCore1ESPool-Public
+          name: NetCore-Public
           demands: ImageOverride -equals windows.vs2019.amd64.open
 
         ${{ if ne(variables['System.TeamProject'], 'public') }}:
