@@ -14,7 +14,6 @@
     <IsShippingAssembly>true</IsShippingAssembly>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <OutputType>Library</OutputType>
     <!--
