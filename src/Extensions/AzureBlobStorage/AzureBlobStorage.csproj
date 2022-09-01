@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <OutputType>Exe</OutputType>
+    <!--<OutputType>Exe</OutputType> -->
     <RootNamespace>Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
@@ -17,6 +17,8 @@
     <ToolCommandName>AzureBlobStorage</ToolCommandName>
     <IncludeSymbols>true</IncludeSymbols>
     <OutputType>Library</OutputType>
+
+    <PackAsToolShimRuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</PackAsToolShimRuntimeIdentifiers>
     <!--
       Workaround for https://github.com/dotnet/aspnetcore/issues/42200
       Required as of 7.0 Preview 5 SDK
