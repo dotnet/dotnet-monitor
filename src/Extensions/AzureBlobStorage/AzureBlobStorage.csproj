@@ -14,6 +14,7 @@
     <IsShippingAssembly>true</IsShippingAssembly>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
+    <ToolCommandName>AzureBlobStorage</ToolCommandName>
     <IncludeSymbols>true</IncludeSymbols>
     <OutputType>Library</OutputType>
     <!--
