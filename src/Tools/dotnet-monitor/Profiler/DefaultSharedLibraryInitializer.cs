@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                     File.Create(sentinelPath).Dispose();
                 }
 
-                sharedLibraryPath = _sharedLibraryTargetPath;
+                sharedLibraryPath = versionedSharedLibraryTargetPath;
             }
 
             _logger.SharedLibraryPath(sharedLibraryPath);
