@@ -183,6 +183,12 @@
             "parameters": {
               "label": "test-fabric-bot"
             }
+          },
+          {
+            "name": "noLabel",
+            "parameters": {
+              "label": "no-recent-activity"
+            }
           }
         ],
         "actions": [
@@ -316,8 +322,33 @@
               "parameters": {}
             },
             {
-              "name": "isAction",
-              "parameters": {}
+              "operator": "or",
+              "operands": [
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "reopened"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "synchronize"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "edited"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "review_requested"
+                  }
+                }
+              ]
             },
             {
               "operator": "not",
