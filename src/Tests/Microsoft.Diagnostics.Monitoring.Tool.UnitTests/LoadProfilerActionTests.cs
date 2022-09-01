@@ -72,9 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     // At this point, the profiler has already been initialized and managed code is already running.
                     // Use any of the initialization state of the profiler to validate that it is loaded.
-                    string productVersion = await runner.GetEnvironmentVariable(ProfilerHelper.ProfilerEnvVarProductVersion, CommonTestTimeouts.EnvVarsTimeout);
-                    Assert.False(string.IsNullOrEmpty(productVersion), "Expected product version to not be null or empty.");
-                    _outputHelper.WriteLine("{0} = {1}", ProfilerHelper.ProfilerEnvVarProductVersion, productVersion);
+                    await ProfilerHelper.VerifyProductVersionEnvironmentVariableAsync(runner, _outputHelper);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
