@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         EnvironmentVariableNotFound = 71,
         FailedInitializeSharedLibraryStorage = 73,
         UnableToApplyProfiler = 74,
-        SharedLibraryPath
+        SharedLibraryPath = 75
     }
 
     internal static class LoggingEventIdsExtensions
