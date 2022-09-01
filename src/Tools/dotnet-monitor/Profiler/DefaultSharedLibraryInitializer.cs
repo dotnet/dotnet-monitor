@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 
@@ -35,7 +36,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             DirectoryInfo sharedLibrarySourceDir = new DirectoryInfo(SharedLibrarySourcePath);
             if (!sharedLibrarySourceDir.Exists)
             {
-                throw new DirectoryNotFoundException();
+                throw new DirectoryNotFoundException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Strings.ErrorMessage_ExpectedToFindSharedLibrariesAtPath,
+                        SharedLibrarySourcePath));
             }
 
             string sharedLibraryPath;
@@ -68,7 +73,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 sharedLibraryPath = _sharedLibraryTargetPath;
             }
 
-            _logger.LogDebug("Shared Library Path: {path}", sharedLibraryPath);
+            _logger.SharedLibraryPath(sharedLibraryPath);
 
             return new Factory(sharedLibraryPath);
         }

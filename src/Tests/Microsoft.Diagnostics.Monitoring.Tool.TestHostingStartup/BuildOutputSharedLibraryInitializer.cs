@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 
         public INativeFileProviderFactory Initialize()
         {
-            _logger.LogDebug("Shared Library Path: {path}", SharedLibrarySourcePath);
+            _logger.SharedLibraryPath(SharedLibrarySourcePath);
 
             return new Factory();
         }

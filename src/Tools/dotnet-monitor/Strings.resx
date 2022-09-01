@@ -182,6 +182,9 @@
 1 Format Parameter:
 0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
   </data>
+  <data name="ErrorMessage_ExpectedToFindSharedLibrariesAtPath" xml:space="preserve">
+    <value>Expected to find shared libraries at '{0}'.</value>
+  </data>
   <data name="ErrorMessage_FieldMustBeLessThanOtherField" xml:space="preserve">
     <value>The value of field {0} must be less than the value of field {1}.</value>
     <comment>{0} = Field name that must be lower.
@@ -303,6 +306,12 @@
   <data name="ErrorMessage_UnableToBindUrls" xml:space="preserve">
     <value>Unable to bind any urls.</value>
     <comment>Gets a string similar to "Unable to bind any urls.".</comment>
+  </data>
+  <data name="ErrorMessage_UnableToDetermineTargetPlatform" xml:space="preserve">
+    <value>Unable to determine platform of the target process.</value>
+  </data>
+  <data name="ErrorMessage_UnableToFindProfilerAssembly" xml:space="preserve">
+    <value>Unable to find profiler assembly at determined path.</value>
   </data>
   <data name="ErrorMessage_UnableToStartProcess" xml:space="preserve">
     <value>Unable to start: {0} {1}</value>
@@ -581,6 +590,9 @@
   <data name="LogFormatString_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {link}</value>
   </data>
+  <data name="LogFormatString_FailedInitializeSharedLibraryStorage" xml:space="preserve">
+    <value>Failed to initialize shared library storage.</value>
+  </data>
   <data name="LogFormatString_GetEnvironmentVariable" xml:space="preserve">
     <value>Getting the environment variable {variableName} from process {processId}.</value>
     <comment>Gets the format string that is printed in the 55:GetEnvironmentVariable event.
@@ -672,6 +684,12 @@
 2 Format parameterts:
 1. variableName: The name of the environment variable being set
 2. processId: The id of the process to which the variable is being set</comment>
+  </data>
+  <data name="LogFormatString_SharedLibraryPath" xml:space="preserve">
+    <value>Shared library path: {path}</value>
+  </data>
+  <data name="LogFormatString_UnableToApplyProfiler" xml:space="preserve">
+    <value>Unable to apply profiler.</value>
   </data>
   <data name="LogFormatString_UnableToListenToAddress" xml:space="preserve">
     <value>Unable to listen to {url}. Dotnet-monitor functionality will be limited.</value>

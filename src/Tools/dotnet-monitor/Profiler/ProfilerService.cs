@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to initialize shared storage.");
+                _logger.FailedInitializeSharedLibraryStorage(ex);
 
                 _fileProviderFactorySource.SetException(ex);
             }
@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
                 if (string.IsNullOrEmpty(runtimeIdentifier))
                 {
-                    throw new InvalidOperationException("Unable to determine platform of the target process.");
+                    throw new InvalidOperationException(Strings.ErrorMessage_UnableToDetermineTargetPlatform);
                 }
                 else
                 {
@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                     if (!profilerFileInfo.Exists)
                     {
                         // Do not use IFileInfo.PhysicalPath as that is null of files that do not exist.
-                        throw new FileNotFoundException("Could not find profiler assembly at determined path.", profilerFileInfo.Name);
+                        throw new FileNotFoundException(Strings.ErrorMessage_UnableToFindProfilerAssembly, profilerFileInfo.Name);
                     }
 
                     await client.SetEnvironmentVariableAsync(
@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Could not apply profiler.");
+                _logger.UnableToApplyProfiler(ex);
             }
         }
     }
