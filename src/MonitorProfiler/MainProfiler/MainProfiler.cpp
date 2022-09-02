@@ -30,36 +30,10 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     HRESULT hr = S_OK;
 
-    //These should always be initialized first
+    // These should always be initialized first
     IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
 
-    //These are created in dependency order!
-    IfFailRet(InitializeEnvironment());
-    IfFailRet(InitializeLogging());
-    IfFailRet(InitializeEnvironmentHelper());
-
-    // Logging is initialized and can now be used
-
-    _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
-    IfNullRet(_threadDataManager);
-    _exceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, _threadDataManager, m_pCorProfilerInfo));
-    IfNullRet(_exceptionTracker);
-
-    IfFailLogRet(InitializeCommandServer());
-
-    // Set product version environment variable to allow discovery of if the profiler
-    // as been applied to a target process. Diagnostic tools must use the diagnostic
-    // communication channel's GetProcessEnvironment command to get this value.
-    IfFailLogRet(_environmentHelper->SetProductVersion());
-
-    DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
-    ThreadDataManager::AddProfilerEventMask(eventsLow);
-    _exceptionTracker->AddProfilerEventMask(eventsLow);
-    StackSampler::AddProfilerEventMask(eventsLow);
-
-    IfFailRet(m_pCorProfilerInfo->SetEventMask2(
-        eventsLow,
-        COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
+    IfFailRet(InitializeCommon());
 
     return S_OK;
 }
@@ -128,11 +102,58 @@ STDMETHODIMP MainProfiler::ExceptionUnwindFunctionEnter(FunctionID functionId)
     return S_OK;
 }
 
+STDMETHODIMP MainProfiler::InitializeForAttach(IUnknown* pCorProfilerInfoUnk, void* pvClientData, UINT cbClientData)
+{
+    HRESULT hr = S_OK;
+
+    // These should always be initialized first
+    IfFailRet(ProfilerBase::Initialize(pCorProfilerInfoUnk));
+
+    IfFailRet(InitializeCommon());
+
+    return S_OK;
+}
+
 STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
 {
     ExpectedPtr(pbNotificationOnly);
 
     *pbNotificationOnly = TRUE;
+
+    return S_OK;
+}
+
+HRESULT MainProfiler::InitializeCommon()
+{
+    HRESULT hr = S_OK;
+
+    // These are created in dependency order!
+    IfFailRet(InitializeEnvironment());
+    IfFailRet(InitializeLogging());
+    IfFailRet(InitializeEnvironmentHelper());
+
+    // Logging is initialized and can now be used
+
+    _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
+    IfNullRet(_threadDataManager);
+    _exceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, _threadDataManager, m_pCorProfilerInfo));
+    IfNullRet(_exceptionTracker);
+
+    IfFailLogRet(InitializeCommandServer());
+
+    // Set product version environment variable to allow discovery of if the profiler
+    // as been applied to a target process. Diagnostic tools must use the diagnostic
+    // communication channel's GetProcessEnvironment command to get this value.
+    IfFailLogRet(_environmentHelper->SetProductVersion());
+
+    DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
+    ThreadDataManager::AddProfilerEventMask(eventsLow);
+    _exceptionTracker->AddProfilerEventMask(eventsLow);
+    StackSampler::AddProfilerEventMask(eventsLow);
+
+    IfFailRet(m_pCorProfilerInfo->SetEventMask2(
+        eventsLow,
+        COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
 
     return S_OK;
 }
