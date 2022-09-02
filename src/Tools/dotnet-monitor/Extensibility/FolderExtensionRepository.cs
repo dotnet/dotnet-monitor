@@ -6,6 +6,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -28,11 +29,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            // Dotnet Monitor version
-            // .store\dotnet-monitor\6.2.2\dotnet-monitor\6.2.2\tools\net6.0\any
-            // Azure Blob Storage version (guessing) -> would hold all the important stuff
-            // .store\AzureBlobStorage\7.0.0\AzureBlobStorage\7.0.0\tools\net7.0\any
-
             IDirectoryContents extensionDir = null;
 
             string extensionPath = string.Empty;
@@ -43,8 +39,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             if (_targetFolder == HostBuilderSettings.ExtensionDirectoryPath)
             {
                 isSpecialCase = true;
-                string ver = "7.0.0-dev.22451.1"; // would need to get this somehow
-                extensionPath = Path.Combine(".store", extensionName, ver, extensionName, ver, "tools", "net7.0", "any");
+
+                var directories = Directory.GetDirectories(Path.Combine(".store", extensionName));
+                string extensionVer = directories.First();
+
+                string netVer = "net7.0"; // How to determine this?
+
+                extensionPath = Path.Combine(".store", extensionName, extensionVer, extensionName, extensionVer, "tools", netVer, "any");
                 extensionDir = _fileSystem.GetDirectoryContents(extensionPath);
             }
             else
