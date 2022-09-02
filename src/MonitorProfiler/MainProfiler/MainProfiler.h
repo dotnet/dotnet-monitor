@@ -33,7 +33,7 @@ public:
     STDMETHOD(ExceptionThrown)(ObjectID thrownObjectId) override;
     STDMETHOD(ExceptionSearchCatcherFound)(FunctionID functionId) override;
     STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionId) override;
-    STDMETHOD(InitializeForAttach)(IUnknown* pCorProfilerInfoUnk, void* pvClientData, UINT cbClientData);
+    STDMETHOD(InitializeForAttach)(IUnknown* pCorProfilerInfoUnk, void* pvClientData, UINT cbClientData) override;
     STDMETHOD(LoadAsNotficationOnly)(BOOL *pbNotificationOnly) override;
 
 private:
