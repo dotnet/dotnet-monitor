@@ -405,6 +405,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
 
+        private static readonly Action<ILogger, Exception> _failedInitializeSharedLibraryStorage =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.FailedInitializeSharedLibraryStorage.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_FailedInitializeSharedLibraryStorage);
+
+        private static readonly Action<ILogger, Exception> _unableToApplyProfiler =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.UnableToApplyProfiler.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_UnableToApplyProfiler);
+
+        private static readonly Action<ILogger, string, Exception> _sharedlibraryPath =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.SharedLibraryPath.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_SharedLibraryPath);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -742,6 +760,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EnvironmentBlockNotSupported(this ILogger logger)
         {
             _environmentBlockNotSupported(logger, null);
+        }
+
+        public static void FailedInitializeSharedLibraryStorage(this ILogger logger, Exception ex)
+        {
+            _failedInitializeSharedLibraryStorage(logger, ex);
+        }
+
+        public static void UnableToApplyProfiler(this ILogger logger, Exception ex)
+        {
+            _unableToApplyProfiler(logger, ex);
+        }
+
+        public static void SharedLibraryPath(this ILogger logger, string path)
+        {
+            _sharedlibraryPath(logger, path, null);
         }
     }
 }

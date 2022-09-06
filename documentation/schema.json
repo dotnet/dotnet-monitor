@@ -1189,6 +1189,13 @@
             "string"
           ],
           "description": "The location for temporary dump files. Defaults to the temp folder."
+        },
+        "SharedLibraryPath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The location to which libraries shared with target applications will be copied at startup."
         }
       }
     },

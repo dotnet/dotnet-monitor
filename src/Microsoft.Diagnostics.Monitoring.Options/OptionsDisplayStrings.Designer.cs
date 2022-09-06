@@ -1329,6 +1329,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The location to which libraries shared with target applications will be copied at startup..
+        /// </summary>
+        public static string DisplayAttributeDescription_StorageOptions_SharedLibraryPath {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_SharedLibraryPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The threshold level the counter must maintain (or higher) for the specified duration..
         /// </summary>
         public static string DisplayAttributeDescription_ThreadpoolQueueLengthOptions_GreaterThan {

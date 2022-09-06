@@ -82,7 +82,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         InvalidMetadata = 69,
         DuplicateKeyInMetadata = 70,
         EnvironmentVariableNotFound = 71,
-        EnvironmentBlockNotSupported = 72
+        EnvironmentBlockNotSupported = 72,
+        FailedInitializeSharedLibraryStorage = 73,
+        UnableToApplyProfiler = 74,
+        SharedLibraryPath = 75
     }
 
     internal static class LoggingEventIdsExtensions

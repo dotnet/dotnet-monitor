@@ -24,19 +24,57 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string ClrEnvVarProfiler = ClrEnvVarPrefix + "PROFILER";
         public const string ClrEnvVarProfilerPath64 = ClrEnvVarPrefix + "PROFILER_PATH_64";
 
-        private const string ProfilerEnvVarPrefix = "DotnetMonitorProfiler_";
-
-        // This environment variable name is embedded into the profiler and set at profiler initialization.
-        // The value is determined BEFORE native build by the generation of the product version into the
-        // _productversion.h header file.
-        public const string ProfilerEnvVarProductVersion = ProfilerEnvVarPrefix + "ProductVersion";
-        public const string ProfilerEnvVarRuntimeId = ProfilerEnvVarPrefix + "RuntimeId";
-        public const string ProfilerEnvVarStdErrLoggerLevel = ProfilerEnvVarPrefix + "StdErrLogger_Level";
-
-        public static readonly Guid Clsid = new Guid("6A494330-5848-4A23-9D87-0E57BBF6DE79");
-
         public static string GetPath(Architecture architecture) =>
-            NativeLibraryHelper.GetSharedLibraryPath(architecture, "MonitorProfiler");
+            NativeLibraryHelper.GetSharedLibraryPath(architecture, ProfilerIdentifiers.LibraryRootFileName);
+
+        private const string OSReleasePath = "/etc/os-release";
+        private static readonly Architecture[] ProfilerArchitectures = { Architecture.X64, Architecture.X86, Architecture.Arm64 };
+
+        public static string TargetRuntimeIdentifier
+        {
+            get
+            {
+                // The tests do not know what runtime architecture they are running for.
+                // Use the built profiler architecture to heuristically determine on which
+                // architecture the tests are running.
+                string architecture = null;
+                foreach (Architecture arch in ProfilerArchitectures)
+                {
+                    if (File.Exists(GetPath(arch)))
+                    {
+                        architecture = arch.ToString("G").ToLowerInvariant();
+                        break;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(architecture))
+                {
+                    throw new PlatformNotSupportedException("Unable to determine architecture.");
+                }
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    return FormattableString.Invariant($"win-{architecture}");
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    return FormattableString.Invariant($"osx-{architecture}");
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    if (File.Exists(OSReleasePath) && File.ReadAllText(OSReleasePath).Contains("Alpine", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return FormattableString.Invariant($"linux-musl-{architecture}");
+                    }
+                    else
+                    {
+                        return FormattableString.Invariant($"linux-{architecture}");
+                    }
+                }
+
+                throw new PlatformNotSupportedException("Unable to determine OS platform.");
+            }
+        }
 
         public static IEnumerable<object[]> GetArchitectureProfilerPath()
         {
@@ -62,9 +100,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public static async Task VerifyProductVersionEnvironmentVariableAsync(AppRunner runner, ITestOutputHelper outputHelper)
         {
-            string productVersion = await runner.GetEnvironmentVariable(ProfilerEnvVarProductVersion, CommonTestTimeouts.EnvVarsTimeout);
+            string productVersion = await runner.GetEnvironmentVariable(ProfilerIdentifiers.EnvironmentVariables.ProductVersion, CommonTestTimeouts.EnvVarsTimeout);
             Assert.False(string.IsNullOrEmpty(productVersion), "Expected product version to not be null or empty.");
-            outputHelper.WriteLine("{0} = {1}", ProfilerEnvVarProductVersion, productVersion);
+            outputHelper.WriteLine("{0} = {1}", ProfilerIdentifiers.EnvironmentVariables.ProductVersion, productVersion);
         }
     }
 }

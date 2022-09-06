@@ -40,10 +40,10 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             // Environment variables necessary for running the profiler + enable all logging to stderr
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
-            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerHelper.Clsid.ToString("B"));
+            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.Clsid.StringWithBraces);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath64, profilerPath);
-            runner.Environment.Add(ProfilerHelper.ProfilerEnvVarRuntimeId, Guid.NewGuid().ToString("D"));
-            runner.Environment.Add(ProfilerHelper.ProfilerEnvVarStdErrLoggerLevel, LogLevel.Trace.ToString("G"));
+            runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, Guid.NewGuid().ToString("D"));
+            runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));
 
             await runner.ExecuteAsync(async () =>
             {
@@ -73,18 +73,18 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                 DiagnosticsClient client = new(await runner.ProcessIdTask);
 
                 client.SetEnvironmentVariable(
-                    ProfilerHelper.ProfilerEnvVarRuntimeId,
+                    ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId,
                     Guid.NewGuid().ToString("D"));
 
                 client.SetEnvironmentVariable(
-                    ProfilerHelper.ProfilerEnvVarStdErrLoggerLevel,
+                    ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level,
                     LogLevel.Trace.ToString("G"));
 
                 // Profiler will attach and initialize before this returns.
                 // All settings must be applied before issuing attach profiler call.
                 client.AttachProfiler(
                     TimeSpan.FromSeconds(10),
-                    ProfilerHelper.Clsid,
+                    ProfilerIdentifiers.Clsid.Guid,
                     profilerPath);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);

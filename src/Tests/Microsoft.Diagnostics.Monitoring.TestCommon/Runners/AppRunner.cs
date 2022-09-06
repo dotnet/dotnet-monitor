@@ -64,6 +64,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public int AppId { get; }
 
+        public bool SetRuntimeIdentifier { get; set; } = true;
+
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
             AppId = appId;
@@ -129,6 +131,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 }
 
                 _adapter.Environment.Add("DOTNET_DiagnosticPorts", DiagnosticPortPath);
+            }
+
+            if (SetRuntimeIdentifier)
+            {
+                _adapter.Environment.Add(
+                    ProfilerIdentifiers.EnvironmentVariables.RuntimeIdentifier,
+                    ProfilerHelper.TargetRuntimeIdentifier);
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);

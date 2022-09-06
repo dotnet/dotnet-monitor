@@ -93,6 +93,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 //is not added until WebHostDefaults are added.
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    TestAssemblies.AddHostingStartup(webBuilder);
+
                     AddressListenResults listenResults = new AddressListenResults();
                     webBuilder.ConfigureServices(services =>
                     {
