@@ -22,10 +22,7 @@ set(SOURCES
     Logging/LoggerHelper.cpp
     Logging/NullLogger.cpp
     Logging/StdErrLogger.cpp
-    MainProfiler/ExceptionTracker.cpp
     MainProfiler/MainProfiler.cpp
-    MainProfiler/ThreadData.cpp
-    MainProfiler/ThreadDataManager.cpp
     Stacks/StacksEventProvider.cpp
     Stacks/StackSampler.cpp
     Utilities/NameCache.cpp

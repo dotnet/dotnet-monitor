@@ -10,8 +10,8 @@
 #include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
 #include <memory>
-#include "ThreadDataManager.h"
-#include "ExceptionTracker.h"
+//#include "ThreadDataManager.h"
+//#include "ExceptionTracker.h"
 
 class MainProfiler final :
     public ProfilerBase
@@ -20,8 +20,8 @@ private:
     std::shared_ptr<IEnvironment> m_pEnvironment;
     std::shared_ptr<EnvironmentHelper> _environmentHelper;
     std::shared_ptr<ILogger> m_pLogger;
-    std::shared_ptr<ThreadDataManager> _threadDataManager;
-    std::unique_ptr<ExceptionTracker> _exceptionTracker;
+    //std::shared_ptr<ThreadDataManager> _threadDataManager;
+    //std::unique_ptr<ExceptionTracker> _exceptionTracker;
 
 public:
     static GUID GetClsid();

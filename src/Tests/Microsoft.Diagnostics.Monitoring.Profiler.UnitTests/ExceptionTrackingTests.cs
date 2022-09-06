@@ -33,19 +33,19 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             _outputHelper = outputHelper;
         }
 
-        [Theory]
-        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public Task ExceptionThrowCatch(Architecture architecture, string profilerPath)
-        {
-            return RunAndCompare(nameof(ExceptionThrowCatch), architecture, profilerPath);
-        }
+        // [Theory]
+        // [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        // public Task ExceptionThrowCatch(Architecture architecture, string profilerPath)
+        // {
+        //     return RunAndCompare(nameof(ExceptionThrowCatch), architecture, profilerPath);
+        // }
 
-        [Theory]
-        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public Task ExceptionThrowCrash(Architecture architecture, string profilerPath)
-        {
-            return RunAndCompare(nameof(ExceptionThrowCrash), architecture, profilerPath);
-        }
+        // [Theory]
+        // [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        // public Task ExceptionThrowCrash(Architecture architecture, string profilerPath)
+        // {
+        //     return RunAndCompare(nameof(ExceptionThrowCrash), architecture, profilerPath);
+        // }
 
         private async Task RunAndCompare(string scenarioName, Architecture architecture, string profilerPath)
         {

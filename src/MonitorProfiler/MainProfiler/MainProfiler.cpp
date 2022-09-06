@@ -52,7 +52,7 @@ STDMETHODIMP MainProfiler::ThreadCreated(ThreadID threadId)
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(_threadDataManager->ThreadCreated(threadId));
+    //IfFailLogRet(_threadDataManager->ThreadCreated(threadId));
 
     return S_OK;
 }
@@ -61,7 +61,7 @@ STDMETHODIMP MainProfiler::ThreadDestroyed(ThreadID threadId)
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(_threadDataManager->ThreadDestroyed(threadId));
+    //IfFailLogRet(_threadDataManager->ThreadDestroyed(threadId));
 
     return S_OK;
 }
@@ -70,10 +70,10 @@ STDMETHODIMP MainProfiler::ExceptionThrown(ObjectID thrownObjectId)
 {
     HRESULT hr = S_OK;
 
-    ThreadID threadId;
-    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+    //ThreadID threadId;
+    //IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
 
-    IfFailLogRet(_exceptionTracker->ExceptionThrown(threadId, thrownObjectId));
+    //IfFailLogRet(_exceptionTracker->ExceptionThrown(threadId, thrownObjectId));
 
     return S_OK;
 }
@@ -82,10 +82,10 @@ STDMETHODIMP MainProfiler::ExceptionSearchCatcherFound(FunctionID functionId)
 {
     HRESULT hr = S_OK;
 
-    ThreadID threadId;
-    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+    //ThreadID threadId;
+    //IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
 
-    IfFailLogRet(_exceptionTracker->ExceptionSearchCatcherFound(threadId, functionId));
+    //IfFailLogRet(_exceptionTracker->ExceptionSearchCatcherFound(threadId, functionId));
 
     return S_OK;
 }
@@ -94,10 +94,10 @@ STDMETHODIMP MainProfiler::ExceptionUnwindFunctionEnter(FunctionID functionId)
 {
     HRESULT hr = S_OK;
 
-    ThreadID threadId;
-    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+    //ThreadID threadId;
+    //IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
 
-    IfFailLogRet(_exceptionTracker->ExceptionUnwindFunctionEnter(threadId, functionId));
+    //IfFailLogRet(_exceptionTracker->ExceptionUnwindFunctionEnter(threadId, functionId));
 
     return S_OK;
 }
@@ -134,10 +134,10 @@ HRESULT MainProfiler::InitializeCommon()
 
     // Logging is initialized and can now be used
 
-    _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
-    IfNullRet(_threadDataManager);
-    _exceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, _threadDataManager, m_pCorProfilerInfo));
-    IfNullRet(_exceptionTracker);
+    //_threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
+    //IfNullRet(_threadDataManager);
+    //_exceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, _threadDataManager, m_pCorProfilerInfo));
+    //IfNullRet(_exceptionTracker);
 
     IfFailLogRet(InitializeCommandServer());
 
@@ -147,8 +147,8 @@ HRESULT MainProfiler::InitializeCommon()
     IfFailLogRet(_environmentHelper->SetProductVersion());
 
     DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
-    ThreadDataManager::AddProfilerEventMask(eventsLow);
-    _exceptionTracker->AddProfilerEventMask(eventsLow);
+    //ThreadDataManager::AddProfilerEventMask(eventsLow);
+    //_exceptionTracker->AddProfilerEventMask(eventsLow);
     StackSampler::AddProfilerEventMask(eventsLow);
 
     IfFailRet(m_pCorProfilerInfo->SetEventMask2(
