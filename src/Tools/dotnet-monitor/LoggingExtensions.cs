@@ -435,6 +435,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ConnectionModeListen);
 
+        private static readonly Action<ILogger, string, Exception> _experimentalFeatureEnabled =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExperimentalFeatureEnabled.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExperimentalFeatureEnabled);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -797,6 +803,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ConnectionModeListen(this ILogger logger, string path)
         {
             _connectionModeListen(logger, path, null);
+        }
+
+        public static void ExperimentalFeatureEnabled(this ILogger logger, string name)
+        {
+            _experimentalFeatureEnabled(logger, name, null);
         }
     }
 }

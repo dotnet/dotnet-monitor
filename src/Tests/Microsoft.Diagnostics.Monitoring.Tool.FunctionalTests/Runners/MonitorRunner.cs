@@ -40,6 +40,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public RootOptions ConfigurationFromEnvironment { get; } = new();
 
         /// <summary>
+        /// Determines whether the stacks feaure is enabled.
+        /// </summary>
+        public bool EnableCallStacksFeature { get; set; }
+
+        /// <summary>
         /// Gets the task for the underlying <see cref="DotNetRunner"/>'s 
         /// <see cref="DotNetRunner.ExitedTask"/> which is used to wait for process exit.
         /// </summary>
@@ -155,6 +160,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
             // Override the user config directory
             _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
+
+            // Enable experimental stacks feature
+            if (EnableCallStacksFeature)
+            {
+                _adapter.Environment.Add(ExperimentalFlags.Feature_CallStacks, "true");
+            }
 
             // Ensures that the TestStartupHook is loaded early so it helps resolve other test assemblies
             _adapter.Environment.Add("DOTNET_STARTUP_HOOKS", TestStartupHookPath);

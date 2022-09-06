@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -44,6 +45,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureTemplates(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<TemplateOptions>(services, configuration, ConfigurationKeys.Templates);
+        }
+
+        public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
+                .AddSingleton<IPostConfigureOptions<InProcessFeaturesOptions>, InProcessFeaturesPostConfigureOptions>();
         }
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
@@ -231,6 +238,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureStartupLoggers(this IServiceCollection services)
         {
             services.AddSingleton<IStartupLogger, ExperienceSurveyStartupLogger>();
+            services.AddSingleton<IStartupLogger, ExperimentalStartupLogger>();
             services.AddSingleton<IStartupLogger, HostBuilderStartupLogger>();
             services.AddSingleton<IStartupLogger, DiagnosticPortStartupLogger>();
             services.AddSingleton<IStartupLogger, ElevatedPermissionsStartupLogger>();

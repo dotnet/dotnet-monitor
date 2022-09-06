@@ -457,6 +457,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Call Stacks.
+        /// </summary>
+        internal static string FeatureName_CallStacks {
+            get {
+                return ResourceManager.GetString("FeatureName_CallStacks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Monitor logs and metrics in a .NET application send the results to a chosen destination..
         /// </summary>
         internal static string HelpDescription_CommandCollect {
@@ -1020,6 +1029,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_ExperienceSurvey {
             get {
                 return ResourceManager.GetString("LogFormatString_ExperienceSurvey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experimental feature &apos;{name}&apos; is enabled..
+        /// </summary>
+        internal static string LogFormatString_ExperimentalFeatureEnabled {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExperimentalFeatureEnabled", resourceCulture);
             }
         }
         

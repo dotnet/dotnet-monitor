@@ -170,6 +170,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureCollectionRules();
                 services.ConfigureProfiler();
                 services.ConfigureStartupLoggers();
+                services.ConfigureInProcessFeatures(context.Configuration);
+                services.AddSingleton<IExperimentalFeatures, ExperimentalFeatures>();
             });
         }
     }
