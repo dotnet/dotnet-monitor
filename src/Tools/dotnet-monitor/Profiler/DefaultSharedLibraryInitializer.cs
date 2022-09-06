@@ -46,6 +46,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             string sharedLibraryPath;
             if (string.IsNullOrEmpty(_sharedLibraryTargetPath))
             {
+                // Since Storage:SharedLibraryPath was not specified, allow providing shared libraries directly
+                // from the 'shared' folder in the dotnet-monitor package.
                 sharedLibraryPath = SharedLibrarySourcePath;
             }
             else
@@ -58,9 +60,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                     expectedVersion = expectedVersion.Substring(0, hashSeparatorIndex);
                 }
 
+                // This is the target location to where shared libraries will be copied.
+                // If the user specified '/diag/libs' for Storage:SharedLibraryPath, this path may look like '/diag/libs/7.0.0'
+                // This path includes the dotnet-monitor version in order to avoid collisions when performing rolling updates
+                // in containerized environments; newer dotnet-monitor versions must repopulate the shared library directory, but
+                // do not assume that the prior versions are deletable due to possible file locks.
                 string versionedSharedLibraryTargetPath = Path.Combine(_sharedLibraryTargetPath, expectedVersion);
-                string sentinelPath = Path.Combine(versionedSharedLibraryTargetPath, "completed");
 
+                // Check that the sentinel file exists (which would indicate this version of the libraries was staged correctly).
+                string sentinelPath = Path.Combine(versionedSharedLibraryTargetPath, "completed");
                 if (!File.Exists(sentinelPath))
                 {
                     sharedLibrarySourceDir.CopyContentsTo(Directory.CreateDirectory(versionedSharedLibraryTargetPath), overwrite: true);

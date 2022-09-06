@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string ClrEnvVarProfilerPath64 = ClrEnvVarPrefix + "PROFILER_PATH_64";
 
         public static string GetPath(Architecture architecture) =>
-            NativeLibraryHelper.GetSharedLibraryPath(architecture, "MonitorProfiler");
+            NativeLibraryHelper.GetSharedLibraryPath(architecture, ProfilerIdentifiers.LibraryRootFileName);
 
         private const string OSReleasePath = "/etc/os-release";
         private static readonly Architecture[] ProfilerArchitectures = { Architecture.X64, Architecture.X86, Architecture.Arm64 };

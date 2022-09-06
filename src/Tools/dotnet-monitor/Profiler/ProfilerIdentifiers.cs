@@ -12,6 +12,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 {
     internal static class ProfilerIdentifiers
     {
+        // Name of the monitor profiler library file without the
+        // extra platform specific library naming conventions.
+        public static string LibraryRootFileName = "MonitorProfiler";
+
         public static class Clsid
         {
             public const string StringWithDashes = "6A494330-5848-4A23-9D87-0E57BBF6DE79";

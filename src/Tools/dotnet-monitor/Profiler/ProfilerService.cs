@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
                     IFileProvider nativeFileProvider = fileProviderFactory.Create(runtimeIdentifier);
 
-                    string libraryName = NativeLibraryHelper.GetSharedLibraryName("MonitorProfiler");
+                    string libraryName = NativeLibraryHelper.GetSharedLibraryName(ProfilerIdentifiers.LibraryRootFileName);
 
                     IFileInfo profilerFileInfo = nativeFileProvider.GetFileInfo(libraryName);
                     if (!profilerFileInfo.Exists)
