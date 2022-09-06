@@ -39,10 +39,12 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     // Logging is initialized and can now be used
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
     IfNullRet(_threadDataManager);
     _exceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, _threadDataManager, m_pCorProfilerInfo));
     IfNullRet(_exceptionTracker);
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
 
     IfFailLogRet(InitializeCommandServer());
 
@@ -53,7 +55,9 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
     ThreadDataManager::AddProfilerEventMask(eventsLow);
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     _exceptionTracker->AddProfilerEventMask(eventsLow);
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
     StackSampler::AddProfilerEventMask(eventsLow);
 
     IfFailRet(m_pCorProfilerInfo->SetEventMask2(
@@ -77,7 +81,9 @@ STDMETHODIMP MainProfiler::ThreadCreated(ThreadID threadId)
 {
     HRESULT hr = S_OK;
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     IfFailLogRet(_threadDataManager->ThreadCreated(threadId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
 
     return S_OK;
 }
@@ -86,7 +92,9 @@ STDMETHODIMP MainProfiler::ThreadDestroyed(ThreadID threadId)
 {
     HRESULT hr = S_OK;
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     IfFailLogRet(_threadDataManager->ThreadDestroyed(threadId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
 
     return S_OK;
 }
@@ -95,10 +103,12 @@ STDMETHODIMP MainProfiler::ExceptionThrown(ObjectID thrownObjectId)
 {
     HRESULT hr = S_OK;
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     ThreadID threadId;
     IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
 
     IfFailLogRet(_exceptionTracker->ExceptionThrown(threadId, thrownObjectId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
 
     return S_OK;
 }
@@ -107,10 +117,12 @@ STDMETHODIMP MainProfiler::ExceptionSearchCatcherFound(FunctionID functionId)
 {
     HRESULT hr = S_OK;
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     ThreadID threadId;
     IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
 
     IfFailLogRet(_exceptionTracker->ExceptionSearchCatcherFound(threadId, functionId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
 
     return S_OK;
 }
@@ -119,10 +131,12 @@ STDMETHODIMP MainProfiler::ExceptionUnwindFunctionEnter(FunctionID functionId)
 {
     HRESULT hr = S_OK;
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     ThreadID threadId;
     IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
 
     IfFailLogRet(_exceptionTracker->ExceptionUnwindFunctionEnter(threadId, functionId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
 
     return S_OK;
 }

@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
 #include "ExceptionTracker.h"
 #include "../Utilities/NameCache.h"
 #include "../Utilities/TypeNameUtilities.h"
@@ -225,3 +226,4 @@ HRESULT ExceptionTracker::LogExceptionThrownFrameCallback(
     // Cancel stack snapshot callbacks after the top frame.
     return S_FALSE;
 }
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS

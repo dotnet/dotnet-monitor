@@ -3,6 +3,7 @@
 
 #pragma once
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
 #include <memory>
 #include "corhlpr.h"
 #include "corprof.h"
@@ -30,3 +31,4 @@ public:
     HRESULT SetHasException();
     HRESULT SetExceptionCatcherFunction(FunctionID functionId);
 };
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS

@@ -38,6 +38,9 @@ set(SOURCES
     Communication/CommandServer.cpp
     )
 
+# Include exceptions tracking feature
+#add_compile_options(-DDOTNETMONITOR_FEATURE_EXCEPTIONS)
+
 # Build library and split symbols
 add_library_clr(MonitorProfiler SHARED ${SOURCES})
 

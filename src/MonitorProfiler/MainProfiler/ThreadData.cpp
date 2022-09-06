@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
 #include "ThreadData.h"
 #include "macros.h"
 
@@ -51,3 +52,4 @@ HRESULT ThreadData::SetExceptionCatcherFunction(FunctionID functionId)
 
     return S_OK;
 }
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
