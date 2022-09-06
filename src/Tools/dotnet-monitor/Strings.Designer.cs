@@ -979,6 +979,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Target framework does not support custom egress metadata..
+        /// </summary>
+        internal static string LogFormatString_EnvironmentBlockNotSupported {
+            get {
+                return ResourceManager.GetString("LogFormatString_EnvironmentBlockNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The environment variable &apos;{name}&apos; could not be found on the target process..
         /// </summary>
         internal static string LogFormatString_EnvironmentVariableNotFound {

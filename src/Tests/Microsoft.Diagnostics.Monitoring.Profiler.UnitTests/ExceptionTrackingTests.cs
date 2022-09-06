@@ -34,14 +34,14 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetArchitectureProfilerPath))]
+        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         public Task ExceptionThrowCatch(Architecture architecture, string profilerPath)
         {
             return RunAndCompare(nameof(ExceptionThrowCatch), architecture, profilerPath);
         }
 
         [Theory]
-        [MemberData(nameof(GetArchitectureProfilerPath))]
+        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         public Task ExceptionThrowCrash(Architecture architecture, string profilerPath)
         {
             return RunAndCompare(nameof(ExceptionThrowCrash), architecture, profilerPath);
@@ -179,28 +179,6 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                 }
             }
             return false;
-        }
-
-        public static IEnumerable<object[]> GetArchitectureProfilerPath()
-        {
-            // There isn't a good way to check which architecture to use when running unit tests.
-            // Each build job builds one specific architecture, but from a test perspective,
-            // it cannot tell which one was built. Gather all of the profilers for every architecture
-            // so long as they exist.
-            List<object[]> arguments = new();
-            AddTestCases(arguments, Architecture.X64);
-            AddTestCases(arguments, Architecture.X86);
-            AddTestCases(arguments, Architecture.Arm64);
-            return arguments;
-
-            static void AddTestCases(List<object[]> arguments, Architecture architecture)
-            {
-                string profilerPath = ProfilerHelper.GetPath(architecture);
-                if (File.Exists(profilerPath))
-                {
-                    arguments.Add(new object[] { architecture, profilerPath });
-                }
-            }
         }
     }
 }

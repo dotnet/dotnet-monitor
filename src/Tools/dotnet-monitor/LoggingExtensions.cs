@@ -399,6 +399,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
 
+        private static readonly Action<ILogger, Exception> _environmentBlockNotSupported =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.EnvironmentBlockNotSupported.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
+
         private static readonly Action<ILogger, Exception> _failedInitializeSharedLibraryStorage =
             LoggerMessage.Define(
                 eventId: LoggingEventIds.FailedInitializeSharedLibraryStorage.EventId(),
@@ -749,6 +755,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
         {
             _environmentVariableNotFound(logger, environmentVariable, null);
+        }
+
+        public static void EnvironmentBlockNotSupported(this ILogger logger)
+        {
+            _environmentBlockNotSupported(logger, null);
         }
 
         public static void FailedInitializeSharedLibraryStorage(this ILogger logger, Exception ex)
