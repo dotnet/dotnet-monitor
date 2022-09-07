@@ -1,0 +1,48 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
+{
+    internal class StacksScenario
+    {
+        public static Command Command()
+        {
+            Command command = new(TestAppScenarios.Stacks.Name);
+
+            command.SetHandler(ExecuteAsync);
+            return command;
+        }
+
+        public static async Task ExecuteAsync(InvocationContext context)
+        {
+            StacksWorker worker = new StacksWorker();
+
+            Thread thread = new Thread(Entrypoint);
+            thread.Start(worker);
+
+            context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Stacks.Commands.Continue, logger);
+                worker.Dispose();
+
+                return 0;
+            }, context.GetCancellationToken());
+        }
+
+        public static void Entrypoint(object worker)
+        {
+            var stacksWorker = (StacksWorker)worker;
+            stacksWorker.Work();
+        }
+    }
+}

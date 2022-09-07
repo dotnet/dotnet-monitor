@@ -1,0 +1,66 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
+{
+    internal sealed class TextStacksFormatter : StacksFormatter
+    {
+        private const string ThreadIdPrefix = "Thread";
+        private const char ModuleSeparator = '!';
+        private const char ClassSeparator = '.';
+        private const string Indent = "  ";
+
+
+        public TextStacksFormatter(Stream outputStream) : base(outputStream)
+        {
+        }
+
+        public override async Task FormatStack(StackResult stackResult, CancellationToken token)
+        {
+            await using StreamWriter writer = new StreamWriter(this.OutputStream, System.Text.Encoding.UTF8, leaveOpen: true);
+            foreach (var stack in stackResult.Stacks)
+            {
+                token.ThrowIfCancellationRequested();
+                await writer.WriteLineAsync($"{ThreadIdPrefix}: ({stack.ThreadId:X})");
+                foreach (var frame in stack.Frames)
+                {
+                    StringBuilder builder = new StringBuilder();
+                    builder.Append(Indent);
+                    BuildFrame(builder, stackResult.NameCache, frame);
+                    await writer.WriteLineAsync(builder, token);
+                }
+                await writer.WriteLineAsync();
+            }
+        }
+
+        private void BuildFrame(StringBuilder builder, NameCache cache, StackFrame frame)
+        {
+            if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+            {
+                builder.Append(base.GetModuleName(cache, functionData.ModuleId));
+                builder.Append(ModuleSeparator);
+                if (functionData.ParentClass != 0)
+                {
+                    BuildClassName(builder, cache, functionData.ParentClass);
+                }
+                else
+                {
+                    BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken);
+                }
+                builder.Append(ClassSeparator);
+                builder.Append(functionData.Name);
+                BuildGenericParameters(builder, cache, functionData.TypeArgs);
+            }
+            else
+            {
+                builder.Append(UnknownFunction);
+            }
+        }
+    }
+}

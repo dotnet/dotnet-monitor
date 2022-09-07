@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -276,7 +277,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                string fileName = FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{processInfo.EndpointInfo.ProcessId}.gcdump");
+                string fileName = GCDumpUtilities.GenerateGCDumpFileName(processInfo.EndpointInfo);
 
                 return Result(
                     Utilities.ArtifactType_GCDump,
@@ -580,6 +581,62 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
             Utilities.GetProcessKey(pid, uid, name));
+        }
+
+        [HttpGet("stacks", Name = nameof(CaptureStacks))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson, ContentTypes.TextPlain)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
+        [RequestLimit(LimitKey = Utilities.ArtifactType_Stacks)]
+        [EgressValidation]
+        public async Task<ActionResult> CaptureStacks(
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null,
+            [FromQuery]
+            string egressProvider = null)
+        {
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
+
+            return await InvokeForProcess(async processInfo =>
+            {
+                bool plainText = Request.GetTypedHeaders().Accept?.Contains(TextPlainHeader) ?? false;
+
+                var settings = new EventStacksPipelineSettings
+                {
+                    Duration = Timeout.InfiniteTimeSpan
+                };
+                await using var eventTracePipeline = new EventStacksPipeline(new DiagnosticsClient(processInfo.EndpointInfo.Endpoint),
+                settings);
+
+                Task runPipelineTask = eventTracePipeline.RunAsync(HttpContext.RequestAborted);
+
+                //The pipeline must start before we send the signal to the profiler to contribute the data.
+                await Task.Yield();
+
+                ProfilerMessage response = await ProfilerChannel.SendMessage(processInfo.EndpointInfo, new ProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 }, this.HttpContext.RequestAborted);
+                if (response.MessageType == ProfilerMessageType.Error)
+                {
+                    throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X2}");
+                }
+
+                await runPipelineTask;
+
+                return await Result(Utilities.ArtifactType_Stacks, egressProvider, async (stream, token) =>
+                {
+                    Stacks.StackResult result = await eventTracePipeline.Result;
+
+                    StacksFormatter formatter = (plainText == true) ? new TextStacksFormatter(stream) : new JsonStacksFormatter(stream);
+
+                    await formatter.FormatStack(result, token);
+
+                }, StackUtilities.GenerateStacksFilename(processInfo.EndpointInfo), plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson, processInfo, asAttachment: false);
+
+            }, processKey, Utilities.ArtifactType_Stacks);
         }
 
         private string GetDiagnosticPortName()

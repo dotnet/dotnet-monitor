@@ -60,7 +60,9 @@ HRESULT StackSampler::CreateCallstack(std::vector<std::unique_ptr<StackSamplerSt
     while ((hr = threadEnum->Next(1, &threadID, &numReturned)) == S_OK)
     {
         std::unique_ptr<StackSamplerState> stackState = std::unique_ptr<StackSamplerState>(new StackSamplerState(_profilerInfo, nameCache));
-        stackState->GetStack().SetThreadId(threadID);
+        DWORD nativeThreadId = 0;
+        IfFailRet(_profilerInfo->GetThreadInfo(threadID, &nativeThreadId));
+        stackState->GetStack().SetThreadId(nativeThreadId);
 
         //TODO According to docs, need to block ThreadDestroyed while stack walking. Is this still a  requirement?
         hr = _profilerInfo->DoStackSnapshot(threadID, DoStackSnapshotCallbackWrapper, COR_PRF_SNAPSHOT_REGISTER_CONTEXT, stackState.get(), nullptr, 0);
