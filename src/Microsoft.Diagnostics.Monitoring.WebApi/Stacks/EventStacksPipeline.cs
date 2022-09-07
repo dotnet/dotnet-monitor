@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
     internal sealed class EventStacksPipeline : EventSourcePipeline<EventStacksPipelineSettings>
     {
-        private TaskCompletionSource<StackResult> _stackResult = new();
+        private TaskCompletionSource<StackResult> _stackResult = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private StackResult _result = new();
 
         public EventStacksPipeline(DiagnosticsClient client, EventStacksPipelineSettings settings)
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             Task eventsTimeoutTask = Task.Delay(Settings.Timeout, token);
             Task completedTask = await Task.WhenAny(_stackResult.Task, eventsTimeoutTask);
 
-            token.ThrowIfCancellationRequested();
+            await completedTask;
 
             await stopSessionAsync();
             await sourceComplete.Task;
@@ -135,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 ulong modId = action.GetPayload<ulong>(StackEvents.TokenDescPayloads.ModuleId);
                 ulong token = action.GetPayload<uint>(StackEvents.TokenDescPayloads.Token);
-                TokenData tokenData = new()
+                var tokenData = new TokenData()
                 {
                     Name = action.GetPayload<string>(StackEvents.TokenDescPayloads.Name),
                     OuterToken = action.GetPayload<uint>(StackEvents.TokenDescPayloads.OuterToken)

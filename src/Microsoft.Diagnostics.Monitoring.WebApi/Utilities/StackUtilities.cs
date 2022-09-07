@@ -8,9 +8,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class StackUtilities
     {
-        public static string GenerateStacksFilename(IEndpointInfo endpointInfo)
+        public static string GenerateStacksFilename(IEndpointInfo endpointInfo, bool plainText)
         {
-            return FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.stacks");
+            string extension = plainText ? "txt" : "json";
+            return FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.stacks.{extension}");
         }
     }
 }

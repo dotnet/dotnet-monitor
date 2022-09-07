@@ -317,7 +317,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /metrics
+        /// GET /stacks
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureStacksAsync(this ApiClient client, int pid, bool plainText)
         {
@@ -325,7 +325,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /metrics
+        /// GET /stacks
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureStacksAsync(this ApiClient client, int pid, bool plainText, TimeSpan timeout)
         {

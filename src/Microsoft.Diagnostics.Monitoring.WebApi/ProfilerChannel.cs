@@ -29,11 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// </summary>
     internal static class ProfilerChannel
     {
-        public static
-#if NET6_0_OR_GREATER
-        async
-#endif
-        Task<ProfilerMessage> SendMessage(IEndpointInfo endpointInfo, ProfilerMessage message, CancellationToken token)
+        public static async Task<ProfilerMessage> SendMessage(IEndpointInfo endpointInfo, ProfilerMessage message, CancellationToken token)
         {
 #if NET6_0_OR_GREATER
             string channelPath = Environment.ExpandEnvironmentVariables(FormattableString.Invariant(@$"%TEMP%\{endpointInfo.RuntimeInstanceCookie:D}.sock"));
@@ -64,8 +60,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 MessageType = (ProfilerMessageType)BitConverter.ToInt16(buffer, startIndex: 0),
                 Parameter = BitConverter.ToInt16(buffer, startIndex: 2)
             };
+#else
+            return await Task.FromException<ProfilerMessage>(new NotImplementedException());
 #endif
-            throw new NotImplementedException();
         }
     }
 }

@@ -613,15 +613,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 await using var eventTracePipeline = new EventStacksPipeline(new DiagnosticsClient(processInfo.EndpointInfo.Endpoint),
                 settings);
 
-                Task runPipelineTask = eventTracePipeline.RunAsync(HttpContext.RequestAborted);
-
-                //The pipeline must start before we send the signal to the profiler to contribute the data.
-                await Task.Yield();
+                Task runPipelineTask = await eventTracePipeline.StartAsync(HttpContext.RequestAborted);
 
                 ProfilerMessage response = await ProfilerChannel.SendMessage(processInfo.EndpointInfo, new ProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 }, this.HttpContext.RequestAborted);
                 if (response.MessageType == ProfilerMessageType.Error)
                 {
-                    throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X2}");
+                    throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X8}");
                 }
 
                 await runPipelineTask;
@@ -634,7 +631,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                     await formatter.FormatStack(result, token);
 
-                }, StackUtilities.GenerateStacksFilename(processInfo.EndpointInfo), plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson, processInfo, asAttachment: false);
+                }, StackUtilities.GenerateStacksFilename(processInfo.EndpointInfo, plainText), plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson, processInfo, asAttachment: false);
 
             }, processKey, Utilities.ArtifactType_Stacks);
         }

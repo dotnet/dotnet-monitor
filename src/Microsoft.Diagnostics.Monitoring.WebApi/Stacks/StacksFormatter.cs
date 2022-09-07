@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         protected const string ArrayType = "_ArrayType_";
         protected const string CompositeType = "_CompositeType_";
 
-        protected const char NestedSeperator = '+';
+        protected const char NestedSeparator = '+';
         protected const char GenericStart = '[';
         protected const char GenericSeparator = ',';
         protected const char GenericEnd = ']';
@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 builder.Append(className);
                 if (classNames.Count > 0)
                 {
-                    builder.Append(NestedSeperator);
+                    builder.Append(NestedSeparator);
                 }
             }
         }
