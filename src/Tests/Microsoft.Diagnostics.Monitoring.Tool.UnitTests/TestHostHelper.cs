@@ -80,8 +80,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     builder.AddInMemoryCollection(configurationValues);
 
-                    builder.ConfigureStorageDefaults();
-
                     if (null != overrideSource)
                     {
                         overrideSource.ForEach(source => builder.Sources.Add(source));

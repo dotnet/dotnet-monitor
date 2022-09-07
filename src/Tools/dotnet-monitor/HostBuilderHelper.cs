@@ -28,7 +28,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     ConfigureEndpointInfoSource(builder, settings.DiagnosticPort);
                     ConfigureMetricsEndpoint(builder, settings.EnableMetrics, settings.MetricsUrls ?? Array.Empty<string>());
                     ConfigureGlobalMetrics(builder);
-                    builder.ConfigureStorageDefaults();
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>()) });
                 })

@@ -1320,6 +1320,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The default path where assets (dumps, socket files, libraries) will be shared between dotnet-monitor and target processes..
+        /// </summary>
+        public static string DisplayAttributeDescription_StorageOptions_DefaultSharedPath {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_DefaultSharedPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The location for temporary dump files. Defaults to the temp folder..
         /// </summary>
         public static string DisplayAttributeDescription_StorageOptions_DumpTempFolder {
@@ -1329,7 +1338,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The location to which libraries shared with target applications will be copied at startup..
+        ///   Looks up a localized string similar to The location to which libraries shared with target processes will be copied at startup..
         /// </summary>
         public static string DisplayAttributeDescription_StorageOptions_SharedLibraryPath {
             get {

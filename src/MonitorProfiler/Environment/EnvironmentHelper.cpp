@@ -52,6 +52,23 @@ HRESULT EnvironmentHelper::GetRuntimeInstanceId(tstring& instanceId)
     return S_OK;
 }
 
+HRESULT EnvironmentHelper::GetSharingPath(tstring& sharingPath)
+{
+    HRESULT hr = S_OK;
+
+    hr = _environment->GetEnvironmentVariable(SharingPathEnvVar, sharingPath);
+    if (FAILED(hr))
+    {
+        if (hr != HRESULT_FROM_WIN32(ERROR_ENVVAR_NOT_FOUND))
+        {
+            return hr;
+        }
+        IfFailRet(GetTempFolder(sharingPath));
+    }
+
+    return S_OK;
+}
+
 HRESULT EnvironmentHelper::GetStdErrLoggerLevel(LogLevel& level)
 {
     HRESULT hr = S_OK;

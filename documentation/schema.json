@@ -1183,6 +1183,13 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "DefaultSharedPath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The default path where assets (dumps, socket files, libraries) will be shared between dotnet-monitor and target processes."
+        },
         "DumpTempFolder": {
           "type": [
             "null",
@@ -1195,7 +1202,7 @@
             "null",
             "string"
           ],
-          "description": "The location to which libraries shared with target applications will be copied at startup."
+          "description": "The location to which libraries shared with target processes will be copied at startup."
         }
       }
     },

@@ -713,7 +713,11 @@
     <comment>The description provided for the QueueSharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_StorageOptions_SharedLibraryPath" xml:space="preserve">
-    <value>The location to which libraries shared with target applications will be copied at startup.</value>
+    <value>The location to which libraries shared with target processes will be copied at startup.</value>
     <comment>The description provided for the SharedLibraryPath parameter on StorageOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_StorageOptions_DefaultSharedPath" xml:space="preserve">
+    <value>The default path where assets (dumps, socket files, libraries) will be shared between dotnet-monitor and target processes.</value>
+    <comment>The description provided for the DefaultSharedPath parameter on StorageOptions.</comment>
   </data>
 </root>
