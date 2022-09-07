@@ -37,21 +37,17 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             // Expected command line format is: AzureBlobStorage.exe Egress --Provider-Name MyProviderEndpointName
             RootCommand rootCommand = new RootCommand("Egresses an artifact to Azure Storage.");
 
-            var providerNameOption = new Option<string>(
-                name: "--Provider-Name",
-                description: "The provider name given in the configuration to dotnet-monitor.");
-
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.")
-            { providerNameOption };
+            { };
 
-            egressCmd.SetHandler(Program.Egress, providerNameOption);
+            egressCmd.SetHandler(Program.Egress);
 
             rootCommand.Add(egressCmd);
 
             return await rootCommand.InvokeAsync(args);
         }
 
-        private static async Task<int> Egress(string ProviderName)
+        private static async Task<int> Egress()
         {
             EgressArtifactResult result = new();
             try
