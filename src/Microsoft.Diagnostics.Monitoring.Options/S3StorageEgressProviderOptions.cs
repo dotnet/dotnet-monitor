@@ -31,18 +31,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKeyName))]
-        public string AccountKeyName { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId))]
+        public string AccessKeyId { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile))]
-        public string SecretsFile { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsAccessKeyFile))]
+        public string SecretsAccessKeyFile { get; set; }
         
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKey))]
-        public string AccountKey { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey))]
+        public string SecretAccessKey { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName))]
+        public string AwsProfileName { get; set; }
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath))]
+        public string AwsProfileFilePath { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -62,7 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (string.IsNullOrEmpty(SecretsFile) && string.IsNullOrEmpty(AccountKey))
+            if (string.IsNullOrEmpty(SecretsAccessKeyFile) && string.IsNullOrEmpty(SecretAccessKey))
                 yield return new ValidationResult(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingSecrets);
 
             if (string.IsNullOrEmpty(BucketName))

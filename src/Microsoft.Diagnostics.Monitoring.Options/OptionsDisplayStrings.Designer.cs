@@ -1284,20 +1284,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The path to secrets file containing the password to login on S3.
+        ///   Looks up a localized string similar to The AWS AccessKeyId for IAM user to login.
         /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKey {
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKey", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The user-name used to login.
+        ///   Looks up a localized string similar to The AWS profile name to be used for login.
         /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKeyName {
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKeyName", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The AWS profile path, if profile details not stored in default path.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath", resourceCulture);
             }
         }
         
@@ -1348,11 +1357,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The AWS SecretAccessKey associated AccessKeyId for IAM user to login.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The path to secrets file to get the value for accountKey to connect to S3 storage.
         /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile {
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsAccessKeyFile {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsAccessKeyFile", resourceCulture);
             }
         }
         

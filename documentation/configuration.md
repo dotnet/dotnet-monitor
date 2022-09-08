@@ -855,9 +855,11 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 |---|---|---|---|
 | endpoint | string | true | An optional endpoint of S3 storage service. Can be left empty in case of using AWS. |
 | bucketName | string | true | The name of the s3 Bucket to which the blob will be egressed |
-| accountKeyName | string | true | The user credential for accessing the s3 service |
-| secretsFile | string | false | Path to a file on disk which holds the user's password for accessing the s3 storage. If not provided the `password` property must be set. |
-| accountKey | string | false | The user's password for accessing the s3 storage. If not provided the `SecretsFile` must be specified. |
+| accessKeyId | string | true | The AWS AccessKeyId for IAM user to login |
+| secretAccessKeyFile | string | false | Path to a file on disk which holds the user's password for accessing the s3 storage. If not provided the `password` property must be set. |
+| secretAccessKey | string | false | The AWS SecretAccessKey associated AccessKeyId for IAM user to login. |
+| awsProfileName | string | false | The AWS profile name to be used for login. |
+| awsProfilePath | string | false | The AWS profile path, if profile details not stored in default path. |
 | generatePresSignedUrl | bool | false | A boolean flag to control if either a pre-signed url is returned after successful upload or only the name of bucket and the artifacts S3 object key. |
 | preSignedUrlExpiryInMinutes | int | true | The number of minutes the generated pre-signed url should be accessible. |
 | copyBufferSize | int | false | The buffer size to use when copying data from the original artifact to the blob stream. There is a minimum size of 5 MB which is set when the given value is lower.|
@@ -874,8 +876,8 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
               "monitorS3Blob": {
                   "endpoint": "http://localhost:9000",
                   "bucketName": "myS3Bucket",
-                  "accountKeyName": "minioUser",
-                  "secretsFile": "C:\\Temp\\s3secret",
+                  "accessKeyId": "minioUser",
+                  "secretAccessKeyFile": "C:\\Temp\\s3secret",
                   "regionName": "us-east-1",
                   "generatePresSignedUrl" : true,
                   "preSignedUrlExpiryInMinutes" : 15,
@@ -897,8 +899,8 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
               "monitorS3Blob": {
                   "endpoint": "http://localhost:9000",
                   "bucketName": "myS3Bucket",
-                  "accountKeyName": "minioUser",
-                  "accountKey": "mySecretPassword",
+                  "accessKeyId": "minioUser",
+                  "secretAccessKey": "mySecretPassword",
                   "regionName": "us-east-1",
                   "generatePresSignedUrl" : true,
                   "preSignedUrlExpiryInMinutes" : 15,

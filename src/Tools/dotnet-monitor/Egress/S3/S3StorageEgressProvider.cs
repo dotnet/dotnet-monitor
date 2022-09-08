@@ -8,6 +8,7 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
@@ -130,23 +131,41 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         private static async Task<IAmazonS3> CreateClientAsync(S3StorageEgressProviderOptions options, CancellationToken cancellationToken)
         {
-            string accountKey;
-            if (!string.IsNullOrEmpty(options.SecretsFile) && File.Exists(options.SecretsFile))
-                accountKey = await WrapException(async () => (await File.ReadAllTextAsync(options.SecretsFile, cancellationToken)).Trim());
-            else 
-                accountKey = options.AccountKey;
-            
-            var credentials = new BasicAWSCredentials(options.AccountKeyName, accountKey);
-            var config = new AmazonS3Config
+            AWSCredentials awsCredentials = null;
+            AmazonS3Config configuration = new();
+            // use the specified access key and the secrets taken from configuration or a local file
+            if (!string.IsNullOrEmpty(options.AccessKeyId) && (!string.IsNullOrEmpty(options.SecretAccessKey) || !string.IsNullOrEmpty(options.SecretsAccessKeyFile)))
             {
-                ServiceURL = options.Endpoint,
-                AuthenticationRegion = options.RegionName,
-                ForcePathStyle = true
-            };
-            var client = new AmazonS3Client(credentials, config);
+                string secretAccessKeyId;
+                if (!string.IsNullOrEmpty(options.SecretsAccessKeyFile) && File.Exists(options.SecretsAccessKeyFile))
+                    secretAccessKeyId = await WrapException(async () => (await File.ReadAllTextAsync(options.SecretsAccessKeyFile, cancellationToken)).Trim());
+                else
+                    secretAccessKeyId = options.SecretAccessKey;
+                awsCredentials = new BasicAWSCredentials(options.AccessKeyId, secretAccessKeyId);
 
-            await VerifyBucketExistsAsync(client, options.BucketName, cancellationToken);
-            return client;
+                configuration.ForcePathStyle = true;
+                configuration.ServiceURL = options.Endpoint;
+                configuration.AuthenticationRegion = options.RegionName;
+            }
+            // use configured AWS profile
+            else if (!string.IsNullOrEmpty(options.AwsProfileName))
+            {
+                CredentialProfileStoreChain chain = !string.IsNullOrEmpty(options.AwsProfileFilePath)
+                    ? new CredentialProfileStoreChain(options.AwsProfileFilePath)
+                    : new CredentialProfileStoreChain();
+
+                if (!chain.TryGetAWSCredentials(options.AwsProfileName, out awsCredentials))
+                    throw new AmazonClientException("AWS profile not found");
+            }
+
+            awsCredentials ??= FallbackCredentialsFactory.GetCredentials();
+
+            if (awsCredentials == null)
+                throw new AmazonClientException("Failed to find AWS Credentials for constructing AWS service client");
+
+            AmazonS3Client s3Client = new(awsCredentials, configuration);
+            await VerifyBucketExistsAsync(s3Client, options.BucketName, cancellationToken);
+            return s3Client;
         }
 
         private static async Task<string> InitMultiPartUploadAsync(IAmazonS3 client, string bucketName, EgressArtifactSettings artifactSettings, CancellationToken cancellationToken)
