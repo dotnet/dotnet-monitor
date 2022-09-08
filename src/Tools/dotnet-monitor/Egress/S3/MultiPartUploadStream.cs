@@ -77,18 +77,20 @@ internal class MultiPartUploadStream : Stream
     {
         if (Disposed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
-        
-        for (var idx = offset; idx < offset + count; idx++)
+
+        int BytesAvailableInBuffer() { return _buffer.Length - _offset;}
+        do
         {
-            if (_offset == _buffer.Length)
-                await DoWriteAsync(cancellationToken); // there is at least one byte left
+            int bytesToCopy = Math.Min(count, BytesAvailableInBuffer()); 
+            Array.Copy(buffer, offset, _buffer, _offset, bytesToCopy);
+            offset += bytesToCopy; // move offset of part buffer
+            count -= bytesToCopy; // reduce amount of bytes which still needs to be written
+            _position += bytesToCopy; // move global position
 
-            _buffer[_offset++] = buffer[idx];
-            _position++;
-        }
-
-        if (_offset == _buffer.Length)
-            await DoWriteAsync(cancellationToken); // unfortunately it is not clear if this is the last part
+            // part buffer is full -> trigger upload of part
+            if (BytesAvailableInBuffer() == 0)
+                await DoWriteAsync(cancellationToken); 
+        } while (count > 0);
     }
 
     private async Task DoWriteAsync(CancellationToken cancellationToken)
