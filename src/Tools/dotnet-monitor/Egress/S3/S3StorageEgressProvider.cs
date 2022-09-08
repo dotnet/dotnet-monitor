@@ -143,9 +143,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                     secretAccessKeyId = options.SecretAccessKey;
                 awsCredentials = new BasicAWSCredentials(options.AccessKeyId, secretAccessKeyId);
 
-                configuration.ForcePathStyle = true;
-                configuration.ServiceURL = options.Endpoint;
-                configuration.AuthenticationRegion = options.RegionName;
+                configuration.ForcePathStyle = options.ForcePathStyle;
+                if (!string.IsNullOrEmpty(options.Endpoint))
+                    configuration.ServiceURL = options.Endpoint;
+                if (!string.IsNullOrEmpty(options.RegionName))
+                    configuration.AuthenticationRegion = options.RegionName;
             }
             // use configured AWS profile
             else if (!string.IsNullOrEmpty(options.AwsProfileName))
@@ -240,8 +242,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         private static async Task VerifyBucketExistsAsync(IAmazonS3 client, string bucketName, CancellationToken token)
         {
-            var response = await client.ListBucketsAsync(token);
-            if (response.Buckets.Any(b => string.Equals(b.BucketName, bucketName, StringComparison.OrdinalIgnoreCase)))
+            bool exists = await client.DoesS3BucketExistAsync(bucketName);
+            if (exists)
                 return;
 
             try

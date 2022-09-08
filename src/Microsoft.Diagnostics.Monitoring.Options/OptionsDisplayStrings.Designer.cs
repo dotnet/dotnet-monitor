@@ -1329,6 +1329,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The boolean flag set for AWS connection configuration ForcePathStyle option..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry..
         /// </summary>
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl {
@@ -1366,7 +1375,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The path to secrets file to get the value for accountKey to connect to S3 storage.
+        ///   Looks up a localized string similar to The path to secret file to get the value for user accountId and user password for connecting to S3..
         /// </summary>
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsAccessKeyFile {
             get {

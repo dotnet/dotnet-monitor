@@ -702,7 +702,7 @@
     <comment>The description provided for the RegionName parameter on S3StorageEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsAccessKeyFile" xml:space="preserve">
-    <value>The path to secrets file to get the value for accountKey to connect to S3 storage</value>
+    <value>The path to secret file to get the value for user accountId and user password for connecting to S3.</value>
     <comment>The description provided for the SecretsAccessKeyFile parameter on S3StorageEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId" xml:space="preserve">
@@ -720,6 +720,10 @@
   <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiryInMinutes" xml:space="preserve">
     <value>The amount of numbers the generated pre-signed url will be accessible.</value>
     <comment>The description provided for the PreSignedUrlExpiryInMinutes parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle" xml:space="preserve">
+    <value>The boolean flag set for AWS connection configuration ForcePathStyle option.</value>
+    <comment>The description provided for the ForcePathStyle parameter on S3StorageEgressProviderOptions.</comment>
   </data>
   <data name="ErrorMessage_EgressS3FailedMissingSecrets" xml:space="preserve">
     <value>S3 storage egress failed: Neither the secrets file nor the password are specified.</value>

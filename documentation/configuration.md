@@ -855,13 +855,14 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 |---|---|---|---|
 | endpoint | string | true | An optional endpoint of S3 storage service. Can be left empty in case of using AWS. |
 | bucketName | string | true | The name of the s3 Bucket to which the blob will be egressed |
-| accessKeyId | string | true | The AWS AccessKeyId for IAM user to login |
-| secretAccessKeyFile | string | false | Path to a file on disk which holds the user's password for accessing the s3 storage. If not provided the `password` property must be set. |
-| secretAccessKey | string | false | The AWS SecretAccessKey associated AccessKeyId for IAM user to login. |
+| accessKeyId | string | false | The AWS AccessKeyId for IAM user to login.  |
+| secretAccessKeyFile | string | false | Path to a file on disk which holds the user's password for accessing the s3 storage.  To login by access key id either the 'secretAccessKeyFile' or 'secretAccessKey' must be set.|
+| secretAccessKey | string | false | The AWS SecretAccessKey associated AccessKeyId for IAM user to login. To login by access key id either the 'secretAccessKeyFile' or 'secretAccessKey' must be set. |
 | awsProfileName | string | false | The AWS profile name to be used for login. |
 | awsProfilePath | string | false | The AWS profile path, if profile details not stored in default path. |
 | generatePresSignedUrl | bool | false | A boolean flag to control if either a pre-signed url is returned after successful upload or only the name of bucket and the artifacts S3 object key. |
 | preSignedUrlExpiryInMinutes | int | true | The number of minutes the generated pre-signed url should be accessible. |
+| ForcePathStyle | bool | false | The boolean flag set for AWS connection configuration ForcePathStyle option. |
 | copyBufferSize | int | false | The buffer size to use when copying data from the original artifact to the blob stream. There is a minimum size of 5 MB which is set when the given value is lower.|
 
 ### Example S3 storage provider
@@ -919,8 +920,8 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
   #!/bin/sh
   kubectl create secret generic my-s3-secrets \
   --from-literal=Egress__S3Storage__monitorS3Blob__bucketName=myS3Bucket \
-  --from-literal=Egress__S3Storage__monitorS3Blob__accountKeyName=minioUser \
-  --from-literal=Egress__S3Storage__monitorS3Blob__accountKey=mySecretPassword \
+  --from-literal=Egress__S3Storage__monitorS3Blob__accessKeyId=minioUser \
+  --from-literal=Egress__S3Storage__monitorS3Blob__secretAccessKey=mySecretPassword \
   --from-literal=Egress__S3Storage__monitorS3Blob__regionName=us-east-1 \
   --dry-run=client -o yaml | kubectl apply -f -
  ```
