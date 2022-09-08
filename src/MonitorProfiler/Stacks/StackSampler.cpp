@@ -65,7 +65,7 @@ HRESULT StackSampler::CreateCallstack(std::vector<std::unique_ptr<StackSamplerSt
         stackState->GetStack().SetThreadId(nativeThreadId);
 
         //TODO According to docs, need to block ThreadDestroyed while stack walking. Is this still a  requirement?
-        hr = _profilerInfo->DoStackSnapshot(threadID, DoStackSnapshotCallbackWrapper, COR_PRF_SNAPSHOT_REGISTER_CONTEXT, stackState.get(), nullptr, 0);
+        IfFailRet(_profilerInfo->DoStackSnapshot(threadID, DoStackSnapshotCallbackWrapper, COR_PRF_SNAPSHOT_REGISTER_CONTEXT, stackState.get(), nullptr, 0));
 
         stackStates.push_back(std::move(stackState));
     }

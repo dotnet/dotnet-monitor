@@ -23,14 +23,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         public override async Task FormatStack(StackResult stackResult, CancellationToken token)
         {
-            await using StreamWriter writer = new StreamWriter(this.OutputStream, System.Text.Encoding.UTF8, leaveOpen: true);
+            await using StreamWriter writer = new StreamWriter(this.OutputStream, Encoding.UTF8, leaveOpen: true);
+            var builder = new StringBuilder();
             foreach (var stack in stackResult.Stacks)
             {
                 token.ThrowIfCancellationRequested();
                 await writer.WriteLineAsync($"{ThreadIdPrefix}: ({stack.ThreadId:X})");
                 foreach (var frame in stack.Frames)
                 {
-                    StringBuilder builder = new StringBuilder();
+                    builder.Clear();
                     builder.Append(Indent);
                     BuildFrame(builder, stackResult.NameCache, frame);
                     await writer.WriteLineAsync(builder, token);

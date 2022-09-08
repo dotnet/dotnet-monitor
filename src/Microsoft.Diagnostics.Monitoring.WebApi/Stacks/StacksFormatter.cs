@@ -62,6 +62,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                             //All other cases default to UnknownClass
                             break;
                     }
+
+                    builder.Append(className);
                 }
                 else
                 {
@@ -72,26 +74,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             else
             {
                 builder.Append(className);
-            }
-        }
-
-        protected void BuildGenericParameters(StringBuilder builder, NameCache cache, ulong[] parameters)
-        {
-            for (int i = 0; i < parameters?.Length; i++)
-            {
-                if (i == 0)
-                {
-                    builder.Append(GenericStart);
-                }
-                BuildClassName(builder, cache, parameters[i]);
-                if (i < parameters.Length - 1)
-                {
-                    builder.Append(GenericSeparator);
-                }
-                else if (i == parameters.Length - 1)
-                {
-                    builder.Append(GenericEnd);
-                }
             }
         }
 
@@ -118,6 +100,26 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 if (classNames.Count > 0)
                 {
                     builder.Append(NestedSeparator);
+                }
+            }
+        }
+
+        protected void BuildGenericParameters(StringBuilder builder, NameCache cache, ulong[] parameters)
+        {
+            for (int i = 0; i < parameters?.Length; i++)
+            {
+                if (i == 0)
+                {
+                    builder.Append(GenericStart);
+                }
+                BuildClassName(builder, cache, parameters[i]);
+                if (i < parameters.Length - 1)
+                {
+                    builder.Append(GenericSeparator);
+                }
+                else if (i == parameters.Length - 1)
+                {
+                    builder.Append(GenericEnd);
                 }
             }
         }

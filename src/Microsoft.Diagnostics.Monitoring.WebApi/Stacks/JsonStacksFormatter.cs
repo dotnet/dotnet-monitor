@@ -20,8 +20,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         {
             Models.StackResult stackResultModel = new Models.StackResult();
             NameCache cache = stackResult.NameCache;
+            var builder = new StringBuilder();
 
-            foreach(Stack stack in stackResult.Stacks)
+            foreach (Stack stack in stackResult.Stacks)
             {
                 Models.Stack stackModel = new Models.Stack();
                 stackModel.ThreadId = stack.ThreadId;
@@ -40,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                         frameModel.ModuleName = GetModuleName(cache, functionData.ModuleId);
                         frameModel.MethodName = functionData.Name;
 
-                        StringBuilder builder = new StringBuilder();
+                        builder.Clear();
                         if (functionData.ParentClass != 0)
                         {
                             BuildClassName(builder, cache, functionData.ParentClass);
@@ -50,10 +51,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                             BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken);
                         }
                         frameModel.ClassName = builder.ToString();
-                        builder.Clear();
 
                         if (functionData.TypeArgs.Length > 0)
                         {
+                            builder.Clear();
                             builder.Append(functionData.Name);
                             BuildGenericParameters(builder, cache, functionData.TypeArgs);
                             frameModel.MethodName = builder.ToString();
@@ -65,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 stackResultModel.Stacks.Add(stackModel);
             }
 
-            await JsonSerializer.SerializeAsync(OutputStream, stackResultModel);
+            await JsonSerializer.SerializeAsync(OutputStream, stackResultModel, cancellationToken: token);
         }
     }
 }

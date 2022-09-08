@@ -25,15 +25,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         public static async Task ExecuteAsync(InvocationContext context)
         {
-            StacksWorker worker = new StacksWorker();
+            using StacksWorker worker = new StacksWorker();
 
+            //Background thread will create an expected callstack and pause.
             Thread thread = new Thread(Entrypoint);
             thread.Start(worker);
 
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Stacks.Commands.Continue, logger);
-                worker.Dispose();
+
+                //Allow the background thread to resume work.
+                worker.Signal();
 
                 return 0;
             }, context.GetCancellationToken());

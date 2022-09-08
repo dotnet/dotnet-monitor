@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tracing;
 using System;
+using System.Diagnostics.Tracing;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,14 +36,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         {
             return new EventPipeProviderSourceConfiguration(requestRundown: false, bufferSizeInMB: 256, new[]
             {
-                new EventPipeProvider(StackEvents.Provider, System.Diagnostics.Tracing.EventLevel.LogAlways)
+                new EventPipeProvider(StackEvents.Provider, EventLevel.LogAlways)
             });
         }
 
         protected override async Task OnEventSourceAvailable(EventPipeEventSource eventSource, Func<Task> stopSessionAsync, CancellationToken token)
         {
-            eventSource.Dynamic.AddCallbackForProviderEvents((string provider, string _) => provider == StackEvents.Provider ?
-            EventFilterResponse.AcceptEvent : EventFilterResponse.RejectEvent, Callback);
+            eventSource.Dynamic.AddCallbackForProviderEvent(StackEvents.Provider, eventName: null, Callback);
 
             using EventTaskSource<Action> sourceComplete = new EventTaskSource<Action>(
                 taskComplete => taskComplete,
@@ -69,11 +69,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         private void Callback(TraceEvent action)
         {
-            if (action.ProviderName != StackEvents.Provider)
-            {
-                return;
-            }
-
             //We do not have a manifest for our events, but we also lookup data by id instead of string.
             if (action.ID == StackEvents.Callstack)
             {

@@ -17,7 +17,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             public void DoWork<U>(U test, WaitHandle handle)
             {
-                Console.WriteLine(test);
                 handle.WaitOne();
             }
         }
@@ -29,9 +28,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             nested.DoWork<long>(5, _eventWaitHandle);
         }
 
-        public void Dispose()
+        public void Signal()
         {
             _eventWaitHandle.Set();
+        }
+
+        public void Dispose()
+        {
             _eventWaitHandle.Dispose();
 
         }

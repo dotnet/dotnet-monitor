@@ -62,12 +62,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Contains(ExpectedFrame, result);
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
-                },
-                configureApp: runner =>
-                {
-                },
-                configureTool: runner =>
-                {
                 });
         }
 
@@ -93,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     foreach (WebApi.Models.Stack stack in result.Stacks)
                     {
-                        if (stack.Frames.Any( f => f.ModuleName == ExpectedModule && f.ClassName == ExpectedClass && f.MethodName == ExpectedFunction))
+                        if (stack.Frames.Any(f => f.ModuleName == ExpectedModule && f.ClassName == ExpectedClass && f.MethodName == ExpectedFunction))
                         {
                             foundStack = true;
                         }
@@ -102,12 +96,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.True(foundStack);
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
-                },
-                configureApp: runner =>
-                {
-                },
-                configureTool: runner =>
-                {
                 });
         }
     }
