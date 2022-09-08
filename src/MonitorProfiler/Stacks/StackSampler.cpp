@@ -65,25 +65,35 @@ HRESULT StackSampler::CreateCallstack(std::vector<std::unique_ptr<StackSamplerSt
         stackState->GetStack().SetThreadId(nativeThreadId);
 
         //TODO According to docs, need to block ThreadDestroyed while stack walking. Is this still a  requirement?
-        IfFailRet(_profilerInfo->DoStackSnapshot(threadID, DoStackSnapshotCallbackWrapper, COR_PRF_SNAPSHOT_REGISTER_CONTEXT, stackState.get(), nullptr, 0));
+        hr = _profilerInfo->DoStackSnapshot(threadID, DoStackSnapshotCallbackWrapper, COR_PRF_SNAPSHOT_REGISTER_CONTEXT, stackState.get(), nullptr, 0);
 
-        stackStates.push_back(std::move(stackState));
+        //Typically fails due to lack of managed frames.
+        //CONSIDER Do we want to report the thread and specify that it has no managed frames?
+        //TODO Log unexpected failures
+        if (SUCCEEDED(hr))
+        {
+            stackStates.push_back(std::move(stackState));
+        }
     }
 
     return S_OK;
 }
 
-HRESULT __stdcall StackSampler::DoStackSnapshotCallbackWrapper(FunctionID funcionId, UINT_PTR ip, COR_PRF_FRAME_INFO frameInfo, ULONG32 contextSize, BYTE context[], void* clientData)
+HRESULT __stdcall StackSampler::DoStackSnapshotCallbackWrapper(FunctionID functionId, UINT_PTR ip, COR_PRF_FRAME_INFO frameInfo, ULONG32 contextSize, BYTE context[], void* clientData)
 {
     HRESULT hr;
 
     StackSamplerState* state = reinterpret_cast<StackSamplerState*>(clientData);
     Stack& stack = state->GetStack();
-    stack.AddFrame(funcionId, ip);
+    stack.AddFrame(functionId, ip);
 
-    std::shared_ptr<NameCache> nameCache = state->GetNameCache();
-    TypeNameUtilities nameUtilities(state->GetProfilerInfo());
-    IfFailRet(nameUtilities.CacheNames(*nameCache, funcionId, frameInfo));
+    //FunctionId of 0 indicates a native frame.
+    if (functionId != 0)
+    {
+        std::shared_ptr<NameCache> nameCache = state->GetNameCache();
+        TypeNameUtilities nameUtilities(state->GetProfilerInfo());
+        IfFailRet(nameUtilities.CacheNames(*nameCache, functionId, frameInfo));
+    }
 
     return S_OK;
 }

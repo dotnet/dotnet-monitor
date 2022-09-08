@@ -50,6 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IDumpService _dumpService;
         private readonly OperationTrackerService _operationTrackerService;
         private readonly ICollectionRuleService _collectionRuleService;
+        private readonly ProfilerChannel _profilerChannel;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -62,6 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
+            _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
         }
 
         /// <summary>
@@ -615,7 +617,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 Task runPipelineTask = await eventTracePipeline.StartAsync(HttpContext.RequestAborted);
 
-                ProfilerMessage response = await ProfilerChannel.SendMessage(processInfo.EndpointInfo, new ProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 }, this.HttpContext.RequestAborted);
+                ProfilerMessage response = await _profilerChannel.SendMessage(processInfo.EndpointInfo, new ProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 }, this.HttpContext.RequestAborted);
                 if (response.MessageType == ProfilerMessageType.Error)
                 {
                     throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X8}");

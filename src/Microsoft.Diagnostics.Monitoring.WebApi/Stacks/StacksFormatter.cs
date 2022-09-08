@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         protected const string ArrayType = "_ArrayType_";
         protected const string CompositeType = "_CompositeType_";
+        protected const string NativeFrame = "[NativeFrame]";
 
         protected const char NestedSeparator = '+';
         protected const char GenericStart = '[';

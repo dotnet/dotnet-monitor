@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -21,18 +22,28 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         public ProfilerMessageType MessageType { get; set; }
 
+        // This is currently unsupported, but some possible future additions:
+        // Parameter Metadata. (I.e. IMetadataImport.GetMethodProps + signature resolution)
+        // Resolve frame offsets (Resolving absolute native address to relative offset then convert to IL using IL-to-native maps.
         public int Parameter { get; set; }
     }
 
     /// <summary>
     /// Communicates with the profiler, using a Unix Domain Socket.
     /// </summary>
-    internal static class ProfilerChannel
+    internal sealed class ProfilerChannel
     {
-        public static async Task<ProfilerMessage> SendMessage(IEndpointInfo endpointInfo, ProfilerMessage message, CancellationToken token)
+        private IOptionsMonitor<StorageOptions> _storageOptions;
+
+        public ProfilerChannel(IOptionsMonitor<StorageOptions> storageOptions)
+        {
+            _storageOptions = storageOptions;
+        }
+
+        public async Task<ProfilerMessage> SendMessage(IEndpointInfo endpointInfo, ProfilerMessage message, CancellationToken token)
         {
 #if NET6_0_OR_GREATER
-            string channelPath = Environment.ExpandEnvironmentVariables(FormattableString.Invariant(@$"%TEMP%\{endpointInfo.RuntimeInstanceCookie:D}.sock"));
+            string channelPath = ComputeChannelPath(endpointInfo);
             var endpoint = new UnixDomainSocketEndPoint(channelPath);
             using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
 
@@ -63,6 +74,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 #else
             return await Task.FromException<ProfilerMessage>(new NotImplementedException());
 #endif
+        }
+
+        private string ComputeChannelPath(IEndpointInfo endpointInfo)
+        {
+            string defaultSharedPath = _storageOptions.CurrentValue.DefaultSharedPath;
+            if (string.IsNullOrEmpty(_storageOptions.CurrentValue.DefaultSharedPath))
+            {
+                //Note this fallback does not work well for sidecar scenarios.
+                defaultSharedPath = Path.GetTempPath();
+            }
+            return Path.Combine(defaultSharedPath, FormattableString.Invariant($"{endpointInfo.RuntimeInstanceCookie:D}.sock"));
         }
     }
 }

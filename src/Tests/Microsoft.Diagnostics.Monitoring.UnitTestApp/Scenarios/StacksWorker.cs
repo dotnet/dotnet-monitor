@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 
@@ -15,9 +16,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         public class StacksWorkerNested<T>
         {
+            private WaitHandle _handle;
+
             public void DoWork<U>(U test, WaitHandle handle)
             {
-                handle.WaitOne();
+                _handle = handle;
+                StacksScenario.TestHook(Callback);
+            }
+
+            public void Callback()
+            {
+                _handle.WaitOne();
             }
         }
 

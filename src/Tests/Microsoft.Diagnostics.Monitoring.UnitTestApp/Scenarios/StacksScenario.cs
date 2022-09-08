@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal class StacksScenario
     {
+        [DllImport("MonitorProfiler", CallingConvention = CallingConvention.StdCall, PreserveSig = true)]
+        public static extern int TestHook([MarshalAs(UnmanagedType.FunctionPtr)] Action callback);
+
         public static Command Command()
         {
             Command command = new(TestAppScenarios.Stacks.Name);

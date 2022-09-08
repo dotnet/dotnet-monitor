@@ -33,10 +33,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     {
                         ClassName = UnknownClass,
                         MethodName = UnknownFunction,
-                        Offset = frame.Offset,
+                        //TODO Bring this back once we have a useful offset value
+                        //Offset = frame.Offset,
                         ModuleName = UnknownModule
                     };
-                    if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+                    if (frame.FunctionId == 0)
+                    {
+                        frameModel.MethodName = NativeFrame;
+                        frameModel.ModuleName = NativeFrame;
+                        frameModel.ClassName = NativeFrame;
+                    }
+                    else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
                     {
                         frameModel.ModuleName = GetModuleName(cache, functionData.ModuleId);
                         frameModel.MethodName = functionData.Name;

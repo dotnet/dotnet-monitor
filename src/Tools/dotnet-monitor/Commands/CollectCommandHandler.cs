@@ -168,6 +168,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureMetrics(context.Configuration);
                 services.ConfigureStorage(context.Configuration);
                 services.ConfigureDefaultProcess(context.Configuration);
+                services.AddSingleton<ProfilerChannel>();
                 services.ConfigureCollectionRules();
                 services.ConfigureProfiler();
             });
