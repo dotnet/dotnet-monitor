@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKeyName))]
         public string AccountKeyName { get; set; }
-        
+
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile))]
@@ -43,6 +43,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKey))]
         public string AccountKey { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl))]
+        public bool GeneratePresSignedUrl { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiryInMinutes))]
+        public int PreSignedUrlExpiryInMinutes { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -60,6 +70,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
             if (string.IsNullOrEmpty(RegionName))
                 yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(RegionName)));
+
+            if(GeneratePresSignedUrl && PreSignedUrlExpiryInMinutes <= 0)
+                yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(PreSignedUrlExpiryInMinutes)));
         }
     }
 }

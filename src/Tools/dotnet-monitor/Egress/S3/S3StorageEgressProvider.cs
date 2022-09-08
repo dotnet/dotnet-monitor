@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -11,6 +10,7 @@ using System.Threading.Tasks;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Transfer;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 {
@@ -72,8 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
                 await CompleteMultiPartUploadAsync(client, options.BucketName, uploadId, artifactSettings, stream.Parts, token);
 
-                var resourceId = client.GetPreSignedURL(new GetPreSignedUrlRequest { BucketName = options.BucketName, Key = artifactSettings.Name, Expires = DateTime.UtcNow.AddHours(1) });
-                Logger?.EgressProviderSavedStream(EgressProviderTypes.S3Storage, resourceId);
+                string resourceId = GetResourceId(client, options, artifactSettings);
                 return resourceId;
             }
             catch (Exception e)
@@ -88,7 +87,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            byte[] buffer = null;
             try
             {
                 var client = await CreateClientAsync(options, token);
@@ -106,57 +104,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                 }
                 else // copy temporary to memory stream locally
                 {
-                    var uploadId = await InitMultiPartUploadAsync(client, options.BucketName, artifactSettings, token);
-                    var bufferSize = Math.Max(options.CopyBufferSize!.Value, MultiPartUploadStream.MinimumSize);
-                    buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
-                    var readBytes = await stream.ReadAsync(buffer, 0, buffer.Length, token);
-                    var parts = new List<PartETag>();
-                    while (readBytes > 0)
-                    {
-                        await using var memoryStream = new MemoryStream();
-                        await memoryStream.WriteAsync(buffer, 0, readBytes, token);
-                        memoryStream.Position = 0;
-
-                        var uploadRequest = new UploadPartRequest
-                        {
-                            BucketName = options.BucketName,
-                            Key = artifactSettings.Name,
-                            InputStream = memoryStream,
-                            PartSize = readBytes,
-                            UploadId = uploadId,
-                            PartNumber = parts.Count
-                        };
-
-                        // try to read more bytes to check if there is another part left
-                        readBytes = await stream.ReadAsync(buffer, 0, buffer.Length, token);
-
-                        // in case there are more bytes, it isn't the last part
-                        uploadRequest.IsLastPart = readBytes == 0;
-                        var partResponse = await client.UploadPartAsync(uploadRequest, token);
-                        parts.Add(new PartETag(parts.Count, partResponse.ETag));
-                    }
-
-                    if (parts.Count == 0)
-                    {
-                        Logger?.LogDebug(Strings.Message_EgressS3NoContent);
-                        return string.Empty; // nothing to return here
-                    }
-
-                    await CompleteMultiPartUploadAsync(client, options.BucketName, uploadId, artifactSettings, parts, token);
+                    using TransferUtility transferUtility = new(client);
+                    await transferUtility.UploadAsync(stream, options.BucketName, artifactSettings.Name, token);
                 }
 
-                var resourceId = client.GetPreSignedURL(new GetPreSignedUrlRequest { BucketName = options.BucketName, Key = artifactSettings.Name, Expires = DateTime.UtcNow.AddHours(1) });
-                Logger?.EgressProviderSavedStream(EgressProviderTypes.S3Storage, resourceId);
+                string resourceId = GetResourceId(client, options, artifactSettings);
                 return resourceId;
             }
             catch (Exception e)
             {
                 throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedDetailed, e.Message));
             }
-            finally
-            {
-                if (buffer != null) ArrayPool<byte>.Shared.Return(buffer);
-            }
+        }
+
+        private string GetResourceId(IAmazonS3 client, S3StorageEgressProviderOptions options, EgressArtifactSettings artifactSettings)
+        {
+            if (!options.GeneratePresSignedUrl)
+                return $"BucketName={options.BucketName}, Key={artifactSettings.Name}";
+
+            DateTime expires = DateTime.UtcNow.AddMinutes(options.PreSignedUrlExpiryInMinutes);
+            string resourceId = client.GetPreSignedURL(new GetPreSignedUrlRequest {BucketName = options.BucketName, Key = artifactSettings.Name, Expires = expires});
+            Logger?.EgressProviderSavedStream(EgressProviderTypes.S3Storage, resourceId);
+            return resourceId;
         }
 
         private static async Task<IAmazonS3> CreateClientAsync(S3StorageEgressProviderOptions options, CancellationToken cancellationToken)
@@ -253,8 +222,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
         private static async Task VerifyBucketExistsAsync(IAmazonS3 client, string bucketName, CancellationToken token)
         {
             var response = await client.ListBucketsAsync(token);
-            if (!response.Buckets.Any(b => string.Equals(b.BucketName, bucketName, StringComparison.OrdinalIgnoreCase)))
-                throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedBucketNotExists));
+            if (response.Buckets.Any(b => string.Equals(b.BucketName, bucketName, StringComparison.OrdinalIgnoreCase)))
+                return;
+
+            try
+            {
+                await client.PutBucketAsync(bucketName, token);
+            }
+            catch (Exception ex)
+            {
+                throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedBucketNotExistsOrCannotBeCreated, ex.Message));
+            }
         }
     }
 }

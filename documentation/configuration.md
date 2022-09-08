@@ -858,6 +858,8 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 | accountKeyName | string | true | The user credential for accessing the s3 service |
 | secretsFile | string | false | Path to a file on disk which holds the user's password for accessing the s3 storage. If not provided the `password` property must be set. |
 | accountKey | string | false | The user's password for accessing the s3 storage. If not provided the `SecretsFile` must be specified. |
+| generatePresSignedUrl | bool | false | A boolean flag to control if either a pre-signed url is returned after successful upload or only the name of bucket and the artifacts S3 object key. |
+| preSignedUrlExpiryInMinutes | int | true | The number of minutes the generated pre-signed url should be accessible. |
 | copyBufferSize | int | false | The buffer size to use when copying data from the original artifact to the blob stream. There is a minimum size of 5 MB which is set when the given value is lower.|
 
 ### Example S3 storage provider
@@ -875,7 +877,9 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
                   "accountKeyName": "minioUser",
                   "secretsFile": "C:\\Temp\\s3secret",
                   "regionName": "us-east-1",
-                  "copyBufferSize": 1024
+                  "generatePresSignedUrl" : true,
+                  "preSignedUrlExpiryInMinutes" : 15,
+                  "copyBufferSize": 1024                  
               }
           }
       }
@@ -896,6 +900,8 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
                   "accountKeyName": "minioUser",
                   "accountKey": "mySecretPassword",
                   "regionName": "us-east-1",
+                  "generatePresSignedUrl" : true,
+                  "preSignedUrlExpiryInMinutes" : 15,
                   "copyBufferSize": 1024
               }
           }

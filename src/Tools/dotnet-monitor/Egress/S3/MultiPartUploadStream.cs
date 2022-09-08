@@ -38,7 +38,7 @@ internal class MultiPartUploadStream : Stream
     public override async Task FlushAsync(CancellationToken cancellationToken)
     {
         if (Disposed)
-            throw new ObjectDisposedException("The stream was already disposed");
+            throw new ObjectDisposedException(nameof(MultiPartUploadStream));
         if (_offset == 0 || _offset < MinimumSize)
             return;
         await DoWriteAsync(cancellationToken);
@@ -47,7 +47,7 @@ internal class MultiPartUploadStream : Stream
     public async Task FinalizeAsync(CancellationToken cancellationToken)
     {
         if (Disposed)
-            throw new ObjectDisposedException("The stream was already disposed");
+            throw new ObjectDisposedException(nameof(MultiPartUploadStream));
         if (_offset == 0)
             return;
         await DoWriteAsync(cancellationToken);
@@ -76,8 +76,8 @@ internal class MultiPartUploadStream : Stream
     public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
         if (Disposed)
-            throw new ObjectDisposedException("The stream was already disposed");
-
+            throw new ObjectDisposedException(nameof(MultiPartUploadStream));
+        
         for (var idx = offset; idx < offset + count; idx++)
         {
             if (_offset == _buffer.Length)

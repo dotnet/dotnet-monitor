@@ -1320,6 +1320,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount of numbers the generated pre-signed url will be accessible..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiryInMinutes {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiryInMi" +
+                        "nutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the S3 region.
         /// </summary>
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName {

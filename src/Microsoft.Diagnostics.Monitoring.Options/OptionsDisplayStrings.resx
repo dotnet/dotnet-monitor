@@ -695,7 +695,7 @@
   </data>
   <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName" xml:space="preserve">
     <value>The name of the S3 region</value>
-    <comment>The descirption provided for the RegionName paramter on S3StorageEgressProviderOptions.</comment>
+    <comment>The description provided for the RegionName parameter on S3StorageEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsFile" xml:space="preserve">
     <value>The path to secrets file to get the value for accountKey to connect to S3 storage</value>
@@ -704,6 +704,14 @@
   <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_AccountKeyName" xml:space="preserve">
     <value>The user-name used to login</value>
     <comment>The description provided for the AccountKeyName parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl" xml:space="preserve">
+    <value>A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry.</value>
+    <comment>The description provided for the GeneratePresSignedUrl parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiryInMinutes" xml:space="preserve">
+    <value>The amount of numbers the generated pre-signed url will be accessible.</value>
+    <comment>The description provided for the PreSignedUrlExpiryInMinutes parameter on S3StorageEgressProviderOptions.</comment>
   </data>
   <data name="ErrorMessage_EgressS3FailedMissingSecrets" xml:space="preserve">
     <value>S3 storage egress failed: Neither the secrets file nor the password are specified.</value>

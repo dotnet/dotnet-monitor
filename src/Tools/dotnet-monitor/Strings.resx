@@ -176,8 +176,11 @@
 1 Format Parameter:
 0. providerType: The type of the provider that could not be found.</comment>
   </data>
-  <data name="ErrorMessage_EgressS3FailedBucketNotExists" xml:space="preserve">
-    <value>S3 storage egress failed: the configured bucket does not exist.</value>
+  <data name="ErrorMessage_EgressS3FailedBucketNotExistsOrCannotBeCreated" xml:space="preserve">
+    <value>S3 storage egress failed: the configured bucket does not exist and cannot be created. Reason: {0]</value>
+    <comment>Gets the format string for egress provider type failure due to missing bucket which also cannot be created.
+1 Format Parameter:
+0. providerType: The message of exception thrown by creation.</comment>
   </data>
   <data name="ErrorMessage_EgressS3FailedDetailed" xml:space="preserve">
     <value>S3 storage egress failed: {0}</value>

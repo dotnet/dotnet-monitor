@@ -178,11 +178,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to S3 storage egress failed: the configured bucket does not exist..
+        ///   Looks up a localized string similar to S3 storage egress failed: the configured bucket does not exist and cannot be created. Reason: {0].
         /// </summary>
-        internal static string ErrorMessage_EgressS3FailedBucketNotExists {
+        internal static string ErrorMessage_EgressS3FailedBucketNotExistsOrCannotBeCreated {
             get {
-                return ResourceManager.GetString("ErrorMessage_EgressS3FailedBucketNotExists", resourceCulture);
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedBucketNotExistsOrCannotBeCreated", resourceCulture);
             }
         }
         
