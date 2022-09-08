@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return new ProfilerMessage
             {
                 MessageType = (ProfilerMessageType)BitConverter.ToInt16(buffer, startIndex: 0),
-                Parameter = BitConverter.ToInt16(buffer, startIndex: 2)
+                Parameter = BitConverter.ToInt32(buffer, startIndex: 2)
             };
 #else
             return await Task.FromException<ProfilerMessage>(new NotImplementedException());

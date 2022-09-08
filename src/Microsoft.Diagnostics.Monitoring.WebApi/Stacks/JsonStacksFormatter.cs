@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         public override async Task FormatStack(StackResult stackResult, CancellationToken token)
         {
-            Models.StackResult result = new Models.StackResult();
+            Models.StackResult stackResultModel = new Models.StackResult();
             NameCache cache = stackResult.NameCache;
 
             foreach(Stack stack in stackResult.Stacks)
@@ -62,10 +62,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
                     stackModel.Frames.Add(frameModel);
                 }
-                result.Stacks.Add(stackModel);
+                stackResultModel.Stacks.Add(stackModel);
             }
 
-            await JsonSerializer.SerializeAsync(OutputStream, result);
+            await JsonSerializer.SerializeAsync(OutputStream, stackResultModel);
         }
     }
 }

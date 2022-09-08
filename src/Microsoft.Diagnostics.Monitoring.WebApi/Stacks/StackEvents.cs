@@ -43,18 +43,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             public const int TypeArgs = 4;
         }
 
+        public static class ModuleDescPayloads
+        {
+            public const int ModuleId = 0;
+            public const int Name = 1;
+        }
         public static class TokenDescPayloads
         {
             public const int ModuleId = 0;
             public const int Token = 1;
             public const int OuterToken = 2;
             public const int Name = 3;
-        }
-
-        public static class ModuleDescPayloads
-        {
-            public const int ModuleId = 0;
-            public const int Name = 1;
         }
 
         public static class EndPayloads

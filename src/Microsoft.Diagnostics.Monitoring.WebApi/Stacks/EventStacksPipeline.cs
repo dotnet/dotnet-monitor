@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
                 _result.Stacks.Add(stack);
 
-                if (functionIds != null && offsets != null)
+                if (functionIds != null && offsets != null && functionIds.Length == offsets.Length)
                 {
                     for (int i = 0; i < functionIds.Length; i++)
                     {

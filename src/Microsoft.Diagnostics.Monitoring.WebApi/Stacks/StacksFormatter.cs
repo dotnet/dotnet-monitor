@@ -59,6 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                             className = CompositeType;
                             break;
                         default:
+                            //All other cases default to UnknownClass
                             break;
                     }
                 }

@@ -54,7 +54,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, plainText: true);
                     Assert.NotNull(holder);
 
-                    MemoryStream stream = new MemoryStream();
                     using StreamReader reader = new StreamReader(holder.Stream);
                     string result = await reader.ReadToEndAsync();
 

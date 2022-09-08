@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public uint ThreadId { get; set; }
 
         [JsonPropertyName("frames")]
-        public IList<StackFrame> Frames { get;set;} = new List<StackFrame>();
+        public IList<StackFrame> Frames { get; set; } = new List<StackFrame>();
     }
 
     public class StackResult

@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
     {
         public ulong[] TypeArgs { get; set; }
 
-        // Because it's possible that we never get the ClassID for a type, we separate Name information from the class.
+        // We do not store the name of the class directly. The name can be retrieved from the TokenData.
         public uint Token { get; set; }
 
         public ulong ModuleId { get; set; }
@@ -57,10 +57,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
     {
         public string Name { get; set; }
 
-        //It is possible that we are able to get the token but not the ClassID.
-
+        /// <summary>
+        /// ClassID of the containing class for this function. Note it's possible that the ClassID could not be retrieved by the profiler.
+        /// In this case, only the token will be available.
+        /// </summary>
         public ulong ParentClass { get; set; }
 
+        /// <summary>
+        /// If the ClassID could not be retrieved, the token can be used to get the name.
+        /// </summary>
         public uint ParentToken { get; set; }
 
         public ulong[] TypeArgs { get; set; }
