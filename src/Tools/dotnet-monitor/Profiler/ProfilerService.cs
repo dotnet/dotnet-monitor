@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                         Directory.CreateDirectory(defaultSharedPath);
 
                         await client.SetEnvironmentVariableAsync(
-                            ProfilerIdentifiers.EnvironmentVariables.SharingPath,
+                            ProfilerIdentifiers.EnvironmentVariables.SharedPath,
                             defaultSharedPath,
                             cancellationToken);
                     }

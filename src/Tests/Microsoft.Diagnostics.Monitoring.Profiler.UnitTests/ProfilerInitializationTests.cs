@@ -104,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public async Task VerifyCustomSharingPath(Architecture architecture, string profilerPath)
+        public async Task VerifyCustomSharedPath(Architecture architecture, string profilerPath)
         {
             if (Architecture.X86 == architecture)
             {
@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.Clsid.StringWithBraces);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath64, profilerPath);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, runtimeInstanceId);
-            runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.SharingPath, tempDir.FullName);
+            runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.SharedPath, tempDir.FullName);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));
 
             await runner.ExecuteAsync(async () =>

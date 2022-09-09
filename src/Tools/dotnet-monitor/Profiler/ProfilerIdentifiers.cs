@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
             // This environment variable is automatically applied to a target process by the tool to inform
             // the profiler which directory it should use to share files and information with dotnet-monitor.
-            public const string SharingPath = Prefix + nameof(SharingPath);
+            public const string SharedPath = Prefix + nameof(SharedPath);
 
             // This environment variable name is embedded into the profiler and set at profiler initialization.
             // The value is determined BEFORE native build by the generation of the product version into the
