@@ -13,6 +13,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class DiagnosticPortPostConfigureOptions :
         IPostConfigureOptions<DiagnosticPortOptions>
     {
+        private const string DefaultSocketName = "dotnet-monitor.sock";
+
         private readonly IConfiguration _configuration;
         private readonly IOptions<StorageOptions> _storageOptions;
 
@@ -41,7 +43,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 !string.IsNullOrEmpty(_storageOptions.Value.DefaultSharedPath))
             {
                 options.ConnectionMode = DiagnosticPortConnectionMode.Listen;
-                options.EndpointName = Path.Combine(_storageOptions.Value.DefaultSharedPath, "dotnet-monitor.sock");
+                options.EndpointName = Path.Combine(_storageOptions.Value.DefaultSharedPath, DefaultSocketName);
             }
         }
     }

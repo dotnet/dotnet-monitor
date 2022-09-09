@@ -10,13 +10,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     public class StoragePostConfigureOptions : IPostConfigureOptions<StorageOptions>
     {
+        private const string DefaultSharedPathDumpsFolderName = "dumps";
+        private const string DefaultSharedPathLibrariesFolderName = "libs";
+
         void IPostConfigureOptions<StorageOptions>.PostConfigure(string name, StorageOptions options)
         {
             if (string.IsNullOrEmpty(options.DumpTempFolder))
             {
                 if (!string.IsNullOrEmpty(options.DefaultSharedPath))
                 {
-                    options.DumpTempFolder = Path.Combine(options.DefaultSharedPath, "dumps");
+                    options.DumpTempFolder = Path.Combine(options.DefaultSharedPath, DefaultSharedPathDumpsFolderName);
                 }
 
                 if (string.IsNullOrEmpty(options.DumpTempFolder))
@@ -29,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 if (!string.IsNullOrEmpty(options.DefaultSharedPath))
                 {
-                    options.SharedLibraryPath = Path.Combine(options.DefaultSharedPath, "libs");
+                    options.SharedLibraryPath = Path.Combine(options.DefaultSharedPath, DefaultSharedPathLibrariesFolderName);
                 }
             }
         }
