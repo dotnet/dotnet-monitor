@@ -38,10 +38,8 @@
   </PropertyGroup>
   <!--
     These versions should ONLY be updated by automation.
-
     DO NOT UPDATE THESE MANUALLY. Use the `darc` command line tool to update this file so it stays in sync with
     Version.Details.xml.
-
     See https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md for instructions on using darc.
   -->
   <PropertyGroup Label="Automated">
@@ -72,29 +70,12 @@
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp70Version>
   </PropertyGroup>
   <PropertyGroup Label="Manual">
-      <AwsSdkS3Version>3.5.8.1</AwsSdkS3Version>
-	  <AzureIdentityVersion>1.6.0</AzureIdentityVersion>
-    <AzureStorageBlobsVersion>12.12.0</AzureStorageBlobsVersion>
-    <AzureStorageQueuesVersion>12.10.0</AzureStorageQueuesVersion>
-    <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
-    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
-    <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
-    <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
-    <MicrosoftIdentityModelTokensVersion>6.17.0</MicrosoftIdentityModelTokensVersion>
-    <MicrosoftOpenApiReadersVersion>1.2.3</MicrosoftOpenApiReadersVersion>
-    <SystemCommandLineVersion>2.0.0-beta3.22173.1</SystemCommandLineVersion>
-    <SystemIdentityModelTokensJwtVersion>6.17.0</SystemIdentityModelTokensJwtVersion>
-    <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
-    <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
-    <!-- Third-party references -->
-    <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
-    <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
-    <XunitAssertVersion>2.4.1</XunitAssertVersion>
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>6.0.5</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>7.0.0-preview.7.22376.6</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>6.0.5</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>7.0.0-preview.7.22376.6</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>7.0.0-preview.7.22376.6</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>    
+    <!-- Third-party references -->
+    <AwsSdkS3Version>3.5.8.1</AwsSdkS3Version>
   </PropertyGroup>
   <PropertyGroup Label="Dev Workflow">
     <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
