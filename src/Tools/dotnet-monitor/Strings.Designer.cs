@@ -808,6 +808,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection mode: Connect.
+        /// </summary>
+        internal static string LogFormatString_ConnectionModeConnect {
+            get {
+                return ResourceManager.GetString("LogFormatString_ConnectionModeConnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection mode: Listen at &apos;{path}&apos;.
+        /// </summary>
+        internal static string LogFormatString_ConnectionModeListen {
+            get {
+                return ResourceManager.GetString("LogFormatString_ConnectionModeListen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Diagnostic port file at &apos;{0}&apos; was either deleted or moved while it was still being used..
         /// </summary>
         internal static string LogFormatString_DiagnosticPortAlteredWhileInUse {

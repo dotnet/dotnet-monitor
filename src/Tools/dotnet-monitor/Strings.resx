@@ -491,6 +491,12 @@
   <data name="LogFormatString_CollectionRuleUnmatchedFilters" xml:space="preserve">
     <value>Collection rule '{ruleName}' filters do not match the process.</value>
   </data>
+  <data name="LogFormatString_ConnectionModeConnect" xml:space="preserve">
+    <value>Connection mode: Connect</value>
+  </data>
+  <data name="LogFormatString_ConnectionModeListen" xml:space="preserve">
+    <value>Connection mode: Listen at '{path}'</value>
+  </data>
   <data name="LogFormatString_DiagnosticPortAlteredWhileInUse" xml:space="preserve">
     <value>Diagnostic port file at '{0}' was either deleted or moved while it was still being used.</value>
   </data>

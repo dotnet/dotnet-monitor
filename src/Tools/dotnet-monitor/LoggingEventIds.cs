@@ -85,7 +85,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         EnvironmentBlockNotSupported = 72,
         FailedInitializeSharedLibraryStorage = 73,
         UnableToApplyProfiler = 74,
-        SharedLibraryPath = 75
+        SharedLibraryPath = 75,
+        ConnectionModeConnect = 76,
+        ConnectionModeListen = 77
     }
 
     internal static class LoggingEventIdsExtensions
