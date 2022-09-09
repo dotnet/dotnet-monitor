@@ -191,17 +191,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
         {
-            DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
-            builder.AddInMemoryCollection(new Dictionary<string, string>
+            if (!string.IsNullOrEmpty(diagnosticPort))
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
-            });
-        }
-
-        private static DiagnosticPortConnectionMode GetConnectionMode(string diagnosticPort)
-        {
-            return string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
+                builder.AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), DiagnosticPortConnectionMode.Listen.ToString()},
+                    {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
+                });
+            }
         }
     }
 }

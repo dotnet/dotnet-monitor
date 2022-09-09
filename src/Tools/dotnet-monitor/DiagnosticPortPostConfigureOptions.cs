@@ -5,6 +5,8 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -12,11 +14,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         IPostConfigureOptions<DiagnosticPortOptions>
     {
         private readonly IConfiguration _configuration;
+        private readonly IOptions<StorageOptions> _storageOptions;
 
         public DiagnosticPortPostConfigureOptions(
+            IOptions<StorageOptions> storageOptions,
             IConfiguration configuration)
         {
             _configuration = configuration;
+            _storageOptions = storageOptions;
         }
 
         public void PostConfigure(string name, DiagnosticPortOptions options)
@@ -28,6 +33,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 options.ConnectionMode = DiagnosticPortConnectionMode.Listen;
                 options.EndpointName = diagPortSection.Value;
+            }
+
+            // Create a default server socket under the default shared path if diagnostic port was not configured
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+                !options.ConnectionMode.HasValue && string.IsNullOrEmpty(options.EndpointName) &&
+                !string.IsNullOrEmpty(_storageOptions.Value.DefaultSharedPath))
+            {
+                options.ConnectionMode = DiagnosticPortConnectionMode.Listen;
+                options.EndpointName = Path.Combine(_storageOptions.Value.DefaultSharedPath, "dotnet-monitor.sock");
             }
         }
     }
