@@ -1,12 +1,12 @@
-﻿using System;
+using Amazon.S3;
+using Amazon.S3.Model;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.S3;
-using Amazon.S3.Model;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 
@@ -78,10 +78,10 @@ internal class MultiPartUploadStream : Stream
         if (Disposed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
 
-        int BytesAvailableInBuffer() { return _buffer.Length - _offset;}
+        int BytesAvailableInBuffer() { return _buffer.Length - _offset; }
         do
         {
-            int bytesToCopy = Math.Min(count, BytesAvailableInBuffer()); 
+            int bytesToCopy = Math.Min(count, BytesAvailableInBuffer());
             Array.Copy(buffer, offset, _buffer, _offset, bytesToCopy);
             offset += bytesToCopy; // move offset of part buffer
             count -= bytesToCopy; // reduce amount of bytes which still needs to be written
@@ -89,7 +89,7 @@ internal class MultiPartUploadStream : Stream
 
             // part buffer is full -> trigger upload of part
             if (BytesAvailableInBuffer() == 0)
-                await DoWriteAsync(cancellationToken); 
+                await DoWriteAsync(cancellationToken);
         } while (count > 0);
     }
 
@@ -100,8 +100,8 @@ internal class MultiPartUploadStream : Stream
         var uploadRequest = new UploadPartRequest
         {
             BucketName = _bucketName,
-            Key = _objectKey, 
-            InputStream = stream, 
+            Key = _objectKey,
+            InputStream = stream,
             PartSize = _offset,
             UploadId = _uploadId,
             PartNumber = _parts.Count

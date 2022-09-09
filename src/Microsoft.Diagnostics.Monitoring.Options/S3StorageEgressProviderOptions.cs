@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Generic;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
@@ -38,7 +38,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsAccessKeyFile))]
         public string SecretsAccessKeyFile { get; set; }
-        
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey))]
@@ -81,8 +80,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
             if (string.IsNullOrEmpty(BucketName))
                 yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(BucketName)));
-            
-            if(GeneratePresSignedUrl && PreSignedUrlExpiryInMinutes <= 0)
+
+            if (GeneratePresSignedUrl && PreSignedUrlExpiryInMinutes <= 0)
                 yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(PreSignedUrlExpiryInMinutes)));
         }
     }

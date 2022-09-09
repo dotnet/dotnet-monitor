@@ -1,4 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon.S3.Transfer;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,11 +12,6 @@ using System.Linq;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
-using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon.S3.Transfer;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 {
@@ -59,7 +59,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                 var client = await CreateClientAsync(options, token);
                 var uploadId = await InitMultiPartUploadAsync(client, options.BucketName, artifactSettings, token);
                 await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, options.CopyBufferSize!.Value);
-                
                 Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.S3Storage);
                 await action(stream, token);
                 await stream.FinalizeAsync(token); // force to push the last part
@@ -124,7 +123,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                 return $"BucketName={options.BucketName}, Key={artifactSettings.Name}";
 
             DateTime expires = DateTime.UtcNow.AddMinutes(options.PreSignedUrlExpiryInMinutes);
-            string resourceId = client.GetPreSignedURL(new GetPreSignedUrlRequest {BucketName = options.BucketName, Key = artifactSettings.Name, Expires = expires});
+            string resourceId = client.GetPreSignedURL(new GetPreSignedUrlRequest { BucketName = options.BucketName, Key = artifactSettings.Name, Expires = expires });
             Logger?.EgressProviderSavedStream(EgressProviderTypes.S3Storage, resourceId);
             return resourceId;
         }
@@ -172,7 +171,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         private static async Task<string> InitMultiPartUploadAsync(IAmazonS3 client, string bucketName, EgressArtifactSettings artifactSettings, CancellationToken cancellationToken)
         {
-            var request = new InitiateMultipartUploadRequest {BucketName = bucketName, Key = artifactSettings.Name, ContentType = artifactSettings.ContentType};
+            var request = new InitiateMultipartUploadRequest { BucketName = bucketName, Key = artifactSettings.Name, ContentType = artifactSettings.ContentType };
             foreach (var metaData in artifactSettings.Metadata)
                 request.Metadata[metaData.Key] = metaData.Value;
             var response = await client.InitiateMultipartUploadAsync(request, cancellationToken);
@@ -235,8 +234,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         private static string WrapMessage(string innerMessage)
         {
-            return !string.IsNullOrEmpty(innerMessage) 
-                ? string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressFileFailedDetailed, innerMessage) 
+            return !string.IsNullOrEmpty(innerMessage)
+                ? string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressFileFailedDetailed, innerMessage)
                 : Strings.ErrorMessage_EgressFileFailedGeneric;
         }
 
