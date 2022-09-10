@@ -230,11 +230,11 @@ HRESULT MainProfiler::InitializeCommandServer()
     tstring separator = _T("\\");
 #endif
 
-    tstring tmpDir;
-    IfFailRet(_environmentHelper->GetTempFolder(tmpDir));
+    tstring sharedPath;
+    IfFailRet(_environmentHelper->GetSharedPath(sharedPath));
 
     _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger, m_pCorProfilerInfo));
-    tstring socketPath = tmpDir + separator + instanceId + _T(".sock");
+    tstring socketPath = sharedPath + separator + instanceId + _T(".sock");
 
     IfFailRet(_commandServer->Start(to_string(socketPath), [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); }));
 

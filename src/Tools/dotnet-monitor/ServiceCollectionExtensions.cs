@@ -176,7 +176,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
+            ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
+            services.AddSingleton<IPostConfigureOptions<StorageOptions>, StoragePostConfigureOptions>();
+            return services;
         }
 
         public static IServiceCollection ConfigureDefaultProcess(this IServiceCollection services, IConfiguration configuration)

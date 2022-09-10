@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.DependencyInjection;
@@ -156,6 +157,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                 services.AddSingleton<ServerEndpointInfoSource>();
                 services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
+                services.AddSingleton<StartupLogging>();
+                services.AddSingleton<IStartupFilter, StartupLoggingStartupFilter>();
                 services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                 services.AddSingleton<IDumpService, DumpService>();
                 services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();

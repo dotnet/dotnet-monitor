@@ -423,6 +423,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_SharedLibraryPath);
 
+        private static readonly Action<ILogger, Exception> _connectionModeConnect =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.ConnectionModeConnect.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ConnectionModeConnect);
+
+        private static readonly Action<ILogger, string, Exception> _connectionModeListen =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ConnectionModeListen.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ConnectionModeListen);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -775,6 +787,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void SharedLibraryPath(this ILogger logger, string path)
         {
             _sharedlibraryPath(logger, path, null);
+        }
+
+        public static void ConnectionModeConnect(this ILogger logger)
+        {
+            _connectionModeConnect(logger, null);
+        }
+
+        public static void ConnectionModeListen(this ILogger logger, string path)
+        {
+            _connectionModeListen(logger, path, null);
         }
     }
 }

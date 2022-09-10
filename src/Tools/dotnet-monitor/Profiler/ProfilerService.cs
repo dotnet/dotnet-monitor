@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,14 +20,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
     {
         private readonly TaskCompletionSource<INativeFileProviderFactory> _fileProviderFactorySource = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly ISharedLibraryInitializer _sharedLibraryInitializer;
+        private readonly IOptions<StorageOptions> _storageOptions;
         private readonly ILogger<ProfilerService> _logger;
 
         public ProfilerService(
             ISharedLibraryInitializer sharedLibraryInitializer,
+            IOptions<StorageOptions> storageOptions,
             ILogger<ProfilerService> logger)
         {
             _logger = logger;
             _sharedLibraryInitializer = sharedLibraryInitializer;
+            _storageOptions = storageOptions;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -78,6 +82,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                     {
                         // Do not use IFileInfo.PhysicalPath as that is null of files that do not exist.
                         throw new FileNotFoundException(Strings.ErrorMessage_UnableToFindProfilerAssembly, profilerFileInfo.Name);
+                    }
+
+                    // This optional setting instructs where the profiler should establish its socket file
+                    // and where to provide any additional files to dotnet-monitor.
+                    // CONSIDER: Include the runtime instance identifier in the path in order to keep
+                    // target processes assets separated from one another.
+                    string defaultSharedPath = _storageOptions.Value.DefaultSharedPath;
+                    if (!string.IsNullOrEmpty(defaultSharedPath))
+                    {
+                        // Create sharing directory in case it doesn't exist.
+                        Directory.CreateDirectory(defaultSharedPath);
+
+                        await client.SetEnvironmentVariableAsync(
+                            ProfilerIdentifiers.EnvironmentVariables.SharedPath,
+                            defaultSharedPath,
+                            cancellationToken);
                     }
 
                     await client.SetEnvironmentVariableAsync(
