@@ -147,28 +147,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     logger.LogTempKey(options.TemporaryJwtKey.Token);
                 }
+
                 //Auth is enabled and we are binding on http. Make sure we log a warning.
-
-                string hostingUrl = Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
-                string[] urls = ConfigurationHelper.SplitValue(hostingUrl);
-                foreach (string url in urls)
+                if (listenResults.HasInsecureAuthentication)
                 {
-                    BindingAddress address = null;
-                    try
-                    {
-                        address = BindingAddress.Parse(url);
-                    }
-                    catch (FormatException ex)
-                    {
-                        logger.ParsingUrlFailed(url, ex);
-                        continue;
-                    }
-
-                    if (string.Equals(Uri.UriSchemeHttp, address.Scheme, StringComparison.OrdinalIgnoreCase))
-                    {
-                        logger.InsecureAuthenticationConfiguration();
-                        break;
-                    }
+                    logger.InsecureAuthenticationConfiguration();
                 }
             }
 
