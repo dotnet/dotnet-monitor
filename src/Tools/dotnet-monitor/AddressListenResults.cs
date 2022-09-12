@@ -29,6 +29,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public bool AnyAddresses => (_defaultAddressCount + _metricsAddressCount) > 0;
 
+        public bool HasInsecureAuthentication { get; private set; }
+
         public IEnumerable<string> GetDefaultAddresses(IServerAddressesFeature serverAddresses)
         {
             Debug.Assert(serverAddresses.Addresses.Count == _defaultAddressCount + _metricsAddressCount);
@@ -44,11 +46,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// <summary>
         /// Configures <see cref="KestrelServerOptions"/> with the specified default and metrics URLs.
         /// </summary>
-        public void Listen(KestrelServerOptions options, IEnumerable<string> defaultUrls, IEnumerable<string> metricsUrls)
+        public void Listen(KestrelServerOptions options, IEnumerable<string> defaultUrls, IEnumerable<string> metricsUrls, bool isAuthEnabled)
         {
             foreach (string url in defaultUrls)
             {
-                if (Listen(options, url))
+                if (Listen(options, url, isAuthEnabled))
                 {
                     _defaultAddressCount++;
                 }
@@ -56,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             foreach (string url in metricsUrls)
             {
-                if (Listen(options, url))
+                if (Listen(options, url, false))
                 {
                     _metricsAddressCount++;
                 }
@@ -66,7 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// <summary>
         /// Configure the <see cref="KestrelServerOptions"/> with the specified URL.
         /// </summary>
-        private bool Listen(KestrelServerOptions options, string url)
+        private bool Listen(KestrelServerOptions options, string url, bool isAuthEnabled)
         {
             BindingAddress address = null;
             try
@@ -109,6 +111,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Record the exception; it will be logged later through ILogger.
                 Errors.Add(new AddressListenResult(url, ex));
                 return false;
+            }
+
+            if (isAuthEnabled && address.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase))
+            {
+                HasInsecureAuthentication = true;
             }
 
             return true;
