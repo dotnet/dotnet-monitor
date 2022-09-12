@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             foreach (string url in metricsUrls)
             {
-                if (Listen(options, url, false))
+                if (Listen(options, url, isAuthEnabled: false))
                 {
                     _metricsAddressCount++;
                 }
