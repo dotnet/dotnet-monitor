@@ -130,6 +130,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             options,
                             urls,
                             metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ? metricUrls : Array.Empty<string>());
+
+                        // Since the endpoints have already been defined on the KestrelServerOptions, clear out the urls
+                        // so that the address binder does not log a warning about overriding urls as specified by configuration.
+                        context.Configuration[WebHostDefaults.ServerUrlsKey] = string.Empty;
                     })
                     .UseStartup<Startup>();
                 });
