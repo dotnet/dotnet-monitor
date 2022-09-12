@@ -157,8 +157,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
                 services.AddSingleton<ServerEndpointInfoSource>();
                 services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
-                services.AddSingleton<StartupLogging>();
-                services.AddSingleton<IStartupFilter, StartupLoggingStartupFilter>();
                 services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                 services.AddSingleton<IDumpService, DumpService>();
                 services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();
@@ -170,6 +168,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureDefaultProcess(context.Configuration);
                 services.ConfigureCollectionRules();
                 services.ConfigureProfiler();
+                services.ConfigureStartupLoggers();
             });
         }
     }

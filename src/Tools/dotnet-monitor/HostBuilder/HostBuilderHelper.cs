@@ -98,6 +98,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     webBuilder.ConfigureServices(services =>
                     {
                         services.AddSingleton(listenResults);
+                        services.AddSingleton<IStartupFilter, AddressListenResultsStartupFilter>();
+                        services.AddHostedService<StartupLoggingHostedService>();
                     })
                     .ConfigureKestrel((context, options) =>
                     {
@@ -130,7 +132,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         listenResults.Listen(
                             options,
                             urls,
-                            metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ? metricUrls : Array.Empty<string>());
+                            metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ? metricUrls : Array.Empty<string>(),
+                            settings.Authentication.KeyAuthenticationMode != KeyAuthenticationMode.NoAuth);
+
+                        context.Configuration[WebHostDefaults.ServerUrlsKey] = string.Empty;
                     })
                     .UseStartup<Startup>();
                 });

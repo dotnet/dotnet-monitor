@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
@@ -23,13 +24,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private IOptionsMonitor<MetricsOptions> _optionsMonitor;
         private IOptionsMonitor<GlobalCounterOptions> _counterOptions;
 
-        public MetricsService(IDiagnosticServices services,
+        public MetricsService(IServiceProvider serviceProvider,
             IOptionsMonitor<MetricsOptions> optionsMonitor,
             IOptionsMonitor<GlobalCounterOptions> counterOptions,
             MetricsStoreService metricsStore)
         {
             _store = metricsStore;
-            _services = services;
+            _services = serviceProvider.GetRequiredService<IDiagnosticServices>();
             _optionsMonitor = optionsMonitor;
             _counterOptions = counterOptions;
         }
