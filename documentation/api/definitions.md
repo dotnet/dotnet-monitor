@@ -322,6 +322,29 @@ The `uid` property is useful for uniquely identifying a process when it is runni
 }
 ```
 
+## Stack
+
+| Name | Type | Description |
+|---|---|---|
+| `threadId` | int | The native thread id of the managed thread. |
+| `frames` | [StackFrame](#stackframe)[] | Managed frame for the thread at the time of collection. |
+
+
+## StackFrame
+
+| Name | Type | Description |
+|---|---|---|
+| `methodName` | string | Name of the method for this frame. This includes generic parameters. |
+| `className` | string | Name of the class for this frame. This includes generic parameters. |
+| `moduleName` | string | Name of the module for this frame. |
+
+## StackResult
+
+| Name | Type | Description |
+|---|---|---|
+| `stacks` | [Stack](#stack)[] | List of all managed stacks at the time of collection. |
+
+
 ## TraceProfile
 
 Enumeration that describes the type of diagnostic trace to capture. Each profile represents a list of event providers, event levels, and keywords.
