@@ -71,5 +71,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string StopSpin = nameof(StopSpin);
             }
         }
+
+        public static class TraceEvents
+        {
+            public const string Name = nameof(TraceEvents);
+
+            public static class Commands
+            {
+                public const string EmitUniqueEvent = nameof(EmitUniqueEvent);
+                public const string ShutdownScenario = nameof(ShutdownScenario);
+            }
+        }
     }
 }

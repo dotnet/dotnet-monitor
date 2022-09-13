@@ -1133,6 +1133,79 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
+        public Task CollectionRuleOptions_CollectTraceAction_StopOnEvent()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+            const string ExpectedEventProviderName = "Microsoft-Extensions-Logging";
+            List<EventPipeProvider> ExpectedProviders = new()
+            {
+                new() { Name = ExpectedEventProviderName }
+            };
+
+            TraceEventOptions expectedStoppingEvent = new()
+            {
+                EventName = "CustomEvent",
+                ProviderName = ExpectedEventProviderName,
+                Opcode = Tracing.TraceEventOpcode.Stop
+            };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, (options) =>
+                        {
+                            options.StoppingEvent = expectedStoppingEvent;
+                        });
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                },
+                ruleOptions =>
+                {
+                    ruleOptions.VerifyCollectTraceAction(0, ExpectedProviders, ExpectedEgressProvider, expectedStoppingEvent);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CollectTraceAction_StopOnEvent_MissingProviderConfig()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+            const string ExpectedMissingEventProviderName = "Non-Existent-Provider";
+
+            List<EventPipeProvider> ExpectedProviders = new()
+            {
+                new() { Name = "Microsoft-Extensions-Logging" }
+            };
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, (options) =>
+                        {
+                            options.StoppingEvent = new TraceEventOptions()
+                            {
+                                EventName = "CustomEvent",
+                                ProviderName = ExpectedMissingEventProviderName
+                            };
+                        });
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyMissingStoppingEventProviderMessage(
+                        failures,
+                        0,
+                        nameof(CollectTraceOptions.StoppingEvent),
+                        ExpectedMissingEventProviderName,
+                        nameof(CollectTraceOptions.Providers));
+                });
+        }
+
+        [Fact]
         public Task CollectionRuleOptions_CollectLiveMetricsAction_RoundTrip()
         {
             const string ExpectedEgressProvider = "TmpEgressProvider";
@@ -1659,6 +1732,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CultureInfo.InvariantCulture,
                 Strings.ErrorMessage_EgressProviderDoesNotExist,
                 egressProvider);
+
+            Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyMissingStoppingEventProviderMessage(string[] failures, int index, string fieldName, string providerName, string providerFieldName)
+        {
+            string message = string.Format(
+                CultureInfo.InvariantCulture,
+                Strings.ErrorMessage_MissingStoppingEventProvider,
+                fieldName,
+                providerName,
+                providerFieldName);
 
             Assert.Equal(message, failures[index]);
         }

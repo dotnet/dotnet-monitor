@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class TraceUtilities
     {
+        // Buffer size matches FileStreamResult
+        private const int DefaultBufferSize = 0x10000;
+
         public static string GenerateTraceFileName(IEndpointInfo endpointInfo)
         {
             return FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.nettrace");
@@ -82,9 +86,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     startCompletionSource.TrySetResult(null);
                 }
-                //Buffer size matches FileStreamResult
                 //CONSIDER Should we allow client to change the buffer size?
-                await eventStream.CopyToAsync(outputStream, 0x10000, token);
+                await eventStream.CopyToAsync(outputStream, DefaultBufferSize, token);
             };
 
             var client = new DiagnosticsClient(endpointInfo.Endpoint);
@@ -96,6 +99,42 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }, streamAvailable);
 
             await pipeProcessor.RunAsync(token);
+        }
+
+        public static async Task CaptureTraceUntilEventAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan timeout, Stream outputStream, string providerName, string eventName, TraceEventOpcode? opcode, CancellationToken token)
+        {
+            DiagnosticsClient client = new(endpointInfo.Endpoint);
+            EventTracePipeline pipeProcessor = null;
+            EventMonitoringPassthroughStream eventMonitoringStream = null;
+
+            Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
+            {
+                startCompletionSource?.TrySetResult(null);
+
+                eventMonitoringStream = new EventMonitoringPassthroughStream(providerName, eventName, opcode, async (_) =>
+                {
+                    // JSFIX: log
+                    await pipeProcessor?.StopAsync(token);
+                }, eventStream, outputStream, DefaultBufferSize, leaveDestinationStreamOpen: true /* We do not have ownership of the outputStream */);
+
+                await eventMonitoringStream.ProcessAsync(token);
+            };
+
+            pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
+            {
+                Configuration = configuration,
+                Duration = timeout,
+            }, streamAvailable);
+
+            try
+            {
+                await pipeProcessor.RunAsync(token);
+            }
+            finally
+            {
+                await pipeProcessor.DisposeAsync();
+                await eventMonitoringStream.DisposeAsync();
+            }
         }
     }
 }

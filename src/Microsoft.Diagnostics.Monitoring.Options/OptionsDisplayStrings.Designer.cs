@@ -698,6 +698,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The event to watch for while collecting the trace, and once observed the trace will be stopped..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_StoppingEvent {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_StoppingEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written..
         /// </summary>
         public static string DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize {
@@ -1343,6 +1352,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the event..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventOptions_EventName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventOptions_EventName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The opcode of the event, if empty the specified event&apos;s opcode will not be checked..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventOptions_Opcode {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventOptions_Opcode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The event provider that will produce the specified event..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventOptions_ProviderName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventOptions_ProviderName", resourceCulture);
             }
         }
         

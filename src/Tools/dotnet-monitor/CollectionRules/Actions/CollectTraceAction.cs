@@ -66,6 +66,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 MonitoringSourceConfiguration configuration;
 
+                TraceEventOptions stoppingEvent = null;
+
                 if (Options.Profile.HasValue)
                 {
                     TraceProfile profile = Options.Profile.Value;
@@ -78,8 +80,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     EventPipeProvider[] optionsProviders = Options.Providers.ToArray();
                     bool requestRundown = Options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
                     int bufferSizeMegabytes = Options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
-
                     configuration = TraceUtilities.GetTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
+
+                    stoppingEvent = Options.StoppingEvent;
                 }
 
                 string fileName = TraceUtilities.GenerateTraceFileName(EndpointInfo);
@@ -90,7 +93,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     async (outputStream, token) =>
                     {
                         using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
-                        await TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token);
+                        if (null != stoppingEvent)
+                        {
+                            await TraceUtilities.CaptureTraceUntilEventAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, stoppingEvent.ProviderName, stoppingEvent.EventName, stoppingEvent.Opcode, token: token);
+                        }
+                        else
+                        {
+                            await TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token);
+                        }
                     },
                     egressProvider,
                     fileName,

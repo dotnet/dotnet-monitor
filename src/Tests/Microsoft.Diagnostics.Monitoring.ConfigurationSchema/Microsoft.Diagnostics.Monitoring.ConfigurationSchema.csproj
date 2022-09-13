@@ -25,6 +25,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectLogsOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectLogsOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectTraceOptions.cs" Link="Options\CollectionRules\Actions\CollectTraceOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectTraceOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectTraceOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\TraceEventOptions.cs" Link="Options\CollectionRules\Actions\TraceEventOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptions.cs" Link="Options\CollectionRules\Actions\ExecuteOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptionsDefaults.cs" Link="Options\CollectionRules\Actions\ExecuteOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\GetEnvironmentVariableOptions.cs" Link="Options\CollectionRules\Actions\GetEnvironmentVariableOptions.cs" />
@@ -71,6 +72,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsLoggingAbstractionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsoleVersion)" />
     <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
+    <PackageReference Include="Microsoft.Diagnostics.Monitoring.EventPipe" Version="$(MicrosoftDiagnosticsMonitoringEventPipeVersion)" />
   </ItemGroup>
 
   <ItemGroup>

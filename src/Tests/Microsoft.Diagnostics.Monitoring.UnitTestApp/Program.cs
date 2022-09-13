@@ -18,7 +18,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 AsyncWaitScenario.Command(),
                 LoggerScenario.Command(),
                 SpinWaitScenario.Command(),
-                EnvironmentVariablesScenario.Command()
+                EnvironmentVariablesScenario.Command(),
+                TraceEventsScenario.Command()
             })
             .UseDefaults()
             .Build()

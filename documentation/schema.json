@@ -1636,6 +1636,17 @@
           "type": "string",
           "description": "The name of the egress provider to which the trace is egressed.",
           "minLength": 1
+        },
+        "StoppingEvent": {
+          "description": "The event to watch for while collecting the trace, and once observed the trace will be stopped.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TraceEventOptions"
+            }
+          ]
         }
       }
     },
@@ -1705,6 +1716,65 @@
         "Warning",
         "Informational",
         "Verbose"
+      ]
+    },
+    "TraceEventOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ProviderName",
+        "EventName"
+      ],
+      "properties": {
+        "ProviderName": {
+          "type": "string",
+          "description": "The event provider that will produce the specified event.",
+          "minLength": 1
+        },
+        "EventName": {
+          "type": "string",
+          "description": "The name of the event.",
+          "minLength": 1
+        },
+        "Opcode": {
+          "description": "The opcode of the event, if empty the specified event's opcode will not be checked.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TraceEventOpcode"
+            }
+          ]
+        }
+      }
+    },
+    "TraceEventOpcode": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Info",
+        "Start",
+        "Stop",
+        "DataCollectionStart",
+        "DataCollectionStop",
+        "Extension",
+        "Reply",
+        "Resume",
+        "Suspend",
+        "Transfer"
+      ],
+      "enum": [
+        "Info",
+        "Start",
+        "Stop",
+        "DataCollectionStart",
+        "DataCollectionStop",
+        "Extension",
+        "Reply",
+        "Resume",
+        "Suspend",
+        "Transfer"
       ]
     },
     "ExecuteOptions": {
