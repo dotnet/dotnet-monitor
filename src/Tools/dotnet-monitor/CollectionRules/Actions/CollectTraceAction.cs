@@ -82,6 +82,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     int bufferSizeMegabytes = Options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
                     configuration = TraceUtilities.GetTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
 
+                    // JSFIX: Investigate what is desired behavior here is.
+                    // We currently only honor StoppingEvent on providers config  similair to the above request rundown
+                    // and buffer size, but don't provide any insight to the user about this.
+                    //
+                    // We can update the StoppingEvent to work for both profile and provider configs, but would have to either:
+                    // - add more initelligent config validation to ensure the stopping event provider is available via a profile
+                    // - ignore the check altogether.
                     stoppingEvent = Options.StoppingEvent;
                 }
 
