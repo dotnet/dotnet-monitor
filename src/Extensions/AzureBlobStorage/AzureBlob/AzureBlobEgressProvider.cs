@@ -183,7 +183,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
             catch (RequestFailedException ex) when (ex.Status == ((int)HttpStatusCode.NotFound))
             {
-                Utilities.WriteWarningLogs(Strings.LogFormatString_QueueDoesNotExist, new string[] { options.QueueName });
+                Utilities.WriteWarningLogs(Strings.LogFormatString_QueueDoesNotExist, new string[] { options.QueueName, nameof(options.QueueName), nameof(options.QueueAccountUri) });
             }
             catch (Exception ex)
             {

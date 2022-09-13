@@ -47,7 +47,7 @@ namespace UnitTests
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.ProvideUploadStream)]
-        [InlineData(UploadAction.WriteToProviderStream)]
+        //[InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_UploadsCorrectData(UploadAction uploadAction)
         {
             _azuriteFixture.SkipTestIfNotAvailable();
@@ -74,7 +74,7 @@ namespace UnitTests
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.ProvideUploadStream)]
-        [InlineData(UploadAction.WriteToProviderStream)]
+        //[InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_Supports_QueueMessages(UploadAction uploadAction)
         {
             _azuriteFixture.SkipTestIfNotAvailable();
@@ -101,7 +101,7 @@ namespace UnitTests
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.ProvideUploadStream)]
-        [InlineData(UploadAction.WriteToProviderStream)]
+        //[InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_Supports_RestrictiveSasToken(UploadAction uploadAction)
         {
             _azuriteFixture.SkipTestIfNotAvailable();
@@ -129,7 +129,7 @@ namespace UnitTests
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.ProvideUploadStream)]
-        [InlineData(UploadAction.WriteToProviderStream)]
+        //[InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_Supports_RestrictiveQueueSasToken(UploadAction uploadAction)
         {
             _azuriteFixture.SkipTestIfNotAvailable();
@@ -159,7 +159,7 @@ namespace UnitTests
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.ProvideUploadStream)]
-        [InlineData(UploadAction.WriteToProviderStream)]
+        //[InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_Supports_OnlyRestrictiveSasTokens(UploadAction uploadAction)
         {
             _azuriteFixture.SkipTestIfNotAvailable();
@@ -191,7 +191,7 @@ namespace UnitTests
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.ProvideUploadStream)]
-        [InlineData(UploadAction.WriteToProviderStream)]
+        //[InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_ThrowsWhen_ContainerDoesNotExistAndUsingRestrictiveSasToken(UploadAction uploadAction)
         {
             _azuriteFixture.SkipTestIfNotAvailable();
@@ -213,7 +213,7 @@ namespace UnitTests
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.ProvideUploadStream)]
-        [InlineData(UploadAction.WriteToProviderStream)]
+        //[InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_DoesNotThrowWhen_QueueDoesNotExistAndUsingRestrictiveQueueSasToken(UploadAction uploadAction)
         {
             _azuriteFixture.SkipTestIfNotAvailable();

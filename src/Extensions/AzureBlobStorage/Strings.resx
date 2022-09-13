@@ -173,7 +173,7 @@
 2. keyName: Name of the property that could not be found</comment>
   </data>
   <data name="LogFormatString_QueueDoesNotExist" xml:space="preserve">
-    <value>The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly.</value>
+    <value>The queue {0} does not exist; ensure that the {1} and {2} fields are set correctly.</value>
     <comment>Gets the format string that is printed in the 57:QueueDoesNotExist event.
 3 Format Parameters:
 1. queueName: The name of the Azure Queue where messages are egressed
