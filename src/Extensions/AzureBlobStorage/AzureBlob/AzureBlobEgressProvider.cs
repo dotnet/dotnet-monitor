@@ -31,6 +31,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
         }
 
+        protected ILogger Logger { get; }
+
+        public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
+        {
+            Logger = logger;
+        }
+
         public async Task<string> EgressAsync(
             string providerName,
             AzureBlobEgressProviderOptions options,
