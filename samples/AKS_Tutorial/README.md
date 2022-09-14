@@ -16,7 +16,7 @@
 * 6:27 - `kubectl get secrets`
 * 6:32 - `kubectl apply -f deploy.yaml`
 * 6:41 - `kubectl get pods`
-* 6:46 - `kubectl logs <pod-name> monitor
+* 6:46 - `kubectl logs <pod-name> monitor`
 * 7:14 - `kubectl get pods`
 * 7:20 - `kubectl port-forward <pod-name> 80`
 * 7:20 - `kubectl port-forward <pod-name> 52323`
