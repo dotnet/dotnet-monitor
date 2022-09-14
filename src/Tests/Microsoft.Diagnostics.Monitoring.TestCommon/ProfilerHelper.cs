@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    internal static class ProfilerHelper
+    public static class ProfilerHelper
     {
         private const string ClrEnvVarPrefix = "CORECLR_";
 

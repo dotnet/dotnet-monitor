@@ -7,7 +7,7 @@
 #include "../Logging/Logger.h"
 #include "../Utilities/StringUtilities.h"
 
-IpcCommServer::IpcCommServer() : _shutdown(false)
+IpcCommServer::IpcCommServer(const std::shared_ptr<ILogger>& logger) : _shutdown(false), _logger(logger)
 {
 }
 
@@ -89,7 +89,7 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
         TIMEVAL timeout;
         timeout.tv_sec = AcceptTimeoutSeconds;
         timeout.tv_usec = 0;
-        result = select(2, &set, nullptr, nullptr, &timeout);
+        result = select(((int)(SOCKET)_domainSocket) + 1, &set, nullptr, nullptr, &timeout);
 
         if (_shutdown.load())
         {

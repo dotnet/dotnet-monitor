@@ -26,7 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             Func<ApiClient, int, Task> postAppValidate = null,
             Action<AppRunner> configureApp = null,
             Action<MonitorCollectRunner> configureTool = null,
-            bool disableHttpEgress = false)
+            bool disableHttpEgress = false,
+            string profilerLogLevel = null)
         {
             DiagnosticPortHelper.Generate(
                 mode,
@@ -47,6 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             ApiClient apiClient = new(outputHelper, httpClient);
 
             AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
+            appRunner.ProfilerLogLevel = profilerLogLevel;
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = scenarioName;
