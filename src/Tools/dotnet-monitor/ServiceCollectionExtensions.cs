@@ -228,6 +228,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
+        public static IServiceCollection ConfigureStartupLoggers(this IServiceCollection services)
+        {
+            services.AddSingleton<IStartupLogger, ExperienceSurveyStartupLogger>();
+            services.AddSingleton<IStartupLogger, HostBuilderStartupLogger>();
+            services.AddSingleton<IStartupLogger, DiagnosticPortStartupLogger>();
+            services.AddSingleton<IStartupLogger, ElevatedPermissionsStartupLogger>();
+            services.AddSingleton<IStartupLogger, AuthenticationStartupLogger>();
+            services.AddSingleton<IStartupLogger, AddressListenResultsStartupLogger>();
+            return services;
+        }
+
         private static IServiceCollection RegisterProvider<TOptions, TProvider>(this IServiceCollection services, string name)
             where TProvider : class, IEgressProvider<TOptions>
             where TOptions : class

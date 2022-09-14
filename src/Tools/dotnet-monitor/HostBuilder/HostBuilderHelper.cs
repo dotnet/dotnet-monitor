@@ -98,6 +98,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     webBuilder.ConfigureServices(services =>
                     {
                         services.AddSingleton(listenResults);
+                        services.AddSingleton<IStartupFilter, AddressListenResultsStartupFilter>();
+                        services.AddHostedService<StartupLoggingHostedService>();
                     })
                     .ConfigureKestrel((context, options) =>
                     {
