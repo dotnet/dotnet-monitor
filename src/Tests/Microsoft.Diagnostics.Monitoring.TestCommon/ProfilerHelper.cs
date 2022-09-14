@@ -22,58 +22,40 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string ClrEnvVarEnableNotificationProfilers = ClrEnvVarPrefix + "ENABLE_NOTIFICATION_PROFILERS";
         public const string ClrEnvVarEnableProfiling = ClrEnvVarPrefix + "ENABLE_PROFILING";
         public const string ClrEnvVarProfiler = ClrEnvVarPrefix + "PROFILER";
-        public const string ClrEnvVarProfilerPath64 = ClrEnvVarPrefix + "PROFILER_PATH_64";
+        public const string ClrEnvVarProfilerPath = ClrEnvVarPrefix + "PROFILER_PATH";
 
         public static string GetPath(Architecture architecture) =>
             NativeLibraryHelper.GetSharedLibraryPath(architecture, ProfilerIdentifiers.LibraryRootFileName);
 
         private const string OSReleasePath = "/etc/os-release";
-        private static readonly Architecture[] ProfilerArchitectures = { Architecture.X64, Architecture.X86, Architecture.Arm64 };
 
-        public static string TargetRuntimeIdentifier
+        public static string GetTargetRuntimeIdentifier(Architecture? architecture)
         {
-            get
+            string architectureString = (architecture ?? RuntimeInformation.OSArchitecture)
+                .ToString("G")
+                .ToLowerInvariant();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // The tests do not know what runtime architecture they are running for.
-                // Use the built profiler architecture to heuristically determine on which
-                // architecture the tests are running.
-                string architecture = null;
-                foreach (Architecture arch in ProfilerArchitectures)
-                {
-                    if (File.Exists(GetPath(arch)))
-                    {
-                        architecture = arch.ToString("G").ToLowerInvariant();
-                        break;
-                    }
-                }
-
-                if (string.IsNullOrEmpty(architecture))
-                {
-                    throw new PlatformNotSupportedException("Unable to determine architecture.");
-                }
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    return FormattableString.Invariant($"win-{architecture}");
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    return FormattableString.Invariant($"osx-{architecture}");
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    if (File.Exists(OSReleasePath) && File.ReadAllText(OSReleasePath).Contains("Alpine", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return FormattableString.Invariant($"linux-musl-{architecture}");
-                    }
-                    else
-                    {
-                        return FormattableString.Invariant($"linux-{architecture}");
-                    }
-                }
-
-                throw new PlatformNotSupportedException("Unable to determine OS platform.");
+                return FormattableString.Invariant($"win-{architectureString}");
             }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                return FormattableString.Invariant($"osx-{architectureString}");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                if (File.Exists(OSReleasePath) && File.ReadAllText(OSReleasePath).Contains("Alpine", StringComparison.OrdinalIgnoreCase))
+                {
+                    return FormattableString.Invariant($"linux-musl-{architectureString}");
+                }
+                else
+                {
+                    return FormattableString.Invariant($"linux-{architectureString}");
+                }
+            }
+
+            throw new PlatformNotSupportedException("Unable to determine OS platform.");
         }
 
         public static IEnumerable<object[]> GetArchitectureProfilerPath()
