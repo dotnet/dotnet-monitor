@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Runtime didn't respond within client timeout.
             }
 
-            TryParseVersion(processInfo.ClrProductVersionString, out Version runtimeVersion);
+            _ = TryParseVersion(processInfo.ClrProductVersionString, out Version runtimeVersion);
 
             // CONSIDER: Generate a runtime instance identifier based on the pipe name
             // for .NET Core 3.1 e.g. pid + disambiguator in GUID form.
@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Runtime didn't respond within client timeout.
             }
 
-            TryParseVersion(processInfo.ClrProductVersionString, out Version runtimeVersion);
+            _ = TryParseVersion(processInfo.ClrProductVersionString, out Version runtimeVersion);
 
             return new EndpointInfo()
             {
@@ -111,14 +111,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 metadataIndex = versionSpan.Length;
             }
 
-            ReadOnlySpan<char> noMetadataVersion = versionSpan.Slice(0, metadataIndex);
+            ReadOnlySpan<char> noMetadataVersion = versionSpan[..metadataIndex];
             int prereleaseIndex = noMetadataVersion.IndexOf('-');
             if (-1 == prereleaseIndex)
             {
                 prereleaseIndex = metadataIndex;
             }
 
-            return Version.TryParse(noMetadataVersion.Slice(0, prereleaseIndex), out version);
+            return Version.TryParse(noMetadataVersion[..prereleaseIndex], out version);
         }
 
         public override IpcEndpoint Endpoint { get; protected set; }
