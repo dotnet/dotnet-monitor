@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +37,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private Dictionary<string, TaskCompletionSource<string>> _waitingForEnvironmentVariables;
 
         private bool _isDiposed;
+
+        public Architecture? Architecture
+        {
+            get => _runner.Architecture;
+            set => _runner.Architecture = value;
+        }
 
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Listen"/>

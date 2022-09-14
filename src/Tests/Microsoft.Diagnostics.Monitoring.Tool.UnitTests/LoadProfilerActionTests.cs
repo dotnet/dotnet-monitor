@@ -42,12 +42,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfmArchitectureProfilerPath), MemberType = typeof(ActionTestsHelper))]
         public async Task LoadProfilerAsStartupProfilerTest(TargetFrameworkMoniker tfm, Architecture architecture, string profilerPath)
         {
-            if (Architecture.X86 == architecture)
-            {
-                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
-                return;
-            }
-
             string profilerFileName = Path.GetFileName(profilerPath);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
@@ -66,6 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
                 AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                runner.Architecture = architecture;
                 runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
                 await runner.ExecuteAsync(async () =>
