@@ -54,6 +54,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         public async Task ApplyProfiler(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
+            // The profiler is only supported on .NET 6+
+            if (null == endpointInfo.RuntimeVersion || endpointInfo.RuntimeVersion.Major < 6)
+            {
+                return;
+            }
+
             try
             {
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
