@@ -627,7 +627,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 return await Result(Utilities.ArtifactType_Stacks, egressProvider, async (stream, token) =>
                 {
-                    Stacks.StackResult result = await eventTracePipeline.Result;
+                    Stacks.CallStackResult result = await eventTracePipeline.Result;
 
                     StacksFormatter formatter = (plainText == true) ? new TextStacksFormatter(stream) : new JsonStacksFormatter(stream);
 

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
-    public class StackFrame
+    public class CallStackFrame
     {
         [JsonPropertyName("methodName")]
         public string MethodName { get; set; }
@@ -23,18 +23,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         //public ulong Offset { get; set; }
     }
 
-    public class Stack
+    public class CallStack
     {
         [JsonPropertyName("threadId")]
         public uint ThreadId { get; set; }
 
         [JsonPropertyName("frames")]
-        public IList<StackFrame> Frames { get; set; } = new List<StackFrame>();
+        public IList<CallStackFrame> Frames { get; set; } = new List<CallStackFrame>();
     }
 
-    public class StackResult
+    public class CallStackResult
     {
         [JsonPropertyName("stacks")]
-        public IList<Stack> Stacks { get; set; } = new List<Stack>();
+        public IList<CallStack> Stacks { get; set; } = new List<CallStack>();
     }
 }

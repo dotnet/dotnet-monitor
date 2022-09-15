@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             OutputStream = outputStream;
         }
 
-        public abstract Task FormatStack(StackResult stackResult, CancellationToken token);
+        public abstract Task FormatStack(CallStackResult stackResult, CancellationToken token);
 
         protected string GetModuleName(NameCache cache, ulong moduleId)
         {

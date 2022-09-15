@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Tracing;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 {
-    internal static class StackEvents
+    internal static class CallStackEvents
     {
         public const string Provider = "DotnetMonitorStacksEventProvider";
 

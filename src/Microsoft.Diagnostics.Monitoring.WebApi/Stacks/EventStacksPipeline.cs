@@ -24,8 +24,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
     internal sealed class EventStacksPipeline : EventSourcePipeline<EventStacksPipelineSettings>
     {
-        private TaskCompletionSource<StackResult> _stackResult = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private StackResult _result = new();
+        private TaskCompletionSource<CallStackResult> _stackResult = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private CallStackResult _result = new();
 
         public EventStacksPipeline(DiagnosticsClient client, EventStacksPipelineSettings settings)
             : base(client, settings)
@@ -36,13 +36,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         {
             return new EventPipeProviderSourceConfiguration(requestRundown: false, bufferSizeInMB: 256, new[]
             {
-                new EventPipeProvider(StackEvents.Provider, EventLevel.LogAlways)
+                new EventPipeProvider(CallStackEvents.Provider, EventLevel.LogAlways)
             });
         }
 
         protected override async Task OnEventSourceAvailable(EventPipeEventSource eventSource, Func<Task> stopSessionAsync, CancellationToken token)
         {
-            eventSource.Dynamic.AddCallbackForProviderEvent(StackEvents.Provider, eventName: null, Callback);
+            eventSource.Dynamic.AddCallbackForProviderEvent(CallStackEvents.Provider, eventName: null, Callback);
 
             using EventTaskSource<Action> sourceComplete = new EventTaskSource<Action>(
                 taskComplete => taskComplete,
@@ -61,23 +61,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
             if (_stackResult.Task.Status != TaskStatus.RanToCompletion)
             {
-                throw new InvalidOperationException("Unable to process stack in timely manner.");
+                throw new InvalidOperationException(Strings.ErrorMessage_StacksTimeout);
             }
         }
 
-        public Task<StackResult> Result => _stackResult.Task;
+        public Task<CallStackResult> Result => _stackResult.Task;
 
         private void Callback(TraceEvent action)
         {
             //We do not have a manifest for our events, but we also lookup data by id instead of string.
-            if (action.ID == StackEvents.Callstack)
+            if (action.ID == CallStackEvents.Callstack)
             {
-                var stack = new Stack
+                var stack = new CallStack
                 {
-                    ThreadId = action.GetPayload<uint>(StackEvents.CallstackPayloads.ThreadId)
+                    ThreadId = action.GetPayload<uint>(CallStackEvents.CallstackPayloads.ThreadId)
                 };
-                ulong[] functionIds = action.GetPayload<ulong[]>(StackEvents.CallstackPayloads.FunctionIds);
-                ulong[] offsets = action.GetPayload<ulong[]>(StackEvents.CallstackPayloads.IpOffsets);
+                ulong[] functionIds = action.GetPayload<ulong[]>(CallStackEvents.CallstackPayloads.FunctionIds);
+                ulong[] offsets = action.GetPayload<ulong[]>(CallStackEvents.CallstackPayloads.IpOffsets);
 
                 _result.Stacks.Add(stack);
 
@@ -85,60 +85,60 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     for (int i = 0; i < functionIds.Length; i++)
                     {
-                        stack.Frames.Add(new StackFrame { FunctionId = functionIds[i], Offset = offsets[i] });
+                        stack.Frames.Add(new CallStackFrame { FunctionId = functionIds[i], Offset = offsets[i] });
                     }
                 }
             }
-            else if (action.ID == StackEvents.FunctionDesc)
+            else if (action.ID == CallStackEvents.FunctionDesc)
             {
-                ulong id = action.GetPayload<ulong>(StackEvents.FunctionDescPayloads.FunctionId);
+                ulong id = action.GetPayload<ulong>(CallStackEvents.FunctionDescPayloads.FunctionId);
                 var functionData = new FunctionData
                 {
-                    Name = action.GetPayload<string>(StackEvents.FunctionDescPayloads.Name),
-                    ParentClass = action.GetPayload<ulong>(StackEvents.FunctionDescPayloads.ClassId),
-                    ParentToken = action.GetPayload<uint>(StackEvents.FunctionDescPayloads.ClassToken),
-                    ModuleId = action.GetPayload<ulong>(StackEvents.FunctionDescPayloads.ModuleId),
-                    TypeArgs = action.GetPayload<ulong[]>(StackEvents.FunctionDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
+                    Name = action.GetPayload<string>(CallStackEvents.FunctionDescPayloads.Name),
+                    ParentClass = action.GetPayload<ulong>(CallStackEvents.FunctionDescPayloads.ClassId),
+                    ParentToken = action.GetPayload<uint>(CallStackEvents.FunctionDescPayloads.ClassToken),
+                    ModuleId = action.GetPayload<ulong>(CallStackEvents.FunctionDescPayloads.ModuleId),
+                    TypeArgs = action.GetPayload<ulong[]>(CallStackEvents.FunctionDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
                 };
 
                 _result.NameCache.FunctionData.Add(id, functionData);
             }
-            else if (action.ID == StackEvents.ClassDesc)
+            else if (action.ID == CallStackEvents.ClassDesc)
             {
-                ulong id = action.GetPayload<ulong>(StackEvents.ClassDescPayloads.ClassId);
+                ulong id = action.GetPayload<ulong>(CallStackEvents.ClassDescPayloads.ClassId);
                 var classData = new ClassData
                 {
-                    ModuleId = action.GetPayload<ulong>(StackEvents.ClassDescPayloads.ModuleId),
-                    Token = action.GetPayload<uint>(StackEvents.ClassDescPayloads.Token),
-                    Flags = (ClassFlags)action.GetPayload<uint>(StackEvents.ClassDescPayloads.Flags),
-                    TypeArgs = action.GetPayload<ulong[]>(StackEvents.ClassDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
+                    ModuleId = action.GetPayload<ulong>(CallStackEvents.ClassDescPayloads.ModuleId),
+                    Token = action.GetPayload<uint>(CallStackEvents.ClassDescPayloads.Token),
+                    Flags = (ClassFlags)action.GetPayload<uint>(CallStackEvents.ClassDescPayloads.Flags),
+                    TypeArgs = action.GetPayload<ulong[]>(CallStackEvents.ClassDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
                 };
 
                 _result.NameCache.ClassData.Add(id, classData);
             }
-            else if (action.ID == StackEvents.ModuleDesc)
+            else if (action.ID == CallStackEvents.ModuleDesc)
             {
-                ulong id = action.GetPayload<ulong>(StackEvents.ModuleDescPayloads.ModuleId);
+                ulong id = action.GetPayload<ulong>(CallStackEvents.ModuleDescPayloads.ModuleId);
                 var moduleData = new ModuleData
                 {
-                    Name = action.GetPayload<string>(StackEvents.ModuleDescPayloads.Name)
+                    Name = action.GetPayload<string>(CallStackEvents.ModuleDescPayloads.Name)
                 };
 
                 _result.NameCache.ModuleData.Add(id, moduleData);
             }
-            else if (action.ID == StackEvents.TokenDesc)
+            else if (action.ID == CallStackEvents.TokenDesc)
             {
-                ulong modId = action.GetPayload<ulong>(StackEvents.TokenDescPayloads.ModuleId);
-                ulong token = action.GetPayload<uint>(StackEvents.TokenDescPayloads.Token);
+                ulong modId = action.GetPayload<ulong>(CallStackEvents.TokenDescPayloads.ModuleId);
+                ulong token = action.GetPayload<uint>(CallStackEvents.TokenDescPayloads.Token);
                 var tokenData = new TokenData()
                 {
-                    Name = action.GetPayload<string>(StackEvents.TokenDescPayloads.Name),
-                    OuterToken = action.GetPayload<uint>(StackEvents.TokenDescPayloads.OuterToken)
+                    Name = action.GetPayload<string>(CallStackEvents.TokenDescPayloads.Name),
+                    OuterToken = action.GetPayload<uint>(CallStackEvents.TokenDescPayloads.OuterToken)
                 };
 
                 _result.NameCache.TokenData.Add((modId, token), tokenData);
             }
-            else if (action.ID == StackEvents.End)
+            else if (action.ID == CallStackEvents.End)
             {
                 //TODO Consider using opcodes instead of a separate event for stopping
                 _stackResult.TrySetResult(_result);

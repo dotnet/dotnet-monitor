@@ -1,6 +1,6 @@
 # Stacks - Get
 
-Captures the callstack of currently running process. Note that only managed frames are collected.
+Captures the call stacks of the currently running process. Note that only managed frames are collected.
 
 ## HTTP Route
 
@@ -39,7 +39,7 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [StackResult](definitions.md#stackresult) | Callstacks for all managed threads in the process. | `application/json` |
+| 200 OK | [CallStackResult](definitions.md#callstackresult) | Callstacks for all managed threads in the process. | `application/json` |
 | 200 OK | text | Text representation of callstacks in the process. | `text/plain` |
 | 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
@@ -70,19 +70,16 @@ Content-Type: application/json
             "methodName": "GetQueuedCompletionStatus",
             "className": "Interop\u002BKernel32",
             "moduleName": "System.Private.CoreLib.dll",
-            "offset": 140731066057736
         },
         {
             "methodName": "WaitForSignal",
             "className": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
-            "offset": 140729483489682
         },
         {
             "methodName": "Wait",
             "className": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
-            "offset": 140729483487062
         }
 }
 ```

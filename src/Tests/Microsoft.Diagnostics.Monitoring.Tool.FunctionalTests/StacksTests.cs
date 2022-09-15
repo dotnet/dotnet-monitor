@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     while ((line = reader.ReadLine()) != null)
                     {
                         line = line.TrimStart();
-                        if (actualFrames.Count == 3)
+                        if (actualFrames.Count == expectedFrames.Length)
                         {
                             break;
                         }
@@ -112,24 +112,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, plainText: false);
                     Assert.NotNull(holder);
 
-                    WebApi.Models.StackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.StackResult>(holder.Stream);
+                    WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder.Stream);
 
-                    var actualFrames = new List<WebApi.Models.StackFrame>();
-                    WebApi.Models.StackFrame[] expectedFrames = new WebApi.Models.StackFrame[]
+                    var actualFrames = new List<WebApi.Models.CallStackFrame>();
+                    WebApi.Models.CallStackFrame[] expectedFrames = new WebApi.Models.CallStackFrame[]
                     {
-                        new WebApi.Models.StackFrame
+                        new WebApi.Models.CallStackFrame
                         {
                             ModuleName = ExpectedModule,
                             ClassName = ExpectedClass,
                             MethodName = ExpectedCallbackFunction
                         },
-                        new WebApi.Models.StackFrame
+                        new WebApi.Models.CallStackFrame
                         {
                             ModuleName = NativeFrame,
                             ClassName = NativeFrame,
                             MethodName = NativeFrame
                         },
-                        new WebApi.Models.StackFrame
+                        new WebApi.Models.CallStackFrame
                         {
                             ModuleName = ExpectedModule,
                             ClassName = ExpectedClass,
@@ -137,12 +137,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         }
                     };
 
-                    foreach (WebApi.Models.Stack stack in result.Stacks)
+                    foreach (WebApi.Models.CallStack stack in result.Stacks)
                     {
                         actualFrames.Clear();
                         foreach(var frame in stack.Frames)
                         {
-                            if (actualFrames.Count == 3)
+                            if (actualFrames.Count == expectedFrames.Length)
                             {
                                 break;
                             }
@@ -184,12 +184,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     using ResponseStreamHolder holder1 = await client.CaptureStacksAsync(processId, plainText: false);
                     Assert.NotNull(holder1);
 
-                    WebApi.Models.StackResult result1 = await JsonSerializer.DeserializeAsync<WebApi.Models.StackResult>(holder1.Stream);
+                    WebApi.Models.CallStackResult result1 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder1.Stream);
 
                     using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, plainText: false);
                     Assert.NotNull(holder2);
 
-                    WebApi.Models.StackResult result2 = await JsonSerializer.DeserializeAsync<WebApi.Models.StackResult>(holder2.Stream);
+                    WebApi.Models.CallStackResult result2 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder2.Stream);
 
                     Assert.NotEmpty(result1.Stacks);
                     Assert.NotEmpty(result2.Stacks);
@@ -217,7 +217,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private static string FormatFrame(string module, string @class, string function) =>
             FormattableString.Invariant($"{module}!{@class}.{function}");
 
-        private static bool AreFramesEqual(WebApi.Models.StackFrame left, WebApi.Models.StackFrame right) =>
+        private static bool AreFramesEqual(WebApi.Models.CallStackFrame left, WebApi.Models.CallStackFrame right) =>
             (left.ModuleName == right.ModuleName) && (left.ClassName == right.ClassName) && (left.MethodName == right.MethodName);
     }
 }

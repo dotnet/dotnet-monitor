@@ -16,20 +16,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         {
         }
 
-        public override async Task FormatStack(StackResult stackResult, CancellationToken token)
+        public override async Task FormatStack(CallStackResult stackResult, CancellationToken token)
         {
-            Models.StackResult stackResultModel = new Models.StackResult();
+            Models.CallStackResult stackResultModel = new Models.CallStackResult();
             NameCache cache = stackResult.NameCache;
             var builder = new StringBuilder();
 
-            foreach (Stack stack in stackResult.Stacks)
+            foreach (CallStack stack in stackResult.Stacks)
             {
-                Models.Stack stackModel = new Models.Stack();
+                Models.CallStack stackModel = new Models.CallStack();
                 stackModel.ThreadId = stack.ThreadId;
 
-                foreach(StackFrame frame in stack.Frames)
+                foreach(CallStackFrame frame in stack.Frames)
                 {
-                    Models.StackFrame frameModel = new Models.StackFrame()
+                    Models.CallStackFrame frameModel = new Models.CallStackFrame()
                     {
                         ClassName = UnknownClass,
                         MethodName = UnknownFunction,

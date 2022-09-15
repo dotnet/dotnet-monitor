@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 {
     internal sealed class TextStacksFormatter : StacksFormatter
     {
-        private const string ThreadIdPrefix = "Thread";
         private const char ModuleSeparator = '!';
         private const char ClassSeparator = '.';
         private const string Indent = "  ";
@@ -20,14 +20,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         {
         }
 
-        public override async Task FormatStack(StackResult stackResult, CancellationToken token)
+        public override async Task FormatStack(CallStackResult stackResult, CancellationToken token)
         {
             await using StreamWriter writer = new StreamWriter(this.OutputStream, Encoding.UTF8, leaveOpen: true);
             var builder = new StringBuilder();
             foreach (var stack in stackResult.Stacks)
             {
                 token.ThrowIfCancellationRequested();
-                await writer.WriteLineAsync($"{ThreadIdPrefix}: (0x{stack.ThreadId:X})");
+
+                await writer.WriteLineAsync(string.Format(CultureInfo.CurrentCulture, Strings.CallstackThreadHeader, stack.ThreadId));
                 foreach (var frame in stack.Frames)
                 {
                     builder.Clear();
@@ -39,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        private void BuildFrame(StringBuilder builder, NameCache cache, StackFrame frame)
+        private void BuildFrame(StringBuilder builder, NameCache cache, CallStackFrame frame)
         {
             if (frame.FunctionId == 0)
             {

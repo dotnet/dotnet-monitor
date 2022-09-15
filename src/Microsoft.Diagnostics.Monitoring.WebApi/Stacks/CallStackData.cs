@@ -10,9 +10,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
     /// This data model is mostly 1:1 with the information that comes from the EventStacksPipeline.
     /// Note that most data is either ClassID's or mdToken information.
     /// </summary>
-    internal sealed class StackResult
+    internal sealed class CallStackResult
     {
-        public List<Stack> Stacks { get; } = new();
+        public List<CallStack> Stacks { get; } = new();
 
         public NameCache NameCache { get; } = new NameCache();
     }
@@ -78,16 +78,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         public string Name { get; set; }
     }
 
-    internal sealed class StackFrame
+    internal sealed class CallStackFrame
     {
         public ulong FunctionId { get; set; }
 
         public ulong Offset { get; set; }
     }
 
-    internal sealed class Stack
+    internal sealed class CallStack
     {
-        public List<StackFrame> Frames = new List<StackFrame>();
+        public List<CallStackFrame> Frames = new List<CallStackFrame>();
 
         public uint ThreadId { get; set; }
     }
