@@ -17,7 +17,6 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Text.Json;
-using Microsoft.DotNet.XUnitExtensions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -45,7 +44,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public Task TestPlainTextStacks()
         {
-            SkipIfWindowX86();
+            if (SkipIfWindowX86())
+            {
+                return Task.CompletedTask;
+            }
 
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -93,7 +95,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public Task TestJsonStacks()
         {
-            SkipIfWindowX86();
+            if (SkipIfWindowX86())
+            {
+                return Task.CompletedTask;
+            }
 
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -162,7 +167,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public Task TestRepeatStackCalls()
         {
-            SkipIfWindowX86();
+            if (SkipIfWindowX86())
+            {
+                return Task.CompletedTask;
+            }
 
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -194,15 +202,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-#endif
-
-        private static void SkipIfWindowX86()
+        private bool SkipIfWindowX86()
         {
             if (ProfilerHelper.TargetRuntimeIdentifier == "win-x86")
             {
-                throw new SkipTestException("Skipping x86 architecture since x86 host is not used at this time.");
+                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
+                return true;
             }
+            return false;
         }
+
+#endif
 
         private static string FormatFrame(string module, string @class, string function) =>
             FormattableString.Invariant($"{module}!{@class}.{function}");
