@@ -29,13 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         public async Task LoadAtStart(Architecture architecture, string profilerPath)
         {
-            if (Architecture.X86 == architecture)
-            {
-                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
-                return;
-            }
-
             await using AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
             // Environment variables necessary for running the profiler + enable all logging to stderr
@@ -43,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.Clsid.StringWithBraces);
-            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath64, profilerPath);
+            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, runtimeInstanceId);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));
 
@@ -63,13 +58,8 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         public async Task AttachAfterStarted(Architecture architecture, string profilerPath)
         {
-            if (Architecture.X86 == architecture)
-            {
-                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
-                return;
-            }
-
             await using AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
             string runtimeInstanceId = Guid.NewGuid().ToString("D");
@@ -106,15 +96,10 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         public async Task VerifyCustomSharedPath(Architecture architecture, string profilerPath)
         {
-            if (Architecture.X86 == architecture)
-            {
-                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
-                return;
-            }
-
             using TemporaryDirectory tempDir = new(_outputHelper);
 
             await using AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
             // Environment variables necessary for running the profiler + enable all logging to stderr
@@ -122,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.Clsid.StringWithBraces);
-            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath64, profilerPath);
+            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, runtimeInstanceId);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.SharedPath, tempDir.FullName);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));

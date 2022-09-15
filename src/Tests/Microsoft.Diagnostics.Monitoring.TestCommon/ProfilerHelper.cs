@@ -22,57 +22,61 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string ClrEnvVarEnableNotificationProfilers = ClrEnvVarPrefix + "ENABLE_NOTIFICATION_PROFILERS";
         public const string ClrEnvVarEnableProfiling = ClrEnvVarPrefix + "ENABLE_PROFILING";
         public const string ClrEnvVarProfiler = ClrEnvVarPrefix + "PROFILER";
-        public const string ClrEnvVarProfilerPath64 = ClrEnvVarPrefix + "PROFILER_PATH_64";
+        public const string ClrEnvVarProfilerPath = ClrEnvVarPrefix + "PROFILER_PATH";
 
         public static string GetPath(Architecture architecture) =>
             NativeLibraryHelper.GetSharedLibraryPath(architecture, ProfilerIdentifiers.LibraryRootFileName);
 
         private const string OSReleasePath = "/etc/os-release";
-        private static readonly Architecture[] ProfilerArchitectures = { Architecture.X64, Architecture.X86, Architecture.Arm64 };
 
-        public static string TargetRuntimeIdentifier
+        public static string GetTargetRuntimeIdentifier(Architecture? architecture)
         {
-            get
+            string architectureString = (architecture ?? RuntimeInformation.OSArchitecture)
+                .ToString("G")
+                .ToLowerInvariant();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // The tests do not know what runtime architecture they are running for.
-                // Use the built profiler architecture to heuristically determine on which
-                // architecture the tests are running.
-                string architecture = null;
-                foreach (Architecture arch in ProfilerArchitectures)
+                return FormattableString.Invariant($"win-{architectureString}");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                return FormattableString.Invariant($"osx-{architectureString}");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                if (File.Exists(OSReleasePath) && File.ReadAllText(OSReleasePath).Contains("Alpine", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (File.Exists(GetPath(arch)))
-                    {
-                        architecture = arch.ToString("G").ToLowerInvariant();
-                        break;
-                    }
+                    return FormattableString.Invariant($"linux-musl-{architectureString}");
                 }
+                else
+                {
+                    return FormattableString.Invariant($"linux-{architectureString}");
+                }
+            }
 
-                if (string.IsNullOrEmpty(architecture))
-                {
-                    throw new PlatformNotSupportedException("Unable to determine architecture.");
-                }
+            throw new PlatformNotSupportedException("Unable to determine OS platform.");
+        }
 
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    return FormattableString.Invariant($"win-{architecture}");
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    return FormattableString.Invariant($"osx-{architecture}");
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    if (File.Exists(OSReleasePath) && File.ReadAllText(OSReleasePath).Contains("Alpine", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return FormattableString.Invariant($"linux-musl-{architecture}");
-                    }
-                    else
-                    {
-                        return FormattableString.Invariant($"linux-{architecture}");
-                    }
-                }
+        public static IEnumerable<object[]> GetArchitecture()
+        {
+            // There isn't a good way to check which architecture to use when running unit tests.
+            // Each build job builds one specific architecture, but from a test perspective,
+            // it cannot tell which one was built. Gather all of the profilers for every architecture
+            // so long as they exist.
+            List<object[]> arguments = new();
+            AddTestCases(arguments, Architecture.X64);
+            AddTestCases(arguments, Architecture.X86);
+            AddTestCases(arguments, Architecture.Arm64);
+            return arguments;
 
-                throw new PlatformNotSupportedException("Unable to determine OS platform.");
+            static void AddTestCases(List<object[]> arguments, Architecture architecture)
+            {
+                string profilerPath = GetPath(architecture);
+                if (File.Exists(profilerPath))
+                {
+                    arguments.Add(new object[] { architecture });
+                }
             }
         }
 

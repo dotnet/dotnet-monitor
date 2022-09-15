@@ -17,6 +17,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Text.Json;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -41,14 +42,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-        [Fact]
-        public Task TestPlainTextStacks()
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestPlainTextStacks(Architecture targetArchitecture)
         {
-            if (SkipIfWindowX86())
-            {
-                return Task.CompletedTask;
-            }
-
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -89,17 +86,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(expectedFrames, actualFrames);
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
                 });
         }
 
-        [Fact]
-        public Task TestJsonStacks()
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestJsonStacks(Architecture targetArchitecture)
         {
-            if (SkipIfWindowX86())
-            {
-                return Task.CompletedTask;
-            }
-
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -161,17 +158,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     }
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
                 });
         }
 
-        [Fact]
-        public Task TestRepeatStackCalls()
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestRepeatStackCalls(Architecture targetArchitecture)
         {
-            if (SkipIfWindowX86())
-            {
-                return Task.CompletedTask;
-            }
-
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -199,17 +196,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
                 });
-        }
-
-        private bool SkipIfWindowX86()
-        {
-            if (ProfilerHelper.TargetRuntimeIdentifier == "win-x86")
-            {
-                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
-                return true;
-            }
-            return false;
         }
 
 #endif

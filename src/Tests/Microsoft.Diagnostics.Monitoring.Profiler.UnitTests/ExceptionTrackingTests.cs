@@ -49,15 +49,10 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
 
         private async Task RunAndCompare(string scenarioName, Architecture architecture, string profilerPath)
         {
-            if (Architecture.X86 == architecture)
-            {
-                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
-                return;
-            }
-
             ITestOutputHelper appOutputHelper = new PrefixedOutputHelper(_outputHelper, FormattableString.Invariant($"[App] "));
 
             using DotNetRunner runner = new();
+            runner.Architecture = architecture;
             await using LoggingRunnerAdapter adapter = new(appOutputHelper, runner);
 
             runner.EntrypointAssemblyPath = AssemblyHelper.GetAssemblyArtifactBinPath(
@@ -69,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.Clsid.StringWithBraces);
-            adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath64, profilerPath);
+            adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
             adapter.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, Guid.NewGuid().ToString("D"));
             adapter.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));
 
