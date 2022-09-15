@@ -9,7 +9,7 @@
 #include <afunix.h>
 #else
 #include <sys/socket.h>
-#include <sys/select.h>
+#include <poll.h>
 #include <sys/un.h>
 #include <unistd.h>
 #include <fcntl.h>
