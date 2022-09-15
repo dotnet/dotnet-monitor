@@ -12,6 +12,7 @@ The following are the root routes on the HTTP API surface.
 | [`/trace`](trace.md) | Captures traces of processes without using a profiler. |
 | [`/metrics`](metrics.md) | Captures metrics of a process in the Prometheus exposition format. |
 | [`/livemetrics`](livemetrics.md) | Captures live metrics of a process. |
+  [`/stacks`](stacks.md) | Gets the current callstacks of all .Net threads. |
 | [`/logs`](logs.md) | Captures logs of processes. |
 | [`/info`](info.md) | Gets info about Dotnet Monitor. |
 | [`/operations`](operations.md) | Gets egress operation status or cancels operations. |

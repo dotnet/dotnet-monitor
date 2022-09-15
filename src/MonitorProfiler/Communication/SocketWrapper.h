@@ -11,8 +11,8 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <sys/un.h>
-#include <unistd.h> 
-#include <fcntl.h> 
+#include <unistd.h>
+#include <fcntl.h>
 typedef int SOCKET;
 typedef struct timeval TIMEVAL;
 #endif

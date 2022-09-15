@@ -10,11 +10,12 @@
 
 #include "SocketWrapper.h"
 #include "IpcCommClient.h"
+#include "../Logging/Logger.h"
 
 class IpcCommServer
 {
 public:
-    IpcCommServer();
+    IpcCommServer(const std::shared_ptr<ILogger>& logger);
     ~IpcCommServer();
     HRESULT Bind(const std::string& rootAddress);
     HRESULT Accept(std::shared_ptr<IpcCommClient>& client);
@@ -26,4 +27,5 @@ private:
     std::string _rootAddress;
     SocketWrapper _domainSocket = 0;
     std::atomic_bool _shutdown;
+    std::shared_ptr<ILogger> _logger;
 };

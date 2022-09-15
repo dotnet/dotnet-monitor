@@ -16,6 +16,13 @@ STDMETHODIMP_(BOOL) DLLEXPORT DllMain(HMODULE hModule, DWORD ul_reason_for_call,
     return TRUE;
 }
 
+STDAPI DLLEXPORT TestHook(_In_ void (*Callback)())
+{
+    // This method is used by testing to inject a native frame into a callstack.
+    Callback();
+    return 0;
+}
+
 _Check_return_
 STDAPI DLLEXPORT DllGetClassObject(_In_ REFCLSID rclsid, _In_ REFIID riid, _Outptr_ LPVOID* ppv)
 {
