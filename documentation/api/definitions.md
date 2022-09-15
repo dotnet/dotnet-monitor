@@ -1,5 +1,26 @@
 # Definitions
 
+## CallStack
+
+| Name | Type | Description |
+|---|---|---|
+| `threadId` | int | The native thread id of the managed thread. |
+| `frames` | [CallStackFrame](#callstackframe)[] | Managed frame for the thread at the time of collection. |
+
+## CallStackFrame
+
+| Name | Type | Description |
+|---|---|---|
+| `methodName` | string | Name of the method for this frame. This includes generic parameters. |
+| `className` | string | Name of the class for this frame. This includes generic parameters. |
+| `moduleName` | string | Name of the module for this frame. |
+
+## CallStackResult
+
+| Name | Type | Description |
+|---|---|---|
+| `stacks` | [CallStack](#callstack)[] | List of all managed stacks at the time of collection. |
+
 ## CollectionRuleDescription
 
 Object describing the basic state of a collection rule for the executing instance of `dotnet monitor`.

@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CallstackThreadHeader" xml:space="preserve">
+    <value>Thread: (0x{0:X})</value>
+  </data>
   <data name="ErrorMessage_CanNotGetEnvironment" xml:space="preserve">
     <value>Unable to get process environment.</value>
     <comment>Gets a string similar to "Unable to get process environment.".</comment>
@@ -157,6 +160,9 @@
   <data name="ErrorMessage_ProcessEnumeratuinFailed" xml:space="preserve">
     <value>Unable to enumerate processes.</value>
     <comment>Gets a string similar to "Unable to enumerate processes.".</comment>
+  </data>
+  <data name="ErrorMessage_StacksTimeout" xml:space="preserve">
+    <value>Unable to process stack in timely manner.</value>
   </data>
   <data name="ErrorMessage_TooManyRequests" xml:space="preserve">
     <value>Rate limit reached.</value>

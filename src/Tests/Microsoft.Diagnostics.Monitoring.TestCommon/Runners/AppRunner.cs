@@ -73,6 +73,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public bool SetRuntimeIdentifier { get; set; } = true;
 
+        public string ProfilerLogLevel { get; set; } = null;
+
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
             AppId = appId;
@@ -145,6 +147,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 _adapter.Environment.Add(
                     ProfilerIdentifiers.EnvironmentVariables.RuntimeIdentifier,
                     ProfilerHelper.GetTargetRuntimeIdentifier(Architecture));
+            }
+            if (ProfilerLogLevel != null)
+            {
+                _adapter.Environment.Add(
+                    ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, ProfilerLogLevel);
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);

@@ -11,8 +11,8 @@
 class Stack
 {
 public:
-    const UINT64 GetThreadId() const { return _tid; }
-    void SetThreadId(UINT64 threadid) { _tid = threadid; }
+    const UINT32 GetThreadId() const { return _tid; }
+    void SetThreadId(UINT32 threadid) { _tid = threadid; }
     const std::vector<UINT64>& GetFunctionIds() const { return _functionIds; }
     const std::vector<UINT64>& GetOffsets() const { return _offsets; }
 
@@ -22,7 +22,7 @@ public:
         _offsets.push_back(offset);
     }
 private:
-    UINT64 _tid = 0;
+    UINT32 _tid = 0;
     //We model these as two parallel arrays instead of objects to simplify conversion to the EventSource format of std::vector<BYTE>
     std::vector<UINT64> _functionIds;
     std::vector<UINT64> _offsets;

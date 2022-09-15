@@ -10,11 +10,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 #endif
 {
-    internal static class ProfilerIdentifiers
+    public static class ProfilerIdentifiers
     {
         // Name of the monitor profiler library file without the
         // extra platform specific library naming conventions.
-        public static string LibraryRootFileName = "MonitorProfiler";
+        public const string LibraryRootFileName = "MonitorProfiler";
 
         public static class Clsid
         {
