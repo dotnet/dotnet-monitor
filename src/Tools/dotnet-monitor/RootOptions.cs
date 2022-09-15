@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public AuthenticationOptions Authentication { get; set; }
 
-        public IDictionary<string, CollectionRuleOptions> CollectionRules { get; }
+        public IDictionary<string, CollectionRuleOptions> CollectionRules { get; set; }
             = new Dictionary<string, CollectionRuleOptions>(0);
 
         public GlobalCounterOptions GlobalCounter { get; set; }
