@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ExperimentalFlags
     {
-        private const string ExperimentalPrefix = "DotnetMonitor_Experimental_";
+        private const string ExperimentalPrefix = ToolIdentifiers.StandardPrefix + "Experimental_";
 
         // Feature flags
         public const string Feature_CallStacks = ExperimentalPrefix + nameof(Feature_CallStacks);
