@@ -1,51 +1,43 @@
 # Egress Extensibility
 
-As of version 7.0, `dotnet monitor` adds support for egress extensibility, allowing users to provide their own egress provider in addition to using the existing egress options.
+As of version 7.0, `dotnet monitor` adds support for egress extensibility, allowing users to provide their own egress providers in addition to using the existing egress options.
 
 ## Creating an Egress Extension
 
 ### Overview
 
+The new egress extensibility model enables developers to create their own extensions without having to go through the process of submitting a pull request on the `dotnet-monitor` GitHub repository. Any developer can make an extension that cooperates with `dotnet-monitor` by following our contract **insert link here** that describes how data, credentials, and configuration are passed between `dotnet-monitor` and the extension.
+
+By default, developers will retain full ownership and control over their extensions; however, we encourage contributors to share their extensions with the community to improve the `dotnet-monitor` experience for other users. **The `dotnet-monitor` repo will not officially endorse any third-party extensions or guarantee their functionality/support**; however, we may link third-party extensions from our repo for users to explore at their own risk.
+
+The `dotnet-monitor-egress-extensions`(**verify name**) is the new home of the `Azure Blob Storage` egress provider and select third-party egress providers that meet our guidelines (**insert link here**). The `dotnet-monitor` team will actively support and distribute these extensions as detailed here (**insert link here**). 
+
 If you'd like to contribute your own egress extension, please review our guidelines (**insert link here**) before submitting a pull request at **insert link here**. 
 
-By default, extensions are considered `unverified` and can be found in feature branches in the GitHub repo. 
+#### Guidelines For Submitting An Extension to `dotnet-monitor-egress-extensions`(**verify name**)
 
-#### `Unverified` vs. `Verified`
-
-#### Guidelines (Might be hosted on the other GitHub - putting here for now)
-
-The basic requirements for an `unverified` extension include:
+The basic requirements for an extension include:
 
 - Verify that your extension works correctly and abides by the egress extension contract (**insert link here**)
 - Does not include personal credentials to connect to an egress provider
 - Does not store user data off-device (wording for clarity?)
 - Does not duplicate the functionality of another egress extension (improvements and changes should be directly made to the existing extension)
 - Follows good coding practices
-- Includes basic documentation
-
-`Verified` extensions are available via Nuget and must conform to all of the following requirements (in addition to the requirements for `unverified` extensions):
+- Includes thorough documentation
 - Includes unit testing
 - Includes a template (**include link here**) for easy set-up
 - Has undergone manual validation from a member of the `dotnet monitor` team
 - Is considered maintainable by the `dotnet monitor` team*
 
-
-
+> **NOTE:** The `dotnet-monitor` team reserves the right to control which extensions are included in the `dotnet-monitor-egress-extensions`(**verify name**) repo - **completion of the aforementioned requirements is not a guarantee that an extension's submission will be accepted**. As a result, we recommend that you start a discussion on our GitHub page regarding your proposed extension before opening a pull request.
 
 ### 
 
 ## Using an Egress Extension
 
-Egress extensions will be available via Nuget at **insert link here** 
+Officially supported egress extensions will be available via Nuget at **insert link here**. There are two ways to incorporate these extensions with your `dotnet-monitor` instance:
 
+- Users will be able to install extensions from Nuget via `dotnet tool install`, which will automatically place the extension in the `.dotnet\tools` directory, where `dotnet-monitor` knows to look for extensions. 
+- Users will be able to manually download Nuget packages and place the contents of the package into one of the locations where `dotnet-monitor` looks for extensions **insert link here**. 
 
-### `Unverified` Egress Extensions
-
-Unverified extensions can be found at **insert link here** and are not publicly shipped. To look for a specific egress extension, you can browse the repo's branches.
-
-> **NOTE:** Unverified extensions are community contributions that have not been rigorously tested or otherwise do not meet the requirements for verified extensions (**insert link here**). These extensions do not come with any support guarantees and are not recommended for use in production scenarios.
-
-
-## `Unverified` vs. `Verified`
-
-`Unverified` extensions are only available as feature branches in the GitHub repo, and are subjected to less stringent requirements than `Verified` extensions (**Insert link to guidelines here**). `Unverified` extensions provide the community with a way to share their contributions without requiring the extra time and effort needed to make the code production-ready. To verify an `unverified` extension, any member of the community can make the required changes to an existing `unverified` extension and open a Pull Request into the main branch. If verified, the extension will be included as part of the `dotnet monitor extensions` nuget package (**Insert link here and include correct name of nuget package**).
+Third party egress extensions that are not included in the `dotnet-monitor-egress-extensions`(**verify name**) repo will have their own distribution mechanisms and guidelines. The `dotnet-monitor` team has guidelines **insert link here** that encourage best practices to help users have a consistent experience when interacting with extensions; **however, these extensions are independently controlled and not reviewed by the `dotnet-monitor` team.**
