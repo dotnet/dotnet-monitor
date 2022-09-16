@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Hosting;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using System;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {

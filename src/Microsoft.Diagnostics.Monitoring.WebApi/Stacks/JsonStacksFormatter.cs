@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 Models.CallStack stackModel = new Models.CallStack();
                 stackModel.ThreadId = stack.ThreadId;
 
-                foreach(CallStackFrame frame in stack.Frames)
+                foreach (CallStackFrame frame in stack.Frames)
                 {
                     Models.CallStackFrame frameModel = new Models.CallStackFrame()
                     {
