@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 // - For Windows and OSX, build identifier from platform + architecture of target process.
                 // - Lookup same environment variable on dotnet-monitor itself.
                 // - Check libc type of dotnet-monitor.
-                env.TryGetValue(ProfilerIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string runtimeIdentifier);
+                env.TryGetValue(ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string runtimeIdentifier);
 
                 if (string.IsNullOrEmpty(runtimeIdentifier))
                 {
