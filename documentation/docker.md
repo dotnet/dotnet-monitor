@@ -19,12 +19,12 @@ In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is
 |---|---|---|---|
 | 7.0 (Preview, Latest) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/alpine/amd64/Dockerfile |
 | 7.0 (Preview, Latest) | Linux (Alpine) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/alpine/arm64v8/Dockerfile |
-| 7.0 (Preview, Latest) | Linux (Ubuntu, Chiseled) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/jammy-chiseled/amd64/Dockerfile |
-| 7.0 (Preview, Latest) | Linux (Ubuntu, Chiseled) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/jammy-chiseled/arm64v8/Dockerfile |
+| 7.0 (Preview, Latest) | Linux (Ubuntu, Chiseled) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/ubuntu-chiseled/amd64/Dockerfile |
+| 7.0 (Preview, Latest) | Linux (Ubuntu, Chiseled) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/ubuntu-chiseled/arm64v8/Dockerfile |
 | 6.2 (Current) | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.2/alpine/amd64/Dockerfile |
 | 6.2 (Current) | Linux (Alpine) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.2/alpine/arm64v8/Dockerfile |
-| 6.2 (Current) | Linux (Ubuntu, Chiseled) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.2/jammy-chiseled/amd64/Dockerfile |
-| 6.2 (Current) | Linux (Ubuntu, Chiseled) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.2/jammy-chiseled/arm64v8/Dockerfile |
+| 6.2 (Current) | Linux (Ubuntu, Chiseled) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.2/ubuntu-chiseled/amd64/Dockerfile |
+| 6.2 (Current) | Linux (Ubuntu, Chiseled) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.2/ubuntu-chiseled/arm64v8/Dockerfile |
 
 ## Image Repositories
 
