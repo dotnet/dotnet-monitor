@@ -11,6 +11,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\Profiler\ProfilerIdentifiers.cs" Link="ProfilerIdentifiers.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\TaskCompletionSourceExtensions.cs" Link="TaskCompletionSourceExtensions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\TaskExtensions.cs" Link="TaskExtensions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\ToolIdentifiers.cs" Link="ToolIdentifiers.cs" />
   </ItemGroup>
 
   <ItemGroup>

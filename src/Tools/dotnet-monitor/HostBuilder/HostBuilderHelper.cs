@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,7 +17,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class HostBuilderHelper
     {
-        public const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     // If a file at this path does not have read permissions, the application will fail to launch.
                     builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
-                    builder.AddEnvironmentVariables(ConfigPrefix);
+                    builder.AddEnvironmentVariables(ToolIdentifiers.StandardPrefix);
 
                     if (settings.Authentication.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {

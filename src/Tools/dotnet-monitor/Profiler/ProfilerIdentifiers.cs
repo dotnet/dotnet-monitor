@@ -26,28 +26,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         public static class EnvironmentVariables
         {
-            private const string Prefix = "DotnetMonitorProfiler_";
+            private const string ProfilerPrefix = ToolIdentifiers.StandardPrefix + "Profiler_";
 
             // This environment variable is automatically applied to a target process by the tool to inform
             // the profiler which directory it should use to share files and information with dotnet-monitor.
-            public const string SharedPath = Prefix + nameof(SharedPath);
+            public const string SharedPath = ProfilerPrefix + nameof(SharedPath);
 
             // This environment variable name is embedded into the profiler and set at profiler initialization.
             // The value is determined BEFORE native build by the generation of the product version into the
             // _productversion.h header file.
-            public const string ProductVersion = Prefix + nameof(ProductVersion);
-
-            // This environment variable is manually applied to target processes to inform dotnet-monitor
-            // which runtime variant of the profiler should be applied to the process.
-            public const string RuntimeIdentifier = Prefix + nameof(RuntimeIdentifier);
+            public const string ProductVersion = ProfilerPrefix + nameof(ProductVersion);
 
             // This environment variable is automatically applied to a target process by the tool to inform
             // the profiler running in the target process the value of the runtime instance.
-            public const string RuntimeInstanceId = Prefix + nameof(RuntimeInstanceId);
+            public const string RuntimeInstanceId = ProfilerPrefix + nameof(RuntimeInstanceId);
 
             // (Optional) This environment variable is manually applied to the target process to override the
             // default level of the stderr logger.
-            public const string StdErrLogger_Level = Prefix + nameof(StdErrLogger_Level);
+            public const string StdErrLogger_Level = ProfilerPrefix + nameof(StdErrLogger_Level);
         }
     }
 }
