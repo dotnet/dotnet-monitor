@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
-        private readonly IExperimentalFeatures _experimentalFeatures;
+        private readonly IInProcessFeatures _inProcessFeatures;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
         private readonly EgressOperationStore _operationsStore;
         private readonly IDumpService _dumpService;
@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _logger = logger;
             _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
-            _experimentalFeatures = serviceProvider.GetRequiredService<IExperimentalFeatures>();
+            _inProcessFeatures = serviceProvider.GetRequiredService<IInProcessFeatures>();
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
             _dumpService = serviceProvider.GetRequiredService<IDumpService>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
@@ -604,7 +604,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            if (!_experimentalFeatures.IsCallStacksEnabled)
+            if (!_inProcessFeatures.IsCallStacksEnabled)
             {
                 return NotFound();
             }

@@ -8,15 +8,15 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class ExperimentalFeatures : IExperimentalFeatures
+    internal sealed class InProcessFeatures : IInProcessFeatures
     {
         private readonly InProcessFeaturesOptions _options;
 
-        public ExperimentalFeatures(IOptions<InProcessFeaturesOptions> options)
+        public InProcessFeatures(IOptions<InProcessFeaturesOptions> options)
         {
             _options = options.Value;
         }
 
-        public bool IsCallStacksEnabled => _options.Enabled && ExperimentalFlags.IsCallStacksEnabled;
+        public bool IsCallStacksEnabled => _options.GetEnabled() && ExperimentalFlags.IsCallStacksEnabled;
     }
 }

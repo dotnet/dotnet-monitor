@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!_inProcessFeaturesOptions.Value.Enabled)
+            if (!_inProcessFeaturesOptions.Value.GetEnabled())
             {
                 return;
             }
@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         public async Task ApplyProfiler(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            if (!_inProcessFeaturesOptions.Value.Enabled)
+            if (!_inProcessFeaturesOptions.Value.GetEnabled())
             {
                 return;
             }

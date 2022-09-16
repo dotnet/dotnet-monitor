@@ -48,6 +48,17 @@
         }
       ]
     },
+    "InProcessFeatures": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/InProcessFeaturesOptions"
+        }
+      ]
+    },
     "CorsConfiguration": {
       "default": {},
       "oneOf": [
@@ -855,6 +866,20 @@
           "default": 5.0,
           "maximum": 86400.0,
           "minimum": 1.0
+        }
+      }
+    },
+    "InProcessFeaturesOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "default": false
         }
       }
     },

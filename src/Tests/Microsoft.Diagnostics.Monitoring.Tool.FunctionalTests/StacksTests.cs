@@ -248,7 +248,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureTool: runner =>
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    // Note that the Stacks experimental feature has not been enabled
+                    // Note that the Stacks experimental feature is not enabled
                 });
         }
 
@@ -280,7 +280,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureTool: runner =>
                 {
                     runner.EnableCallStacksFeature = true;
-                    // Note that the in-process features are not been enabled
+                    // Note that the in-process features are not enabled
                 });
         }
 
