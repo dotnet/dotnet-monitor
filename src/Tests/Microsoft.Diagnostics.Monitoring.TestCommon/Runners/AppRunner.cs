@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             if (SetRuntimeIdentifier)
             {
                 _adapter.Environment.Add(
-                    ProfilerIdentifiers.EnvironmentVariables.RuntimeIdentifier,
+                    ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier,
                     ProfilerHelper.GetTargetRuntimeIdentifier(Architecture));
             }
             if (ProfilerLogLevel != null)

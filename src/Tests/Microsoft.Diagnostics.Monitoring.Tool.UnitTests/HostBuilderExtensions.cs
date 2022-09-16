@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.Configuration.Memory;
@@ -70,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             return builder.ConfigureAppConfiguration(builder =>
             {
-                ReplaceEnvironment(builder.Sources, HostBuilderHelper.ConfigPrefix, values);
+                ReplaceEnvironment(builder.Sources, ToolIdentifiers.StandardPrefix, values);
             });
         }
 

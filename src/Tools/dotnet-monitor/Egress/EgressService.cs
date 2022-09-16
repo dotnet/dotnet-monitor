@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -141,7 +142,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private static void AddMetadata(EgressArtifactSettings settings, string key, string value)
         {
-            settings.Metadata.Add($"DotnetMonitor_{key}", value);
+            settings.Metadata.Add($"{ToolIdentifiers.StandardPrefix}{key}", value);
         }
 
         private void Reload()
