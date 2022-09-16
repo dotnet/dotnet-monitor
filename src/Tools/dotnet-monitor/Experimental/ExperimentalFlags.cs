@@ -18,8 +18,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string Feature_CallStacks = ExperimentalPrefix + nameof(Feature_CallStacks);
 
         // Behaviors
-        private const string DisabledFalseValue = "False";
-        private const string DisabledZeroValue = "0";
+        private const string EnabledTrueValue = "True";
+        private const string EnabledOneValue = "1";
 
         private static readonly Lazy<bool> _isCallStacksEnabledLazy = new Lazy<bool>(() => IsFeatureEnabled(Feature_CallStacks));
 
@@ -27,13 +27,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             string value = Environment.GetEnvironmentVariable(environmentVariable);
 
-            if (string.IsNullOrEmpty(value))
-            {
-                return false;
-            }
-
-            return !string.Equals(DisabledZeroValue, value, StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(DisabledFalseValue, value, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(EnabledTrueValue, value, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(EnabledOneValue, value, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool IsCallStacksEnabled => _isCallStacksEnabledLazy.Value;
