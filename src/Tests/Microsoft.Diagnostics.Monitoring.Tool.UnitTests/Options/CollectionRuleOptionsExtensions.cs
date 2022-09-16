@@ -143,6 +143,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 });
         }
 
+        public static CollectionRuleOptions AddCollectStacksAction(this CollectionRuleOptions options, string egress = null, CallStackFormat? format = null)
+        {
+            return options.AddAction(
+                KnownCollectionRuleActions.CollectStacks,
+                actionOptions =>
+                {
+                    CollectStacksOptions collectStacksOptions = new();
+                    collectStacksOptions.Egress = egress;
+                    collectStacksOptions.Format = format;
+                    actionOptions.Settings = collectStacksOptions;
+                });
+        }
+
         public static CollectionRuleOptions AddExecuteAction(this CollectionRuleOptions options, string path, string arguments = null, bool? waitForCompletion = null)
         {
             return options.AddAction(

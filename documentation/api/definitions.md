@@ -7,6 +7,15 @@
 | `threadId` | int | The native thread id of the managed thread. |
 | `frames` | [CallStackFrame](#callstackframe)[] | Managed frame for the thread at the time of collection. |
 
+## CallStackFormat
+
+Enumeration that describes the output format of the collected call stacks.
+
+| Name | Description |
+|---|---|
+| `Json` | Stacks are formatted in Json. See [CallStackResult](#callstackresult). |
+| `PlainText` | Stacks are formatted in plain text. |
+
 ## CallStackFrame
 
 | Name | Type | Description |

@@ -644,6 +644,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The format used to display the callstacks..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectStacksOptions_Format {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectStacksOptions_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The size of the event pipe buffer to use in the target process. If the event pipe buffer fills with too many events, newer events will be dropped until the buffer is drained to fit new events..
         /// </summary>
         public static string DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes {

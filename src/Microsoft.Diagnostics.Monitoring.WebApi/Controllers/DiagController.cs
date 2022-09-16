@@ -615,30 +615,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 bool plainText = Request.GetTypedHeaders().Accept?.Contains(TextPlainHeader) ?? false;
 
-                var settings = new EventStacksPipelineSettings
-                {
-                    Duration = Timeout.InfiniteTimeSpan
-                };
-                await using var eventTracePipeline = new EventStacksPipeline(new DiagnosticsClient(processInfo.EndpointInfo.Endpoint),
-                settings);
-
-                Task runPipelineTask = await eventTracePipeline.StartAsync(HttpContext.RequestAborted);
-
-                ProfilerMessage response = await _profilerChannel.SendMessage(processInfo.EndpointInfo, new ProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 }, this.HttpContext.RequestAborted);
-                if (response.MessageType == ProfilerMessageType.Error)
-                {
-                    throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X8}");
-                }
-
-                await runPipelineTask;
-
                 return await Result(Utilities.ArtifactType_Stacks, egressProvider, async (stream, token) =>
                 {
-                    Stacks.CallStackResult result = await eventTracePipeline.Result;
-
-                    StacksFormatter formatter = (plainText == true) ? new TextStacksFormatter(stream) : new JsonStacksFormatter(stream);
-
-                    await formatter.FormatStack(result, token);
+                    await StackUtilities.CollectStacksAsync(null, processInfo.EndpointInfo, _profilerChannel, plainText, stream, token);
 
                 }, StackUtilities.GenerateStacksFilename(processInfo.EndpointInfo, plainText), plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson, processInfo, asAttachment: false);
 

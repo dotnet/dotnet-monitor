@@ -50,14 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 builder.Append(base.GetModuleName(cache, functionData.ModuleId));
                 builder.Append(ModuleSeparator);
-                if (functionData.ParentClass != 0)
-                {
-                    BuildClassName(builder, cache, functionData.ParentClass);
-                }
-                else
-                {
-                    BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken);
-                }
+                BuildClassName(builder, cache, functionData);
                 builder.Append(ClassSeparator);
                 builder.Append(functionData.Name);
                 BuildGenericParameters(builder, cache, functionData.TypeArgs);
