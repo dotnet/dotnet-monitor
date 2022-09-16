@@ -3,9 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios

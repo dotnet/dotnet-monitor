@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
-using System.IO;
 using System;
+using System.IO;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 {
