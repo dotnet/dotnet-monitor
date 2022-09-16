@@ -1005,6 +1005,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_Enabled {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets or sets JsonWriterOptions..
         /// </summary>
         public static string DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions {

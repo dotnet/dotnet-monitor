@@ -337,6 +337,9 @@
     <value>'{0}' is not a known trigger type.</value>
     <comment>{0} = The type of trigger that is unknown.</comment>
   </data>
+  <data name="FeatureName_CallStacks" xml:space="preserve">
+    <value>Call Stacks</value>
+  </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
     <comment>Gets the string to display in help that explains what the 'collect' command does.</comment>
@@ -598,6 +601,9 @@
   </data>
   <data name="LogFormatString_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {link}</value>
+  </data>
+  <data name="LogFormatString_ExperimentalFeatureEnabled" xml:space="preserve">
+    <value>Experimental feature '{name}' is enabled.</value>
   </data>
   <data name="LogFormatString_FailedInitializeSharedLibraryStorage" xml:space="preserve">
     <value>Failed to initialize shared library storage.</value>

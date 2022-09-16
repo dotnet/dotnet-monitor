@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.FileProviders;
@@ -19,6 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
     internal sealed class ProfilerService : BackgroundService
     {
         private readonly TaskCompletionSource<INativeFileProviderFactory> _fileProviderFactorySource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly IOptions<InProcessFeaturesOptions> _inProcessFeaturesOptions;
         private readonly ISharedLibraryInitializer _sharedLibraryInitializer;
         private readonly IOptions<StorageOptions> _storageOptions;
         private readonly ILogger<ProfilerService> _logger;
@@ -26,8 +28,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
         public ProfilerService(
             ISharedLibraryInitializer sharedLibraryInitializer,
             IOptions<StorageOptions> storageOptions,
+            IOptions<InProcessFeaturesOptions> inProcessFeaturesOptions,
             ILogger<ProfilerService> logger)
         {
+            _inProcessFeaturesOptions = inProcessFeaturesOptions;
             _logger = logger;
             _sharedLibraryInitializer = sharedLibraryInitializer;
             _storageOptions = storageOptions;
@@ -35,6 +39,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            if (!_inProcessFeaturesOptions.Value.GetEnabled())
+            {
+                return;
+            }
+
             using IDisposable _ = stoppingToken.Register(() => _fileProviderFactorySource.TrySetCanceled(stoppingToken));
 
             // Yield to allow other hosting services to start
@@ -54,6 +63,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         public async Task ApplyProfiler(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
+            if (!_inProcessFeaturesOptions.Value.GetEnabled())
+            {
+                return;
+            }
+
             // The profiler is only supported on .NET 6+
             if (null == endpointInfo.RuntimeVersion || endpointInfo.RuntimeVersion.Major < 6)
             {

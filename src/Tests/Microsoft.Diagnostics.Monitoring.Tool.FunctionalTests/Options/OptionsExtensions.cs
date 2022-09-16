@@ -53,6 +53,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions EnableInProcessFeatures(this RootOptions options)
+        {
+            if (null == options.InProcessFeatures)
+            {
+                options.InProcessFeatures = new Monitoring.Options.InProcessFeaturesOptions();
+            }
+
+            options.InProcessFeatures.Enabled = true;
+
+            return options;
+        }
+
         public static RootOptions SetDumpTempFolder(this RootOptions options, string directoryPath)
         {
             if (null == options.Storage)

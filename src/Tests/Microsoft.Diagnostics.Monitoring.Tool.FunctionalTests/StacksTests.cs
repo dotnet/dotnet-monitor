@@ -2,28 +2,30 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using Xunit.Abstractions;
-using Xunit;
-using System.Threading.Tasks;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
-using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
-using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-using System.Text.Json;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     [Collection(DefaultCollectionFixture.Name)]
-    public class StackTests
+    public class StacksTests
     {
 #if NET6_0_OR_GREATER
 
@@ -36,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string ExpectedCallbackFunction = @"Callback";
         private const string NativeFrame = "[NativeFrame]";
 
-        public StackTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        public StacksTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
@@ -90,6 +92,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureApp: runner =>
                 {
                     runner.Architecture = targetArchitecture;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                    runner.EnableCallStacksFeature = true;
                 });
         }
 
@@ -162,6 +169,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureApp: runner =>
                 {
                     runner.Architecture = targetArchitecture;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                    runner.EnableCallStacksFeature = true;
                 });
         }
 
@@ -200,6 +212,75 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureApp: runner =>
                 {
                     runner.Architecture = targetArchitecture;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                    runner.EnableCallStacksFeature = true;
+                });
+        }
+
+        /// <summary>
+        /// Verifies that the /stacks route returns 404 if the stacks feature is not enabled.
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestFeatureNotEnabled(Architecture targetArchitecture)
+        {
+            return ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                WebApi.DiagnosticPortConnectionMode.Listen,
+                TestAppScenarios.Stacks.Name,
+                appValidate: async (runner, client) =>
+                {
+                    int processId = await runner.ProcessIdTask;
+
+                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, plainText: false));
+                    Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
+
+                    await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                    // Note that the Stacks experimental feature is not enabled
+                });
+        }
+
+        /// <summary>
+        /// Verifies that the /stacks route returns 404 if the in-process features are not enabled.
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestInProcessFeaturesNotEnabled(Architecture targetArchitecture)
+        {
+            return ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                WebApi.DiagnosticPortConnectionMode.Listen,
+                TestAppScenarios.Stacks.Name,
+                appValidate: async (runner, client) =>
+                {
+                    int processId = await runner.ProcessIdTask;
+
+                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, plainText: false));
+                    Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
+
+                    await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                },
+                configureTool: runner =>
+                {
+                    runner.EnableCallStacksFeature = true;
+                    // Note that the in-process features are not enabled
                 });
         }
 

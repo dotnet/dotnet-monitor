@@ -16,6 +16,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public const string DiagnosticPort = nameof(RootOptions.DiagnosticPort);
 
+        public const string InProcessFeatures = nameof(RootOptions.InProcessFeatures);
+
         public const string Egress = nameof(RootOptions.Egress);
 
         public const string Metrics = nameof(RootOptions.Metrics);

@@ -87,7 +87,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         UnableToApplyProfiler = 74,
         SharedLibraryPath = 75,
         ConnectionModeConnect = 76,
-        ConnectionModeListen = 77
+        ConnectionModeListen = 77,
+        ExperimentalFeatureEnabled = 78
     }
 
     internal static class LoggingEventIdsExtensions
