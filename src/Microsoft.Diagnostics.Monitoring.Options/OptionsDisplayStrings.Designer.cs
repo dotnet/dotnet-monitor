@@ -1005,6 +1005,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_Enabled {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets or sets JsonWriterOptions..
         /// </summary>
         public static string DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions {
@@ -1320,11 +1329,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows, dotnet-monitor runs in listen mode with a Unix domain socket named &apos;dotnet-monitor.sock&apos; immediately under this path unless the diagnostic port is specified on the command line or the DiagnosticPort optio [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string DisplayAttributeDescription_StorageOptions_DefaultSharedPath {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_DefaultSharedPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The location for temporary dump files. Defaults to the temp folder..
         /// </summary>
         public static string DisplayAttributeDescription_StorageOptions_DumpTempFolder {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_DumpTempFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The location to which libraries shared with target processes will be copied at startup..
+        /// </summary>
+        public static string DisplayAttributeDescription_StorageOptions_SharedLibraryPath {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_SharedLibraryPath", resourceCulture);
             }
         }
         

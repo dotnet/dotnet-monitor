@@ -16,7 +16,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class HostBuilderHelper
     {
-        public const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
@@ -28,7 +27,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     ConfigureEndpointInfoSource(builder, settings.DiagnosticPort);
                     ConfigureMetricsEndpoint(builder, settings.EnableMetrics, settings.MetricsUrls ?? Array.Empty<string>());
                     ConfigureGlobalMetrics(builder);
-                    builder.ConfigureStorageDefaults();
 
                     builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>()) });
                 })
@@ -63,7 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     // If a file at this path does not have read permissions, the application will fail to launch.
                     builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
-                    builder.AddEnvironmentVariables(ConfigPrefix);
+                    builder.AddEnvironmentVariables(ToolIdentifiers.StandardPrefix);
 
                     if (settings.Authentication.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {
@@ -93,10 +91,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 //is not added until WebHostDefaults are added.
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    TestAssemblies.AddHostingStartup(webBuilder);
+
                     AddressListenResults listenResults = new AddressListenResults();
                     webBuilder.ConfigureServices(services =>
                     {
                         services.AddSingleton(listenResults);
+                        services.AddSingleton<IStartupFilter, AddressListenResultsStartupFilter>();
+                        services.AddHostedService<StartupLoggingHostedService>();
                     })
                     .ConfigureKestrel((context, options) =>
                     {
@@ -195,17 +197,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
         {
-            DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
-            builder.AddInMemoryCollection(new Dictionary<string, string>
+            if (!string.IsNullOrEmpty(diagnosticPort))
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
-            });
-        }
-
-        private static DiagnosticPortConnectionMode GetConnectionMode(string diagnosticPort)
-        {
-            return string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
+                builder.AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), DiagnosticPortConnectionMode.Listen.ToString()},
+                    {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
+                });
+            }
         }
     }
 }

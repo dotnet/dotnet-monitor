@@ -2,12 +2,22 @@
   "tools": {
     "dotnet": "7.0.100-rc.1.22431.12",
     "runtimes": {
-      "aspnetcore": [
+      "aspnetcore/x64": [
         "$(MicrosoftAspNetCoreApp31Version)",
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
       ],
-      "dotnet": [
+      "aspnetcore/x86": [
+        "$(MicrosoftAspNetCoreApp31Version)",
+        "$(MicrosoftAspNetCoreApp60Version)",
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
+      ],
+      "dotnet/x64": [
+        "$(MicrosoftNETCoreApp31Version)",
+        "$(MicrosoftNETCoreApp60Version)",
+        "$(VSRedistCommonNetCoreSharedFrameworkx6470Version)"
+      ],
+      "dotnet/x86": [
         "$(MicrosoftNETCoreApp31Version)",
         "$(MicrosoftNETCoreApp60Version)",
         "$(VSRedistCommonNetCoreSharedFrameworkx6470Version)"

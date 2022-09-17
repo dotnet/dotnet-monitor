@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if UNITTEST
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+#endif
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections;
@@ -15,7 +18,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class CommonOptionsExtensions
     {
-        private const string EnvironmentVariablePrefix = "DotnetMonitor_";
         private const string KeySegmentSeparator = "__";
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IDictionary<string, string> ToEnvironmentConfiguration(this RootOptions options, bool useDotnetMonitorPrefix = false)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
-            MapObject(options, useDotnetMonitorPrefix ? EnvironmentVariablePrefix : string.Empty, KeySegmentSeparator, variables);
+            MapObject(options, useDotnetMonitorPrefix ? ToolIdentifiers.StandardPrefix : string.Empty, KeySegmentSeparator, variables);
             return variables;
         }
 
