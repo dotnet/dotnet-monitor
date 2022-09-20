@@ -20,7 +20,7 @@ internal class MultiPartUploadStream : Stream
     private readonly IAmazonS3 _client;
     private readonly List<PartETag> _parts = new();
     public List<PartETag> Parts => _parts.ToList();
-    public bool Disposed { get; private set; }
+    public bool Closed { get; private set; }
     private int _position;
     public const int MinimumSize = 5 * 1024 * 1024; // the minimum size of an upload part (except for the last part)
 
@@ -37,7 +37,7 @@ internal class MultiPartUploadStream : Stream
 
     public override async Task FlushAsync(CancellationToken cancellationToken)
     {
-        if (Disposed)
+        if (Closed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
         if (_offset == 0 || _offset < MinimumSize)
             return;
@@ -46,7 +46,7 @@ internal class MultiPartUploadStream : Stream
 
     public async Task FinalizeAsync(CancellationToken cancellationToken)
     {
-        if (Disposed)
+        if (Closed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
         if (_offset == 0)
             return;
@@ -75,7 +75,7 @@ internal class MultiPartUploadStream : Stream
 
     public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        if (Disposed)
+        if (Closed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
 
         int BytesAvailableInBuffer() { return _buffer.Length - _offset; }
@@ -83,6 +83,7 @@ internal class MultiPartUploadStream : Stream
         {
             int bytesToCopy = Math.Min(count, BytesAvailableInBuffer());
             Array.Copy(buffer, offset, _buffer, _offset, bytesToCopy);
+            _offset += bytesToCopy; // move the offset of the stream buffer
             offset += bytesToCopy; // move offset of part buffer
             count -= bytesToCopy; // reduce amount of bytes which still needs to be written
             _position += bytesToCopy; // move global position
@@ -118,7 +119,7 @@ internal class MultiPartUploadStream : Stream
 
     public override bool CanRead => false;
     public override bool CanSeek => false;
-    public override bool CanWrite => !Disposed;
+    public override bool CanWrite => !Closed;
     public override long Length => throw new NotSupportedException();
 
     public override long Position
@@ -127,21 +128,12 @@ internal class MultiPartUploadStream : Stream
         set => throw new NotSupportedException();
     }
 
-    protected override void Dispose(bool disposing)
+    public override void Close()
     {
-        if (Disposed)
+        if (Closed)
             return;
-        Disposed = true;
+        Closed = true;
         ArrayPool<byte>.Shared.Return(_buffer);
-        Dispose();
-    }
-
-    public override async ValueTask DisposeAsync()
-    {
-        if (Disposed)
-            return;
-        Disposed = true;
-        ArrayPool<byte>.Shared.Return(_buffer);
-        await base.DisposeAsync();
+        base.Close();
     }
 }

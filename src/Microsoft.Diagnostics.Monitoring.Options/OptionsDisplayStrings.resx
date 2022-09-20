@@ -717,9 +717,9 @@
     <value>A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry.</value>
     <comment>The description provided for the GeneratePresSignedUrl parameter on S3StorageEgressProviderOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiryInMinutes" xml:space="preserve">
-    <value>The amount of numbers the generated pre-signed url will be accessible.</value>
-    <comment>The description provided for the PreSignedUrlExpiryInMinutes parameter on S3StorageEgressProviderOptions.</comment>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry" xml:space="preserve">
+    <value>The amount of time the generated pre-signed url will be accessible.</value>
+    <comment>The description provided for the PreSignedUrlExpiry parameter on S3StorageEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle" xml:space="preserve">
     <value>The boolean flag set for AWS connection configuration ForcePathStyle option.</value>
@@ -765,5 +765,9 @@
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignatureName" xml:space="preserve">
     <value>The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
     <comment>The description provided for the QueueSharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_S3Storage" xml:space="preserve">
+    <value>Mapping of S3 storage egress provider names to their options.</value>
+    <comment>The description provided for the S3Storage parameter on EgressOptions.</comment>
   </data>
 </root>

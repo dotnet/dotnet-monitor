@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
@@ -11,8 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
     /// <summary>
     /// Egress provider options for file system egress.
     /// </summary>
-    internal sealed class S3StorageEgressProviderOptions :
-        IEgressProviderCommonOptions, IValidatableObject
+    internal sealed partial class S3StorageEgressProviderOptions : IEgressProviderCommonOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -22,6 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName))]
+        [Required(AllowEmptyStrings = false)]
         public string BucketName { get; set; }
 
         [Display(
@@ -59,8 +59,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiryInMinutes))]
-        public int PreSignedUrlExpiryInMinutes { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry))]
+        [Range(typeof(TimeSpan), "00:01:00", "1.00:00:00")]
+        public TimeSpan? PreSignedUrlExpiry { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -71,18 +72,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize))]
         [Range(1, int.MaxValue)]
-        public int? CopyBufferSize => 1024 * 1024 * 50;
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (!string.IsNullOrEmpty(AccessKeyId) && string.IsNullOrEmpty(SecretsAccessKeyFile) && string.IsNullOrEmpty(SecretAccessKey))
-                yield return new ValidationResult(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingSecrets);
-
-            if (string.IsNullOrEmpty(BucketName))
-                yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(BucketName)));
-
-            if (GeneratePresSignedUrl && PreSignedUrlExpiryInMinutes <= 0)
-                yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(PreSignedUrlExpiryInMinutes)));
-        }
+        public int? CopyBufferSize { get; set; }
     }
 }

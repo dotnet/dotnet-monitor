@@ -853,16 +853,17 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| endpoint | string | true | An optional endpoint of S3 storage service. Can be left empty in case of using AWS. |
-| bucketName | string | true | The name of the s3 Bucket to which the blob will be egressed |
+| endpoint | string | false | An optional endpoint of S3 storage service. Can be left empty in case of using AWS. |
+| bucketName | string | true | The name of the S3 Bucket to which the blob will be egressed |
 | accessKeyId | string | false | The AWS AccessKeyId for IAM user to login.  |
-| secretAccessKeyFile | string | false | Path to a file on disk which holds the user's password for accessing the s3 storage.  To login by access key id either the 'secretAccessKeyFile' or 'secretAccessKey' must be set.|
+| secretAccessKeyFile | string | false | Path to a file on disk which holds the user's password for accessing the S3 storage.  To login by access key id either the 'secretAccessKeyFile' or 'secretAccessKey' must be set.|
 | secretAccessKey | string | false | The AWS SecretAccessKey associated AccessKeyId for IAM user to login. To login by access key id either the 'secretAccessKeyFile' or 'secretAccessKey' must be set. |
 | awsProfileName | string | false | The AWS profile name to be used for login. |
 | awsProfilePath | string | false | The AWS profile path, if profile details not stored in default path. |
 | generatePresSignedUrl | bool | false | A boolean flag to control if either a pre-signed url is returned after successful upload or only the name of bucket and the artifacts S3 object key. |
-| preSignedUrlExpiryInMinutes | int | true | The number of minutes the generated pre-signed url should be accessible. |
-| ForcePathStyle | bool | false | The boolean flag set for AWS connection configuration ForcePathStyle option. |
+| regionName | string | false | A Region is a named set of AWS resources in the same geographical area. This option specifies the region to connect to. |
+| preSignedUrlExpiry | time stamp | true | The amount of time the generated pre-signed url should be accessible. The value has to be between 1 minute and 1 day. |
+| forcePathStyle | bool | false | The boolean flag set for AWS connection configuration ForcePathStyle option. |
 | copyBufferSize | int | false | The buffer size to use when copying data from the original artifact to the blob stream. There is a minimum size of 5 MB which is set when the given value is lower.|
 
 ### Example S3 storage provider
@@ -881,7 +882,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
                   "secretAccessKeyFile": "C:\\Temp\\s3secret",
                   "regionName": "us-east-1",
                   "generatePresSignedUrl" : true,
-                  "preSignedUrlExpiryInMinutes" : 15,
+                  "preSignedUrlExpiry" : "00:15:00",
                   "copyBufferSize": 1024                  
               }
           }
@@ -904,7 +905,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
                   "secretAccessKey": "mySecretPassword",
                   "regionName": "us-east-1",
                   "generatePresSignedUrl" : true,
-                  "preSignedUrlExpiryInMinutes" : 15,
+                  "preSignedUrlExpiry" : "00:15:00",
                   "copyBufferSize": 1024
               }
           }

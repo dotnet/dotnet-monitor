@@ -887,6 +887,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mapping of S3 storage egress provider names to their options..
+        /// </summary>
+        public static string DisplayAttributeDescription_EgressOptions_S3Storage {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_S3Storage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the counter to monitor..
         /// </summary>
         public static string DisplayAttributeDescription_EventCounterOptions_CounterName {
@@ -1347,12 +1356,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The amount of numbers the generated pre-signed url will be accessible..
+        ///   Looks up a localized string similar to The amount of time the generated pre-signed url will be accessible..
         /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiryInMinutes {
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiryInMi" +
-                        "nutes", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry", resourceCulture);
             }
         }
         
