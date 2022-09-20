@@ -49,6 +49,7 @@
       ]
     },
     "InProcessFeatures": {
+      "description": "[Experimental]",
       "default": {},
       "oneOf": [
         {
@@ -878,7 +879,7 @@
             "boolean",
             "null"
           ],
-          "description": "Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "description": "[Experimental] Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
           "default": false
         }
       }
@@ -1213,7 +1214,7 @@
             "null",
             "string"
           ],
-          "description": "The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows, dotnet-monitor runs in listen mode with a Unix domain socket named 'dotnet-monitor.sock' immediately under this path unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified."
+          "description": "[Experimental] The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows, dotnet-monitor runs in listen mode with a Unix domain socket named 'dotnet-monitor.sock' immediately under this path unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified."
         },
         "DumpTempFolder": {
           "type": [
@@ -1227,7 +1228,7 @@
             "null",
             "string"
           ],
-          "description": "The location to which libraries shared with target processes will be copied at startup."
+          "description": "[Experimental] The location to which libraries shared with target processes will be copied at startup."
         }
       }
     },
