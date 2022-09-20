@@ -45,16 +45,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public event Action<string> WarnPrivateKey;
 
         /// <summary>
-        /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Connect"/>
-        /// (the tool is searching for apps that are in listen mode).
+        /// The mode of the diagnostic port connection.
         /// </summary>
         /// <remarks>
+        /// Set to <see cref="DiagnosticPortConnectionMode.Connect"/> if tool needs to discover the diagnostic port for each target process.
         /// Set to <see cref="DiagnosticPortConnectionMode.Listen"/> if tool needs to establish the diagnostic port listener.
         /// </remarks>
-        public DiagnosticPortConnectionMode ConnectionMode { get; set; } = DiagnosticPortConnectionMode.Connect;
+        public DiagnosticPortConnectionMode? ConnectionModeViaCommandLine { get; set; }
 
         /// <summary>
-        /// Path of the diagnostic port to establish when <see cref="ConnectionMode"/> is <see cref="DiagnosticPortConnectionMode.Listen"/>.
+        /// Path of the diagnostic port to establish when <see cref="ConnectionModeViaCommandLine"/> is <see cref="DiagnosticPortConnectionMode.Listen"/>.
         /// </summary>
         public string DiagnosticPortPath { get; set; }
 
@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 argsList.Add("http://127.0.0.1:0");
             }
 
-            if (ConnectionMode == DiagnosticPortConnectionMode.Listen)
+            if (ConnectionModeViaCommandLine == DiagnosticPortConnectionMode.Listen)
             {
                 argsList.Add("--diagnostic-port");
                 if (string.IsNullOrEmpty(DiagnosticPortPath))

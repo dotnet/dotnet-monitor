@@ -65,6 +65,30 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions SetConnectionMode(this RootOptions options, DiagnosticPortConnectionMode connectionMode)
+        {
+            if (null == options.DiagnosticPort)
+            {
+                options.DiagnosticPort = new DiagnosticPortOptions();
+            }
+
+            options.DiagnosticPort.ConnectionMode = connectionMode;
+
+            return options;
+        }
+
+        public static RootOptions SetDefaultSharedPath(this RootOptions options, string directoryPath)
+        {
+            if (null == options.Storage)
+            {
+                options.Storage = new StorageOptions();
+            }
+
+            options.Storage.DefaultSharedPath = directoryPath;
+
+            return options;
+        }
+
         public static RootOptions SetDumpTempFolder(this RootOptions options, string directoryPath)
         {
             if (null == options.Storage)

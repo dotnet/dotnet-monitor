@@ -15,6 +15,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// </summary>
         public const string StandardPrefix = "DotnetMonitor_";
 
+        public const string DefaultSocketName = "dotnet-monitor.sock";
+
         public static class EnvironmentVariables
         {
             // This environment variable is manually applied to target processes to inform dotnet-monitor
