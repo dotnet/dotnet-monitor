@@ -21,11 +21,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             {
                 await runner.StartAsync(CommonTestTimeouts.StartProcess);
 
-                await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
+                //await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
 
                 await func();
 
-                await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
+                //await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
 
                 // This gives the app time to send out any remaining stdout/stderr messages,
                 // exit properly, and delete its diagnostic pipe.

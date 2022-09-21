@@ -1,0 +1,15 @@
+﻿@page
+using System.ComponentModel.DataAnnotations
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<form method="post">
+    <button class="submit-button" type="submit" asp-page-handler="Submit">Submit</button>
+</form>

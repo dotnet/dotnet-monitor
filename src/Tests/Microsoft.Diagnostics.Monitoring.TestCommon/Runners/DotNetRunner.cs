@@ -158,6 +158,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             argsBuilder.Append(EntrypointAssemblyPath);
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
+            if (!string.IsNullOrEmpty(frameworkVersion)) // use somthing different
+            {
+                argsBuilder.Append(" --urls http://0.0.0.0:82");
+            }
 
             _process.StartInfo.Arguments = argsBuilder.ToString();
 

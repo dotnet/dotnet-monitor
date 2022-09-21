@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private Dictionary<string, TaskCompletionSource<string>> _waitingForEnvironmentVariables;
 
-        private bool _isDiposed;
+        private bool _isDisposed;
 
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Listen"/>
@@ -64,16 +64,26 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public int AppId { get; }
 
-        public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
+        public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current, bool isWebApp = false)
         {
             AppId = appId;
 
             _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
 
-            _appPath = AssemblyHelper.GetAssemblyArtifactBinPath(
-                testAssembly,
-                "Microsoft.Diagnostics.Monitoring.UnitTestApp",
-                tfm);
+            if (isWebApp)
+            {
+                _appPath = AssemblyHelper.GetAssemblyArtifactBinPath(
+                    testAssembly,
+                    "Microsoft.Diagnostics.Monitoring.UnitTestWebApp",
+                    tfm);
+            }
+            else
+            {
+                _appPath = AssemblyHelper.GetAssemblyArtifactBinPath(
+                    testAssembly,
+                    "Microsoft.Diagnostics.Monitoring.UnitTestApp",
+                    tfm);
+            }
 
             _runner.TargetFramework = tfm;
 
@@ -87,11 +97,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         {
             lock (_adapter)
             {
-                if (_isDiposed)
+                if (_isDisposed)
                 {
                     return;
                 }
-                _isDiposed = true;
+                _isDisposed = true;
             }
 
             _adapter.ReceivedStandardOutputLine -= StandardOutputCallback;
@@ -129,11 +139,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 }
 
                 _adapter.Environment.Add("DOTNET_DiagnosticPorts", DiagnosticPortPath);
+                //_adapter.Environment.Add("ASPNETCORE_ENVIRONMENT", "Development");
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);
 
-            await _readySource.WithCancellation(token);
+            //await _readySource.WithCancellation(token); // This one locks things up
         }
 
         public Task<int> WaitForExitAsync(CancellationToken token)
@@ -150,6 +161,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 switch (logEvent.Category)
                 {
                     case "Microsoft.Diagnostics.Monitoring.UnitTestApp.Program":
+                        HandleProgramEvent(logEvent);
+                        break;
+                    case "Microsoft.Diagnostics.Monitoring.UnitTestWebApp.Program":
                         HandleProgramEvent(logEvent);
                         break;
                 }

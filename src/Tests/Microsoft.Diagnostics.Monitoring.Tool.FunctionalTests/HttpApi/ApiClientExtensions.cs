@@ -287,6 +287,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.CaptureLogsAsync(pid, duration, configuration, logFormat, timeoutSource.Token);
         }
 
+                /// <summary>
+        /// GET /trace?pid={pid}&level={logLevel}&durationSeconds={duration}
+        /// </summary>
+        public static Task<ResponseStreamHolder> CaptureTraceAsync(this ApiClient client, int pid, TimeSpan duration, TraceProfile? profile)
+        {
+            return client.CaptureTraceAsync(pid, duration, profile, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// GET /trace?pid={pid}&level={logLevel}&durationSeconds={duration}
+        /// </summary>
+        public static async Task<ResponseStreamHolder> CaptureTraceAsync(this ApiClient client, int pid, TimeSpan duration, TraceProfile? profile, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.CaptureTraceAsync(pid, duration, profile, timeoutSource.Token);
+        }
+
         /// <summary>
         /// GET /metrics
         /// </summary>
