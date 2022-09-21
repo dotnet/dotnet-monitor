@@ -227,9 +227,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                 ? string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedDetailed, innerMessage)
                 : Strings.ErrorMessage_EgressFileFailedGeneric;
         }
-
-        private static async Task VerifyBucketExistsAsync(IAmazonS3 client, string bucketName, CancellationToken token)
-        {
-        }
     }
 }
