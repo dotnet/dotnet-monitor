@@ -23,11 +23,12 @@ internal class MultiPartUploadStream : Stream
     public bool Closed { get; private set; }
     private int _position;
     public const int MinimumSize = 5 * 1024 * 1024; // the minimum size of an upload part (except for the last part)
+    private readonly int _bufferSize;
 
     public MultiPartUploadStream(IAmazonS3 client, string bucketName, string objectKey, string uploadId, int bufferSize)
     {
-        bufferSize = Math.Max(bufferSize, MinimumSize); // has to be at least the minimum
-        _buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+        _bufferSize = Math.Max(bufferSize, MinimumSize); // has to be at least the minimum
+        _buffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
         _offset = 0;
         _client = client;
         _bucketName = bucketName;
@@ -78,7 +79,7 @@ internal class MultiPartUploadStream : Stream
         if (Closed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
 
-        int BytesAvailableInBuffer() { return _buffer.Length - _offset; }
+        int BytesAvailableInBuffer() { return _bufferSize - _offset; }
         do
         {
             int bytesToCopy = Math.Min(count, BytesAvailableInBuffer());

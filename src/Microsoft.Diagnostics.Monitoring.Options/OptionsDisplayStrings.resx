@@ -769,6 +769,7 @@
   <data name="DisplayAttributeDescription_EgressOptions_S3Storage" xml:space="preserve">
     <value>Mapping of S3 storage egress provider names to their options.</value>
     <comment>The description provided for the S3Storage parameter on EgressOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_StorageOptions_SharedLibraryPath" xml:space="preserve">
     <value>The location to which libraries shared with target processes will be copied at startup.</value>
     <comment>The description provided for the SharedLibraryPath parameter on StorageOptions.</comment>

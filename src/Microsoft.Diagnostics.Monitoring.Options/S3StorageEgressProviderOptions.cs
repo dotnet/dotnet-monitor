@@ -47,6 +47,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName))]
         public string AwsProfileName { get; set; }
+
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath))]
