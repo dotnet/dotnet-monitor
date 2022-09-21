@@ -212,7 +212,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddProcessNameFilter(DotNetHost.HostExeNameWithoutExtension);
+                        .AddProcessNameFilter(DotNetHost.ExeNameWithoutExtension);
 
                     startedTask = runner.WaitForCollectionRuleStartedAsync(DefaultRuleName);
                 });

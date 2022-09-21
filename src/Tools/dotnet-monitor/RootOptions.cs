@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public AuthenticationOptions Authentication { get; set; }
 
-        public IDictionary<string, CollectionRuleOptions> CollectionRules { get; }
+        public IDictionary<string, CollectionRuleOptions> CollectionRules { get; set; }
             = new Dictionary<string, CollectionRuleOptions>(0);
 
         public GlobalCounterOptions GlobalCounter { get; set; }
+
+        public InProcessFeaturesOptions InProcessFeatures { get; set; }
 
         public CorsConfigurationOptions CorsConfiguration { get; set; }
 

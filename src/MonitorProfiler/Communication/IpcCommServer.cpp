@@ -7,7 +7,7 @@
 #include "../Logging/Logger.h"
 #include "../Utilities/StringUtilities.h"
 
-IpcCommServer::IpcCommServer() : _shutdown(false)
+IpcCommServer::IpcCommServer(const std::shared_ptr<ILogger>& logger) : _shutdown(false), _logger(logger)
 {
 }
 
@@ -82,6 +82,8 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
 
     do
     {
+#if TARGET_WINDOWS
+
         fd_set set;
         FD_ZERO(&set);
         FD_SET(_domainSocket, &set);
@@ -89,8 +91,17 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
         TIMEVAL timeout;
         timeout.tv_sec = AcceptTimeoutSeconds;
         timeout.tv_usec = 0;
-        result = select(2, &set, nullptr, nullptr, &timeout);
+        result = select(0, &set, nullptr, nullptr, &timeout);
+#else
+        //select has limitations on Linux; any descriptor value over 1024 is ignored.
 
+        pollfd set[1];
+        set[0].fd = _domainSocket;
+        set[0].events = POLLIN;
+        set[0].revents = 0;
+
+        result = poll(set, 1, AcceptTimeoutSeconds * 1000);
+#endif
         if (_shutdown.load())
         {
             return E_ABORT;

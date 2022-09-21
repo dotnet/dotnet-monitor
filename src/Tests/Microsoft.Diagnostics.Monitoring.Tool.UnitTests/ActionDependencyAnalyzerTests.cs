@@ -42,6 +42,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public override string CommandLine { get; protected set; }
             public override string OperatingSystem { get; protected set; }
             public override string ProcessArchitecture { get; protected set; }
+
+            public override Version RuntimeVersion { get; protected set; }
         }
 
         private readonly ITestOutputHelper _outputHelper;

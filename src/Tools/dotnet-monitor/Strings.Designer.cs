@@ -205,6 +205,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expected to find shared libraries at &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_ExpectedToFindSharedLibrariesAtPath {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExpectedToFindSharedLibrariesAtPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value of field {0} must be less than the value of field {1}..
         /// </summary>
         internal static string ErrorMessage_FieldMustBeLessThanOtherField {
@@ -403,6 +412,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to determine platform of the target process..
+        /// </summary>
+        internal static string ErrorMessage_UnableToDetermineTargetPlatform {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnableToDetermineTargetPlatform", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find profiler assembly at determined path..
+        /// </summary>
+        internal static string ErrorMessage_UnableToFindProfilerAssembly {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnableToFindProfilerAssembly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to start: {0} {1}.
         /// </summary>
         internal static string ErrorMessage_UnableToStartProcess {
@@ -444,6 +471,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_UnknownTriggerType {
             get {
                 return ResourceManager.GetString("ErrorMessage_UnknownTriggerType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Call Stacks.
+        /// </summary>
+        internal static string FeatureName_CallStacks {
+            get {
+                return ResourceManager.GetString("FeatureName_CallStacks", resourceCulture);
             }
         }
         
@@ -799,6 +835,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection mode: Connect.
+        /// </summary>
+        internal static string LogFormatString_ConnectionModeConnect {
+            get {
+                return ResourceManager.GetString("LogFormatString_ConnectionModeConnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection mode: Listen at &apos;{path}&apos;.
+        /// </summary>
+        internal static string LogFormatString_ConnectionModeListen {
+            get {
+                return ResourceManager.GetString("LogFormatString_ConnectionModeListen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Diagnostic port file at &apos;{0}&apos; was either deleted or moved while it was still being used..
         /// </summary>
         internal static string LogFormatString_DiagnosticPortAlteredWhileInUse {
@@ -997,6 +1051,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Experimental feature &apos;{name}&apos; is enabled..
+        /// </summary>
+        internal static string LogFormatString_ExperimentalFeatureEnabled {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExperimentalFeatureEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to initialize shared library storage..
+        /// </summary>
+        internal static string LogFormatString_FailedInitializeSharedLibraryStorage {
+            get {
+                return ResourceManager.GetString("LogFormatString_FailedInitializeSharedLibraryStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting the environment variable {variableName} from process {processId}..
         /// </summary>
         internal static string LogFormatString_GetEnvironmentVariable {
@@ -1155,6 +1227,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_SetEnvironmentVariable {
             get {
                 return ResourceManager.GetString("LogFormatString_SetEnvironmentVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shared library path: {path}.
+        /// </summary>
+        internal static string LogFormatString_SharedLibraryPath {
+            get {
+                return ResourceManager.GetString("LogFormatString_SharedLibraryPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to apply profiler..
+        /// </summary>
+        internal static string LogFormatString_UnableToApplyProfiler {
+            get {
+                return ResourceManager.GetString("LogFormatString_UnableToApplyProfiler", resourceCulture);
             }
         }
         

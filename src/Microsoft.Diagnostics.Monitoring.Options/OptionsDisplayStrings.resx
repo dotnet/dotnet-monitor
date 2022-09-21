@@ -769,5 +769,15 @@
   <data name="DisplayAttributeDescription_EgressOptions_S3Storage" xml:space="preserve">
     <value>Mapping of S3 storage egress provider names to their options.</value>
     <comment>The description provided for the S3Storage parameter on EgressOptions.</comment>
+  <data name="DisplayAttributeDescription_StorageOptions_SharedLibraryPath" xml:space="preserve">
+    <value>The location to which libraries shared with target processes will be copied at startup.</value>
+    <comment>The description provided for the SharedLibraryPath parameter on StorageOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_StorageOptions_DefaultSharedPath" xml:space="preserve">
+    <value>The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows, dotnet-monitor runs in listen mode with a Unix domain socket named 'dotnet-monitor.sock' immediately under this path unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified.</value>
+    <comment>The description provided for the DefaultSharedPath parameter on StorageOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_InProcessFeaturesOptions_Enabled" xml:space="preserve">
+    <value>Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.</value>
   </data>
 </root>
