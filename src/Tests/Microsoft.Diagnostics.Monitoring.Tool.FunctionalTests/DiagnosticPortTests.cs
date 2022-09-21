@@ -5,13 +5,10 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,15 +16,12 @@ using Xunit.Abstractions;
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
-    [Collection(DefaultCollectionFixture.Name)]
     public sealed class DiagnosticPortTests
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
-        public DiagnosticPortTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        public DiagnosticPortTests(ITestOutputHelper outputHelper)
         {
-            _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
         }
 
@@ -37,16 +31,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task DefaultDiagnosticPort_NotSupported_ConnectMode()
         {
-            using TemporaryDirectory tempDir = new(_outputHelper);
+            using TemporaryDirectory defaultSharedTempDir = new(_outputHelper);
 
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.ConnectionModeViaCommandLine = WebApi.DiagnosticPortConnectionMode.Connect;
-            toolRunner.ConfigurationFromEnvironment.SetDefaultSharedPath(tempDir.FullName);
+            toolRunner.ConfigurationFromEnvironment.SetDefaultSharedPath(defaultSharedTempDir.FullName);
 
             await toolRunner.StartAsync();
 
-            string expectedMissingSocketPath = GetDefaultSharedSocketPath(tempDir.FullName);
-            Assert.False(File.Exists(expectedMissingSocketPath), $"Expected socket to not exist at '{expectedMissingSocketPath}'.");
+            AssertDefaultDiagnosticPortNotExists(defaultSharedTempDir);
         }
 
         /// <summary>
@@ -56,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task DefaultDiagnosticPort_NotSupported_ListenModeWithSpecifiedPort()
         {
-            using TemporaryDirectory tempDir = new(_outputHelper);
+            using TemporaryDirectory defaultSharedTempDir = new(_outputHelper);
 
             DiagnosticPortHelper.Generate(
                 DiagnosticPortConnectionMode.Listen,
@@ -66,12 +59,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.ConnectionModeViaCommandLine = DiagnosticPortConnectionMode.Listen;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
-            toolRunner.ConfigurationFromEnvironment.SetDefaultSharedPath(tempDir.FullName);
+            toolRunner.ConfigurationFromEnvironment.SetDefaultSharedPath(defaultSharedTempDir.FullName);
 
             await toolRunner.StartAsync();
 
-            string expectedMissingSocketPath = GetDefaultSharedSocketPath(tempDir.FullName);
-            Assert.False(File.Exists(expectedMissingSocketPath), $"Expected socket to not exist at '{expectedMissingSocketPath}'.");
+            AssertDefaultDiagnosticPortNotExists(defaultSharedTempDir);
         }
 
         /// <summary>
@@ -81,16 +73,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [ConditionalFact(typeof(TestConditions), nameof(TestConditions.IsNotWindows))]
         public async Task DefaultDiagnosticPort_Supported_ListenModeOnNonWindows()
         {
-            using TemporaryDirectory tempDir = new(_outputHelper);
+            using TemporaryDirectory defaultSharedTempDir = new(_outputHelper);
 
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.ConfigurationFromEnvironment.SetConnectionMode(DiagnosticPortConnectionMode.Listen);
-            toolRunner.ConfigurationFromEnvironment.SetDefaultSharedPath(tempDir.FullName);
+            toolRunner.ConfigurationFromEnvironment.SetDefaultSharedPath(defaultSharedTempDir.FullName);
 
             await toolRunner.StartAsync();
 
-            string expectedSocketPath = GetDefaultSharedSocketPath(tempDir.FullName);
-            Assert.True(File.Exists(expectedSocketPath), $"Expected socket to exist at '{expectedSocketPath}'.");
+            AssertDefaultDiagnosticPortExists(defaultSharedTempDir);
         }
 
         /// <summary>
@@ -100,22 +91,33 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [ConditionalFact(typeof(TestConditions), nameof(TestConditions.IsWindows))]
         public async Task DefaultDiagnosticPort_NotSupported_ListenModeOnWindows()
         {
-            using TemporaryDirectory tempDir = new(_outputHelper);
+            using TemporaryDirectory defaultSharedTempDir = new(_outputHelper);
 
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.ConfigurationFromEnvironment.SetConnectionMode(DiagnosticPortConnectionMode.Listen);
-            toolRunner.ConfigurationFromEnvironment.SetDefaultSharedPath(tempDir.FullName);
+            toolRunner.ConfigurationFromEnvironment.SetDefaultSharedPath(defaultSharedTempDir.FullName);
 
             // dotnet-monitor will fail to start due to misconfigured diagnostic port
             await Assert.ThrowsAsync<InvalidOperationException>(() => toolRunner.StartAsync());
 
-            string expectedMissingSocketPath = GetDefaultSharedSocketPath(tempDir.FullName);
-            Assert.False(File.Exists(expectedMissingSocketPath), $"Expected socket to not exist at '{expectedMissingSocketPath}'.");
+            AssertDefaultDiagnosticPortNotExists(defaultSharedTempDir);
         }
 
         private static string GetDefaultSharedSocketPath(string defaultSharedPath)
         {
             return Path.Combine(defaultSharedPath, ToolIdentifiers.DefaultSocketName);
+        }
+
+        private static void AssertDefaultDiagnosticPortExists(TemporaryDirectory dir)
+        {
+            string diagnosticPort = GetDefaultSharedSocketPath(dir.FullName);
+            Assert.True(File.Exists(diagnosticPort), $"Expected socket to exist at '{diagnosticPort}'.");
+        }
+
+        private static void AssertDefaultDiagnosticPortNotExists(TemporaryDirectory dir)
+        {
+            string diagnosticPort = GetDefaultSharedSocketPath(dir.FullName);
+            Assert.False(File.Exists(diagnosticPort), $"Expected socket to not exist at '{diagnosticPort}'.");
         }
     }
 }
