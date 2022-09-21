@@ -1214,7 +1214,7 @@
             "null",
             "string"
           ],
-          "description": "[Experimental] The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows, dotnet-monitor runs in listen mode with a Unix domain socket named 'dotnet-monitor.sock' immediately under this path unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified."
+          "description": "The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows, dotnet-monitor runs in listen mode with a Unix domain socket named 'dotnet-monitor.sock' immediately under this path unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified."
         },
         "DumpTempFolder": {
           "type": [

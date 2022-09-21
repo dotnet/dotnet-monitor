@@ -9,7 +9,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal class StorageOptions
     {
-        [Experimental]
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_StorageOptions_DefaultSharedPath))]
