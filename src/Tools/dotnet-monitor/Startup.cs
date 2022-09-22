@@ -64,16 +64,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 configureOptions.Providers.Add<BrotliCompressionProvider>();
                 configureOptions.MimeTypes = new List<string> { ContentTypes.ApplicationOctetStream };
             });
-
-            var metricsOptions = new MetricsOptions();
-            Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
-            if (metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled))
-            {
-                services.AddSingleton<MetricsStoreService>();
-                services.AddHostedService<MetricsService>();
-            }
-
-            services.AddSingleton<IMetricsPortsProvider, MetricsPortsProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
