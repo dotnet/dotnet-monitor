@@ -19,6 +19,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
     /// </summary>
     internal class S3StorageEgressProvider : EgressProvider<S3StorageEgressProviderOptions>
     {
+        internal class AmazonS3ClientFactory
+        {
+            public virtual IAmazonS3 Create(AWSCredentials awsCredentials, AmazonS3Config configuration) => new AmazonS3Client(awsCredentials, configuration);
+        }
+
+        internal AmazonS3ClientFactory ClientFactory = new();
+
         public S3StorageEgressProvider(ILogger<S3StorageEgressProvider> logger) : base(logger)
         {
         }
@@ -115,7 +122,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             return resourceId;
         }
 
-        private static async Task<IAmazonS3> CreateClientAsync(S3StorageEgressProviderOptions options, CancellationToken cancellationToken)
+        private async Task<IAmazonS3> CreateClientAsync(S3StorageEgressProviderOptions options, CancellationToken cancellationToken)
         {
             AWSCredentials awsCredentials = null;
             AmazonS3Config configuration = new();
@@ -151,7 +158,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             if (awsCredentials == null)
                 throw new AmazonClientException("Failed to find AWS Credentials for constructing AWS service client");
 
-            IAmazonS3 s3Client = new AmazonS3Client(awsCredentials, configuration);
+            IAmazonS3 s3Client = ClientFactory.Create(awsCredentials, configuration);
             bool exists = await s3Client.DoesS3BucketExistAsync(options.BucketName);
             if (!exists)
                 await s3Client.PutBucketAsync(options.BucketName, cancellationToken);

@@ -857,12 +857,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
         public Task<PutBucketResponse> PutBucketAsync(string bucketName, CancellationToken cancellationToken = new())
         {
-            throw new NotSupportedException();
+            if (!_storage.ContainsKey(bucketName))
+                _storage.Add(bucketName, new Dictionary<string, StorageData>());
+            return Task.FromResult(new PutBucketResponse { HttpStatusCode = HttpStatusCode.OK });
         }
 
-        public Task<PutBucketResponse> PutBucketAsync(PutBucketRequest request, CancellationToken cancellationToken = new())
+        public async Task<PutBucketResponse> PutBucketAsync(PutBucketRequest request, CancellationToken cancellationToken = new())
         {
-            throw new NotSupportedException();
+            return await PutBucketAsync(request.BucketName, cancellationToken);
         }
 
         public Task<PutBucketAccelerateConfigurationResponse> PutBucketAccelerateConfigurationAsync(PutBucketAccelerateConfigurationRequest request, CancellationToken cancellationToken = new())
