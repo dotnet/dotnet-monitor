@@ -4,12 +4,30 @@
 
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+#if !NET7_0_OR_GREATER
 using System.Reflection;
+#endif
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ConfigurationExtensions
     {
+        public static bool TryGetProvider(this IConfigurationBuilder builder, string key, out IConfigurationProvider provider)
+        {
+            foreach (IConfigurationSource source in builder.Sources.Reverse())
+            {
+                if (source is ChainedConfigurationSource chainedSource &&
+                    null != chainedSource.Configuration &&
+                    chainedSource.Configuration.TryGetProviderAndValue(key, out provider, out _))
+                {
+                    return true;
+                }
+            }
+
+            provider = null;
+            return false;
+        }
+
         public static bool TryGetProviderAndValue(this IConfiguration configuration, string key, out IConfigurationProvider provider, out string value)
         {
             if (configuration is IConfigurationRoot configurationRoot)
