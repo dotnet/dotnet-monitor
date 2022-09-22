@@ -2,6 +2,8 @@
 
 Captures the call stacks of the currently running process. Note that only managed frames are collected.
 
+>**NOTE:** This feature is [experimental](./../experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](./../configuration.md#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+
 ## HTTP Route
 
 ```http

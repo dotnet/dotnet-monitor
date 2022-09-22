@@ -2,6 +2,8 @@
 
 `dotnet monitor` has extensive configuration to control various aspects of its behavior. Ordinarily, you are not required to specify most of this configuration and only exists if you wish to change the default behavior in `dotnet monitor`.
 
+>**NOTE:** Some features are [experimental](./experimental.md) and are denoted as `**[Experimental]**` in this document.
+
 ## Configuration Sources
 
 `dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (User-specified json file is highest precedence) :
@@ -314,7 +316,49 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 
 ## Storage Configuration
 
+Some diagnostic features (e.g. memory dumps, stack traces) require that a directory is shared between the `dotnet monitor` tool and the target applications. The `Storage` configuration section allows specifying these directories to facilitate this sharing.
+
+### Default Shared Path (7.0+)
+
+The default shared path option (`DefaultSharedPath`) can be set, which allows artifacts to be shared automatically without requiring additional configuration for each artifact type. By setting this property with an appropriate value, the following become available:
+- dumps are temporarily stored in this directory or in a subdirectory.
+- **[Experimental]** shared libraries are shared from `dotnet monitor` to target applications in this directory or in a subdirectory.
+- **[Experimental]** in-process diagnostics share files back to `dotnet monitor` in this directory or in a subdirectory.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Storage": {
+      "DefaultSharedPath": "/diag"
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  Storage__DefaultSharedPath: "/diag"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_Storage__DefaultSharedPath
+    value: "/diag"
+  ```
+</details>
+
+### Dumps Path
+
 Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't streamed back from the target process to `dotnet monitor`. Instead, they are written directly to disk by the runtime. After successful collection of a process dump, `dotnet monitor` will read the process dump directly from disk. In the default configuration, the directory that the runtime writes its process dump to is the temp directory (`%TMP%` on Windows, `/tmp` on \*nix). It is possible to change to the ephemeral directory that these dump files get written to via the following configuration:
+
+>**Note:** This option is optional if `dotnet monitor` is running in the same process namespace as the target processes or if `DefaultSharedPath` is specified.
 
 <details>
   <summary>JSON</summary>
@@ -342,6 +386,41 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
   ```yaml
   - name: DotnetMonitor_Storage__DumpTempFolder
     value: "/diag/dumps/"
+  ```
+</details>
+
+### **[Experimental]** Shared Library Path (7.0+)
+
+The shared library path option (`SharedLibraryPath`) allows specifying the path to where shared libraries are copied from the `dotnet monitor` installation to make them available to target applications for in-process diagnostics scenarios, such a call stack collection.
+
+>**Note:** This option is not required if `DefaultSharedPath` is specified. This option provides an alternative directory path compared to the behavior of specifying `DefaultSharedPath`.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Storage": {
+      "SharedLibraryPath": "/diag/libs/"
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  Storage__SharedLibraryPath: "/diag/libs/"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_Storage__SharedLibraryPath
+    value: "/diag/libs/"
   ```
 </details>
 
@@ -1673,9 +1752,11 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
   ```
 </details>
 
-#### `CollectStacks` Action
+#### **[Experimental]** `CollectStacks` Action (7.0+)
 
 Collect call stacks from the target process.
+
+>**NOTE:** This feature is [experimental](./../experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
 
 ##### Properties
 
@@ -2051,5 +2132,47 @@ The following example includes a default egress provider that corresponds to the
     value: "CollectGCDump"
   - name: DotnetMonitor_CollectionRules__HighRequestCount__Actions__1__Settings__Egress
     value: "monitorBlob"
+  ```
+</details>
+
+## **[Experimental]** In-Process Features Configuration (7.0+)
+
+Some features of `dotnet monitor` require loading libraries that are not part of the deployment of the target application. These libraries ship with `dotnet monitor` and are provisioned to be available to the target applications using the `DefaultSharedPath` option in the [storage configuration](#storage-configuration) section. The following features require these in-process libraries to be used:
+
+- Call stack collection
+
+ Because these libraries are loaded into the target application, they may have performance impact on memory and CPU utilization. These features are off by default and may be enabled via the `InProcessFeatures` configuration section.
+
+ ### Example
+
+ To enable in-process features, such as call stack collection, use the following configuration:
+
+ <details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "InProcessFeatures": {
+      "Enabled": true
+    }
+  }
+  ```
+</details>
+
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  InProcessFeatures__Enabled: "true"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_InProcessFeatures__Enabled
+    value: "true"
   ```
 </details>
