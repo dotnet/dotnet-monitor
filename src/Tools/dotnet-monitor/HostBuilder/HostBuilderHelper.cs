@@ -20,6 +20,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
         {
+            string appUrls = string.Empty;
+            string serviceUrls = string.Empty;
             return new HostBuilder()
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
@@ -87,6 +89,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                     }
                 })
+                .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
+                {
+                    // Save and clear URLs so ASP.NET app configuration cannot see them
+                    appUrls = context.Configuration[WebHostDefaults.ServerUrlsKey];
+                    context.Configuration[WebHostDefaults.ServerUrlsKey] = string.Empty;
+                })
+                .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
+                {
+                    // Save and clear URLs so ASP.NET service configuration cannot see them
+                    serviceUrls = context.Configuration[WebHostDefaults.ServerUrlsKey];
+                    context.Configuration[WebHostDefaults.ServerUrlsKey] = string.Empty;
+                })
                 //Note this is necessary for config only because Kestrel configuration
                 //is not added until WebHostDefaults are added.
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -113,8 +127,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //2) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
                         //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
 
-                        string hostingUrl = context.Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
-                        string[] urls = ConfigurationHelper.SplitValue(hostingUrl);
+                        string hostingUrls = context.Configuration[WebHostDefaults.ServerUrlsKey];
+                        string[] urls = ConfigurationHelper.SplitValue(hostingUrls);
 
                         var metricsOptions = new MetricsOptions();
                         context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
@@ -139,6 +153,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         context.Configuration[WebHostDefaults.ServerUrlsKey] = string.Empty;
                     })
                     .UseStartup<Startup>();
+                })
+                .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
+                {
+                    // Restore URLs for app configuration
+                    context.Configuration[WebHostDefaults.ServerUrlsKey] = appUrls;
+                })
+                .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
+                {
+                    // Restore URLs for service configuration
+                    context.Configuration[WebHostDefaults.ServerUrlsKey] = serviceUrls;
                 });
         }
 
