@@ -644,6 +644,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the call stacks are egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectStacksOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectStacksOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format used to display the callstacks..
         /// </summary>
         public static string DisplayAttributeDescription_CollectStacksOptions_Format {

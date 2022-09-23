@@ -1636,11 +1636,11 @@
       "properties": {
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the logs are egressed.",
+          "description": "[Experimental] The name of the egress provider to which the call stacks are egressed.",
           "minLength": 1
         },
         "Format": {
-          "description": "The format used to display the callstacks.",
+          "description": "[Experimental] The format used to display the call stacks.",
           "default": "Json",
           "oneOf": [
             {

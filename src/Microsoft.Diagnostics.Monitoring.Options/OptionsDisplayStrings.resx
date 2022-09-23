@@ -724,6 +724,9 @@
     <value>Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.</value>
   </data>
   <data name="DisplayAttributeDescription_CollectStacksOptions_Format" xml:space="preserve">
-    <value>The format used to display the callstacks.</value>
+    <value>The format used to display the call stacks.</value>
+  </data>
+  <data name="DisplayAttributeDescription_CollectStacksOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the call stacks are egressed.</value>
   </data>
 </root>
