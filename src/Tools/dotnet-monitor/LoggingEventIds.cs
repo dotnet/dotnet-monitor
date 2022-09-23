@@ -81,7 +81,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         DiagnosticPortWatchingFailed = 68,
         InvalidMetadata = 69,
         DuplicateKeyInMetadata = 70,
-        EnvironmentVariableNotFound = 71
+        EnvironmentVariableNotFound = 71,
+        ConnectionModeConnect = 76,
+        ConnectionModeListen = 77
     }
 
     internal static class LoggingEventIdsExtensions

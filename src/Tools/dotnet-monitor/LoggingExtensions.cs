@@ -399,6 +399,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
 
+        private static readonly Action<ILogger, Exception> _connectionModeConnect =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.ConnectionModeConnect.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ConnectionModeConnect);
+
+        private static readonly Action<ILogger, string, Exception> _connectionModeListen =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ConnectionModeListen.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ConnectionModeListen);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -731,6 +743,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
         {
             _environmentVariableNotFound(logger, environmentVariable, null);
+        }
+
+
+        public static void ConnectionModeConnect(this ILogger logger)
+        {
+            _connectionModeConnect(logger, null);
+        }
+
+        public static void ConnectionModeListen(this ILogger logger, string path)
+        {
+            _connectionModeListen(logger, path, null);
         }
     }
 }
