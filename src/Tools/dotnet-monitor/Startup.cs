@@ -66,16 +66,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 configureOptions.MimeTypes = new List<string> { ContentTypes.ApplicationOctetStream };
             });
 
-            var metricsOptions = new MetricsOptions();
-            Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
-            if (metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled))
-            {
-                services.AddSingleton<MetricsStoreService>();
-                services.AddHostedService<MetricsService>();
-            }
-
-            services.AddSingleton<IMetricsPortsProvider, MetricsPortsProvider>();
-
             services.ConfigureCors(Configuration);
         }
 
