@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         listenResults.Listen(
                             options,
                             urls,
-                            metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ? metricUrls : Array.Empty<string>(),
+                            metricsOptions.GetEnabled() ? metricUrls : Array.Empty<string>(),
                             settings.Authentication.KeyAuthenticationMode != KeyAuthenticationMode.NoAuth);
 
                         // Since the endpoints have already been defined on the KestrelServerOptions, clear out the urls
