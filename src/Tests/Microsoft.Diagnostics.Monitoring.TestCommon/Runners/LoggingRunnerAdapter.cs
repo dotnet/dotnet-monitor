@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private readonly ITestOutputHelper _outputHelper;
         private readonly TaskCompletionSource<int> _processIdSource =
             new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly DotNetRunner _runner;
+        public readonly DotNetRunner _runner;
         private readonly List<string> _standardErrorLines = new();
         private readonly List<string> _standardOutputLines = new();
 

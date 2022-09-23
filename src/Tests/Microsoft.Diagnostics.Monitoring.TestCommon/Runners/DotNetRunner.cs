@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private readonly TaskCompletionSource<int> _exitedSource;
 
         // The process object of the started process
-        private readonly Process _process;
+        public readonly Process _process;
 
         /// <summary>
         /// The arguments to the entrypoint method.

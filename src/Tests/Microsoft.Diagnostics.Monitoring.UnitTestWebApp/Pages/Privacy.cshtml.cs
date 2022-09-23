@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.UnitTestApp;
+//using Microsoft.Diagnostics.Monitoring.UnitTestApp;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -23,14 +24,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestWebApp.Pages
             _logger.LogWarning("IN PRIVACY");
         }
 
-        public async Task OnGetAsync()
+        public void OnGet()
         {
             _logger.LogWarning("IN PRIVACY ONGET");
 
-            await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue, _logger);
+            //await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue, _logger);
 
-            Process p = Process.GetCurrentProcess();
-            p.Kill();
+            //_logger.LogWarning("After waiting for command");
+
+            //Process p = Process.GetCurrentProcess();
+            //p.Kill();
 
             /*
             _logger.LogWarning("IN PRIVACY ONGET");

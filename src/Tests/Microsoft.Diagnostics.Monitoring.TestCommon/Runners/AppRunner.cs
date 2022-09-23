@@ -93,6 +93,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
         }
 
+        public void KillProcess()
+        {
+            _adapter._runner._process.Kill(true);
+        }
+
         public async ValueTask DisposeAsync()
         {
             lock (_adapter)

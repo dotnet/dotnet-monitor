@@ -17,9 +17,11 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -53,60 +55,68 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
 
-            Task ruleStartedTask = null;
-
-            await ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
+            DiagnosticPortHelper.Generate(
                 mode,
-                TestAppScenarios.SpinWait.Name,
-                appValidate: async (runner, client) =>
-                {
-                    try
-                    {
-                        string pathAndQuery = "http://localhost:82"; // not sure this will work
-                        HttpResponseMessage message = await client.ApiCall(pathAndQuery);
-                        string pathAndQuery2 = "http://localhost:82/Privacy"; // not sure this will work
-                        HttpResponseMessage message2 = await client.ApiCall(pathAndQuery2);
-                    }
-                    catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        // Handle cases where it fails to locate the single process.
-                    }
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
 
-                    _outputHelper.WriteLine("IN APPVALIDATE");
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.ConnectionMode = mode;
+            toolRunner.DiagnosticPortPath = diagnosticPortPath;
+            toolRunner.DisableAuthentication = true;
 
-                    await ruleStartedTask;
+            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), isWebApp: true);
+            appRunner.ConnectionMode = appConnectionMode;
+            appRunner.DiagnosticPortPath = diagnosticPortPath;
+            appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
-                    //await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
-                    Assert.True(File.Exists(ExpectedFilePath));
-                    Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
+            await appRunner.ExecuteAsync(async () =>
+            {
+                // Validate that the first rule is observed and its actions are run.
+                //await originalActionsCompletedTask;
 
-                    _outputHelper.WriteLine("AFTER ASSERTIONS");
-
-                    /*                    await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StartSpin);
-
-                                        await ruleCompletedTask;
-
-                                        await runner.SendCommandAsync(TestAppScenarios.SpinWait.Commands.StopSpin);
-
-                                        Assert.True(File.Exists(ExpectedFilePath));
-                                        Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));*/
-
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-                },
-                configureTool: runner =>
-                {
-                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                // Change collection rule configuration to only contain the second rule.
+                RootOptions newOptions = new();
+                newOptions.CreateCollectionRule(DefaultRuleName)
                         .SetAspNetRequestCountTrigger(options =>
                         {
                             options.RequestCount = ExpectedRequestCount;
                         })
                         .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
 
-                    ruleStartedTask = runner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
-                }, isWebApp: true);
+                    //ruleStartedTask = runner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
+
+                await toolRunner.WriteUserSettingsAsync(newOptions);
+                await toolRunner.StartAsync();
+
+                try
+                {
+                    using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+                    ApiClient apiClient = new(_outputHelper, httpClient);
+
+                    string pathAndQuery = "http://localhost:82"; // not sure this will work
+                    HttpResponseMessage message = await apiClient.ApiCall(pathAndQuery);
+                    string pathAndQuery2 = "http://localhost:82/Privacy"; // not sure this will work
+                    HttpResponseMessage message2 = await apiClient.ApiCall(pathAndQuery2);
+                }
+                catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    // Handle cases where it fails to locate the single process.
+                }
+
+                // Validate that only the second rule is observed.
+                await ruleStartedTask;
+                Assert.True(ruleStartedTask.IsCompleted);
+
+                Assert.True(File.Exists(ExpectedFilePath));
+                Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
+
+                appRunner.KillProcess();
+                //await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            });
+            //Assert.Equal(0, appRunner.ExitCode);
         }
 
         /// <summary>
