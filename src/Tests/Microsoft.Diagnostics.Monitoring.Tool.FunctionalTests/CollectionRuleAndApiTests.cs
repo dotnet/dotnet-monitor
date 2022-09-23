@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
-            await appRunner.ExecuteAsync(async () =>
+            await appRunner.ExecuteNoCommandsAsync(async () =>
             {
                 // Validate that the first rule is observed and its actions are run.
                 //await originalActionsCompletedTask;

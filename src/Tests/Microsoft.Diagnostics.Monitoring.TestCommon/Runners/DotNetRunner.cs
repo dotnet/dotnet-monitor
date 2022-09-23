@@ -158,7 +158,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             argsBuilder.Append(EntrypointAssemblyPath);
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
-            if (!string.IsNullOrEmpty(frameworkVersion)) // use somthing different
+
+            var pathSections = EntrypointAssemblyPath.Split('\\');
+            if (pathSections[pathSections.Length - 1] == "Microsoft.Diagnostics.Monitoring.UnitTestWebApp.dll")
             {
                 argsBuilder.Append(" --urls http://0.0.0.0:82");
             }
