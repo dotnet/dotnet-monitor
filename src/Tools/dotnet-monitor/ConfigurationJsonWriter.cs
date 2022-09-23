@@ -269,24 +269,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private string GetConfigurationProvider(IConfigurationSection section, bool showSources)
         {
-            if (showSources)
+            if (showSources && _configuration.TryGetProviderAndValue(section.Path, out IConfigurationProvider provider, out _))
             {
-                var configurationProviders = ((IConfigurationRoot)_configuration).Providers.Reverse();
-
-                string comment = string.Empty;
-
-                foreach (var provider in configurationProviders)
-                {
-                    provider.TryGet(section.Path, out string value);
-
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        comment = provider.ToString();
-                        break;
-                    }
-                }
-
-                return comment;
+                return provider.ToString();
             }
 
             return string.Empty;
