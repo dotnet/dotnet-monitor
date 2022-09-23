@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 #if SCHEMAGEN
     [NJsonSchema.Annotations.JsonSchemaFlatten]
 #endif
-    internal record class CollectStacksOptions : BaseRecordOptions, IEgressProviderProperties
+    internal partial record class CollectStacksOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Experimental]
         [Display(

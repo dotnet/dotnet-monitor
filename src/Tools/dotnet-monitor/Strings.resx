@@ -137,6 +137,9 @@
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
   </data>
+  <data name="ErrorMessage_DisabledFeature" xml:space="preserve">
+    <value>Feature '{0}' is not enabled.</value>
+  </data>
   <data name="ErrorMessage_DuplicateActionName" xml:space="preserve">
     <value>Duplicate action name '{0}'.</value>
   </data>
