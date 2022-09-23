@@ -276,6 +276,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 _settings = new JsonSchemaGeneratorSettings();
                 _settings.SerializerSettings = new JsonSerializerSettings();
                 _settings.SerializerSettings.Converters.Add(new StringEnumConverter());
+                _settings.SchemaProcessors.Add(new ExperimentalSchemaProcessor());
 
                 _resolver = new JsonSchemaResolver(rootSchema, _settings);
 

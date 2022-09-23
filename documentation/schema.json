@@ -49,6 +49,7 @@
       ]
     },
     "InProcessFeatures": {
+      "description": "[Experimental]",
       "default": {},
       "oneOf": [
         {
@@ -878,7 +879,7 @@
             "boolean",
             "null"
           ],
-          "description": "Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "description": "[Experimental] Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
           "default": false
         }
       }
@@ -1227,7 +1228,7 @@
             "null",
             "string"
           ],
-          "description": "The location to which libraries shared with target processes will be copied at startup."
+          "description": "[Experimental] The location to which libraries shared with target processes will be copied at startup."
         }
       }
     },

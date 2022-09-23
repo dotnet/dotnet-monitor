@@ -13,6 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     /// </summary>
     internal class InProcessFeaturesOptions
     {
+        [Experimental]
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_InProcessFeaturesOptions_Enabled))]
