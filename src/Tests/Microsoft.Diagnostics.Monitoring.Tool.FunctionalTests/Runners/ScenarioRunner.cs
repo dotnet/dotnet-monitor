@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 out string diagnosticPortPath);
 
             await using MonitorCollectRunner toolRunner = new(outputHelper);
-            toolRunner.ConnectionMode = mode;
+            toolRunner.ConnectionModeViaCommandLine = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
             toolRunner.DisableHttpEgress = disableHttpEgress;
