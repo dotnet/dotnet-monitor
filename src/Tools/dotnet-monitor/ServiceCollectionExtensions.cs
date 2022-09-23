@@ -32,6 +32,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ServiceCollectionExtensions
     {
+        public static IServiceCollection ConfigureCors(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<CorsConfigurationOptions>(services, configuration, ConfigurationKeys.CorsConfiguration);
+        }
+
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter);
