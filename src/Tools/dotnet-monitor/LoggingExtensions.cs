@@ -399,6 +399,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
 
+        private static readonly Action<ILogger, Exception> _environmentBlockNotSupported =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.EnvironmentBlockNotSupported.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -731,6 +737,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
         {
             _environmentVariableNotFound(logger, environmentVariable, null);
+        }
+
+        public static void EnvironmentBlockNotSupported(this ILogger logger)
+        {
+            _environmentBlockNotSupported(logger, null);
         }
     }
 }

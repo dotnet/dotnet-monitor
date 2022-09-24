@@ -39,6 +39,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             // CONSIDER: Generate a runtime instance identifier based on the pipe name
             // for .NET Core 3.1 e.g. pid + disambiguator in GUID form.
+            // Note that currently we use RuntimeInstanceId == Guid.Empty as a means of determining
+            // if an app is running as 3.1
             return new EndpointInfo()
             {
                 Endpoint = new PidIpcEndpoint(processId),
