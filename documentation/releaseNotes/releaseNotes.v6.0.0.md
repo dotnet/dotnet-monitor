@@ -1,6 +1,3 @@
-
-[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=releaseNotes)
-
 Today we are releasing the official 6.0.0 GA build of the `dotnet monitor` tool. This release includes:
 
 - Add `netcoreapp3.1` target framework to allow tool to run on .NET Core 3.1 and .NET 5 (#1080).
