@@ -1,3 +1,4 @@
+
 # Dump - Get
 
 Captures a managed dump of a specified process without using a debugger.
