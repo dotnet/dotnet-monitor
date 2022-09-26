@@ -1,3 +1,4 @@
+
 # Metrics - Get
 
 Gets a snapshot of metrics in the Prometheus exposition format of a single process.
