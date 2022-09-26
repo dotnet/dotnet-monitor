@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=collectionrules-individual)
+
 # Collection Rules - Get
 
 Reports the detailed state of the specified collection rule for a specific process.
