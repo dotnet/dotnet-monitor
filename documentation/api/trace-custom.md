@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=trace-custom)
+
 # Trace - Get Custom
 
 Captures a diagnostic trace of a process using the given set of event providers specified in the request body.
