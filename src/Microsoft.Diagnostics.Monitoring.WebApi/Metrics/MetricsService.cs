@@ -36,6 +36,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            if (!_optionsMonitor.CurrentValue.GetEnabled())
+            {
+                return;
+            }
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 stoppingToken.ThrowIfCancellationRequested();
