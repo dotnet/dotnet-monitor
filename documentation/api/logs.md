@@ -1,3 +1,4 @@
+
 # Logs
 
 The Logs API enables collecting logs that are logged to the [ILogger<> infrastructure](https://docs.microsoft.com/aspnet/core/fundamentals/logging) within a specified process.
