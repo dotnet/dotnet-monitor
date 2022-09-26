@@ -19,7 +19,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly Action<TraceEvent> _onEvent;
         private readonly string _providerName;
         private readonly string _eventName;
-        private readonly TraceEventOpcode? _eventOpcode;
         private readonly Stream _sourceStream;
         private readonly Stream _destinationStream;
 
@@ -31,7 +30,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public EventMonitoringPassthroughStream(
             string providerName,
             string eventName,
-            TraceEventOpcode? eventOpcode,
             Action<TraceEvent> onEvent,
             Stream sourceStream,
             Stream destinationStream,
@@ -40,7 +38,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             _providerName = providerName;
             _eventName = eventName;
-            _eventOpcode = eventOpcode;
             _onEvent = onEvent;
             _sourceStream = sourceStream;
 
@@ -79,15 +76,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private void TraceEventCallback(TraceEvent obj)
         {
-            if (!_eventOpcode.HasValue || obj.Opcode == _eventOpcode)
-            {
-                // Once the specified event has been observed, stop watching for it.
-                // However, keep processing the data as to allow remaining trace event
-                // data, such as run down, to finish transferring to the destination stream.
-                _eventSource.Dynamic.RemoveCallback<TraceEvent>(TraceEventCallback);
+            // Once the specified event has been observed, stop watching for it.
+            // However, keep processing the data as to allow remaining trace event
+            // data, such as run down, to finish transferring to the destination stream.
+            _eventSource.Dynamic.RemoveCallback<TraceEvent>(TraceEventCallback);
 
-                _onEvent(obj);
-            }
+            _onEvent(obj);
         }
 
         public override bool CanSeek => false;

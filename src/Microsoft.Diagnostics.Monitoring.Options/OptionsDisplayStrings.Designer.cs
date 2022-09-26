@@ -1365,15 +1365,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The opcode of the event, if empty the specified event&apos;s opcode will not be checked..
-        /// </summary>
-        public static string DisplayAttributeDescription_TraceEventOptions_Opcode {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventOptions_Opcode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The event provider that will produce the specified event..
         /// </summary>
         public static string DisplayAttributeDescription_TraceEventOptions_ProviderName {

@@ -1145,8 +1145,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             TraceEventOptions expectedStoppingEvent = new()
             {
                 EventName = "CustomEvent",
-                ProviderName = ExpectedEventProviderName,
-                Opcode = Tracing.TraceEventOpcode.Stop
+                ProviderName = ExpectedEventProviderName
             };
 
             return ValidateSuccess(

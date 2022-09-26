@@ -38,15 +38,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
 #if NET5_0_OR_GREATER
         [Fact]
-        public Task StopOnEvent_Succeeds_WithNoOpcode()
-        {
-            return StopOnEventTestCore(opcode: null);
-        }
-
-        [Fact]
         public Task StopOnEvent_Succeeds_WithMatchingOpcode()
         {
-            return StopOnEventTestCore(TraceEventOpcode.Info);
+            return StopOnEventTestCore(TraceEventOpcode.Reply);
         }
 
         [Fact]
@@ -61,12 +55,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return StopOnEventTestCore(TraceEventOpcode.Resume, TimeSpan.FromSeconds(10));
         }
 
-        private async Task StopOnEventTestCore(TraceEventOpcode? opcode, TimeSpan? duration = null)
+        private async Task StopOnEventTestCore(TraceEventOpcode opcode = TraceEventOpcode.Info, TimeSpan? duration = null)
         {
             const string DefaultRuleName = "FunctionalTestRule";
             const string EgressProvider = "TmpEgressProvider";
             const string EventProviderName = "TestScenario";
             const string StoppingEventName = "UniqueEvent";
+
+            string qualifiedEventName = (opcode == TraceEventOpcode.Info) ? StoppingEventName : $"{StoppingEventName}/{opcode}";
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -101,8 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                                 options.StoppingEvent = new TraceEventOptions()
                                 {
                                     ProviderName = EventProviderName,
-                                    EventName = StoppingEventName,
-                                    Opcode = opcode
+                                    EventName = qualifiedEventName,
                                 };
                             });
 

@@ -5,7 +5,6 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -101,40 +100,41 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             await pipeProcessor.RunAsync(token);
         }
 
-        public static async Task CaptureTraceUntilEventAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan timeout, Stream outputStream, string providerName, string eventName, TraceEventOpcode? opcode, CancellationToken token)
+        public static async Task CaptureTraceUntilEventAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan timeout, Stream outputStream, string providerName, string eventName, CancellationToken token)
         {
             DiagnosticsClient client = new(endpointInfo.Endpoint);
-            EventTracePipeline pipeProcessor = null;
-            EventMonitoringPassthroughStream eventMonitoringStream = null;
+            TaskCompletionSource<object> stoppingEventHitSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
-            {
-                startCompletionSource?.TrySetResult(null);
-
-                eventMonitoringStream = new EventMonitoringPassthroughStream(providerName, eventName, opcode, async (_) =>
-                {
-                    // JSFIX: log
-                    await pipeProcessor?.StopAsync(token);
-                }, eventStream, outputStream, DefaultBufferSize, leaveDestinationStreamOpen: true /* We do not have ownership of the outputStream */);
-
-                await eventMonitoringStream.ProcessAsync(token);
-            };
-
-            pipeProcessor = new EventTracePipeline(client, new EventTracePipelineSettings
+            await using EventTracePipeline pipeProcessor = new(client, new EventTracePipelineSettings
             {
                 Configuration = configuration,
                 Duration = timeout,
-            }, streamAvailable);
+            },
+            async (eventStream, token) =>
+            {
+                startCompletionSource?.TrySetResult(null);
+                await using EventMonitoringPassthroughStream eventMonitoringStream = new(
+                    providerName,
+                    eventName,
+                    onEvent: (_) => stoppingEventHitSource.TrySetResult(null),
+                    eventStream,
+                    outputStream,
+                    DefaultBufferSize,
+                    leaveDestinationStreamOpen: true /* We do not have ownership of the outputStream */);
 
-            try
+                await eventMonitoringStream.ProcessAsync(token);
+            });
+
+            Task pipelineRunTask = pipeProcessor.RunAsync(token);
+            await Task.WhenAny(pipelineRunTask, stoppingEventHitSource.Task);
+
+
+            if (stoppingEventHitSource.Task.IsCompleted)
             {
-                await pipeProcessor.RunAsync(token);
+                await pipeProcessor.StopAsync(token);
             }
-            finally
-            {
-                await pipeProcessor.DisposeAsync();
-                await eventMonitoringStream.DisposeAsync();
-            }
+
+            await pipelineRunTask;
         }
     }
 }

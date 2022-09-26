@@ -720,10 +720,6 @@
     <value>The name of the event.</value>
     <comment>The description provided for the EventName parameter on TraceEventOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_TraceEventOptions_Opcode" xml:space="preserve">
-    <value>The opcode of the event, if empty the specified event's opcode will not be checked.</value>
-    <comment>The description provided for the Opcode parameter on TraceEventOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_TraceEventOptions_ProviderName" xml:space="preserve">
     <value>The event provider that will produce the specified event.</value>
     <comment>The description provided for the ProviderName parameter on TraceEventOptions.</comment>

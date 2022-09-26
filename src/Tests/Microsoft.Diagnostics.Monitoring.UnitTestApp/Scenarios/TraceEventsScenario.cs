@@ -7,7 +7,6 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Diagnostics.Tracing;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
@@ -26,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             [Event(1)]
             public void RandomNumberGenerated(int number) => WriteEvent(1, number);
 
-            [Event(2)]
+            [Event(2, Opcode = EventOpcode.Reply)]
             public void UniqueEvent() => WriteEvent(2);
         }
 
@@ -47,11 +46,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
-                using ManualResetEventSlim stopGeneratingEvents = new(initialState: false);
+                TaskCompletionSource<object> stopGeneratingEvents = new();
                 Task eventEmitterTask = Task.Run(() =>
                 {
                     Random random = new();
-                    while (!stopGeneratingEvents.IsSet)
+                    while (!stopGeneratingEvents.Task.IsCompleted)
                     {
                         TestScenarioEventSource.Log.RandomNumberGenerated(random.Next());
                         Task.Delay(100, context.GetCancellationToken());
@@ -60,15 +59,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
                 while (true)
                 {
-                    string command = await ScenarioHelpers.WaitForCommandAsync(acceptableCommands, logger);
-
                     switch (await ScenarioHelpers.WaitForCommandAsync(acceptableCommands, logger))
                     {
                         case TestAppScenarios.TraceEvents.Commands.EmitUniqueEvent:
                             TestScenarioEventSource.Log.UniqueEvent();
                             break;
                         case TestAppScenarios.TraceEvents.Commands.ShutdownScenario:
-                            stopGeneratingEvents.Set();
+                            stopGeneratingEvents.TrySetResult(null);
                             eventEmitterTask.Wait(context.GetCancellationToken());
                             return 0;
                     }

@@ -31,6 +31,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
             if (hasProfile)
             {
+                if (hasStoppingEvent)
+                {
+                    results.Add(new ValidationResult(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
+                            nameof(Profile),
+                            nameof(StoppingEvent))));
+                }
+
                 if (hasProviders)
                 {
                     // Both Profile and Providers cannot be specified at the same time, otherwise
