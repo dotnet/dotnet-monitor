@@ -1,3 +1,4 @@
+
 # Default Process
 
 When using APIs to capture diagnostic artifacts, typically a `pid`, `uid`, or `name` is provided to perform the operation on a specific process. However, these parameters may be omitted if `dotnet monitor` is able to resolve a default process.
