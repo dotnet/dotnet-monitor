@@ -242,7 +242,7 @@
   <data name="ErrorMessage_MissingStoppingEventProvider" xml:space="preserve">
     <value>The {0} field specified the provider '{1}' but it was not found in the {2} field.</value>
     <comment>Gets the format string for CollectTraceOptions type failure due to missing the needed provider for StoppingEventOptions.
-1 Format Parameter:
+3 Format Parameter:
 0. stoppingEventField: The field that specified the StoppingEventOptions that contains the failure.
 1. missingProviderName: The specified provider that is missing.
 2. providersField: the field that the provider should be defined in.</comment>
