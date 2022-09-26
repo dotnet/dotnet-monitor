@@ -33,7 +33,7 @@ jobs:
       - name: Append To File
         uses: kkeirstead/AppendToFile@main
         with:
-          textToSearch: 'HelpfulDocs/images/WasThisHelpful.png'
+          textToSearch: 'WasThisHelpful.png'
           textToAdd: '[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src={insertFileName})'
           insertFileName: 'true'
           paths: ${{ env.updated_files }}
