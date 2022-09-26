@@ -1,3 +1,4 @@
+
 Today we are releasing the next official preview of the `dotnet monitor` tool. This release includes:
 
 - Load a profiler via a collection rule action (#781)
