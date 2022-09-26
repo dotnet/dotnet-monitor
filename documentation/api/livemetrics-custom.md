@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=livemetrics-custom)
+
 # Livemetrics - Get Custom
 
 Captures metrics for a process, with the ability to specify custom metrics.
