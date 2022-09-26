@@ -1,3 +1,4 @@
+
 # Traces
 
 The Traces API enables collecting `.nettrace` formatted traces without using a profiler.
