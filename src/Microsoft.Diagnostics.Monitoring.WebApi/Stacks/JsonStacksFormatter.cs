@@ -49,14 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                         frameModel.MethodName = functionData.Name;
 
                         builder.Clear();
-                        if (functionData.ParentClass != 0)
-                        {
-                            BuildClassName(builder, cache, functionData.ParentClass);
-                        }
-                        else
-                        {
-                            BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken);
-                        }
+                        BuildClassName(builder, cache, functionData);
                         frameModel.ClassName = builder.ToString();
 
                         if (functionData.TypeArgs.Length > 0)

@@ -44,7 +44,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             return moduleName;
         }
 
-        protected void BuildClassName(StringBuilder builder, NameCache cache, ulong classId)
+        protected void BuildClassName(StringBuilder builder, NameCache cache, FunctionData functionData)
+        {
+            if (functionData.ParentClass != 0)
+            {
+                BuildClassName(builder, cache, functionData.ParentClass);
+            }
+            else
+            {
+                BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken);
+            }
+        }
+
+        private void BuildClassName(StringBuilder builder, NameCache cache, ulong classId)
         {
             string className = UnknownClass;
             if (cache.ClassData.TryGetValue(classId, out ClassData classData))
@@ -78,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        protected void BuildClassName(StringBuilder builder, NameCache cache, ulong moduleId, uint token)
+        private void BuildClassName(StringBuilder builder, NameCache cache, ulong moduleId, uint token)
         {
             var classNames = new Stack<string>();
 

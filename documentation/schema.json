@@ -759,6 +759,16 @@
         {
           "properties": {
             "Type": {
+              "const": "CollectStacks"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectStacksOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
               "const": "CollectTrace"
             },
             "Settings": {
@@ -1419,6 +1429,7 @@
         "CollectGCDump",
         "CollectLiveMetrics",
         "CollectLogs",
+        "CollectStacks",
         "CollectTrace",
         "Execute",
         "LoadProfiler",
@@ -1617,6 +1628,41 @@
         "NewlineDelimitedJson",
         "PlainText",
         "JsonSequence"
+      ]
+    },
+    "CollectStacksOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": "string",
+          "description": "[Experimental] The name of the egress provider to which the call stacks are egressed.",
+          "minLength": 1
+        },
+        "Format": {
+          "description": "[Experimental] The format used to display the call stacks.",
+          "default": "Json",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CallStackFormat"
+            }
+          ]
+        }
+      }
+    },
+    "CallStackFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Json",
+        "PlainText"
+      ],
+      "enum": [
+        "Json",
+        "PlainText"
       ]
     },
     "CollectTraceOptions": {

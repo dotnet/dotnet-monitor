@@ -103,6 +103,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
             services.RegisterCollectionRuleAction<CollectLiveMetricsActionFactory, CollectLiveMetricsOptions>(KnownCollectionRuleActions.CollectLiveMetrics);
             services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
+            services.RegisterCollectionRuleAction<CollectStacksActionFactory, CollectStacksOptions>(KnownCollectionRuleActions.CollectStacks);
             services.RegisterCollectionRuleAction<CollectTraceActionFactory, CollectTraceOptions>(KnownCollectionRuleActions.CollectTrace);
             services.RegisterCollectionRuleAction<ExecuteActionFactory, ExecuteOptions>(KnownCollectionRuleActions.Execute);
             services.RegisterCollectionRuleAction<LoadProfilerActionFactory, LoadProfilerOptions>(KnownCollectionRuleActions.LoadProfiler);
