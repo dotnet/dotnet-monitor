@@ -1,3 +1,4 @@
+
 # Stacks - Get
 
 Captures the call stacks of the currently running process. Note that only managed frames are collected.
