@@ -26,7 +26,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectLogsOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectLogsOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectTraceOptions.cs" Link="Options\CollectionRules\Actions\CollectTraceOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectTraceOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectTraceOptionsDefaults.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\TraceEventOptions.cs" Link="Options\CollectionRules\Actions\TraceEventOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\TraceEventFilter.cs" Link="Options\CollectionRules\Actions\TraceEventFilter.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptions.cs" Link="Options\CollectionRules\Actions\ExecuteOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ExecuteOptionsDefaults.cs" Link="Options\CollectionRules\Actions\ExecuteOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\GetEnvironmentVariableOptions.cs" Link="Options\CollectionRules\Actions\GetEnvironmentVariableOptions.cs" />

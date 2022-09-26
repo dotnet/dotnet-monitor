@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 MonitoringSourceConfiguration configuration;
 
-                TraceEventOptions stoppingEvent = null;
+                TraceEventFilter stoppingEvent = null;
 
                 if (Options.Profile.HasValue)
                 {

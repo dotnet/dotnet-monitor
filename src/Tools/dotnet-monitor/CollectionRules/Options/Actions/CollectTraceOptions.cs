@@ -67,6 +67,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectTraceOptions_StoppingEvent))]
-        public TraceEventOptions StoppingEvent { get; set; }
+        public TraceEventFilter StoppingEvent { get; set; }
     }
 }

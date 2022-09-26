@@ -1142,7 +1142,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 new() { Name = ExpectedEventProviderName }
             };
 
-            TraceEventOptions expectedStoppingEvent = new()
+            TraceEventFilter expectedStoppingEvent = new()
             {
                 EventName = "CustomEvent",
                 ProviderName = ExpectedEventProviderName
@@ -1183,7 +1183,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetStartupTrigger()
                         .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, (options) =>
                         {
-                            options.StoppingEvent = new TraceEventOptions()
+                            options.StoppingEvent = new TraceEventFilter()
                             {
                                 EventName = "CustomEvent",
                                 ProviderName = ExpectedMissingEventProviderName
@@ -1216,7 +1216,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetStartupTrigger()
                         .AddCollectTraceAction(TraceProfile.Metrics, ExpectedEgressProvider, options =>
                         {
-                            options.StoppingEvent = new TraceEventOptions()
+                            options.StoppingEvent = new TraceEventFilter()
                             {
                                 EventName = "CustomEvent",
                                 ProviderName = "CustomProvider"

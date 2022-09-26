@@ -484,7 +484,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return collectTraceOptions;
         }
 
-        public static CollectTraceOptions VerifyCollectTraceAction(this CollectionRuleOptions ruleOptions, int actionIndex, IEnumerable<EventPipeProvider> providers, string expectedEgress, TraceEventOptions expectedStoppingEvent = null)
+        public static CollectTraceOptions VerifyCollectTraceAction(this CollectionRuleOptions ruleOptions, int actionIndex, IEnumerable<EventPipeProvider> providers, string expectedEgress, TraceEventFilter expectedStoppingEvent = null)
         {
             CollectTraceOptions collectTraceOptions = ruleOptions.VerifyAction<CollectTraceOptions>(
                 actionIndex, KnownCollectionRuleActions.CollectTrace);

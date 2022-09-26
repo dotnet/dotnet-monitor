@@ -10,29 +10,29 @@ using System.Diagnostics;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 {
     /// <summary>
-    /// Options for the CollectTrace action.
+    /// A trace event filter.
     /// </summary>
-    [DebuggerDisplay("TraceEvent")]
+    [DebuggerDisplay("TraceEventFilter")]
 #if SCHEMAGEN
     [NJsonSchema.Annotations.JsonSchemaFlatten]
 #endif
-    internal sealed record class TraceEventOptions : BaseRecordOptions
+    internal sealed record class TraceEventFilter : BaseRecordOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_TraceEventOptions_ProviderName))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_TraceEventFilter_ProviderName))]
         [Required]
         public string ProviderName { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_TraceEventOptions_EventName))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_TraceEventFilter_EventName))]
         [Required]
         public string EventName { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_TraceEventOptions_PayloadFilter))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_TraceEventFilter_PayloadFilter))]
         public IDictionary<string, string> PayloadFilter { get; set; }
     }
 }

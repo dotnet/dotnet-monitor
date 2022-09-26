@@ -1383,29 +1383,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are seperated by a &apos;/&apos;. If the event has no opcode, then the event name is just the task name..
+        ///   Looks up a localized string similar to The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are separated by a &apos;/&apos;. If the event has no opcode, then the event name is just the task name..
         /// </summary>
-        public static string DisplayAttributeDescription_TraceEventOptions_EventName {
+        public static string DisplayAttributeDescription_TraceEventFilter_EventName {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventOptions_EventName", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_EventName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A mapping of event payload field names to their expected value. A subset of the payload fields may be specified.
+        ///   Looks up a localized string similar to A mapping of event payload field names to their expected value. A subset of the payload fields may be specified..
         /// </summary>
-        public static string DisplayAttributeDescription_TraceEventOptions_PayloadFilter {
+        public static string DisplayAttributeDescription_TraceEventFilter_PayloadFilter {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventOptions_PayloadFilter", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_PayloadFilter", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The event provider that will produce the specified event..
         /// </summary>
-        public static string DisplayAttributeDescription_TraceEventOptions_ProviderName {
+        public static string DisplayAttributeDescription_TraceEventFilter_ProviderName {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventOptions_ProviderName", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_ProviderName", resourceCulture);
             }
         }
         

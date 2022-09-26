@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             EgressProvider, options =>
                             {
                                 options.Duration = duration ?? TimeSpan.Parse(ActionOptionsConstants.Duration_MaxValue);
-                                options.StoppingEvent = new TraceEventOptions()
+                                options.StoppingEvent = new TraceEventFilter()
                                 {
                                     ProviderName = EventProviderName,
                                     EventName = qualifiedEventName,
