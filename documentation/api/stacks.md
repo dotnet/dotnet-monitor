@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=stacks)
+
 # Stacks - Get
 
 Captures the call stacks of the currently running process. Note that only managed frames are collected.
