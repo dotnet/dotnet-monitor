@@ -1,3 +1,4 @@
+
 # GC Dump - Get
 
 Captures a GC dump of a specified process. These dumps are useful for several scenarios:
