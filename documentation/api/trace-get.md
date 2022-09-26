@@ -1,3 +1,4 @@
+
 # Trace - Get
 
 Captures a diagnostic trace of a process based on a predefined set of trace profiles.
