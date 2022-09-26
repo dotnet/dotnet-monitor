@@ -1383,7 +1383,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the event..
+        ///   Looks up a localized string similar to The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are seperated by a &apos;/&apos;. If the event has no opcode, then the event name is just the task name..
         /// </summary>
         public static string DisplayAttributeDescription_TraceEventOptions_EventName {
             get {
