@@ -1,3 +1,4 @@
+
 # Collection Rules - Get
 
 Reports the detailed state of the specified collection rule for a specific process.
