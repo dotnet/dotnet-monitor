@@ -1,3 +1,4 @@
+
 # Operations
 
 Operations are used to track long running operations in dotnet-monitor, specifically egressing data via egressProviders instead of directly to the client. This api is very similiar to [Azure asynchronous operations](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations#url-to-monitor-status).
