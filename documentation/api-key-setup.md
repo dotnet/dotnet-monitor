@@ -1,3 +1,4 @@
+
 # Configuring API Key Authentication
 
 The API Key you use to secure `dotnet monitor` is a secret Json Web Token (JWT), cryptographically signed by a public/private key algorithm. You can **[Recommended]** use the integrated command to generate a key or you can generate the key yourself following the [format, documented here](./api-key-format.md). This guide will use the integrated command.
