@@ -1,3 +1,4 @@
+
 Today we are releasing the 6.1.2 build of the `dotnet monitor` tool. This release includes:
 
 - Ensure unexpected egress failures complete operations (#1935)
