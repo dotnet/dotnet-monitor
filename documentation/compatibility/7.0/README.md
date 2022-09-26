@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=7)
+
 # Breaking Changes in 7.0
 
 If you are migrating your usage to `dotnet monitor` 7.0, the following changes might affect you. Changes are grouped together by areas within the tool.

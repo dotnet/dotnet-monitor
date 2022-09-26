@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=release-process)
+
 # Release Process
 
 ## Merge to Release Branch

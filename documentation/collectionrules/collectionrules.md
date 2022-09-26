@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=collectionrules)
+
 # Collection Rules
 
 `dotnet monitor` can be [configured](./../configuration.md#collection-rule-configuration) to automatically collect diagnostic artifacts based on conditions within the discovered processes.

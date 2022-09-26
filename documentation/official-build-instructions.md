@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=official-build-instructions)
+
 # Official Build Instructions
 
 > *WARNING*: These instructions will only work internally at Microsoft.

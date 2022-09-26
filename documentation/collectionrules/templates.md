@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=templates)
+
 # Templates
 
 Templates allow users to design reusable collection rule components to decrease configuration verbosity, reduce duplication between rules, and speed up the process of writing complex scenarios.

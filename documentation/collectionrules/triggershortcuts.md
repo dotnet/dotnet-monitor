@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=triggershortcuts)
+
 # Trigger Shortcuts
 
 These triggers simplify configuration for several common trigger use-cases. All of these shortcuts can be expressed as `EventCounter` triggers; however, these shortcuts provide improved defaults, range validation, and a simpler syntax. There are currently three built-in default triggers; additional trigger shortcuts may be added in future versions of `dotnet monitor`.

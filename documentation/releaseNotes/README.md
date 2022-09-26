@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=README)
+
 # Release Notes
 This folder contains the release notes that appear here: [https://github.com/dotnet/dotnet-monitor/releases](https://github.com/dotnet/dotnet-monitor/releases).
 
