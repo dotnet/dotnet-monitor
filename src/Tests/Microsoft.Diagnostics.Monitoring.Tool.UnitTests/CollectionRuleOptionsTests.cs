@@ -1534,6 +1534,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
                     VerifyFeatureDisabled(failures, 0);
+                },
+                servicesCallback =>
+                {
+                    // Set the experimental flags, but we did not set InProcessFeatures to be enabled
+                    servicesCallback.AddSingleton<Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags, TestExperimentalFlags>((_) => new TestExperimentalFlags { IsCallStacksEnabled = true });
                 });
         }
 
@@ -1545,7 +1550,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     const string fileEgress = nameof(fileEgress);
                     rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
-                        .EnableInProcessFeatures()
+                        .EnableInProcessFeatures() //Enable inproc features but don't set the flag
                         .CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddCollectStacksAction(fileEgress);
@@ -1555,33 +1560,34 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
                     VerifyFeatureDisabled(failures, 0);
+                },
+                servicesCallback =>
+                {
+                    servicesCallback.AddSingleton<Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags, Tools.Monitor.ExperimentalFlags>();
                 });
+
         }
 
         [Fact]
         public async Task CollectionRuleOptions_CollectStacksAction_FeatureEnabled()
         {
-            try
-            {
-                Environment.SetEnvironmentVariable(ExperimentalFlags.Feature_CallStacks, "true");
-                await ValidateSuccess(
-                    rootOptions =>
-                    {
-                        const string fileEgress = nameof(fileEgress);
-                        rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
-                            .EnableInProcessFeatures()
-                            .CreateCollectionRule(DefaultRuleName)
-                            .SetCPUUsageTrigger(usageOptions => { usageOptions.GreaterThan = 100; })
-                            .AddCollectStacksAction(fileEgress);
-                    },
-                    ruleOptions =>
-                    {
-                    });
-            }
-            finally
-            {
-                Environment.SetEnvironmentVariable(ExperimentalFlags.Feature_CallStacks, null);
-            }
+            await ValidateSuccess(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .EnableInProcessFeatures()
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetCPUUsageTrigger(usageOptions => { usageOptions.GreaterThan = 100; })
+                        .AddCollectStacksAction(fileEgress);
+                },
+                ruleOptions =>
+                {
+                },
+                servicesCallback =>
+                {
+                    servicesCallback.AddSingleton<Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags, TestExperimentalFlags>((_) => new TestExperimentalFlags { IsCallStacksEnabled = true });
+                });
         }
 
         public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
@@ -1593,26 +1599,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private Task Validate(
             Action<RootOptions> setup,
-            Action<IOptionsMonitor<CollectionRuleOptions>> validate)
+            Action<IOptionsMonitor<CollectionRuleOptions>> validate,
+            Action<IServiceCollection> servicesCallback = null)
         {
             return TestHostHelper.CreateCollectionRulesHost(
                 _outputHelper,
                 setup,
-                host => validate(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>()));
+                servicesCallback: servicesCallback,
+                hostCallback: host => validate(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>()));
         }
 
         private Task ValidateSuccess(
             Action<RootOptions> setup,
-            Action<CollectionRuleOptions> validate)
+            Action<CollectionRuleOptions> validate,
+            Action<IServiceCollection> servicesCallback = null)
         {
             return Validate(
                 setup,
-                monitor => validate(monitor.Get(DefaultRuleName)));
+                monitor => validate(monitor.Get(DefaultRuleName)),
+                servicesCallback);
         }
 
         private Task ValidateFailure(
             Action<RootOptions> setup,
-            Action<OptionsValidationException> validate)
+            Action<OptionsValidationException> validate,
+            Action<IServiceCollection> servicesCallback = null)
         {
             return Validate(
                 setup,
@@ -1621,7 +1632,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     OptionsValidationException ex = Assert.Throws<OptionsValidationException>(() => monitor.Get(DefaultRuleName));
                     _outputHelper.WriteLine("Exception: {0}", ex.Message);
                     validate(ex);
-                });
+                },
+                servicesCallback);
         }
 
         private static void VerifyUnknownActionTypeMessage(string[] failures, int index, string actionType)
