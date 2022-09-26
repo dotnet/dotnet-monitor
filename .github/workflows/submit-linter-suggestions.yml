@@ -26,7 +26,7 @@ jobs:
       # artifacts, so use a 3rd party one.
       - name: 'Download linting results (C#)'
         uses: dawidd6/action-download-artifact@v2
-        if: ${{ github.event.workflow_run.workflow_name == 'C# Linting' }}
+        if: ${{ github.event.workflow_run.name == 'C# Linting' }}
         with:
           workflow: lint-csharp.yml
           run_id: ${{github.event.workflow_run.id }}
@@ -35,7 +35,7 @@ jobs:
 
       - name: 'Download linting results (MD)'
         uses: dawidd6/action-download-artifact@v2
-        if: ${{ github.event.workflow_run.workflow_name != 'C# Linting' }}
+        if: ${{ github.event.workflow_run.name != 'C# Linting' }}
         with:
           workflow: add-markdown-feedback.yml
           run_id: ${{github.event.workflow_run.id }}
@@ -43,12 +43,12 @@ jobs:
           path: ./pr-linter
 
       - name: Get reporter name (C#)
-        if: ${{ github.event.workflow_run.workflow_name == 'C# Linting' }}
-        run: echo 'dotnet_version=dotnet format' >> $GITHUB_ENV
+        if: ${{ github.event.workflow_run.name == 'C# Linting' }}
+        run: echo 'reporter_name=dotnet format' >> $GITHUB_ENV
 
       - name: Get reporter name (MD)
-        if: ${{ github.event.workflow_run.workflow_name != 'C# Linting' }}
-        run: echo 'dotnet_version=Add Markdown Feedback' >> $GITHUB_ENV
+        if: ${{ github.event.workflow_run.name != 'C# Linting' }}
+        run: echo 'reporter_name=Add Markdown Feedback' >> $GITHUB_ENV
 
       - name: 'Setup reviewdog'
         uses: reviewdog/action-setup@v1
@@ -68,7 +68,7 @@ jobs:
           new_event_name=$(cat ./pr-linter/pr-event-name)
           jq -j ".${new_event_name}.head.repo.owner.id = .${new_event_name}.base.repo.owner.id" ./pr-linter/pr-event.json > ${new_event_file}
           GITHUB_EVENT_NAME="${new_event_name}" GITHUB_EVENT_PATH="${new_event_file}" REVIEWDOG_GITHUB_API_TOKEN="${{ secrets.GITHUB_TOKEN }}" reviewdog \
-              -name="dotnet format" \
+              -name=${{reporter_name}} \
               -f=diff \
               -f.diff.strip=1 \
               -reporter="github-pr-review" \
