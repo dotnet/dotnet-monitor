@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
                         if (null != stoppingEvent)
                         {
-                            await TraceUtilities.CaptureTraceUntilEventAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, stoppingEvent.ProviderName, stoppingEvent.EventName, token: token);
+                            await TraceUtilities.CaptureTraceUntilEventAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, stoppingEvent.ProviderName, stoppingEvent.EventName, stoppingEvent.PayloadFilter, token: token);
                         }
                         else
                         {

@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             public void RandomNumberGenerated(int number) => WriteEvent(1, number);
 
             [Event(2, Opcode = EventOpcode.Reply)]
-            public void UniqueEvent() => WriteEvent(2);
+            public void UniqueEvent(string message) => WriteEvent(2, message);
         }
 
         public static Command Command()
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                     switch (await ScenarioHelpers.WaitForCommandAsync(acceptableCommands, logger))
                     {
                         case TestAppScenarios.TraceEvents.Commands.EmitUniqueEvent:
-                            TestScenarioEventSource.Log.UniqueEvent();
+                            TestScenarioEventSource.Log.UniqueEvent(TestAppScenarios.TraceEvents.UniqueEventMessage);
                             break;
                         case TestAppScenarios.TraceEvents.Commands.ShutdownScenario:
                             stopGeneratingEvents.TrySetResult(null);

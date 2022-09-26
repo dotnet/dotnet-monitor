@@ -75,6 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static class TraceEvents
         {
             public const string Name = nameof(TraceEvents);
+            public const string UniqueEventMessage = "FooBar";
 
             public static class Commands
             {

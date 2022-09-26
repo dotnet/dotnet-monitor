@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Tracing;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +18,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class EventMonitoringPassthroughStream : Stream
     {
         private readonly Action<TraceEvent> _onEvent;
-        private readonly string _providerName;
-        private readonly string _eventName;
+        private readonly Action<IReadOnlyCollection<string>> _onPayloadFilterFailure;
+
         private readonly Stream _sourceStream;
         private readonly Stream _destinationStream;
-
         private EventPipeEventSource _eventSource;
+
+        private readonly string _providerName;
+        private readonly string _eventName;
+
+        // The original payload filter specified by the user. It will only be used to initialize _payloadFilterIndexCache.
+        private readonly IDictionary<string, string> _payloadFilter;
+
+        // A mapping of payload indexes to their expected value.
+        private object _payloadCacheLocker = new();
+        private Dictionary<int, string> _payloadFilterIndexCache;
 
         // JSFIX: Add summary.
         // Key takeaway is that onEvent will only be invoked once, and the source stream will continue to transfer to
@@ -30,7 +40,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public EventMonitoringPassthroughStream(
             string providerName,
             string eventName,
+            IDictionary<string, string> payloadFilter,
             Action<TraceEvent> onEvent,
+            Action<IReadOnlyCollection<string>> onPayloadFilterFailure,
             Stream sourceStream,
             Stream destinationStream,
             int bufferSize,
@@ -39,7 +51,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _providerName = providerName;
             _eventName = eventName;
             _onEvent = onEvent;
+            _onPayloadFilterFailure = onPayloadFilterFailure;
             _sourceStream = sourceStream;
+            _payloadFilter = payloadFilter;
 
             // Wrap a buffered stream around the destination stream
             // to avoid slowing down the event processing with the data
@@ -76,12 +90,79 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private void TraceEventCallback(TraceEvent obj)
         {
+            if (_payloadFilterIndexCache == null && !HydratePayloadFilterCache(obj))
+            {
+                // The payload filter doesn't map onto the actual data,
+                // we'll never match the event so stop checking it
+                // and proceed with just transferring the data to the destination stream.
+                _eventSource.Dynamic.RemoveCallback<TraceEvent>(TraceEventCallback);
+                _onPayloadFilterFailure(obj.PayloadNames);
+                return;
+            }
+
+            if (!DoesPayloadMatch(obj))
+            {
+                return;
+            }
+
             // Once the specified event has been observed, stop watching for it.
             // However, keep processing the data as to allow remaining trace event
             // data, such as run down, to finish transferring to the destination stream.
             _eventSource.Dynamic.RemoveCallback<TraceEvent>(TraceEventCallback);
-
             _onEvent(obj);
+        }
+
+        private bool HydratePayloadFilterCache(TraceEvent obj)
+        {
+            lock (_payloadCacheLocker)
+            {
+                if (_payloadFilterIndexCache != null)
+                {
+                    return true;
+                }
+
+                if (_payloadFilter == null || _payloadFilter.Count == 0)
+                {
+                    _payloadFilterIndexCache = new();
+                    return true;
+                }
+
+                if (obj.PayloadNames.Length < _payloadFilter.Count)
+                {
+                    return false;
+                }
+
+                Dictionary<int, string> payloadFilterCache = new();
+                for (int i = 0; i < obj.PayloadNames.Length; i++)
+                {
+                    if (_payloadFilter.TryGetValue(obj.PayloadNames[i], out string payloadValue))
+                    {
+                        payloadFilterCache.Add(i, payloadValue);
+                    }
+                }
+
+                if (_payloadFilter.Count != payloadFilterCache.Count)
+                {
+                    return false;
+                }
+
+                _payloadFilterIndexCache = payloadFilterCache;
+            }
+
+            return true;
+        }
+
+        private bool DoesPayloadMatch(TraceEvent obj)
+        {
+            foreach (var (payloadIndex, expectedValue) in _payloadFilterIndexCache)
+            {
+                if (!string.Equals(obj.PayloadString(payloadIndex), expectedValue, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public override bool CanSeek => false;

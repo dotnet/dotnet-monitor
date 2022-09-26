@@ -1365,6 +1365,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A mapping of event payload field names to their expected value..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventOptions_PayloadFilter {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventOptions_PayloadFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The event provider that will produce the specified event..
         /// </summary>
         public static string DisplayAttributeDescription_TraceEventOptions_ProviderName {

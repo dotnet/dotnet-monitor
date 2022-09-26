@@ -724,4 +724,8 @@
     <value>The event provider that will produce the specified event.</value>
     <comment>The description provided for the ProviderName parameter on TraceEventOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_TraceEventOptions_PayloadFilter" xml:space="preserve">
+    <value>A mapping of event payload field names to their expected value.</value>
+    <comment>The description provided for the PayloadFilter parameter on TraceEventOptions.</comment>
+  </data>
 </root>

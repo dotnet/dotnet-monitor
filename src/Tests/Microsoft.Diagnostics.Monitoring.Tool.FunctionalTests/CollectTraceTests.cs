@@ -13,6 +13,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -35,27 +36,57 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
         }
-
 #if NET5_0_OR_GREATER
+
+        private const TraceEventOpcode ExpectedEventOpcode = TraceEventOpcode.Reply;
+
         [Fact]
         public Task StopOnEvent_Succeeds_WithMatchingOpcode()
         {
-            return StopOnEventTestCore(TraceEventOpcode.Reply);
+            return StopOnEventTestCore();
+        }
+
+        [Fact]
+        public Task StopOnEvent_Succeeds_WithMatchingPayload()
+        {
+            return StopOnEventTestCore(payloadFilter: new Dictionary<string, string>()
+            {
+                { "message", TestAppScenarios.TraceEvents.UniqueEventMessage }
+            });
         }
 
         [Fact]
         public Task StopOnEvent_DoesNotStop_WhenOpcodeDoesNotMatch()
         {
-            return Assert.ThrowsAsync<TaskCanceledException>(() => StopOnEventTestCore(TraceEventOpcode.Resume));
+            return Assert.ThrowsAsync<TaskCanceledException>(() => StopOnEventTestCore(opcode: TraceEventOpcode.Resume));
+        }
+
+        [Fact]
+        public Task StopOnEvent_DoesNotStop_WhenPayloadFieldNamesMismatch()
+        {
+            return Assert.ThrowsAsync<TaskCanceledException>(() => StopOnEventTestCore(payloadFilter: new Dictionary<string, string>()
+            {
+                { "message", TestAppScenarios.TraceEvents.UniqueEventMessage },
+                { "foobar", "baz" }
+            }));
+        }
+
+        [Fact]
+        public Task StopOnEvent_DoesNotStop_WhenPayloadFieldValueMismatch()
+        {
+            return Assert.ThrowsAsync<TaskCanceledException>(() => StopOnEventTestCore(payloadFilter: new Dictionary<string, string>()
+            {
+                { "message", TestAppScenarios.TraceEvents.UniqueEventMessage.ToUpperInvariant() }
+            }));
         }
 
         [Fact]
         public Task StopOnEvent_UsesDuration_WhenNoEventMatchesInTime()
         {
-            return StopOnEventTestCore(TraceEventOpcode.Resume, TimeSpan.FromSeconds(10));
+            return StopOnEventTestCore(opcode: TraceEventOpcode.Resume, duration: TimeSpan.FromSeconds(10));
         }
 
-        private async Task StopOnEventTestCore(TraceEventOpcode opcode = TraceEventOpcode.Info, TimeSpan? duration = null)
+        private async Task StopOnEventTestCore(TraceEventOpcode opcode = ExpectedEventOpcode, IDictionary<string, string> payloadFilter = null, TimeSpan? duration = null)
         {
             const string DefaultRuleName = "FunctionalTestRule";
             const string EgressProvider = "TmpEgressProvider";
@@ -98,6 +129,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                                 {
                                     ProviderName = EventProviderName,
                                     EventName = qualifiedEventName,
+                                    PayloadFilter = payloadFilter
                                 };
                             });
 

@@ -1205,6 +1205,39 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
+        public Task CollectionRuleOptions_CollectTraceAction_BothProfileAndStoppingEvent()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectTraceAction(TraceProfile.Metrics, ExpectedEgressProvider, options =>
+                        {
+                            options.StoppingEvent = new TraceEventOptions()
+                            {
+                                EventName = "CustomEvent",
+                                ProviderName = "CustomProvider"
+                            };
+                        });
+
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.NotEmpty(failures);
+                    VerifyBothCannotBeSpecifiedMessage(
+                        failures,
+                        0,
+                        nameof(CollectTraceOptions.Profile),
+                        nameof(CollectTraceOptions.StoppingEvent));
+                });
+        }
+
+        [Fact]
         public Task CollectionRuleOptions_CollectLiveMetricsAction_RoundTrip()
         {
             const string ExpectedEgressProvider = "TmpEgressProvider";
