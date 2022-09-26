@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -95,7 +96,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
                         if (null != stoppingEvent)
                         {
-                            await TraceUtilities.CaptureTraceUntilEventAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, stoppingEvent.ProviderName, stoppingEvent.EventName, stoppingEvent.PayloadFilter, token: token);
+                            ILogger<CollectTraceAction> logger = _serviceProvider
+                                .GetRequiredService<ILoggerFactory>()
+                                .CreateLogger<CollectTraceAction>();
+                            using var _ = logger.BeginScope(scope);
+
+                            await TraceUtilities.CaptureTraceUntilEventAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, stoppingEvent.ProviderName, stoppingEvent.EventName, stoppingEvent.PayloadFilter, logger, token);
                         }
                         else
                         {

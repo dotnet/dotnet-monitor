@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -51,6 +52,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DefaultProcessUnexpectedFailure);
 
+        private static readonly Action<ILogger, string, string, Exception> _stoppingTraceEventHit =
+            LoggerMessage.Define<string, string>(
+                eventId: new EventId(8, "StoppingTraceEventHit"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_StoppingTraceEventHit);
+
+        private static readonly Action<ILogger, string, string, string, Exception> _stoppingTraceEventPayloadFilterMismatch =
+            LoggerMessage.Define<string, string, string>(
+                eventId: new EventId(9, "StoppingTraceEventPayloadFilterMismatch"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_StoppingTraceEventPayloadFilterMismatch);
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -84,6 +97,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static void DefaultProcessUnexpectedFailure(this ILogger logger, Exception ex)
         {
             _defaultProcessUnexpectedFailure(logger, ex);
+        }
+
+        public static void StoppingTraceEventHit(this ILogger logger, TraceEvent traceEvent)
+        {
+            _stoppingTraceEventHit(logger, traceEvent.ProviderName, traceEvent.EventName, null);
+        }
+
+        public static void StoppingTraceEventPayloadFilterMismatch(this ILogger logger, TraceEvent traceEvent)
+        {
+            _stoppingTraceEventPayloadFilterMismatch(logger, traceEvent.ProviderName, traceEvent.EventName, string.Join(' ', traceEvent.PayloadNames), null);
         }
     }
 }

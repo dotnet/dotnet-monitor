@@ -268,6 +268,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hit stopping trace event &apos;{providerName}/{eventName}&apos;.
+        /// </summary>
+        internal static string LogFormatString_StoppingTraceEventHit {
+            get {
+                return ResourceManager.GetString("LogFormatString_StoppingTraceEventHit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One or more field names specified in the payload filter for event &apos;{providerName}/{eventName}&apos; do not match any of the known field names: &apos;{payloadFieldNames}&apos;. As a result the requested stopping event is unreachable; will continue to collect the trace for the remaining specified duration..
+        /// </summary>
+        internal static string LogFormatString_StoppingTraceEventPayloadFilterMismatch {
+            get {
+                return ResourceManager.GetString("LogFormatString_StoppingTraceEventPayloadFilterMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Request limit for endpoint reached. Limit: {limit}, oustanding requests: {requests}.
         /// </summary>
         internal static string LogFormatString_ThrottledEndpoint {

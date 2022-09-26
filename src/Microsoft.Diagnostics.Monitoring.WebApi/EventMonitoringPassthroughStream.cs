@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class EventMonitoringPassthroughStream : Stream
     {
         private readonly Action<TraceEvent> _onEvent;
-        private readonly Action<IReadOnlyCollection<string>> _onPayloadFilterFailure;
+        private readonly Action<TraceEvent> _onPayloadFilterMismatch;
 
         private readonly Stream _sourceStream;
         private readonly Stream _destinationStream;
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string eventName,
             IDictionary<string, string> payloadFilter,
             Action<TraceEvent> onEvent,
-            Action<IReadOnlyCollection<string>> onPayloadFilterFailure,
+            Action<TraceEvent> onPayloadFilterMismatch,
             Stream sourceStream,
             Stream destinationStream,
             int bufferSize,
@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _providerName = providerName;
             _eventName = eventName;
             _onEvent = onEvent;
-            _onPayloadFilterFailure = onPayloadFilterFailure;
+            _onPayloadFilterMismatch = onPayloadFilterMismatch;
             _sourceStream = sourceStream;
             _payloadFilter = payloadFilter;
 
@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 // we'll never match the event so stop checking it
                 // and proceed with just transferring the data to the destination stream.
                 _eventSource.Dynamic.RemoveCallback<TraceEvent>(TraceEventCallback);
-                _onPayloadFilterFailure(obj.PayloadNames);
+                _onPayloadFilterMismatch(obj);
                 return;
             }
 

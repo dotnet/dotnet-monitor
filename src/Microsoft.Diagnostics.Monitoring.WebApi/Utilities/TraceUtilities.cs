@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             await pipeProcessor.RunAsync(token);
         }
 
-        public static async Task CaptureTraceUntilEventAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan timeout, Stream outputStream, string providerName, string eventName, IDictionary<string, string> payloadFilter, CancellationToken token)
+        public static async Task CaptureTraceUntilEventAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan timeout, Stream outputStream, string providerName, string eventName, IDictionary<string, string> payloadFilter, ILogger logger, CancellationToken token)
         {
             DiagnosticsClient client = new(endpointInfo.Endpoint);
             TaskCompletionSource<object> stoppingEventHitSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -117,8 +117,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     providerName,
                     eventName,
                     payloadFilter,
-                    onEvent: (_) => stoppingEventHitSource.TrySetResult(null),
-                    onPayloadFilterFailure: (_) => { },
+                    onEvent: (traceEvent) =>
+                    {
+                        logger.StoppingTraceEventHit(traceEvent);
+                        stoppingEventHitSource.TrySetResult(null);
+                    },
+                    onPayloadFilterMismatch: logger.StoppingTraceEventPayloadFilterMismatch,
                     eventStream,
                     outputStream,
                     DefaultBufferSize,
