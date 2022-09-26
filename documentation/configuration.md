@@ -1674,6 +1674,17 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
   ```
 </details>
 
+#### `CollectStacks` Action
+
+Collect call stacks from the target process.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Format` | [CallStackFormat](api/definitions.md#callstackformat) | false | The format of the collected call stack. | `Json` |
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected stacks. | |
+
 #### `LoadProfiler` Action
 
 An action that loads an [ICorProfilerCallback](https://docs.microsoft.com/en-us/dotnet/framework/unmanaged-api/profiling/icorprofilercallback-interface) implementation into a target process as a startup profiler. This action must be used in a collection rule with a `Startup` trigger.

@@ -31,6 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
+        private readonly TemporaryDirectory _tempDirectory;
 
         private const string ExpectedModule = @"Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
         private const string ExpectedClass = @"Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.StacksWorker+StacksWorkerNested`1[System.Int32]";
@@ -42,6 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
+            _tempDirectory = new TemporaryDirectory(_outputHelper);
         }
 
         [Theory]
@@ -117,48 +119,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.NotNull(holder);
 
                     WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder.Stream);
-
-                    var actualFrames = new List<WebApi.Models.CallStackFrame>();
-                    WebApi.Models.CallStackFrame[] expectedFrames = new WebApi.Models.CallStackFrame[]
-                    {
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = ExpectedModule,
-                            ClassName = ExpectedClass,
-                            MethodName = ExpectedCallbackFunction
-                        },
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = NativeFrame,
-                            ClassName = NativeFrame,
-                            MethodName = NativeFrame
-                        },
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = ExpectedModule,
-                            ClassName = ExpectedClass,
-                            MethodName = ExpectedFunction
-                        }
-                    };
-
-                    foreach (WebApi.Models.CallStack stack in result.Stacks)
-                    {
-                        actualFrames.Clear();
-                        foreach(var frame in stack.Frames)
-                        {
-                            if (actualFrames.Count == expectedFrames.Length)
-                            {
-                                break;
-                            }
-                            if (AreFramesEqual(expectedFrames.First(), frame) || actualFrames.Count > 0)
-                            {
-                                actualFrames.Add(frame);
-                            }
-                        }
-                    }
+                    WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
+                    IList<WebApi.Models.CallStackFrame> actualFrames = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
 
                     Assert.Equal(expectedFrames.Length, actualFrames.Count);
-
                     for (int i = 0; i < expectedFrames.Length; i++)
                     {
                         Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
@@ -284,12 +248,110 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-#endif
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestCollectStacksAction(Architecture targetArchitecture)
+        {
+            Task ruleCompletedTask = null;
+
+            return ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                WebApi.DiagnosticPortConnectionMode.Listen,
+                TestAppScenarios.Stacks.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await ruleCompletedTask;
+
+                    string[] files = Directory.GetFiles(_tempDirectory.FullName, "*");
+                    Assert.Single(files);
+                    using FileStream stream = File.OpenRead(files.First());
+
+                    WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(stream);
+                    WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
+                    IList<WebApi.Models.CallStackFrame> actualFrames = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
+
+                    Assert.Equal(expectedFrames.Length, actualFrames.Count);
+                    for (int i = 0; i < expectedFrames.Length; i++)
+                    {
+                        Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
+                    }
+
+                    await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                },
+                configureTool: runner =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    runner.EnableCallStacksFeature = true;
+                    runner.ConfigurationFromEnvironment
+                        .EnableInProcessFeatures()
+                        .AddFileSystemEgress(fileEgress, _tempDirectory.FullName)
+                        .CreateCollectionRule("StacksCounterRule")
+                        .SetEventCounterTrigger(options =>
+                        {
+                            options.ProviderName = "StackScenario";
+                            options.CounterName = "Ready";
+                            options.GreaterThan = 0.0;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(5);
+                        })
+                        .AddCollectStacksAction(fileEgress, Tools.Monitor.CollectionRules.Options.Actions.CallStackFormat.Json);
+
+                    ruleCompletedTask = runner.WaitForCollectionRuleActionsCompletedAsync("StacksCounterRule");
+                });
+        }
 
         private static string FormatFrame(string module, string @class, string function) =>
             FormattableString.Invariant($"{module}!{@class}.{function}");
 
         private static bool AreFramesEqual(WebApi.Models.CallStackFrame left, WebApi.Models.CallStackFrame right) =>
             (left.ModuleName == right.ModuleName) && (left.ClassName == right.ClassName) && (left.MethodName == right.MethodName);
+
+        private static IList<WebApi.Models.CallStackFrame> GetActualFrames(WebApi.Models.CallStackResult result, WebApi.Models.CallStackFrame expectedFirstFrame, int expectedFrameCount)
+        {
+            var actualFrames = new List<WebApi.Models.CallStackFrame>();
+            foreach (WebApi.Models.CallStack stack in result.Stacks)
+            {
+                actualFrames.Clear();
+                foreach (var frame in stack.Frames)
+                {
+                    if (AreFramesEqual(expectedFirstFrame, frame) || actualFrames.Count > 0)
+                    {
+                        actualFrames.Add(frame);
+                        if (actualFrames.Count == expectedFrameCount)
+                        {
+                            return actualFrames;
+                        }
+                    }
+                }
+            }
+            return actualFrames;
+        }
+
+        private static WebApi.Models.CallStackFrame[] ExpectedFrames() => new WebApi.Models.CallStackFrame[]
+            {
+                        new WebApi.Models.CallStackFrame
+                        {
+                            ModuleName = ExpectedModule,
+                            ClassName = ExpectedClass,
+                            MethodName = ExpectedCallbackFunction
+                        },
+                        new WebApi.Models.CallStackFrame
+                        {
+                            ModuleName = NativeFrame,
+                            ClassName = NativeFrame,
+                            MethodName = NativeFrame
+                        },
+                        new WebApi.Models.CallStackFrame
+                        {
+                            ModuleName = ExpectedModule,
+                            ClassName = ExpectedClass,
+                            MethodName = ExpectedFunction
+                        }
+            };
+#endif
     }
 }

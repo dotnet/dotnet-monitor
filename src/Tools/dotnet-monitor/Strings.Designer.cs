@@ -106,6 +106,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Feature &apos;{0}&apos; is not enabled..
+        /// </summary>
+        internal static string ErrorMessage_DisabledFeature {
+            get {
+                return ResourceManager.GetString("ErrorMessage_DisabledFeature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate action name &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorMessage_DuplicateActionName {
