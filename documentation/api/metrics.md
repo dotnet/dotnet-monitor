@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=metrics)
+
 # Metrics - Get
 
 Gets a snapshot of metrics in the Prometheus exposition format of a single process.

@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=operations-list)
+
 # Operations - List
 
 Lists all operations that have been created, as well as their status.

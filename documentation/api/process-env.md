@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=process-env)
+
 # Processes - Get Environment
 
 Gets the environment block of a specified process.

@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=process-get)
+
 # Processes - Get
 
 Gets detailed information about a specified process.

@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=processes-list)
+
 # Processes - List
 
 Lists the processes that are available from which diagnostic information can be obtained.

@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=pidvsuid)
+
 # Process ID `pid` vs Unique ID `uid`
 
 Many of the HTTP routes allow specifying either the process ID `pid` or the unique ID `uid`. Which one to use depends on the target process and the environment in which the process is running.
