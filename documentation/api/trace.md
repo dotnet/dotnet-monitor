@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=trace)
+
 # Traces
 
 The Traces API enables collecting `.nettrace` formatted traces without using a profiler.
