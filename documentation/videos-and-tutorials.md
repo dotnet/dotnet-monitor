@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=videos-and-tutorials)
+
 
 ### Dotnet Monitor Fundamentals
 [![Video Tutorial For Getting Started Locally With Dotnet Monitor](https://i.ytimg.com/vi/pG0t19bEYJw/hq720.jpg)](https://www.youtube.com/watch?v=pG0t19bEYJw)

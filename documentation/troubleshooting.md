@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=troubleshooting)
+
 # Troubleshooting Guide
 
 Here is our guide for diagnosing specific issues with `dotnet monitor`. This is an ongoing effort to add issues and solutions to this guide; you can help us by letting us know in the [Issues](https://github.com/dotnet/dotnet-monitor/issues) section if we should add something here.
