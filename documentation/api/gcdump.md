@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=gcdump)
+
 # GC Dump - Get
 
 Captures a GC dump of a specified process. These dumps are useful for several scenarios:
