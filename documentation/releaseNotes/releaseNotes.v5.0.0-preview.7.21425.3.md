@@ -1,6 +1,3 @@
-
-[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=releaseNotes)
-
 Today we are releasing the next official preview of the `dotnet-monitor` tool. This release includes:
 
 - ⚠️ A breaking change to ApiKey authentication. The `ApiAuthentication` configuration settings used in preview 6 and below will not work with preview 7 and later. We have dropped the custom authentication scheme `MonitorApiKey` and the corresponding payload format. The new ApiKey format uses the standard [`Bearer` authentication scheme](https://datatracker.ietf.org/doc/html/rfc6750.html#section-2.1) with a [JSON Web Token](https://datatracker.ietf.org/doc/html/rfc7519) payload. Use the command `dotnet monitor generatekey` to make new ApiKey credentials and the corresponding configuration. See [API Key Authentication](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/authentication.md#api-key-authentication) for full details. (#247)
