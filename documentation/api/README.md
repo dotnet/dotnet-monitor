@@ -1,3 +1,4 @@
+
 # HTTP API Documentation
 
 The HTTP API enables on-demand extraction of diagnostic information and artifacts from discoverable processes.
