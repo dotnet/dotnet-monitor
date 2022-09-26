@@ -1517,6 +1517,73 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+        [Fact]
+        public async Task CollectionRuleOptions_CollectStacksAction_FeatureDisabled()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectStacksAction(fileEgress);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFeatureDisabled(failures, 0);
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectStacksAction_FeatureDisabledByFlag()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .EnableInProcessFeatures()
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectStacksAction(fileEgress);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFeatureDisabled(failures, 0);
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectStacksAction_FeatureEnabled()
+        {
+            try
+            {
+                Environment.SetEnvironmentVariable(ExperimentalFlags.Feature_CallStacks, "true");
+                await ValidateSuccess(
+                    rootOptions =>
+                    {
+                        const string fileEgress = nameof(fileEgress);
+                        rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                            .EnableInProcessFeatures()
+                            .CreateCollectionRule(DefaultRuleName)
+                            .SetCPUUsageTrigger(usageOptions => { usageOptions.GreaterThan = 100; })
+                            .AddCollectStacksAction(fileEgress);
+                    },
+                    ruleOptions =>
+                    {
+                    });
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable(ExperimentalFlags.Feature_CallStacks, null);
+            }
+        }
+
         public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
         {
             yield return new object[] { typeof(CPUUsageOptions), KnownCollectionRuleTriggers.CPUUsage };
@@ -1661,6 +1728,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 egressProvider);
 
             Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyFeatureDisabled(string[] failures, int index)
+        {
+            string expectedMessage = string.Format(
+                CultureInfo.InvariantCulture,
+                Strings.ErrorMessage_DisabledFeature,
+                nameof(Tools.Monitor.CollectionRules.Actions.CollectStacksAction));
+
+            Assert.Equal(expectedMessage, failures[index]);
         }
     }
 }

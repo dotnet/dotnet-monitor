@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
-            bool isPlainText = Options.Format.GetValueOrDefault(CollectStacksOptionsDefaults.Format) == CallStackFormat.PlainText;
+            bool isPlainText = Options.GetFormat() == CallStackFormat.PlainText;
 
             string fileName = StackUtilities.GenerateStacksFilename(EndpointInfo, isPlainText);
 
