@@ -22,6 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
 
         public override bool CanSeek => _baseStream.CanSeek;
+
         public override bool CanTimeout => _baseStream.CanTimeout;
 
         public override bool CanRead => _baseStream.CanRead;
