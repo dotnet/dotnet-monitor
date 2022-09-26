@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// </summary>
         public void StopMonitoringForEvent()
         {
-            _eventSource.Dynamic.RemoveCallback<TraceEvent>(TraceEventCallback);
+            _eventSource?.Dynamic.RemoveCallback<TraceEvent>(TraceEventCallback);
 
         }
 
