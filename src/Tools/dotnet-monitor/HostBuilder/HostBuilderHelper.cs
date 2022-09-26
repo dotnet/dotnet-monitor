@@ -242,7 +242,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static string FormatCmdLineArgument(string key, string value)
         {
-            return $"{key}={value}";
+            return FormattableString.Invariant($"{key}={value}");
         }
     }
 }
