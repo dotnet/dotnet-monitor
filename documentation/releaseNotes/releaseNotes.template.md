@@ -1,6 +1,3 @@
-
-[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=releaseNotes)
-
 Today we are releasing the next official preview of the `dotnet monitor` tool. This release includes:
 
 - ⚠️ [Here is a breaking change we did and it's work item] (#737)
