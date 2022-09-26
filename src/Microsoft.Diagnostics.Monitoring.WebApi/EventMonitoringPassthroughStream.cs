@@ -33,8 +33,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         // Guards _payloadFilterIndexCache.
         private object _payloadCacheLocker = new();
-        // A cache of the mapping of payload indexes to their expected value.
-        // Unlike _payloadFilter, this tracks the exact indices into the provided event's payload to check for the expected values.
+        // This tracks the exact indices into the provided event's payload to check for the expected values instead
+        // of repeatedly searching the payload for the field names in _payloadFilter.
         private Dictionary<int, string> _payloadFilterIndexCache;
 
 
