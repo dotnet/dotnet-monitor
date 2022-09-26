@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=dump)
+
 # Dump - Get
 
 Captures a managed dump of a specified process without using a debugger.
