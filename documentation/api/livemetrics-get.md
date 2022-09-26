@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=livemetrics-get)
+
 # Livemetrics - Get
 
 Captures metrics for a chosen process.
