@@ -1,3 +1,4 @@
+
 # Operations - Delete
 
 Cancel a running operation. Only valid against operations in the `Running` state. Transitions the operation to `Cancelled` state.
