@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             const string EventProviderName = "TestScenario";
             const string StoppingEventName = "UniqueEvent";
 
-            string qualifiedEventName = (opcode == TraceEventOpcode.Info) ? StoppingEventName : $"{StoppingEventName}/{opcode}";
+            string qualifiedEventName = (opcode == TraceEventOpcode.Info) ? StoppingEventName : FormattableString.Invariant($"{StoppingEventName}/{opcode}");
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 

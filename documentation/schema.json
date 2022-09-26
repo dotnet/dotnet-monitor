@@ -1776,46 +1776,17 @@
           "description": "The name of the event.",
           "minLength": 1
         },
-        "Opcode": {
-          "description": "The opcode of the event, if empty the specified event's opcode will not be checked.",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/TraceEventOpcode"
-            }
-          ]
+        "PayloadFilter": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of event payload field names to their expected value.",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
-    },
-    "TraceEventOpcode": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Info",
-        "Start",
-        "Stop",
-        "DataCollectionStart",
-        "DataCollectionStop",
-        "Extension",
-        "Reply",
-        "Resume",
-        "Suspend",
-        "Transfer"
-      ],
-      "enum": [
-        "Info",
-        "Start",
-        "Stop",
-        "DataCollectionStart",
-        "DataCollectionStop",
-        "Extension",
-        "Reply",
-        "Resume",
-        "Suspend",
-        "Transfer"
-      ]
     },
     "ExecuteOptions": {
       "type": "object",

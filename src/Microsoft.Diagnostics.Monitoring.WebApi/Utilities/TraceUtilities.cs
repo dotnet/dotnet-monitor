@@ -126,6 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     eventStream,
                     outputStream,
                     DefaultBufferSize,
+                    callOnEventOnlyOnce: true,
                     leaveDestinationStreamOpen: true /* We do not have ownership of the outputStream */);
 
                 await eventMonitoringStream.ProcessAsync(token);
