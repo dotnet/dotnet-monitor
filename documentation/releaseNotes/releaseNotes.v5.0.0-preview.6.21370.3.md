@@ -1,3 +1,4 @@
+
 Today we are releasing the next official preview of the `dotnet-monitor` tool. This release includes:
 - `MonitorApiKey` now supports a configurable key length and hash algorithm. Both the key length (`--key-length`) and hash algorithm (`--hash-algorithm`) can also be supplied to the `generatekey` command via command line parameters.   (#361)
 - The `/logs` endpoint now supports egressing logs with the [`application/json-seq`](https://datatracker.ietf.org/doc/html/rfc7464) Content-Type. (#468)
