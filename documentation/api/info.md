@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=info)
+
 # Info - Get
 
 Gets information about the `dotnet monitor` version, the runtime version, and the diagnostic port settings.
