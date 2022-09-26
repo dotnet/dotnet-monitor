@@ -7,10 +7,12 @@ using System;
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 #else
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    internal static class ExperimentalFlags
+    internal class ExperimentalFlags : IExperimentalFlags
     {
         private const string ExperimentalPrefix = ToolIdentifiers.StandardPrefix + "Experimental_";
 
@@ -21,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string EnabledTrueValue = "True";
         private const string EnabledOneValue = "1";
 
-        private static readonly Lazy<bool> _isCallStacksEnabledLazy = new Lazy<bool>(() => IsFeatureEnabled(Feature_CallStacks));
+        private readonly Lazy<bool> _isCallStacksEnabledLazy = new Lazy<bool>(() => IsFeatureEnabled(Feature_CallStacks));
 
         private static bool IsFeatureEnabled(string environmentVariable)
         {
@@ -31,6 +33,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 string.Equals(EnabledOneValue, value, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool IsCallStacksEnabled => _isCallStacksEnabledLazy.Value;
+        public bool IsCallStacksEnabled => _isCallStacksEnabledLazy.Value;
     }
 }

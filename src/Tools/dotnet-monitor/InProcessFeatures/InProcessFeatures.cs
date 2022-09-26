@@ -11,12 +11,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class InProcessFeatures : IInProcessFeatures
     {
         private readonly InProcessFeaturesOptions _options;
+        private readonly IExperimentalFlags _experimentalFlags;
 
-        public InProcessFeatures(IOptions<InProcessFeaturesOptions> options)
+        public InProcessFeatures(IOptions<InProcessFeaturesOptions> options, IExperimentalFlags experimentalFlags)
         {
             _options = options.Value;
+            _experimentalFlags = experimentalFlags;
         }
 
-        public bool IsCallStacksEnabled => _options.GetEnabled() && ExperimentalFlags.IsCallStacksEnabled;
+        public bool IsCallStacksEnabled => _options.GetEnabled() && _experimentalFlags.IsCallStacksEnabled;
     }
 }
