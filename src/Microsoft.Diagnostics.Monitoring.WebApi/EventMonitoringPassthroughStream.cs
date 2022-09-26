@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// </summary>
         /// <param name="providerName">The stopping event provider name.</param>
         /// <param name="eventName">The stopping event name, which is the concatenation of the task name and opcode name, if set. <see cref="TraceEvent.EventName"/> for more information about the format.</param>
-        /// <param name="payloadFilter">A mapping of the stopping event payload field names to their expected values. A subset of the possible fields may be specified.</param>
+        /// <param name="payloadFilter">A mapping of the stopping event payload field names to their expected values. A subset of the payload fields may be specified.</param>
         /// <param name="onEvent">A callback that will be invoked each time the requested event has been observed.</param>
         /// <param name="onPayloadFilterMismatch">A callback that will be invoked if the field names specified in <paramref name="payloadFilter"/> do not match those in the event's manifest.</param>
         /// <param name="sourceStream">The source event stream which is compatible with <see cref="EventPipeEventSource"/>.</param>

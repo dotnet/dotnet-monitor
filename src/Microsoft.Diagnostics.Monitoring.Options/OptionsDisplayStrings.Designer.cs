@@ -1392,7 +1392,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A mapping of event payload field names to their expected value..
+        ///   Looks up a localized string similar to A mapping of event payload field names to their expected value. A subset of the payload fields may be specified.
         /// </summary>
         public static string DisplayAttributeDescription_TraceEventOptions_PayloadFilter {
             get {

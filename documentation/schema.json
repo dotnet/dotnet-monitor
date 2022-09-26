@@ -1781,7 +1781,7 @@
             "null",
             "object"
           ],
-          "description": "A mapping of event payload field names to their expected value.",
+          "description": "A mapping of event payload field names to their expected value. A subset of the payload fields may be specified",
           "additionalProperties": {
             "type": "string"
           }
