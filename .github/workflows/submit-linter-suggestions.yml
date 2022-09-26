@@ -2,7 +2,7 @@ name: 'Submit linter suggestions'
 
 on:
   workflow_run:
-    workflows: ["C# linting"]
+    workflows: ["C# linting", "Add Markdown Feedback"]
     types:
       - completed
 
@@ -24,13 +24,31 @@ jobs:
       # Download the artifact from the workflow that kicked off this one.
       # The default artifact download action doesn't support cross-workflow
       # artifacts, so use a 3rd party one.
-      - name: 'Download linting results'
+      - name: 'Download linting results (C#)'
         uses: dawidd6/action-download-artifact@v2
+        if: ${{ github.event.workflow_run.workflow_name == 'C# Linting' }}
         with:
           workflow: lint-csharp.yml
           run_id: ${{github.event.workflow_run.id }}
           name: pr-linter
           path: ./pr-linter
+
+      - name: 'Download linting results (MD)'
+        uses: dawidd6/action-download-artifact@v2
+        if: ${{ github.event.workflow_run.workflow_name != 'C# Linting' }}
+        with:
+          workflow: add-markdown-feedback.yml
+          run_id: ${{github.event.workflow_run.id }}
+          name: pr-linter
+          path: ./pr-linter
+
+      - name: Get reporter name (C#)
+        if: ${{ github.event.workflow_run.workflow_name == 'C# Linting' }}
+        run: echo 'dotnet_version=dotnet format' >> $GITHUB_ENV
+
+      - name: Get reporter name (MD)
+        if: ${{ github.event.workflow_run.workflow_name != 'C# Linting' }}
+        run: echo 'dotnet_version=Add Markdown Feedback' >> $GITHUB_ENV
 
       - name: 'Setup reviewdog'
         uses: reviewdog/action-setup@v1
