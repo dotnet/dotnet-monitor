@@ -61,6 +61,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Thread: (0x{0:X}).
+        /// </summary>
+        internal static string CallstackThreadHeader {
+            get {
+                return ResourceManager.GetString("CallstackThreadHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to get process environment..
         /// </summary>
         internal static string ErrorMessage_CanNotGetEnvironment {
@@ -156,6 +165,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string ErrorMessage_ProcessEnumeratuinFailed {
             get {
                 return ResourceManager.GetString("ErrorMessage_ProcessEnumeratuinFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to process stack in timely manner..
+        /// </summary>
+        internal static string ErrorMessage_StacksTimeout {
+            get {
+                return ResourceManager.GetString("ErrorMessage_StacksTimeout", resourceCulture);
             }
         }
         

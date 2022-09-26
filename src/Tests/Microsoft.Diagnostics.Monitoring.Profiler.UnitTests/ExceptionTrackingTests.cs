@@ -33,15 +33,15 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             _outputHelper = outputHelper;
         }
 
-        [Theory]
-        [MemberData(nameof(GetArchitectureProfilerPath))]
+        [Theory(Skip = "Exception tracking via profiler is currently disabled")]
+        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         public Task ExceptionThrowCatch(Architecture architecture, string profilerPath)
         {
             return RunAndCompare(nameof(ExceptionThrowCatch), architecture, profilerPath);
         }
 
-        [Theory]
-        [MemberData(nameof(GetArchitectureProfilerPath))]
+        [Theory(Skip = "Exception tracking via profiler is currently disabled")]
+        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         public Task ExceptionThrowCrash(Architecture architecture, string profilerPath)
         {
             return RunAndCompare(nameof(ExceptionThrowCrash), architecture, profilerPath);
@@ -49,15 +49,10 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
 
         private async Task RunAndCompare(string scenarioName, Architecture architecture, string profilerPath)
         {
-            if (Architecture.X86 == architecture)
-            {
-                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
-                return;
-            }
-
             ITestOutputHelper appOutputHelper = new PrefixedOutputHelper(_outputHelper, FormattableString.Invariant($"[App] "));
 
             using DotNetRunner runner = new();
+            runner.Architecture = architecture;
             await using LoggingRunnerAdapter adapter = new(appOutputHelper, runner);
 
             runner.EntrypointAssemblyPath = AssemblyHelper.GetAssemblyArtifactBinPath(
@@ -68,10 +63,10 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             // Environment variables necessary for running the profiler + enable all logging to stderr
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
-            adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerHelper.Clsid.ToString("B"));
-            adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath64, profilerPath);
-            adapter.Environment.Add(ProfilerHelper.ProfilerEnvVarRuntimeId, Guid.NewGuid().ToString("D"));
-            adapter.Environment.Add(ProfilerHelper.ProfilerEnvVarStdErrLoggerLevel, LogLevel.Trace.ToString("G"));
+            adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.Clsid.StringWithBraces);
+            adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
+            adapter.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, Guid.NewGuid().ToString("D"));
+            adapter.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));
 
             List<string> outputLines = new();
 
@@ -179,28 +174,6 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                 }
             }
             return false;
-        }
-
-        public static IEnumerable<object[]> GetArchitectureProfilerPath()
-        {
-            // There isn't a good way to check which architecture to use when running unit tests.
-            // Each build job builds one specific architecture, but from a test perspective,
-            // it cannot tell which one was built. Gather all of the profilers for every architecture
-            // so long as they exist.
-            List<object[]> arguments = new();
-            AddTestCases(arguments, Architecture.X64);
-            AddTestCases(arguments, Architecture.X86);
-            AddTestCases(arguments, Architecture.Arm64);
-            return arguments;
-
-            static void AddTestCases(List<object[]> arguments, Architecture architecture)
-            {
-                string profilerPath = ProfilerHelper.GetPath(architecture);
-                if (File.Exists(profilerPath))
-                {
-                    arguments.Add(new object[] { architecture, profilerPath });
-                }
-            }
         }
     }
 }

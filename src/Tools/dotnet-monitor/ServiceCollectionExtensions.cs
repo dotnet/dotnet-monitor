@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -20,6 +21,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -30,6 +32,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ServiceCollectionExtensions
     {
+        public static IServiceCollection ConfigureCors(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<CorsConfigurationOptions>(services, configuration, ConfigurationKeys.CorsConfiguration);
+        }
+
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter);
@@ -45,10 +52,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return ConfigureOptions<TemplateOptions>(services, configuration, ConfigurationKeys.Templates);
         }
 
+        public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
+                .AddSingleton<IPostConfigureOptions<InProcessFeaturesOptions>, InProcessFeaturesPostConfigureOptions>();
+        }
+
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics)
-                .AddSingleton<IValidateOptions<MetricsOptions>, DataAnnotationValidateOptions<MetricsOptions>>();
+                .AddSingleton<IValidateOptions<MetricsOptions>, DataAnnotationValidateOptions<MetricsOptions>>()
+                .AddSingleton<MetricsStoreService>()
+                .AddHostedService<MetricsService>()
+                .AddSingleton<IMetricsPortsProvider, MetricsPortsProvider>();
         }
 
         public static IServiceCollection ConfigureMonitorApiKeyOptions(this IServiceCollection services, IConfiguration configuration)
@@ -175,7 +191,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
+            ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
+            services.AddSingleton<IPostConfigureOptions<StorageOptions>, StoragePostConfigureOptions>();
+            return services;
         }
 
         public static IServiceCollection ConfigureDefaultProcess(this IServiceCollection services, IConfiguration configuration)
@@ -213,6 +231,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
             services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
 
+            return services;
+        }
+
+        public static IServiceCollection ConfigureProfiler(this IServiceCollection services)
+        {
+            services.AddSingleton<ProfilerService>();
+            services.AddHostedServiceForwarder<ProfilerService>();
+            services.AddSingleton<IEndpointInfoSourceCallbacks, ProfilerEndpointInfoSourceCallbacks>();
+            services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureStartupLoggers(this IServiceCollection services)
+        {
+            services.AddSingleton<IStartupLogger, ExperienceSurveyStartupLogger>();
+            services.AddSingleton<IStartupLogger, ExperimentalStartupLogger>();
+            services.AddSingleton<IStartupLogger, HostBuilderStartupLogger>();
+            services.AddSingleton<IStartupLogger, DiagnosticPortStartupLogger>();
+            services.AddSingleton<IStartupLogger, ElevatedPermissionsStartupLogger>();
+            services.AddSingleton<IStartupLogger, AuthenticationStartupLogger>();
+            services.AddSingleton<IStartupLogger, AddressListenResultsStartupLogger>();
             return services;
         }
 

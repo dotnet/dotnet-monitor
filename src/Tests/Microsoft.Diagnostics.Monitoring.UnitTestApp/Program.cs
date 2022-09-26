@@ -19,6 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 LoggerScenario.Command(),
                 SpinWaitScenario.Command(),
                 EnvironmentVariablesScenario.Command(),
+                StacksScenario.Command(),
                 TraceEventsScenario.Command()
             })
             .UseDefaults()

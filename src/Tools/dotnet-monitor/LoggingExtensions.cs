@@ -405,6 +405,42 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
 
+        private static readonly Action<ILogger, Exception> _failedInitializeSharedLibraryStorage =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.FailedInitializeSharedLibraryStorage.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_FailedInitializeSharedLibraryStorage);
+
+        private static readonly Action<ILogger, Exception> _unableToApplyProfiler =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.UnableToApplyProfiler.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_UnableToApplyProfiler);
+
+        private static readonly Action<ILogger, string, Exception> _sharedlibraryPath =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.SharedLibraryPath.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_SharedLibraryPath);
+
+        private static readonly Action<ILogger, Exception> _connectionModeConnect =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.ConnectionModeConnect.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ConnectionModeConnect);
+
+        private static readonly Action<ILogger, string, Exception> _connectionModeListen =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ConnectionModeListen.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ConnectionModeListen);
+
+        private static readonly Action<ILogger, string, Exception> _experimentalFeatureEnabled =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExperimentalFeatureEnabled.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExperimentalFeatureEnabled);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -742,6 +778,36 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EnvironmentBlockNotSupported(this ILogger logger)
         {
             _environmentBlockNotSupported(logger, null);
+        }
+
+        public static void FailedInitializeSharedLibraryStorage(this ILogger logger, Exception ex)
+        {
+            _failedInitializeSharedLibraryStorage(logger, ex);
+        }
+
+        public static void UnableToApplyProfiler(this ILogger logger, Exception ex)
+        {
+            _unableToApplyProfiler(logger, ex);
+        }
+
+        public static void SharedLibraryPath(this ILogger logger, string path)
+        {
+            _sharedlibraryPath(logger, path, null);
+        }
+
+        public static void ConnectionModeConnect(this ILogger logger)
+        {
+            _connectionModeConnect(logger, null);
+        }
+
+        public static void ConnectionModeListen(this ILogger logger, string path)
+        {
+            _connectionModeListen(logger, path, null);
+        }
+
+        public static void ExperimentalFeatureEnabled(this ILogger logger, string name)
+        {
+            _experimentalFeatureEnabled(logger, name, null);
         }
     }
 }

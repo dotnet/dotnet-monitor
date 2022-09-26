@@ -476,6 +476,37 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
+        public async Task<ResponseStreamHolder> CaptureStacksAsync(int processId, bool plainText, CancellationToken token)
+        {
+            string uri = FormattableString.Invariant($"/stacks?pid={processId}");
+            var contentType = plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson;
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            request.Headers.Add(HeaderNames.Accept, contentType);
+
+            using DisposableBox<HttpResponseMessage> responseBox = new(
+                await SendAndLogAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token).ConfigureAwait(false));
+
+            switch (responseBox.Value.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(responseBox.Value, contentType);
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                case HttpStatusCode.TooManyRequests:
+                    ThrowIfNotSuccess(responseBox.Value);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
+        }
+
         public async Task<HttpResponseMessage> ApiCall(string routeAndQuery, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, routeAndQuery);

@@ -42,22 +42,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfmArchitectureProfilerPath), MemberType = typeof(ActionTestsHelper))]
         public async Task LoadProfilerAsStartupProfilerTest(TargetFrameworkMoniker tfm, Architecture architecture, string profilerPath)
         {
-            if (Architecture.X86 == architecture)
-            {
-                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
-                return;
-            }
-
             string profilerFileName = Path.GetFileName(profilerPath);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddSetEnvironmentVariableAction(ProfilerHelper.ProfilerEnvVarRuntimeId, ConfigurationTokenParser.RuntimeIdReference)
+                    .AddSetEnvironmentVariableAction(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, ConfigurationTokenParser.RuntimeIdReference)
                     .AddLoadProfilerAction(options =>
                     {
                         options.Path = profilerPath;
-                        options.Clsid = ProfilerHelper.Clsid;
+                        options.Clsid = ProfilerIdentifiers.Clsid.Guid;
                     })
                     .SetStartupTrigger();
             }, async host =>
@@ -66,15 +60,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
                 AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                runner.Architecture = architecture;
                 runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
                 await runner.ExecuteAsync(async () =>
                 {
                     // At this point, the profiler has already been initialized and managed code is already running.
                     // Use any of the initialization state of the profiler to validate that it is loaded.
-                    string productVersion = await runner.GetEnvironmentVariable(ProfilerHelper.ProfilerEnvVarProductVersion, CommonTestTimeouts.EnvVarsTimeout);
-                    Assert.False(string.IsNullOrEmpty(productVersion), "Expected product version to not be null or empty.");
-                    _outputHelper.WriteLine("{0} = {1}", ProfilerHelper.ProfilerEnvVarProductVersion, productVersion);
+                    await ProfilerHelper.VerifyProductVersionEnvironmentVariableAsync(runner, _outputHelper);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });

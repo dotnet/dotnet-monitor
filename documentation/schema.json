@@ -48,6 +48,18 @@
         }
       ]
     },
+    "InProcessFeatures": {
+      "description": "[Experimental]",
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/InProcessFeaturesOptions"
+        }
+      ]
+    },
     "CorsConfiguration": {
       "default": {},
       "oneOf": [
@@ -858,6 +870,20 @@
         }
       }
     },
+    "InProcessFeaturesOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "[Experimental] Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "default": false
+        }
+      }
+    },
     "CorsConfigurationOptions": {
       "type": "object",
       "additionalProperties": false,
@@ -1183,12 +1209,26 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "DefaultSharedPath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows platforms, a server diagnostic port is created with the name of 'dotnet-monitor.sock' immediately under this path if running in listen mode unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified."
+        },
         "DumpTempFolder": {
           "type": [
             "null",
             "string"
           ],
           "description": "The location for temporary dump files. Defaults to the temp folder."
+        },
+        "SharedLibraryPath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "[Experimental] The location to which libraries shared with target processes will be copied at startup."
         }
       }
     },

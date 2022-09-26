@@ -31,6 +31,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
+        public static class Stacks
+        {
+            public const string Name = nameof(Stacks);
+
+            public static class Commands
+            {
+                public const string Continue = nameof(Continue);
+            }
+        }
+
         public static class EnvironmentVariables
         {
             public const string Name = nameof(EnvironmentVariables);

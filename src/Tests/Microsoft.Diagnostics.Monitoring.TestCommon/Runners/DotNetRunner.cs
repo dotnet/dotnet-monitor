@@ -28,6 +28,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private readonly Process _process;
 
         /// <summary>
+        /// The architecture of the dotnet host.
+        /// </summary>
+        public Architecture? Architecture { get; set; } = null;
+
+        /// <summary>
         /// The arguments to the entrypoint method.
         /// </summary>
         public string Arguments { get; set; }
@@ -100,7 +105,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public DotNetRunner()
         {
             _process = new Process();
-            _process.StartInfo.FileName = DotNetHost.HostExePath;
             _process.StartInfo.UseShellExecute = false;
             _process.StartInfo.RedirectStandardError = true;
             _process.StartInfo.RedirectStandardInput = true;
@@ -159,6 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
 
+            _process.StartInfo.FileName = DotNetHost.GetPath(Architecture);
             _process.StartInfo.Arguments = argsBuilder.ToString();
 
             if (!_process.Start())
