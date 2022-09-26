@@ -1,4 +1,6 @@
 
+[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=trace-get)
+
 # Trace - Get
 
 Captures a diagnostic trace of a process based on a predefined set of trace profiles.
