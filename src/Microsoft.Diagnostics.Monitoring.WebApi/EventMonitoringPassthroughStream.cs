@@ -153,7 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 if (_payloadFilter == null || _payloadFilter.Count == 0)
                 {
-                    _payloadFilterIndexCache = new();
+                    _payloadFilterIndexCache = new(capacity: 0);
                     return true;
                 }
 
@@ -162,7 +162,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     return false;
                 }
 
-                Dictionary<int, string> payloadFilterCache = new();
+                Dictionary<int, string> payloadFilterCache = new(capacity: _payloadFilter.Count);
                 for (int i = 0; i < obj.PayloadNames.Length; i++)
                 {
                     if (_payloadFilter.TryGetValue(obj.PayloadNames[i], out string payloadValue))
