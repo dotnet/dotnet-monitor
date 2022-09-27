@@ -6,4 +6,4 @@ The following are the current set of experimental features:
 
 | Name | Description | First Available Version | How to Enable |
 |---|---|---|---|
-| Call Stacks | Collect call stacks from target processes are a diagnostic artifact using either the `/stack` route or the `CollectStacks` collection rule action. | 7.0 RC 1 | Set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. |
+| Call Stacks | Collect call stacks from target processes as a diagnostic artifact using either the `/stacks` route or the `CollectStacks` collection rule action. | 7.0 RC 1 | Set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. |

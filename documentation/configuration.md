@@ -391,7 +391,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 
 ### **[Experimental]** Shared Library Path (7.0+)
 
-The shared library path option (`SharedLibraryPath`) allows specifying the path to where shared libraries are copied from the `dotnet monitor` installation to make them available to target applications for in-process diagnostics scenarios, such a call stack collection.
+The shared library path option (`SharedLibraryPath`) allows specifying the path to where shared libraries are copied from the `dotnet monitor` installation to make them available to target applications for in-process diagnostics scenarios, such as call stack collection.
 
 >**Note:** This option is not required if `DefaultSharedPath` is specified. This option provides an alternative directory path compared to the behavior of specifying `DefaultSharedPath`.
 
@@ -1756,13 +1756,13 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
 
 Collect call stacks from the target process.
 
->**NOTE:** This feature is [experimental](./../experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+>**NOTE:** This feature is [experimental](./experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
 
 ##### Properties
 
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
-| `Format` | [CallStackFormat](api/definitions.md#callstackformat) | false | The format of the collected call stack. | `Json` |
+| `Format` | [CallStackFormat](api/definitions.md#experimental-callstackformat-70) | false | The format of the collected call stack. | `Json` |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected stacks. | |
 
 #### `LoadProfiler` Action
@@ -2137,17 +2137,17 @@ The following example includes a default egress provider that corresponds to the
 
 ## **[Experimental]** In-Process Features Configuration (7.0+)
 
-Some features of `dotnet monitor` require loading libraries that are not part of the deployment of the target application. These libraries ship with `dotnet monitor` and are provisioned to be available to the target applications using the `DefaultSharedPath` option in the [storage configuration](#storage-configuration) section. The following features require these in-process libraries to be used:
+Some features of `dotnet monitor` require loading libraries into target applications. These libraries ship with `dotnet monitor` and are provisioned to be available to target applications using the `DefaultSharedPath` option in the [storage configuration](#storage-configuration) section. The following features require these in-process libraries to be used:
 
 - Call stack collection
 
- Because these libraries are loaded into the target application, they may have performance impact on memory and CPU utilization. These features are off by default and may be enabled via the `InProcessFeatures` configuration section.
+Because these libraries are loaded into the target application (they are not loaded into `dotnet monitor`), they may have performance impact on memory and CPU utilization in the target application. These features are off by default and may be enabled via the `InProcessFeatures` configuration section.
 
- ### Example
+### Example
 
- To enable in-process features, such as call stack collection, use the following configuration:
+To enable in-process features, such as call stack collection, use the following configuration:
 
- <details>
+<details>
   <summary>JSON</summary>
 
   ```json
@@ -2158,7 +2158,6 @@ Some features of `dotnet monitor` require loading libraries that are not part of
   }
   ```
 </details>
-
 
 <details>
   <summary>Kubernetes ConfigMap</summary>

@@ -41,7 +41,7 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [CallStackResult](definitions.md#callstackresult) | Callstacks for all managed threads in the process. | `application/json` |
+| 200 OK | [CallStackResult](definitions.md#experimental-callstackresult-70) | Callstacks for all managed threads in the process. | `application/json` |
 | 200 OK | text | Text representation of callstacks in the process. | `text/plain` |
 | 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
