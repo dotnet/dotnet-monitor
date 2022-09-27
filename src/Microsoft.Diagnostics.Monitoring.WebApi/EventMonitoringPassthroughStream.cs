@@ -163,7 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
 
                 Dictionary<int, string> payloadFilterCache = new(capacity: _payloadFilter.Count);
-                for (int i = 0; i < obj.PayloadNames.Length; i++)
+                for (int i = 0; (i < obj.PayloadNames.Length) && (payloadFilterCache.Count < _payloadFilter.Count); i++)
                 {
                     if (_payloadFilter.TryGetValue(obj.PayloadNames[i], out string payloadValue))
                     {
