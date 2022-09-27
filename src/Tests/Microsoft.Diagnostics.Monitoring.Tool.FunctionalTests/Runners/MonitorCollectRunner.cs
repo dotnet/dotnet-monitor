@@ -194,25 +194,33 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         protected override void StandardOutputCallback(string line)
         {
-            ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
-
-            switch (logEvent.Category)
+            try
             {
-                case "Microsoft.AspNetCore.Server.Kestrel":
-                    HandleKestrelEvent(logEvent);
-                    break;
-                case "Microsoft.Hosting.Lifetime":
-                    HandleLifetimeEvent(logEvent);
-                    break;
-                case "Microsoft.Diagnostics.Tools.Monitor.Startup":
-                    HandleStartupEvent(logEvent);
-                    break;
-                case "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.CollectionRuleService":
-                    HandleCollectionRuleEvent(logEvent);
-                    break;
-                default:
-                    HandleGenericLogEvent(logEvent);
-                    break;
+                ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
+
+                switch (logEvent.Category)
+                {
+                    case "Microsoft.AspNetCore.Server.Kestrel":
+                        HandleKestrelEvent(logEvent);
+                        break;
+                    case "Microsoft.Hosting.Lifetime":
+                        HandleLifetimeEvent(logEvent);
+                        break;
+                    case "Microsoft.Diagnostics.Tools.Monitor.Startup":
+                        HandleStartupEvent(logEvent);
+                        break;
+                    case "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.CollectionRuleService":
+                        HandleCollectionRuleEvent(logEvent);
+                        break;
+                    default:
+                        HandleGenericLogEvent(logEvent);
+                        break;
+                }
+            }
+            catch (JsonException)
+            {
+                // Unable to parse the output. These could be lines writen to stdout that are not JSON formatted.
+                _outputHelper.WriteLine("Unable to JSON parse stdout line: {0}", line);
             }
         }
 
