@@ -78,6 +78,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// </summary>
         public bool DisableMetricsViaCommandLine { get; set; }
 
+        /// <summary>
+        /// Reports whether the server URLs were overriden by UseKestrel/ConfigureKestrel code.
+        /// </summary>
+        public bool OverrodeServerUrls { get; private set; }
+
+        /// <summary>
+        /// Urls used for the DOTNET_Urls environment variable.
+        /// </summary>
+        public string DotNetUrls { get; set; }
+
+        /// <summary>
+        /// Urls used for the ASPNETCORE_Urls environment variable.
+        /// </summary>
+        public string AspNetCoreUrls { get; set; }
+
+        /// <summary>
+        /// Urls used for the DOTNETMONITOR_Urls environment variable.
+        /// </summary>
+        public string DotNetMonitorUrls { get; set; }
+
 
         public MonitorCollectRunner(ITestOutputHelper outputHelper)
             : base(outputHelper)
@@ -108,6 +128,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             argsList.Add("--urls");
             argsList.Add("http://127.0.0.1:0");
+
+            if (!string.IsNullOrEmpty(DotNetUrls))
+            {
+                SetEnvironmentVariable("DOTNET_Urls", DotNetUrls);
+            }
+            if (!string.IsNullOrEmpty(AspNetCoreUrls))
+            {
+                SetEnvironmentVariable("ASPNETCORE_Urls", AspNetCoreUrls);
+            }
+            if (!string.IsNullOrEmpty(DotNetMonitorUrls))
+            {
+                SetEnvironmentVariable("DOTNETMONITOR_Urls", DotNetMonitorUrls);
+            }
 
             if (DisableMetricsViaCommandLine)
             {
@@ -161,22 +194,33 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         protected override void StandardOutputCallback(string line)
         {
-            ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
-
-            switch (logEvent.Category)
+            try
             {
-                case "Microsoft.Hosting.Lifetime":
-                    HandleLifetimeEvent(logEvent);
-                    break;
-                case "Microsoft.Diagnostics.Tools.Monitor.Startup":
-                    HandleStartupEvent(logEvent);
-                    break;
-                case "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.CollectionRuleService":
-                    HandleCollectionRuleEvent(logEvent);
-                    break;
-                default:
-                    HandleGenericLogEvent(logEvent);
-                    break;
+                ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
+
+                switch (logEvent.Category)
+                {
+                    case "Microsoft.AspNetCore.Server.Kestrel":
+                        HandleKestrelEvent(logEvent);
+                        break;
+                    case "Microsoft.Hosting.Lifetime":
+                        HandleLifetimeEvent(logEvent);
+                        break;
+                    case "Microsoft.Diagnostics.Tools.Monitor.Startup":
+                        HandleStartupEvent(logEvent);
+                        break;
+                    case "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.CollectionRuleService":
+                        HandleCollectionRuleEvent(logEvent);
+                        break;
+                    default:
+                        HandleGenericLogEvent(logEvent);
+                        break;
+                }
+            }
+            catch (JsonException)
+            {
+                // Unable to parse the output. These could be lines writen to stdout that are not JSON formatted.
+                _outputHelper.WriteLine("Unable to JSON parse stdout line: {0}", line);
             }
         }
 
@@ -243,6 +287,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                         Assert.True(_monitorApiKeySource.TrySetResult(monitorApiKey));
                     }
                     break;
+            }
+        }
+
+        private void HandleKestrelEvent(ConsoleLogEvent logEvent)
+        {
+            if (logEvent.Message.StartsWith("Overriding address(es)"))
+            {
+                OverrodeServerUrls = true;
             }
         }
 
