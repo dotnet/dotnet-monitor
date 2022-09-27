@@ -18,10 +18,11 @@
 class EnvironmentHelper final
 {
 private:
-    static constexpr LPCWSTR DebugLoggerLevelEnvVar = _T("DotnetMonitorProfiler_DebugLogger_Level");
-    static constexpr LPCWSTR ProfilerVersionEnvVar = _T("DotnetMonitorProfiler_ProductVersion");
-    static constexpr LPCWSTR RuntimeInstanceEnvVar = _T("DotnetMonitorProfiler_RuntimeId");
-    static constexpr LPCWSTR StdErrLoggerLevelEnvVar = _T("DotnetMonitorProfiler_StdErrLogger_Level");
+    static constexpr LPCWSTR DebugLoggerLevelEnvVar = _T("DotnetMonitor_Profiler_DebugLogger_Level");
+    static constexpr LPCWSTR ProfilerVersionEnvVar = _T("DotnetMonitor_Profiler_ProductVersion");
+    static constexpr LPCWSTR RuntimeInstanceEnvVar = _T("DotnetMonitor_Profiler_RuntimeInstanceId");
+    static constexpr LPCWSTR SharedPathEnvVar = _T("DotnetMonitor_Profiler_SharedPath");
+    static constexpr LPCWSTR StdErrLoggerLevelEnvVar = _T("DotnetMonitor_Profiler_StdErrLogger_Level");
 
     std::shared_ptr<IEnvironment> _environment;
     std::shared_ptr<ILogger> _logger;
@@ -53,6 +54,8 @@ public:
     HRESULT SetProductVersion();
 
     HRESULT GetRuntimeInstanceId(tstring& instanceId);
+
+    HRESULT GetSharedPath(tstring& instanceId);
 
     /// <summary>
     /// Gets the log level for the stderr logger from the environment.

@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.DependencyInjection;
@@ -165,7 +166,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureMetrics(context.Configuration);
                 services.ConfigureStorage(context.Configuration);
                 services.ConfigureDefaultProcess(context.Configuration);
+                services.AddSingleton<ProfilerChannel>();
                 services.ConfigureCollectionRules();
+                services.ConfigureProfiler();
+                services.ConfigureStartupLoggers();
+                services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
+                services.ConfigureInProcessFeatures(context.Configuration);
+                services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
             });
         }
     }

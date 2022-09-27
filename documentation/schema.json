@@ -48,6 +48,18 @@
         }
       ]
     },
+    "InProcessFeatures": {
+      "description": "[Experimental]",
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/InProcessFeaturesOptions"
+        }
+      ]
+    },
     "CorsConfiguration": {
       "default": {},
       "oneOf": [
@@ -747,6 +759,16 @@
         {
           "properties": {
             "Type": {
+              "const": "CollectStacks"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectStacksOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
               "const": "CollectTrace"
             },
             "Settings": {
@@ -855,6 +877,20 @@
           "default": 5.0,
           "maximum": 86400.0,
           "minimum": 1.0
+        }
+      }
+    },
+    "InProcessFeaturesOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "[Experimental] Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "default": false
         }
       }
     },
@@ -1183,12 +1219,26 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "DefaultSharedPath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows platforms, a server diagnostic port is created with the name of 'dotnet-monitor.sock' immediately under this path if running in listen mode unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified."
+        },
         "DumpTempFolder": {
           "type": [
             "null",
             "string"
           ],
           "description": "The location for temporary dump files. Defaults to the temp folder."
+        },
+        "SharedLibraryPath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "[Experimental] The location to which libraries shared with target processes will be copied at startup."
         }
       }
     },
@@ -1379,6 +1429,7 @@
         "CollectGCDump",
         "CollectLiveMetrics",
         "CollectLogs",
+        "CollectStacks",
         "CollectTrace",
         "Execute",
         "LoadProfiler",
@@ -1577,6 +1628,41 @@
         "NewlineDelimitedJson",
         "PlainText",
         "JsonSequence"
+      ]
+    },
+    "CollectStacksOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": "string",
+          "description": "[Experimental] The name of the egress provider to which the call stacks are egressed.",
+          "minLength": 1
+        },
+        "Format": {
+          "description": "[Experimental] The format used to display the call stacks.",
+          "default": "Json",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CallStackFormat"
+            }
+          ]
+        }
+      }
+    },
+    "CallStackFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Json",
+        "PlainText"
+      ],
+      "enum": [
+        "Json",
+        "PlainText"
       ]
     },
     "CollectTraceOptions": {

@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata))]
-        public IDictionary<string, string> Metadata { get; }
+        public IDictionary<string, string> Metadata { get; set; }
             = new Dictionary<string, string>(0);
     }
 }

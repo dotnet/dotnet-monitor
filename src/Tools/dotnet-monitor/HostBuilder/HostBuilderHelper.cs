@@ -16,7 +16,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class HostBuilderHelper
     {
-        public const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
@@ -24,13 +23,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return new HostBuilder()
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
-                    //Note these are in precedence order.
-                    ConfigureEndpointInfoSource(builder, settings.DiagnosticPort);
-                    ConfigureMetricsEndpoint(builder, settings.EnableMetrics, settings.MetricsUrls ?? Array.Empty<string>());
-                    ConfigureGlobalMetrics(builder);
-                    builder.ConfigureStorageDefaults();
+                    // Configure default values
+                    ConfigureGlobalMetricsDefaults(builder);
+                    ConfigureMetricsDefaults(builder);
 
-                    builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>()) });
+                    // These are configured via the command line configuration source so that
+                    // the "show config" command will report these are from the command line
+                    // rather than an in-memory collection.
+                    List<string> arguments = new();
+                    AddDiagnosticPortArguments(arguments, settings);
+                    AddMetricsArguments(arguments, settings);
+                    AddUrlsArguments(arguments, settings);
+
+                    builder.AddCommandLine(arguments.ToArray());
                 })
                 .ConfigureDefaults(args: null)
                 .UseContentRoot(settings.ContentRootDirectory)
@@ -63,11 +68,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     // If a file at this path does not have read permissions, the application will fail to launch.
                     builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
-                    builder.AddEnvironmentVariables(ConfigPrefix);
+                    builder.AddEnvironmentVariables(ToolIdentifiers.StandardPrefix);
 
                     if (settings.Authentication.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {
-                        ConfigureTempApiHashKey(builder, settings.Authentication);
+                        // These are configured via the command line configuration source so that
+                        // the "show config" command will report these are from the command line
+                        // rather than an in-memory collection.
+                        List<string> arguments = new();
+                        AddTempApiKeyArguments(arguments, settings);
+
+                        builder.AddCommandLine(arguments.ToArray());
                     }
 
                     // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
@@ -93,10 +104,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 //is not added until WebHostDefaults are added.
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    TestAssemblies.AddHostingStartup(webBuilder);
+
                     AddressListenResults listenResults = new AddressListenResults();
                     webBuilder.ConfigureServices(services =>
                     {
                         services.AddSingleton(listenResults);
+                        services.AddSingleton<IStartupFilter, AddressListenResultsStartupFilter>();
+                        services.AddHostedService<StartupLoggingHostedService>();
                     })
                     .ConfigureKestrel((context, options) =>
                     {
@@ -129,7 +144,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         listenResults.Listen(
                             options,
                             urls,
-                            metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ? metricUrls : Array.Empty<string>());
+                            metricsOptions.GetEnabled() ? metricUrls : Array.Empty<string>(),
+                            settings.Authentication.KeyAuthenticationMode != KeyAuthenticationMode.NoAuth);
+
+                        // Since the endpoints have already been defined on the KestrelServerOptions, clear out the urls
+                        // so that the address binder does not log a warning about overriding urls as specified by configuration.
+                        context.Configuration[WebHostDefaults.ServerUrlsKey] = string.Empty;
                     })
                     .UseStartup<Startup>();
                 });
@@ -157,30 +177,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return new AuthConfiguration(authMode);
         }
 
-        private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, IAuthConfiguration authenticationOptions)
-        {
-            if (authenticationOptions.TemporaryJwtKey != null)
-            {
-                builder.AddInMemoryCollection(new Dictionary<string, string>
-                {
-                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)), authenticationOptions.TemporaryJwtKey.Subject },
-                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)), authenticationOptions.TemporaryJwtKey.PublicKey },
-                });
-            }
-        }
-
-        private static void ConfigureMetricsEndpoint(IConfigurationBuilder builder, bool enableMetrics, string[] metricEndpoints)
+        private static void ConfigureMetricsDefaults(IConfigurationBuilder builder)
         {
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Endpoints)), string.Join(';', metricEndpoints)},
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)), enableMetrics.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.MetricCount)), MetricsOptionsDefaults.MetricCount.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()}
             });
         }
 
-        private static void ConfigureGlobalMetrics(IConfigurationBuilder builder)
+        private static void ConfigureGlobalMetricsDefaults(IConfigurationBuilder builder)
         {
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
@@ -188,19 +194,55 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             });
         }
 
-        private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
+        private static void AddDiagnosticPortArguments(List<string> arguments, HostBuilderSettings settings)
         {
-            DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
-            builder.AddInMemoryCollection(new Dictionary<string, string>
+            if (!string.IsNullOrEmpty(settings.DiagnosticPort))
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
-            });
+                arguments.Add(FormatCmdLineArgument(
+                    ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)),
+                    DiagnosticPortConnectionMode.Listen.ToString()));
+
+                arguments.Add(FormatCmdLineArgument(
+                    ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)),
+                    settings.DiagnosticPort));
+            }
         }
 
-        private static DiagnosticPortConnectionMode GetConnectionMode(string diagnosticPort)
+        private static void AddMetricsArguments(List<string> arguments, HostBuilderSettings settings)
         {
-            return string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
+            arguments.Add(FormatCmdLineArgument(
+                ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Endpoints)),
+                ConfigurationHelper.JoinValue(settings.MetricsUrls ?? Array.Empty<string>())));
+
+            arguments.Add(FormatCmdLineArgument(
+                ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)),
+                settings.EnableMetrics.ToString()));
+        }
+
+        private static void AddTempApiKeyArguments(List<string> arguments, HostBuilderSettings settings)
+        {
+            if (settings.Authentication.TemporaryJwtKey != null)
+            {
+                arguments.Add(FormatCmdLineArgument(
+                    ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)),
+                    settings.Authentication.TemporaryJwtKey.Subject));
+
+                arguments.Add(FormatCmdLineArgument(
+                    ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)),
+                    settings.Authentication.TemporaryJwtKey.PublicKey));
+            }
+        }
+
+        private static void AddUrlsArguments(List<string> arguments, HostBuilderSettings settings)
+        {
+            arguments.Add(FormatCmdLineArgument(
+                WebHostDefaults.ServerUrlsKey,
+                ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>())));
+        }
+
+        private static string FormatCmdLineArgument(string key, string value)
+        {
+            return FormattableString.Invariant($"{key}={value}");
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             _outputHelper = outputhelper;
 
-            _directoryInfo = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
+            _directoryInfo = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             _directoryInfo.Create();
 
             _outputHelper.WriteLine("Created temporary directory '{0}'", FullName);

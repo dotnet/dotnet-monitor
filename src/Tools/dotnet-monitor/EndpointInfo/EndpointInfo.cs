@@ -37,6 +37,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Runtime didn't respond within client timeout.
             }
 
+            _ = TryParseVersion(processInfo.ClrProductVersionString, out Version runtimeVersion);
+
             // CONSIDER: Generate a runtime instance identifier based on the pipe name
             // for .NET Core 3.1 e.g. pid + disambiguator in GUID form.
             // Note that currently we use RuntimeInstanceId == Guid.Empty as a means of determining
@@ -48,7 +50,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 RuntimeInstanceCookie = processInfo?.RuntimeInstanceCookie ?? Guid.Empty,
                 CommandLine = processInfo?.CommandLine,
                 OperatingSystem = processInfo?.OperatingSystem,
-                ProcessArchitecture = processInfo?.ProcessArchitecture
+                ProcessArchitecture = processInfo?.ProcessArchitecture,
+                RuntimeVersion = runtimeVersion
             };
         }
 
@@ -76,6 +79,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Runtime didn't respond within client timeout.
             }
 
+            _ = TryParseVersion(processInfo.ClrProductVersionString, out Version runtimeVersion);
+
             return new EndpointInfo()
             {
                 Endpoint = info.Endpoint,
@@ -83,8 +88,37 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 RuntimeInstanceCookie = info.RuntimeInstanceCookie,
                 CommandLine = processInfo?.CommandLine,
                 OperatingSystem = processInfo?.OperatingSystem,
-                ProcessArchitecture = processInfo?.ProcessArchitecture
+                ProcessArchitecture = processInfo?.ProcessArchitecture,
+                RuntimeVersion = runtimeVersion
             };
+        }
+
+        private static bool TryParseVersion(string versionString, out Version version)
+        {
+            version = null;
+            if (string.IsNullOrEmpty(versionString))
+            {
+                return false;
+            }
+
+            // The version is of the SemVer2 form: <major>.<minor>.<patch>[-<prerelease>][+<metadata>]
+            // Remove the prerelease and metadata version information before parsing.
+
+            ReadOnlySpan<char> versionSpan = versionString;
+            int metadataIndex = versionSpan.IndexOf('+');
+            if (-1 == metadataIndex)
+            {
+                metadataIndex = versionSpan.Length;
+            }
+
+            ReadOnlySpan<char> noMetadataVersion = versionSpan[..metadataIndex];
+            int prereleaseIndex = noMetadataVersion.IndexOf('-');
+            if (-1 == prereleaseIndex)
+            {
+                prereleaseIndex = metadataIndex;
+            }
+
+            return Version.TryParse(noMetadataVersion[..prereleaseIndex], out version);
         }
 
         public override IpcEndpoint Endpoint { get; protected set; }
@@ -98,6 +132,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public override string OperatingSystem { get; protected set; }
 
         public override string ProcessArchitecture { get; protected set; }
+
+        public override Version RuntimeVersion { get; protected set; }
 
         internal string DebuggerDisplay => FormattableString.Invariant($"PID={ProcessId}, Cookie={RuntimeInstanceCookie}");
     }
