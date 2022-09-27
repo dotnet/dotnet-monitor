@@ -3,8 +3,6 @@
 
 # Trace - Get Custom
 
-# Trace - Get Custom
-
 Captures a diagnostic trace of a process using the given set of event providers specified in the request body.
 
 ## HTTP Route
