@@ -13,20 +13,22 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestWebApp.Pages
 {
-    public class PrivacyModel : PageModel
+    public class SlowResponseModel : PageModel
     {
-        private readonly ILogger<PrivacyModel> _logger;
+        private readonly ILogger<SlowResponseModel> _logger;
 
-        public PrivacyModel(ILogger<PrivacyModel> logger)
+        public SlowResponseModel(ILogger<SlowResponseModel> logger)
         {
             _logger = logger;
 
-            _logger.LogWarning("IN PRIVACY");
+            _logger.LogWarning("IN SLOW RESPONSE");
         }
 
-        public void OnGet()
+        public async Task OnGet()
         {
-            _logger.LogWarning("IN PRIVACY ONGET");
+            _logger.LogWarning("IN SLOW RESPONSE ONGET");
+
+            await Task.Delay(2000); // Wait two seconds to return
         }
     }
 }
