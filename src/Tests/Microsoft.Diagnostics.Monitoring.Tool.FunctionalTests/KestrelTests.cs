@@ -33,13 +33,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public Task UrlBinding_NoOverrideWarning_CmdLine()
         {
-            return ExecuteNoOverridWarning();
+            return ExecuteNoOverrideWarning();
         }
 
         [Fact]
         public Task UrlBinding_NoOverrideWarning_DotNet()
         {
-            return ExecuteNoOverridWarning((runner, url) =>
+            return ExecuteNoOverrideWarning((runner, url) =>
             {
                 runner.DotNetUrls = url;
             });
@@ -48,10 +48,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public Task UrlBinding_NoOverrideWarning_AspNetCore()
         {
-            return ExecuteNoOverridWarning((runner, url) =>
+            return ExecuteNoOverrideWarning((runner, url) =>
             {
                 // This should be overriden by the ASPNETCORE_Urls entry. If it is not,
-                // it will cause dotnet-monitor to no bind correctly and the /info route
+                // it will cause dotnet-monitor to not bind correctly and the /info route
                 // check will fail.
                 runner.DotNetUrls = "dotnet_invalid";
                 runner.AspNetCoreUrls = url;
@@ -61,10 +61,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public Task UrlBinding_NoOverrideWarning_DotNetMonitor()
         {
-            return ExecuteNoOverridWarning((runner, url) =>
+            return ExecuteNoOverrideWarning((runner, url) =>
             {
                 // These should be overriden by the DotnetMonitor_Urls entry. If it is not,
-                // it will cause dotnet-monitor to no bind correctly and the /info route
+                // it will cause dotnet-monitor to not bind correctly and the /info route
                 // check will fail.
                 runner.DotNetUrls = "dotnet_invalid";
                 runner.AspNetCoreUrls = "aspnetcore_invalid";
@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
-        private async Task ExecuteNoOverridWarning(Action<MonitorCollectRunner, string> configure = null)
+        private async Task ExecuteNoOverrideWarning(Action<MonitorCollectRunner, string> configure = null)
         {
             await using MonitorCollectRunner runner = new(_outputHelper);
 

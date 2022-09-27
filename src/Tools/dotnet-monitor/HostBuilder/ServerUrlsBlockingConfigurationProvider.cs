@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public override void Set(string key, string value)
         {
             // Overridden to prevent set of data since this provider does not
-            // provider any real data from any source.
+            // provide any real data from any source.
         }
 
         public override bool TryGet(string key, out string value)

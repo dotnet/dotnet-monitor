@@ -193,7 +193,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     // Container configuration is the last phase of building the host before the service provider is constructed.
                     // At this point, all configuration callbacks have been executed. Lift the block on the Urls option so that
-                    // the option my be read from configuration by default.
+                    // the option may be read from configuration by default.
                     manager.IsBlocking = false;
                 });
         }
