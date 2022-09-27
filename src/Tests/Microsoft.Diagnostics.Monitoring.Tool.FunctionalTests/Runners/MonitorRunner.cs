@@ -189,5 +189,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             _outputHelper.WriteLine("Wrote user settings.");
         }
+
+        protected void SetEnvironmentVariable(string name, string value)
+        {
+            _adapter.Environment[name] = value;
+        }
     }
 }

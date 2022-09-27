@@ -15,6 +15,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     internal static class MonitorCollectRunnerExtensions
     {
         /// <summary>
+        /// Creates a <see cref="HttpClient"/> over the address of the <paramref name="runner"/>.
+        /// </summary>
+        public static Task<HttpClient> CreateHttpClientAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string address)
+        {
+            return runner.CreateHttpClientAsync(factory, address, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="HttpClient"/> over the address of the <paramref name="runner"/>.
+        /// </summary>
+        public static async Task<HttpClient> CreateHttpClientAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string address, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+
+            return await runner.CreateHttpClientAsync(factory, address, Extensions.Options.Options.DefaultName, cancellation.Token);
+        }
+
+        /// <summary>
+        /// Creates a named <see cref="HttpClient"/> over the address of the <paramref name="runner"/>.
+        /// </summary>
+        public static async Task<HttpClient> CreateHttpClientAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string address, string name, CancellationToken token)
+        {
+            HttpClient client = factory.CreateClient(name);
+
+            client.BaseAddress = new Uri(address, UriKind.Absolute);
+
+            if (runner.UseTempApiKey)
+            {
+                string monitorApiKey = await runner.GetMonitorApiKey(token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, monitorApiKey);
+            }
+
+            return client;
+        }
+
+        /// <summary>
         /// Creates a <see cref="HttpClient"/> over the default address of the <paramref name="runner"/>.
         /// </summary>
         public static Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory)
@@ -43,18 +79,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// </summary>
         public static async Task<HttpClient> CreateHttpClientDefaultAddressAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string name, TimeSpan timeout)
         {
-            HttpClient client = factory.CreateClient(name);
-
             using CancellationTokenSource cancellation = new(timeout);
-            client.BaseAddress = new Uri(await runner.GetDefaultAddressAsync(cancellation.Token), UriKind.Absolute);
 
-            if (runner.UseTempApiKey)
-            {
-                string monitorApiKey = await runner.GetMonitorApiKey(cancellation.Token);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, monitorApiKey);
-            }
+            string address = await runner.GetDefaultAddressAsync(cancellation.Token);
 
-            return client;
+            return await runner.CreateHttpClientAsync(factory, address, name, cancellation.Token);
         }
 
         /// <summary>
