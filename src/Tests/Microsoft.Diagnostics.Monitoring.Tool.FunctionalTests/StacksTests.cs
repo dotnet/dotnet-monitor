@@ -248,7 +248,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Disable unstable tests.")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task TestCollectStacksAction(Architecture targetArchitecture)
         {
