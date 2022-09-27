@@ -710,7 +710,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             AppendDuration(routeBuilder, duration);
             if (profile.HasValue)
             {
-                routeBuilder.Append("&level=");
+                routeBuilder.Append("&profile=");
                 routeBuilder.Append(profile.Value.ToString("G"));
             }
             return routeBuilder.ToString();

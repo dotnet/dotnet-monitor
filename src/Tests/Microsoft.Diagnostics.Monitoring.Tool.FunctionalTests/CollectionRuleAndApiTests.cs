@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Graphs;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
@@ -49,7 +50,111 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRuleAndApi_AspNetRequestCountTest(DiagnosticPortConnectionMode mode)
         {
-            const int ExpectedRequestCount = 1;
+            const int ExpectedRequestCount = 2;
+
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+            string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
+            string ExpectedFileContent = Guid.NewGuid().ToString("N");
+
+            DiagnosticPortHelper.Generate(
+                mode,
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
+
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.ConnectionMode = mode;
+            toolRunner.DiagnosticPortPath = diagnosticPortPath;
+            toolRunner.DisableAuthentication = true;
+
+            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), isWebApp: true);
+            appRunner.ConnectionMode = appConnectionMode;
+            appRunner.DiagnosticPortPath = diagnosticPortPath;
+            appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
+
+            Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
+
+            await appRunner.ExecuteNoCommandsAsync(async () =>
+            {
+                RootOptions newOptions = new();
+                newOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetAspNetResponseStatusTrigger(options =>
+                        {
+                            options.ResponseCount = ExpectedRequestCount;
+                            options.StatusCodes = new string[] { "200", "202" };
+                        })
+                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
+
+                await toolRunner.WriteUserSettingsAsync(newOptions);
+                await toolRunner.StartAsync();
+
+                using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+                ApiClient apiClient = new(_outputHelper, httpClient);
+
+                try
+                {
+                    string pathAndQuery = "http://localhost:82";
+                    HttpResponseMessage message = await apiClient.ApiCall(pathAndQuery);
+                    string pathAndQuery2 = "http://localhost:82/Privacy";
+                    HttpResponseMessage message2 = await apiClient.ApiCall(pathAndQuery2);
+                    string pathAndQuery3 = "http://localhost:82";
+                    HttpResponseMessage message3 = await apiClient.ApiCall(pathAndQuery3);
+                }
+                catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    // Handle cases where it fails to locate the single process.
+                }
+
+                await ruleStartedTask;
+                Assert.True(ruleStartedTask.IsCompleted);
+
+                Assert.True(File.Exists(ExpectedFilePath));
+                Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
+
+                //Directory.Delete(ExpectedFilePath);
+
+                ////////////////////////////
+
+                int processId = await appRunner.ProcessIdTask;
+
+                TimeSpan duration = TimeSpan.FromSeconds(5);
+                using ResponseStreamHolder holder = await apiClient.CaptureTraceAsync(processId, duration, WebApi.Models.TraceProfile.Http);
+                Assert.NotNull(holder);
+
+                await TraceTestUtilities.ValidateTrace(holder.Stream);
+
+                //await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+
+                ////////////////////////////
+
+                Task ruleStartedTask2 = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
+
+                try
+                {
+                    string pathAndQuery = "http://localhost:82";
+                    HttpResponseMessage message = await apiClient.ApiCall(pathAndQuery);
+                    string pathAndQuery2 = "http://localhost:82/Privacy";
+                    HttpResponseMessage message2 = await apiClient.ApiCall(pathAndQuery2);
+                    string pathAndQuery3 = "http://localhost:82";
+                    HttpResponseMessage message3 = await apiClient.ApiCall(pathAndQuery3);
+                }
+                catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    // Handle cases where it fails to locate the single process.
+                }
+
+                await ruleStartedTask2;
+                Assert.True(ruleStartedTask2.IsCompleted);
+
+                Assert.True(File.Exists(ExpectedFilePath));
+                Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
+
+                appRunner.KillProcess();
+            });
+        }
+
+        private async Task RunAspNetRequestCountCheck(DiagnosticPortConnectionMode mode)
+        {
+            const int ExpectedRequestCount = 2;
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
@@ -86,7 +191,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         })
                         .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
 
-                    //ruleStartedTask = runner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
+                //ruleStartedTask = runner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
                 await toolRunner.WriteUserSettingsAsync(newOptions);
                 await toolRunner.StartAsync();
@@ -96,9 +201,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
                     ApiClient apiClient = new(_outputHelper, httpClient);
 
-                    string pathAndQuery = "http://localhost:82"; // not sure this will work
+                    string pathAndQuery = "http://localhost:82";
                     HttpResponseMessage message = await apiClient.ApiCall(pathAndQuery);
-                    string pathAndQuery2 = "http://localhost:82/Privacy"; // not sure this will work
+                    string pathAndQuery2 = "http://localhost:82/Privacy";
                     HttpResponseMessage message2 = await apiClient.ApiCall(pathAndQuery2);
                 }
                 catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
