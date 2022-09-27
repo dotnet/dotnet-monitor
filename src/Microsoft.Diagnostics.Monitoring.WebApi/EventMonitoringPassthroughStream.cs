@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Tracing;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -183,9 +184,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private bool DoesPayloadMatch(TraceEvent obj)
         {
-            foreach (var (payloadIndex, expectedValue) in _payloadFilterIndexCache)
+            foreach (var (fieldIndex, expectedValue) in _payloadFilterIndexCache)
             {
-                if (!string.Equals(obj.PayloadString(payloadIndex), expectedValue, StringComparison.Ordinal))
+                string fieldValue = Convert.ToString(obj.PayloadValue(fieldIndex), CultureInfo.InvariantCulture) ?? string.Empty;
+                if (!string.Equals(fieldValue, expectedValue, StringComparison.Ordinal))
                 {
                     return false;
                 }
