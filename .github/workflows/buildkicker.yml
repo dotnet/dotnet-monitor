@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Extract retries allowed
-      uses: actions/github-script@v3
+      uses: actions/github-script@v6.3.0
       id: retries-extractor
       with:
         result-encoding: string
@@ -37,7 +37,7 @@ jobs:
 
           return 3;
     - name: Post acknowledgement to pull request
-      uses: actions/github-script@v3
+      uses: actions/github-script@v6.3.0
       id: comment-poster
       with:
         result-encoding: string
