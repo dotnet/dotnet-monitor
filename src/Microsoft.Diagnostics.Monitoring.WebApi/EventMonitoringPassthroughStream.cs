@@ -32,8 +32,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         // The original payload filter of fieldName->fieldValue specified by the user. It will only be used to hydrate _payloadFilterIndexCache.
         private readonly IDictionary<string, string> _payloadFilter;
 
-        // Guards _payloadFilterIndexCache.
-        private object _payloadCacheLocker = new();
         // This tracks the exact indices into the provided event's payload to check for the expected values instead
         // of repeatedly searching the payload for the field names in _payloadFilter.
         private Dictionary<int, string> _payloadFilterIndexCache;
@@ -144,40 +142,37 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private bool HydratePayloadFilterCache(TraceEvent obj)
         {
-            lock (_payloadCacheLocker)
+            if (_payloadFilterIndexCache != null)
             {
-                if (_payloadFilterIndexCache != null)
-                {
-                    return true;
-                }
-
-                if (_payloadFilter == null || _payloadFilter.Count == 0)
-                {
-                    _payloadFilterIndexCache = new(capacity: 0);
-                    return true;
-                }
-
-                if (obj.PayloadNames.Length < _payloadFilter.Count)
-                {
-                    return false;
-                }
-
-                Dictionary<int, string> payloadFilterCache = new(capacity: _payloadFilter.Count);
-                for (int i = 0; (i < obj.PayloadNames.Length) && (payloadFilterCache.Count < _payloadFilter.Count); i++)
-                {
-                    if (_payloadFilter.TryGetValue(obj.PayloadNames[i], out string payloadValue))
-                    {
-                        payloadFilterCache.Add(i, payloadValue);
-                    }
-                }
-
-                if (_payloadFilter.Count != payloadFilterCache.Count)
-                {
-                    return false;
-                }
-
-                _payloadFilterIndexCache = payloadFilterCache;
+                return true;
             }
+
+            if (_payloadFilter == null || _payloadFilter.Count == 0)
+            {
+                _payloadFilterIndexCache = new(capacity: 0);
+                return true;
+            }
+
+            if (obj.PayloadNames.Length < _payloadFilter.Count)
+            {
+                return false;
+            }
+
+            Dictionary<int, string> payloadFilterCache = new(capacity: _payloadFilter.Count);
+            for (int i = 0; (i < obj.PayloadNames.Length) && (payloadFilterCache.Count < _payloadFilter.Count); i++)
+            {
+                if (_payloadFilter.TryGetValue(obj.PayloadNames[i], out string payloadValue))
+                {
+                    payloadFilterCache.Add(i, payloadValue);
+                }
+            }
+
+            if (_payloadFilter.Count != payloadFilterCache.Count)
+            {
+                return false;
+            }
+
+            _payloadFilterIndexCache = payloadFilterCache;
 
             return true;
         }
