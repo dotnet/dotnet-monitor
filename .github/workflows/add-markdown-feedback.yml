@@ -2,7 +2,7 @@ name: 'Add Markdown Feedback'
 on:
   pull_request:
     paths: ['documentation/**.md']
-    branches: ['main', 'release/6.x']
+    branches: ['main']
 
 permissions:
   pull-requests: read
@@ -24,17 +24,14 @@ jobs:
       - name: Get changed files
         run: |
           echo "Files changed: '$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }})'"
-          changed_source_files=$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }} | { grep "**.md$" || test $? = 1; })
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }} -- . ':!documentation/releaseNotes/*' | { grep "**.md$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
-      - name: Get dotnet version
-        run: echo 'dotnet_version='$(jq -r '.tools.dotnet' global.json) >> $GITHUB_ENV
-
       - name: Append To File
         uses: kkeirstead/AppendToFile@main
         with:
-          textToSearch: 'WasThisHelpful.png'
-          textToAdd: '[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src={insertFileName})'
+          textToSearch: 'DGDQWXH'
+          textToAdd: '### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src={insertFileName})'
           insertFileName: 'true'
           paths: ${{ env.updated_files }}
 
