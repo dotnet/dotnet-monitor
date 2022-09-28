@@ -1,5 +1,5 @@
 
-[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=trace-customdocumentation%2Fapi%2F)
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=trace-customdocumentation%2Fapi%2F)
 
 # Trace - Get Custom
 

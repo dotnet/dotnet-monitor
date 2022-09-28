@@ -1,5 +1,5 @@
 
-[<img src=/images/WasThisHelpful.png width="200"/>](https://www.research.net/r/DGDQWXH?src=documentation%2Fcompatibility%2F7.0%2FREADME)
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fcompatibility%2F7.0%2FREADME)
 
 # Breaking Changes in 7.0
 
