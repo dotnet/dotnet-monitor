@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Runtime didn't respond within client timeout.
             }
 
-            _ = TryParseVersion(processInfo.ClrProductVersionString, out Version runtimeVersion);
+            _ = TryParseVersion(processInfo?.ClrProductVersionString, out Version runtimeVersion);
 
             // CONSIDER: Generate a runtime instance identifier based on the pipe name
             // for .NET Core 3.1 e.g. pid + disambiguator in GUID form.
@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Runtime didn't respond within client timeout.
             }
 
-            _ = TryParseVersion(processInfo.ClrProductVersionString, out Version runtimeVersion);
+            _ = TryParseVersion(processInfo?.ClrProductVersionString, out Version runtimeVersion);
 
             return new EndpointInfo()
             {
