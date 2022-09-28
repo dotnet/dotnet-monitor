@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await ValidateAction(
                 options =>
                 {
-                    options.Path = DotNetHost.HostExePath;
+                    options.Path = DotNetHost.GetPath();
                     options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.ZeroExitCode });
                 },
                 async (action, token) =>
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await ValidateAction(
                 options =>
                 {
-                    options.Path = DotNetHost.HostExePath;
+                    options.Path = DotNetHost.GetPath();
                     options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonzeroExitCode });
                 },
                 async (action, token) =>
@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await ValidateAction(
                 options =>
                 {
-                    options.Path = DotNetHost.HostExePath;
+                    options.Path = DotNetHost.GetPath();
                     options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.Sleep, sleepMsArg });
                 },
                 async (action, token) =>
@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await ValidateAction(
                 options =>
                 {
-                    options.Path = DotNetHost.HostExePath;
+                    options.Path = DotNetHost.GetPath();
                     options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.TextFileOutput, textFileOutputPath, testMessage });
                 },
                 async (action, token) =>
@@ -146,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await ValidateAction(
                 options =>
                 {
-                    options.Path = DotNetHost.HostExePath;
+                    options.Path = DotNetHost.GetPath();
                     options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonzeroExitCode });
                     options.IgnoreExitCode = true;
                 },

@@ -18,13 +18,23 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static Version RuntimeVersion =>
             s_runtimeVersionLazy.Value;
 
-        public static string HostExeNameWithoutExtension => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            Path.GetFileNameWithoutExtension(HostExePath) :
-            Path.GetFileName(HostExePath);
+        public static string ExeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "dotnet.exe" : "dotnet";
 
-        public static string HostExePath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            @"..\..\..\..\..\.dotnet\dotnet.exe" :
-            "../../../../../.dotnet/dotnet";
+        public static string ExeNameWithoutExtension => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+            Path.GetFileNameWithoutExtension(ExeName) :
+            ExeName;
+
+        public static string GetPath(Architecture? arch = null)
+        {
+            // e.g. <repoPath>/.dotnet
+            string dotnetDirPath = Path.Combine("..", "..", "..", "..", "..", ".dotnet");
+            if (arch.HasValue && arch.Value != RuntimeInformation.OSArchitecture)
+            {
+                // e.g. Append "\x86" to the path
+                dotnetDirPath = Path.Combine(dotnetDirPath, arch.Value.ToString("G").ToLowerInvariant());
+            }
+            return Path.GetFullPath(Path.Combine(dotnetDirPath, ExeName));
+        }
 
         public static TargetFrameworkMoniker BuiltTargetFrameworkMoniker
         {

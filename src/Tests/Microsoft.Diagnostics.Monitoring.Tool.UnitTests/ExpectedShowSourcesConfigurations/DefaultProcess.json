@@ -1,8 +1,8 @@
 {
   "Filters": [
     {
-      "Key": "ProcessId" /*Microsoft.Extensions.Configuration.ChainedConfigurationProvider*/,
-      "Value": "12345" /*Microsoft.Extensions.Configuration.ChainedConfigurationProvider*/
+      "Key": "ProcessId" /*MemoryConfigurationProvider*/,
+      "Value": "12345" /*MemoryConfigurationProvider*/
     }
   ]
 }

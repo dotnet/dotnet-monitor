@@ -32,7 +32,7 @@ class StackSampler
         static void AddProfilerEventMask(DWORD& eventsLow);
     private:
         static HRESULT __stdcall DoStackSnapshotCallbackWrapper(
-            FunctionID funcionId,
+            FunctionID functionId,
             UINT_PTR ip,
             COR_PRF_FRAME_INFO frameInfo,
             ULONG32 contextSize,

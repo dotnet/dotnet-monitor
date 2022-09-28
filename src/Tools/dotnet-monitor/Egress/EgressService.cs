@@ -141,7 +141,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private static void AddMetadata(EgressArtifactSettings settings, string key, string value)
         {
-            settings.Metadata.Add($"DotnetMonitor_{key}", value);
+            settings.Metadata.Add($"{ToolIdentifiers.StandardPrefix}{key}", value);
         }
 
         private void Reload()
