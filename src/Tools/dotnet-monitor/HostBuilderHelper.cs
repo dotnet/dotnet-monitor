@@ -21,21 +21,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
         {
-            // The configuration is built in a precedence order such that sources that are configured
-            // later will have a higher precedence. Typically, an application would call Host.CreateDefaultBuilder
-            // and pass command line arguments to this call. This would setup DOTNET_* environment variables at a
-            // lower precedence compared to the command line arguments. For dotnet-monitor, the desired order of
-            // precedence is (where 1 is the highest precedence):
-            //
-            // 1) DOTNETMONITOR_* environment variables
-            // 2) User and shared settings and key-per-file files
-            // 3) appsettings.*.json files
-            // 4) DOTNET_* and ASPNETCORE_* environment variables
-            // 5) Command Line Arguments and defaults
-            //
-            // In order to achieve this, create an empty host builder, add the command line arguments and defaults
-            // as host configuration, then configure the defaults (which includes DOTNET_* environment variables
-            // and appsettings.*.json files), and finally configure the remaining dotnet-monitor specific sources.
+            string aspnetUrls = string.Empty;
+            ServerUrlsBlockingConfigurationManager manager = new();
+            manager.IsBlocking = true;
+
             return new HostBuilder()
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
@@ -58,6 +47,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 .UseContentRoot(settings.ContentRootDirectory)
                 .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
                 {
+                    context.Properties[typeof(ServerUrlsBlockingConfigurationManager)] = manager;
+
                     HostBuilderResults hostBuilderResults = new HostBuilderResults();
                     context.Properties.Add(HostBuilderResults.ResultKey, hostBuilderResults);
 
@@ -121,6 +112,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 //is not added until WebHostDefaults are added.
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    // ASP.NET will initially create a configuration that primarily contains
+                    // the ASPNETCORE_* environment variables. This IWebHostBuilder configuration callback
+                    // is invoked before any of the usual configuration phases (host, app, service, container)
+                    // are executed. Thus, there is opportunity here to get the Urls option to store it and
+                    // clear it so that the initial WebHostOptions does not pick it up during host configuration.
+                    aspnetUrls = webBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+                    webBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Empty);
+
                     AddressListenResults listenResults = new AddressListenResults();
                     webBuilder.ConfigureServices(services =>
                     {
@@ -140,8 +139,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //2) Command line arguments (these have defaults) --urls, --metricUrls
                         //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
 
-                        string hostingUrl = context.Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
-                        string[] urls = ConfigurationHelper.SplitValue(hostingUrl);
+                        // Unblock reading of the Urls option from configuration, read it, and block it again so that Kestrel
+                        // is unable to read this option when it starts.
+                        manager.IsBlocking = false;
+                        string[] urls = ConfigurationHelper.SplitValue(context.Configuration[WebHostDefaults.ServerUrlsKey]);
+                        manager.IsBlocking = true;
 
                         var metricsOptions = new MetricsOptions();
                         context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
@@ -160,12 +162,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             urls,
                             metricsOptions.GetEnabled() ? metricUrls : Array.Empty<string>(),
                             settings.Authentication.KeyAuthenticationMode != KeyAuthenticationMode.NoAuth);
-
-                        // Since the endpoints have already been defined on the KestrelServerOptions, clear out the urls
-                        // so that the address binder does not log a warning about overriding urls as specified by configuration.
-                        context.Configuration[WebHostDefaults.ServerUrlsKey] = string.Empty;
                     })
                     .UseStartup<Startup>();
+                })
+                .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
+                {
+                    // Restore the Urls option to the configuration provider that originally provided the value
+                    // before it was cleared during the IWebHostBuilder configuration callback.
+                    if (!string.IsNullOrEmpty(aspnetUrls) &&
+                        builder.TryGetProvider(WebHostDefaults.ServerUrlsKey, out IConfigurationProvider provider))
+                    {
+                        provider.Set(WebHostDefaults.ServerUrlsKey, aspnetUrls);
+                    }
+
+                    // The DOTNET_* and ASPNETCORE_* environment variables were added as part of the host configuration
+                    // phase. Before the phase is completed, add a configuration source that will conditionally block
+                    // reading of the Urls options so that they are not picked up by future Kestrel configuration callbacks.
+                    builder.Add(new ServerUrlsBlockingConfigurationSource(manager));
+                })
+                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
+                {
+                    // The settings.json, key-per-file, and DOTNETMONITOR_* environment variables were added as part
+                    // of the app configuration phase. Before the phase is completed, add a configuration source that will
+                    // conditionally block reading of the Urls options so that they are not picked up by future Kestrel
+                    // configuration callbacks.
+                    builder.Add(new ServerUrlsBlockingConfigurationSource(manager));
+                })
+                .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
+                {
+                    // Container configuration is the last phase of building the host before the service provider is constructed.
+                    // At this point, all configuration callbacks have been executed. Lift the block on the Urls option so that
+                    // the option may be read from configuration by default.
+                    manager.IsBlocking = false;
                 });
         }
 
