@@ -6,18 +6,6 @@ The following guidelines describe how data, credentials, and configuration are p
 
 Configuration for extensions can be written alongside `dotnet-monitor` configuration, allowing users to keep all of their documentation in one place. However, the `dotnet-monitor` schema will not include information about third-party extensions, which means that users writing `json` configuration will not be able to benefit from suggestions or autocomplete. To address this issue, we encourage all extensions to include a template (**insert link here**) and a schema that users can rely on when writing configuration.
 
-### Connecting to `dotnet-monitor`
-
-`dotnet-monitor` searches for extensions in four locations (**make sure this is correct - it may change**):
-- Alongside the executing `dotnet-monitor` assembly
-- Shared Settings Path (**link to configuration.md**)
-- User Settings Path (**link to configuration.md**)
-- Dotnet Tools Path
-  - On Windows, `%USERPROFILE%\.dotnet\Tools`
-  - On *nix, `%XDG_CONFIG_HOME%/dotnet/tools`
-  - If `$XDG_CONFIG_HOME` isn't defined, we fall back to `$HOME/.config/dotnet/tools`
-
-
 ### Logging
 
 Console output from the extension is designed to be forwarded to `dotnet monitor`, which will log messages from the extension alongside its own logs. `dotnet monitor` will also disambiguate between standard output and error output.
