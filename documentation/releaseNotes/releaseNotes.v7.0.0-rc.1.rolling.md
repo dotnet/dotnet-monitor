@@ -1,4 +1,4 @@
-Today we are releasing the next official preview of the `dotnet monitor` tool. This release includes:
+Today we are releasing the official 7.0 Release Candidate of the `dotnet monitor` tool. This release includes:
 
 - With this release, support for experimental features is added. Users can now enable an experimental feature through configuration flags when launching `dotnet monitor` to enable features that are still under development and not yet fully production-ready. (#2506)
 - 🔬 Add collect stacks api and action (#2512, #2525)
