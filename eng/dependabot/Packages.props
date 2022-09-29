@@ -1,0 +1,28 @@
+<Project>
+  <!-- Packages in this file have versions updated periodically by Dependabot.
+  Versions managed by Maestro should be in ..\Versions.props.
+  Versions managed by Dependabot should be in .\Versions.props.
+  -->
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
+    <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
+    <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelTokensJwtVersion)" />
+    <PackageReference Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
+    <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
+    <PackageReference Include="Microsoft.OpenApi.Readers" Version="$(MicrosoftOpenApiReadersVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="$(MicrosoftIdentityModelTokensVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsLoggingAbstractionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsoleVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="$(MicrosoftExtensionsLoggingEventSourceVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationAbstractionsVersion)" />
+
+    <!-- Third-party references -->
+    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
+    <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="$(SwashbuckleAspNetCoreSwaggerGenVersion)" />
+    <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />
+  </ItemGroup>
+</Project>
