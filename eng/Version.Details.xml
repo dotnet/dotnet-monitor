@@ -18,13 +18,13 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>fee5944815af7145335e695a77a4a956c8fb6b72</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22471.1">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22473.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>09c27cd8c71292f2e26a44ac80d20e4532ed35bf</Sha>
+      <Sha>86caedcb8d09e5631a8139aab1e1cb90726668f5</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.22471.1">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.22473.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>09c27cd8c71292f2e26a44ac80d20e4532ed35bf</Sha>
+      <Sha>86caedcb8d09e5631a8139aab1e1cb90726668f5</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.345501">
       <Uri>https://github.com/dotnet/symstore</Uri>
