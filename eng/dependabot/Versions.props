@@ -21,6 +21,5 @@
     <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>6.4.0</SwashbuckleAspNetCoreSwaggerGenVersion>
-    <XunitAssertVersion>2.4.1</XunitAssertVersion>
   </PropertyGroup>
 </Project>
