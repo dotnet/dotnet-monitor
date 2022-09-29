@@ -5,7 +5,7 @@
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class CollectionRuleMetadataNames
-              {
+    {
         /// <summary>
         /// Represents the name of the triggered collection rule.
         /// </summary>
