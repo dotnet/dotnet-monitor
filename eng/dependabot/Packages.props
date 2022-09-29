@@ -23,6 +23,5 @@
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="$(SwashbuckleAspNetCoreSwaggerGenVersion)" />
-    <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />
   </ItemGroup>
 </Project>
