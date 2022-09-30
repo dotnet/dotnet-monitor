@@ -105,6 +105,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             DiagnosticsClient client = new(endpointInfo.Endpoint);
             TaskCompletionSource<object> stoppingEventHitSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+            using IDisposable registration = token.Register(
+                () => stoppingEventHitSource.TrySetCanceled(token));
+
             await using EventTracePipeline pipeProcessor = new(client, new EventTracePipelineSettings
             {
                 Configuration = configuration,
@@ -133,14 +136,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             });
 
             Task pipelineRunTask = pipeProcessor.RunAsync(token);
-            await Task.WhenAny(pipelineRunTask, stoppingEventHitSource.Task);
+            await Task.WhenAny(pipelineRunTask, stoppingEventHitSource.Task).Unwrap();
 
             if (stoppingEventHitSource.Task.IsCompleted)
             {
                 await pipeProcessor.StopAsync(token);
             }
-
-            await pipelineRunTask;
         }
     }
 }
