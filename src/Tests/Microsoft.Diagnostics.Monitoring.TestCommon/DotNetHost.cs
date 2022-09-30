@@ -33,7 +33,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 // e.g. Append "\x86" to the path
                 dotnetDirPath = Path.Combine(dotnetDirPath, arch.Value.ToString("G").ToLowerInvariant());
             }
-            return Path.GetFullPath(Path.Combine(dotnetDirPath, ExeName));
+
+            string absoluteExecutablePath = Path.GetFullPath(Path.Combine(dotnetDirPath, ExeName));
+            if (!File.Exists(absoluteExecutablePath) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSAPPIDDIR")))
+            {
+                Console.WriteLine($"Could not find '{absoluteExecutablePath}', falling back to the system's version.");
+                return ExeName;
+            }
+
+            return absoluteExecutablePath;
         }
 
         public static TargetFrameworkMoniker BuiltTargetFrameworkMoniker
