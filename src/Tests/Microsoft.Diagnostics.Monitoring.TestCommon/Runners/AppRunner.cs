@@ -70,20 +70,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
 
-            if (isWebApp)
-            {
-                _appPath = AssemblyHelper.GetAssemblyArtifactBinPath(
-                    testAssembly,
-                    "Microsoft.Diagnostics.Monitoring.UnitTestWebApp",
-                    tfm);
-            }
-            else
-            {
-                _appPath = AssemblyHelper.GetAssemblyArtifactBinPath(
-                    testAssembly,
-                    "Microsoft.Diagnostics.Monitoring.UnitTestApp",
-                    tfm);
-            }
+            string appName = isWebApp ? "Microsoft.Diagnostics.Monitoring.UnitTestWebApp" : "Microsoft.Diagnostics.Monitoring.UnitTestApp";
+
+            _appPath = AssemblyHelper.GetAssemblyArtifactBinPath(
+                testAssembly,
+                appName,
+                tfm);
 
             _runner.TargetFramework = tfm;
 
@@ -95,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public void KillProcess()
         {
-            _adapter._runner._process.Kill(true);
+            _adapter.Runner.StartedProcess.Kill(true);
         }
 
         public async ValueTask DisposeAsync()
@@ -118,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _runner.Dispose();
         }
 
-        public async Task StartAsync(CancellationToken token)
+        public async Task StartAsync(bool noCommands, CancellationToken token)
         {
             if (string.IsNullOrEmpty(ScenarioName))
             {
@@ -144,12 +136,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 }
 
                 _adapter.Environment.Add("DOTNET_DiagnosticPorts", DiagnosticPortPath);
-                //_adapter.Environment.Add("ASPNETCORE_ENVIRONMENT", "Development");
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);
 
-            //await _readySource.WithCancellation(token); // This one locks things up
+            if (!noCommands)
+            {
+                await _readySource.WithCancellation(token); // This one locks things up
+            }
         }
 
         public Task<int> WaitForExitAsync(CancellationToken token)

@@ -161,30 +161,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         protected override void StandardOutputCallback(string line)
         {
-            // Temporary to avoid exceptions related to personal logs
-            try
-            {
-                ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
+            ConsoleLogEvent logEvent = JsonSerializer.Deserialize<ConsoleLogEvent>(line);
 
-                switch (logEvent.Category)
-                {
-                    case "Microsoft.Hosting.Lifetime":
-                        HandleLifetimeEvent(logEvent);
-                        break;
-                    case "Microsoft.Diagnostics.Tools.Monitor.Startup":
-                        HandleStartupEvent(logEvent);
-                        break;
-                    case "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.CollectionRuleService":
-                        HandleCollectionRuleEvent(logEvent);
-                        break;
-                    default:
-                        HandleGenericLogEvent(logEvent);
-                        break;
-                }
-            }
-            catch (Exception)
+            switch (logEvent.Category)
             {
-
+                case "Microsoft.Hosting.Lifetime":
+                    HandleLifetimeEvent(logEvent);
+                    break;
+                case "Microsoft.Diagnostics.Tools.Monitor.Startup":
+                    HandleStartupEvent(logEvent);
+                    break;
+                case "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.CollectionRuleService":
+                    HandleCollectionRuleEvent(logEvent);
+                    break;
+                default:
+                    HandleGenericLogEvent(logEvent);
+                    break;
             }
         }
 

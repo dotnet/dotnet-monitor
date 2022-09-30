@@ -26,18 +26,12 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.Logger.LogInformation("2");
 app.UseStaticFiles();
-app.Logger.LogInformation("3");
 
 app.UseRouting();
-app.Logger.LogInformation("4");
 
 app.UseAuthorization();
-app.Logger.LogInformation("5");
 
 app.MapRazorPages();
-app.Logger.LogInformation("6");
 
 app.Run();
-app.Logger.LogInformation("7");

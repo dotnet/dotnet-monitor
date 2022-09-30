@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// <summary>
         /// Default timeout for starting an executable.
         /// </summary>
-        public static readonly TimeSpan StartProcess = TimeSpan.FromSeconds(15); //  TimeSpan.FromMinutes(1); 
+        public static readonly TimeSpan StartProcess = TimeSpan.FromMinutes(1); 
 
         /// <summary>
         /// Default timeout for waiting for an executable to exit.

@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         {
             try
             {
-                await runner.StartAsync(CommonTestTimeouts.StartProcess);
+                await runner.StartAsync(CommonTestTimeouts.StartProcess, noCommands: true);
 
                 await func();
 
@@ -145,10 +145,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             return runner.StartAsync(CommonTestTimeouts.StartProcess);
         }
 
-        public static async Task StartAsync(this AppRunner runner, TimeSpan timeout)
+        public static async Task StartAsync(this AppRunner runner, TimeSpan timeout, bool noCommands = false)
         {
             using CancellationTokenSource cancellation = new(timeout);
-            await runner.StartAsync(cancellation.Token).ConfigureAwait(false);
+            await runner.StartAsync(noCommands, cancellation.Token).ConfigureAwait(false);
         }
 
         public static async Task<string> GetEnvironmentVariable(this AppRunner runner, string name, TimeSpan timeout)

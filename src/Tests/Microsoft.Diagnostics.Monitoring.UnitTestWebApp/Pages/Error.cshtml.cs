@@ -13,10 +13,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestWebApp.Pages
     [IgnoreAntiforgeryToken]
     public class ErrorModel : PageModel
     {
-        public string RequestId { get; set; }
-
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-
         private readonly ILogger<ErrorModel> _logger;
 
         public ErrorModel(ILogger<ErrorModel> logger)
@@ -25,12 +21,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestWebApp.Pages
 
             Process p = Process.GetCurrentProcess();
             p.Kill();
-
         }
 
         public void OnGet()
         {
-            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private readonly ITestOutputHelper _outputHelper;
         private readonly TaskCompletionSource<int> _processIdSource =
             new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
-        public readonly DotNetRunner _runner;
+        public DotNetRunner Runner { get; }
         private readonly List<string> _standardErrorLines = new();
         private readonly List<string> _standardOutputLines = new();
 
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public LoggingRunnerAdapter(ITestOutputHelper outputHelper, DotNetRunner runner)
         {
             _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
-            _runner = runner ?? throw new ArgumentNullException(nameof(runner));
+            Runner = runner ?? throw new ArgumentNullException(nameof(runner));
         }
 
         public async ValueTask DisposeAsync()
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             // Shutdown the runner
             _outputHelper.WriteLine("Stopping...");
-            _runner.ForceClose();
+            Runner.ForceClose();
 
             // Wait for it to exit
             await WaitForExitAsync(CancellationToken.None).SafeAwait(_outputHelper, -1).ConfigureAwait(false);
@@ -88,49 +88,49 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public async Task StartAsync(CancellationToken token)
         {
-            _outputHelper.WriteLine("Path: {0}", _runner.EntrypointAssemblyPath);
-            _outputHelper.WriteLine("Args: {0}", _runner.Arguments);
+            _outputHelper.WriteLine("Path: {0}", Runner.EntrypointAssemblyPath);
+            _outputHelper.WriteLine("Args: {0}", Runner.Arguments);
 
             _outputHelper.WriteLine("Begin Environment:");
             foreach (KeyValuePair<string, string> variable in Environment)
             {
                 _outputHelper.WriteLine("- {0} = {1}", variable.Key, variable.Value);
-                _runner.Environment[variable.Key] = variable.Value;
+                Runner.Environment[variable.Key] = variable.Value;
             }
             _outputHelper.WriteLine("End Environment:");
 
             using (var _ = token.Register(() => _processIdSource.TrySetCanceled(token)))
             {
                 _outputHelper.WriteLine("Starting...");
-                await _runner.StartAsync(token).ConfigureAwait(false);
+                await Runner.StartAsync(token).ConfigureAwait(false);
             }
 
-            _outputHelper.WriteLine("Process ID: {0}", _runner.ProcessId);
-            _processId = _runner.ProcessId;
-            _processIdSource.TrySetResult(_runner.ProcessId);
+            _outputHelper.WriteLine("Process ID: {0}", Runner.ProcessId);
+            _processId = Runner.ProcessId;
+            _processIdSource.TrySetResult(Runner.ProcessId);
 
-            _standardErrorTask = ReadLinesAsync(_runner.StandardError, _standardErrorLines, ReceivedStandardErrorLine, _cancellation.Token);
-            _standardOutputTask = ReadLinesAsync(_runner.StandardOutput, _standardOutputLines, ReceivedStandardOutputLine, _cancellation.Token);
+            _standardErrorTask = ReadLinesAsync(Runner.StandardError, _standardErrorLines, ReceivedStandardErrorLine, _cancellation.Token);
+            _standardOutputTask = ReadLinesAsync(Runner.StandardOutput, _standardOutputLines, ReceivedStandardOutputLine, _cancellation.Token);
         }
 
         public async Task<int> WaitForExitAsync(CancellationToken token)
         {
             int? exitCode;
-            if (!_runner.HasStarted)
+            if (!Runner.HasStarted)
             {
                 _outputHelper.WriteLine("Runner Never Started.");
                 throw new InvalidOperationException("The runner has never been started, call StartAsync first.");
             }
-            else if (_runner.HasExited)
+            else if (Runner.HasExited)
             {
                 _outputHelper.WriteLine("Already exited.");
-                exitCode = _runner.ExitCode;
+                exitCode = Runner.ExitCode;
             }
             else
             {
                 _outputHelper.WriteLine("Waiting for exit...");
-                await _runner.WaitForExitAsync(token).ConfigureAwait(false);
-                exitCode = _runner.ExitCode;
+                await Runner.WaitForExitAsync(token).ConfigureAwait(false);
+                exitCode = Runner.ExitCode;
             }
             _outputHelper.WriteLine("Exit Code: {0}", exitCode);
             _exitCode = exitCode;

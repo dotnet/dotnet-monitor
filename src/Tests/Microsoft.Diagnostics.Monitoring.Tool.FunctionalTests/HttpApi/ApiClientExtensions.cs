@@ -288,7 +288,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
                 /// <summary>
-        /// GET /trace?pid={pid}&level={logLevel}&durationSeconds={duration}
+        /// GET /trace?pid={pid}&profile={profile}&durationSeconds={duration}
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureTraceAsync(this ApiClient client, int pid, TimeSpan duration, TraceProfile? profile)
         {
@@ -296,7 +296,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /trace?pid={pid}&level={logLevel}&durationSeconds={duration}
+        /// GET /trace?pid={pid}&profile={profile}&durationSeconds={duration}
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureTraceAsync(this ApiClient client, int pid, TimeSpan duration, TraceProfile? profile, TimeSpan timeout)
         {
