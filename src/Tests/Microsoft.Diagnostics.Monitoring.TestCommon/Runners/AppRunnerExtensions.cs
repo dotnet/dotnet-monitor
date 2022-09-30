@@ -15,43 +15,23 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     {
         private static readonly TimeSpan ExceptionTimeout = TimeSpan.FromSeconds(5);
 
-        public static async Task ExecuteAsync(this AppRunner runner, Func<Task> func)
+        public static async Task ExecuteAsync(this AppRunner runner, Func<Task> func, bool noCommands = false)
         {
             try
             {
-                await runner.StartAsync(CommonTestTimeouts.StartProcess);
+                await runner.StartAsync(CommonTestTimeouts.StartProcess, noCommands);
 
-                await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
-
-                await func();
-
-                await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
-
-                // This gives the app time to send out any remaining stdout/stderr messages,
-                // exit properly, and delete its diagnostic pipe.
-                await runner.WaitForExitAsync(CommonTestTimeouts.WaitForExit);
-            }
-            catch (Exception)
-            {
-                // If an exception is thrown, give app some time to send out any remaining
-                // stdout/stderr messages.
-                await Task.Delay(ExceptionTimeout);
-
-                throw;
-            }
-            finally
-            {
-                await runner.DisposeAsync();
-            }
-        }
-
-        public static async Task ExecuteNoCommandsAsync(this AppRunner runner, Func<Task> func)
-        {
-            try
-            {
-                await runner.StartAsync(CommonTestTimeouts.StartProcess, noCommands: true);
+                if (!noCommands)
+                {
+                    await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
+                }
 
                 await func();
+
+                if (!noCommands)
+                {
+                    await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
+                }
 
                 // This gives the app time to send out any remaining stdout/stderr messages,
                 // exit properly, and delete its diagnostic pipe.

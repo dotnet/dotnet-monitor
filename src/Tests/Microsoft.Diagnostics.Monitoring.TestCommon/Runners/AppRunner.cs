@@ -142,7 +142,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             if (!noCommands)
             {
-                await _readySource.WithCancellation(token); // This one locks things up
+                await _readySource.WithCancellation(token);
             }
         }
 

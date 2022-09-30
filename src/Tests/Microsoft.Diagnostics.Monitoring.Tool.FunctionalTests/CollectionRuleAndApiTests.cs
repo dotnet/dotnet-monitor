@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
-            await appRunner.ExecuteNoCommandsAsync(async () =>
+            await appRunner.ExecuteAsync(async () =>
             {
                 RootOptions newOptions = new();
                 newOptions.CreateCollectionRule(DefaultRuleName)
@@ -120,7 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
 
                 appRunner.KillProcess();
-            });
+            }, noCommands: true);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
-            await appRunner.ExecuteNoCommandsAsync(async () =>
+            await appRunner.ExecuteAsync(async () =>
             {
                 RootOptions newOptions = new();
                 newOptions.CreateCollectionRule(DefaultRuleName)
@@ -204,7 +204,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
 
                 appRunner.KillProcess();
-            });
+            }, noCommands: true);
         }
 
         private async Task ApiCallHelper(string host, string[] paths, ApiClient client)
