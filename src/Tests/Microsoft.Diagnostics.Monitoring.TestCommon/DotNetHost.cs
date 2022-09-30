@@ -35,9 +35,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
 
             string absoluteExecutablePath = Path.GetFullPath(Path.Combine(dotnetDirPath, ExeName));
-            if (!File.Exists(absoluteExecutablePath) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSAPPIDDIR")))
+
+            // If the current repo enlistment has only ever been built and tested with Visual Studio,
+            // the repo's private copy of dotnet will have never been setup.
+            //
+            // In this scenario fall back to the system's copy.
+            // Limit this fallback behavior to only happen when running under Visual Studio.
+            // (i.e. when on Windows and a well-defined VS-specific environment variable set)
+            if (!File.Exists(absoluteExecutablePath)
+                && RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSAPPIDDIR")))
             {
-                Console.WriteLine($"Could not find '{absoluteExecutablePath}', falling back to the system's version.");
+                Console.WriteLine($"'{absoluteExecutablePath}' does not exist, falling back to the system's version.");
                 return ExeName;
             }
 
