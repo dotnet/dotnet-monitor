@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.DotNet.XUnitExtensions" Version="$(MicrosoftDotNetXUnitExtensionsVersion)" />
     <PackageReference Include="Microsoft.FileFormats" Version="$(MicrosoftFileFormatsVersion)" />
     <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
-    <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />
+    <PackageReference Include="xunit.assert" Version="$(XUnitVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsLoggingVersion)" />
   </ItemGroup>
 
