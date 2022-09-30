@@ -52,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
+            string[] urlPaths = new string[] { "", "/Privacy", "" };
 
             DiagnosticPortHelper.Generate(
                 mode,
@@ -87,16 +88,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
                 ApiClient apiClient = new(_outputHelper, httpClient);
 
-                 await ApiCallHelper(hostName, new string[] { "", "/Privacy", "" }, apiClient);
-
-                await ruleStartedTask;
-                Assert.True(ruleStartedTask.IsCompleted);
-
-                Assert.True(File.Exists(ExpectedFilePath));
-                Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
-
-                File.Delete(ExpectedFilePath);
-                Assert.False(File.Exists(ExpectedFilePath));
+                await ValidateAspNetTriggerCollected(
+                    ruleStartedTask,
+                    apiClient,
+                    urlPaths,
+                    ExpectedFilePath,
+                    ExpectedFileContent);
 
                 ////////////////////////////
 
@@ -111,13 +108,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                 Task ruleStartedTask2 = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
-                await ApiCallHelper(hostName, new string[] { "", "/Privacy", "" }, apiClient);
-
-                await ruleStartedTask2;
-                Assert.True(ruleStartedTask2.IsCompleted);
-
-                Assert.True(File.Exists(ExpectedFilePath));
-                Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
+                await ValidateAspNetTriggerCollected(
+                    ruleStartedTask2,
+                    apiClient,
+                    urlPaths,
+                    ExpectedFilePath,
+                    ExpectedFileContent);
 
                 appRunner.KillProcess();
             }, noCommands: true);
@@ -136,6 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
+            string[] urlPaths = new string[] { "/SlowResponse", "/SlowResponse", "/SlowResponse" };
 
             DiagnosticPortHelper.Generate(
                 mode,
@@ -171,16 +168,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
                 ApiClient apiClient = new(_outputHelper, httpClient);
 
-                await ApiCallHelper(hostName, new string[] { "/SlowResponse", "/SlowResponse", "/SlowResponse" }, apiClient);
-
-                await ruleStartedTask;
-                Assert.True(ruleStartedTask.IsCompleted);
-
-                Assert.True(File.Exists(ExpectedFilePath));
-                Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
-
-                File.Delete(ExpectedFilePath);
-                Assert.False(File.Exists(ExpectedFilePath));
+                await ValidateAspNetTriggerCollected(
+                    ruleStartedTask,
+                    apiClient,
+                    urlPaths,
+                    ExpectedFilePath,
+                    ExpectedFileContent);
 
                 ////////////////////////////
 
@@ -195,23 +188,35 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                 Task ruleStartedTask2 = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
-                await ApiCallHelper(hostName, new string[] { "/SlowResponse", "/SlowResponse", "/SlowResponse" }, apiClient);
-
-                await ruleStartedTask2;
-                Assert.True(ruleStartedTask2.IsCompleted);
-
-                Assert.True(File.Exists(ExpectedFilePath));
-                Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
+                await ValidateAspNetTriggerCollected(
+                    ruleStartedTask2,
+                    apiClient,
+                    urlPaths,
+                    ExpectedFilePath,
+                    ExpectedFileContent);
 
                 appRunner.KillProcess();
             }, noCommands: true);
         }
 
-        private async Task ApiCallHelper(string host, string[] paths, ApiClient client)
+        private async Task ValidateAspNetTriggerCollected(Task ruleTask, ApiClient client, string[] paths, string expectedFilePath, string expectedFileContent)
+        {
+            await ApiCallHelper(paths, client);
+
+            await ruleTask;
+            Assert.True(ruleTask.IsCompleted);
+
+            Assert.True(File.Exists(expectedFilePath));
+            Assert.Equal(expectedFileContent, File.ReadAllText(expectedFilePath));
+
+            File.Delete(expectedFilePath);
+        }
+
+        private async Task ApiCallHelper(string[] paths, ApiClient client)
         {
             foreach (string path in paths)
             {
-                string url = host + path;
+                string url = hostName + path;
                 _ = await client.ApiCall(url);
             }
         }

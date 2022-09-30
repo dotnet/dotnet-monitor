@@ -43,6 +43,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 // stdout/stderr messages.
                 await Task.Delay(ExceptionTimeout);
 
+                if (noCommands)
+                {
+                    runner.KillProcess();
+                }
+
                 throw;
             }
             finally
