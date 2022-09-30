@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
         public void Process(SchemaProcessorContext context)
         {
-            foreach (PropertyInfo property in context.Type.GetProperties())
+            foreach (PropertyInfo property in context.ContextualType.Type.GetProperties())
             {
                 if (null != property.GetCustomAttribute<ExperimentalAttribute>())
                 {
