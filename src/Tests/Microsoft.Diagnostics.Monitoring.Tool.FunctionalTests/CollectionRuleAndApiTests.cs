@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Graphs;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
@@ -17,12 +16,9 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -41,6 +37,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
 #if NET5_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
+        private readonly TimeSpan TraceDuration = TimeSpan.FromSeconds(5);
+        private const string hostName = "http://localhost:82";
 
         /// <summary>
         /// Validates that a non-startup rule will complete when it has an action limit specified
@@ -90,19 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
                 ApiClient apiClient = new(_outputHelper, httpClient);
 
-                try
-                {
-                    string pathAndQuery = "http://localhost:82";
-                    HttpResponseMessage message = await apiClient.ApiCall(pathAndQuery);
-                    string pathAndQuery2 = "http://localhost:82/Privacy";
-                    HttpResponseMessage message2 = await apiClient.ApiCall(pathAndQuery2);
-                    string pathAndQuery3 = "http://localhost:82";
-                    HttpResponseMessage message3 = await apiClient.ApiCall(pathAndQuery3);
-                }
-                catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    // Handle cases where it fails to locate the single process.
-                }
+                 await ApiCallHelper(hostName, new string[] { "", "/Privacy", "" }, apiClient);
 
                 await ruleStartedTask;
                 Assert.True(ruleStartedTask.IsCompleted);
@@ -110,37 +96,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.True(File.Exists(ExpectedFilePath));
                 Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
 
-                //Directory.Delete(ExpectedFilePath);
+                File.Delete(ExpectedFilePath);
+                Assert.False(File.Exists(ExpectedFilePath));
 
                 ////////////////////////////
 
                 int processId = await appRunner.ProcessIdTask;
 
-                TimeSpan duration = TimeSpan.FromSeconds(5);
-                using ResponseStreamHolder holder = await apiClient.CaptureTraceAsync(processId, duration, WebApi.Models.TraceProfile.Http);
+                using ResponseStreamHolder holder = await apiClient.CaptureTraceAsync(processId, TraceDuration, WebApi.Models.TraceProfile.Http);
                 Assert.NotNull(holder);
 
                 await TraceTestUtilities.ValidateTrace(holder.Stream);
-
-                //await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
                 ////////////////////////////
 
                 Task ruleStartedTask2 = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
-                try
-                {
-                    string pathAndQuery = "http://localhost:82";
-                    HttpResponseMessage message = await apiClient.ApiCall(pathAndQuery);
-                    string pathAndQuery2 = "http://localhost:82/Privacy";
-                    HttpResponseMessage message2 = await apiClient.ApiCall(pathAndQuery2);
-                    string pathAndQuery3 = "http://localhost:82";
-                    HttpResponseMessage message3 = await apiClient.ApiCall(pathAndQuery3);
-                }
-                catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    // Handle cases where it fails to locate the single process.
-                }
+                await ApiCallHelper(hostName, new string[] { "", "/Privacy", "" }, apiClient);
 
                 await ruleStartedTask2;
                 Assert.True(ruleStartedTask2.IsCompleted);
@@ -200,17 +172,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
                 ApiClient apiClient = new(_outputHelper, httpClient);
 
-                try
-                {
-                    string pathAndQuery = "http://localhost:82/SlowResponse";
-                    HttpResponseMessage message = await apiClient.ApiCall(pathAndQuery);
-                    HttpResponseMessage message2 = await apiClient.ApiCall(pathAndQuery);
-                    HttpResponseMessage message3 = await apiClient.ApiCall(pathAndQuery);
-                }
-                catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    // Handle cases where it fails to locate the single process.
-                }
+                await ApiCallHelper(hostName, new string[] { "/SlowResponse", "/SlowResponse", "/SlowResponse" }, apiClient);
 
                 await ruleStartedTask;
                 Assert.True(ruleStartedTask.IsCompleted);
@@ -218,35 +180,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.True(File.Exists(ExpectedFilePath));
                 Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
 
-                //Directory.Delete(ExpectedFilePath);
+                File.Delete(ExpectedFilePath);
+                Assert.False(File.Exists(ExpectedFilePath));
 
                 ////////////////////////////
 
                 int processId = await appRunner.ProcessIdTask;
 
-                TimeSpan duration = TimeSpan.FromSeconds(5);
-                using ResponseStreamHolder holder = await apiClient.CaptureTraceAsync(processId, duration, WebApi.Models.TraceProfile.Http);
+                using ResponseStreamHolder holder = await apiClient.CaptureTraceAsync(processId, TraceDuration, WebApi.Models.TraceProfile.Http);
                 Assert.NotNull(holder);
 
                 await TraceTestUtilities.ValidateTrace(holder.Stream);
-
-                //await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
                 ////////////////////////////
 
                 Task ruleStartedTask2 = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
-                try
-                {
-                    string pathAndQuery = "http://localhost:82/SlowResponse";
-                    HttpResponseMessage message = await apiClient.ApiCall(pathAndQuery);
-                    HttpResponseMessage message2 = await apiClient.ApiCall(pathAndQuery);
-                    HttpResponseMessage message3 = await apiClient.ApiCall(pathAndQuery);
-                }
-                catch (ApiStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    // Handle cases where it fails to locate the single process.
-                }
+                await ApiCallHelper(hostName, new string[] { "/SlowResponse", "/SlowResponse", "/SlowResponse" }, apiClient);
 
                 await ruleStartedTask2;
                 Assert.True(ruleStartedTask2.IsCompleted);
@@ -258,6 +208,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
+        private async Task ApiCallHelper(string host, string[] paths, ApiClient client)
+        {
+            foreach (string path in paths)
+            {
+                string url = host + path;
+                _ = await client.ApiCall(url);
+            }
+        }
 #endif
     }
 }
