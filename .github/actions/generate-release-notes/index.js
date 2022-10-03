@@ -23,7 +23,7 @@ async function run() {
     const output = core.getInput("output", { required: true });
     const buildDescription = core.getInput("build_description", { required: true });
     const lastReleaseDate = core.getInput("last_release_date", { required: true });
-    
+
     const repoOwner = github.context.payload.repository.owner.login;
     const repoName = github.context.payload.repository.name;
     const branch = process.env.GITHUB_REF_NAME;
@@ -40,7 +40,7 @@ async function run() {
                     moniker: "🔬"
                 }
             ]);
-        
+
             const releaseNotes = await generateReleaseNotes(path.join(__dirname, "releaseNotes.template.md"), buildDescription, changelog);
             await writeFile(output, releaseNotes);
     } catch (error) {
@@ -101,7 +101,7 @@ async function generateChangelog(octokit, branchName, repoOwner, repoName, minMe
 
         const changelogRegex=/^###### Release Notes Entry\r?\n(?<releaseNotesEntry>.*)/m
         const userDefinedChangelogEntry = pr.body?.match(changelogRegex)?.groups?.releaseNotesEntry;
-        if (userDefinedChangelogEntry !== undefined && userDefinedChangelogEntry !== "N/A") {
+        if (userDefinedChangelogEntry !== undefined) {
             entry += ` ${userDefinedChangelogEntry}`
         } else {
             entry += ` ${pr.title}`
@@ -146,7 +146,7 @@ async function resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName
 
         if (label.name == BackportLabel) {
             originIsBackport = true;
-            break;
+            // Keep searching incase there is also an update-release-notes label
         }
     }
 
