@@ -48,29 +48,10 @@ async function run() {
     }
 }
 
-async function generateReleaseNotes(templatePath, buildDescription, changelog) {
-    let releaseNotes = await readFile(templatePath);
-    releaseNotes = releaseNotes.replace("${buildDescription}", buildDescription);
-    releaseNotes = releaseNotes.replace("${changelog}", changelog);
-
-    return releaseNotes;
-}
-
-async function getPRs(octokit, branchName, repoOwner, repoName, minMergeDate, labelFilter) {
-    const searchQuery = `is:pr is:merged label:${labelFilter} repo:${repoOwner}/${repoName} base:${branchName} merged:>=${minMergeDate}`;
-    console.log(searchQuery);
-
-    return await octokit.paginate(octokit.rest.search.issuesAndPullRequests, {
-        q: searchQuery,
-        sort: "created",
-        order: "desc"
-    });
-}
-
 async function generateChangelog(octokit, branchName, repoOwner, repoName, minMergeDate, significantLabels) {
     let prs = await getPRs(octokit, branchName, repoOwner, repoName, minMergeDate, UpdateReleaseNotesLabel);
 
-    // Resolve the backport PRs for their origin PRs
+    // Resolve the backport PRs to their origin PRs
     const maxRecursion = 3;
     const backportPrs = await getPRs(octokit, branchName, repoOwner, repoName, minMergeDate, BackportLabel);
     for (const pr of backportPrs) {
@@ -113,6 +94,25 @@ async function generateChangelog(octokit, branchName, repoOwner, repoName, minMe
     }
 
     return changelog.join("\n");
+}
+
+async function generateReleaseNotes(templatePath, buildDescription, changelog) {
+    let releaseNotes = await readFile(templatePath);
+    releaseNotes = releaseNotes.replace("${buildDescription}", buildDescription);
+    releaseNotes = releaseNotes.replace("${changelog}", changelog);
+
+    return releaseNotes;
+}
+
+async function getPRs(octokit, branchName, repoOwner, repoName, minMergeDate, labelFilter) {
+    const searchQuery = `is:pr is:merged label:${labelFilter} repo:${repoOwner}/${repoName} base:${branchName} merged:>=${minMergeDate}`;
+    console.log(searchQuery);
+
+    return await octokit.paginate(octokit.rest.search.issuesAndPullRequests, {
+        q: searchQuery,
+        sort: "created",
+        order: "desc"
+    });
 }
 
 async function resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName, minMergeDate, maxRecursion) {
