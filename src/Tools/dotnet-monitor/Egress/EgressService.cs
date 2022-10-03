@@ -110,8 +110,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             settings.Name = fileName;
             settings.ContentType = contentType;
 
-            DiagnosticsClient client = new DiagnosticsClient(source.Endpoint);
-            settings.EnvBlock = await client.GetProcessEnvironmentAsync(token);
+            if (source.TargetFrameworkSupportsProcessEnv())
+            {
+                DiagnosticsClient client = new DiagnosticsClient(source.Endpoint);
+                settings.EnvBlock = await client.GetProcessEnvironmentAsync(token);
+            }
 
             // Activity metadata
             Activity activity = Activity.Current;
@@ -138,7 +141,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private static void AddMetadata(EgressArtifactSettings settings, string key, string value)
         {
-            settings.Metadata.Add($"DotnetMonitor_{key}", value);
+            settings.Metadata.Add($"{ToolIdentifiers.StandardPrefix}{key}", value);
         }
 
         private void Reload()

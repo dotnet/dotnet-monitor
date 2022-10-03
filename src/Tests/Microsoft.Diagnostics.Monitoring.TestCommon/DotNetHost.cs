@@ -18,13 +18,40 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static Version RuntimeVersion =>
             s_runtimeVersionLazy.Value;
 
-        public static string HostExeNameWithoutExtension => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            Path.GetFileNameWithoutExtension(HostExePath) :
-            Path.GetFileName(HostExePath);
+        public static string ExeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "dotnet.exe" : "dotnet";
 
-        public static string HostExePath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            @"..\..\..\..\..\.dotnet\dotnet.exe" :
-            "../../../../../.dotnet/dotnet";
+        public static string ExeNameWithoutExtension => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+            Path.GetFileNameWithoutExtension(ExeName) :
+            ExeName;
+
+        public static string GetPath(Architecture? arch = null)
+        {
+            // e.g. <repoPath>/.dotnet
+            string dotnetDirPath = Path.Combine("..", "..", "..", "..", "..", ".dotnet");
+            if (arch.HasValue && arch.Value != RuntimeInformation.OSArchitecture)
+            {
+                // e.g. Append "\x86" to the path
+                dotnetDirPath = Path.Combine(dotnetDirPath, arch.Value.ToString("G").ToLowerInvariant());
+            }
+
+            string absoluteExecutablePath = Path.GetFullPath(Path.Combine(dotnetDirPath, ExeName));
+
+            // If the current repo enlistment has only ever been built and tested with Visual Studio,
+            // the repo's private copy of dotnet will have never been setup.
+            //
+            // In this scenario fall back to the system's copy.
+            // Limit this fallback behavior to only happen when running under Visual Studio.
+            // (i.e. when on Windows and a well-defined VS-specific environment variable set)
+            if (!File.Exists(absoluteExecutablePath)
+                && RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSAPPIDDIR")))
+            {
+                Console.WriteLine($"'{absoluteExecutablePath}' does not exist, falling back to the system's version.");
+                return ExeName;
+            }
+
+            return absoluteExecutablePath;
+        }
 
         public static TargetFrameworkMoniker BuiltTargetFrameworkMoniker
         {

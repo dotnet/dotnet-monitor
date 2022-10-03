@@ -8,12 +8,10 @@
         },
         {
             "pattern": "^https://pkgs\\.dev\\.azure\\.com/dnceng/public/_packaging/.*"
-        },
-        {
-            "pattern": "^https://www\\.microsoft\\.com.*"
         }
     ],
     "aliveStatusCodes": [
+        0,
         200,
         203
     ]

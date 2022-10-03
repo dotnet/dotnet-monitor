@@ -212,7 +212,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddProcessNameFilter(DotNetHost.HostExeNameWithoutExtension);
+                        .AddProcessNameFilter(DotNetHost.ExeNameWithoutExtension);
 
                     startedTask = runner.WaitForCollectionRuleStartedAsync(DefaultRuleName);
                 });
@@ -265,7 +265,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 out string diagnosticPortPath);
 
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
-            toolRunner.ConnectionMode = mode;
+            toolRunner.ConnectionModeViaCommandLine = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
 
@@ -323,7 +323,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 out string diagnosticPortPath);
 
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
-            toolRunner.ConnectionMode = mode;
+            toolRunner.ConnectionModeViaCommandLine = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
 

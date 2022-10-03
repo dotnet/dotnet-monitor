@@ -180,6 +180,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
         public void AddConfiguredMetadataAsync(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings)
         {
+            if (artifactSettings.EnvBlock.Count == 0)
+            {
+                Logger.EnvironmentBlockNotSupported();
+                return;
+            }
+
             foreach (var metadataPair in options.Metadata)
             {
                 if (artifactSettings.EnvBlock.TryGetValue(metadataPair.Value, out string envVarValue))

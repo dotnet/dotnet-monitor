@@ -712,4 +712,21 @@
     <value>The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
     <comment>The description provided for the QueueSharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_StorageOptions_SharedLibraryPath" xml:space="preserve">
+    <value>The location to which libraries shared with target processes will be copied at startup.</value>
+    <comment>The description provided for the SharedLibraryPath parameter on StorageOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_StorageOptions_DefaultSharedPath" xml:space="preserve">
+    <value>The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows platforms, a server diagnostic port is created with the name of 'dotnet-monitor.sock' immediately under this path if running in listen mode unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified.</value>
+    <comment>The description provided for the DefaultSharedPath parameter on StorageOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_InProcessFeaturesOptions_Enabled" xml:space="preserve">
+    <value>Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.</value>
+  </data>
+  <data name="DisplayAttributeDescription_CollectStacksOptions_Format" xml:space="preserve">
+    <value>The format used to display the call stacks.</value>
+  </data>
+  <data name="DisplayAttributeDescription_CollectStacksOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the call stacks are egressed.</value>
+  </data>
 </root>

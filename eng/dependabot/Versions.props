@@ -2,24 +2,23 @@
   <!-- Import references updated by Dependabot. -->
 
   <PropertyGroup>
-    <AzureIdentityVersion>1.6.1</AzureIdentityVersion>
+    <AzureIdentityVersion>1.7.0</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.13.1</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.11.1</AzureStorageQueuesVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.2</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
-    <MicrosoftIdentityModelTokensVersion>6.22.1</MicrosoftIdentityModelTokensVersion>
-    <MicrosoftOpenApiReadersVersion>1.3.2</MicrosoftOpenApiReadersVersion>
-    <SystemIdentityModelTokensJwtVersion>6.22.1</SystemIdentityModelTokensJwtVersion>
+    <MicrosoftIdentityModelTokensVersion>6.23.1</MicrosoftIdentityModelTokensVersion>
+    <MicrosoftOpenApiReadersVersion>1.4.1</MicrosoftOpenApiReadersVersion>
+    <SystemIdentityModelTokensJwtVersion>6.23.1</SystemIdentityModelTokensJwtVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
 
     <!-- Third-party references -->
     <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
-    <SwashbuckleAspNetCoreSwaggerGenVersion>5.6.3</SwashbuckleAspNetCoreSwaggerGenVersion>
-    <XunitAssertVersion>2.4.2</XunitAssertVersion>
+    <SwashbuckleAspNetCoreSwaggerGenVersion>6.4.0</SwashbuckleAspNetCoreSwaggerGenVersion>
   </PropertyGroup>
 </Project>

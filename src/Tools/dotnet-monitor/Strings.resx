@@ -137,6 +137,9 @@
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
   </data>
+  <data name="ErrorMessage_DisabledFeature" xml:space="preserve">
+    <value>Feature '{0}' is not enabled.</value>
+  </data>
   <data name="ErrorMessage_DuplicateActionName" xml:space="preserve">
     <value>Duplicate action name '{0}'.</value>
   </data>
@@ -181,6 +184,9 @@
     <comment>Gets the format string for file system egress provider failure due to inability to create an intermediate file.
 1 Format Parameter:
 0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
+  </data>
+  <data name="ErrorMessage_ExpectedToFindSharedLibrariesAtPath" xml:space="preserve">
+    <value>Expected to find shared libraries at '{0}'.</value>
   </data>
   <data name="ErrorMessage_FieldMustBeLessThanOtherField" xml:space="preserve">
     <value>The value of field {0} must be less than the value of field {1}.</value>
@@ -304,6 +310,12 @@
     <value>Unable to bind any urls.</value>
     <comment>Gets a string similar to "Unable to bind any urls.".</comment>
   </data>
+  <data name="ErrorMessage_UnableToDetermineTargetPlatform" xml:space="preserve">
+    <value>Unable to determine platform of the target process.</value>
+  </data>
+  <data name="ErrorMessage_UnableToFindProfilerAssembly" xml:space="preserve">
+    <value>Unable to find profiler assembly at determined path.</value>
+  </data>
   <data name="ErrorMessage_UnableToStartProcess" xml:space="preserve">
     <value>Unable to start: {0} {1}</value>
     <comment>{0} = FileName, {1} = Process's Arguments</comment>
@@ -327,6 +339,9 @@
   <data name="ErrorMessage_UnknownTriggerType" xml:space="preserve">
     <value>'{0}' is not a known trigger type.</value>
     <comment>{0} = The type of trigger that is unknown.</comment>
+  </data>
+  <data name="FeatureName_CallStacks" xml:space="preserve">
+    <value>Call Stacks</value>
   </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
@@ -482,6 +497,12 @@
   <data name="LogFormatString_CollectionRuleUnmatchedFilters" xml:space="preserve">
     <value>Collection rule '{ruleName}' filters do not match the process.</value>
   </data>
+  <data name="LogFormatString_ConnectionModeConnect" xml:space="preserve">
+    <value>Connection mode: Connect</value>
+  </data>
+  <data name="LogFormatString_ConnectionModeListen" xml:space="preserve">
+    <value>Connection mode: Listen at '{path}'</value>
+  </data>
   <data name="LogFormatString_DiagnosticPortAlteredWhileInUse" xml:space="preserve">
     <value>Diagnostic port file at '{0}' was either deleted or moved while it was still being used.</value>
   </data>
@@ -574,12 +595,21 @@
   <data name="LogFormatString_EndpointTimeout" xml:space="preserve">
     <value>Unexpected timeout from process {processId}. Process will no longer be monitored.</value>
   </data>
+  <data name="LogFormatString_EnvironmentBlockNotSupported" xml:space="preserve">
+    <value>Target framework does not support custom egress metadata.</value>
+  </data>
   <data name="LogFormatString_EnvironmentVariableNotFound" xml:space="preserve">
     <value>The environment variable '{name}' could not be found on the target process.</value>
     <comment>Gets a string similar to "The environment variable '{name}' could not be found on the target process.".</comment>
   </data>
   <data name="LogFormatString_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {link}</value>
+  </data>
+  <data name="LogFormatString_ExperimentalFeatureEnabled" xml:space="preserve">
+    <value>Experimental feature '{name}' is enabled.</value>
+  </data>
+  <data name="LogFormatString_FailedInitializeSharedLibraryStorage" xml:space="preserve">
+    <value>Failed to initialize shared library storage.</value>
   </data>
   <data name="LogFormatString_GetEnvironmentVariable" xml:space="preserve">
     <value>Getting the environment variable {variableName} from process {processId}.</value>
@@ -672,6 +702,12 @@
 2 Format parameterts:
 1. variableName: The name of the environment variable being set
 2. processId: The id of the process to which the variable is being set</comment>
+  </data>
+  <data name="LogFormatString_SharedLibraryPath" xml:space="preserve">
+    <value>Shared library path: {path}</value>
+  </data>
+  <data name="LogFormatString_UnableToApplyProfiler" xml:space="preserve">
+    <value>Unable to apply profiler.</value>
   </data>
   <data name="LogFormatString_UnableToListenToAddress" xml:space="preserve">
     <value>Unable to listen to {url}. Dotnet-monitor functionality will be limited.</value>

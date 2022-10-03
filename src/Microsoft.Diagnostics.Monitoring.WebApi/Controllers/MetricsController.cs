@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return this.InvokeService(() =>
             {
-                if (!_metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled))
+                if (!_metricsOptions.GetEnabled())
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_MetricsDisabled);
                 }

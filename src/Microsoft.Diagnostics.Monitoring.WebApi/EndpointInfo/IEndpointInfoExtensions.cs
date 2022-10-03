@@ -2,12 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.IO;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal sealed class StorageOptionsDefaults
+    internal static class IEndpointInfoExtensions
     {
-        public static readonly string DumpTempFolder = Path.GetTempPath();
+        public static bool TargetFrameworkSupportsProcessEnv(this IEndpointInfo endpointInfo)
+        {
+            return endpointInfo.RuntimeInstanceCookie != Guid.Empty;
+        }
     }
 }

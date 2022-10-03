@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,6 +38,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private bool _isDiposed;
 
+        public Architecture? Architecture
+        {
+            get => _runner.Architecture;
+            set => _runner.Architecture = value;
+        }
+
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Listen"/>
         /// (the application is listening for connections).
@@ -63,6 +70,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public string ScenarioName { get; set; }
 
         public int AppId { get; }
+
+        public bool SetRuntimeIdentifier { get; set; } = true;
+
+        public string ProfilerLogLevel { get; set; } = null;
 
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
@@ -129,6 +140,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 }
 
                 _adapter.Environment.Add("DOTNET_DiagnosticPorts", DiagnosticPortPath);
+            }
+
+            if (SetRuntimeIdentifier)
+            {
+                _adapter.Environment.Add(
+                    ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier,
+                    ProfilerHelper.GetTargetRuntimeIdentifier(Architecture));
+            }
+            if (ProfilerLogLevel != null)
+            {
+                _adapter.Environment.Add(
+                    ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, ProfilerLogLevel);
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);

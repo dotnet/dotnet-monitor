@@ -70,6 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             "CollectionRules",
             "CorsConfiguration",
             "DiagnosticPort",
+            "InProcessFeatures",
             "Metrics",
             "Storage",
             "DefaultProcess",
@@ -234,7 +235,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact);
 
-            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact, ExpectedConfigurationsDirectory)));
+            Assert.Equal(CleanWhitespace(ConstructExpectedOutput(redact, ExpectedConfigurationsDirectory)), CleanWhitespace(generatedConfig));
         }
 
         /// <summary>
@@ -278,7 +279,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             // This is the settings.json file in the shared configuration directory that is visible
             // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
-            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("Logging.json", "Metrics.json"));
+            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("Logging.json", "Metrics.json", "InProcessFeatures.json"));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -296,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             string generatedConfig = WriteAndRetrieveConfiguration(rootConfiguration, redact, showSources: true);
 
-            Assert.Equal(CleanWhitespace(generatedConfig), CleanWhitespace(ConstructExpectedOutput(redact, ExpectedShowSourcesConfigurationsDirectory)));
+            Assert.Equal(CleanWhitespace(ConstructExpectedOutput(redact, ExpectedShowSourcesConfigurationsDirectory)), CleanWhitespace(generatedConfig));
         }
 
         /// <summary>
@@ -435,7 +436,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 { "CollectionRules", "CollectionRules.json" },
                 { "CollectionRuleDefaults", "CollectionRuleDefaults.json" },
                 { "Templates", "Templates.json" },
-                { "Authentication", redact ? "AuthenticationRedacted.json" : "AuthenticationFull.json" }
+                { "Authentication", redact ? "AuthenticationRedacted.json" : "AuthenticationFull.json" },
+                { "InProcessFeatures", "InProcessFeatures.json" }
             };
         }
 

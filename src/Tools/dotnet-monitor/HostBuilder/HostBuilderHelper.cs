@@ -16,26 +16,37 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class HostBuilderHelper
     {
-        public const string ConfigPrefix = "DotnetMonitor_";
         private const string SettingsFileName = "settings.json";
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
         {
+            string aspnetUrls = string.Empty;
+            ServerUrlsBlockingConfigurationManager manager = new();
+            manager.IsBlocking = true;
+
             return new HostBuilder()
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
-                    //Note these are in precedence order.
-                    ConfigureEndpointInfoSource(builder, settings.DiagnosticPort);
-                    ConfigureMetricsEndpoint(builder, settings.EnableMetrics, settings.MetricsUrls ?? Array.Empty<string>());
-                    ConfigureGlobalMetrics(builder);
-                    builder.ConfigureStorageDefaults();
+                    // Configure default values
+                    ConfigureGlobalMetricsDefaults(builder);
+                    ConfigureMetricsDefaults(builder);
 
-                    builder.AddCommandLine(new[] { "--urls", ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>()) });
+                    // These are configured via the command line configuration source so that
+                    // the "show config" command will report these are from the command line
+                    // rather than an in-memory collection.
+                    List<string> arguments = new();
+                    AddDiagnosticPortArguments(arguments, settings);
+                    AddMetricsArguments(arguments, settings);
+                    AddUrlsArguments(arguments, settings);
+
+                    builder.AddCommandLine(arguments.ToArray());
                 })
                 .ConfigureDefaults(args: null)
                 .UseContentRoot(settings.ContentRootDirectory)
                 .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
                 {
+                    context.Properties[typeof(ServerUrlsBlockingConfigurationManager)] = manager;
+
                     HostBuilderResults hostBuilderResults = new HostBuilderResults();
                     context.Properties.Add(HostBuilderResults.ResultKey, hostBuilderResults);
 
@@ -63,11 +74,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     // If a file at this path does not have read permissions, the application will fail to launch.
                     builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
-                    builder.AddEnvironmentVariables(ConfigPrefix);
+                    builder.AddEnvironmentVariables(ToolIdentifiers.StandardPrefix);
 
                     if (settings.Authentication.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
                     {
-                        ConfigureTempApiHashKey(builder, settings.Authentication);
+                        // These are configured via the command line configuration source so that
+                        // the "show config" command will report these are from the command line
+                        // rather than an in-memory collection.
+                        List<string> arguments = new();
+                        AddTempApiKeyArguments(arguments, settings);
+
+                        builder.AddCommandLine(arguments.ToArray());
                     }
 
                     // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
@@ -93,10 +110,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 //is not added until WebHostDefaults are added.
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    TestAssemblies.AddHostingStartup(webBuilder);
+
+                    // ASP.NET will initially create a configuration that primarily contains
+                    // the ASPNETCORE_* environment variables. This IWebHostBuilder configuration callback
+                    // is invoked before any of the usual configuration phases (host, app, service, container)
+                    // are executed. Thus, there is opportunity here to get the Urls option to store it and
+                    // clear it so that the initial WebHostOptions does not pick it up during host configuration.
+                    aspnetUrls = webBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+                    webBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Empty);
+
                     AddressListenResults listenResults = new AddressListenResults();
                     webBuilder.ConfigureServices(services =>
                     {
                         services.AddSingleton(listenResults);
+                        services.AddSingleton<IStartupFilter, AddressListenResultsStartupFilter>();
+                        services.AddHostedService<StartupLoggingHostedService>();
                     })
                     .ConfigureKestrel((context, options) =>
                     {
@@ -111,8 +140,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         //2) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
                         //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
 
-                        string hostingUrl = context.Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey);
-                        string[] urls = ConfigurationHelper.SplitValue(hostingUrl);
+                        // Unblock reading of the Urls option from configuration, read it, and block it again so that Kestrel
+                        // is unable to read this option when it starts.
+                        manager.IsBlocking = false;
+                        string[] urls = ConfigurationHelper.SplitValue(context.Configuration[WebHostDefaults.ServerUrlsKey]);
+                        manager.IsBlocking = true;
 
                         var metricsOptions = new MetricsOptions();
                         context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
@@ -129,9 +161,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         listenResults.Listen(
                             options,
                             urls,
-                            metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled) ? metricUrls : Array.Empty<string>());
+                            metricsOptions.GetEnabled() ? metricUrls : Array.Empty<string>(),
+                            settings.Authentication.KeyAuthenticationMode != KeyAuthenticationMode.NoAuth);
                     })
                     .UseStartup<Startup>();
+                })
+                .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
+                {
+                    // Restore the Urls option to the configuration provider that originally provided the value
+                    // before it was cleared during the IWebHostBuilder configuration callback.
+                    if (!string.IsNullOrEmpty(aspnetUrls) &&
+                        builder.TryGetProvider(WebHostDefaults.ServerUrlsKey, out IConfigurationProvider provider))
+                    {
+                        provider.Set(WebHostDefaults.ServerUrlsKey, aspnetUrls);
+                    }
+
+                    // The DOTNET_* and ASPNETCORE_* environment variables were added as part of the host configuration
+                    // phase. Before the phase is completed, add a configuration source that will conditionally block
+                    // reading of the Urls options so that they are not picked up by future Kestrel configuration callbacks.
+                    builder.Add(new ServerUrlsBlockingConfigurationSource(manager));
+                })
+                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
+                {
+                    // The settings.json, key-per-file, and DOTNETMONITOR_* environment variables were added as part
+                    // of the app configuration phase. Before the phase is completed, add a configuration source that will
+                    // conditionally block reading of the Urls options so that they are not picked up by future Kestrel
+                    // configuration callbacks.
+                    builder.Add(new ServerUrlsBlockingConfigurationSource(manager));
+                })
+                .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
+                {
+                    // Container configuration is the last phase of building the host before the service provider is constructed.
+                    // At this point, all configuration callbacks have been executed. Lift the block on the Urls option so that
+                    // the option may be read from configuration by default.
+                    manager.IsBlocking = false;
                 });
         }
 
@@ -157,30 +220,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return new AuthConfiguration(authMode);
         }
 
-        private static void ConfigureTempApiHashKey(IConfigurationBuilder builder, IAuthConfiguration authenticationOptions)
-        {
-            if (authenticationOptions.TemporaryJwtKey != null)
-            {
-                builder.AddInMemoryCollection(new Dictionary<string, string>
-                {
-                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)), authenticationOptions.TemporaryJwtKey.Subject },
-                    { ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)), authenticationOptions.TemporaryJwtKey.PublicKey },
-                });
-            }
-        }
-
-        private static void ConfigureMetricsEndpoint(IConfigurationBuilder builder, bool enableMetrics, string[] metricEndpoints)
+        private static void ConfigureMetricsDefaults(IConfigurationBuilder builder)
         {
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Endpoints)), string.Join(';', metricEndpoints)},
-                {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)), enableMetrics.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.MetricCount)), MetricsOptionsDefaults.MetricCount.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()}
             });
         }
 
-        private static void ConfigureGlobalMetrics(IConfigurationBuilder builder)
+        private static void ConfigureGlobalMetricsDefaults(IConfigurationBuilder builder)
         {
             builder.AddInMemoryCollection(new Dictionary<string, string>
             {
@@ -188,19 +237,55 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             });
         }
 
-        private static void ConfigureEndpointInfoSource(IConfigurationBuilder builder, string diagnosticPort)
+        private static void AddDiagnosticPortArguments(List<string> arguments, HostBuilderSettings settings)
         {
-            DiagnosticPortConnectionMode connectionMode = GetConnectionMode(diagnosticPort);
-            builder.AddInMemoryCollection(new Dictionary<string, string>
+            if (!string.IsNullOrEmpty(settings.DiagnosticPort))
             {
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)), connectionMode.ToString()},
-                {ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)), diagnosticPort}
-            });
+                arguments.Add(FormatCmdLineArgument(
+                    ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.ConnectionMode)),
+                    DiagnosticPortConnectionMode.Listen.ToString()));
+
+                arguments.Add(FormatCmdLineArgument(
+                    ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)),
+                    settings.DiagnosticPort));
+            }
         }
 
-        private static DiagnosticPortConnectionMode GetConnectionMode(string diagnosticPort)
+        private static void AddMetricsArguments(List<string> arguments, HostBuilderSettings settings)
         {
-            return string.IsNullOrEmpty(diagnosticPort) ? DiagnosticPortConnectionMode.Connect : DiagnosticPortConnectionMode.Listen;
+            arguments.Add(FormatCmdLineArgument(
+                ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Endpoints)),
+                ConfigurationHelper.JoinValue(settings.MetricsUrls ?? Array.Empty<string>())));
+
+            arguments.Add(FormatCmdLineArgument(
+                ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)),
+                settings.EnableMetrics.ToString()));
+        }
+
+        private static void AddTempApiKeyArguments(List<string> arguments, HostBuilderSettings settings)
+        {
+            if (settings.Authentication.TemporaryJwtKey != null)
+            {
+                arguments.Add(FormatCmdLineArgument(
+                    ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)),
+                    settings.Authentication.TemporaryJwtKey.Subject));
+
+                arguments.Add(FormatCmdLineArgument(
+                    ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)),
+                    settings.Authentication.TemporaryJwtKey.PublicKey));
+            }
+        }
+
+        private static void AddUrlsArguments(List<string> arguments, HostBuilderSettings settings)
+        {
+            arguments.Add(FormatCmdLineArgument(
+                WebHostDefaults.ServerUrlsKey,
+                ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>())));
+        }
+
+        private static string FormatCmdLineArgument(string key, string value)
+        {
+            return FormattableString.Invariant($"{key}={value}");
         }
     }
 }
