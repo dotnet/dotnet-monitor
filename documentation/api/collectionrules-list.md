@@ -1,6 +1,6 @@
-# Collection Rules - Get
+# Collection Rules - List (6.3+)
 
-Reports the state of the configured collection rules of a specific process.
+Get the basic state of all collection rules for all processes or for the specified process.
 
 ## HTTP Route
 
@@ -38,7 +38,7 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | Dictionary<string, [CollectionRuleDescription](definitions.md#collectionruledescription)> | The basic information about the current state of the configured collection rules. | `application/json` |
+| 200 OK | map (of [CollectionRuleDescription](definitions.md#collectionruledescription)) | The basic information about the current state of the configured collection rules. | `application/json` |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 

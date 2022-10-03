@@ -16,5 +16,6 @@ The following are the root routes on the HTTP API surface.
 | [`/logs`](logs.md) | Captures logs of processes. |
 | [`/info`](info.md) | Gets info about Dotnet Monitor. |
 | [`/operations`](operations.md) | Gets egress operation status or cancels operations. |
+| [`/collectionrules`](collectionrules.md) | (6.3+) Gets the current state of collection rules. |
 
 The `dotnet monitor` tool is able to detect .NET Core 3.1 and .NET 5+ applications. When connecting to a .NET Core 3.1 application, some information may not be available and is called out in the documentation.

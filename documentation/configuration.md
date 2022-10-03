@@ -17,7 +17,7 @@
 
 - Environment variables
 - User-Specified json file
-  - Use the `--configuration-file-path` flag from the command line to specify your own configuration file (using its full path).
+  - (6.3+) Use the `--configuration-file-path` flag from the command line to specify your own configuration file (using its full path).
 
 ### Translating configuration between providers
 
@@ -725,8 +725,8 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | sharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the SAS token; if using SAS, must be specified if `sharedAccessSignature` is not specified.|
 | queueName | string | false | The name of the queue to which a message will be dispatched upon writing to a blob.|
 | queueAccountUri | string | false | The URI of the Azure queue storage account.|
-| queueSharedAccessSignature | string | false | The shared access signature (SAS) used to access the Azure queue storage account; if using SAS, must be specified if `queueSharedAccessSignatureName` is not specified.|
-| queueSharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
+| queueSharedAccessSignature | string | false | (6.3+) The shared access signature (SAS) used to access the Azure queue storage account; if using SAS, must be specified if `queueSharedAccessSignatureName` is not specified.|
+| queueSharedAccessSignatureName | string | false | (6.3+) Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
 | metadata | Dictionary<string, string> | false | A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.|
 
 ***Note:*** Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.

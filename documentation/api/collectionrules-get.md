@@ -1,6 +1,6 @@
-# Collection Rules - Get
+# Collection Rules - Get (6.3+)
 
-Reports the detailed state of the specified collection rule for a specific process.
+Get the detailed state of the specified collection rule for all processes or for the specified process.
 
 ## HTTP Route
 
