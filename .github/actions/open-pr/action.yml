@@ -23,11 +23,6 @@ inputs:
     description: 'The token used to authenticate to GitHub.'
     required: true
 
-outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-number }}
-
 runs:
   using: "composite"
   steps:
