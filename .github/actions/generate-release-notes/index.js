@@ -144,7 +144,7 @@ async function resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName
             return originPr;
         }
 
-        if (label.name == BackportLabel) {
+        if (label.name === BackportLabel) {
             originIsBackport = true;
             // Keep searching incase there is also an update-release-notes label
         }
