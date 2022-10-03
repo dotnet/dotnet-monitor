@@ -24,12 +24,13 @@ async function run() {
     const buildDescription = core.getInput("build_description", { required: true });
     const lastReleaseDate = core.getInput("last_release_date", { required: true });
     const branch = core.getInput("branch_name", { required: true });
+    const additional_branch = core.getInput("additional_branch", { required: false });
 
     const repoOwner = github.context.payload.repository.owner.login;
     const repoName = github.context.payload.repository.name;
 
     try {
-        const changelog = await generateChangelog(octokit, branch, repoOwner, repoName, lastReleaseDate,
+        const changelog = await generateChangelog(octokit, branch, additional_branch, repoOwner, repoName, lastReleaseDate,
             [
                 {
                     labelName: "breaking-change",
@@ -48,12 +49,12 @@ async function run() {
     }
 }
 
-async function generateChangelog(octokit, branchName, repoOwner, repoName, minMergeDate, significantLabels) {
-    let prs = await getPRs(octokit, branchName, repoOwner, repoName, minMergeDate, UpdateReleaseNotesLabel);
+async function generateChangelog(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, significantLabels) {
+    let prs = await getPRs(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, UpdateReleaseNotesLabel);
 
     // Resolve the backport PRs to their origin PRs
     const maxRecursion = 3;
-    const backportPrs = await getPRs(octokit, branchName, repoOwner, repoName, minMergeDate, BackportLabel);
+    const backportPrs = await getPRs(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, BackportLabel);
     for (const pr of backportPrs) {
         const originPr = await resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName, minMergeDate, maxRecursion);
         if (originPr !== undefined) {
@@ -104,8 +105,11 @@ async function generateReleaseNotes(templatePath, buildDescription, changelog) {
     return releaseNotes;
 }
 
-async function getPRs(octokit, branchName, repoOwner, repoName, minMergeDate, labelFilter) {
-    const searchQuery = `is:pr is:merged label:${labelFilter} repo:${repoOwner}/${repoName} base:${branchName} merged:>=${minMergeDate}`;
+async function getPRs(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, labelFilter) {
+    let searchQuery = `is:pr is:merged label:${labelFilter} repo:${repoOwner}/${repoName} base:${branchName} merged:>=${minMergeDate}`;
+    if (additionalBranch !== undefined) {
+        searchQuery += ` base:${additionalBranch}`
+    }
     console.log(searchQuery);
 
     return await octokit.paginate(octokit.rest.search.issuesAndPullRequests, {

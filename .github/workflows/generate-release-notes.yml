@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       prerelease_build_tag:
-        description: 'Prerelease build tag, must be set if this for a preview build.'
+        description: 'Prerelease build tag, must be set if this is for a preview build.'
         required: false
         type: string
+      include_main_prs:
+        description: 'Has main been merged into this branch?'
+        required: true
+        type: boolean
 
 permissions:
   contents: write
@@ -34,31 +38,32 @@ jobs:
           release_version_label=$(perl -ne '/<PreReleaseVersionLabel>([^<]*)/ && print $1' $versionFile)
           release_version_iteration=$(perl -ne '/<PreReleaseVersionIteration>([^<]*)/ && print $1' $versionFile)
 
-          release_version=""
           friendly_release_name=""
+          qualified_release_version=""
 
           if [ "$release_version_label" == "rtm" ]; then
             friendly_release_name="$release_version build"
-            release_version="$release_version"
-          elif [ "$release_version_label" == "rc" ]; then
-            friendly_release_name="official release candidate"
-          else
-            if [ -z "$prerelease_build_tag" ]; then
+            qualified_release_version="$release_version"
+          elif [ -z "$prerelease_build_tag" ]; then
               echo "prerelease_build_tag is not set!"
               exit 1
+          else
+            qualified_release_version="${release_version}-${release_version_label}.${release_version_iteration}.${prerelease_build_tag}"
+            if [ "$release_version_label" == "rc" ]; then
+              friendly_release_name="official $release_version Release Candidate"
+            else
+              friendly_release_name="next official preview version"
             fi
-
-            release_version="${release_version}-${release_version_label}.${release_version_iteration}.${prerelease_build_tag}"
-            friendly_release_name="next official preview"
           fi
 
-          echo "release_note_path=$(echo ./documentation/releaseNotes/releaseNotes.v${release_version}.md)" >> $GITHUB_ENV
+          echo "release_note_path=$(echo ./documentation/releaseNotes/releaseNotes.v${qualified_release_version}.md)" >> $GITHUB_ENV
           echo "friendly_release_name=$(echo ${friendly_release_name})" >> $GITHUB_ENV
-          echo "release_version=$(echo ${release_version})" >> $GITHUB_ENV
+          echo "qualified_release_version=$(echo ${qualified_release_version})" >> $GITHUB_ENV
         env:
           prerelease_build_tag: ${{ inputs.prerelease_build_tag }}
 
       - name: Generate release notes
+        if: ${{ inputs.include_main_prs != true }}
         uses: ./.github/actions/generate-release-notes
         with:
           output: ${{ env.release_note_path }}
@@ -67,12 +72,23 @@ jobs:
           auth_token: ${{ secrets.GITHUB_TOKEN }}
           branch_name: ${{ github.ref_name }}
 
+      - name: Generate release notes (main merged)
+        if: ${{ inputs.include_main_prs }}
+        uses: ./.github/actions/generate-release-notes
+        with:
+          output: ${{ env.release_note_path }}
+          last_release_date:  ${{ env.last_release_date }}
+          build_description: ${{ env.friendly_release_name }}
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
+          branch_name: ${{ github.ref_name }}
+          additional_branch: 'main'
+
       - name: Open PR
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: ${{ env.release_note_path }}
-          title: Add ${{ env.release_version }} release notes
+          title: Add ${{ env.qualified_release_version }} release notes
           commit_message: generate release notes
-          body: Add ${{ env.release_version }} release notes. This PR was auto generated and will not be automatically merged in.
-          branch_name: releaseNotes/${{ env.release_version }}
+          body: Add ${{ env.qualified_release_version }} release notes. This PR was auto generated and will not be automatically merged in.
+          branch_name: releaseNotes/${{ env.qualified_release_version }}
           auth_token: ${{ secrets.GITHUB_TOKEN }}
