@@ -5,13 +5,13 @@ inputs:
     description: 'The token used to authenticate to GitHub.'
     required: true
   output:
-    description: 'The output file to save the release notes to'
+    description: 'The output file to save the release notes to.'
     required: true
   build_description:
-    description: 'Build description'
+    description: 'Build description.'
     required: true
   last_release_date:
-    description: 'Last release date in ISO 8601 format'
+    description: 'Last release date in ISO 8601 format.'
     required: true
 
 runs:

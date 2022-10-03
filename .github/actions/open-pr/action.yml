@@ -2,22 +2,22 @@ name: 'Open PR'
 description: 'Open PR'
 inputs:
   branch_name:
-    description: 'The branch name to create. Will be prefixed with "bot/"'
+    description: 'The branch name to create. Will be prefixed with "bot/".'
     required: true
   title:
-    description: 'The PR title'
+    description: 'The PR title.'
     required: true
   files_to_commit:
-    description: 'The files to commit'
+    description: 'The files to commit.'
     required: true
   commit_message:
-    description: 'The commit message'
+    description: 'The commit message.'
     required: true
   body:
-    description: 'The PR body'
+    description: 'The PR body.'
     required: true
   labels:
-    description: 'Labels to add to the PR'
+    description: 'Labels to add to the PR, comma separated.'
     required: false
   auth_token:
     description: 'The token used to authenticate to GitHub.'
