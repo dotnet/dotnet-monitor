@@ -34,7 +34,6 @@ jobs:
           release_version_label=$(perl -ne '/<PreReleaseVersionLabel>([^<]*)/ && print $1' $versionFile)
           release_version_iteration=$(perl -ne '/<PreReleaseVersionIteration>([^<]*)/ && print $1' $versionFile)
 
-
           release_version=""
           friendly_release_name=""
 
