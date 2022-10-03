@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       prerelease_build_tag:
-        description: 'Prerelease build tag'
+        description: 'Prerelease build tag, must be set if this for a preview build.'
         required: false
         type: string
 
@@ -35,15 +35,22 @@ jobs:
           release_version_iteration=$(perl -ne '/<PreReleaseVersionIteration>([^<]*)/ && print $1' $versionFile)
 
 
-          [ -z "$prerelease_build_tag" ] && prerelease_build_tag="tbd"
-          release_version="${release_version}-${release_version_label}.${release_version_iteration}.${prerelease_build_tag}"
-          friendly_release_name="next official preview"
+          release_version=""
+          friendly_release_name=""
 
           if [ "$release_version_label" == "rtm" ]; then
             friendly_release_name="$release_version build"
             release_version="$release_version"
           elif [ "$release_version_label" == "rc" ]; then
             friendly_release_name="official release candidate"
+          else
+            if [ -z "$prerelease_build_tag" ]; then
+              echo "prerelease_build_tag is not set!"
+              exit 1
+            fi
+
+            release_version="${release_version}-${release_version_label}.${release_version_iteration}.${prerelease_build_tag}"
+            friendly_release_name="next official preview"
           fi
 
           echo "release_note_path=$(echo ./documentation/releaseNotes/releaseNotes.v${release_version}.md)" >> $GITHUB_ENV
