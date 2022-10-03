@@ -102,7 +102,7 @@ App_Data/*.ldf
 .azurite
 
 # Github actions development
-.github/actions/**/node_modules
+.github/actions/**/node_modules/
 .github/actions/**/package.json
 .github/actions/**/package-lock.json
 
