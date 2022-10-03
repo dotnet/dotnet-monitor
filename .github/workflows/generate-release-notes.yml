@@ -1,0 +1,69 @@
+name: 'Generate release notes'
+
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease_build_tag:
+        description: 'Prerelease build tag'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-release-notes:
+    name: 'Generate release notes'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
+
+      - name: Calculate release information
+        run: |
+          git fetch --tags
+          last_release_tag=$(git describe --tags --abbrev=0)
+          echo "last_release_date=$(git log -1 --format=%aI ${last_release_tag})" >> $GITHUB_ENV
+
+          versionFile="./eng/Versions.props"
+          release_version=$(perl -ne '/<VersionPrefix>([^<]*)/ && print $1' $versionFile)
+          release_version_label=$(perl -ne '/<PreReleaseVersionLabel>([^<]*)/ && print $1' $versionFile)
+          release_version_iteration=$(perl -ne '/<PreReleaseVersionIteration>([^<]*)/ && print $1' $versionFile)
+
+          release_version="${release_version}-${release_version_label}.${release_version_iteration}.${prerelease_build_tag}"
+          friendly_release_name="next official preview"
+
+          if [ "$release_version_label" == "rtm" ]; then
+            friendly_release_name="$release_version build"
+            release_version="$release_version"
+          elif [ "$release_version_label" == "rc" ]; then
+            friendly_release_name="official release candidate"
+          fi
+
+          echo "release_note_path=$(echo ./documentation/releaseNotes/releaseNotes.v${release_version}.md)" >> $GITHUB_ENV
+          echo "friendly_release_name=$(echo ${friendly_release_name})" >> $GITHUB_ENV
+          echo "release_version=$(echo ${release_version})" >> $GITHUB_ENV
+        env:
+          prerelease_build_tag: ${{ inputs.prerelease_build_tag }}
+
+      - name: Generate release notes
+        uses: ./.github/actions/generate-release-notes
+        with:
+          output: ${{ env.release_note_path }}
+          last_release_date:  ${{ env.last_release_date }}
+          build_description: ${{ env.friendly_release_name }}
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Open PR
+        uses: ./.github/actions/open-pr
+        with:
+          files_to_commit: ${{ env.release_note_path }}
+          title: Add ${{ env.release_version }} release notes
+          commit_message: generate release notes
+          body: Add ${{ env.release_version }} release notes. This PR was auto generated and will not be automatically merged in.
+          branch_name: releaseNotes/${{ env.release_version }}
+          auth_token: ${{ secrets.GITHUB_TOKEN }}

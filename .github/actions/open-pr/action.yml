@@ -1,5 +1,5 @@
 name: 'Open PR'
-description: 'Open PR'
+description: 'Opens a PR targeting the currently checked out out branch.'
 inputs:
   branch_name:
     description: 'The branch name to create. Will be prefixed with "bot/".'
@@ -26,7 +26,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Commit
+    - name: Open PR
       run: |
         current_branch_name=$(git symbolic-ref --short HEAD)
         pr_branch_name=$(echo "bot/${{ inputs.branch_name }}" )
