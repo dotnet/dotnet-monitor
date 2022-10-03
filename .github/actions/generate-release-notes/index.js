@@ -29,6 +29,10 @@ async function run() {
     const branch = process.env.GITHUB_REF_NAME;
 
     try {
+        if (branch === undefined) {
+            throw new Error("Environment variable GITHUB_REF_NAME was undefined, cannot proceed!")
+        }
+
         const changelog = await generateChangelog(octokit, branch, repoOwner, repoName, lastReleaseDate,
             [
                 {
