@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fcollectionrules-all)
+
 # Collection Rules - Get
 
 Reports the state of the configured collection rules of a specific process.
