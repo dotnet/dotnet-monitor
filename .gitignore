@@ -101,6 +101,11 @@ App_Data/*.ldf
 **/__azurite*
 .azurite
 
+# Github actions development
+.github/actions/**/node_modules
+.github/actions/**/package.json
+.github/actions/**/package-lock.json
+
 # =========================
 # Windows detritus
 # =========================
