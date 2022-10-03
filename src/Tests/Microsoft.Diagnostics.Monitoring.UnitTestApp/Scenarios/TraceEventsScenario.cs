@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
-                ManualResetEventSlim stopGeneratingEvents = new(initialState: false);
+                using ManualResetEventSlim stopGeneratingEvents = new(initialState: false);
 
                 Task eventEmitterTask = Task.Run(async () =>
                 {
