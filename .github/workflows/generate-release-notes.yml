@@ -65,6 +65,7 @@ jobs:
           last_release_date:  ${{ env.last_release_date }}
           build_description: ${{ env.friendly_release_name }}
           auth_token: ${{ secrets.GITHUB_TOKEN }}
+          branch_name: ${{ github.ref_name }}
 
       - name: Open PR
         uses: ./.github/actions/open-pr

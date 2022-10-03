@@ -23,16 +23,12 @@ async function run() {
     const output = core.getInput("output", { required: true });
     const buildDescription = core.getInput("build_description", { required: true });
     const lastReleaseDate = core.getInput("last_release_date", { required: true });
+    const branch = core.getInput("branch_name", { required: true });
 
     const repoOwner = github.context.payload.repository.owner.login;
     const repoName = github.context.payload.repository.name;
-    const branch = process.env.GITHUB_REF_NAME;
 
     try {
-        if (branch === undefined) {
-            throw new Error("Environment variable GITHUB_REF_NAME was undefined, cannot proceed!")
-        }
-
         const changelog = await generateChangelog(octokit, branch, repoOwner, repoName, lastReleaseDate,
             [
                 {

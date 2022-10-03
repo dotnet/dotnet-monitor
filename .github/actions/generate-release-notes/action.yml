@@ -13,6 +13,9 @@ inputs:
   last_release_date:
     description: 'Last release date in ISO 8601 format.'
     required: true
+  branch_name:
+    description: 'The branch to generate release notes for.'
+    required: true
 
 runs:
   using: 'node16'
