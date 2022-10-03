@@ -7,6 +7,7 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Diagnostics.Tracing;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
@@ -46,11 +47,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
-                TaskCompletionSource<object> stopGeneratingEvents = new();
+                ManualResetEventSlim stopGeneratingEvents = new(initialState: false);
+
                 Task eventEmitterTask = Task.Run(async () =>
                 {
                     Random random = new();
-                    while (!stopGeneratingEvents.Task.IsCompleted)
+                    while (!stopGeneratingEvents.IsSet)
                     {
                         TestScenarioEventSource.Log.RandomNumberGenerated(random.Next());
                         await Task.Delay(TimeSpan.FromMilliseconds(100), context.GetCancellationToken());
@@ -65,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                             TestScenarioEventSource.Log.UniqueEvent(TestAppScenarios.TraceEvents.UniqueEventMessage);
                             break;
                         case TestAppScenarios.TraceEvents.Commands.ShutdownScenario:
-                            stopGeneratingEvents.TrySetResult(null);
+                            stopGeneratingEvents.Set();
                             eventEmitterTask.Wait(context.GetCancellationToken());
                             return 0;
                     }

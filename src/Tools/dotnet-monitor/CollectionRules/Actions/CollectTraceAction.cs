@@ -99,7 +99,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                             ILogger<CollectTraceAction> logger = _serviceProvider
                                 .GetRequiredService<ILoggerFactory>()
                                 .CreateLogger<CollectTraceAction>();
-                            using var _ = logger.BeginScope(scope);
 
                             await TraceUtilities.CaptureTraceUntilEventAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, stoppingEvent.ProviderName, stoppingEvent.EventName, stoppingEvent.PayloadFilter, logger, token);
                         }
