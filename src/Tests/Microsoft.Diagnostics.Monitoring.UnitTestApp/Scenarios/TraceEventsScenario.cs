@@ -47,15 +47,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
                 TaskCompletionSource<object> stopGeneratingEvents = new();
-                Task eventEmitterTask = Task.Run(() =>
+                Task eventEmitterTask = Task.Run(async () =>
                 {
                     Random random = new();
                     while (!stopGeneratingEvents.Task.IsCompleted)
                     {
                         TestScenarioEventSource.Log.RandomNumberGenerated(random.Next());
-                        Task.Delay(100, context.GetCancellationToken());
+                        await Task.Delay(TimeSpan.FromMilliseconds(100), context.GetCancellationToken());
                     }
-                });
+                }, context.GetCancellationToken());
 
                 while (true)
                 {

@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private static readonly Action<ILogger, string, string, Exception> _stoppingTraceEventHit =
             LoggerMessage.Define<string, string>(
                 eventId: new EventId(8, "StoppingTraceEventHit"),
-                logLevel: LogLevel.Information,
+                logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_StoppingTraceEventHit);
 
         private static readonly Action<ILogger, string, string, string, Exception> _stoppingTraceEventPayloadFilterMismatch =
