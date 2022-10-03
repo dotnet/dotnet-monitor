@@ -59,6 +59,7 @@
 
   <PropertyGroup>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherNativeFilesForTfm</TargetsForTfmSpecificContentInPackage>
+    <UserSecretsId>622dea59-8cc0-4505-a540-6b82043edc1d</UserSecretsId>
   </PropertyGroup>
 
   <!-- Don't include profiler files in official builds until productized. -->
@@ -77,9 +78,9 @@
     </ItemGroup>
     <ItemGroup>
       <!-- Pack the profiler library for each platform if it exists. -->
-      <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile->Exists())" />
+      <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile-&gt;Exists())" />
       <!-- Pack the profiler symbols for each platform if it exists. -->
-      <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile->Exists())" />
+      <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile-&gt;Exists())" />
     </ItemGroup>
   </Target>
 

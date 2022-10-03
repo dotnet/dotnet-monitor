@@ -43,6 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Validates that a non-startup rule will complete when it has an action limit specified
         /// without a sliding window duration.
         /// </summary>
+        //[Theory(Skip = "These tests will fail until #3425 in the diagnostics repo is checked in.")]
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRuleAndApi_AspNetResponsesStatusTest(DiagnosticPortConnectionMode mode)
@@ -67,7 +68,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), isWebApp: true);
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
-            appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
             Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
@@ -123,6 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Validates that a non-startup rule will complete when it has an action limit specified
         /// without a sliding window duration.
         /// </summary>
+        //[Theory(Skip = "These tests will fail until #3425 in the diagnostics repo is checked in.")]
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRuleAndApi_AspNetRequestDurationTest(DiagnosticPortConnectionMode mode)
@@ -147,7 +148,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), isWebApp: true);
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
-            appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
             Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 

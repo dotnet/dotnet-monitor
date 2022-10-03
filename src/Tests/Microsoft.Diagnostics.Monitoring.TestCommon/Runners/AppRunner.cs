@@ -112,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public async Task StartAsync(bool noCommands, CancellationToken token)
         {
-            if (string.IsNullOrEmpty(ScenarioName))
+            if (!noCommands && string.IsNullOrEmpty(ScenarioName))
             {
                 throw new ArgumentNullException(nameof(ScenarioName));
             }
