@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fstacks)
+
 # Stacks - Get
 
 Captures the call stacks of the currently running process. Note that only managed frames are collected.

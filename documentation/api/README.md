@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2FREADME)
+
 # HTTP API Documentation
 
 The HTTP API enables on-demand extraction of diagnostic information and artifacts from discoverable processes.
@@ -18,5 +21,6 @@ The following are the root routes on the HTTP API surface.
 | [`/logs`](logs.md) | Captures logs of processes. | 6.0 |
 | [`/info`](info.md) | Gets info about `dotnet monitor`. | 6.0 |
 | [`/operations`](operations.md) | Gets egress operation status or cancels operations. | 6.0 |
+| [`/collectionrules`](collectionrules.md) | Gets the current state of collection rules. | 6.3 |
 
 The `dotnet monitor` tool is able to detect .NET Core 3.1 and .NET 5+ applications. When connecting to a .NET Core 3.1 application, some information may not be available and is called out in the documentation.

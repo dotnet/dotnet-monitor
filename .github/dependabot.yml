@@ -10,3 +10,13 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "main"
+  - package-ecosystem: "nuget"
+    directory: "/eng/dependabot"
+    schedule:
+      interval: "daily"
+    target-branch: "release/6.x"
+  - package-ecosystem: "nuget"
+    directory: "/eng/dependabot"
+    schedule:
+      interval: "daily"
+    target-branch: "release/7.x"
