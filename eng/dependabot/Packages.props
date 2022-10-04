@@ -24,5 +24,10 @@
     <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="$(SwashbuckleAspNetCoreSwaggerGenVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitAssertVersion)" />
+  
+    <!-- Release-branch specific reference -->
+    <!-- dotnet/diagnostics references -->
+    <PackageReference Include="Microsoft.Diagnostics.Monitoring" Version="$(MicrosoftDiagnosticsMonitoringVersion)" />
+
   </ItemGroup>
 </Project>
