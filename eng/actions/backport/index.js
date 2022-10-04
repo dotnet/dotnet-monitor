@@ -27,6 +27,7 @@ async function run() {
 
   let octokit = github.getOctokit(core.getInput("auth_token", { required: true }));
   let target_branch = core.getInput("target_branch", { required: true });
+  let pr_label = core.getInput("label", { required: false });
 
   try {
     // verify the comment user is a repo collaborator
@@ -126,7 +127,7 @@ async function run() {
       .replace(/%cc_users%/g, cc_users);
 
     // open the GitHub PR
-    await octokit.rest.pulls.create({
+    const pr = await octokit.rest.pulls.create({
       owner: repo_owner,
       repo: repo_name,
       title: backport_pr_title,
@@ -134,6 +135,15 @@ async function run() {
       head: temp_branch,
       base: target_branch
     });
+
+    if (pr_label.length !== 0) {
+      await octokit.rest.issues.addLabels({
+        owner: repo_owner,
+        repo: repo_name,
+        issue_number: pr.data.number,
+        labels: [pr_label],
+      });
+    }
 
     console.log("Successfully opened the GitHub PR.");
   } catch (error) {
