@@ -829,7 +829,7 @@
             "string"
           ],
           "description": "The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.",
-          "format": "time-span"
+          "format": "duration"
         },
         "RuleDuration": {
           "type": [
@@ -837,7 +837,7 @@
             "string"
           ],
           "description": "The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -1277,7 +1277,7 @@
             "string"
           ],
           "description": "The default sliding window duration.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -1314,7 +1314,7 @@
             "string"
           ],
           "description": "The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed.",
-          "format": "time-span"
+          "format": "duration"
         },
         "RuleDuration": {
           "type": [
@@ -1322,7 +1322,7 @@
             "string"
           ],
           "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -1464,7 +1464,7 @@
             "string"
           ],
           "description": "The duration of time in which live metrics are collected.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
@@ -1543,7 +1543,7 @@
             "string"
           ],
           "description": "The duration of time in which logs are collected.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
@@ -1629,7 +1629,7 @@
             "string"
           ],
           "description": "The duration of time in which trace events are collected.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
@@ -1821,7 +1821,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of requests are counted.",
-          "format": "time-span"
+          "format": "duration"
         },
         "IncludePaths": {
           "type": [
@@ -1862,7 +1862,7 @@
             "string"
           ],
           "description": "The threshold of the amount of time in which a request is considered to be slow.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:05"
         },
         "SlidingWindowDuration": {
@@ -1871,7 +1871,7 @@
             "string"
           ],
           "description": "The sliding time window in which the the number of slow requests are counted.",
-          "format": "time-span"
+          "format": "duration"
         },
         "IncludePaths": {
           "type": [
@@ -1924,7 +1924,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of responses with matching status codes must occur.",
-          "format": "time-span"
+          "format": "duration"
         },
         "IncludePaths": {
           "type": [
@@ -1988,7 +1988,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -2023,7 +2023,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:01:00"
         }
       }
@@ -2057,7 +2057,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:01:00"
         }
       }
@@ -2091,7 +2091,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:01:00"
         }
       }

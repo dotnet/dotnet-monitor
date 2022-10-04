@@ -19,7 +19,7 @@
 
     <!-- Third-party references -->
     <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
-    <NJsonSchemaVersion>10.5.2</NJsonSchemaVersion>
+    <NJsonSchemaVersion>10.8.0</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>6.4.0</SwashbuckleAspNetCoreSwaggerGenVersion>
   </PropertyGroup>
 </Project>
