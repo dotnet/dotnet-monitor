@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Flocalmachine)
+
 # Running on a local machine
 
 `dotnet monitor` can be installed as a global tool providing observability, diagnostics artifact collection, and triggering in local development and testing scenarios. You can run `dotnet tool install -g dotnet-monitor` to install the latest version, see the full details [here](./setup.md#net-core-global-tool).
