@@ -7,6 +7,10 @@ on:
         description: 'Prerelease build tag, must be set if this is for a preview build.'
         required: false
         type: string
+      last_release_tag:
+        description: 'The release tag to use as a baseline. If left empty, this will be set as the last tag on the branch.'
+        required: false
+        type: string
       include_main_prs:
         description: 'Has main been merged into this branch?'
         required: true
@@ -30,7 +34,11 @@ jobs:
       - name: Calculate release information
         run: |
           git fetch --tags
-          last_release_tag=$(git describe --tags --abbrev=0)
+
+          if [ -z "$last_release_tag" ]; then
+            last_release_tag=$(git describe --tags --abbrev=0)
+          fi
+
           echo "last_release_date=$(git log -1 --format=%aI ${last_release_tag})" >> $GITHUB_ENV
 
           versionFile="./eng/Versions.props"
@@ -61,6 +69,7 @@ jobs:
           echo "qualified_release_version=$(echo ${qualified_release_version})" >> $GITHUB_ENV
         env:
           prerelease_build_tag: ${{ inputs.prerelease_build_tag }}
+          last_release_tag: ${{ inputs.last_release_tag }}
 
       - name: Generate release notes
         if: ${{ inputs.include_main_prs != true }}
