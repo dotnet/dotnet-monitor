@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             {
                 return hostInRepositoryPath;
             }
-            
+
             // If the current repo enlistment has only ever been built and tested with Visual Studio,
             // the repo's private copy of dotnet will have never been setup.
             //
