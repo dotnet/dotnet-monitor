@@ -30,7 +30,7 @@ stages:
 - stage: Validation
 
   pool:
-    name: NetCore1ESPool-Internal
+    name: NetCore1ESPool-Svc-Internal
     demands: ImageOverride -equals 1es-windows-2019
 
   jobs:
@@ -94,7 +94,7 @@ stages:
   - Validation
 
   pool:
-    name: NetCore1ESPool-Internal
+    name: NetCore1ESPool-Svc-Internal
     demands: ImageOverride -equals 1es-windows-2019
 
   jobs:
