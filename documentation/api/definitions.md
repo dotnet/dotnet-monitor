@@ -33,7 +33,7 @@ Enumeration that describes the output format of the collected call stacks.
 |---|---|---|
 | `stacks` | [CallStack](#callstack)[] | List of all managed stacks at the time of collection. |
 
-## CollectionRuleDescription
+## CollectionRuleDescription (6.3+)
 
 Object describing the basic state of a collection rule for the executing instance of `dotnet monitor`.
 
@@ -42,7 +42,7 @@ Object describing the basic state of a collection rule for the executing instanc
 | State | [CollectionRuleState](#collectionrulestate) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 
-## CollectionRuleDetailedDescription
+## CollectionRuleDetailedDescription (6.3+)
 
 Object describing the detailed state of a collection rule for the executing instance of `dotnet monitor`.
 
@@ -57,7 +57,7 @@ Object describing the detailed state of a collection rule for the executing inst
 | SlidingWindowDurationCountdown | TimeSpan? | The amount of time remaining before the collection rule will no longer be throttled. |
 | RuleFinishedCountdown | TimeSpan? | The amount of time remaining before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. |
 
-## CollectionRuleState
+## CollectionRuleState (6.3+)
 
 Enumeration that describes the current state of the collection rule.
 
@@ -247,6 +247,16 @@ Object describing a metric from the application.
 | `code` | string | Error code representing the failure. |
 | `message` | string | Detailed error message. |
 
+## OperationProcessInfo (6.3+)
+
+The process on which the egress operation is performed.
+
+| Name | Type | Description |
+|---|---|---|
+| `pid` | int | The ID of the process. |
+| `uid` | guid | `.NET 5+` A value that uniquely identifies a runtime instance within a process.<br/>`.NET Core 3.1` An empty value: `00000000-0000-0000-0000-000000000000` |
+| `name` | string | The name of the process. |
+
 ## OperationState
 
 Status of the egress operation.
@@ -291,6 +301,7 @@ Summary state of an operation.
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
 | `status` | [OperationState](#operationstate) | The current status of operation. |
+| `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
 
 ### Example
 
@@ -298,7 +309,12 @@ Summary state of an operation.
 {
     "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
     "createdDateTime": "2021-07-21T06:21:15.315861Z",
-    "status": "Succeeded"
+    "status": "Succeeded",
+    "process": {
+        "pid": 21632,
+        "uid": "cd4da319-fa9e-4987-ac4e-e57b2aac248b",
+        "name": "dotnet"
+    }
 }
 ```
 
