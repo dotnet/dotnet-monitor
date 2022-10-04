@@ -3,8 +3,8 @@ name: 'Generate release notes'
 on:
   workflow_dispatch:
     inputs:
-      prerelease_build_tag:
-        description: 'Prerelease build tag, must be set if this is for a preview build.'
+      build_number_label:
+        description: 'Build number label, must be set if this is for a preview build.'
         required: false
         type: string
       last_release_tag:
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout release branch
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
@@ -52,11 +52,11 @@ jobs:
           if [ "$release_version_label" == "rtm" ] || [ "$release_version_label" == "servicing" ]; then
             friendly_release_name="$release_version build"
             qualified_release_version="$release_version"
-          elif [ -z "$prerelease_build_tag" ]; then
-              echo "prerelease_build_tag is not set!"
+          elif [ -z "$build_number_label" ]; then
+              echo "build_number_label is not set!"
               exit 1
           else
-            qualified_release_version="${release_version}-${release_version_label}.${release_version_iteration}.${prerelease_build_tag}"
+            qualified_release_version="${release_version}-${release_version_label}.${release_version_iteration}.${build_number_label}"
             if [ "$release_version_label" == "rc" ]; then
               friendly_release_name="official $release_version Release Candidate"
             else
@@ -68,8 +68,13 @@ jobs:
           echo "friendly_release_name=$(echo ${friendly_release_name})" >> $GITHUB_ENV
           echo "qualified_release_version=$(echo ${qualified_release_version})" >> $GITHUB_ENV
         env:
-          prerelease_build_tag: ${{ inputs.prerelease_build_tag }}
+          build_number_label: ${{ inputs.build_number_label }}
           last_release_tag: ${{ inputs.last_release_tag }}
+
+      - name: Checkout main
+        uses: actions/checkout@v3
+        with:
+          ref: main
 
       - name: Generate release notes
         if: ${{ inputs.include_main_prs != true }}
