@@ -1,4 +1,4 @@
-Today we are releasing the ${buildDescription} version of the `dotnet monitor` tool. This release includes:
+Today we are releasing the ${buildDescription} of the `dotnet monitor` tool. This release includes:
 
 ${changelog}
 

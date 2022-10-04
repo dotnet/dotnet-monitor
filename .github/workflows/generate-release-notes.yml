@@ -41,7 +41,7 @@ jobs:
           friendly_release_name=""
           qualified_release_version=""
 
-          if [ "$release_version_label" == "rtm" ]; then
+          if [ "$release_version_label" == "rtm" ] || [ "$release_version_label" == "servicing" ]; then
             friendly_release_name="$release_version build"
             qualified_release_version="$release_version"
           elif [ -z "$prerelease_build_tag" ]; then
