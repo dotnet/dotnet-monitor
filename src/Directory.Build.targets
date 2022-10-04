@@ -51,7 +51,7 @@
 
     The general purpose solution is to generate a custom runtimeconfig[.test].json file that instructs the
     runtime which framework versions to use. The framework versions in this file are the ones provided by the
-    depedency flow system.
+    dependency flow system.
   -->
   <Target Name="GenerateTestRuntimeConfigurationFiles"
           DependsOnTargets="GenerateBuildRuntimeConfigurationFiles;CalculateProjectRuntimeConfigTestFilePath"
