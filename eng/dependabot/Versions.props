@@ -24,7 +24,7 @@
 
     <!-- Release-branch specific reference -->
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>5.0.328102</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>5.0.350302</MicrosoftDiagnosticsMonitoringVersion>
 
   </PropertyGroup>
 </Project>
