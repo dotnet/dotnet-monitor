@@ -186,7 +186,7 @@ stages:
         - MacOS_x64_Release
         - MacOS_arm64_Release
         pool:
-          name: NetCore1ESPool-Internal
+          name: NetCore1ESPool-Svc-Internal
           demands: ImageOverride -equals 1es-windows-2019
         enablePublishUsingPipelines: true
         enableMicrobuild: true
@@ -218,7 +218,7 @@ stages:
         - Pack_Sign
         publishUsingPipelines: true
         pool:
-          name: NetCore1ESPool-Internal
+          name: NetCore1ESPool-Svc-Internal
           demands: ImageOverride -equals 1es-windows-2019
 # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:

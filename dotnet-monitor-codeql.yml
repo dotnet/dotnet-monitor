@@ -24,7 +24,7 @@ stages:
         displayName: Windows (C++)
         timeoutInMinutes: 90
         pool:
-          name: NetCore1ESPool-Internal
+          name: NetCore1ESPool-Svc-Internal
           demands: ImageOverride -equals 1es-windows-2019
 
         steps:
@@ -56,7 +56,7 @@ stages:
         displayName: Windows (C#)
         timeoutInMinutes: 90
         pool:
-          name: NetCore1ESPool-Internal
+          name: NetCore1ESPool-Svc-Internal
           demands: ImageOverride -equals 1es-windows-2019
 
         steps:
