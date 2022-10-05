@@ -1,0 +1,94 @@
+name: 'Update release version'
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'preview' 
+        type: choice
+        options:
+        - rtm
+        - rc
+        - preview
+        - alpha
+      release_version:
+        description: 'Release version'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-release-version:
+    name: 'Update release version'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3
+
+      - name: Update release information
+        run: |
+          versionFile="./eng/Versions.props"
+
+          current_release_version=$(perl -ne '/<VersionPrefix>([^<]*)/ && print $1' $versionFile)
+          current_release_version_type=$(perl -ne '/<PreReleaseVersionLabel>([^<]*)/ && print $1' $versionFile)
+          current_prerelease_version_iteration=$(perl -ne '/<PreReleaseVersionIteration>([^<]*)/ && print $1' $versionFile)
+          declare -i current_prerelease_version_iteration
+
+          new_release_type="$release_type"
+          new_release_version="$release_version"
+          new_build_quality="release"
+          new_prerelease_iteration=0
+          declare -i new_prerelease_iteration
+
+          if [ "$release_type" == "rtm" ]; then
+              if [[ "$release_version" != *\.0 ]]; then
+                  new_release_type="servicing"
+              fi
+          else
+              if [ "$release_type" == "alpha" ]; then
+                  new_build_quality="daily"
+              fi
+
+              if [[ ! -z $current_prerelease_version_iteration ]] && [ "$release_type" == "$current_release_version_type" ] && [ "$release_version" == "$current_release_version" ]; then
+                  new_prerelease_iteration=$current_prerelease_version_iteration+1
+              else
+                  new_prerelease_iteration=1
+              fi
+          fi
+
+          # Apply the new version information
+          sed -i "s/<VersionPrefix>.*/<VersionPrefix>${new_release_version}<\/VersionPrefix>/" $versionFile
+          sed -i "s/<PreReleaseVersionLabel>.*/<PreReleaseVersionLabel>${new_release_type}<\/PreReleaseVersionLabel>/" $versionFile
+
+          sed -i "/<PreReleaseVersionIteration>/d" $versionFile
+          if [ $new_prerelease_iteration != 0 ]; then
+              sed -i "/<PreReleaseVersionLabel>.*/a\ \ \ \ <PreReleaseVersionIteration>${new_prerelease_iteration}<\/PreReleaseVersionIteration>" $versionFile
+          fi
+
+          sed -i "s/<BlobGroupBuildQuality>.*/<BlobGroupBuildQuality>${new_build_quality}<\/BlobGroupBuildQuality>/" $versionFile
+
+          sed -i "/<DotnetFinalVersionKind>/d" $versionFile
+          if [ "$release_type" == "rtm" ]; then
+              sed -i "/<PreReleaseVersionLabel>.*/a\ \ \ \ <DotnetFinalVersionKind>release<\/DotnetFinalVersionKind>" $versionFile
+          fi
+
+          echo "release_version_file=$(echo $versionFile)" >> $GITHUB_ENV
+        env:
+          release_type: ${{ inputs.release_type }}
+          release_version: ${{ inputs.release_version }}
+
+      - name: Open PR
+        uses: ./.github/actions/open-pr
+        with:
+          files_to_commit: ${{ env.release_version_file }}
+          title: '[${{ github.ref_name }}] Update release version'
+          commit_message: update release information
+          body: Update release version for ${{ inputs.release_type }} ${{ inputs.release_version }}. This PR was auto generated and will not be automatically merged in.
+          branch_name: releaseVersion/${{ inputs.release_type }}-${{ inputs.release_version }}
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
