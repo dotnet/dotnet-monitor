@@ -3,23 +3,25 @@
 
 # Definitions
 
-## CallStack
+>**NOTE:** Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
+
+## **[Experimental]** CallStack (7.0+)
 
 | Name | Type | Description |
 |---|---|---|
 | `threadId` | int | The native thread id of the managed thread. |
-| `frames` | [CallStackFrame](#callstackframe)[] | Managed frame for the thread at the time of collection. |
+| `frames` | [CallStackFrame](#experimental-callstackframe-70)[] | Managed frame for the thread at the time of collection. |
 
-## CallStackFormat
+## **[Experimental]** CallStackFormat (7.0+)
 
 Enumeration that describes the output format of the collected call stacks.
 
 | Name | Description |
 |---|---|
-| `Json` | Stacks are formatted in Json. See [CallStackResult](#callstackresult). |
+| `Json` | Stacks are formatted in Json. See [CallStackResult](#experimental-callstackresult-70). |
 | `PlainText` | Stacks are formatted in plain text. |
 
-## CallStackFrame
+## **[Experimental]** CallStackFrame (7.0+)
 
 | Name | Type | Description |
 |---|---|---|
@@ -27,11 +29,11 @@ Enumeration that describes the output format of the collected call stacks.
 | `className` | string | Name of the class for this frame. This includes generic parameters. |
 | `moduleName` | string | Name of the module for this frame. |
 
-## CallStackResult
+## **[Experimental]** CallStackResult (7.0+)
 
 | Name | Type | Description |
 |---|---|---|
-| `stacks` | [CallStack](#callstack)[] | List of all managed stacks at the time of collection. |
+| `stacks` | [CallStack](#experimental-callstack-70)[] | List of all managed stacks at the time of collection. |
 
 ## CollectionRuleDescription (6.3+)
 
