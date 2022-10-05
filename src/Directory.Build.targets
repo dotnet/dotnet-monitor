@@ -35,4 +35,75 @@
     <None Remove="$(NUGET_PACKAGES)Microsoft.Diagnostics.Tracing.TraceEvent\*\build\native\**" />
   </ItemGroup>
 
+  <Target Name="CalculateProjectRuntimeConfigTestFilePath">
+    <PropertyGroup>
+      <ProjectRuntimeConfigTestFileName Condition="'$(ProjectRuntimeConfigTestFileName)' == ''">$(AssemblyName).runtimeconfig.test.json</ProjectRuntimeConfigTestFileName>
+      <ProjectRuntimeConfigTestFilePath Condition="'$(ProjectRuntimeConfigTestFilePath)' == ''">$(TargetDir)$(ProjectRuntimeConfigTestFileName)</ProjectRuntimeConfigTestFilePath>
+    </PropertyGroup>
+  </Target>
+
+  <!--
+    Typically, the SDK will generate a runtimeconfig.json file with frameworks that it natively has included
+    with itself. This does not allow testing with newer runtime versions brought in through dependency updates.
+    The unit test apps can be rolled forward using RuntimeFrameworkVersion at build time, however we do not want
+    to do this with any binaries that are shipped e.g. dotnet-monitor. Additionally the runtime-fx argument to
+    dotnet does not work for any application that has more than one framework, such as ASP.NET apps.
+
+    The general purpose solution is to generate a custom runtimeconfig[.test].json file that instructs the
+    runtime which framework versions to use. The framework versions in this file are the ones provided by the
+    dependency flow system.
+  -->
+  <Target Name="GenerateTestRuntimeConfigurationFiles"
+          DependsOnTargets="GenerateBuildRuntimeConfigurationFiles;CalculateProjectRuntimeConfigTestFilePath"
+          BeforeTargets="CopyFilesToOutputDirectory"
+          Condition=" '$(GenerateRuntimeConfigurationFiles)' == 'true' "
+          Inputs="@(GenerateRuntimeConfigurationFilesInputs)"
+          Outputs="$(ProjectRuntimeConfigTestFilePath)">
+    <!--
+      For each target framework, copy and modify the version for NETCore and AspNetCore; include any remaining
+      frameworks that are not forcibly reversioned.
+      -->
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
+        <Version>$(MicrosoftNETCoreApp31Version)</Version>
+      </_TestRuntimeFramework>
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
+        <Version>$(MicrosoftAspNetCoreApp31Version)</Version>
+      </_TestRuntimeFramework>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
+        <Version>$(MicrosoftNETCoreApp50Version)</Version>
+      </_TestRuntimeFramework>
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
+        <Version>$(MicrosoftAspNetCoreApp50Version)</Version>
+      </_TestRuntimeFramework>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
+        <Version>$(MicrosoftNETCoreApp60Version)</Version>
+      </_TestRuntimeFramework>
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
+        <Version>$(MicrosoftAspNetCoreApp60Version)</Version>
+      </_TestRuntimeFramework>
+    </ItemGroup>
+    <ItemGroup>
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' != 'Microsoft.NETCore.App' and '%(Identity)' != 'Microsoft.AspNetCore.App' " />
+    </ItemGroup>
+    <GenerateRuntimeConfigurationFiles AssetsFilePath="$(ProjectAssetsFile)"
+                                       TargetFramework="$(TargetFramework)"
+                                       TargetFrameworkMoniker="$(TargetFrameworkMoniker)"
+                                       RuntimeConfigPath="$(ProjectRuntimeConfigTestFilePath)"
+                                       RuntimeIdentifier="$(RuntimeIdentifier)"
+                                       PlatformLibraryName="$(MicrosoftNETPlatformLibrary)"
+                                       RuntimeFrameworks="@(_TestRuntimeFramework)"
+                                       RollForward="$(RollForward)"
+                                       UserRuntimeConfig="$(UserRuntimeConfig)"
+                                       HostConfigurationOptions="@(RuntimeHostConfigurationOption)"
+                                       AdditionalProbingPaths="@(AdditionalProbingPath)"
+                                       IsSelfContained="$(SelfContained)"
+                                       WriteIncludedFrameworks="$(_WriteIncludedFrameworks)"
+                                       AlwaysIncludeCoreFramework="$(AlwaysIncludeCoreFrameworkInRuntimeConfig)" />
+  </Target>
+
 </Project>
