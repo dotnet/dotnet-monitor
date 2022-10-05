@@ -21,14 +21,17 @@ jobs:
           git fetch origin ${{ github.base_ref }}
           echo "base_sha=$(git rev-parse origin/${{ github.base_ref }})" >> $GITHUB_ENV
           echo "Merging ${{ github.sha }} into ${{ github.base_ref }}"
+
       - name: Get changed files
         run: |
           echo "Files changed: '$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }})'"
           changed_source_files=$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }} -- . ':!documentation/releaseNotes/*' | { grep "**.md$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
+          changed_source_files=$(echo ${changed_source_files} | sed 's/ documentation/,documentation/g')
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
+
       - name: Append To File
-        uses: kkeirstead/AppendToFile@main
+        uses: ./.github/actions/AppendToFile
         with:
           textToSearch: 'DGDQWXH'
           textToAdd: '### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src={insertFileName})'
@@ -40,6 +43,7 @@ jobs:
           cp $GITHUB_EVENT_PATH ./pr/pr-event.json
           echo -n $GITHUB_EVENT_NAME > ./pr/pr-event-name
           git diff > ./pr/linter.diff
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
