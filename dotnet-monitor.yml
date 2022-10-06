@@ -13,6 +13,8 @@ pr:
     - .devcontainer
     - .github
     - .vscode
+    - .gitignore
+    - eng/actions
     - '**.md'
 
 schedules:
