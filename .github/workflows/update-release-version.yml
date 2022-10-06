@@ -91,4 +91,5 @@ jobs:
           commit_message: update release information
           body: Update release version for ${{ inputs.release_type }} ${{ inputs.release_version }}. This PR was auto generated and will not be automatically merged in.
           branch_name: releaseVersion/${{ inputs.release_type }}-${{ inputs.release_version }}
+          fail_if_files_unchanged: false
           auth_token: ${{ secrets.GITHUB_TOKEN }}
