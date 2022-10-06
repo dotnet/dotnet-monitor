@@ -105,4 +105,5 @@ jobs:
           commit_message: generate release notes
           body: Add ${{ env.qualified_release_version }} release notes. This PR was auto generated and will not be automatically merged in.
           branch_name: releaseNotes/${{ env.qualified_release_version }}
+          fail_if_files_unchanged: true
           auth_token: ${{ secrets.GITHUB_TOKEN }}

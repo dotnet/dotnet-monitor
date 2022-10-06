@@ -19,6 +19,9 @@ inputs:
   labels:
     description: 'Labels to add to the PR, comma separated.'
     required: false
+  fail_if_files_unchanged:
+    description: 'Fails the action if all of the specified files_to_commit are unchanged.'
+    required: false
   auth_token:
     description: 'The token used to authenticate to GitHub.'
     required: true
@@ -35,6 +38,18 @@ runs:
         git config user.email "github-actions@github.com"
         git checkout -b "$pr_branch_name"
         git add ${{ inputs.files_to_commit }}
+
+        are_files_changed=""
+        git diff --name-only --cached --exit-code || are_files_changed="1"
+        if [ "$are_files_changed" != "1" ]; then
+          echo "No files changed, nothing to do."
+          if [ "${{ inputs.fail_if_files_unchanged }}" == "true" ]; then
+            exit 1
+          fi
+
+          exit 0
+        fi
+
         git commit -m "$pr_branch_name"
         git push --force --set-upstream origin "HEAD:$pr_branch_name"
 
