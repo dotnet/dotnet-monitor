@@ -227,7 +227,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
                 await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(endpointInfoCallback);
 
-                AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
                 runner.ScenarioName = TestAppScenarios.Logger.Name;
 
                 Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);

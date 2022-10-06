@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private Dictionary<string, TaskCompletionSource<string>> _waitingForEnvironmentVariables;
 
-        private bool _isDiposed;
+        private long _disposedState;
 
         public Architecture? Architecture
         {
@@ -94,13 +94,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public async ValueTask DisposeAsync()
         {
-            lock (_adapter)
+            if (!DisposableHelper.CanDispose(ref _disposedState))
             {
-                if (_isDiposed)
-                {
-                    return;
-                }
-                _isDiposed = true;
+                return;
             }
 
             _adapter.ReceivedStandardOutputLine -= StandardOutputCallback;
@@ -155,6 +151,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             await _adapter.StartAsync(token).ConfigureAwait(false);
 
             await _readySource.WithCancellation(token);
+        }
+
+        public Task StopAsync(CancellationToken token)
+        {
+            return _adapter.StopAsync(token);
         }
 
         public Task<int> WaitForExitAsync(CancellationToken token)
