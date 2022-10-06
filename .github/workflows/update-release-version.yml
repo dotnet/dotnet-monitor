@@ -74,6 +74,7 @@ jobs:
           sed -i "s/<BlobGroupBuildQuality>.*/<BlobGroupBuildQuality>${new_build_quality}<\/BlobGroupBuildQuality>/" $versionFile
 
           sed -i "/<DotnetFinalVersionKind>/d" $versionFile
+          # rtm on the release_type input covered both rtm and servicing
           if [ "$release_type" == "rtm" ]; then
               sed -i "/<PreReleaseVersionLabel>.*/a\ \ \ \ <DotnetFinalVersionKind>release<\/DotnetFinalVersionKind>" $versionFile
           fi
