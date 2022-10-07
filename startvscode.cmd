@@ -28,5 +28,3 @@ IF "%folder%"=="" (
 ) else (
     code "%folder%"
 )
-
-exit /b 1
