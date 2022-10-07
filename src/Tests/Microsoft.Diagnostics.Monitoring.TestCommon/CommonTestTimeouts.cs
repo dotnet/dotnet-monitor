@@ -56,12 +56,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// <summary>
         /// Default timeout for logs collection.
         /// </summary>
-        public static readonly TimeSpan LogsTimeout = TimeSpan.FromMinutes(3);
+        public static readonly TimeSpan LogsTimeout = TimeSpan.FromSeconds(10);
 
         /// <summary>
         /// Default logs collection duration.
         /// </summary>
-        public static readonly TimeSpan LogsDuration = TimeSpan.FromSeconds(10);
+        public static readonly TimeSpan LogsDuration = TimeSpan.FromSeconds(5);
 
         /// <summary>
         /// Default timeout for environment variable manipulation.

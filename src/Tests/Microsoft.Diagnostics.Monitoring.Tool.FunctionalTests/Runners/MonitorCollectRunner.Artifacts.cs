@@ -1,0 +1,123 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Tools.Monitor;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
+{
+    partial class MonitorCollectRunner
+    {
+        private readonly ConcurrentDictionary<ArtifactEventKey, List<TaskCompletionSource<object>>> _artifactCallbacks = new();
+
+        public Task WaitForStartCollectArtifactAsync(string artifactType, CancellationToken token)
+        {
+            return WaitForArtifactEventAsync(LoggingEventIds.StartCollectingArtifact.Id(), artifactType, token);
+        }
+
+        private async Task WaitForArtifactEventAsync(int eventId, string artifactType, CancellationToken token)
+        {
+            TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            ArtifactEventKey eventKey = new(eventId, artifactType);
+
+            AddArtifactEventCallback(eventKey, tcs);
+
+            try
+            {
+                await tcs.WithCancellation(token);
+            }
+            finally
+            {
+                RemoveArtifactEventCallback(eventKey, tcs);
+            }
+        }
+
+        private void HandleArtifactEvent(ConsoleLogEvent logEvent)
+        {
+            if (logEvent.State.TryGetValue("artifactType", out string artifactType))
+            {
+                ArtifactEventKey key = new(logEvent.EventId, artifactType);
+                switch ((LoggingEventIds)logEvent.EventId)
+                {
+                    case LoggingEventIds.StartCollectingArtifact:
+                        CompleteArtifactEventCallbacks(key);
+                        break;
+                }
+            }
+        }
+
+        private List<TaskCompletionSource<object>> GetArtifactEventCompletionSources(ArtifactEventKey key)
+        {
+            return _artifactCallbacks.GetOrAdd(key, _ => new List<TaskCompletionSource<object>>());
+        }
+
+        private void AddArtifactEventCallback(ArtifactEventKey key, TaskCompletionSource<object> completionSource)
+        {
+            List<TaskCompletionSource<object>> completionSources = GetArtifactEventCompletionSources(key);
+            lock (completionSources)
+            {
+                completionSources.Add(completionSource);
+            }
+        }
+
+        private void RemoveArtifactEventCallback(ArtifactEventKey key, TaskCompletionSource<object> completionSource)
+        {
+            List<TaskCompletionSource<object>> completionSources = GetArtifactEventCompletionSources(key);
+            lock (completionSources)
+            {
+                completionSources.Remove(completionSource);
+            }
+        }
+
+        private void CompleteArtifactEventCallbacks(ArtifactEventKey key)
+        {
+            List<TaskCompletionSource<object>> completionSources = GetArtifactEventCompletionSources(key);
+            lock (completionSources)
+            {
+                foreach (TaskCompletionSource<object> completionSource in completionSources)
+                {
+                    completionSource.TrySetResult(null);
+                }
+            }
+        }
+
+        private struct ArtifactEventKey : IEquatable<ArtifactEventKey>
+        {
+            private readonly int _eventId;
+            private readonly string _artifactType;
+
+            public ArtifactEventKey(int eventId, string artifactType)
+            {
+                _eventId = eventId;
+                _artifactType = artifactType;
+            }
+
+            public bool Equals(ArtifactEventKey other)
+            {
+                return _eventId == other._eventId &&
+                    string.Equals(_artifactType, other._artifactType, StringComparison.Ordinal);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is ArtifactEventKey key && Equals(key);
+            }
+
+            public override int GetHashCode()
+            {
+                HashCode code = new();
+                code.Add(_eventId);
+                code.Add(_artifactType);
+                return code.ToHashCode();
+            }
+        }
+    }
+}
