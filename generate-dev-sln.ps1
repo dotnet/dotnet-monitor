@@ -37,5 +37,4 @@ $slnFile = Get-Content $devSln
 #dotnet sln uses an older ProjectType Guid
 $slnFile -replace 'FAE04EC0-301F-11D3-BF4B-00C04F79EFBC', '9A19103F-16F7-4668-BE54-9A1E7A4F7556' | Out-File $devSln
 
-$devenvPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -property productPath
-& $devenvPath $PSScriptRoot\dotnet-monitor.dev.sln
+& "$PSScriptRoot\startvs.cmd" $PSScriptRoot\dotnet-monitor.dev.sln

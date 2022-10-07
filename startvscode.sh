@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # This command launches a Visual Studio code with environment variables required to use a local version of the .NET Core SDK.
 
@@ -20,10 +21,8 @@ if [ ! -f "$DOTNET_ROOT/dotnet" ]; then
     exit 1
 fi
 
-if [[ $1 == "" ]]; then
+if [ -z "$1" ]; then
   code .
 else
   code $1
 fi
-
-exit 1
