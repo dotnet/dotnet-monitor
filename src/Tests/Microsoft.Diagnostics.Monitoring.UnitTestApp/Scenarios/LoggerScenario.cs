@@ -35,6 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                         builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory1, LogLevel.Debug);
                         builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory2, LogLevel.Information);
                         builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning);
+                        builder.AddFilter(TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical);
                     }).BuildServiceProvider();
 
                 ILoggerFactory loggerFactory = services.GetRequiredService<ILoggerFactory>();
@@ -64,6 +65,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 LogWarningMessage(cat3Logger);
                 LogErrorMessage(cat3Logger);
                 LogCriticalMessage(cat3Logger);
+
+                ILogger sentinelCategory = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.SentinelCategory);
+                // This sentinel entry helps the logs tests to understand that they will not receive
+                // any more logging data that should be checked.
+                LogCriticalMessage(sentinelCategory);
+
+                // The log entries above may get stuck in buffers in the runtime eventing infra or
+                // in the trace event library event processor due to their close proximity in being emitted.
+                // To mitigate this, wait a short time and send another log entry, which will cause the buffer
+                // to flush the existing entries. This log entry should be ignored by the logs tests.
+                await Task.Delay(TimeSpan.FromMilliseconds(200));
+                LogCriticalMessage(sentinelCategory);
 
                 return 0;
             }, context.GetCancellationToken());

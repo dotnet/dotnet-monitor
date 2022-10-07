@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -127,6 +128,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             using CancellationTokenSource cancellation = new(timeout);
             await runner.StopAsync(cancellation.Token);
+        }
+
+        public static async Task WaitForStartCollectArtifactAsync(this MonitorCollectRunner runner, string artifactType, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+            await runner.WaitForStartCollectArtifactAsync(artifactType, cancellation.Token);
+        }
+
+        public static Task WaitForStartCollectLogsAsync(this MonitorCollectRunner runner)
+        {
+            return runner.WaitForStartCollectArtifactAsync("logs", CommonTestTimeouts.LogsTimeout);
         }
 
         public static Task WaitForCollectionRuleActionsCompletedAsync(this MonitorCollectRunner runner, string ruleName)

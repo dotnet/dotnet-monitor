@@ -167,6 +167,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
+                services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
             })
             .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
             {
