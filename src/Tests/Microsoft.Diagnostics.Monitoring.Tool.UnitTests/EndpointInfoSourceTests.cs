@@ -203,13 +203,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             dumpService.CompleteOperation();
             await dumpTask;
 
-            // Process should no longer exist
-            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
-            Assert.Empty(endpointInfos);
-
-            // Test that process removal sent notification
+            // Wait for process removal notification; this may take a few seconds for process pruning to occur
             endpointInfo = await removedEndpointTask;
             Assert.Equal(processId, endpointInfo.ProcessId);
+
+            // Test that process should no longer exist
+            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
+            Assert.Empty(endpointInfos);
         }
 
         private static void ValidateEndpointInfo(IEndpointInfo endpointInfo)
