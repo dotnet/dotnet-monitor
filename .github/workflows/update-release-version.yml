@@ -33,6 +33,12 @@ jobs:
 
       - name: Update release information
         run: |
+
+          if [[ ! "$release_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Unexpected release version, valid format is major.minor.patch without any extra labels."
+              exit 1
+          fi
+      
           versionFile="./eng/Versions.props"
 
           current_release_version=$(perl -ne '/<VersionPrefix>([^<]*)/ && print $1' $versionFile)
