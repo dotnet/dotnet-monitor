@@ -29,7 +29,7 @@
     <!-- dotnet/diagnostics references -->
     <!--
       Keep MicrosoftDiagnosticsMonitoringVersion in-sync with the latest publicly shipped version of dotnet-dump:
-      - In release branches we wonly want to use versions of Microsoft.Diagnostics.Monitoring.* packages that
+      - In release branches we want to only use versions of Microsoft.Diagnostics.Monitoring.* packages that
         were built together with other packages from dotnet/diagnostics that have publicly shipped on nuget.org.
       - Microsoft.Diagnostics.Monitoring.* packages are not shipped via nuget.org, and instead are available via
         the dotnet-tools feed, but it contains additional (often newer) versions that don't correspond to
