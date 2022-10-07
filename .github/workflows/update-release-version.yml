@@ -33,7 +33,7 @@ jobs:
 
       - name: Update release information
         run: |
-
+          # note: \d is not valid in POSIX regex
           if [[ ! "$release_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               echo "Unexpected release version, valid format is major.minor.patch without any extra labels."
               exit 1
