@@ -27,7 +27,7 @@
   
     <!-- Release-branch specific reference -->
     <!-- dotnet/diagnostics references -->
-    <PackageReference Include="Microsoft.Diagnostics.Monitoring" Version="$(MicrosoftDiagnosticsMonitoringVersion)" />
+    <PackageReference Include="dotnet-dump" Version="$(MicrosoftDiagnosticsMonitoringVersion)" />
 
   </ItemGroup>
 </Project>
