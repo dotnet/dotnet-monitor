@@ -4,12 +4,12 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 {
@@ -138,7 +138,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public static Task WaitForStartCollectLogsAsync(this MonitorCollectRunner runner)
         {
-            return runner.WaitForStartCollectArtifactAsync("logs", CommonTestTimeouts.LogsTimeout);
+            return runner.WaitForStartCollectArtifactAsync(Utils.ArtifactType_Logs, CommonTestTimeouts.LogsTimeout);
         }
 
         public static Task WaitForCollectionRuleActionsCompletedAsync(this MonitorCollectRunner runner, string ruleName)
