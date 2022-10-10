@@ -46,8 +46,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Validates that an AspNetResponseStatus trigger will fire following an HTTP trace.
         /// </summary>
-        //[Theory(Skip = "These tests will fail until #3425 in the diagnostics repo is checked in.")]
-        [Theory]
+        [Theory(Skip = "These tests will fail until #3425 in the diagnostics repo is checked in.")]
+        //[Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRuleAndApi_AspNetResponseStatusTest(DiagnosticPortConnectionMode mode)
         {
@@ -103,8 +103,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Validates that an AspNetRequestDuration trigger will fire following an HTTP trace.
         /// </summary>
-        //[Theory(Skip = "These tests will fail until #3425 in the diagnostics repo is checked in.")]
-        [Theory]
+        [Theory(Skip = "These tests will fail until #3425 in the diagnostics repo is checked in.")]
+        //[Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRuleAndApi_AspNetRequestDurationTest(DiagnosticPortConnectionMode mode)
         {
