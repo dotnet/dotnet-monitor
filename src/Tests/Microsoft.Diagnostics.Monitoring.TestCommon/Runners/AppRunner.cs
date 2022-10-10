@@ -172,9 +172,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     case "Microsoft.Diagnostics.Monitoring.UnitTestApp.Program":
                         HandleProgramEvent(logEvent);
                         break;
-                    case "Microsoft.Diagnostics.Monitoring.UnitTestWebApp.Program":
-                        HandleProgramEvent(logEvent);
-                        break;
                 }
             }
             catch (JsonException)
