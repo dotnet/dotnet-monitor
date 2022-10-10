@@ -67,7 +67,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public string AdditionalArguments { get; set; }
 
-
         public int AppId { get; }
 
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current, bool isWebApp = false)

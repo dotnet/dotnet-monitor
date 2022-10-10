@@ -26,8 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             Func<ApiClient, int, Task> postAppValidate = null,
             Action<AppRunner> configureApp = null,
             Action<MonitorCollectRunner> configureTool = null,
-            bool disableHttpEgress = false,
-            bool isWebApp = false)
+            bool disableHttpEgress = false)
         {
             DiagnosticPortHelper.Generate(
                 mode,
@@ -47,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(httpClientFactory);
             ApiClient apiClient = new(outputHelper, httpClient);
 
-            AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly(), isWebApp: isWebApp);
+            AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = scenarioName;

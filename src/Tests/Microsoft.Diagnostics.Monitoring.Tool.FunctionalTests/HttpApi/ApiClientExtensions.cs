@@ -287,7 +287,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.CaptureLogsAsync(pid, duration, configuration, logFormat, timeoutSource.Token);
         }
 
-                /// <summary>
+        /// <summary>
         /// GET /trace?pid={pid}&profile={profile}&durationSeconds={duration}
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureTraceAsync(this ApiClient client, int pid, TimeSpan duration, TraceProfile? profile)

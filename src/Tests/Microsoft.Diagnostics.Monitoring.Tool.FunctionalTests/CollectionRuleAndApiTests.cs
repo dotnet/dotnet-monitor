@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
 #if NET5_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
-        private readonly TimeSpan TraceDuration = TimeSpan.FromSeconds(5);
+        private readonly TimeSpan TraceDuration = TimeSpan.FromSeconds(1);
         private const string hostName = "http://localhost:82";
         private const string additionalArguments = "--urls http://0.0.0.0:82";
 
@@ -205,6 +205,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             int retryCounter = 0;
 
+            // Repeatedly check if dotnet-monitor is detecting our process; due to timing issues,
+            // tests were sometimes failing due to the target process not being found when collecting a trace.
             while (retryCounter < 5)
             {
                 _outputHelper.WriteLine("Retry counter: " + retryCounter);

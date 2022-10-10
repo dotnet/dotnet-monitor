@@ -410,14 +410,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return CaptureTraceAsync(GetProcessQuery(pid: pid), duration, profile, token);
         }
 
-        /// <summary>
-        /// GET /trace?uid={uid}&profile={profile}&durationSeconds={duration}
-        /// </summary>
-        public Task<ResponseStreamHolder> CaptureTraceAsync(Guid uid, TimeSpan duration, TraceProfile? profile, CancellationToken token)
-        {
-            return CaptureTraceAsync(GetProcessQuery(uid: uid), duration, profile, token);
-        }
-
         private Task<ResponseStreamHolder> CaptureTraceAsync(string processQuery, TimeSpan duration, TraceProfile? profile, CancellationToken token)
         {
             return CaptureTraceAsync(

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
-//using Microsoft.Diagnostics.Monitoring.UnitTestApp;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
