@@ -3,10 +3,6 @@ name: 'Generate release notes'
 on:
   workflow_dispatch:
     inputs:
-      last_release_tag:
-        description: 'The release tag to use as a baseline. If left empty, this will be set as the last tag on the branch.'
-        required: false
-        type: string
       include_main_prs:
         description: 'Has main been merged into this branch?'
         required: true
@@ -31,10 +27,9 @@ jobs:
         run: |
           git fetch --tags
 
-          if [ -z "$last_release_tag" ]; then
-            last_release_tag=$(git describe --tags --abbrev=0)
-          fi
-
+          # Grab the latest tag from the current branch. If it doesn't exist, grab the latest tag across all branches.
+          last_release_tag=$(git describe --tags --abbrev=0 || git describe --tags $(git rev-list --tags --max-count=1))
+          echo "Using tag: $last_release_tag"
           echo "last_release_date=$(git log -1 --format=%aI ${last_release_tag})" >> $GITHUB_ENV
 
           versionFile="./eng/Versions.props"
