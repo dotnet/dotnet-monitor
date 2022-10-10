@@ -15,20 +15,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     {
         private static readonly TimeSpan ExceptionTimeout = TimeSpan.FromSeconds(5);
 
-        public static async Task ExecuteAsync(this AppRunner runner, Func<Task> func, bool noCommands = false)
+        public static async Task ExecuteAsync(this AppRunner runner, Func<Task> func, bool noScenario = false)
         {
             try
             {
-                await runner.StartAsync(CommonTestTimeouts.StartProcess, noCommands);
+                await runner.StartAsync(CommonTestTimeouts.StartProcess, noScenario);
 
-                if (!noCommands)
+                if (!noScenario)
                 {
                     await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
                 }
 
                 await func();
 
-                if (!noCommands)
+                if (!noScenario)
                 {
                     await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
                 }
@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 // stdout/stderr messages.
                 await Task.Delay(ExceptionTimeout);
 
-                if (noCommands)
+                if (noScenario)
                 {
                     runner.KillProcess();
                 }
@@ -130,10 +130,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             return runner.StartAsync(CommonTestTimeouts.StartProcess);
         }
 
-        public static async Task StartAsync(this AppRunner runner, TimeSpan timeout, bool noCommands = false)
+        public static async Task StartAsync(this AppRunner runner, TimeSpan timeout, bool noScenario = false)
         {
             using CancellationTokenSource cancellation = new(timeout);
-            await runner.StartAsync(noCommands, cancellation.Token).ConfigureAwait(false);
+            await runner.StartAsync(noScenario, cancellation.Token).ConfigureAwait(false);
         }
 
         public static async Task<string> GetEnvironmentVariable(this AppRunner runner, string name, TimeSpan timeout)

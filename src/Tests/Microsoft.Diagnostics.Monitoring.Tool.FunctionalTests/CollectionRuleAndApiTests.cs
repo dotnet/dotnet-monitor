@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Graphs;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
@@ -98,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ExpectedFileContent);
 
                 appRunner.KillProcess();
-            }, noCommands: true);
+            }, noScenario: true);
         }
 
         /// <summary>
@@ -142,11 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
                 ApiClient apiClient = new(_outputHelper, httpClient);
 
-                ////////////////////////////
-
                 await CaptureTrace(appRunner, apiClient);
-
-                ////////////////////////////
 
                 Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
 
@@ -159,7 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ExpectedFileContent);
 
                 appRunner.KillProcess();
-            }, noCommands: true);
+            }, noScenario: true);
         }
 
         private async Task ValidateAspNetTriggerCollected(Task ruleTask, ApiClient client, string hostName, string[] paths, string expectedFilePath, string expectedFileContent)
@@ -210,7 +205,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             int retryCounter = 0;
 
-            while (retryCounter <= 5)
+            while (retryCounter < 5)
             {
                 _outputHelper.WriteLine("Retry counter: " + retryCounter);
 
@@ -223,7 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     break;
                 }
 
-                retryCounter -= 1;
+                retryCounter += 1;
                 await Task.Delay(500);
             }
 

@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private readonly TaskCompletionSource<int> _exitedSource;
 
         // The process object of the started process
-        public Process StartedProcess { get; }
+        private readonly Process _process;
 
         /// <summary>
         /// The arguments to the entrypoint method.
@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// <summary>
         /// Retrives the starting environment block of the process.
         /// </summary>
-        public IDictionary<string, string> Environment => StartedProcess.StartInfo.Environment;
+        public IDictionary<string, string> Environment => _process.StartInfo.Environment;
 
         /// <summary>
         /// Gets a <see cref="bool"/> indicating if <see cref="StartAsync(CancellationToken)"/> has been called and the process has been started.
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// <summary>
         /// Retrieves the exit code of the process.
         /// </summary>
-        public int ExitCode => StartedProcess.ExitCode;
+        public int ExitCode => _process.ExitCode;
 
         /// <summary>
         /// Gets a task that completes with the process exit code when it exits.
@@ -65,27 +65,27 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// <summary>
         /// Determines if the process has exited.
         /// </summary>
-        public bool HasExited => HasStarted && StartedProcess.HasExited;
+        public bool HasExited => HasStarted && _process.HasExited;
 
         /// <summary>
         /// Gets the process ID of the running process.
         /// </summary>
-        public int ProcessId => StartedProcess.Id;
+        public int ProcessId => _process.Id;
 
         /// <summary>
         /// Gets a <see cref="StreamReader"/> that reads stderr.
         /// </summary>
-        public StreamReader StandardError => StartedProcess.StandardError;
+        public StreamReader StandardError => _process.StandardError;
 
         /// <summary>
         /// Gets a <see cref="StreamWriter"/> that writes to stdin.
         /// </summary>
-        public StreamWriter StandardInput => StartedProcess.StandardInput;
+        public StreamWriter StandardInput => _process.StandardInput;
 
         /// <summary>
         /// Gets a <see cref="StreamReader"/> that reads stdout.
         /// </summary>
-        public StreamReader StandardOutput => StartedProcess.StandardOutput;
+        public StreamReader StandardOutput => _process.StandardOutput;
 
         /// <summary>
         /// Get or set the target framework on which the application should run.
@@ -99,25 +99,25 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public DotNetRunner()
         {
-            StartedProcess = new Process();
-            StartedProcess.StartInfo.FileName = DotNetHost.HostExePath;
-            StartedProcess.StartInfo.UseShellExecute = false;
-            StartedProcess.StartInfo.RedirectStandardError = true;
-            StartedProcess.StartInfo.RedirectStandardInput = true;
-            StartedProcess.StartInfo.RedirectStandardOutput = true;
+            _process = new Process();
+            _process.StartInfo.FileName = DotNetHost.HostExePath;
+            _process.StartInfo.UseShellExecute = false;
+            _process.StartInfo.RedirectStandardError = true;
+            _process.StartInfo.RedirectStandardInput = true;
+            _process.StartInfo.RedirectStandardOutput = true;
 
             _exitedSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _exitedHandler = (s, e) => _exitedSource.SetResult(StartedProcess.ExitCode);
+            _exitedHandler = (s, e) => _exitedSource.SetResult(_process.ExitCode);
 
-            StartedProcess.EnableRaisingEvents = true;
-            StartedProcess.Exited += _exitedHandler;
+            _process.EnableRaisingEvents = true;
+            _process.Exited += _exitedHandler;
         }
 
         public void Dispose()
         {
             ForceClose();
 
-            StartedProcess.Dispose();
+            _process.Dispose();
         }
 
         /// <summary>
@@ -159,11 +159,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
 
-            StartedProcess.StartInfo.Arguments = argsBuilder.ToString();
+            _process.StartInfo.Arguments = argsBuilder.ToString();
 
-            if (!StartedProcess.Start())
+            if (!_process.Start())
             {
-                throw new InvalidOperationException($"Unable to start: {StartedProcess.StartInfo.FileName} {StartedProcess.StartInfo.Arguments}");
+                throw new InvalidOperationException($"Unable to start: {_process.StartInfo.FileName} {_process.StartInfo.Arguments}");
             }
             HasStarted = true;
 
@@ -177,7 +177,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     {
                         token.ThrowIfCancellationRequested();
 
-                        var matchingFiles = Directory.GetFiles(Path.GetTempPath(), $"dotnet-diagnostic-{StartedProcess.Id}-*-socket");
+                        var matchingFiles = Directory.GetFiles(Path.GetTempPath(), $"dotnet-diagnostic-{_process.Id}-*-socket");
                         if (matchingFiles.Length > 0)
                         {
                             break;
@@ -194,7 +194,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public async Task WaitForExitAsync(CancellationToken token)
         {
-            if (HasStarted && !StartedProcess.HasExited)
+            if (HasStarted && !_process.HasExited)
             {
                 await ExitedTask.WithCancellation(token);
             }
@@ -205,9 +205,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public void ForceClose()
         {
-            if (HasStarted && !StartedProcess.HasExited)
+            if (HasStarted && !_process.HasExited)
             {
-                StartedProcess.Kill();
+                _process.Kill();
             }
         }
     }

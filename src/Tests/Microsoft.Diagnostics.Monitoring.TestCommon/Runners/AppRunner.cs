@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public void KillProcess()
         {
-            _adapter.Runner.StartedProcess.Kill(true);
+            _adapter.Runner.ForceClose();
         }
 
         public async ValueTask DisposeAsync()
@@ -116,9 +116,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _runner.Dispose();
         }
 
-        public async Task StartAsync(bool noCommands, CancellationToken token)
+        public async Task StartAsync(bool noScenario, CancellationToken token)
         {
-            if (!noCommands && string.IsNullOrEmpty(ScenarioName))
+            if (!noScenario && string.IsNullOrEmpty(ScenarioName))
             {
                 throw new ArgumentNullException(nameof(ScenarioName));
             }
@@ -151,7 +151,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             await _adapter.StartAsync(token).ConfigureAwait(false);
 
-            if (!noCommands)
+            if (!noScenario)
             {
                 await _readySource.WithCancellation(token);
             }
