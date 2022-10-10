@@ -6,6 +6,7 @@
 ## Prepare the release branch
 
 1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`). Note that for patch releases, fixes should be made directly to the appropriate release branch and we do not merge from the `main` branch. Note that it is acceptable to use a release/major.x branch. Alternatively, you can create a new release branch for the minor version. See [additional branch steps](#additional-steps-when-creating-a-new-release-branch) below.
+1. Review and merge in any outstanding dependabot PRs for the release branch.
 1. Run the [Update release version](https://github.com/dotnet/dotnet-monitor/actions/workflows/update-release-version.yml) workflow, setting `Use workflow from` to the release branch and correctly setting the `Release type` and `Release version` options. (*NOTE:* Release version should include only major.minor.patch, without any extra labels). Review and merge in the PR created by this workflow.
 1. If you merged from `main` in step 1, repeat the above step for the `main` branch, using `alpha` as the `Release type`.
 1. Complete at least one successful [release build](#build-release-branch).
