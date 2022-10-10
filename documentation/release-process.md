@@ -6,7 +6,7 @@
 ## Prepare the release branch
 
 1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`). Note that for patch releases, fixes should be made directly to the appropriate release branch and we do not merge from the `main` branch. Note that it is acceptable to use a release/major.x branch. Alternatively, you can create a new release branch for the minor version. See [additional branch steps](#additional-steps-when-creating-a-new-release-branch) below.
-1. Run the [Update release version](JSFIX) workflow, setting `Use workflow from` to the release branch and correctly setting the `Release type` and `Release version` options. (*NOTE:* Release version should include only major.minor.patch, without any extra labels). Review and merge in the PR created by this workflow.
+1. Run the [Update release version](https://github.com/dotnet/dotnet-monitor/actions/workflows/update-release-version.yml) workflow, setting `Use workflow from` to the release branch and correctly setting the `Release type` and `Release version` options. (*NOTE:* Release version should include only major.minor.patch, without any extra labels). Review and merge in the PR created by this workflow.
 1. Repeat the above step for the `main` branch, using `alpha` as the `Release type`.
 1. Complete at least one successful [release build](#build-release-branch).
 1. [Update dotnet-docker pipeline variables](#update-pipeline-variable-for-release) to pick up builds from the release branch.
@@ -98,7 +98,7 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 
 ## Release to nuget.org and Add GitHub Release
 
-1. Run the [Generate release notes](JSFIX) workflow, setting `Use workflow from` to the release branch and checking `Include PRs that were merged into main?` if you merged `main` into the release branch. Review and merge in the PR created by this workflow.
+1. Run the [Generate release notes](https://github.com/dotnet/dotnet-monitor/actions/workflows/generate-release-notes.yml) workflow, setting `Use workflow from` to the release branch and checking `Include PRs that were merged into main?` if you merged `main` into the release branch. Review and merge in the PR created by this workflow.
 1. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105). Allow the stages to trigger automatically (do not check the boxes in the associated dropdown). During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact (set `dotnet-monitor_build` to the pipeline run of `dotnet monitor` that is being released; set `dotnet-monitor_source` to the latest commit from `main`).
 1. The release will start the stage "Pre-Release Verification"; this will check that the above steps were done as expected. The name of the release will be updated automatically.
 1. Approve the sign-off step the day before the release after 8:45 AM PDT, when ready to publish.
