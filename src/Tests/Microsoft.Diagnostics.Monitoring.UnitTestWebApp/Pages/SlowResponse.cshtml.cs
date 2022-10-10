@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestWebApp.Pages
 
         public async Task OnGet()
         {
-            await Task.Delay(2000); // Wait two seconds to return
+            await Task.Delay(1000); // Wait one second to return
         }
     }
 }

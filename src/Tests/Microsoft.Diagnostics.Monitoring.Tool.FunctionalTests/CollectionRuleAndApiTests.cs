@@ -37,7 +37,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 #if NET5_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
         private readonly TimeSpan TraceDuration = TimeSpan.FromSeconds(5);
-        private const string hostName = "http://localhost:82";
 
         /// <summary>
         /// Validates that a non-startup rule will complete when it has an action limit specified
@@ -49,6 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         public async Task CollectionRuleAndApi_AspNetResponsesStatusTest(DiagnosticPortConnectionMode mode)
         {
             const int ExpectedResponseCount = 2;
+            const string hostName = "http://localhost:82";
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
@@ -68,8 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), isWebApp: true);
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
-
-            Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
+            appRunner.AdditionalArguments = "--urls http://0.0.0.0:82";
 
             await appRunner.ExecuteAsync(async () =>
             {
@@ -88,29 +87,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
                 ApiClient apiClient = new(_outputHelper, httpClient);
 
+                ////////////////////////////
+
+                await CaptureTrace(appRunner, apiClient);
+
+                ////////////////////////////
+
+                Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
+
                 await ValidateAspNetTriggerCollected(
                     ruleStartedTask,
                     apiClient,
-                    urlPaths,
-                    ExpectedFilePath,
-                    ExpectedFileContent);
-
-                ////////////////////////////
-
-                int processId = await appRunner.ProcessIdTask;
-
-                using ResponseStreamHolder holder = await apiClient.CaptureTraceAsync(processId, TraceDuration, WebApi.Models.TraceProfile.Http);
-                Assert.NotNull(holder);
-
-                await TraceTestUtilities.ValidateTrace(holder.Stream);
-
-                ////////////////////////////
-
-                Task ruleStartedTask2 = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
-
-                await ValidateAspNetTriggerCollected(
-                    ruleStartedTask2,
-                    apiClient,
+                    hostName,
                     urlPaths,
                     ExpectedFilePath,
                     ExpectedFileContent);
@@ -129,6 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         public async Task CollectionRuleAndApi_AspNetRequestDurationTest(DiagnosticPortConnectionMode mode)
         {
             const int ExpectedRequestCount = 2;
+            const string hostName = "http://localhost:83";
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
@@ -148,8 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), isWebApp: true);
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
-
-            Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
+            appRunner.AdditionalArguments = "--urls http://0.0.0.0:83";
 
             await appRunner.ExecuteAsync(async () =>
             {
@@ -158,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         .SetAspNetRequestDurationTrigger(options =>
                         {
                             options.RequestCount = ExpectedRequestCount;
-                            options.RequestDuration = TimeSpan.FromSeconds(1);
+                            options.RequestDuration = TimeSpan.FromSeconds(0);
                         })
                         .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
 
@@ -168,21 +156,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
                 ApiClient apiClient = new(_outputHelper, httpClient);
 
-                await ValidateAspNetTriggerCollected(
-                    ruleStartedTask,
-                    apiClient,
-                    urlPaths,
-                    ExpectedFilePath,
-                    ExpectedFileContent);
-
                 ////////////////////////////
 
-                int processId = await appRunner.ProcessIdTask;
-
-                using ResponseStreamHolder holder = await apiClient.CaptureTraceAsync(processId, TraceDuration, WebApi.Models.TraceProfile.Http);
-                Assert.NotNull(holder);
-
-                await TraceTestUtilities.ValidateTrace(holder.Stream);
+                await CaptureTrace(appRunner, apiClient);
 
                 ////////////////////////////
 
@@ -191,6 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 await ValidateAspNetTriggerCollected(
                     ruleStartedTask2,
                     apiClient,
+                    hostName,
                     urlPaths,
                     ExpectedFilePath,
                     ExpectedFileContent);
@@ -199,9 +176,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }, noCommands: true);
         }
 
-        private async Task ValidateAspNetTriggerCollected(Task ruleTask, ApiClient client, string[] paths, string expectedFilePath, string expectedFileContent)
+        private async Task ValidateAspNetTriggerCollected(Task ruleTask, ApiClient client, string hostName, string[] paths, string expectedFilePath, string expectedFileContent)
         {
-            await ApiCallHelper(paths, client);
+            await ApiCallHelper(hostName, paths, client);
 
             await ruleTask;
             Assert.True(ruleTask.IsCompleted);
@@ -212,13 +189,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             File.Delete(expectedFilePath);
         }
 
-        private async Task ApiCallHelper(string[] paths, ApiClient client)
+        private async Task ApiCallHelper(string hostName, string[] paths, ApiClient client)
         {
             foreach (string path in paths)
             {
                 string url = hostName + path;
                 _ = await client.ApiCall(url);
             }
+        }
+
+        private async Task CaptureTrace(AppRunner runner, ApiClient client)
+        {
+            int processId = await runner.ProcessIdTask;
+
+            using ResponseStreamHolder holder = await client.CaptureTraceAsync(processId, TraceDuration, WebApi.Models.TraceProfile.Http);
+            Assert.NotNull(holder);
+
+            await TraceTestUtilities.ValidateTrace(holder.Stream);
         }
 #endif
     }

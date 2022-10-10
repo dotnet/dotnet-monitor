@@ -62,6 +62,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public string ScenarioName { get; set; }
 
+        /// <summary>
+        /// Additional arguments to use with the target application.
+        /// </summary>
+        public string AdditionalArguments { get; set; }
+
+
         public int AppId { get; }
 
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current, bool isWebApp = false)
@@ -124,6 +130,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             _runner.EntrypointAssemblyPath = _appPath;
             _runner.Arguments = ScenarioName;
+
+            if (!string.IsNullOrEmpty(AdditionalArguments))
+            {
+                _runner.Arguments += " " + AdditionalArguments;
+            }
 
             // Enable diagnostics in case it is disabled via inheriting test environment.
             _adapter.Environment.Add("COMPlus_EnableDiagnostics", "1");

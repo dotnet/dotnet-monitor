@@ -159,12 +159,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
 
-            var pathSections = EntrypointAssemblyPath.Split('\\');
-            if (pathSections[pathSections.Length - 1] == "Microsoft.Diagnostics.Monitoring.UnitTestWebApp.dll")
-            {
-                argsBuilder.Append(" --urls http://0.0.0.0:82");
-            }
-
             StartedProcess.StartInfo.Arguments = argsBuilder.ToString();
 
             if (!StartedProcess.Start())
