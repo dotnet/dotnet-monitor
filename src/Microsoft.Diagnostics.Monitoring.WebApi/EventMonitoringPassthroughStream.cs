@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// Start processing the event stream, monitoring it for the requested event and transferring its data to the specified destination stream.
         /// This will continue to run until the event stream is complete or a stop is requested, regardless of if the requested event has been observed.
         /// </summary>
-        /// <param name="token">The cancellation token. It can only be signaled before processing has been started. After that point <see cref="StopProcessing"/> or <see cref="DisposeAsync"/> should be called to stop processing.</param>
+        /// <param name="token">The cancellation token. It can only be signaled before processing has been started. After that point <see cref="DisposeAsync"/> should be called to stop processing.</param>
         /// <returns></returns>
         public Task ProcessAsync(CancellationToken token)
         {

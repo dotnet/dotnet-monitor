@@ -11,13 +11,12 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tracing;
+using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,68 +35,77 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
         }
+
 #if NET5_0_OR_GREATER
-
-        private const TraceEventOpcode ExpectedEventOpcode = TraceEventOpcode.Reply;
-
         [Fact]
         public Task StopOnEvent_Succeeds_WithMatchingOpcode()
         {
-            return StopOnEventTestCore();
+            return StopOnEventTestCore(expectStoppingEvent: true);
+        }
+
+        [Fact]
+        public Task StopOnEvent_Succeeds_WithMatchingOpcodeAndNoRundown()
+        {
+            return StopOnEventTestCore(expectStoppingEvent: true, collectRundown: false);
         }
 
         [Fact]
         public Task StopOnEvent_Succeeds_WithMatchingPayload()
         {
-            return StopOnEventTestCore(payloadFilter: new Dictionary<string, string>()
+            return StopOnEventTestCore(expectStoppingEvent: true, payloadFilter: new Dictionary<string, string>()
             {
-                { "message", TestAppScenarios.TraceEvents.UniqueEventMessage }
+                { TestAppScenarios.TraceEvents.UniqueEventPayloadField, TestAppScenarios.TraceEvents.UniqueEventMessage }
             });
         }
 
         [Fact]
         public Task StopOnEvent_DoesNotStop_WhenOpcodeDoesNotMatch()
         {
-            return Assert.ThrowsAsync<TaskCanceledException>(() => StopOnEventTestCore(opcode: TraceEventOpcode.Resume));
+            return StopOnEventTestCore(expectStoppingEvent: false, opcode: TraceEventOpcode.Resume);
         }
 
         [Fact]
         public Task StopOnEvent_DoesNotStop_WhenPayloadFieldNamesMismatch()
         {
-            return Assert.ThrowsAsync<TaskCanceledException>(() => StopOnEventTestCore(payloadFilter: new Dictionary<string, string>()
+            return StopOnEventTestCore(expectStoppingEvent: false, payloadFilter: new Dictionary<string, string>()
             {
-                { "message", TestAppScenarios.TraceEvents.UniqueEventMessage },
+                { TestAppScenarios.TraceEvents.UniqueEventPayloadField, TestAppScenarios.TraceEvents.UniqueEventMessage },
                 { "foobar", "baz" }
-            }));
+            });
         }
 
         [Fact]
         public Task StopOnEvent_DoesNotStop_WhenPayloadFieldValueMismatch()
         {
-            return Assert.ThrowsAsync<TaskCanceledException>(() => StopOnEventTestCore(payloadFilter: new Dictionary<string, string>()
+            return StopOnEventTestCore(expectStoppingEvent: false, payloadFilter: new Dictionary<string, string>()
             {
-                { "message", TestAppScenarios.TraceEvents.UniqueEventMessage.ToUpperInvariant() }
-            }));
+                { TestAppScenarios.TraceEvents.UniqueEventPayloadField, TestAppScenarios.TraceEvents.UniqueEventMessage.ToUpperInvariant() }
+            });
         }
 
-        [Fact]
-        public Task StopOnEvent_UsesDuration_WhenNoEventMatchesInTime()
+        private string ConstructQualifiedEventName(string eventName, TraceEventOpcode opcode)
         {
-            return StopOnEventTestCore(opcode: TraceEventOpcode.Resume, duration: TimeSpan.FromSeconds(10));
+            return (opcode == TraceEventOpcode.Info)
+                ? eventName
+                : FormattableString.Invariant($"{eventName}/{opcode}");
         }
 
-        private async Task StopOnEventTestCore(TraceEventOpcode opcode = ExpectedEventOpcode, IDictionary<string, string> payloadFilter = null, TimeSpan? duration = null)
+        private async Task StopOnEventTestCore(bool expectStoppingEvent, TraceEventOpcode opcode = TestAppScenarios.TraceEvents.UniqueEventOpcode, bool collectRundown = true, IDictionary<string, string> payloadFilter = null, TimeSpan? duration = null)
         {
+            TimeSpan DefaultCollectTraceTimeout = TimeSpan.FromSeconds(10);
             const string DefaultRuleName = "FunctionalTestRule";
             const string EgressProvider = "TmpEgressProvider";
-            const string EventProviderName = "TestScenario";
-            const string StoppingEventName = "UniqueEvent";
-
-            string qualifiedEventName = (opcode == TraceEventOpcode.Info) ? StoppingEventName : FormattableString.Invariant($"{StoppingEventName}/{opcode}");
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
             Task ruleCompletedTask = null;
+
+            TraceEventFilter traceEventFilter = new()
+            {
+                ProviderName = TestAppScenarios.TraceEvents.EventProviderName,
+                EventName = ConstructQualifiedEventName(TestAppScenarios.TraceEvents.UniqueEventName, opcode),
+                PayloadFilter = payloadFilter
+            };
 
             await ScenarioRunner.SingleTarget(_outputHelper,
                 _httpClientFactory,
@@ -118,19 +126,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             new EventPipeProvider[] {
                                 new EventPipeProvider()
                                 {
-                                    Name = EventProviderName,
+                                    Name = TestAppScenarios.TraceEvents.EventProviderName,
                                     Keywords = "-1"
                                 }
                             },
                             EgressProvider, options =>
                             {
-                                options.Duration = duration ?? TimeSpan.Parse(ActionOptionsConstants.Duration_MaxValue);
-                                options.StoppingEvent = new TraceEventFilter()
-                                {
-                                    ProviderName = EventProviderName,
-                                    EventName = qualifiedEventName,
-                                    PayloadFilter = payloadFilter
-                                };
+                                options.Duration = duration ?? DefaultCollectTraceTimeout;
+                                options.StoppingEvent = traceEventFilter;
+                                options.RequestRundown = collectRundown;
                             });
 
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
@@ -138,17 +142,48 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             string[] files = Directory.GetFiles(tempDirectory.FullName, "*.nettrace", SearchOption.TopDirectoryOnly);
             string traceFile = Assert.Single(files);
-            await ValidateNettraceFile(traceFile);
+
+            var (hasStoppingEvent, hasRundown) = await ValidateNettraceFile(traceFile, traceEventFilter);
+            Assert.Equal(expectStoppingEvent, hasStoppingEvent);
+            Assert.Equal(collectRundown, hasRundown);
         }
 
-        private async Task ValidateNettraceFile(string filePath)
+        private Task<(bool hasStoppingEvent, bool hasRundown)> ValidateNettraceFile(string filePath, TraceEventFilter eventFilter)
         {
-            byte[] expectedMagicToken = Encoding.UTF8.GetBytes("Nettrace");
-            byte[] actualMagicToken = new byte[8];
+            return Task.Run(() =>
+            {
+                using FileStream fs = File.OpenRead(filePath);
+                using EventPipeEventSource eventSource = new(fs);
 
-            await using FileStream fs = File.OpenRead(filePath);
-            await fs.ReadAsync(actualMagicToken);
-            Assert.True(actualMagicToken.SequenceEqual(expectedMagicToken), $"{filePath} is not a Nettrace file!");
+                bool didSeeRundownEvents = false;
+                bool didSeeStoppingEvent = false;
+
+                eventSource.Dynamic.AddCallbackForProviderEvent(eventFilter.ProviderName, eventFilter.EventName, (obj) =>
+                {
+                    if (eventFilter.PayloadFilter != null)
+                    {
+                        foreach (var (fieldName, fieldValue) in eventFilter.PayloadFilter)
+                        {
+                            object payloadValue = obj.PayloadByName(fieldName);
+                            if (!string.Equals(fieldValue, payloadValue?.ToString(), StringComparison.Ordinal))
+                            {
+                                return;
+                            }
+                        }
+                    }
+
+                    didSeeStoppingEvent = true;
+                });
+
+                ClrRundownTraceEventParser rundown = new(eventSource);
+                rundown.RuntimeStart += (data) =>
+                {
+                    didSeeRundownEvents = true;
+                };
+
+                eventSource.Process();
+                return (didSeeStoppingEvent, didSeeRundownEvents);
+            });
         }
 #endif // NET5_0_OR_GREATER
     }
