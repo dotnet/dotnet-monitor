@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       include_main_prs:
-        description: 'Has main been merged into this branch?'
+        description: 'Include PRs that were merged into main?'
         required: true
         type: boolean
 
@@ -35,7 +35,6 @@ jobs:
           versionFile="./eng/Versions.props"
           release_version=$(perl -ne '/<VersionPrefix>([^<]*)/ && print $1' $versionFile)
           release_version_label=$(perl -ne '/<PreReleaseVersionLabel>([^<]*)/ && print $1' $versionFile)
-          release_version_iteration=$(perl -ne '/<PreReleaseVersionIteration>([^<]*)/ && print $1' $versionFile)
           major_minor_version=${release_version%.*}
 
           version_url="https://aka.ms/dotnet/diagnostics/monitor${major_minor_version}/release/dotnet-monitor.nupkg.version"
