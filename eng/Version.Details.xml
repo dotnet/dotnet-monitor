@@ -1,12 +1,12 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="6.0.0-preview.22505.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="6.0.0-preview.22507.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>17e1ecf644715abc38e866927592674d72a21bca</Sha>
+      <Sha>933e0d7d53faefe255f22b1e7578ad21b0ed1d84</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="6.0.0-preview.22505.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="6.0.0-preview.22507.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>17e1ecf644715abc38e866927592674d72a21bca</Sha>
+      <Sha>933e0d7d53faefe255f22b1e7578ad21b0ed1d84</Sha>
     </Dependency>
     <Dependency Name="System.CommandLine" Version="2.0.0-beta4.22504.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
