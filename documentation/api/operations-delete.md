@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Foperations-delete)
+
 # Operations - Delete
 
 Cancel a running operation. Only valid against operations in the `Running` state. Transitions the operation to `Cancelled` state.
