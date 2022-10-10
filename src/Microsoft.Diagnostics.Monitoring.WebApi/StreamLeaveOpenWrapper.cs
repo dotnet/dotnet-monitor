@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// <summary>
     /// Wraps a given stream but leaves it open on Dispose.
     /// </summary>
-    public class StreamLeaveOpenWrapper : Stream
+    public sealed class StreamLeaveOpenWrapper : Stream
     {
         private readonly Stream _baseStream;
 
