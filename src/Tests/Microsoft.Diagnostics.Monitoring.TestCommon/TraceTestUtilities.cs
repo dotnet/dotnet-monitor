@@ -5,7 +5,6 @@
 using Microsoft.Diagnostics.Tracing;
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
