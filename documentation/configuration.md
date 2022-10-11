@@ -1503,6 +1503,7 @@ An action that collects a trace of the process that the collection rule is targe
 | `BufferSizeMegabytes` | int | false | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Only applies when `Providers` is specified. | `256` | `1` | `1024` |
 | `Duration` | TimeSpan? | false | The duration of the trace operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected trace. | | | |
+| `StoppingEvent` | [TraceEventFilter](api/definitions.md#traceeventfilter)? | false | The event to watch for while collecting the trace, and once either the event is hit or the `Duration` is reached the trace will be stopped. This can only be specified if `Providers` is set. | `null` | | |
 
 ##### Outputs
 
