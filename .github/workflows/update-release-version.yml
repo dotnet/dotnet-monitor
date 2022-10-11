@@ -48,19 +48,20 @@ jobs:
 
           new_release_type="$release_type"
           new_release_version="$release_version"
-          new_build_quality="release"
+          new_build_quality="daily"
           new_prerelease_iteration=0
           declare -i new_prerelease_iteration
+
+          current_branch_name=$(git symbolic-ref --short HEAD)
+          if [[ "$qualified_release_version" =~ "^release\/" ]]; then
+              new_build_quality="release"
+          fi
 
           if [ "$release_type" == "rtm" ]; then
               if [[ "$release_version" != *\.0 ]]; then
                   new_release_type="servicing"
               fi
           else
-              if [ "$release_type" == "alpha" ]; then
-                  new_build_quality="daily"
-              fi
-
               if [[ ! -z $current_prerelease_version_iteration ]] && [ "$release_type" == "$current_release_version_type" ] && [ "$release_version" == "$current_release_version" ]; then
                   new_prerelease_iteration=$current_prerelease_version_iteration+1
               else
