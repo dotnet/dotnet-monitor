@@ -13,13 +13,13 @@
     "customizations": {
         "vscode": {
             "extensions": [
-				"ms-vscode.cpptools",
-				"ms-dotnettools.csharp",
-				"EditorConfig.EditorConfig",
-				"ms-vscode.powershell",
-				"tintoy.msbuild-project-tools",
-				"streetsidesoftware.code-spell-checker",
-				"formulahendry.dotnet-test-explorer"
+                "ms-vscode.cpptools",
+                "ms-dotnettools.csharp",
+                "EditorConfig.EditorConfig",
+                "ms-vscode.powershell",
+                "tintoy.msbuild-project-tools",
+                "streetsidesoftware.code-spell-checker",
+                "formulahendry.dotnet-test-explorer"
 			],
             "settings": {
                 "files.associations": {
