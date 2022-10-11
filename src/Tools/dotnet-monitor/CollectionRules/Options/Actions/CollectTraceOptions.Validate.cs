@@ -27,9 +27,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
             bool hasProfile = Profile.HasValue;
             bool hasProviders = null != Providers && Providers.Any();
+            bool hasStoppingEvent = null != StoppingEvent;
 
             if (hasProfile)
             {
+                if (hasStoppingEvent)
+                {
+                    results.Add(new ValidationResult(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
+                            nameof(Profile),
+                            nameof(StoppingEvent))));
+                }
+
                 if (hasProviders)
                 {
                     // Both Profile and Providers cannot be specified at the same time, otherwise
@@ -73,6 +84,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                         Strings.ErrorMessage_TwoFieldsMissing,
                         nameof(Profile),
                         nameof(Providers))));
+            }
+
+            if (hasStoppingEvent)
+            {
+                bool hasMatchingStoppingProvider = hasProviders
+                    && null != Providers.Find(x => string.Equals(x.Name, StoppingEvent.ProviderName, System.StringComparison.Ordinal));
+
+                if (!hasMatchingStoppingProvider)
+                {
+                    results.Add(new ValidationResult(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            Strings.ErrorMessage_MissingStoppingEventProvider,
+                            nameof(StoppingEvent),
+                            StoppingEvent.ProviderName,
+                            nameof(Providers))));
+                }
             }
 
             return results;
