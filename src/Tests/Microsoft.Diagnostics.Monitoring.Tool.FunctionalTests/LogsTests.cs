@@ -390,19 +390,33 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 logFormat);
         }
-
         private Task ValidateLogsAsync(
             DiagnosticPortConnectionMode mode,
             LogLevel? logLevel,
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat logFormat)
         {
-            return Retry(() => ValidateLogsAsyncCore(mode, logLevel, callback, logFormat));
+            Func<ApiClient, int, Task<ResponseStreamHolder>> captureLogs =
+                (client, pid) => client.CaptureLogsAsync(pid, CommonTestTimeouts.LogsDuration, logLevel, logFormat);
+
+            return Retry(() => ValidateLogsAsyncCore(mode, captureLogs, callback, logFormat));
+        }
+
+        private Task ValidateLogsAsync(
+            DiagnosticPortConnectionMode mode,
+            LogsConfiguration configuration,
+            Func<ChannelReader<LogEntry>, Task> callback,
+            LogFormat logFormat)
+        {
+            Func<ApiClient, int, Task<ResponseStreamHolder>> captureLogs =
+                (client, pid) => client.CaptureLogsAsync(pid, CommonTestTimeouts.LogsDuration, configuration, logFormat);
+
+            return Retry(() => ValidateLogsAsyncCore(mode, captureLogs, callback, logFormat));
         }
 
         private Task ValidateLogsAsyncCore(
             DiagnosticPortConnectionMode mode,
-            LogLevel? logLevel,
+            Func<ApiClient, int, Task<ResponseStreamHolder>> captureLogs,
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat logFormat)
         {
@@ -412,73 +426,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 mode,
                 TestAppScenarios.Logger.Name,
                 appValidate: async (runner, client) =>
-                    await ValidateResponseStream(
-                        runner,
-                        client.CaptureLogsAsync(
-                            await runner.ProcessIdTask,
-                            CommonTestTimeouts.LogsDuration,
-                            logLevel,
-                            logFormat),
-                        callback,
-                        logFormat));
-        }
+                {
+                    Task<ResponseStreamHolder> holderTask = captureLogs(client, await runner.ProcessIdTask);
 
-        private Task ValidateLogsAsync(
-            DiagnosticPortConnectionMode mode,
-            LogsConfiguration configuration,
-            Func<ChannelReader<LogEntry>, Task> callback,
-            LogFormat logFormat)
-        {
-            return Retry(() => ValidateLogsAsyncCore(mode, configuration, callback, logFormat));
-        }
+                    // CONSIDER: Give dotnet-monitor some time to start the logs pipeline before having the target
+                    // application start logging. It would be best if dotnet-monitor could write a console event
+                    // (at Debug or Trace level) for when the pipeline has started. This would require dotnet-monitor
+                    // to know when the pipeline started and is waiting for logging data.
+                    await Task.Delay(TimeSpan.FromSeconds(3));
 
-        private Task ValidateLogsAsyncCore(
-            DiagnosticPortConnectionMode mode,
-            LogsConfiguration configuration,
-            Func<ChannelReader<LogEntry>, Task> callback,
-            LogFormat logFormat)
-        {
-            return ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                mode,
-                TestAppScenarios.Logger.Name,
-                appValidate: async (runner, client) =>
-                    await ValidateResponseStream(
-                        runner,
-                        client.CaptureLogsAsync(
-                            await runner.ProcessIdTask,
-                            CommonTestTimeouts.LogsDuration,
-                            configuration,
-                            logFormat),
-                        callback,
-                        logFormat));
-        }
+                    // Start logging in the target application
+                    await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
 
-        private async Task ValidateResponseStream(AppRunner runner, Task<ResponseStreamHolder> holderTask, Func<ChannelReader<LogEntry>, Task> callback, LogFormat logFormat)
-        {
-            Assert.NotNull(runner);
-            Assert.NotNull(holderTask);
-            Assert.NotNull(callback);
+                    // Await the holder after sending the message to start logging so that ASP.NET can send chunked responses.
+                    // If awaited before sending the message, ASP.NET will not send the complete set of headers because no data
+                    // is written into the response stream. Since HttpClient.SendAsync has to wait for the complete set of headers,
+                    // the /logs invocation would run and complete with no log events. To avoid this, the /logs invocation is started,
+                    // then the StartLogging message is sent, and finally the holder is awaited.
+                    using ResponseStreamHolder holder = await holderTask;
+                    Assert.NotNull(holder);
 
-            // CONSIDER: Give dotnet-monitor some time to start the logs pipeline before having the target
-            // application start logging. It would be best if dotnet-monitor could write a console event
-            // (at Debug or Trace level) for when the pipeline has started. This would require dotnet-monitor
-            // to know when the pipeline started and is waiting for logging data.
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            // Start logging in the target application
-            await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
-
-            // Await the holder after sending the message to start logging so that ASP.NET can send chunked responses.
-            // If awaited before sending the message, ASP.NET will not send the complete set of headers because no data
-            // is written into the response stream. Since HttpClient.SendAsync has to wait for the complete set of headers,
-            // the /logs invocation would run and complete with no log events. To avoid this, the /logs invocation is started,
-            // then the StartLogging message is sent, and finally the holder is awaited.
-            using ResponseStreamHolder holder = await holderTask;
-            Assert.NotNull(holder);
-
-            await LogsTestUtilities.ValidateLogsEquality(holder.Stream, callback, logFormat, _outputHelper);
+                    await LogsTestUtilities.ValidateLogsEquality(holder.Stream, callback, logFormat, _outputHelper);
+                });
         }
 
         private async Task Retry(Func<Task> func, int attemptCount = 5)

@@ -8,6 +8,7 @@
 
 CommandServer::CommandServer(const std::shared_ptr<ILogger>& logger, ICorProfilerInfo12* profilerInfo) :
     _shutdown(false),
+    _server(logger),
     _logger(logger),
     _profilerInfo(profilerInfo)
 {

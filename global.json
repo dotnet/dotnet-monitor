@@ -1,8 +1,13 @@
 {
   "tools": {
-    "dotnet": "7.0.100-preview.7.22377.5",
+    "dotnet": "7.0.100-rc.1.22431.12",
     "runtimes": {
       "aspnetcore": [
+        "$(MicrosoftAspNetCoreApp31Version)",
+        "$(MicrosoftAspNetCoreApp60Version)",
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
+      ],
+      "aspnetcore/x86": [
         "$(MicrosoftAspNetCoreApp31Version)",
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
@@ -11,11 +16,16 @@
         "$(MicrosoftNETCoreApp31Version)",
         "$(MicrosoftNETCoreApp60Version)",
         "$(VSRedistCommonNetCoreSharedFrameworkx6470Version)"
+      ],
+      "dotnet/x86": [
+        "$(MicrosoftNETCoreApp31Version)",
+        "$(MicrosoftNETCoreApp60Version)",
+        "$(VSRedistCommonNetCoreSharedFrameworkx6470Version)"
       ]
     }
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "2.0.1",
-    "Microsoft.DotNet.Arcade.Sdk": "7.0.0-beta.22456.8"
+    "Microsoft.DotNet.Arcade.Sdk": "8.0.0-beta.22503.1"
   }
 }

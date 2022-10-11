@@ -28,6 +28,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private readonly Process _process;
 
         /// <summary>
+        /// The architecture of the dotnet host.
+        /// </summary>
+        public Architecture? Architecture { get; set; } = null;
+
+        /// <summary>
         /// The arguments to the entrypoint method.
         /// </summary>
         public string Arguments { get; set; }
@@ -58,11 +63,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public Task<int> ExitedTask => _exitedSource.Task;
 
         /// <summary>
-        /// The framework reference of the app to run.
-        /// </summary>
-        public DotNetFrameworkReference FrameworkReference { get; set; } = DotNetFrameworkReference.Microsoft_NetCore_App;
-
-        /// <summary>
         /// Determines if the process has exited.
         /// </summary>
         public bool HasExited => HasStarted && _process.HasExited;
@@ -88,11 +88,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public StreamReader StandardOutput => _process.StandardOutput;
 
         /// <summary>
-        /// Get or set the target framework on which the application should run.
-        /// </summary>
-        public TargetFrameworkMoniker TargetFramework { get; set; } = TargetFrameworkMoniker.Current;
-
-        /// <summary>
         /// Determines if <see cref="StartAsync(CancellationToken)" /> should wait for the diagnostic pipe to be available.
         /// </summary>
         public bool WaitForDiagnosticPipe { get; set; }
@@ -100,7 +95,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public DotNetRunner()
         {
             _process = new Process();
-            _process.StartInfo.FileName = DotNetHost.HostExePath;
             _process.StartInfo.UseShellExecute = false;
             _process.StartInfo.RedirectStandardError = true;
             _process.StartInfo.RedirectStandardInput = true;
@@ -125,40 +119,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public async Task StartAsync(CancellationToken token)
         {
-            string frameworkVersion = null;
-            switch (FrameworkReference)
-            {
-                case DotNetFrameworkReference.Microsoft_AspNetCore_App:
-                    // Starting in .NET 6, the .NET SDK is emitting two framework references
-                    // into the .runtimeconfig.json file. This is preventing the --fx-version
-                    // parameter from having the correct effect of using the exact framework version
-                    // that we want. Disabling this forced version usage for ASP.NET 6+ applications
-                    // until it can be resolved.
-                    if (!TargetFramework.IsEffectively(TargetFrameworkMoniker.Net60) &&
-                        !TargetFramework.IsEffectively(TargetFrameworkMoniker.Net70))
-                    {
-                        frameworkVersion = TargetFramework.GetAspNetCoreFrameworkVersionString();
-                    }
-                    break;
-                case DotNetFrameworkReference.Microsoft_NetCore_App:
-                    frameworkVersion = TargetFramework.GetNetCoreAppFrameworkVersionString();
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unsupported framework reference: {FrameworkReference}");
-            }
-
             StringBuilder argsBuilder = new();
-            if (!string.IsNullOrEmpty(frameworkVersion))
+            if (DotNetHost.HasHostInRepository)
             {
-                argsBuilder.Append("--fx-version ");
-                argsBuilder.Append(frameworkVersion);
-                argsBuilder.Append(" ");
+                argsBuilder.Append("exec --runtimeconfig \"");
+                argsBuilder.Append(Path.ChangeExtension(EntrypointAssemblyPath, ".runtimeconfig.test.json"));
+                argsBuilder.Append("\" ");
             }
             argsBuilder.Append("\"");
             argsBuilder.Append(EntrypointAssemblyPath);
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
 
+            _process.StartInfo.FileName = DotNetHost.GetPath(Architecture);
             _process.StartInfo.Arguments = argsBuilder.ToString();
 
             if (!_process.Start())

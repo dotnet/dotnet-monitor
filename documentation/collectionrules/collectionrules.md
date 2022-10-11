@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fcollectionrules%2Fcollectionrules)
+
 # Collection Rules
 
 `dotnet monitor` can be [configured](./../configuration.md#collection-rule-configuration) to automatically collect diagnostic artifacts based on conditions within the discovered processes.
@@ -56,6 +59,7 @@ The following are the currently available actions:
 | [CollectGCDump](./../configuration.md#collectgcdump-action) | Collects a gcdump of the target process. |
 | [CollectLiveMetrics](./../configuration.md#collectlivemetrics-action) | Collects live metrics from the target process. |
 | [CollectLogs](./../configuration.md#collectlogs-action) | Collects logs from the target process. |
+| [CollectStacks](./../configuration.md#collectstacks-action) | Collects call stacks from the target process. |
 | [CollectTrace](./../configuration.md#collecttrace-action) | Collects an event trace of the target process. |
 | [Execute](./../configuration.md#execute-action) | Executes an external executable with command line parameters. |
 | [LoadProfiler](./../configuration.md#loadprofiler-action) | Loads an ICorProfilerCallback implementation into the target process. |
