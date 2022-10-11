@@ -47,3 +47,4 @@ jobs:
       with:
         target_branch: ${{ steps.target-branch-extractor.outputs.result }}
         auth_token: ${{ secrets.GITHUB_TOKEN }}
+        label: backport
