@@ -4,6 +4,7 @@
 
 #pragma once
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
 #include <memory>
 #include <mutex>
 #include <unordered_map>
@@ -43,3 +44,4 @@ public:
 private:
     HRESULT GetThreadData(ThreadID threadId, std::shared_ptr<ThreadData>& threadData);
 };
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS

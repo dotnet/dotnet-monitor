@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor.Commands;
+using System;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.IO;
@@ -207,6 +208,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static Task<int> Main(string[] args)
         {
+            // Prevent child processes from inheriting startup hooks
+            Environment.SetEnvironmentVariable("DOTNET_STARTUP_HOOKS", null);
+
+            TestAssemblies.SimulateStartupHook();
+
             var parser = new CommandLineBuilder(new RootCommand()
             {
                 CollectCommand(),

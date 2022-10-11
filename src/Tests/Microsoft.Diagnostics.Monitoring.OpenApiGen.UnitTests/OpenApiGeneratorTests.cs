@@ -103,7 +103,6 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
             string path = Path.GetTempFileName();
 
             DotNetRunner runner = new();
-            runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
             runner.EntrypointAssemblyPath = OpenApiGenPath;
             runner.Arguments = path;
 

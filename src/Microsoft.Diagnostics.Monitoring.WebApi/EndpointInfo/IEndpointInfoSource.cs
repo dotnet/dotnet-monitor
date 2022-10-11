@@ -23,6 +23,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         string OperatingSystem { get; }
 
         string ProcessArchitecture { get; }
+
+        Version RuntimeVersion { get; }
     }
 
     /// <summary>
@@ -42,6 +44,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public abstract string CommandLine { get; protected set; }
         public abstract string OperatingSystem { get; protected set; }
         public abstract string ProcessArchitecture { get; protected set; }
+
+        public abstract Version RuntimeVersion { get; protected set; }
     }
 
     public interface IEndpointInfoSource

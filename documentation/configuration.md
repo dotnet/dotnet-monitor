@@ -1,6 +1,11 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration)
+
 # Configuration
 
 `dotnet monitor` has extensive configuration to control various aspects of its behavior. Ordinarily, you are not required to specify most of this configuration and only exists if you wish to change the default behavior in `dotnet monitor`.
+
+>**NOTE:** Some features are [experimental](./experimental.md) and are denoted as `**[Experimental]**` in this document.
 
 ## Configuration Sources
 
@@ -17,7 +22,7 @@
 
 - Environment variables
 - User-Specified json file
-  - Use the `--configuration-file-path` flag from the command line to specify your own configuration file (using its full path).
+  - (6.3+) Use the `--configuration-file-path` flag from the command line to specify your own configuration file (using its full path).
 
 ### Translating configuration between providers
 
@@ -314,7 +319,49 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 
 ## Storage Configuration
 
+Some diagnostic features (e.g. memory dumps, stack traces) require that a directory is shared between the `dotnet monitor` tool and the target applications. The `Storage` configuration section allows specifying these directories to facilitate this sharing.
+
+### Default Shared Path (7.0+)
+
+The default shared path option (`DefaultSharedPath`) can be set, which allows artifacts to be shared automatically without requiring additional configuration for each artifact type. By setting this property with an appropriate value, the following become available:
+- dumps are temporarily stored in this directory or in a subdirectory.
+- **[Experimental]** shared libraries are shared from `dotnet monitor` to target applications in this directory or in a subdirectory.
+- **[Experimental]** in-process diagnostics share files back to `dotnet monitor` in this directory or in a subdirectory.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Storage": {
+      "DefaultSharedPath": "/diag"
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  Storage__DefaultSharedPath: "/diag"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_Storage__DefaultSharedPath
+    value: "/diag"
+  ```
+</details>
+
+### Dumps Path
+
 Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't streamed back from the target process to `dotnet monitor`. Instead, they are written directly to disk by the runtime. After successful collection of a process dump, `dotnet monitor` will read the process dump directly from disk. In the default configuration, the directory that the runtime writes its process dump to is the temp directory (`%TMP%` on Windows, `/tmp` on \*nix). It is possible to change to the ephemeral directory that these dump files get written to via the following configuration:
+
+>**Note:** This option is optional if `dotnet monitor` is running in the same process namespace as the target processes or if `DefaultSharedPath` is specified.
 
 <details>
   <summary>JSON</summary>
@@ -342,6 +389,41 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
   ```yaml
   - name: DotnetMonitor_Storage__DumpTempFolder
     value: "/diag/dumps/"
+  ```
+</details>
+
+### **[Experimental]** Shared Library Path (7.0+)
+
+The shared library path option (`SharedLibraryPath`) allows specifying the path to where shared libraries are copied from the `dotnet monitor` installation to make them available to target applications for in-process diagnostics scenarios, such as call stack collection.
+
+>**Note:** This option is not required if `DefaultSharedPath` is specified. This option provides an alternative directory path compared to the behavior of specifying `DefaultSharedPath`.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Storage": {
+      "SharedLibraryPath": "/diag/libs/"
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  Storage__SharedLibraryPath: "/diag/libs/"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_Storage__SharedLibraryPath
+    value: "/diag/libs/"
   ```
 </details>
 
@@ -725,8 +807,8 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | sharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the SAS token; if using SAS, must be specified if `sharedAccessSignature` is not specified.|
 | queueName | string | false | The name of the queue to which a message will be dispatched upon writing to a blob.|
 | queueAccountUri | string | false | The URI of the Azure queue storage account.|
-| queueSharedAccessSignature | string | false | The shared access signature (SAS) used to access the Azure queue storage account; if using SAS, must be specified if `queueSharedAccessSignatureName` is not specified.|
-| queueSharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
+| queueSharedAccessSignature | string | false | (6.3+) The shared access signature (SAS) used to access the Azure queue storage account; if using SAS, must be specified if `queueSharedAccessSignatureName` is not specified.|
+| queueSharedAccessSignatureName | string | false | (6.3+) Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
 | metadata | Dictionary<string, string> | false | A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.|
 
 ***Note:*** Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.
@@ -1673,6 +1755,19 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
   ```
 </details>
 
+#### **[Experimental]** `CollectStacks` Action (7.0+)
+
+Collect call stacks from the target process.
+
+>**NOTE:** This feature is [experimental](./experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Format` | [CallStackFormat](api/definitions.md#experimental-callstackformat-70) | false | The format of the collected call stack. | `Json` |
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected stacks. | |
+
 #### `LoadProfiler` Action
 
 An action that loads an [ICorProfilerCallback](https://docs.microsoft.com/en-us/dotnet/framework/unmanaged-api/profiling/icorprofilercallback-interface) implementation into a target process as a startup profiler. This action must be used in a collection rule with a `Startup` trigger.
@@ -2040,5 +2135,46 @@ The following example includes a default egress provider that corresponds to the
     value: "CollectGCDump"
   - name: DotnetMonitor_CollectionRules__HighRequestCount__Actions__1__Settings__Egress
     value: "monitorBlob"
+  ```
+</details>
+
+## **[Experimental]** In-Process Features Configuration (7.0+)
+
+Some features of `dotnet monitor` require loading libraries into target applications. These libraries ship with `dotnet monitor` and are provisioned to be available to target applications using the `DefaultSharedPath` option in the [storage configuration](#storage-configuration) section. The following features require these in-process libraries to be used:
+
+- Call stack collection
+
+Because these libraries are loaded into the target application (they are not loaded into `dotnet monitor`), they may have performance impact on memory and CPU utilization in the target application. These features are off by default and may be enabled via the `InProcessFeatures` configuration section.
+
+### Example
+
+To enable in-process features, such as call stack collection, use the following configuration:
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "InProcessFeatures": {
+      "Enabled": true
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  InProcessFeatures__Enabled: "true"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_InProcessFeatures__Enabled
+    value: "true"
   ```
 </details>

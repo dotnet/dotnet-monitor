@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
 #include "ThreadDataManager.h"
 #include "macros.h"
 #include <utility>
@@ -104,3 +105,4 @@ HRESULT ThreadDataManager::GetThreadData(ThreadID threadId, shared_ptr<ThreadDat
 
     return S_OK;
 }
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
