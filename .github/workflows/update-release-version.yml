@@ -53,7 +53,7 @@ jobs:
           declare -i new_prerelease_iteration
 
           current_branch_name=$(git symbolic-ref --short HEAD)
-          if [[ "$qualified_release_version" =~ "^release\/" ]]; then
+          if [[ "$current_branch_name" =~ ^release\/* ]]; then
               new_build_quality="release"
           fi
 
