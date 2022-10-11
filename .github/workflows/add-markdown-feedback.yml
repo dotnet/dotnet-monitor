@@ -25,7 +25,7 @@ jobs:
       - name: Get changed files
         run: |
           echo "Files changed: '$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }})'"
-          changed_source_files=$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }} -- . ':!documentation/releaseNotes/*' | { grep "**.md$" || test $? = 1; })
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }} -- documentation ':!documentation/releaseNotes/*' | { grep "**.md$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
           changed_source_files=$(echo ${changed_source_files} | sed 's/ documentation/,documentation/g')
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
