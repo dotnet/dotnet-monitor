@@ -13,13 +13,14 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "ms-vscode.cpptools",
-                "ms-dotnettools.csharp",
-                "EditorConfig.EditorConfig",
-                "ms-vscode.powershell",
-                "tintoy.msbuild-project-tools",
-                "streetsidesoftware.code-spell-checker"
-            ],
+				"ms-vscode.cpptools",
+				"ms-dotnettools.csharp",
+				"EditorConfig.EditorConfig",
+				"ms-vscode.powershell",
+				"tintoy.msbuild-project-tools",
+				"streetsidesoftware.code-spell-checker",
+				"formulahendry.dotnet-test-explorer"
+			],
             "settings": {
                 "files.associations": {
                     "*.csproj": "msbuild",
@@ -48,7 +49,11 @@
                 // ms-vscode.powershell settings
                 "powershell.promptToUpdatePowerShell": false,
                 "powershell.integratedConsole.showOnStartup": false,
-                "powershell.startAutomatically": false
+                "powershell.startAutomatically": false,
+
+                // formulahendry.dotnet-test-explorer settings
+                "dotnet-test-explorer.testProjectPath": "src/Tests/*Tests/*Tests.csproj",
+                "dotnet-test-explorer.runInParallel": true
             }
         }
     },
@@ -57,7 +62,8 @@
     "features": {
         "github-cli": "latest",
         "azure-cli": "latest",
-        "powershell": "latest"
+        "powershell": "latest",
+        "docker-in-docker": "latest"
     },
     "remoteEnv": {
         "PATH": "${containerWorkspaceFolder}/.dotnet:${containerEnv:PATH}",
