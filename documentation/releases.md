@@ -7,7 +7,7 @@
 
 | Version | Original Release Date | Latest Patch Version | Patch Release Date | End of Support | Runtime Frameworks |
 |---|---|---|---|---|---|
-| 6.3 | October 11, 2022 | [6.3.0](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releaseNotes/releaseNotes.v6.3.0.md) | | | .NET Core 3.1 (with major roll forward)<br/>.NET 6 |
+| 6.3 | October 11, 2022 | [6.3.0](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releaseNotes/releaseNotes.v6.3.0.md) | October 11, 2022 | | .NET Core 3.1 (with major roll forward)<br/>.NET 6 |
 | 6.2 | June 14, 2022 | [6.2.2](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releaseNotes/releaseNotes.v6.2.2.md) | August 9, 2022 | January 11, 2023 | .NET Core 3.1 (with major roll forward)<br/>.NET 6 |
 
 ## Out of support versions
