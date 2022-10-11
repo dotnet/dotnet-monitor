@@ -10,8 +10,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     {
         public EgressArtifactSettings Settings { get; set; }
         public IDictionary<string, string> Properties { get; set; }
-        public IDictionary<string, string> Configuration { get; set; }
         public string FilePath { get; set; }
+        public IDictionary<string, object> Configuration { get; set; }
         public string ProviderName { get; set; }
     }
 }

@@ -7,25 +7,6 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using System.CommandLine;
 using System.Text.Json;
 
-/*
- *   <ItemGroup>
-    <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="ExternalRefs\LoggingEventIds.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressProvider.cs" Link="ExternalRefs\EgressProvider.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\IEgressProvider.cs" Link="ExternalRefs\IEgressProvider.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressProviderTypes.cs" Link="ExternalRefs\EgressProviderTypes.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressException.cs" Link="ExternalRefs\EgressException.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressArtifactSettings.cs" Link="ExternalRefs\EgressArtifactSettings.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProvider.cs" Link="ExternalRefs\AzureBlobEgressProvider.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProvider.AutoFlushStream.cs" Link="ExternalRefs\AzureBlobEgressProvider.AutoFlushStream.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\Extension\EgressArtifactResult.cs" Link="ExternalRefs\EgressArtifactResult.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\IEgressProviderCommonOptions.cs" Link="ExternalRefs\IEgressProviderCommonOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\OptionsDisplayStrings.Designer.cs" Link="ExternalRefs\OptionsDisplayStrings.Designer.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Extensibility\IExtensionResult.cs" Link="ExternalRefs\IExtensionResult.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\AzureBlobEgressProviderOptions.cs" Link="ExternalRefs\AzureBlobEgressProviderOptions.cs" />
-  </ItemGroup>
-*/
-
-
 namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
     internal class Program
@@ -34,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
         static async Task<int> Main(string[] args)
         {
-            // Expected command line format is: AzureBlobStorage.exe Egress --Provider-Name MyProviderEndpointName
+            // Expected command line format is: AzureBlobStorage.exe Egress
             RootCommand rootCommand = new RootCommand("Egresses an artifact to Azure Storage.");
 
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.")
@@ -63,7 +44,8 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
-                result.ArtifactPath = await provider.EgressAsync(configPayload.ProfileName, options, GetStream, configPayload.Settings, CancelSource.Token);
+                result.ArtifactPath = await provider.EgressAsync(options, GetStream, configPayload.Settings, CancelSource.Token);
+
                 result.Succeeded = true;
             }
             catch (Exception ex)
@@ -136,6 +118,21 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             }
             return new Uri(uriStr);
         }
+<<<<<<< HEAD
+=======
+
+        private static Dictionary<string, string> GetDictionaryConfig(Dictionary<string, object> configDict, string propKey)
+        {
+            if (configDict.ContainsKey(propKey))
+            {
+                if (configDict[propKey] is JsonElement element)
+                {
+                    return JsonSerializer.Deserialize<Dictionary<string, string>>(element);
+                }
+            }
+            return null;
+        }
+>>>>>>> 1e71968a (Removing some unused files; still works)
     }
 
     internal class ExtensionEgressPayload
@@ -145,5 +142,4 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
         public Dictionary<string, string> Configuration { get; set; }
         public string ProfileName { get; set; }
     }
-
 }
