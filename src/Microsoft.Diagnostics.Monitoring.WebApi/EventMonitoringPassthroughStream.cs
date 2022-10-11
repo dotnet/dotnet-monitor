@@ -85,17 +85,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// Start processing the event stream, monitoring it for the requested event and transferring its data to the specified destination stream.
         /// This will continue to run until the event stream is complete or a stop is requested, regardless of if the requested event has been observed.
         /// </summary>
-        /// <param name="token">The cancellation token. It can only be signaled before processing has been started. After that point <see cref="DisposeAsync"/> should be called to stop processing.</param>
+        /// <param name="token">The cancellation token.</param>
         /// <returns></returns>
         public Task ProcessAsync(CancellationToken token)
         {
             return Task.Run(() =>
             {
                 _eventSource = new EventPipeEventSource(this);
+                token.ThrowIfCancellationRequested();
+                using IDisposable registration = token.Register(() => _eventSource.Dispose());
+
                 _eventSource.Dynamic.AddCallbackForProviderEvent(_providerName, _eventName, TraceEventCallback);
 
                 // The EventPipeEventSource will drive the transferring of data to the destination stream as it processes events.
                 _eventSource.Process();
+                token.ThrowIfCancellationRequested();
             }, token);
         }
 
@@ -147,7 +151,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             // If there's no payload filter, there's nothing to do.
             if (_payloadFilter == null || _payloadFilter.Count == 0)
             {
-                _payloadFilterIndexCache = new(capacity: 0);
+                _payloadFilterIndexCache = new Dictionary<int, string>(capacity: 0);
                 return true;
             }
 
@@ -242,8 +246,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public override void CopyTo(Stream destination, int bufferSize) => throw new NotSupportedException();
         public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken) => throw new NotSupportedException();
 
-        public override void Flush() => _sourceStream.Flush();
-        public override Task FlushAsync(CancellationToken cancellationToken) => _sourceStream.FlushAsync(cancellationToken);
+        public override void Flush() => _destinationStream.Flush();
+        public override Task FlushAsync(CancellationToken cancellationToken) => _destinationStream.FlushAsync(cancellationToken);
 
         public override async ValueTask DisposeAsync()
         {

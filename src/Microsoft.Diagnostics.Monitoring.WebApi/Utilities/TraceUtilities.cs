@@ -141,6 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             if (stoppingEventHitSource.Task.IsCompleted)
             {
                 await pipeProcessor.StopAsync(token);
+                await pipelineRunTask;
             }
         }
     }
