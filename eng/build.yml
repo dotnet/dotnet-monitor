@@ -65,16 +65,16 @@ jobs:
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
       ${{ if eq(parameters.architecture, 'arm64') }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-20220312201346-b2c2436
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64
       ${{ else }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-20220107135107-9b5bbc2
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7
 
     ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       ${{ if eq(parameters.architecture, 'arm64') }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine-20220312201346-538077f
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine
       ${{ else }}:
         # CMake + Clang is broken on Alpine 3.14 prereqs image
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode-20211214164113-c401c85
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
