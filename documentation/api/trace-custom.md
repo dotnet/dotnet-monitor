@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=trace-customdocumentation%2Fapi%2F)
+
 # Trace - Get Custom
 
 Captures a diagnostic trace of a process using the given set of event providers specified in the request body.
@@ -24,7 +27,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `durationSeconds` | query | false | int | The duration of the trace operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected trace. When not specified, the trace is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 
-See [ProcessIdentifier](definitions.md#ProcessIdentifier) for more details about the `pid`, `uid`, and `name` parameters.
+See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
 If none of `pid`, `uid`, or `name` are specified, a trace of the [default process](defaultprocess.md) will be captured. Attempting to capture a trace of the default process when the default process cannot be resolved will fail.
 
@@ -38,7 +41,7 @@ Allowed schemes:
 
 ## Request Body
 
-A request body of type [EventProvidersConfiguration](definitions.md#EventProvidersConfiguration) is required.
+A request body of type [EventProvidersConfiguration](definitions.md#eventprovidersconfiguration) is required.
 
 The expected content type is `application/json`.
 
@@ -48,7 +51,7 @@ The expected content type is `application/json`.
 |---|---|---|---|
 | 200 OK | stream | A trace of the process. | `application/octet-stream` |
 | 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
-| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many trace requests at this time. Try to request a trace at a later time. | `application/problem+json` |
 

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dotnet-monitor-egress
+data:
+  Egress__FileSystem__monitorFile__directoryPath: /diag
+  Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
+  Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
+  Egress__AzureBlobStorage__monitorBlob__blobPrefix: "artifacts"
+  Egress__AzureBlobStorage__monitorBlob__managedIdentityClientId: "ffffffff-ffff-ffff-ffff-ffffffffffff"

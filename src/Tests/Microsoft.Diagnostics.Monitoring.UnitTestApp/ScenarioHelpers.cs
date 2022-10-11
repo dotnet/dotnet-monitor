@@ -4,10 +4,13 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,11 +25,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             using ServiceProvider hostServices = new ServiceCollection()
                 .AddLogging(builder =>
                 {
-                    builder.AddFilter(typeof(Program).FullName, LogLevel.Debug)
-                        .AddJsonConsole(options =>
-                        {
-                            options.UseUtcTimestamp = true;
-                        });
+                    builder.AddFilter(typeof(Program).FullName, LogLevel.Debug);
+                    // Console logger infra is not writing out all lines during process lifetime
+                    // which causes the coordination between the unit test and the test app to fail.
+                    // Temporarily replace with custom JSON console logger.
+                    //builder.AddJsonConsole(options =>
+                    //{
+                    //    options.UseUtcTimestamp = true;
+                    //});
+                    builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, JsonConsoleLoggerProvider>());
                 }).BuildServiceProvider();
 
             // All test host communication should be sent through this logger.
@@ -92,6 +99,88 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             }
 
             return commandReceived;
+        }
+
+        private class JsonConsoleLoggerProvider : ILoggerProvider
+        {
+            private readonly ConcurrentDictionary<string, JsonConsoleLogger> _loggers = new();
+
+            public ILogger CreateLogger(string categoryName)
+            {
+                return _loggers.GetOrAdd(categoryName, name => new JsonConsoleLogger(name));
+            }
+
+            public void Dispose()
+            {
+            }
+
+            private class JsonConsoleLogger : ILogger
+            {
+                private string _categoryName;
+
+                public JsonConsoleLogger(string categoryName)
+                {
+                    _categoryName = categoryName;
+                }
+
+                public IDisposable BeginScope<TState>(TState state)
+                {
+                    return null;
+                }
+
+                public bool IsEnabled(LogLevel logLevel)
+                {
+                    return true;
+                }
+
+                public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+                {
+                    using Utf8JsonWriter writer = new(Console.OpenStandardOutput());
+
+                    writer.WriteStartObject();
+
+                    writer.WriteNumber("EventId", eventId.Id);
+                    writer.WriteString("Level", logLevel.ToString("G"));
+                    writer.WriteString("Category", _categoryName);
+                    writer.WriteString("Message", formatter(state, exception));
+
+                    if (null != state)
+                    {
+                        writer.WriteStartObject("State");
+                        writer.WriteString("Message", state.ToString());
+
+                        if ((object)state is IReadOnlyCollection<KeyValuePair<string, object>> readOnlyCollection)
+                        {
+                            foreach (KeyValuePair<string, object> item in readOnlyCollection)
+                            {
+                                if (item.Value is string stringValue)
+                                {
+                                    writer.WriteString(item.Key, stringValue);
+                                }
+                                else if (item.Value is Enum enumValue)
+                                {
+                                    writer.WriteString(item.Key, enumValue.ToString("G"));
+                                }
+                                else if (item.Value is bool booleanValue)
+                                {
+                                    writer.WriteBoolean(item.Key, booleanValue);
+                                }
+                                else
+                                {
+                                    writer.WriteString(item.Key, "[UNHANDLED]");
+                                }
+                            }
+                        }
+                        writer.WriteEndObject();
+                    }
+
+                    writer.WriteEndObject();
+
+                    writer.Flush();
+
+                    Console.WriteLine();
+                }
+            }
         }
     }
 }

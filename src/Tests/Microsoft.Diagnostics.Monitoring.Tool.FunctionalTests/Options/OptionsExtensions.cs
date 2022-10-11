@@ -36,10 +36,56 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions AddGlobalCounter(this RootOptions options, int intervalSeconds)
+        {
+            options.GlobalCounter = new GlobalCounterOptions
+            {
+                IntervalSeconds = intervalSeconds
+            };
+
+            return options;
+        }
+
         public static CollectionRuleOptions CreateCollectionRule(this RootOptions rootOptions, string name)
         {
             CollectionRuleOptions options = new();
             rootOptions.CollectionRules.Add(name, options);
+            return options;
+        }
+
+        public static RootOptions EnableInProcessFeatures(this RootOptions options)
+        {
+            if (null == options.InProcessFeatures)
+            {
+                options.InProcessFeatures = new Monitoring.Options.InProcessFeaturesOptions();
+            }
+
+            options.InProcessFeatures.Enabled = true;
+
+            return options;
+        }
+
+        public static RootOptions SetConnectionMode(this RootOptions options, DiagnosticPortConnectionMode connectionMode)
+        {
+            if (null == options.DiagnosticPort)
+            {
+                options.DiagnosticPort = new DiagnosticPortOptions();
+            }
+
+            options.DiagnosticPort.ConnectionMode = connectionMode;
+
+            return options;
+        }
+
+        public static RootOptions SetDefaultSharedPath(this RootOptions options, string directoryPath)
+        {
+            if (null == options.Storage)
+            {
+                options.Storage = new StorageOptions();
+            }
+
+            options.Storage.DefaultSharedPath = directoryPath;
+
             return options;
         }
 
@@ -123,7 +169,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 case SecurityAlgorithms.HmacSha256:
                 case SecurityAlgorithms.HmacSha384:
                 case SecurityAlgorithms.HmacSha512:
-                    HMAC hmac = HMAC.Create(GetHmacAlgorithmFromName(algorithmName));
+                    HMAC hmac = GetHmacAlgorithmFromName(algorithmName);
                     SymmetricSecurityKey hmacSecKey = new SymmetricSecurityKey(hmac.Key);
                     signingCreds = new SigningCredentials(hmacSecKey, algorithmName);
                     exportableJwk = JsonWebKeyConverter.ConvertFromSymmetricSecurityKey(hmacSecKey);
@@ -152,16 +198,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        private static string GetHmacAlgorithmFromName(string algorithmName)
+        private static HMAC GetHmacAlgorithmFromName(string algorithmName)
         {
             switch (algorithmName)
             {
                 case SecurityAlgorithms.HmacSha256:
-                    return typeof(HMACSHA256).FullName;
+                    return new HMACSHA256();
                 case SecurityAlgorithms.HmacSha384:
-                    return typeof(HMACSHA384).FullName;
+                    return new HMACSHA384();
                 case SecurityAlgorithms.HmacSha512:
-                    return typeof(HMACSHA512).FullName;
+                    return new HMACSHA512();
                 default:
                     throw new ArgumentException($"Algorithm name '{algorithmName}' not supported", nameof(algorithmName));
             }

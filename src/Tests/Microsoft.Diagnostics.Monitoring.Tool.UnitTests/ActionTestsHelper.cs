@@ -24,7 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         public static TargetFrameworkMoniker[] tfmsToTest = new TargetFrameworkMoniker[]
         {
-            TargetFrameworkMoniker.Net50,
             TargetFrameworkMoniker.Net60,
 #if INCLUDE_NEXT_DOTNET
             TargetFrameworkMoniker.Net70
@@ -105,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             static void AddTestCases(List<object[]> arguments, Architecture architecture)
             {
-                string profilerPath = NativeLibraryHelper.GetMonitorProfilerPath(architecture);
+                string profilerPath = ProfilerHelper.GetPath(architecture);
                 if (File.Exists(profilerPath))
                 {
                     foreach (TargetFrameworkMoniker tfm in ActionTestsHelper.tfms6PlusToTest)

@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 
-            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => {}, host =>
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions => { }, host =>
             {
                 IOptionsMonitor<CollectionRuleOptions> optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
 

@@ -45,6 +45,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ThrottledEndpoint);
 
+        private static readonly Action<ILogger, Exception> _defaultProcessUnexpectedFailure =
+            LoggerMessage.Define(
+                eventId: new EventId(7, "DefaultProcessUnexpectedFailure"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DefaultProcessUnexpectedFailure);
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -73,6 +79,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static void WrittenToHttpStream(this ILogger logger)
         {
             _writtenToHttpStream(logger, null);
+        }
+
+        public static void DefaultProcessUnexpectedFailure(this ILogger logger, Exception ex)
+        {
+            _defaultProcessUnexpectedFailure(logger, ex);
         }
     }
 }

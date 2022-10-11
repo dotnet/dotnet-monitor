@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Foperations-get)
+
 # Operations - Get
 
 Gets detailed information about a specific operation.
@@ -24,8 +27,8 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [OperationStatus](./definitions.md#OperationStatus) | Detailed status of the operation | `application/json` |
-| 400 Bad Request | [ValidationProblemDetails](./definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 200 OK | [OperationStatus](./definitions.md#operationstatus) | Detailed status of the operation | `application/json` |
+| 400 Bad Request | [ValidationProblemDetails](./definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples
@@ -49,7 +52,13 @@ Content-Type: application/json
     "error": null,
     "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
     "createdDateTime": "2021-07-21T06:21:15.315861Z",
-    "status": "Succeeded"  
+    "status": "Succeeded",
+    "process":
+    {
+        "pid":1,
+        "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783",
+        "name":"dotnet-monitor-demo"
+    }
 }
 ```
 

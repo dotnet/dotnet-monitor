@@ -9,7 +9,11 @@
     <Description>.NET Core Diagnostic Monitoring Tool</Description>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
-    <RollForward>Major</RollForward>
+    <!--
+      Workaround for https://github.com/dotnet/aspnetcore/issues/42200
+      Required as of 7.0 Preview 5 SDK
+      -->
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,10 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Common\CommandExtensions.cs" Link="Commands\CommandExtensions.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
   </ItemGroup>
@@ -42,6 +42,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
   </ItemGroup>
 
@@ -61,25 +62,24 @@
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherNativeFilesForTfm</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
-  <!-- Don't include profiler files in official builds until productized. -->
-  <Target Name="GatherNativeFilesForTfm" Condition="'$(ContinuousIntegrationBuild)' != 'true'">
+  <Target Name="GatherNativeFilesForTfm">
     <ItemGroup>
       <!-- Create profiler library items for all of the native platforms. -->
       <MonitorProfilerLibraryFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(LibraryExtension)')">
-        <PackagePath>tools/$(TargetFramework)/any/profiler/%(TargetRid)</PackagePath>
+        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
       </MonitorProfilerLibraryFile>
     </ItemGroup>
     <ItemGroup>
       <!-- Create profiler symbols items for all of the native platforms. -->
       <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')">
-        <PackagePath>tools/$(TargetFramework)/any/profiler/%(TargetRid)</PackagePath>
+        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
       </MonitorProfilerSymbolsFile>
     </ItemGroup>
     <ItemGroup>
       <!-- Pack the profiler library for each platform if it exists. -->
-      <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile->Exists())" />
+      <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile-&gt;Exists())" />
       <!-- Pack the profiler symbols for each platform if it exists. -->
-      <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile->Exists())" />
+      <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile-&gt;Exists())" />
     </ItemGroup>
   </Target>
 

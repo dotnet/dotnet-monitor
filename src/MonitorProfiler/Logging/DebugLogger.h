@@ -16,13 +16,13 @@ class DebugLogger final :
     public ILogger
 {
 private:
-    const static LogLevel s_DefaultLevel = LogLevel::Information;
-    const static int s_nMaxEntrySize = 1000;
+    const static LogLevel DefaultLevel = LogLevel::Information;
+    const static size_t MaxEntrySize = 1000;
 
-    LogLevel m_level = s_DefaultLevel;
+    LogLevel _level = DefaultLevel;
 
 public:
-    DebugLogger(const std::shared_ptr<IEnvironment>& pEnvironment);
+    DebugLogger(const std::shared_ptr<IEnvironment>& environment);
 
 public:
     // ILogger Members
@@ -31,5 +31,5 @@ public:
     STDMETHOD_(bool, IsEnabled)(LogLevel level) override;
 
     /// <inheritdoc />
-    STDMETHOD(Log)(LogLevel level, const tstring format, va_list args) override;
+    STDMETHOD(Log)(LogLevel level, const lstring& message) override;
 };

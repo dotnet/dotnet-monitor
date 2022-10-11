@@ -3,27 +3,32 @@
 // See the LICENSE file in the project root for more information.
 
 #include "DebugLogger.h"
+#include "LoggerHelper.h"
 #include "LogLevelHelper.h"
 #include "../Environment/EnvironmentHelper.h"
+#include "NullLogger.h"
+#include "macros.h"
 
 using namespace std;
 
-DebugLogger::DebugLogger(const shared_ptr<IEnvironment>& pEnvironment)
+DebugLogger::DebugLogger(const shared_ptr<IEnvironment>& environment)
 {
     // Try to get log level from environment
-    if (FAILED(EnvironmentHelper::GetDebugLoggerLevel(pEnvironment, m_level)))
+
+    EnvironmentHelper helper(environment, NullLogger::Instance);
+    if (FAILED(helper.GetDebugLoggerLevel(_level)))
     {
         // Fallback to default level
-        m_level = s_DefaultLevel;
+        _level = DefaultLevel;
     }
 }
 
 STDMETHODIMP_(bool) DebugLogger::IsEnabled(LogLevel level)
 {
-    return LogLevelHelper::IsEnabled(level, m_level);
+    return LogLevelHelper::IsEnabled(level, _level);
 }
 
-STDMETHODIMP DebugLogger::Log(LogLevel level, const tstring format, va_list args)
+STDMETHODIMP DebugLogger::Log(LogLevel level, const lstring& message)
 {
     if (!IsEnabled(level))
     {
@@ -32,30 +37,18 @@ STDMETHODIMP DebugLogger::Log(LogLevel level, const tstring format, va_list args
 
     HRESULT hr = S_OK;
 
-    WCHAR wszMessage[s_nMaxEntrySize];
-    _vsnwprintf_s(
-        wszMessage,
-        s_nMaxEntrySize,
-        _TRUNCATE,
-        format.c_str(),
-        args);
+    lstring levelStr;
+    IfFailRet(LogLevelHelper::GetShortName(level, levelStr));
 
-    tstring tstrLevel;
-    if (FAILED(LogLevelHelper::GetShortName(level, tstrLevel)))
-    {
-        tstrLevel.assign(_T("ukwn"));
-    }
+    WCHAR output[MaxEntrySize] = {};
 
-    WCHAR wszString[s_nMaxEntrySize];
-    _snwprintf_s(
-        wszString,
-        s_nMaxEntrySize,
-        _TRUNCATE,
+    IfFailRet(LoggerHelper::FormatTruncate(
+        output,
         _T("[profiler]%s: %s\r\n"),
-        tstrLevel.c_str(),
-        wszMessage);
+        levelStr.c_str(),
+        message.c_str()));
 
-    OutputDebugStringW(wszString);
+    OutputDebugStringW(output);
 
     return S_OK;
 }

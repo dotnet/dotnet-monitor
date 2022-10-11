@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -134,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<Dictionary<string, string>> GetProcessEnvironmentAsync(int pid, CancellationToken token)
         {
-            return GetProcessEnvironmentAsync(GetProcessQuery(pid:pid), token);
+            return GetProcessEnvironmentAsync(GetProcessQuery(pid: pid), token);
         }
 
         /// <summary>
@@ -142,7 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<Dictionary<string, string>> GetProcessEnvironmentAsync(Guid uid, CancellationToken token)
         {
-            return GetProcessEnvironmentAsync(GetProcessQuery(uid:uid), token);
+            return GetProcessEnvironmentAsync(GetProcessQuery(uid: uid), token);
         }
 
         private async Task<Dictionary<string, string>> GetProcessEnvironmentAsync(string processQuery, CancellationToken token)
@@ -204,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(int pid, DumpType dumpType, CancellationToken token)
         {
-            return CaptureDumpAsync(GetProcessQuery(pid:pid), dumpType, token);
+            return CaptureDumpAsync(GetProcessQuery(pid: pid), dumpType, token);
         }
 
         /// <summary>
@@ -212,7 +211,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(Guid uid, DumpType dumpType, CancellationToken token)
         {
-            return CaptureDumpAsync(GetProcessQuery(uid:uid), dumpType, token);
+            return CaptureDumpAsync(GetProcessQuery(uid: uid), dumpType, token);
         }
 
         private async Task<ResponseStreamHolder> CaptureDumpAsync(string processQuery, DumpType dumpType, CancellationToken token)
@@ -245,11 +244,83 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
+        /// Capable of getting every combination of process query: PID, UID, and/or Name
+        /// Get /collectionrules?pid={pid}&uid={uid}&name={name}
+        /// </summary>
+        public Task<Dictionary<string, CollectionRuleDescription>> GetCollectionRulesDescriptionAsync(int? pid, Guid? uid, string name, CancellationToken token)
+        {
+            return GetCollectionRulesDescriptionAsync(GetProcessQuery(pid: pid, uid: uid, name: name), token);
+        }
+
+        private async Task<Dictionary<string, CollectionRuleDescription>> GetCollectionRulesDescriptionAsync(string processQuery, CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/collectionRules?" + processQuery);
+            request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
+
+            using HttpResponseMessage response = await SendAndLogAsync(
+                request,
+                HttpCompletionOption.ResponseContentRead,
+                token).ConfigureAwait(false);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(response, ContentTypes.ApplicationJson);
+                    return await ReadContentAsync<Dictionary<string, CollectionRuleDescription>>(response).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Capable of getting every combination of process query: PID, UID, and/or Name
+        /// GET /collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name}
+        /// </summary>
+        public Task<CollectionRuleDetailedDescription> GetCollectionRuleDetailedDescriptionAsync(string collectionRuleName, int? pid, Guid? uid, string name, CancellationToken token)
+        {
+            return GetCollectionRuleDetailedDescriptionAsync(collectionRuleName, GetProcessQuery(pid: pid, uid: uid, name: name), token);
+        }
+
+        private async Task<CollectionRuleDetailedDescription> GetCollectionRuleDetailedDescriptionAsync(string collectionRuleName, string processQuery, CancellationToken token)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/collectionRules/" + collectionRuleName + "?" + processQuery);
+            request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationJson);
+
+            using HttpResponseMessage response = await SendAndLogAsync(
+                request,
+                HttpCompletionOption.ResponseContentRead,
+                token).ConfigureAwait(false);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(response, ContentTypes.ApplicationJson);
+                    return await ReadContentAsync<CollectionRuleDetailedDescription>(response).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// GET /logs?pid={pid}&level={logLevel}&durationSeconds={duration}
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(GetProcessQuery(pid:pid), duration, logLevel, logFormat, token);
+            return CaptureLogsAsync(GetProcessQuery(pid: pid), duration, logLevel, logFormat, token);
         }
 
         /// <summary>
@@ -257,7 +328,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(GetProcessQuery(uid:uid), duration, logLevel, logFormat, token);
+            return CaptureLogsAsync(GetProcessQuery(uid: uid), duration, logLevel, logFormat, token);
         }
 
         private Task<ResponseStreamHolder> CaptureLogsAsync(string processQuery, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
@@ -275,7 +346,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, CancellationToken token)
         {
-            return CaptureLogsAsync(GetProcessQuery(pid:pid), duration, configuration, logFormat, token);
+            return CaptureLogsAsync(GetProcessQuery(pid: pid), duration, configuration, logFormat, token);
         }
 
         private Task<ResponseStreamHolder> CaptureLogsAsync(string processQuery, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, CancellationToken token)
@@ -405,6 +476,37 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
+        public async Task<ResponseStreamHolder> CaptureStacksAsync(int processId, bool plainText, CancellationToken token)
+        {
+            string uri = FormattableString.Invariant($"/stacks?pid={processId}");
+            var contentType = plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson;
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            request.Headers.Add(HeaderNames.Accept, contentType);
+
+            using DisposableBox<HttpResponseMessage> responseBox = new(
+                await SendAndLogAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token).ConfigureAwait(false));
+
+            switch (responseBox.Value.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(responseBox.Value, contentType);
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                case HttpStatusCode.TooManyRequests:
+                    ThrowIfNotSuccess(responseBox.Value);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
+        }
+
         public async Task<HttpResponseMessage> ApiCall(string routeAndQuery, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, routeAndQuery);
@@ -481,7 +583,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         {
             using HttpRequestMessage request = new(HttpMethod.Delete, operation.ToString());
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
-            
+
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:

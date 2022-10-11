@@ -1,4 +1,3 @@
 "DiagnosticPort": {
-  "ConnectionMode": "Connect",
-  "EndpointName": null
+  "ConnectionMode": "Connect"
 }

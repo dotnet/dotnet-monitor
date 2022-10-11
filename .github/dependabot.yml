@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+  - package-ecosystem: "nuget"
+    directory: "/eng/dependabot"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+  - package-ecosystem: "nuget"
+    directory: "/eng/dependabot"
+    schedule:
+      interval: "daily"
+    target-branch: "release/6.x"

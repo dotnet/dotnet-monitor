@@ -12,7 +12,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     /// Options for the <see cref="CollectionRules.Actions.GetEnvironmentVariableAction"/> action.
     /// </summary>
     [DebuggerDisplay("GetEnvironmentVariable")]
-    internal class GetEnvironmentVariableOptions
+#if SCHEMAGEN
+    [NJsonSchema.Annotations.JsonSchemaFlatten]
+#endif
+    internal sealed record class GetEnvironmentVariableOptions : BaseRecordOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

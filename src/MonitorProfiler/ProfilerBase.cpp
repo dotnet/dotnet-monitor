@@ -18,7 +18,7 @@ STDMETHODIMP ProfilerBase::Initialize(IUnknown *pICorProfilerInfoUnk)
     HRESULT hr = S_OK;
 
     IfFailRet(pICorProfilerInfoUnk->QueryInterface(
-        IID_ICorProfilerInfo11,
+        IID_ICorProfilerInfo12,
         reinterpret_cast<void **>(&m_pCorProfilerInfo)));
 
     return S_OK;
@@ -408,6 +408,14 @@ STDMETHODIMP ProfilerBase::HandleDestroyed(GCHandleID handleId)
 
 STDMETHODIMP ProfilerBase::InitializeForAttach(IUnknown *pCorProfilerInfoUnk, void *pvClientData, UINT cbClientData)
 {
+    ExpectedPtr(pCorProfilerInfoUnk);
+
+    HRESULT hr = S_OK;
+
+    IfFailRet(pCorProfilerInfoUnk->QueryInterface(
+        IID_ICorProfilerInfo12,
+        reinterpret_cast<void**>(&m_pCorProfilerInfo)));
+
     return S_OK;
 }
 

@@ -16,8 +16,20 @@ set(SOURCES
     ${PROFILER_SOURCES}
     Environment/EnvironmentHelper.cpp
     Environment/ProfilerEnvironment.cpp
+    EventProvider/ProfilerEventProvider.cpp
     Logging/AggregateLogger.cpp
+    Logging/Logger.cpp
+    Logging/LoggerHelper.cpp
+    Logging/NullLogger.cpp
+    Logging/StdErrLogger.cpp
+    MainProfiler/ExceptionTracker.cpp
     MainProfiler/MainProfiler.cpp
+    MainProfiler/ThreadData.cpp
+    MainProfiler/ThreadDataManager.cpp
+    Stacks/StacksEventProvider.cpp
+    Stacks/StackSampler.cpp
+    Utilities/NameCache.cpp
+    Utilities/TypeNameUtilities.cpp
     ClassFactory.cpp
     DllMain.cpp
     ProfilerBase.cpp
@@ -25,6 +37,9 @@ set(SOURCES
     Communication/IpcCommClient.cpp
     Communication/CommandServer.cpp
     )
+
+# Include exceptions tracking feature
+#add_compile_options(-DDOTNETMONITOR_FEATURE_EXCEPTIONS)
 
 # Build library and split symbols
 add_library_clr(MonitorProfiler SHARED ${SOURCES})

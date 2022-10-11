@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "args",
+            "description": "Enter arguments for dotnet-monitor",
+            "default": "collect --no-auth",
+            "type": "promptString",
+        }
+    ],
+    "configurations": [
+        {
+            "name": "Build & Launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build (Debug)",
+            "program": "${workspaceFolder}/artifacts/bin/dotnet-monitor/Debug/net7.0/dotnet-monitor.dll",
+            "args": "${input:args}",
+            "stopAtEntry": false,
+            "justMyCode": false
+        },
+        {
+            "name": "Launch",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/artifacts/bin/dotnet-monitor/Debug/net7.0/dotnet-monitor.dll",
+            "args": "${input:args}",
+            "stopAtEntry": false,
+            "justMyCode": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "justMyCode": false
+        }
+    ]
+}

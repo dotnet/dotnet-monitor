@@ -2,17 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Tools.Monitor.Commands;
-using Microsoft.Tools.Common;
-using System.Collections.Generic;
+using System;
 using System.CommandLine;
-using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
-using System.Threading;
+using System.IO;
 using System.Threading.Tasks;
-using System.Linq;
-using System.CommandLine.Binding;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -22,11 +17,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             Command command = new Command(
                 name: "generatekey",
-                description: Strings.HelpDescription_CommandGenerateKey);
+                description: Strings.HelpDescription_CommandGenerateKey)
+            {
+                OutputOption
+            };
 
-            command.Add(Output());
-
-            command.SetHandler<CancellationToken, OutputFormat, IConsole>(GenerateApiKeyCommandHandler.Invoke, command.Children.OfType<IValueDescriptor>().ToArray());
+            command.SetHandler(async context =>
+            {
+                context.ExitCode = await GenerateApiKeyCommandHandler.Invoke(
+                    context.GetCancellationToken(),
+                    context.ParseResult.GetValueForOption(OutputOption),
+                    context.Console);
+            });
 
             return command;
         }
@@ -37,11 +39,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 name: "collect",
                 description: Strings.HelpDescription_CommandCollect)
             {
-                SharedOptions()
+                UrlsOption,
+                MetricUrlsOption,
+                ProvideMetricsOption,
+                DiagnosticPortOption,
+                NoAuthOption,
+                TempApiKeyOption,
+                NoHttpEgressOption,
+                ConfigurationFilePathOption
             };
 
-            command.SetHandler<CancellationToken, string[], string[], bool, string, bool, bool, bool>(CollectCommandHandler.Invoke, command.Children.OfType<IValueDescriptor>().ToArray());
- 
+            command.SetHandler(async context =>
+            {
+                context.ExitCode = await CollectCommandHandler.Invoke(
+                    context.GetCancellationToken(),
+                    context.ParseResult.GetValueForOption(UrlsOption),
+                    context.ParseResult.GetValueForOption(MetricUrlsOption),
+                    context.ParseResult.GetValueForOption(ProvideMetricsOption),
+                    context.ParseResult.GetValueForOption(DiagnosticPortOption),
+                    context.ParseResult.GetValueForOption(NoAuthOption),
+                    context.ParseResult.GetValueForOption(TempApiKeyOption),
+                    context.ParseResult.GetValueForOption(NoHttpEgressOption),
+                    context.ParseResult.GetValueForOption(ConfigurationFilePathOption));
+            });
+
             return command;
         }
 
@@ -51,12 +72,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 name: "show",
                 description: Strings.HelpDescription_CommandShow)
             {
-                SharedOptions(),
-                ConfigLevel(),
-                ShowSources()
+                UrlsOption,
+                MetricUrlsOption,
+                ProvideMetricsOption,
+                DiagnosticPortOption,
+                NoAuthOption,
+                TempApiKeyOption,
+                NoHttpEgressOption,
+                ConfigurationFilePathOption,
+                ConfigLevelOption,
+                ShowSourcesOption
             };
 
-            showCommand.SetHandler<string[], string[], bool, string, bool, bool, bool, ConfigDisplayLevel, bool>(ConfigShowCommandHandler.Invoke, showCommand.Children.OfType<IValueDescriptor>().ToArray());
+            showCommand.SetHandler(context =>
+            {
+                ConfigShowCommandHandler.Invoke(
+                    context.ParseResult.GetValueForOption(UrlsOption),
+                    context.ParseResult.GetValueForOption(MetricUrlsOption),
+                    context.ParseResult.GetValueForOption(ProvideMetricsOption),
+                    context.ParseResult.GetValueForOption(DiagnosticPortOption),
+                    context.ParseResult.GetValueForOption(NoAuthOption),
+                    context.ParseResult.GetValueForOption(TempApiKeyOption),
+                    context.ParseResult.GetValueForOption(NoHttpEgressOption),
+                    context.ParseResult.GetValueForOption(ConfigurationFilePathOption),
+                    context.ParseResult.GetValueForOption(ConfigLevelOption),
+                    context.ParseResult.GetValueForOption(ShowSourcesOption));
+            });
 
             Command configCommand = new Command(
                 name: "config",
@@ -68,12 +109,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return configCommand;
         }
 
-        private static IEnumerable<Option> SharedOptions() => new Option[]
-        {
-            Urls(), MetricUrls(), ProvideMetrics(), DiagnosticPort(), NoAuth(), TempApiKey(), NoHttpEgress()
-        };
-        
-        private static Option Urls() =>
+        private static Option<string[]> UrlsOption =
             new Option<string[]>(
                 aliases: new[] { "-u", "--urls" },
                 description: Strings.HelpDescription_OptionUrls,
@@ -82,7 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArgumentHelpName = "urls"
             };
 
-        private static Option MetricUrls() =>
+        private static Option<string[]> MetricUrlsOption =
             new Option<string[]>(
                 aliases: new[] { "--metricUrls" },
                 description: Strings.HelpDescription_OptionMetricsUrls,
@@ -91,7 +127,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArgumentHelpName = "metricUrls"
             };
 
-        private static Option ProvideMetrics() =>
+        private static Option<bool> ProvideMetricsOption =
             new Option<bool>(
                 aliases: new[] { "-m", "--metrics" },
                 description: Strings.HelpDescription_OptionMetrics,
@@ -100,7 +136,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArgumentHelpName = "metrics"
             };
 
-        private static Option DiagnosticPort() =>
+        private static Option<string> DiagnosticPortOption =
             new Option<string>(
                 name: "--diagnostic-port",
                 description: Strings.HelpDescription_OptionDiagnosticPort)
@@ -108,7 +144,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArgumentHelpName = "diagnosticPort"
             };
 
-        private static Option NoAuth() =>
+        private static Option<FileInfo> ConfigurationFilePathOption =
+            new Option<FileInfo>(
+                name: "--configuration-file-path",
+                description: Strings.HelpDescription_OptionConfigurationFilePath)
+            {
+                ArgumentHelpName = "configurationFilePath"
+            };
+
+        private static Option<bool> NoAuthOption =
             new Option<bool>(
                 name: "--no-auth",
                 description: Strings.HelpDescription_OptionNoAuth,
@@ -117,7 +161,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArgumentHelpName = "noAuth"
             };
 
-        private static Option NoHttpEgress() =>
+        private static Option<bool> NoHttpEgressOption =
             new Option<bool>(
                 name: "--no-http-egress",
                 description: Strings.HelpDescription_OptionNoHttpEgress,
@@ -126,7 +170,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArgumentHelpName = "noHttpEgress"
             };
 
-        private static Option TempApiKey() =>
+        private static Option<bool> TempApiKeyOption =
             new Option<bool>(
                 name: "--temp-apikey",
                 description: Strings.HelpDescription_OptionTempApiKey,
@@ -135,7 +179,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArgumentHelpName = "tempApiKey"
             };
 
-        private static Option Output() =>
+        private static Option<OutputFormat> OutputOption =
             new Option<OutputFormat>(
                 aliases: new[] { "-o", "--output" },
                 description: Strings.HelpDescription_OutputFormat,
@@ -144,7 +188,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArgumentHelpName = "output"
             };
 
-        private static Option ConfigLevel() =>
+        private static Option<ConfigDisplayLevel> ConfigLevelOption =
             new Option<ConfigDisplayLevel>(
                 name: "--level",
                 description: Strings.HelpDescription_OptionLevel,
@@ -153,7 +197,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArgumentHelpName = "level"
             };
 
-        private static Option ShowSources() =>
+        private static Option<bool> ShowSourcesOption =
             new Option<bool>(
                 name: "--show-sources",
                 description: Strings.HelpDescription_OptionShowSources,
@@ -164,6 +208,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static Task<int> Main(string[] args)
         {
+            // Prevent child processes from inheriting startup hooks
+            Environment.SetEnvironmentVariable("DOTNET_STARTUP_HOOKS", null);
+
+            TestAssemblies.SimulateStartupHook();
+
             var parser = new CommandLineBuilder(new RootCommand()
             {
                 CollectCommand(),

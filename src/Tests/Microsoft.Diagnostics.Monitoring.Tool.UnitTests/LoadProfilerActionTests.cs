@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
@@ -25,11 +26,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const string DefaultRuleName = "ProfilerTestRule";
 
-        // This environment variable name is embedded into the profiler and set at profiler initialization.
-        // The value is determined BEFORE native build by the generation of the product version into the
-        // _productversion.h header file.
-        private const string ProductVersionEnvVarName = "DotnetMonitorProfiler_ProductVersion";
-
         private readonly ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
@@ -46,21 +42,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfmArchitectureProfilerPath), MemberType = typeof(ActionTestsHelper))]
         public async Task LoadProfilerAsStartupProfilerTest(TargetFrameworkMoniker tfm, Architecture architecture, string profilerPath)
         {
-            if (Architecture.X86 == architecture)
-            {
-                _outputHelper.WriteLine("Skipping x86 architecture since x86 host is not used at this time.");
-                return;
-            }
-
             string profilerFileName = Path.GetFileName(profilerPath);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddSetEnvironmentVariableAction(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, ConfigurationTokenParser.RuntimeIdReference)
                     .AddLoadProfilerAction(options =>
                     {
                         options.Path = profilerPath;
-                        options.Clsid = NativeLibraryHelper.MonitorProfilerClsid;
+                        options.Clsid = ProfilerIdentifiers.Clsid.Guid;
                     })
                     .SetStartupTrigger();
             }, async host =>
@@ -69,15 +60,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
                 AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                runner.Architecture = architecture;
                 runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
                 await runner.ExecuteAsync(async () =>
                 {
                     // At this point, the profiler has already been initialized and managed code is already running.
                     // Use any of the initialization state of the profiler to validate that it is loaded.
-                    string productVersion = await runner.GetEnvironmentVariable(ProductVersionEnvVarName, CommonTestTimeouts.EnvVarsTimeout);
-                    Assert.False(string.IsNullOrEmpty(productVersion), "Expected product version to not be null or empty.");
-                    _outputHelper.WriteLine("{0} = {1}", ProductVersionEnvVarName, productVersion);
+                    await ProfilerHelper.VerifyProductVersionEnvironmentVariableAsync(runner, _outputHelper);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
@@ -100,8 +90,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public override async Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken token)
             {
+                SetEnvironmentVariableOptions envOptions = ActionTestsHelper.GetActionOptions<SetEnvironmentVariableOptions>(_host, DefaultRuleName, actionIndex: 0);
+                Assert.True(_host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.SetEnvironmentVariable, out ICollectionRuleActionFactoryProxy setEnvFactory));
+                ICollectionRuleAction setEnvAction = setEnvFactory.Create(endpointInfo, envOptions);
+                await ActionTestsHelper.ExecuteAndDisposeAsync(setEnvAction, CommonTestTimeouts.EnvVarsTimeout);
+
                 // Load the profiler into the target process
-                LoadProfilerOptions options = ActionTestsHelper.GetActionOptions<LoadProfilerOptions>(_host, DefaultRuleName);
+                LoadProfilerOptions options = ActionTestsHelper.GetActionOptions<LoadProfilerOptions>(_host, DefaultRuleName, actionIndex: 1);
 
                 ICollectionRuleActionFactoryProxy factory;
                 Assert.True(_host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.LoadProfiler, out factory));

@@ -6,7 +6,11 @@
 #include <thread>
 #include "../Logging/Logger.h"
 
-CommandServer::CommandServer(const std::shared_ptr<ILogger>& logger) : _shutdown(false), _logger(logger)
+CommandServer::CommandServer(const std::shared_ptr<ILogger>& logger, ICorProfilerInfo12* profilerInfo) :
+    _shutdown(false),
+    _server(logger),
+    _logger(logger),
+    _profilerInfo(profilerInfo)
 {
 }
 
@@ -65,7 +69,7 @@ void CommandServer::ListeningThread()
         hr = client->Receive(message);
         if (FAILED(hr))
         {
-            _logger->Log(LogLevel::Error, _T("Unexpected error when receiving data: 0x%08x"), hr);
+            _logger->Log(LogLevel::Error, _LS("Unexpected error when receiving data: 0x%08x"), hr);
             continue;
         }
 
@@ -76,13 +80,13 @@ void CommandServer::ListeningThread()
         hr = client->Send(response);
         if (FAILED(hr))
         {
-            _logger->Log(LogLevel::Error, _T("Unexpected error when sending data: 0x%08x"), hr);
+            _logger->Log(LogLevel::Error, _LS("Unexpected error when sending data: 0x%08x"), hr);
             continue;
         }
         hr = client->Shutdown();
         if (FAILED(hr))
         {
-            _logger->Log(LogLevel::Warning, _T("Unexpected error during shutdown: 0x%08x"), hr);
+            _logger->Log(LogLevel::Warning, _LS("Unexpected error during shutdown: 0x%08x"), hr);
         }
 
         _clientQueue.Enqueue(message);
@@ -91,10 +95,18 @@ void CommandServer::ListeningThread()
 
 void CommandServer::ClientProcessingThread()
 {
+    HRESULT hr = _profilerInfo->InitializeCurrentThread();
+
+    if (FAILED(hr))
+    {
+        _logger->Log(LogLevel::Error, _LS("Unable to initialize thread: 0x%08x"), hr);
+        return;
+    }
+
     while (true)
     {
         IpcMessage message;
-        HRESULT hr = _clientQueue.BlockingDequeue(message);
+        hr = _clientQueue.BlockingDequeue(message);
         if (hr != S_OK)
         {
             //We are complete, discard all messages
@@ -103,7 +115,7 @@ void CommandServer::ClientProcessingThread()
         hr = _callback(message);
         if (hr != S_OK)
         {
-            _logger->Log(LogLevel::Warning, _T("IpcMessage callback failed: 0x%08x"), hr);
+            _logger->Log(LogLevel::Warning, _LS("IpcMessage callback failed: 0x%08x"), hr);
         }
     }
 }

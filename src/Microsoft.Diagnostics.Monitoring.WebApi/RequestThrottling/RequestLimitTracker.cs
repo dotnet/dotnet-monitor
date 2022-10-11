@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -33,6 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _requestLimitTable.Add(Utilities.ArtifactType_Logs, 3);
             _requestLimitTable.Add(Utilities.ArtifactType_Trace, 3);
             _requestLimitTable.Add(Utilities.ArtifactType_Metrics, 3);
+            _requestLimitTable.Add(Utilities.ArtifactType_Stacks, 1);
 
             _logger = logger;
         }

@@ -4,12 +4,14 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
@@ -17,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
-    internal class CollectionRuleService : BackgroundService, IAsyncDisposable
+    internal class CollectionRuleService : BackgroundService, IAsyncDisposable, ICollectionRuleService
     {
         // The number of items that the pending removal channel will hold before forcing
         // the writer to wait for capacity to be available.
@@ -157,6 +159,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     await rulesChangedTaskSource.Task;
                 }
 
+                _containersMap.Keys.ToList().ForEach(key => _containersMap[key].Pipelines.Clear());
+
                 rulesChanged = false;
 
                 _logger.CollectionRuleConfigurationChanged();
@@ -231,7 +235,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private void CheckForListenDiagnosticMode()
         {
-            if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen 
+            if (DiagnosticPortOptionsExtensions.GetConnectionMode(_portOptions) != DiagnosticPortConnectionMode.Listen
                 && _provider.GetCollectionRuleNames().Any())
             {
                 _logger.DiagnosticPortNotInListenModeForCollectionRules();
@@ -248,6 +252,100 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 await container.DisposeAsync();
             }
+        }
+
+        public Dictionary<string, CollectionRuleDescription> GetCollectionRulesDescriptions(IEndpointInfo endpointInfo)
+        {
+            Dictionary<string, CollectionRuleDescription> collectionRulesDescriptions = new();
+
+            if (_containersMap.TryGetValue(endpointInfo, out CollectionRuleContainer container))
+            {
+                container.Pipelines.ForEach(pipeline => collectionRulesDescriptions.Add(pipeline.Context.Name, GetCollectionRuleDescription(pipeline)));
+            }
+
+            return collectionRulesDescriptions;
+        }
+
+        public CollectionRuleDetailedDescription GetCollectionRuleDetailedDescription(string collectionRuleName, IEndpointInfo endpointInfo)
+        {
+            if (_containersMap.TryGetValue(endpointInfo, out CollectionRuleContainer container))
+            {
+                IEnumerable<CollectionRulePipeline> pipelines = container.Pipelines.Where(pipeline => pipeline.Context.Name.Equals(collectionRuleName));
+
+                if (null == pipelines || !pipelines.Any())
+                {
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_CollectionRuleNotFound, collectionRuleName));
+                }
+
+                return GetCollectionRuleDetailedDescription(pipelines.First());
+            }
+
+            return null;
+        }
+
+        internal static CollectionRuleDescription GetCollectionRuleDescription(CollectionRulePipeline pipeline)
+        {
+            CollectionRulePipelineState pipelineState = pipeline.GetPipelineState();
+
+            CollectionRuleDescription description = new()
+            {
+                State = pipelineState.CurrentState,
+                StateReason = pipelineState.CurrentStateReason
+            };
+
+            return description;
+        }
+
+        internal static CollectionRuleDetailedDescription GetCollectionRuleDetailedDescription(CollectionRulePipeline pipeline)
+        {
+            CollectionRulePipelineState pipelineState = pipeline.GetPipelineState();
+
+            CollectionRuleDetailedDescription description = new()
+            {
+                State = pipelineState.CurrentState,
+                StateReason = pipelineState.CurrentStateReason,
+                LifetimeOccurrences = pipelineState.AllExecutionTimestamps.Count,
+                ActionCountLimit = pipelineState.ActionCountLimit,
+                SlidingWindowOccurrences = pipelineState.ExecutionTimestamps.Count,
+                ActionCountSlidingWindowDurationLimit = pipelineState.ActionCountSlidingWindowDuration
+            };
+
+            if (description.State != CollectionRuleState.Finished)
+            {
+                DateTime currentTime = pipeline.Context.Clock.UtcNow.UtcDateTime;
+
+                description.SlidingWindowDurationCountdown = GetSWDCountdown(pipelineState.ExecutionTimestamps, description.ActionCountSlidingWindowDurationLimit, description.ActionCountLimit, currentTime);
+                description.RuleFinishedCountdown = GetRuleFinishedCountdown(pipelineState.PipelineStartTime, pipelineState.RuleDuration, currentTime);
+            }
+
+            return description;
+        }
+
+        private static TimeSpan? GetSWDCountdown(Queue<DateTime> timestamps, TimeSpan? actionCountWindowDuration, int actionCount, DateTime currentTime)
+        {
+            if (actionCountWindowDuration.HasValue && timestamps.Count >= actionCount)
+            {
+                TimeSpan countdown = timestamps.Peek() - (currentTime - actionCountWindowDuration.Value);
+                return GetTruncatedPositiveTimeSpan(countdown);
+            }
+
+            return null;
+        }
+
+        private static TimeSpan? GetRuleFinishedCountdown(DateTime pipelineStartTime, TimeSpan? ruleDuration, DateTime currentTime)
+        {
+            if (ruleDuration.HasValue)
+            {
+                TimeSpan countdown = ruleDuration.Value - (currentTime - pipelineStartTime);
+                return GetTruncatedPositiveTimeSpan(countdown);
+            }
+
+            return null;
+        }
+
+        private static TimeSpan? GetTruncatedPositiveTimeSpan(TimeSpan original)
+        {
+            return (original > TimeSpan.Zero) ? TimeSpan.FromSeconds((long)original.TotalSeconds) : null; // Intentionally lose millisecond precision
         }
     }
 }

@@ -7,6 +7,9 @@
 #include "../Environment/ProfilerEnvironment.h"
 #include "../Logging/AggregateLogger.h"
 #include "../Logging/DebugLogger.h"
+#include "../Logging/StdErrLogger.h"
+#include "../Stacks/StacksEventProvider.h"
+#include "../Stacks/StackSampler.h"
 #include "corhlpr.h"
 #include "macros.h"
 #include <memory>
@@ -14,8 +17,6 @@
 using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
-
-#define LogInformationV(format, ...) LogInformationV_(m_pLogger, format, __VA_ARGS__)
 
 GUID MainProfiler::GetClsid()
 {
@@ -29,24 +30,10 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     HRESULT hr = S_OK;
 
-    //These should always be initialized first
+    // These should always be initialized first
     IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
-    IfFailRet(InitializeEnvironment());
-    IfFailRet(InitializeLogging());
 
-    IfFailLogRet(InitializeCommandServer());
-
-    // Logging is initialized and can now be used
-
-    // Set product version environment variable to allow discovery of if the profiler
-    // as been applied to a target process. Diagnostic tools must use the diagnostic
-    // communication channel's GetProcessEnvironment command to get this value.
-    IfFailLogRet(EnvironmentHelper::SetProductVersion(m_pEnvironment, m_pLogger));
-
-#ifdef TARGET_WINDOWS
-    DWORD processId = GetCurrentProcessId();
-    LogInformationV(_T("Process Id: %d"), processId);
-#endif
+    IfFailRet(InitializeCommon());
 
     return S_OK;
 }
@@ -61,6 +48,82 @@ STDMETHODIMP MainProfiler::Shutdown()
     return ProfilerBase::Shutdown();
 }
 
+STDMETHODIMP MainProfiler::ThreadCreated(ThreadID threadId)
+{
+    HRESULT hr = S_OK;
+
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
+    IfFailLogRet(_threadDataManager->ThreadCreated(threadId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ThreadDestroyed(ThreadID threadId)
+{
+    HRESULT hr = S_OK;
+
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
+    IfFailLogRet(_threadDataManager->ThreadDestroyed(threadId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ExceptionThrown(ObjectID thrownObjectId)
+{
+    HRESULT hr = S_OK;
+
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
+    ThreadID threadId;
+    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+
+    IfFailLogRet(_exceptionTracker->ExceptionThrown(threadId, thrownObjectId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ExceptionSearchCatcherFound(FunctionID functionId)
+{
+    HRESULT hr = S_OK;
+
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
+    ThreadID threadId;
+    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+
+    IfFailLogRet(_exceptionTracker->ExceptionSearchCatcherFound(threadId, functionId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ExceptionUnwindFunctionEnter(FunctionID functionId)
+{
+    HRESULT hr = S_OK;
+
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
+    ThreadID threadId;
+    IfFailLogRet(m_pCorProfilerInfo->GetCurrentThreadID(&threadId));
+
+    IfFailLogRet(_exceptionTracker->ExceptionUnwindFunctionEnter(threadId, functionId));
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::InitializeForAttach(IUnknown* pCorProfilerInfoUnk, void* pvClientData, UINT cbClientData)
+{
+    HRESULT hr = S_OK;
+
+    // These should always be initialized first
+    IfFailRet(ProfilerBase::Initialize(pCorProfilerInfoUnk));
+
+    IfFailRet(InitializeCommon());
+
+    return S_OK;
+}
+
 STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
 {
     ExpectedPtr(pbNotificationOnly);
@@ -70,10 +133,60 @@ STDMETHODIMP MainProfiler::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
     return S_OK;
 }
 
+HRESULT MainProfiler::InitializeCommon()
+{
+    HRESULT hr = S_OK;
+
+    // These are created in dependency order!
+    IfFailRet(InitializeEnvironment());
+    IfFailRet(InitializeLogging());
+    IfFailRet(InitializeEnvironmentHelper());
+
+    // Logging is initialized and can now be used
+
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
+    _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
+    IfNullRet(_threadDataManager);
+    _exceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, _threadDataManager, m_pCorProfilerInfo));
+    IfNullRet(_exceptionTracker);
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+
+    IfFailLogRet(InitializeCommandServer());
+
+    // Set product version environment variable to allow discovery of if the profiler
+    // as been applied to a target process. Diagnostic tools must use the diagnostic
+    // communication channel's GetProcessEnvironment command to get this value.
+    IfFailLogRet(_environmentHelper->SetProductVersion());
+
+    DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
+    ThreadDataManager::AddProfilerEventMask(eventsLow);
+    _exceptionTracker->AddProfilerEventMask(eventsLow);
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+    StackSampler::AddProfilerEventMask(eventsLow);
+
+    IfFailRet(m_pCorProfilerInfo->SetEventMask2(
+        eventsLow,
+        COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
+
+    return S_OK;
+}
+
 HRESULT MainProfiler::InitializeEnvironment()
 {
+    if (m_pEnvironment)
+    {
+        return E_UNEXPECTED;
+    }
     m_pEnvironment = make_shared<ProfilerEnvironment>(m_pCorProfilerInfo);
+    return S_OK;
+}
+
+HRESULT MainProfiler::InitializeEnvironmentHelper()
+{
     IfNullRet(m_pEnvironment);
+
+    _environmentHelper = make_shared<EnvironmentHelper>(m_pEnvironment, m_pLogger);
 
     return S_OK;
 }
@@ -85,6 +198,10 @@ HRESULT MainProfiler::InitializeLogging()
     // Create an aggregate logger to allow for multiple logging implementations
     unique_ptr<AggregateLogger> pAggregateLogger(new (nothrow) AggregateLogger());
     IfNullRet(pAggregateLogger);
+
+    shared_ptr<StdErrLogger> pStdErrLogger = make_shared<StdErrLogger>(m_pEnvironment);
+    IfNullRet(pStdErrLogger);
+    pAggregateLogger->Add(pStdErrLogger);
 
 #ifdef _DEBUG
 #ifdef TARGET_WINDOWS
@@ -104,17 +221,8 @@ HRESULT MainProfiler::InitializeCommandServer()
 {
     HRESULT hr = S_OK;
 
-    //TODO For now we are using the process id to generate the unique server name. We should use the environment
-    //value with the runtime instance id once it's available.
-    unsigned long pid =
-#if TARGET_WINDOWS
-        GetCurrentProcessId();
-#else
-        getpid();
-#endif
-
-    tstring instanceId = to_tstring(to_string(pid));
-    //IfFailRet(EnvironmentHelper::GetRuntimeInstanceId(m_pEnvironment, m_pLogger, instanceId));
+    tstring instanceId;
+    IfFailRet(_environmentHelper->GetRuntimeInstanceId(instanceId));
 
 #if TARGET_UNIX
     tstring separator = _T("/");
@@ -122,11 +230,11 @@ HRESULT MainProfiler::InitializeCommandServer()
     tstring separator = _T("\\");
 #endif
 
-    tstring tmpDir;
-    IfFailRet(EnvironmentHelper::GetTempFolder(m_pEnvironment, m_pLogger, tmpDir));
+    tstring sharedPath;
+    IfFailRet(_environmentHelper->GetSharedPath(sharedPath));
 
-    _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger));
-    tstring socketPath = tmpDir + separator + instanceId + _T(".sock");
+    _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger, m_pCorProfilerInfo));
+    tstring socketPath = sharedPath + separator + instanceId + _T(".sock");
 
     IfFailRet(_commandServer->Start(to_string(socketPath), [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); }));
 
@@ -135,6 +243,54 @@ HRESULT MainProfiler::InitializeCommandServer()
 
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
-    m_pLogger->Log(LogLevel::Information, _T("Message received from client: %d %d"), message.MessageType, message.Parameters);
+    m_pLogger->Log(LogLevel::Information, _LS("Message received from client: %d %d"), message.MessageType, message.Parameters);
+
+    if (message.MessageType == MessageType::Callstack)
+    {
+        //Currently we do not have any options for this message
+        return ProcessCallstackMessage();
+    }
+
+    return S_OK;
+}
+
+HRESULT MainProfiler::ProcessCallstackMessage()
+{
+    HRESULT hr;
+
+    StackSampler stackSampler(m_pCorProfilerInfo);
+    std::vector<std::unique_ptr<StackSamplerState>> stackStates;
+    std::shared_ptr<NameCache> nameCache;
+
+    IfFailLogRet(stackSampler.CreateCallstack(stackStates, nameCache));
+
+    std::unique_ptr<StacksEventProvider> eventProvider;
+    IfFailLogRet(StacksEventProvider::CreateProvider(m_pCorProfilerInfo, eventProvider));
+
+    for (auto& entry : nameCache->GetFunctions())
+    {
+        IfFailLogRet(eventProvider->WriteFunctionData(entry.first, *entry.second.get()));
+    }
+    for (auto& entry : nameCache->GetClasses())
+    {
+        IfFailLogRet(eventProvider->WriteClassData(entry.first, *entry.second.get()));
+    }
+    for (auto& entry : nameCache->GetModules())
+    {
+        IfFailLogRet(eventProvider->WriteModuleData(entry.first, *entry.second.get()));
+    }
+    for (auto& entry : nameCache->GetTypeNames())
+    {
+        //first: (Module,TypeDef)
+        IfFailLogRet(eventProvider->WriteTokenData(entry.first.first, entry.first.second, *entry.second.get()));
+    }
+
+    for (std::unique_ptr<StackSamplerState>& stackState : stackStates)
+    {
+        IfFailLogRet(eventProvider->WriteCallstack(stackState->GetStack()));
+    }
+
+    IfFailLogRet(eventProvider->WriteEndEvent());
+
     return S_OK;
 }

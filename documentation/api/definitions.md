@@ -1,4 +1,72 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fdefinitions)
+
 # Definitions
+
+## CallStack
+
+| Name | Type | Description |
+|---|---|---|
+| `threadId` | int | The native thread id of the managed thread. |
+| `frames` | [CallStackFrame](#callstackframe)[] | Managed frame for the thread at the time of collection. |
+
+## CallStackFormat
+
+Enumeration that describes the output format of the collected call stacks.
+
+| Name | Description |
+|---|---|
+| `Json` | Stacks are formatted in Json. See [CallStackResult](#callstackresult). |
+| `PlainText` | Stacks are formatted in plain text. |
+
+## CallStackFrame
+
+| Name | Type | Description |
+|---|---|---|
+| `methodName` | string | Name of the method for this frame. This includes generic parameters. |
+| `className` | string | Name of the class for this frame. This includes generic parameters. |
+| `moduleName` | string | Name of the module for this frame. |
+
+## CallStackResult
+
+| Name | Type | Description |
+|---|---|---|
+| `stacks` | [CallStack](#callstack)[] | List of all managed stacks at the time of collection. |
+
+## CollectionRuleDescription
+
+Object describing the basic state of a collection rule for the executing instance of `dotnet monitor`.
+
+| Name | Type | Description |
+|---|---|---|
+| State | [CollectionRuleState](#collectionrulestate) | Indicates what state the collection rule is in for the current process. |
+| StateReason | string | Human-readable explanation for the current state of the collection rule. |
+
+## CollectionRuleDetailedDescription
+
+Object describing the detailed state of a collection rule for the executing instance of `dotnet monitor`.
+
+| Name | Type | Description |
+|---|---|---|
+| State | [CollectionRuleState](#collectionrulestate) | Indicates what state the collection rule is in for the current process. |
+| StateReason | string | Human-readable explanation for the current state of the collection rule. |
+| LifetimeOccurrences | int | The number of times the trigger has executed for a process in its lifetime. |
+| SlidingWindowOccurrences | int | The number of times the trigger has executed within the current sliding window. |
+| ActionCountLimit | int | The number of times the action list may be executed before being throttled. |
+| ActionCountSlidingWindowDurationLimit | TimeSpan? | The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting. If not specified, all action list executions will be counted for the entire duration of the rule. |
+| SlidingWindowDurationCountdown | TimeSpan? | The amount of time remaining before the collection rule will no longer be throttled. |
+| RuleFinishedCountdown | TimeSpan? | The amount of time remaining before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. |
+
+## CollectionRuleState
+
+Enumeration that describes the current state of the collection rule.
+
+| Name | Description |
+|---|---|
+| `Running` | Indicates that the collection rule is active and waiting for its triggering conditions to be satisfied. |
+| `ActionExecuting` | Indicates that the collection has had its triggering conditions satisfied and is currently executing its action list. |
+| `Throttled` | Indicates that the collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration. |
+| `Finished` | Indicates that the collection rule has completed and will no longer trigger. |
 
 ## DotnetMonitorInfo
 
@@ -29,7 +97,7 @@ Describes custom metrics.
 | Name | Type | Description |
 |---|---|---|
 | `includeDefaultProviders` | bool | Determines if the default counter providers should be used (such as System.Runtime). |
-| `providers` | [EventMetricsProvider](#EventMetricsProvider)[] | Array of providers for metrics to collect. |
+| `providers` | [EventMetricsProvider](#eventmetricsprovider)[] | Array of providers for metrics to collect. |
 
 ## EventMetricsProvider
 
@@ -55,7 +123,7 @@ Object describing the list of event providers, keywords, event levels, and addit
 
 | Name | Type | Description |
 |---|---|---|
-| Providers | [EventProvider](#EventProvider)[] | List of event providers from which to capture events. At least one event provider must be specified. |
+| Providers | [EventProvider](#eventprovider)[] | List of event providers from which to capture events. At least one event provider must be specified. |
 | RequestRundown | bool | The runtime may provide additional type information for certain types of events after the trace session is ended. This additional information is known as rundown events. Without this information, some events may not be parsable into useful information. Default is `true`. |
 | BufferSizeInMB | int | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Default is `256`. Min is `1`. Max is `1024`. |
 
@@ -85,7 +153,7 @@ Object describing a log entry from a target process.
 | `Category` | string | The category of the log entry. |
 | `EventId` | string | The event name of the EventId of the log entry. |
 | `Exception` | string | If an exception is logged, this property contains the formatted message of the log entry. |
-| `LogLevel` | string | The [LogLevel](#LogLevel) of the log entry. |
+| `LogLevel` | string | The [LogLevel](#loglevel) of the log entry. |
 | `Message` | string | If an exception is NOT logged, this property contains the formatted message of the log entry. |
 | `Scopes` | map (of object) | The scope information associated with the log entry. |
 
@@ -141,8 +209,8 @@ Object describing the default log level and filtering specifications for collect
 
 | Name | Type | Description |
 |---|---|---|
-| `logLevel` | [LogLevel](#LogLevel) | The default log level at which logs are collected. Default is `Warning`. |
-| `filterSpecs` | map (of [LogLevel](#LogLevel) or `null`) | A mapping of logger categories and the levels at which those categories should be collected. If level is set to `null`, collect category at the default level set in the `logLevel` property. |
+| `logLevel` | [LogLevel](#loglevel) | The default log level at which logs are collected. Default is `Warning`. |
+| `filterSpecs` | map (of [LogLevel](#loglevel) or `null`) | A mapping of logger categories and the levels at which those categories should be collected. If level is set to `null`, collect category at the default level set in the `logLevel` property. |
 | `useAppFilters` | bool | Collect logs for the categories and at the levels as specified by the [application-defined configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/#configure-logging). Default is `true`. |
 
 ### Example
@@ -197,10 +265,10 @@ Detailed information about an operation.
 | Name | Type | Description |
 |---|---|---|
 | `resourceLocation` | string | Resource location of the egressed artifact. This can be Uri or path depending on the egress provider. |
-| `error` | [OperationError](#OperationError) | Detailed error message if the operation is in a `Failed` state. |
+| `error` | [OperationError](#operationerror) | Detailed error message if the operation is in a `Failed` state. |
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
-| `status` | [OperationState](#OperationState) | The current status of operation. |
+| `status` | [OperationState](#operationstate) | The current status of operation. |
 
 ### Example
 
@@ -222,7 +290,7 @@ Summary state of an operation.
 |---|---|---|
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
-| `status` | [OperationState](#OperationState) | The current status of operation. |
+| `status` | [OperationState](#operationstate) | The current status of operation. |
 
 ### Example
 

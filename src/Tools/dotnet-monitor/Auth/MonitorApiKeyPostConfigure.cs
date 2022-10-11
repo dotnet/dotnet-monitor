@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         new string[] { nameof(MonitorApiKeyOptions.PublicKey) }));
             }
 
-            JsonWebKey jwk = null; 
+            JsonWebKey jwk = null;
             if (!string.IsNullOrEmpty(jwkJson))
             {
                 try
@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (null != jwk)
             {
-                if(!JwtAlgorithmChecker.IsValidJwk(jwk))
+                if (!JwtAlgorithmChecker.IsValidJwk(jwk))
                 {
                     errors.Add(
                         new ValidationResult(

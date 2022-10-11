@@ -8,17 +8,21 @@
 
 using namespace std;
 
-#define IfFailLogRet(EXPR) IfFailLogRet_(pLogger, EXPR)
+#define IfFailLogRet(EXPR) IfFailLogRet_(_logger, EXPR)
 
-HRESULT EnvironmentHelper::GetDebugLoggerLevel(
+EnvironmentHelper::EnvironmentHelper(
     const std::shared_ptr<IEnvironment>& pEnvironment,
-    LogLevel& level)
+    const std::shared_ptr<ILogger>& pLogger) : _environment(pEnvironment), _logger(pLogger)
+{
+}
+
+HRESULT EnvironmentHelper::GetDebugLoggerLevel(LogLevel& level)
 {
     HRESULT hr = S_OK;
 
     tstring tstrLevel;
-    IfFailRet(pEnvironment->GetEnvironmentVariable(
-        s_wszDebugLoggerLevelEnvVar,
+    IfFailRet(_environment->GetEnvironmentVariable(
+        DebugLoggerLevelEnvVar,
         tstrLevel
         ));
 
@@ -27,44 +31,77 @@ HRESULT EnvironmentHelper::GetDebugLoggerLevel(
     return S_OK;
 }
 
-HRESULT EnvironmentHelper::SetProductVersion(
-    const shared_ptr<IEnvironment>& pEnvironment,
-    const shared_ptr<ILogger>& pLogger)
+HRESULT EnvironmentHelper::SetProductVersion()
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(pEnvironment->SetEnvironmentVariable(
-        s_wszProfilerVersionEnvVar,
+    IfFailLogRet(_environment->SetEnvironmentVariable(
+        ProfilerVersionEnvVar,
         MonitorProductVersion_TSTR
         ));
 
     return S_OK;
 }
 
-HRESULT EnvironmentHelper::GetRuntimeInstanceId(const std::shared_ptr<IEnvironment>& pEnvironment, const std::shared_ptr<ILogger>& pLogger, tstring& instanceId)
+HRESULT EnvironmentHelper::GetRuntimeInstanceId(tstring& instanceId)
 {
     HRESULT hr = S_OK;
 
-    IfFailLogRet(pEnvironment->GetEnvironmentVariable(s_wszRuntimeInstanceEnvVar, instanceId));
+    IfFailLogRet(_environment->GetEnvironmentVariable(RuntimeInstanceEnvVar, instanceId));
 
     return S_OK;
 }
 
-HRESULT EnvironmentHelper::GetTempFolder(const std::shared_ptr<IEnvironment>& pEnvironment, const std::shared_ptr<ILogger>& pLogger, tstring& tempFolder)
+HRESULT EnvironmentHelper::GetSharedPath(tstring& sharedPath)
+{
+    HRESULT hr = S_OK;
+
+    hr = _environment->GetEnvironmentVariable(SharedPathEnvVar, sharedPath);
+    if (FAILED(hr))
+    {
+        if (hr != HRESULT_FROM_WIN32(ERROR_ENVVAR_NOT_FOUND))
+        {
+            return hr;
+        }
+        IfFailRet(GetTempFolder(sharedPath));
+    }
+
+    return S_OK;
+}
+
+HRESULT EnvironmentHelper::GetStdErrLoggerLevel(LogLevel& level)
+{
+    HRESULT hr = S_OK;
+
+    tstring tstrLevel;
+    IfFailRet(_environment->GetEnvironmentVariable(
+        StdErrLoggerLevelEnvVar,
+        tstrLevel
+    ));
+
+    IfFailRet(LogLevelHelper::ToLogLevel(tstrLevel, level));
+
+    return S_OK;
+}
+
+HRESULT EnvironmentHelper::GetTempFolder(tstring& tempFolder)
 {
     HRESULT hr = S_OK;
 
     tstring tmpDir;
 #if TARGET_WINDOWS
-    IfFailLogRet(pEnvironment->GetEnvironmentVariable(s_wszTempEnvVar, tmpDir));
+    IfFailLogRet(_environment->GetEnvironmentVariable(TempEnvVar, tmpDir));
 #else
-    hr = pEnvironment->GetEnvironmentVariable(s_wszTempEnvVar, tmpDir);
-#endif
-
+    hr = _environment->GetEnvironmentVariable(TempEnvVar, tmpDir);
     if (FAILED(hr))
     {
-        tmpDir = s_wszDefaultTempFolder;
+        if (hr != HRESULT_FROM_WIN32(ERROR_ENVVAR_NOT_FOUND))
+        {
+            return hr;
+        }
+        tmpDir = DefaultTempFolder;
     }
+#endif
 
     tempFolder = std::move(tmpDir);
 

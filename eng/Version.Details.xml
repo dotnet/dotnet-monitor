@@ -1,46 +1,46 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="System.CommandLine.Experimental" Version="&gt;0.2.0-alpha.19213.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.22480.2">
+      <Uri>https://github.com/dotnet/diagnostics</Uri>
+      <Sha>c59197e57841be686feec388d00cd42fcda427e1</Sha>
+    </Dependency>
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.22480.2">
+      <Uri>https://github.com/dotnet/diagnostics</Uri>
+      <Sha>c59197e57841be686feec388d00cd42fcda427e1</Sha>
+    </Dependency>
+    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.22468.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
-      <Sha>166610c56ff732093f0145a2911d4f6c40b786da</Sha>
-    </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="5.0.0-preview.22276.1">
-      <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>a29569b3f85589bd69bf76976e95fe962dc66eef</Sha>
-    </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="5.0.0-preview.22276.1">
-      <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>a29569b3f85589bd69bf76976e95fe962dc66eef</Sha>
+      <Sha>c0efeb46a4a0ecd40ac72d35cae08020e8f30677</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="7.0.0-preview.6.22276.1">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="7.0.0-rtm.22501.6">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>dd11b0e1aaf274b2049e56c35466ad06d684298b</Sha>
+      <Sha>2b8523d9b40815bc800cb8a3b1149abfc4137d32</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22276.1">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.22473.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>b8b67b243ba93bf9b89390c85b4dee034d3c5609</Sha>
+      <Sha>86caedcb8d09e5631a8139aab1e1cb90726668f5</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.22276.1">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="7.0.0-beta.22473.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>b8b67b243ba93bf9b89390c85b4dee034d3c5609</Sha>
+      <Sha>86caedcb8d09e5631a8139aab1e1cb90726668f5</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.327301">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.345501">
       <Uri>https://github.com/dotnet/symstore</Uri>
-      <Sha>adf3d62fe38ae79afe7ac3da7db13ddba601279a</Sha>
+      <Sha>ecc608c89f6de49a937e9d6f180141bbc1639092</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="7.0.0-preview.5.22274.8" CoherentParentDependency="Microsoft.AspNetCore.App.Runtime.win-x64">
+    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="7.0.0-rtm.22480.10" CoherentParentDependency="Microsoft.AspNetCore.App.Runtime.win-x64">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>69679789fba3c377b1d14689ebab2e30a9f9ad8a</Sha>
+      <Sha>809b42196ea09700175785a25eace264995dde75</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.6.22276.1">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0" Version="7.0.0-rtm.22501.6">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>dd11b0e1aaf274b2049e56c35466ad06d684298b</Sha>
+      <Sha>2b8523d9b40815bc800cb8a3b1149abfc4137d32</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.7.0" Version="7.0.0-preview.5.22274.8" CoherentParentDependency="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.7.0" Version="7.0.0-rtm.22480.10" CoherentParentDependency="VS.Redist.Common.AspNetCore.SharedFramework.x64.7.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>69679789fba3c377b1d14689ebab2e30a9f9ad8a</Sha>
+      <Sha>809b42196ea09700175785a25eace264995dde75</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

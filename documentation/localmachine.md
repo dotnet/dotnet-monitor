@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Flocalmachine)
+
 # Running on a local machine
 
 `dotnet monitor` can be installed as a global tool providing observability, diagnostics artifact collection, and triggering in local development and testing scenarios. You can run `dotnet tool install -g dotnet-monitor` to install the latest version, see the full details [here](./setup.md#net-core-global-tool).
@@ -10,7 +13,7 @@ There are a number of local development scenarios that are much more efficient w
 
 ### Local configuration
 
-To monitor a specific local process you can use the settings file to define a default process. This ensures `dotnet monitor` automatically collects artifacts and logs based on a process criteria you have identified (e.g. process name, processs id, etc.).
+To monitor a specific local process you can use the settings file to define a default process. This ensures `dotnet monitor` automatically collects artifacts and logs based on a process criteria you have identified (e.g., process name, process id, etc.).
 
 Defining a default process on Windows requires creating a settings file in the user path (`%USERPROFILE%\.dotnet-monitor\settings.json`). In the following example the default process has a process name of __BuggyDemoWeb__.
 
@@ -28,7 +31,7 @@ Defining a default process on Windows requires creating a settings file in the u
 
 ### dotnet monitor collection
 
-To start using `dotnet monitor`, run the following command from a Powershell or Command prompt:
+To start using `dotnet monitor`, run the following command from a PowerShell or Command prompt:
 
 ```cmd
 dotnet-monitor collect

@@ -60,9 +60,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly Action<ILogger, Exception> _insecureAuthenticationConfiguration =
             LoggerMessage.Define(
-                eventId: LoggingEventIds.InsecureAutheticationConfiguration.EventId(),
+                eventId: LoggingEventIds.InsecureAuthenticationConfiguration.EventId(),
                 logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_InsecureAutheticationConfiguration);
+                formatString: Strings.LogFormatString_InsecureAuthenticationConfiguration);
 
         private static readonly Action<ILogger, string, Exception> _unableToListenToAddress =
             LoggerMessage.Define<string>(
@@ -82,7 +82,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_BoundMetricsAddress);
 
-        private static readonly Action<ILogger, string, Exception> _optionsValidationFalure =
+        private static readonly Action<ILogger, string, Exception> _optionsValidationFailure =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.OptionsValidationFailure.EventId(),
                 logLevel: LogLevel.Critical,
@@ -424,6 +424,108 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ExtensionMalformedOutput);
 
+        private static readonly Action<ILogger, Exception> _runtimeInstanceCookieFailedToFilterSelf =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.RuntimeInstanceCookieFailedToFilterSelf.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_RuntimeInstanceCookieFailedToFilterSelf);
+
+        private static readonly Action<ILogger, string, Exception> _parsingUrlFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ParsingUrlFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ParsingUrlFailed);
+
+        private static readonly Action<ILogger, string, Exception> _intermediateFileDeletionFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.IntermediateFileDeletionFailed.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_IntermediateFileDeletionFailed);
+
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortDeleteAttempt =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortDeleteAttempt.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortDeleteAttempt);
+
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortDeleteFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortDeleteFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortDeleteFailed);
+
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortAlteredWhileInUse =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortAlteredWhileInUse.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortAlteredWhileInUse);
+
+        private static readonly Action<ILogger, string, Exception> _diagnosticPortWatchingFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DiagnosticPortWatchingFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
+
+        private static readonly Action<ILogger, Exception> _invalidMetadata =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.InvalidMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_InvalidMetadata);
+
+        private static readonly Action<ILogger, string, Exception> _duplicateKeyInMetadata =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
+
+        private static readonly Action<ILogger, string, Exception> _environmentVariableNotFound =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.EnvironmentVariableNotFound.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
+
+        private static readonly Action<ILogger, Exception> _environmentBlockNotSupported =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.EnvironmentBlockNotSupported.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
+
+        private static readonly Action<ILogger, Exception> _failedInitializeSharedLibraryStorage =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.FailedInitializeSharedLibraryStorage.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_FailedInitializeSharedLibraryStorage);
+
+        private static readonly Action<ILogger, Exception> _unableToApplyProfiler =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.UnableToApplyProfiler.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_UnableToApplyProfiler);
+
+        private static readonly Action<ILogger, string, Exception> _sharedlibraryPath =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.SharedLibraryPath.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_SharedLibraryPath);
+
+        private static readonly Action<ILogger, Exception> _connectionModeConnect =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.ConnectionModeConnect.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ConnectionModeConnect);
+
+        private static readonly Action<ILogger, string, Exception> _connectionModeListen =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ConnectionModeListen.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ConnectionModeListen);
+
+        private static readonly Action<ILogger, string, Exception> _experimentalFeatureEnabled =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExperimentalFeatureEnabled.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExperimentalFeatureEnabled);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -482,7 +584,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void OptionsValidationFailure(this ILogger logger, OptionsValidationException exception)
         {
             foreach (string failure in exception.Failures)
-                _optionsValidationFalure(logger, failure, null);
+                _optionsValidationFailure(logger, failure, null);
         }
 
         public static void RunningElevated(this ILogger logger)
@@ -777,6 +879,90 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExtensionMalformedOutput(this ILogger logger, int pid, string message, Type resultType)
         {
             _extensionMalformedOutput(logger, pid, message, resultType.Name, null);
+        }
+
+        public static void RuntimeInstanceCookieFailedToFilterSelf(this ILogger logger, Exception ex)
+        {
+            _runtimeInstanceCookieFailedToFilterSelf(logger, ex);
+        }
+
+        public static void ParsingUrlFailed(this ILogger logger, string url, Exception ex)
+        {
+            _parsingUrlFailed(logger, url, ex);
+        }
+
+        public static void IntermediateFileDeletionFailed(this ILogger logger, string intermediateFilePath, Exception ex)
+        {
+            _intermediateFileDeletionFailed(logger, intermediateFilePath, ex);
+        }
+
+        public static void DiagnosticPortDeleteAttempt(this ILogger logger, string diagnosticPort)
+        {
+            _diagnosticPortDeleteAttempt(logger, diagnosticPort, null);
+        }
+
+        public static void DiagnosticPortDeleteFailed(this ILogger logger, string diagnosticPort, Exception ex)
+        {
+            _diagnosticPortDeleteFailed(logger, diagnosticPort, ex);
+        }
+
+        public static void DiagnosticPortAlteredWhileInUse(this ILogger logger, string diagnosticPort)
+        {
+            _diagnosticPortAlteredWhileInUse(logger, diagnosticPort, null);
+        }
+
+        public static void DiagnosticPortWatchingFailed(this ILogger logger, string diagnosticPort, Exception ex)
+        {
+            _diagnosticPortWatchingFailed(logger, diagnosticPort, ex);
+        }
+        public static void InvalidMetadata(this ILogger logger, Exception ex)
+        {
+            _invalidMetadata(logger, ex);
+        }
+
+        public static void DuplicateKeyInMetadata(this ILogger logger, string duplicateKey)
+        {
+            _duplicateKeyInMetadata(logger, duplicateKey, null);
+        }
+
+        public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
+        {
+            _environmentVariableNotFound(logger, environmentVariable, null);
+        }
+
+        public static void EnvironmentBlockNotSupported(this ILogger logger)
+        {
+            _environmentBlockNotSupported(logger, null);
+        }
+
+        public static void FailedInitializeSharedLibraryStorage(this ILogger logger, Exception ex)
+        {
+            _failedInitializeSharedLibraryStorage(logger, ex);
+        }
+
+        public static void UnableToApplyProfiler(this ILogger logger, Exception ex)
+        {
+            _unableToApplyProfiler(logger, ex);
+        }
+
+        public static void SharedLibraryPath(this ILogger logger, string path)
+        {
+            _sharedlibraryPath(logger, path, null);
+        }
+
+        public static void ConnectionModeConnect(this ILogger logger)
+        {
+            _connectionModeConnect(logger, null);
+        }
+
+        public static void ConnectionModeListen(this ILogger logger, string path)
+        {
+            _connectionModeListen(logger, path, null);
+        }
+
+        public static void ExperimentalFeatureEnabled(this ILogger logger, string name)
+        {
+            _experimentalFeatureEnabled(logger, name, null);
         }
     }
 }

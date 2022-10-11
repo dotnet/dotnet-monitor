@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CallstackThreadHeader" xml:space="preserve">
+    <value>Thread: (0x{0:X})</value>
+  </data>
   <data name="ErrorMessage_CanNotGetEnvironment" xml:space="preserve">
     <value>Unable to get process environment.</value>
     <comment>Gets a string similar to "Unable to get process environment.".</comment>
@@ -158,6 +161,9 @@
     <value>Unable to enumerate processes.</value>
     <comment>Gets a string similar to "Unable to enumerate processes.".</comment>
   </data>
+  <data name="ErrorMessage_StacksTimeout" xml:space="preserve">
+    <value>Unable to process stack in timely manner.</value>
+  </data>
   <data name="ErrorMessage_TooManyRequests" xml:space="preserve">
     <value>Rate limit reached.</value>
   </data>
@@ -194,6 +200,11 @@
     <value>Value must be of type string.</value>
     <comment>Gets a string similar to "Value must be of type string.".</comment>
   </data>
+  <data name="LogFormatString_DefaultProcessUnexpectedFailure" xml:space="preserve">
+    <value>Failed to determine the default process.</value>
+    <comment>Gets the format string that is printed in the 7:DefaultProcessUnexpectedFailure event.
+0 Format Parameters</comment>
+  </data>
   <data name="LogFormatString_EgressedArtifact" xml:space="preserve">
     <value>Egressed artifact to {location}</value>
     <comment>Gets the format string that is printed in the 4:EgressedArtifact event.
@@ -226,5 +237,26 @@
     <value>Written to HTTP stream.</value>
     <comment>Gets the format string that is printed in the 5:WrittenToHttpStream event.
 0 Format Parameters</comment>
+  </data>
+  <data name="Message_CollectionRuleStateReason_ExecutingActions" xml:space="preserve">
+    <value>This collection rule has had its triggering conditions satisfied and is currently executing its action list.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Finished_ActionCount" xml:space="preserve">
+    <value>The collection rule will no longer trigger because the ActionCount was reached.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Finished_Failure" xml:space="preserve">
+    <value>The collection rule will no longer trigger because a failure occurred with message: {0}.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Finished_RuleDuration" xml:space="preserve">
+    <value>The collection rule will no longer trigger because the RuleDuration limit was reached.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Finished_Startup" xml:space="preserve">
+    <value>The collection rule will no longer trigger because the Startup trigger only executes once.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Running" xml:space="preserve">
+    <value>This collection rule is active and waiting for its triggering conditions to be satisfied.</value>
+  </data>
+  <data name="Message_CollectionRuleStateReason_Throttled" xml:space="preserve">
+    <value>This collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration.</value>
   </data>
 </root>

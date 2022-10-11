@@ -10,5 +10,11 @@
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
     <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftNETCoreApp31Version)</RuntimeFrameworkVersion>
     <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftNETCoreApp50Version)</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'net6.0'">$(MicrosoftNETCoreApp60Version)</RuntimeFrameworkVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Used to upgrade to a higher version than what is provided from indirect dependencies. -->
+    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
+  </ItemGroup>
 </Project>

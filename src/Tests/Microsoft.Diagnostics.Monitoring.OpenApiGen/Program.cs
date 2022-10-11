@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 throw new InvalidOperationException("Expected single argument for the output path.");
             }
             string outputPath = args[0];
-            
+
             // Create directory if it does not exist
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 
@@ -43,7 +43,8 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 metricUrls: null,
                 metrics: false,
                 diagnosticPort: null,
-                authConfiguration: HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false));
+                authConfiguration: HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                userProvidedConfigFilePath: null);
 
             // Create all of the same services as dotnet-monitor and add
             // OpenAPI generation in order to have it inspect the ASP.NET Core

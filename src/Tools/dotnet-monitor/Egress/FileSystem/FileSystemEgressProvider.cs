@@ -18,9 +18,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
     internal class FileSystemEgressProvider :
         EgressProvider<FileSystemEgressProviderOptions>
     {
+        ILogger<FileSystemEgressProvider> _logger;
+
         public FileSystemEgressProvider(ILogger<FileSystemEgressProvider> logger)
             : base(logger)
         {
+            _logger = logger;
         }
 
         public override async Task<string> EgressAsync(
@@ -77,8 +80,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
                             File.Delete(intermediateFilePath);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        _logger.IntermediateFileDeletionFailed(intermediateFilePath, ex);
                     }
                 }
             }

@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 CollectDumpOptions options = ActionTestsHelper.GetActionOptions<CollectDumpOptions>(host, DefaultRuleName);
 
-                Assert.Equal(options.Egress, ActionTestsConstants.ExpectedEgressProvider);
+                Assert.Equal(ActionTestsConstants.ExpectedEgressProvider, options.Egress);
             });
         }
 
@@ -97,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 CollectDumpOptions options = ActionTestsHelper.GetActionOptions<CollectDumpOptions>(host, DefaultRuleName);
 
-                Assert.Equal(options.Egress, ActionTestsConstants.ExpectedEgressProvider);
+                Assert.Equal(ActionTestsConstants.ExpectedEgressProvider, options.Egress);
             });
         }
 

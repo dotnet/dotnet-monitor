@@ -23,6 +23,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         string OperatingSystem { get; }
 
         string ProcessArchitecture { get; }
+
+        Version RuntimeVersion { get; }
+    }
+
+    /// <summary>
+    /// Because IpcEndpoint may not be visible outside of this assembly (we have access to it here through InternalsVisibleTo), we
+    /// create a base class that allows skipping the Endpoint property.
+    /// </summary>
+    internal abstract class EndpointInfoBase : IEndpointInfo
+    {
+        public virtual IpcEndpoint Endpoint
+        {
+            get => throw new NotImplementedException();
+            protected set => throw new NotImplementedException();
+        }
+
+        public abstract int ProcessId { get; protected set; }
+        public abstract Guid RuntimeInstanceCookie { get; protected set; }
+        public abstract string CommandLine { get; protected set; }
+        public abstract string OperatingSystem { get; protected set; }
+        public abstract string ProcessArchitecture { get; protected set; }
+
+        public abstract Version RuntimeVersion { get; protected set; }
     }
 
     public interface IEndpointInfoSource

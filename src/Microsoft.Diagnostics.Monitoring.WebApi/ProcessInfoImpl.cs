@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string commandLine = endpointInfo.CommandLine;
             if (string.IsNullOrEmpty(commandLine))
             {
-                // The EventProcessInfoPipeline will frequently hang during disposal of its
+                // The EventProcessInfoPipeline will frequently block during disposal of its
                 // EventPipeStreamProvider, which is trying to send a SessionStop command to
                 // stop the event pipe session. When this happens, it waits for the 30 timeout
                 // before giving up. Because this is happening during a disposal call, it is
@@ -92,7 +92,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                     commandLine = await commandLineSource.Task;
                 }
-                catch
+                catch (PipelineException)
+                {
+                }
+                catch (OperationCanceledException)
                 {
                 }
                 finally

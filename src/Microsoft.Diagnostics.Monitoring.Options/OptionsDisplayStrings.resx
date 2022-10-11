@@ -194,7 +194,7 @@
     <comment>The description provided for the ContainerName parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature" xml:space="preserve">
-    <value>The shared access signature (SAS) used to access the azure blob storage account.</value>
+    <value>The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts.</value>
     <comment>The description provided for the SharedAccessSignature parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureName" xml:space="preserve">
@@ -573,7 +573,7 @@
     <comment>The description provided for the Name parameter on GetEnvironmentVariableOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri" xml:space="preserve">
-    <value>The URI of the Azure queue account.</value>
+    <value>The URI of the Azure queue storage account.</value>
     <comment>The description provided for the QueueAccountUri parameter on AzureBlobEgressProviderOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName" xml:space="preserve">
@@ -680,5 +680,53 @@
   </data>
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId" xml:space="preserve">
     <value>Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage.</value>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Duration" xml:space="preserve">
+    <value>The duration of time in which live metrics are collected.</value>
+    <comment>The description provided for the Duration parameter on CollectLiveMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the live metrics are egressed.</value>
+    <comment>The description provided for the Egress parameter on CollectLiveMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders" xml:space="preserve">
+    <value>Determines if the default counter providers should be used.</value>
+    <comment>The description provided for the IncludeDefaultProviders parameter on CollectLiveMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Providers" xml:space="preserve">
+    <value>The array of providers for metrics to collect.</value>
+    <comment>The description provided for the Providers parameter on CollectLiveMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup" xml:space="preserve">
+    <value>In 'Listen' connection mode, deletes the domain socket file used for diagnostic port communication.</value>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata" xml:space="preserve">
+    <value>A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.</value>
+    <comment>The description provided for the Metadata parameter on AzureBlobEgressProviderOptions</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignature" xml:space="preserve">
+    <value>The shared access signature (SAS) used to access the Azure queue storage account.</value>
+    <comment>The description provided for the QueueSharedAccessSignature parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignatureName" xml:space="preserve">
+    <value>The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
+    <comment>The description provided for the QueueSharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_StorageOptions_SharedLibraryPath" xml:space="preserve">
+    <value>The location to which libraries shared with target processes will be copied at startup.</value>
+    <comment>The description provided for the SharedLibraryPath parameter on StorageOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_StorageOptions_DefaultSharedPath" xml:space="preserve">
+    <value>The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows platforms, a server diagnostic port is created with the name of 'dotnet-monitor.sock' immediately under this path if running in listen mode unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified.</value>
+    <comment>The description provided for the DefaultSharedPath parameter on StorageOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_InProcessFeaturesOptions_Enabled" xml:space="preserve">
+    <value>Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.</value>
+  </data>
+  <data name="DisplayAttributeDescription_CollectStacksOptions_Format" xml:space="preserve">
+    <value>The format used to display the call stacks.</value>
+  </data>
+  <data name="DisplayAttributeDescription_CollectStacksOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the call stacks are egressed.</value>
   </data>
 </root>

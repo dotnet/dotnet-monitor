@@ -28,6 +28,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// </summary>
         public static readonly TimeSpan TraceTimeout = TimeSpan.FromMinutes(2);
 
+        /// <summary>
+        /// Default timeout for live metrics collection.
+        /// </summary>
+        public static readonly TimeSpan LiveMetricsTimeout = TimeSpan.FromMinutes(2);
+
         /// Default timeout for gcdump collection.
         /// </summary>
         /// <remarks>
@@ -62,5 +67,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Default timeout for loading a profiler into a target process.
         /// </summary>
         public static readonly TimeSpan LoadProfilerTimeout = TimeSpan.FromSeconds(10);
+
+        /// <summary>
+        /// Default timeout for waiting for Azurite to fully initialize.
+        /// </summary>
+        public static readonly TimeSpan AzuriteInitializationTimeout = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// Default timeout for waiting for Azurite to fully stop.
+        /// </summary>
+        public static readonly TimeSpan AzuriteTeardownTimeout = TimeSpan.FromSeconds(30);
     }
 }

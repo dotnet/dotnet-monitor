@@ -71,6 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ProcessChildSection(configuration, ConfigurationKeys.CollectionRules, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.CorsConfiguration, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.DiagnosticPort, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ConfigurationKeys.InProcessFeatures, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.Metrics, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.Storage, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.DefaultProcess, skipNotPresent, includeChildSections: true, showSources: showSources);
@@ -148,6 +149,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignatureName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKeyName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
                             ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.ManagedIdentityClientId), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignature), skipNotPresent, includeChildSections: false, redact: true, showSources: showSources);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignatureName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
+                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.Metadata), skipNotPresent, includeChildSections: true, redact: false, showSources: showSources);
                         }
                     }
                 }
@@ -265,24 +269,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private string GetConfigurationProvider(IConfigurationSection section, bool showSources)
         {
-            if (showSources)
+            if (showSources && _configuration.TryGetProviderAndValue(section.Path, out IConfigurationProvider provider, out _))
             {
-                var configurationProviders = ((IConfigurationRoot)_configuration).Providers.Reverse();
-
-                string comment = string.Empty;
-
-                foreach (var provider in configurationProviders)
-                {
-                    provider.TryGet(section.Path, out string value);
-
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        comment = provider.ToString();
-                        break;
-                    }
-                }
-
-                return comment;
+                return provider.ToString();
             }
 
             return string.Empty;

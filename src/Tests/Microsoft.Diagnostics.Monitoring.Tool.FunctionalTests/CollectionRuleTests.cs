@@ -9,14 +9,12 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -214,7 +212,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddProcessNameFilter(DotNetHost.HostExeNameWithoutExtension);
+                        .AddProcessNameFilter(DotNetHost.ExeNameWithoutExtension);
 
                     startedTask = runner.WaitForCollectionRuleStartedAsync(DefaultRuleName);
                 });
@@ -267,7 +265,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 out string diagnosticPortPath);
 
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
-            toolRunner.ConnectionMode = mode;
+            toolRunner.ConnectionModeViaCommandLine = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
 
@@ -325,7 +323,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 out string diagnosticPortPath);
 
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
-            toolRunner.ConnectionMode = mode;
+            toolRunner.ConnectionModeViaCommandLine = mode;
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
 
