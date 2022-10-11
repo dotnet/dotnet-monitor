@@ -50,7 +50,7 @@ runs:
           exit 0
         fi
 
-        git commit -m "$pr_branch_name"
+        git commit -m "${{ inputs.commit_message }}"
         git push --force --set-upstream origin "HEAD:$pr_branch_name"
 
         gh pr create --repo "${{ github.repository }}" --base "$current_branch_name" -t "${{ inputs.title }}" -b  "${{ inputs.body }}" -l "${{ inputs.labels }}"
