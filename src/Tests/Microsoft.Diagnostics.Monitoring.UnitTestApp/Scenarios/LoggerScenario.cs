@@ -75,7 +75,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 // in the trace event library event processor due to their close proximity in being emitted.
                 // To mitigate this, wait a short time and send another log entry, which will cause the buffer
                 // to flush the existing entries. This log entry should be ignored by the logs tests.
-                await Task.Delay(TimeSpan.FromMilliseconds(200));
+                await Task.Delay(CommonTestTimeouts.EventSourceBufferAvoidanceTimeout);
+
                 LogCriticalMessage(sentinelCategory);
 
                 return 0;

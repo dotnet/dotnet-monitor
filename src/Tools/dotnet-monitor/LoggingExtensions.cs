@@ -443,7 +443,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static readonly Action<ILogger, string, Exception> _startCollectArtifact =
             LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.StartCollectingArtifact.EventId(),
+                eventId: LoggingEventIds.StartCollectArtifact.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_StartCollectArtifact);
 

@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <summary>
         /// Produces a diagnostic artifact to the output stream.
         /// </summary>
-        /// <param name="outputStream">The steram to which the diagnostic artifact is written.</param>
+        /// <param name="outputStream">The stream to which the diagnostic artifact is written.</param>
         /// <param name="startCompletionSource">A completion source that is signaled when the operation has started.</param>
         /// <param name="token">A token used to cancel the operation.</param>
         /// <returns></returns>

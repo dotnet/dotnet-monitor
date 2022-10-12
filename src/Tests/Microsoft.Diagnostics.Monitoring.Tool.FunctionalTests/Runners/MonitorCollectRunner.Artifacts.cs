@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public Task WaitForStartCollectArtifactAsync(string artifactType, CancellationToken token)
         {
-            return WaitForArtifactEventAsync(LoggingEventIds.StartCollectingArtifact.Id(), artifactType, token);
+            return WaitForArtifactEventAsync(LoggingEventIds.StartCollectArtifact.Id(), artifactType, token);
         }
 
         private async Task WaitForArtifactEventAsync(int eventId, string artifactType, CancellationToken token)
@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 ArtifactEventKey key = new(logEvent.EventId, artifactType);
                 switch ((LoggingEventIds)logEvent.EventId)
                 {
-                    case LoggingEventIds.StartCollectingArtifact:
+                    case LoggingEventIds.StartCollectArtifact:
                         CompleteArtifactEventCallbacks(key);
                         break;
                 }
@@ -89,35 +89,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
         }
 
-        private struct ArtifactEventKey : IEquatable<ArtifactEventKey>
-        {
-            private readonly int _eventId;
-            private readonly string _artifactType;
-
-            public ArtifactEventKey(int eventId, string artifactType)
-            {
-                _eventId = eventId;
-                _artifactType = artifactType;
-            }
-
-            public bool Equals(ArtifactEventKey other)
-            {
-                return _eventId == other._eventId &&
-                    string.Equals(_artifactType, other._artifactType, StringComparison.Ordinal);
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is ArtifactEventKey key && Equals(key);
-            }
-
-            public override int GetHashCode()
-            {
-                HashCode code = new();
-                code.Add(_eventId);
-                code.Add(_artifactType);
-                return code.ToHashCode();
-            }
-        }
+        private record struct ArtifactEventKey(int EventId, string ArtifactType);
     }
 }
