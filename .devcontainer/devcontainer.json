@@ -10,6 +10,9 @@
             "NODE_VERSION": "lts/*"
         }
     },
+    "hostRequirements": {
+        "cpus": 4
+    },
     "customizations": {
         "vscode": {
             "extensions": [
@@ -65,6 +68,9 @@
             "version": "latest"
         },
         "ghcr.io/devcontainers/features/docker-in-docker:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
             "version": "latest"
         }
     },
