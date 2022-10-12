@@ -9,6 +9,7 @@
     <Description>.NET Core Diagnostic Monitoring Tool</Description>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
   </PropertyGroup>
 
   <ItemGroup>
