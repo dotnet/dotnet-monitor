@@ -10,6 +10,9 @@
             "NODE_VERSION": "lts/*"
         }
     },
+    "hostRequirements": {
+        "cpus": 4
+    },
     "customizations": {
         "vscode": {
             "extensions": [
