@@ -44,6 +44,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_QueueOptionsPartiallySet);
 
+        private static readonly Action<ILogger, Exception> _invalidMetadata =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.InvalidMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_InvalidMetadata);
+
+        private static readonly Action<ILogger, string, Exception> _duplicateKeyInMetadata =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
+
+        private static readonly Action<ILogger, string, Exception> _environmentVariableNotFound =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.EnvironmentVariableNotFound.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
+
+        private static readonly Action<ILogger, Exception> _environmentBlockNotSupported =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.EnvironmentBlockNotSupported.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
+
         public static void EgressCopyActionStreamToEgressStream(this ILogger logger, int bufferSize)
         {
             _egressCopyActionStreamToEgressStream(logger, bufferSize, null);
@@ -72,6 +96,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public static void QueueOptionsPartiallySet(this ILogger logger)
         {
             _queueOptionsPartiallySet(logger, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
+        }
+
+        public static void InvalidMetadata(this ILogger logger, Exception ex)
+        {
+            _invalidMetadata(logger, ex);
+        }
+
+        public static void DuplicateKeyInMetadata(this ILogger logger, string duplicateKey)
+        {
+            _duplicateKeyInMetadata(logger, duplicateKey, null);
+        }
+
+        public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
+        {
+            _environmentVariableNotFound(logger, environmentVariable, null);
+        }
+
+        public static void EnvironmentBlockNotSupported(this ILogger logger)
+        {
+            _environmentBlockNotSupported(logger, null);
         }
     }
 }
