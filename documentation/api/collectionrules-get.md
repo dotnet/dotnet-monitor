@@ -1,9 +1,9 @@
 
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fcollectionrules-individual)
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fcollectionrules-get)
 
-# Collection Rules - Get
+# Collection Rules - Get (6.3+)
 
-Reports the detailed state of the specified collection rule for a specific process.
+Get the detailed state of the specified collection rule for all processes or for the specified process.
 
 ## HTTP Route
 
@@ -42,7 +42,7 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [CollectionRuleDetailedDescription](definitions.md#collectionruledetaileddescription) | The detailed information about the current state of the specified collection rule. | `application/json` |
+| 200 OK | [CollectionRuleDetailedDescription](definitions.md#collectionruledetaileddescription-63) | The detailed information about the current state of the specified collection rule. | `application/json` |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 

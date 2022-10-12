@@ -86,8 +86,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 "Microsoft.Diagnostics.Monitoring.UnitTestApp",
                 tfm);
 
-            _runner.TargetFramework = tfm;
-
             _waitingForEnvironmentVariables = new Dictionary<string, TaskCompletionSource<string>>();
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
@@ -211,10 +209,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             switch ((TestAppLogEventIds)logEvent.EventId)
             {
                 case TestAppLogEventIds.ScenarioState:
-                    Assert.True(logEvent.State.TryGetValue("state", out TestAppScenarios.SenarioState state));
+                    Assert.True(logEvent.State.TryGetValue("state", out TestAppScenarios.ScenarioState state));
                     switch (state)
                     {
-                        case TestAppScenarios.SenarioState.Ready:
+                        case TestAppScenarios.ScenarioState.Ready:
                             Assert.True(_readySource.TrySetResult(null));
                             break;
                     }
