@@ -137,6 +137,9 @@
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
   </data>
+  <data name="ErrorMessage_DisabledFeature" xml:space="preserve">
+    <value>Feature '{0}' is not enabled.</value>
+  </data>
   <data name="ErrorMessage_DuplicateActionName" xml:space="preserve">
     <value>Duplicate action name '{0}'.</value>
   </data>
@@ -253,6 +256,14 @@
   </data>
   <data name="ErrorMessage_MaxConnections" xml:space="preserve">
     <value>Value must be between 1 and 254, or -1 (to obtain the maximum number allowed by system resources).</value>
+  </data>
+  <data name="ErrorMessage_MissingStoppingEventProvider" xml:space="preserve">
+    <value>The {0} field specified the provider '{1}' but it was not found in the {2} field.</value>
+    <comment>Gets the format string for CollectTraceOptions type failure due to missing the needed provider for StoppingEventOptions.
+3 Format Parameter:
+1. stoppingEventField: The field that specified the StoppingEventOptions that contains the failure.
+2. missingProviderName: The specified provider that is missing.
+3. providersField: the field that the provider should be defined in.</comment>
   </data>
   <data name="ErrorMessage_NoEnvironmentVariable" xml:space="preserve">
     <value>The environment block does not contain the '{0}' variable.</value>

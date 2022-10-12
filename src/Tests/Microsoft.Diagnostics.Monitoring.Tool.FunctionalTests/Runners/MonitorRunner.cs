@@ -91,12 +91,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             _outputHelper = new PrefixedOutputHelper(outputHelper, "[Monitor] ");
 
-            // Must tell runner this is an ASP.NET Core app so that it can choose
-            // the correct ASP.NET Core version (which can be different than the .NET
-            // version, especially for prereleases).
-            _runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
-            _runner.TargetFramework = TargetFrameworkMoniker.Net60;
-
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
 
@@ -219,6 +213,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
 
             _outputHelper.WriteLine("Wrote user settings.");
+        }
+
+        protected void SetEnvironmentVariable(string name, string value)
+        {
+            _adapter.Environment[name] = value;
         }
     }
 }

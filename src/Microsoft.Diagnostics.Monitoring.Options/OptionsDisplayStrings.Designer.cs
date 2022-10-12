@@ -644,6 +644,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the call stacks are egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectStacksOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectStacksOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format used to display the callstacks..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectStacksOptions_Format {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectStacksOptions_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The size of the event pipe buffer to use in the target process. If the event pipe buffer fills with too many events, newer events will be dropped until the buffer is drained to fit new events..
         /// </summary>
         public static string DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes {
@@ -694,6 +712,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectTraceOptions_RequestRundown {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_RequestRundown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The event to watch for while collecting the trace, and once observed the trace will be stopped..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_StoppingEvent {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_StoppingEvent", resourceCulture);
             }
         }
         
@@ -1437,7 +1464,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows, dotnet-monitor runs in listen mode with a Unix domain socket named &apos;dotnet-monitor.sock&apos; immediately under this path unless the diagnostic port is specified on the command line or the DiagnosticPort optio [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows platforms, a server diagnostic port is created with the name of &apos;dotnet-monitor.sock&apos; immediately under this path if running in listen mode unless the diagnostic port is specified on the command line or th [rest of string was truncated]&quot;;.
         /// </summary>
         public static string DisplayAttributeDescription_StorageOptions_DefaultSharedPath {
             get {
@@ -1478,6 +1505,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_ThreadpoolQueueLengthOptions_LessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are separated by a &apos;/&apos;. If the event has no opcode, then the event name is just the task name..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventFilter_EventName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_EventName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A mapping of event payload field names to their expected value. A subset of the payload fields may be specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventFilter_PayloadFilter {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_PayloadFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The event provider that will produce the specified event..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventFilter_ProviderName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_ProviderName", resourceCulture);
             }
         }
         

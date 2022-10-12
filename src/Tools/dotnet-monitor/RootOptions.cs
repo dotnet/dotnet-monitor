@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public GlobalCounterOptions GlobalCounter { get; set; }
 
+        [Experimental]
         public InProcessFeaturesOptions InProcessFeatures { get; set; }
 
         public CorsConfigurationOptions CorsConfiguration { get; set; }

@@ -106,6 +106,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Feature &apos;{0}&apos; is not enabled..
+        /// </summary>
+        internal static string ErrorMessage_DisabledFeature {
+            get {
+                return ResourceManager.GetString("ErrorMessage_DisabledFeature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate action name &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorMessage_DuplicateActionName {
@@ -309,6 +318,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_MaxConnections {
             get {
                 return ResourceManager.GetString("ErrorMessage_MaxConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field specified the provider &apos;{1}&apos; but it was not found in the {2} field..
+        /// </summary>
+        internal static string ErrorMessage_MissingStoppingEventProvider {
+            get {
+                return ResourceManager.GetString("ErrorMessage_MissingStoppingEventProvider", resourceCulture);
             }
         }
         

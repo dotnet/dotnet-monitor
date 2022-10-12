@@ -49,6 +49,7 @@
       ]
     },
     "InProcessFeatures": {
+      "description": "[Experimental]",
       "default": {},
       "oneOf": [
         {
@@ -758,6 +759,16 @@
         {
           "properties": {
             "Type": {
+              "const": "CollectStacks"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectStacksOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
               "const": "CollectTrace"
             },
             "Settings": {
@@ -840,7 +851,7 @@
             "string"
           ],
           "description": "The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.",
-          "format": "time-span"
+          "format": "duration"
         },
         "RuleDuration": {
           "type": [
@@ -848,7 +859,7 @@
             "string"
           ],
           "description": "The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -878,7 +889,7 @@
             "boolean",
             "null"
           ],
-          "description": "Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "description": "[Experimental] Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
           "default": false
         }
       }
@@ -1312,7 +1323,7 @@
             "null",
             "string"
           ],
-          "description": "The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows, dotnet-monitor runs in listen mode with a Unix domain socket named 'dotnet-monitor.sock' immediately under this path unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified."
+          "description": "The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows platforms, a server diagnostic port is created with the name of 'dotnet-monitor.sock' immediately under this path if running in listen mode unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified."
         },
         "DumpTempFolder": {
           "type": [
@@ -1326,7 +1337,7 @@
             "null",
             "string"
           ],
-          "description": "The location to which libraries shared with target processes will be copied at startup."
+          "description": "[Experimental] The location to which libraries shared with target processes will be copied at startup."
         }
       }
     },
@@ -1415,7 +1426,7 @@
             "string"
           ],
           "description": "The default sliding window duration.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -1452,7 +1463,7 @@
             "string"
           ],
           "description": "The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed.",
-          "format": "time-span"
+          "format": "duration"
         },
         "RuleDuration": {
           "type": [
@@ -1460,7 +1471,7 @@
             "string"
           ],
           "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -1517,6 +1528,7 @@
         "CollectGCDump",
         "CollectLiveMetrics",
         "CollectLogs",
+        "CollectStacks",
         "CollectTrace",
         "Execute",
         "LoadProfiler",
@@ -1602,7 +1614,7 @@
             "string"
           ],
           "description": "The duration of time in which live metrics are collected.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
@@ -1681,7 +1693,7 @@
             "string"
           ],
           "description": "The duration of time in which logs are collected.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
@@ -1715,6 +1727,41 @@
         "NewlineDelimitedJson",
         "PlainText",
         "JsonSequence"
+      ]
+    },
+    "CollectStacksOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": "string",
+          "description": "[Experimental] The name of the egress provider to which the call stacks are egressed.",
+          "minLength": 1
+        },
+        "Format": {
+          "description": "[Experimental] The format used to display the call stacks.",
+          "default": "Json",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CallStackFormat"
+            }
+          ]
+        }
+      }
+    },
+    "CallStackFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Json",
+        "PlainText"
+      ],
+      "enum": [
+        "Json",
+        "PlainText"
       ]
     },
     "CollectTraceOptions": {
@@ -1767,13 +1814,24 @@
             "string"
           ],
           "description": "The duration of time in which trace events are collected.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
           "type": "string",
           "description": "The name of the egress provider to which the trace is egressed.",
           "minLength": 1
+        },
+        "StoppingEvent": {
+          "description": "The event to watch for while collecting the trace, and once observed the trace will be stopped.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TraceEventFilter"
+            }
+          ]
         }
       }
     },
@@ -1844,6 +1902,36 @@
         "Informational",
         "Verbose"
       ]
+    },
+    "TraceEventFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ProviderName",
+        "EventName"
+      ],
+      "properties": {
+        "ProviderName": {
+          "type": "string",
+          "description": "The event provider that will produce the specified event.",
+          "minLength": 1
+        },
+        "EventName": {
+          "type": "string",
+          "description": "The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are separated by a '/'. If the event has no opcode, then the event name is just the task name.",
+          "minLength": 1
+        },
+        "PayloadFilter": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of event payload field names to their expected value. A subset of the payload fields may be specified.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
     },
     "ExecuteOptions": {
       "type": "object",
@@ -1959,7 +2047,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of requests are counted.",
-          "format": "time-span"
+          "format": "duration"
         },
         "IncludePaths": {
           "type": [
@@ -2000,7 +2088,7 @@
             "string"
           ],
           "description": "The threshold of the amount of time in which a request is considered to be slow.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:05"
         },
         "SlidingWindowDuration": {
@@ -2009,7 +2097,7 @@
             "string"
           ],
           "description": "The sliding time window in which the the number of slow requests are counted.",
-          "format": "time-span"
+          "format": "duration"
         },
         "IncludePaths": {
           "type": [
@@ -2062,7 +2150,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of responses with matching status codes must occur.",
-          "format": "time-span"
+          "format": "duration"
         },
         "IncludePaths": {
           "type": [
@@ -2126,7 +2214,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -2161,7 +2249,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:01:00"
         }
       }
@@ -2195,7 +2283,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:01:00"
         }
       }
@@ -2229,7 +2317,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:01:00"
         }
       }

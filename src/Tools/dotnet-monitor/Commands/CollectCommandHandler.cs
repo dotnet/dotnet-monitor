@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authConfiguration, configurationFilePath);
 
                 IHost host = HostBuilderHelper.CreateHostBuilder(settings)
-                    .ConfigureServices(authConfiguration, noHttpEgress)
+                    .Configure(authConfiguration, noHttpEgress)
                     .Build();
 
                 try
@@ -83,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             return 0;
         }
 
-        private static IHostBuilder ConfigureServices(this IHostBuilder builder, AuthConfiguration authenticationOptions, bool noHttpEgress)
+        private static IHostBuilder Configure(this IHostBuilder builder, AuthConfiguration authenticationOptions, bool noHttpEgress)
         {
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
@@ -170,8 +171,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureCollectionRules();
                 services.ConfigureProfiler();
                 services.ConfigureStartupLoggers();
+                services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
+            })
+            .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
+            {
+                ServerUrlsBlockingConfigurationManager manager =
+                    context.Properties[typeof(ServerUrlsBlockingConfigurationManager)] as ServerUrlsBlockingConfigurationManager;
+                Debug.Assert(null != manager, $"Expected {typeof(ServerUrlsBlockingConfigurationManager).FullName} to be a {typeof(HostBuilderContext).FullName} property.");
+                if (null != manager)
+                {
+                    // Block reading of the Urls option so that Kestrel is unable to read it from the composed configuration.
+                    manager.IsBlocking = true;
+                }
             });
         }
     }

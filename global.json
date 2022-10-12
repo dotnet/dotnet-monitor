@@ -2,7 +2,7 @@
   "tools": {
     "dotnet": "7.0.100-rc.1.22431.12",
     "runtimes": {
-      "aspnetcore/x64": [
+      "aspnetcore": [
         "$(MicrosoftAspNetCoreApp31Version)",
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
@@ -12,7 +12,7 @@
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
       ],
-      "dotnet/x64": [
+      "dotnet": [
         "$(MicrosoftNETCoreApp31Version)",
         "$(MicrosoftNETCoreApp60Version)",
         "$(VSRedistCommonNetCoreSharedFrameworkx6470Version)"
@@ -26,6 +26,6 @@
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "2.0.1",
-    "Microsoft.DotNet.Arcade.Sdk": "7.0.0-beta.22464.4"
+    "Microsoft.DotNet.Arcade.Sdk": "8.0.0-beta.22503.1"
   }
 }

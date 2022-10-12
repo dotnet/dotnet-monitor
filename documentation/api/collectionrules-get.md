@@ -1,6 +1,9 @@
-# Collection Rules - Get
 
-Reports the detailed state of the specified collection rule for a specific process.
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fcollectionrules-get)
+
+# Collection Rules - Get (6.3+)
+
+Get the detailed state of the specified collection rule for all processes or for the specified process.
 
 ## HTTP Route
 

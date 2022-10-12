@@ -10,6 +10,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public partial class DotNetHost
     {
+        private static Lazy<bool> s_HasHostInRepositoryLazy =
+            new(() => File.Exists(GetHostFromRepository()));
+
         // The version is in the Major.Minor.Patch-label format; remove the label
         // and only parse the Major.Minor.Patch part.
         private static Lazy<Version> s_runtimeVersionLazy =
@@ -24,7 +27,34 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             Path.GetFileNameWithoutExtension(ExeName) :
             ExeName;
 
+        public static bool HasHostInRepository => s_HasHostInRepositoryLazy.Value;
+
         public static string GetPath(Architecture? arch = null)
+        {
+            string hostInRepositoryPath = GetHostFromRepository(arch);
+
+            if (File.Exists(hostInRepositoryPath))
+            {
+                return hostInRepositoryPath;
+            }
+
+            // If the current repo enlistment has only ever been built and tested with Visual Studio,
+            // the repo's private copy of dotnet will have never been setup.
+            //
+            // In this scenario fall back to the system's copy.
+            // Limit this fallback behavior to only happen when running under Visual Studio.
+            // (i.e. when on Windows and a well-defined VS-specific environment variable set)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSAPPIDDIR")))
+            {
+                Console.WriteLine($"'{hostInRepositoryPath}' does not exist, falling back to the system's version.");
+                return ExeName;
+            }
+
+            throw new InvalidOperationException("Could not locate the dotnet host executable.");
+        }
+
+        public static string GetHostFromRepository(Architecture? arch = null)
         {
             // e.g. <repoPath>/.dotnet
             string dotnetDirPath = Path.Combine("..", "..", "..", "..", "..", ".dotnet");
@@ -33,6 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 // e.g. Append "\x86" to the path
                 dotnetDirPath = Path.Combine(dotnetDirPath, arch.Value.ToString("G").ToLowerInvariant());
             }
+
             return Path.GetFullPath(Path.Combine(dotnetDirPath, ExeName));
         }
 

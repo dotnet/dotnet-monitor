@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
@@ -65,19 +66,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 configureOptions.MimeTypes = new List<string> { ContentTypes.ApplicationOctetStream };
             });
 
-            var metricsOptions = new MetricsOptions();
-            Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
-            if (metricsOptions.Enabled.GetValueOrDefault(MetricsOptionsDefaults.Enabled))
-            {
-                services.AddSingleton<MetricsStoreService>();
-                services.AddHostedService<MetricsService>();
-            }
-
-            services.AddSingleton<IMetricsPortsProvider, MetricsPortsProvider>();
+            services.ConfigureCors(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<CorsConfigurationOptions> corsOptions)
         {
             if (env.IsDevelopment())
             {
@@ -93,11 +86,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             app.UseAuthentication();
             app.UseAuthorization();
 
-            CorsConfigurationOptions corsConfiguration = new CorsConfigurationOptions();
-            Configuration.Bind(ConfigurationKeys.CorsConfiguration, corsConfiguration);
-            if (!string.IsNullOrEmpty(corsConfiguration.AllowedOrigins))
+            if (!string.IsNullOrEmpty(corsOptions.Value.AllowedOrigins))
             {
-                app.UseCors(builder => builder.WithOrigins(corsConfiguration.GetOrigins()).AllowAnyHeader().AllowAnyMethod());
+                app.UseCors(builder => builder.WithOrigins(corsOptions.Value.GetOrigins()).AllowAnyHeader().AllowAnyMethod());
             }
 
             // Disable response compression due to ASP.NET 6.0 bug:

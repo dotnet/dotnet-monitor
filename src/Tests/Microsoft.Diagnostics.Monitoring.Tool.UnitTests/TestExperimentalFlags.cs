@@ -2,11 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-namespace Microsoft.Diagnostics.Monitoring.TestCommon
+namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    public enum DotNetFrameworkReference
+    internal sealed class TestExperimentalFlags : Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags
     {
-        Microsoft_NetCore_App,
-        Microsoft_AspNetCore_App
+        public bool IsCallStacksEnabled { get; set; }
     }
 }

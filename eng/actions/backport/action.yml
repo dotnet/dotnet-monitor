@@ -14,6 +14,9 @@ inputs:
       Backport of #%source_pr_number% to %target_branch%
 
       /cc %cc_users%
+  label:
+    description: 'Label to add to the PR.'
+    required: false
 
 runs:
   using: 'node12'
