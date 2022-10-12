@@ -40,12 +40,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             ILogger<Program> logger = hostServices.GetRequiredService<ILoggerFactory>()
                 .CreateLogger<Program>();
 
-            logger.ScenarioState(TestAppScenarios.SenarioState.Ready);
+            logger.ScenarioState(TestAppScenarios.ScenarioState.Ready);
 
             // Wait for test host before executing scenario
             await WaitForCommandAsync(TestAppScenarios.Commands.StartScenario, logger);
 
-            logger.ScenarioState(TestAppScenarios.SenarioState.Executing);
+            logger.ScenarioState(TestAppScenarios.ScenarioState.Executing);
 
             int result = -1;
             try
@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 Console.Error.WriteLine($"Exception: {ex}");
             }
 
-            logger.ScenarioState(TestAppScenarios.SenarioState.Finished);
+            logger.ScenarioState(TestAppScenarios.ScenarioState.Finished);
 
             // Wait for test host before ending scenario
             await WaitForCommandAsync(TestAppScenarios.Commands.EndScenario, logger);
@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
 
         public static async Task<string> WaitForCommandAsync(string[] expectedCommands, ILogger logger)
         {
-            logger.ScenarioState(TestAppScenarios.SenarioState.Waiting);
+            logger.ScenarioState(TestAppScenarios.ScenarioState.Waiting);
 
             bool receivedExpected = false;
             string line, commandReceived = null;
