@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ConnectionModeConnect = 76,
         ConnectionModeListen = 77,
         ExperimentalFeatureEnabled = 78,
-        StartCollectingArtifact = 79
+        StartCollectArtifact = 79
     }
 
     internal static class LoggingEventIdsExtensions
