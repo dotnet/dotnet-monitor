@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.")
             { providerNameOption };
 
-            egressCmd.SetHandler(async (providerNameOption) => { await Egress(providerNameOption); }, providerNameOption);
+            egressCmd.SetHandler(Program.Egress, providerNameOption);
 
             rootCommand.Add(egressCmd);
 
