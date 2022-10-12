@@ -63,24 +63,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public async ValueTask DisposeAsync()
         {
-            if (DisposableHelper.CanDispose(ref _disposalState))
+            if (!DisposableHelper.CanDispose(ref _disposalState))
             {
-                _containersToRemoveWriter.TryComplete();
+                return;
+            }
 
-                CollectionRuleContainer[] containers;
-                lock (_containersMap)
-                {
-                    containers = _containersMap.Values.ToArray();
-                }
+            _containersToRemoveWriter.TryComplete();
 
-                // This will cancel the background execution if
-                // BackgroundService.StopAsync wasn't called.
-                Dispose();
+            CollectionRuleContainer[] containers;
+            lock (_containersMap)
+            {
+                containers = _containersMap.Values.ToArray();
+            }
 
-                foreach (CollectionRuleContainer container in containers)
-                {
-                    await container.DisposeAsync();
-                }
+            // This will cancel the background execution if
+            // BackgroundService.StopAsync wasn't called.
+            Dispose();
+
+            foreach (CollectionRuleContainer container in containers)
+            {
+                await container.DisposeAsync();
             }
         }
 

@@ -19,17 +19,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         {
             try
             {
-                await runner.StartAsync(CommonTestTimeouts.StartProcess);
+                await runner.StartAsync();
 
-                await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
+                await runner.SendStartScenarioAsync();
 
                 await func();
 
-                await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
+                await runner.SendEndScenarioAsync();
 
                 // This gives the app time to send out any remaining stdout/stderr messages,
                 // exit properly, and delete its diagnostic pipe.
-                await runner.WaitForExitAsync(CommonTestTimeouts.WaitForExit);
+                await runner.WaitForExitAsync();
             }
             catch (Exception)
             {
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
             finally
             {
-                await runner.DisposeAsync();
+                await runner.StopAsync();
             }
         }
 
@@ -51,9 +51,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             {
                 foreach (AppRunner runner in runners)
                 {
-                    await runner.StartAsync(CommonTestTimeouts.StartProcess);
+                    await runner.StartAsync();
 
-                    await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
+                    await runner.SendStartScenarioAsync();
                 }
 
                 await func();
@@ -62,9 +62,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 // exit properly, and delete their diagnostic pipes.
                 await Task.WhenAll(runners.Select(async runner =>
                     {
-                        await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
+                        await runner.SendEndScenarioAsync();
 
-                        await runner.WaitForExitAsync(CommonTestTimeouts.WaitForExit);
+                        await runner.WaitForExitAsync();
                     }));
             }
             catch (Exception)
@@ -77,7 +77,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
             finally
             {
-                await runners.DisposeItemsAsync();
+                foreach (AppRunner runner in runners)
+                {
+                    await runner.StopAsync();
+                }
             }
         }
 
@@ -123,6 +126,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         {
             using CancellationTokenSource cancellation = new(timeout);
             await runner.StartAsync(cancellation.Token).ConfigureAwait(false);
+        }
+
+        public static Task StopAsync(this AppRunner runner)
+        {
+            return runner.StopAsync(CommonTestTimeouts.StopProcess);
+        }
+
+        public static async Task StopAsync(this AppRunner runner, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+            await runner.StopAsync(cancellation.Token).ConfigureAwait(false);
         }
 
         public static async Task<string> GetEnvironmentVariable(this AppRunner runner, string name, TimeSpan timeout)

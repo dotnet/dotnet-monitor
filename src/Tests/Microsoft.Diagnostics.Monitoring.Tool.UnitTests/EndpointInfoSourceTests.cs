@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
             Assert.Empty(endpointInfos);
 
-            AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
+            await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
 
             Task addedEndpointTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
             Task removedEndpointTask = callback.WaitRemovedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
@@ -112,6 +112,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 removedEndpointTasks[i] = callback.WaitRemovedEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
             }
 
+            await using IAsyncDisposable _ = runners.CreateItemDisposer();
+
             await runners.ExecuteAsync(async () =>
             {
                 _outputHelper.WriteLine("Waiting for all added endpoint notifications.");
@@ -165,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             MockDumpService dumpService = new(operationTrackerService);
             await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback, dumpService, operationTrackerService);
 
-            AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
+            await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
 
             Task<IEndpointInfo> addedEndpointTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
             Task<IEndpointInfo> removedEndpointTask = callback.WaitRemovedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
@@ -201,13 +203,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             dumpService.CompleteOperation();
             await dumpTask;
 
-            // Process should no longer exist
-            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
-            Assert.Empty(endpointInfos);
-
-            // Test that process removal sent notification
+            // Wait for process removal notification; this may take a few seconds for process pruning to occur
             endpointInfo = await removedEndpointTask;
             Assert.Equal(processId, endpointInfo.ProcessId);
+
+            // Test that process should no longer exist
+            endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
+            Assert.Empty(endpointInfos);
         }
 
         private static void ValidateEndpointInfo(IEndpointInfo endpointInfo)

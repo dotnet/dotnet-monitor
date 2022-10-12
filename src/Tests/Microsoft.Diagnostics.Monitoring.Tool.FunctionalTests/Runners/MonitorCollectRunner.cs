@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         private readonly TaskCompletionSource<string> _readySource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        private bool _isDisposed;
+        private long _disposedState;
 
         /// <summary>
         /// Event callback for when a Private Key warning message is seen.
@@ -106,13 +106,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public override async ValueTask DisposeAsync()
         {
-            lock (_lock)
+            if (!DisposableHelper.CanDispose(ref _disposedState))
             {
-                if (_isDisposed)
-                {
-                    return;
-                }
-                _isDisposed = true;
+                return;
             }
 
             CancelCompletionSources(CancellationToken.None);

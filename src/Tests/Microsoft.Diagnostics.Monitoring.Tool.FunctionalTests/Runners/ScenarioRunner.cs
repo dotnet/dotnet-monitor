@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(httpClientFactory);
             ApiClient apiClient = new(outputHelper, httpClient);
 
-            AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
+            await using AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ProfilerLogLevel = profilerLogLevel;
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
