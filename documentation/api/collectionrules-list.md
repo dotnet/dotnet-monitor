@@ -41,7 +41,7 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | map (of [CollectionRuleDescription](definitions.md#collectionruledescription)) | The basic information about the current state of the configured collection rules. | `application/json` |
+| 200 OK | map (of [CollectionRuleDescription](definitions.md#collectionruledescription-63)) | The basic information about the current state of the configured collection rules. | `application/json` |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 

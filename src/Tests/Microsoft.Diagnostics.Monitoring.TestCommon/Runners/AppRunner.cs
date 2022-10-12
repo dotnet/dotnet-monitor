@@ -209,10 +209,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             switch ((TestAppLogEventIds)logEvent.EventId)
             {
                 case TestAppLogEventIds.ScenarioState:
-                    Assert.True(logEvent.State.TryGetValue("state", out TestAppScenarios.SenarioState state));
+                    Assert.True(logEvent.State.TryGetValue("state", out TestAppScenarios.ScenarioState state));
                     switch (state)
                     {
-                        case TestAppScenarios.SenarioState.Ready:
+                        case TestAppScenarios.ScenarioState.Ready:
                             Assert.True(_readySource.TrySetResult(null));
                             break;
                     }
