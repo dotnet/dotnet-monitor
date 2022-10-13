@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    internal static class DisposableHelper
+    public static class DisposableHelper
     {
         private static readonly long DisposeStateActive = default(long);
         private static readonly long DisposeStateDisposed = 1;

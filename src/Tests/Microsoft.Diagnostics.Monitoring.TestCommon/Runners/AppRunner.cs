@@ -69,39 +69,27 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public string ScenarioName { get; set; }
 
-        /// <summary>
-        /// Additional arguments to use with the target application.
-        /// </summary>
-        public string AdditionalArguments { get; set; }
-
         public int AppId { get; }
 
         public bool SetRuntimeIdentifier { get; set; } = true;
 
         public string ProfilerLogLevel { get; set; } = null;
 
-        public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current, bool isWebApp = false)
+        public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
             AppId = appId;
 
             _outputHelper = new PrefixedOutputHelper(outputHelper, FormattableString.Invariant($"[App{appId}] "));
 
-            string appName = isWebApp ? "Microsoft.Diagnostics.Monitoring.UnitTestWebApp" : "Microsoft.Diagnostics.Monitoring.UnitTestApp";
-
             _appPath = AssemblyHelper.GetAssemblyArtifactBinPath(
                 testAssembly,
-                appName,
+                "Microsoft.Diagnostics.Monitoring.UnitTestApp",
                 tfm);
 
             _waitingForEnvironmentVariables = new Dictionary<string, TaskCompletionSource<string>>();
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
-        }
-
-        public void KillProcess()
-        {
-            _adapter.Runner.ForceClose();
         }
 
         public async ValueTask DisposeAsync()
@@ -124,9 +112,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _runner.Dispose();
         }
 
-        public async Task StartAsync(bool noScenario, CancellationToken token)
+        public async Task StartAsync(CancellationToken token)
         {
-            if (!noScenario && string.IsNullOrEmpty(ScenarioName))
+            if (string.IsNullOrEmpty(ScenarioName))
             {
                 throw new ArgumentNullException(nameof(ScenarioName));
             }
@@ -138,11 +126,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             _runner.EntrypointAssemblyPath = _appPath;
             _runner.Arguments = ScenarioName;
-
-            if (!string.IsNullOrEmpty(AdditionalArguments))
-            {
-                _runner.Arguments += " " + AdditionalArguments;
-            }
 
             // Enable diagnostics in case it is disabled via inheriting test environment.
             _adapter.Environment.Add("COMPlus_EnableDiagnostics", "1");
@@ -171,10 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             await _adapter.StartAsync(token).ConfigureAwait(false);
 
-            if (!noScenario)
-            {
-                await _readySource.WithCancellation(token);
-            }
+            await _readySource.WithCancellation(token);
         }
 
         public Task<int> WaitForExitAsync(CancellationToken token)

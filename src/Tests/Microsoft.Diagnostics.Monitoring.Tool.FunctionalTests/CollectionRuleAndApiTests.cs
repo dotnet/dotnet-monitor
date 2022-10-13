@@ -18,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -37,11 +38,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
-        private readonly TimeSpan TraceDuration = TimeSpan.FromSeconds(1);
-        private const string hostName = "http://localhost:82";
-        private const string additionalArguments = "--urls http://0.0.0.0:82";
+        private readonly TimeSpan TraceDuration = Timeout.InfiniteTimeSpan;
+        private const string ClientBaseUrl = "http://localhost:10000";
+        private const string AppUrl = "http://+:10000";
+        private const string AspNetUrlsKey = "ASPNETCORE_Urls";
 
         /// <summary>
         /// Validates that an AspNetResponseStatus trigger will fire following an HTTP trace.
@@ -58,19 +60,30 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
             string[] urlPaths = new string[] { "", "/Privacy", "" };
 
-            DiagnosticPortHelper.Generate(
+            Task ruleStartedTask = null;
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
                 mode,
-                out DiagnosticPortConnectionMode appConnectionMode,
-                out string diagnosticPortPath);
+                TestAppScenarios.AspNetSlow.Name,
+                appValidate: async (runner, client) =>
+                {
+                    using ResponseStreamHolder holder = await CaptureTrace(runner, client);
 
-            await using MonitorCollectRunner toolRunner = SetUpToolRunner(mode, diagnosticPortPath);
+                    await ValidateAspNetTriggerCollected(
+                        ruleStartedTask,
+                        client,
+                        ClientBaseUrl,
+                        urlPaths,
+                        ExpectedFilePath,
+                        ExpectedFileContent);
 
-            AppRunner appRunner = SetUpAppRunner(appConnectionMode, diagnosticPortPath);
-
-            await appRunner.ExecuteAsync(async () =>
-            {
-                RootOptions newOptions = new();
-                newOptions.CreateCollectionRule(DefaultRuleName)
+                    await runner.SendCommandAsync(TestAppScenarios.AspNetSlow.Commands.Continue);
+                },
+                configureTool: (runner) =>
+                {
+                    runner.ConfigurationFromEnvironment
+                        .CreateCollectionRule(DefaultRuleName)
                         .SetAspNetResponseStatusTrigger(options =>
                         {
                             options.ResponseCount = ExpectedResponseCount;
@@ -78,26 +91,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         })
                         .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
 
-                await toolRunner.WriteUserSettingsAsync(newOptions);
-                await toolRunner.StartAsync();
-
-                using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
-                ApiClient apiClient = new(_outputHelper, httpClient);
-
-                await CaptureTrace(appRunner, apiClient);
-
-                Task ruleStartedTask = toolRunner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
-
-                await ValidateAspNetTriggerCollected(
-                    ruleStartedTask,
-                    apiClient,
-                    hostName,
-                    urlPaths,
-                    ExpectedFilePath,
-                    ExpectedFileContent);
-
-                appRunner.KillProcess();
-            }, noScenario: true);
+                    ruleStartedTask = runner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
+                },
+                configureApp: (runner) =>
+                {
+                    runner.Environment.Add(AspNetUrlsKey, AppUrl);
+                });
         }
 
         /// <summary>
@@ -148,13 +147,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 await ValidateAspNetTriggerCollected(
                     ruleStartedTask,
                     apiClient,
-                    hostName,
+                    ClientBaseUrl,
                     urlPaths,
                     ExpectedFilePath,
                     ExpectedFileContent);
 
-                appRunner.KillProcess();
-            }, noScenario: true);
+                await appRunner.SendCommandAsync(TestAppScenarios.AspNetSlow.Commands.Continue);
+            });
         }
 
         private async Task ValidateAspNetTriggerCollected(Task ruleTask, ApiClient client, string hostName, string[] paths, string expectedFilePath, string expectedFileContent)
@@ -172,10 +171,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private AppRunner SetUpAppRunner(DiagnosticPortConnectionMode appConnectionMode, string diagnosticPortPath)
         {
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), isWebApp: true);
+            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
-            appRunner.AdditionalArguments = additionalArguments;
+            appRunner.ScenarioName = TestAppScenarios.AspNetSlow.Name;
+            appRunner.Environment.Add(AspNetUrlsKey, AppUrl);
 
             return appRunner;
         }
@@ -196,10 +196,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 string url = hostName + path;
                 _ = await client.ApiCall(url);
+
+                await Task.Delay(TimeSpan.FromMilliseconds(200));
             }
         }
 
-        private async Task CaptureTrace(AppRunner runner, ApiClient client)
+        private async Task<ResponseStreamHolder> CaptureTrace(AppRunner runner, ApiClient client)
         {
             int processId = await runner.ProcessIdTask;
 
@@ -224,10 +226,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 await Task.Delay(500);
             }
 
-            using ResponseStreamHolder holder = await client.CaptureTraceAsync(processId, TraceDuration, WebApi.Models.TraceProfile.Http);
+            ResponseStreamHolder holder = await client.CaptureTraceAsync(processId, TraceDuration, WebApi.Models.TraceProfile.Http);
             Assert.NotNull(holder);
 
-            await TraceTestUtilities.ValidateTrace(holder.Stream);
+            return holder;
         }
 #endif
     }

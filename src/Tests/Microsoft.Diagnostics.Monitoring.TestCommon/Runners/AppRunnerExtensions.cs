@@ -15,23 +15,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     {
         private static readonly TimeSpan ExceptionTimeout = TimeSpan.FromSeconds(5);
 
-        public static async Task ExecuteAsync(this AppRunner runner, Func<Task> func, bool noScenario = false)
+        public static async Task ExecuteAsync(this AppRunner runner, Func<Task> func)
         {
             try
             {
-                await runner.StartAsync(CommonTestTimeouts.StartProcess, noScenario);
+                await runner.StartAsync(CommonTestTimeouts.StartProcess);
 
-                if (!noScenario)
-                {
-                    await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
-                }
+                await runner.SendStartScenarioAsync(CommonTestTimeouts.SendCommand);
 
                 await func();
 
-                if (!noScenario)
-                {
-                    await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
-                }
+                await runner.SendEndScenarioAsync(CommonTestTimeouts.SendCommand);
 
                 // This gives the app time to send out any remaining stdout/stderr messages,
                 // exit properly, and delete its diagnostic pipe.
@@ -42,11 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 // If an exception is thrown, give app some time to send out any remaining
                 // stdout/stderr messages.
                 await Task.Delay(ExceptionTimeout);
-
-                if (noScenario)
-                {
-                    runner.KillProcess();
-                }
 
                 throw;
             }
@@ -130,10 +119,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             return runner.StartAsync(CommonTestTimeouts.StartProcess);
         }
 
-        public static async Task StartAsync(this AppRunner runner, TimeSpan timeout, bool noScenario = false)
+        public static async Task StartAsync(this AppRunner runner, TimeSpan timeout)
         {
             using CancellationTokenSource cancellation = new(timeout);
-            await runner.StartAsync(noScenario, cancellation.Token).ConfigureAwait(false);
+            await runner.StartAsync(cancellation.Token).ConfigureAwait(false);
         }
 
         public static async Task<string> GetEnvironmentVariable(this AppRunner runner, string name, TimeSpan timeout)
