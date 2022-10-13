@@ -48,6 +48,18 @@
         }
       ]
     },
+    "InProcessFeatures": {
+      "description": "[Experimental]",
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/InProcessFeaturesOptions"
+        }
+      ]
+    },
     "CorsConfiguration": {
       "default": {},
       "oneOf": [
@@ -727,10 +739,30 @@
         {
           "properties": {
             "Type": {
+              "const": "CollectLiveMetrics"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectLiveMetricsOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
               "const": "CollectLogs"
             },
             "Settings": {
               "$ref": "#/definitions/CollectLogsOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
+              "const": "CollectStacks"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectStacksOptions"
             }
           }
         },
@@ -819,7 +851,7 @@
             "string"
           ],
           "description": "The sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed. Executions that fall outside the window will not count toward the limit specified in the ActionCount setting.",
-          "format": "time-span"
+          "format": "duration"
         },
         "RuleDuration": {
           "type": [
@@ -827,7 +859,7 @@
             "string"
           ],
           "description": "The amount of time before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -845,6 +877,20 @@
           "default": 5.0,
           "maximum": 86400.0,
           "minimum": 1.0
+        }
+      }
+    },
+    "InProcessFeaturesOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "[Experimental] Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "default": false
         }
       }
     },
@@ -892,6 +938,14 @@
           ],
           "description": "In 'Listen' mode, the maximum amount of connections to accept.",
           "format": "int32"
+        },
+        "DeleteEndpointOnStartup": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "In 'Listen' connection mode, deletes the domain socket file used for diagnostic port communication.",
+          "default": false
         }
       }
     },
@@ -979,7 +1033,7 @@
             "null",
             "string"
           ],
-          "description": "The shared access signature (SAS) used to access the azure blob storage account."
+          "description": "The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts."
         },
         "SharedAccessSignatureName": {
           "type": [
@@ -1027,8 +1081,32 @@
             "null",
             "string"
           ],
-          "description": "The URI of the Azure queue account.",
+          "description": "The URI of the Azure queue storage account.",
           "format": "uri"
+        },
+        "QueueSharedAccessSignature": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The shared access signature (SAS) used to access the Azure queue storage account."
+        },
+        "QueueSharedAccessSignatureName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map."
+        },
+        "Metadata": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1141,12 +1219,26 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "DefaultSharedPath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows platforms, a server diagnostic port is created with the name of 'dotnet-monitor.sock' immediately under this path if running in listen mode unless the diagnostic port is specified on the command line or the DiagnosticPort options are specified."
+        },
         "DumpTempFolder": {
           "type": [
             "null",
             "string"
           ],
           "description": "The location for temporary dump files. Defaults to the temp folder."
+        },
+        "SharedLibraryPath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "[Experimental] The location to which libraries shared with target processes will be copied at startup."
         }
       }
     },
@@ -1235,7 +1327,7 @@
             "string"
           ],
           "description": "The default sliding window duration.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -1272,7 +1364,7 @@
             "string"
           ],
           "description": "The default sliding window of time to consider whether the action list should be throttled based on the number of times the action list was executed.",
-          "format": "time-span"
+          "format": "duration"
         },
         "RuleDuration": {
           "type": [
@@ -1280,7 +1372,7 @@
             "string"
           ],
           "description": "The default amount of time before the rule will stop monitoring a process after it has been applied to a process.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -1335,7 +1427,9 @@
       "enum": [
         "CollectDump",
         "CollectGCDump",
+        "CollectLiveMetrics",
         "CollectLogs",
+        "CollectStacks",
         "CollectTrace",
         "Execute",
         "LoadProfiler",
@@ -1393,6 +1487,66 @@
         }
       }
     },
+    "CollectLiveMetricsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "IncludeDefaultProviders": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Determines if the default counter providers should be used.",
+          "default": true
+        },
+        "Providers": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The array of providers for metrics to collect.",
+          "items": {
+            "$ref": "#/definitions/EventMetricsProvider"
+          }
+        },
+        "Duration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The duration of time in which live metrics are collected.",
+          "format": "duration",
+          "default": "00:00:30"
+        },
+        "Egress": {
+          "type": "string",
+          "description": "The name of the egress provider to which the live metrics are egressed.",
+          "minLength": 1
+        }
+      }
+    },
+    "EventMetricsProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ProviderName"
+      ],
+      "properties": {
+        "ProviderName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "CounterNames": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "CollectLogsOptions": {
       "type": "object",
       "additionalProperties": false,
@@ -1440,7 +1594,7 @@
             "string"
           ],
           "description": "The duration of time in which logs are collected.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
@@ -1474,6 +1628,41 @@
         "NewlineDelimitedJson",
         "PlainText",
         "JsonSequence"
+      ]
+    },
+    "CollectStacksOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": "string",
+          "description": "[Experimental] The name of the egress provider to which the call stacks are egressed.",
+          "minLength": 1
+        },
+        "Format": {
+          "description": "[Experimental] The format used to display the call stacks.",
+          "default": "Json",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CallStackFormat"
+            }
+          ]
+        }
+      }
+    },
+    "CallStackFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Json",
+        "PlainText"
+      ],
+      "enum": [
+        "Json",
+        "PlainText"
       ]
     },
     "CollectTraceOptions": {
@@ -1526,13 +1715,24 @@
             "string"
           ],
           "description": "The duration of time in which trace events are collected.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
           "type": "string",
           "description": "The name of the egress provider to which the trace is egressed.",
           "minLength": 1
+        },
+        "StoppingEvent": {
+          "description": "The event to watch for while collecting the trace, and once observed the trace will be stopped.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TraceEventFilter"
+            }
+          ]
         }
       }
     },
@@ -1603,6 +1803,36 @@
         "Informational",
         "Verbose"
       ]
+    },
+    "TraceEventFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ProviderName",
+        "EventName"
+      ],
+      "properties": {
+        "ProviderName": {
+          "type": "string",
+          "description": "The event provider that will produce the specified event.",
+          "minLength": 1
+        },
+        "EventName": {
+          "type": "string",
+          "description": "The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are separated by a '/'. If the event has no opcode, then the event name is just the task name.",
+          "minLength": 1
+        },
+        "PayloadFilter": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of event payload field names to their expected value. A subset of the payload fields may be specified.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
     },
     "ExecuteOptions": {
       "type": "object",
@@ -1718,7 +1948,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of requests are counted.",
-          "format": "time-span"
+          "format": "duration"
         },
         "IncludePaths": {
           "type": [
@@ -1759,7 +1989,7 @@
             "string"
           ],
           "description": "The threshold of the amount of time in which a request is considered to be slow.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:00:05"
         },
         "SlidingWindowDuration": {
@@ -1768,7 +1998,7 @@
             "string"
           ],
           "description": "The sliding time window in which the the number of slow requests are counted.",
-          "format": "time-span"
+          "format": "duration"
         },
         "IncludePaths": {
           "type": [
@@ -1821,7 +2051,7 @@
             "string"
           ],
           "description": "The sliding time window in which the number of responses with matching status codes must occur.",
-          "format": "time-span"
+          "format": "duration"
         },
         "IncludePaths": {
           "type": [
@@ -1885,7 +2115,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span"
+          "format": "duration"
         }
       }
     },
@@ -1920,7 +2150,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:01:00"
         }
       }
@@ -1954,7 +2184,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:01:00"
         }
       }
@@ -1988,7 +2218,7 @@
             "string"
           ],
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
-          "format": "time-span",
+          "format": "duration",
           "default": "00:01:00"
         }
       }

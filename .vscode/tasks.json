@@ -1,0 +1,122 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "./build.sh",
+            "windows": {
+                "command": ".\\build.cmd"
+            },
+            "args": [
+                "-ci",
+                "-c",
+                "${input:configuration}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Build (Debug)",
+            "type": "shell",
+            "command": "./build.sh",
+            "windows": {
+                "command": ".\\build.cmd"
+            },
+            "args": [
+                "-ci",
+                "-c",
+                "Debug"
+            ],
+            "group": {
+                "kind": "build",
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Test",
+            "type": "shell",
+            "command": "./test.sh",
+            "windows": {
+                "command": ".\\test.cmd"
+            },
+            "args": [
+                "-ci",
+                "-c",
+                "${input:configuration}",
+                "/p:TestGroup=${input:testgroup}"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Regenerate schema.json",
+            "type": "shell",
+            "command": "./dotnet.sh",
+            "windows": {
+                "command": ".\\dotnet.cmd"
+            },
+            "args": [
+                "run",
+                "--project",
+                "./src/Tests/Microsoft.Diagnostics.Monitoring.ConfigurationSchema/Microsoft.Diagnostics.Monitoring.ConfigurationSchema.csproj",
+                "./documentation/schema.json"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Regenerate openapi.json",
+            "type": "shell",
+            "command": "./dotnet.sh",
+            "windows": {
+                "command": ".\\dotnet.cmd"
+            },
+            "args": [
+                "run",
+                "--project",
+                "./src/Tests/Microsoft.Diagnostics.Monitoring.OpenApiGen/Microsoft.Diagnostics.Monitoring.OpenApiGen.csproj",
+                "./documentation/openapi.json"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "configuration",
+            "type": "pickString",
+            "default": "Debug",
+            "description": "The build configuration",
+            "options": [
+                "Debug",
+                "Release"
+            ]
+        },
+        {
+            "id": "testgroup",
+            "type": "pickString",
+            "default": "PR",
+            "description": "The test group",
+            "options": [
+                "CI",
+                "PR",
+                "All"
+            ]
+        }
+    ]
+}

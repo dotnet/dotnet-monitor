@@ -14,6 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ArtifactType_Logs = "logs";
         public const string ArtifactType_Trace = "trace";
         public const string ArtifactType_Metrics = "livemetrics";
+        public const string ArtifactType_Stacks = "stacks";
 
         public static TimeSpan ConvertSecondsToTimeSpan(int durationSeconds)
         {
@@ -33,6 +34,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             scope.AddArtifactType(artifactType);
             scope.AddArtifactEndpointInfo(endpointInfo);
             return scope;
+        }
+
+        public static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
+        {
+            return (!pid.HasValue && !uid.HasValue && string.IsNullOrEmpty(name)) ? null : new ProcessKey(pid, uid, name);
         }
     }
 }

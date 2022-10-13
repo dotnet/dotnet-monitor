@@ -1,14 +1,8 @@
 <Project>
   <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props"/>
-  <!--
-    Do not pin the runtime framework version to the runtime versions that are installed in the
-    .dotnet directory when building with Visual Studio. Visual Studio uses the globally installed
-    .NET SDK, which does not know of the .dotnet directory at the root of the repository. However,
-    when building with the CLI, do pin the runtime framework versions as the .NET SDK in the
-    global.json may reference default minimum runtime versions that are not published to nuget.org.
-    -->
-  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
-    <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftNETCoreApp31Version)</RuntimeFrameworkVersion>
-    <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftNETCoreApp50Version)</RuntimeFrameworkVersion>
-  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Used to upgrade to a higher version than what is provided from indirect dependencies. -->
+    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
+  </ItemGroup>
 </Project>

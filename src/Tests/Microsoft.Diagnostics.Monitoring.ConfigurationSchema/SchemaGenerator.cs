@@ -125,7 +125,9 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 
             AddCollectionRuleActionSchema<CollectDumpOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectDump);
             AddCollectionRuleActionSchema<CollectGCDumpOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectGCDump);
+            AddCollectionRuleActionSchema<CollectLiveMetricsOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectLiveMetrics);
             AddCollectionRuleActionSchema<CollectLogsOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectLogs);
+            AddCollectionRuleActionSchema<CollectStacksOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectStacks);
             AddCollectionRuleActionSchema<CollectTraceOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectTrace);
             AddCollectionRuleActionSchema<ExecuteOptions>(context, actionTypeSchema, KnownCollectionRuleActions.Execute);
             AddCollectionRuleActionSchema<LoadProfilerOptions>(context, actionTypeSchema, KnownCollectionRuleActions.LoadProfiler);
@@ -275,6 +277,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 _settings = new JsonSchemaGeneratorSettings();
                 _settings.SerializerSettings = new JsonSerializerSettings();
                 _settings.SerializerSettings.Converters.Add(new StringEnumConverter());
+                _settings.SchemaProcessors.Add(new ExperimentalSchemaProcessor());
 
                 _resolver = new JsonSchemaResolver(rootSchema, _settings);
 

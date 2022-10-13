@@ -18,12 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             "Release";
 #endif
 
-        public static readonly Guid MonitorProfilerClsid = new Guid("6A494330-5848-4A23-9D87-0E57BBF6DE79");
-
-        public static string GetMonitorProfilerPath(Architecture architecture) =>
-            GetSharedLibraryPath(architecture, "MonitorProfiler");
-
-        private static string GetSharedLibraryPath(Architecture architecture, string rootName)
+        public static string GetSharedLibraryPath(Architecture architecture, string rootName)
         {
             string artifactsBinPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "..", ".."));
             return Path.Combine(artifactsBinPath, GetNativeBinDirectoryName(architecture), GetSharedLibraryName(rootName));

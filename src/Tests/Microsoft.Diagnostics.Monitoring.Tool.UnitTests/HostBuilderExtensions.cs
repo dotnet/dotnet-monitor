@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             return builder.ConfigureAppConfiguration(builder =>
             {
-                ReplaceEnvironment(builder.Sources, HostBuilderHelper.ConfigPrefix, values);
+                ReplaceEnvironment(builder.Sources, ToolIdentifiers.StandardPrefix, values);
             });
         }
 

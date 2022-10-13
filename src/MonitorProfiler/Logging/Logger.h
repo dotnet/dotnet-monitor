@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "corhlpr.h"
 #include "tstring.h"
 
@@ -22,11 +23,29 @@ enum class LogLevel
     None
 };
 
+#ifdef TARGET_WINDOWS
+#define _LS(str) L##str
+#else
+#define _LS(str) str
+#endif 
+
+#ifdef TARGET_WINDOWS
+typedef std::wstring lstring;
+typedef wchar_t LCHAR;
+#else
+typedef std::string lstring;
+typedef char LCHAR;
+#endif
+
 /// <summary>
 /// Interface for logging messages.
 /// </summary>
 DECLARE_INTERFACE(ILogger)
 {
+private:
+    const static size_t MaxEntrySize = 1000;
+
+public:
     /// <summary>
     /// Determines if the logger accepts a message at the given LogLevel.
     /// </summary>
@@ -35,16 +54,54 @@ DECLARE_INTERFACE(ILogger)
     /// <summary>
     /// Writes a log message.
     /// </summary>
-    STDMETHOD(Log)(LogLevel level, const tstring format, va_list args) PURE;
+    STDMETHOD(Log)(LogLevel level, const lstring& message) PURE;
 
-    inline STDMETHODIMP Log(LogLevel level, const tstring format, ...)
+    template <typename... T>
+    inline STDMETHODIMP Log(LogLevel level, const lstring format, const T&... args)
     {
-        va_list args;
-        va_start(args, format);
-        HRESULT hr = Log(level, format, args);
-        va_end(args);
-        return hr;
+        // A cache of strings that were converted from their original width
+        // to the string width for the target platform. This prevents freeing of the
+        // converted strings before logging can complete.
+        // CONSIDER: Make this a static thread local so that the vector does not
+        // need to be allocated for each log call. Reserve the new size before calling
+        // LogV and clear it after calling LogV.
+        std::vector<lstring> argStrings;
+        argStrings.reserve(sizeof...(args));
+
+        // Call LogV method with the pack expansion converting strings to the
+        // appropriate string width for the target platform.
+        return LogV(level, format, ConvertArg(args, argStrings)...);
     }
+
+private:
+    /// <summary>
+    /// Convert char* strings to logging string width for the target platform.
+    /// </summary>
+    static const LCHAR* ConvertArg(const char* str, std::vector<lstring>& argStrings);
+
+    /// <summary>
+    /// Convert narrow strings to logging string width for the target platform.
+    /// </summary>
+    static const LCHAR* ConvertArg(const std::string& str, std::vector<lstring>& argStrings);
+
+    /// <summary>
+    /// Convert tstrings to logging string width for the target platform.
+    /// </summary>
+    static const LCHAR* ConvertArg(const tstring& str, std::vector<lstring>& argStrings);
+
+    /// <summary>
+    /// Pass through all other argument types as-is.
+    /// </summary>
+    template <typename T>
+    inline static T ConvertArg(const T& value, std::vector<lstring>& argStrings)
+    {
+        return value;
+    }
+
+    /// <summary>
+    /// Formats the format string with the variable arguments and calls the Log(level, message) function.
+    /// </summary>
+    STDMETHODIMP LogV(LogLevel level, const lstring format, ...);
 };
 
 // Checks if EXPR is a failed HRESULT
@@ -58,12 +115,31 @@ DECLARE_INTERFACE(ILogger)
                 { \
                     pLogger->Log(\
                         LogLevel::Error, \
-                        _T("IfFailLogRet(" #EXPR ") failed in function %s: 0x%08x"), \
-                        to_tstring(__func__).c_str(), \
+                        _LS("IfFailLogRet(" #EXPR ") failed in function %s: 0x%08x"), \
+                        __func__, \
                         hr); \
                 } \
             } \
             return (hr); \
+        } \
+    } while (0)
+
+// Checks if EXPR is false
+// If false, logs the failure and returns the provided HRESULT
+#define IfFalseLogRet_(pLogger, EXPR, hr) \
+    do { \
+        if(!(EXPR)) { \
+            if (nullptr != pLogger) { \
+                if (pLogger->IsEnabled(LogLevel::Error)) \
+                { \
+                    pLogger->Log(\
+                        LogLevel::Error, \
+                        _LS("IfFalseLogRet(" #EXPR ") is false in function %s: 0x%08x"), \
+                        __func__, \
+                        hr); \
+                } \
+            } \
+            return hr; \
         } \
     } while (0)
 
@@ -77,8 +153,8 @@ DECLARE_INTERFACE(ILogger)
                 { \
                     pLogger->Log( \
                         LogLevel::Error, \
-                        _T("IfNullLogRetPtr(" #EXPR ") failed in function %s"), \
-                        to_tstring(__func__).c_str()); \
+                        _LS("IfNullLogRetPtr(" #EXPR ") failed in function %s"), \
+                        __func__); \
                 } \
             } \
             return E_POINTER; \
@@ -90,7 +166,7 @@ DECLARE_INTERFACE(ILogger)
 #define LogV_(pLogger, level, format, ...) \
     if (pLogger->IsEnabled(level)) \
     { \
-        IfFailRet(pLogger->Log(level, format, __VA_ARGS__)); \
+        IfFailRet(pLogger->Log(level, _LS(format), __VA_ARGS__)); \
     }
 
 // Logs a message at the Trace level

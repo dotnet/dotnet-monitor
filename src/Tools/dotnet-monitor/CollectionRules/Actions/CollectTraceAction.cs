@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -58,12 +59,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
                 TaskCompletionSource<object> startCompletionSource,
+                CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectTraceOptionsDefaults.Duration));
                 string egressProvider = Options.Egress;
 
                 MonitoringSourceConfiguration configuration;
+
+                TraceEventFilter stoppingEvent = null;
 
                 if (Options.Profile.HasValue)
                 {
@@ -77,8 +81,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     EventPipeProvider[] optionsProviders = Options.Providers.ToArray();
                     bool requestRundown = Options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
                     int bufferSizeMegabytes = Options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
-
                     configuration = TraceUtilities.GetTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);
+
+                    stoppingEvent = Options.StoppingEvent;
                 }
 
                 string fileName = TraceUtilities.GenerateTraceFileName(EndpointInfo);
@@ -89,13 +94,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     async (outputStream, token) =>
                     {
                         using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
-                        await TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token);
+                        if (null != stoppingEvent)
+                        {
+                            ILogger<CollectTraceAction> logger = _serviceProvider
+                                .GetRequiredService<ILoggerFactory>()
+                                .CreateLogger<CollectTraceAction>();
+
+                            await TraceUtilities.CaptureTraceUntilEventAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, stoppingEvent.ProviderName, stoppingEvent.EventName, stoppingEvent.PayloadFilter, logger, token);
+                        }
+                        else
+                        {
+                            await TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token);
+                        }
                     },
                     egressProvider,
                     fileName,
                     EndpointInfo,
                     ContentTypes.ApplicationOctetStream,
-                    scope);
+                    scope,
+                    collectionRuleMetadata);
 
                 ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
                 if (null != result.Exception)

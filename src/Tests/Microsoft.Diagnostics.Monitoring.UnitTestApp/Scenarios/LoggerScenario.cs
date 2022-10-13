@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
@@ -20,13 +19,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new(TestAppScenarios.Logger.Name);
-            command.SetHandler((Func<CancellationToken, Task<int>>)ExecuteAsync);
+            command.SetHandler(ExecuteAsync);
             return command;
         }
 
-        public static Task<int> ExecuteAsync(CancellationToken token)
+        public static async Task ExecuteAsync(InvocationContext context)
         {
-            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
                 using ServiceProvider services = new ServiceCollection()
                     .AddLogging(builder =>
@@ -67,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 LogCriticalMessage(cat3Logger);
 
                 return 0;
-            }, token);
+            }, context.GetCancellationToken());
         }
 
         private static void LogTraceMessage(ILogger logger)
@@ -128,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 _message = message;
                 _keys = keys ?? throw new ArgumentNullException(nameof(keys));
                 _values = values ?? throw new ArgumentNullException(nameof(values));
-                
+
                 if (_keys.Length != _values.Length)
                 {
                     throw new ArgumentException($"{nameof(keys)} and {nameof(values)} must have the same length.");

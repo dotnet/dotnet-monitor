@@ -19,6 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string fileName,
             string contentType,
             IEndpointInfo source,
+            CollectionRuleMetadata collectionRuleMetadata,
             CancellationToken token);
 
         Task<EgressResult> EgressAsync(
@@ -27,6 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string fileName,
             string contentType,
             IEndpointInfo source,
+            CollectionRuleMetadata collectionRuleMetadata,
             CancellationToken token);
     }
 }

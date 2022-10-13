@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         // Completion source containing the bearer token emitted by the generatekey command
         private readonly TaskCompletionSource<string> _bearerTokenTaskSource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly Regex _bearerTokenRegex = 
+        private readonly Regex _bearerTokenRegex =
             new Regex("^Authorization: Bearer (?<token>[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+)$", RegexOptions.Compiled);
         private readonly Regex _authorizationHeaderRegex =
             new Regex("^Bearer (?<token>[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+)$", RegexOptions.Compiled);

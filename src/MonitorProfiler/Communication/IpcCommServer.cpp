@@ -5,8 +5,9 @@
 #include "IpcCommClient.h"
 #include "IpcCommServer.h"
 #include "../Logging/Logger.h"
+#include "../Utilities/StringUtilities.h"
 
-IpcCommServer::IpcCommServer() : _shutdown(false)
+IpcCommServer::IpcCommServer(const std::shared_ptr<ILogger>& logger) : _shutdown(false), _logger(logger)
 {
 }
 
@@ -29,8 +30,7 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
         return E_UNEXPECTED;
     }
 
-    _rootAddress = rootAddress;
-
+    HRESULT hr;
     sockaddr_un address;
     memset(&address, 0, sizeof(address));
 
@@ -39,22 +39,20 @@ HRESULT IpcCommServer::Bind(const std::string& rootAddress)
         return E_INVALIDARG;
     }
 
+    _rootAddress = rootAddress;
+
+    address.sun_family = AF_UNIX;
+    IfFailRet(StringUtilities::Copy(address.sun_path, rootAddress.c_str()));
+
     //We don't error check this on purpose
     std::remove(rootAddress.c_str());
 
-    address.sun_family = AF_UNIX;
-#if TARGET_WINDOWS
-    strncpy_s(address.sun_path, rootAddress.c_str(), sizeof(address.sun_path));
-#else
-    strncpy(address.sun_path, rootAddress.c_str(), sizeof(address.sun_path));
-#endif
     _domainSocket = socket(AF_UNIX, SOCK_STREAM, 0);
     if (!_domainSocket.Valid())
     {
         return SocketWrapper::GetSocketError();
     }
     
-    HRESULT hr;
     IfFailRet(_domainSocket.SetBlocking(false));
 
     if (bind(_domainSocket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != 0)
@@ -84,6 +82,8 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
 
     do
     {
+#if TARGET_WINDOWS
+
         fd_set set;
         FD_ZERO(&set);
         FD_SET(_domainSocket, &set);
@@ -91,8 +91,17 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
         TIMEVAL timeout;
         timeout.tv_sec = AcceptTimeoutSeconds;
         timeout.tv_usec = 0;
-        result = select(2, &set, nullptr, nullptr, &timeout);
+        result = select(0, &set, nullptr, nullptr, &timeout);
+#else
+        //select has limitations on Linux; any descriptor value over 1024 is ignored.
 
+        pollfd set[1];
+        set[0].fd = _domainSocket;
+        set[0].events = POLLIN;
+        set[0].revents = 0;
+
+        result = poll(set, 1, AcceptTimeoutSeconds * 1000);
+#endif
         if (_shutdown.load())
         {
             return E_ABORT;
@@ -116,6 +125,7 @@ HRESULT IpcCommServer::Accept(std::shared_ptr<IpcCommClient>& client)
     {
         return SocketWrapper::GetSocketError();
     }
+
 #if TARGET_WINDOWS
     DWORD receiveTimeout = ReceiveTimeoutMilliseconds;
 

@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,13 +18,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new(TestAppScenarios.SpinWait.Name);
-            command.SetHandler((Func<CancellationToken, Task<int>>)ExecuteAsync);
+            command.SetHandler(ExecuteAsync);
             return command;
         }
 
-        public static Task<int> ExecuteAsync(CancellationToken token)
+        public static async Task ExecuteAsync(InvocationContext context)
         {
-            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.SpinWait.Commands.StartSpin, logger);
 
@@ -38,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 }
 
                 return 0;
-            }, token);
+            }, context.GetCancellationToken());
         }
     }
 }

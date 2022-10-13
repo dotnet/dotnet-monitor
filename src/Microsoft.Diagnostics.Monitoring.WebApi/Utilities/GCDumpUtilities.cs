@@ -80,4 +80,3 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
     }
 }
- 

@@ -21,6 +21,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     /// </summary>
     internal class MonitorRunner : IAsyncDisposable
     {
+        private const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup";
+        private const string TestStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook";
+
         protected readonly object _lock = new();
 
         protected readonly ITestOutputHelper _outputHelper;
@@ -37,6 +40,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public RootOptions ConfigurationFromEnvironment { get; } = new();
 
         /// <summary>
+        /// Determines whether the stacks feaure is enabled.
+        /// </summary>
+        public bool EnableCallStacksFeature { get; set; }
+
+        /// <summary>
         /// Gets the task for the underlying <see cref="DotNetRunner"/>'s 
         /// <see cref="DotNetRunner.ExitedTask"/> which is used to wait for process exit.
         /// </summary>
@@ -49,6 +57,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 "dotnet-monitor",
+#if NET7_0_OR_GREATER
+                TargetFrameworkMoniker.Net70
+#else
+                TargetFrameworkMoniker.Net60
+#endif
+                );
+
+        private static string TestStartupHookPath =>
+            AssemblyHelper.GetAssemblyArtifactBinPath(
+                Assembly.GetExecutingAssembly(),
+                TestStartupHookAssemblyName,
 #if NET7_0_OR_GREATER
                 TargetFrameworkMoniker.Net70
 #else
@@ -71,12 +90,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public MonitorRunner(ITestOutputHelper outputHelper)
         {
             _outputHelper = new PrefixedOutputHelper(outputHelper, "[Monitor] ");
-
-            // Must tell runner this is an ASP.NET Core app so that it can choose
-            // the correct ASP.NET Core version (which can be different than the .NET
-            // version, especially for prereleases).
-            _runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
-            _runner.TargetFramework = TargetFrameworkMoniker.Net60;
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
@@ -142,6 +155,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             // Override the user config directory
             _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
 
+            // Enable experimental stacks feature
+            if (EnableCallStacksFeature)
+            {
+                _adapter.Environment.Add(ExperimentalFlags.Feature_CallStacks, "true");
+            }
+
+            // Ensures that the TestStartupHook is loaded early so it helps resolve other test assemblies
+            _adapter.Environment.Add("DOTNET_STARTUP_HOOKS", TestStartupHookPath);
+
+            // Allow TestHostingStartup to participate in host building in the tool
+            _adapter.Environment.Add("ASPNETCORE_HOSTINGSTARTUPASSEMBLIES", TestHostingStartupAssemblyName);
+
             // Set configuration via environment variables
             var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration(useDotnetMonitorPrefix: true);
             if (configurationViaEnvironment.Count > 0)
@@ -188,6 +213,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
 
             _outputHelper.WriteLine("Wrote user settings.");
+        }
+
+        protected void SetEnvironmentVariable(string name, string value)
+        {
+            _adapter.Environment[name] = value;
         }
     }
 }

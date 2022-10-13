@@ -88,6 +88,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Metadata cannot include duplicate keys; please change or remove the key &apos;{key}&apos;.
+        /// </summary>
+        internal static string LogFormatString_DuplicateKeyInMetadata {
+            get {
+                return ResourceManager.GetString("LogFormatString_DuplicateKeyInMetadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copying action stream to egress stream with buffer size {bufferSize}.
         /// </summary>
         internal static string LogFormatString_EgressCopyActionStreamToEgressStream {
@@ -111,6 +120,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
         internal static string LogFormatString_EgressProviderSavedStream {
             get {
                 return ResourceManager.GetString("LogFormatString_EgressProviderSavedStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target framework does not support custom egress metadata..
+        /// </summary>
+        internal static string LogFormatString_EnvironmentBlockNotSupported {
+            get {
+                return ResourceManager.GetString("LogFormatString_EnvironmentBlockNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The environment variable &apos;{name}&apos; could not be found on the target process..
+        /// </summary>
+        internal static string LogFormatString_EnvironmentVariableNotFound {
+            get {
+                return ResourceManager.GetString("LogFormatString_EnvironmentVariableNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid metadata; custom metadata keys must be valid C# identifiers..
+        /// </summary>
+        internal static string LogFormatString_InvalidMetadata {
+            get {
+                return ResourceManager.GetString("LogFormatString_InvalidMetadata", resourceCulture);
             }
         }
         

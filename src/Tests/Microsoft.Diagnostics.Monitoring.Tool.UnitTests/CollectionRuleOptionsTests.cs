@@ -1133,6 +1133,178 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
+        public Task CollectionRuleOptions_CollectTraceAction_StopOnEvent()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+            const string ExpectedEventProviderName = "Microsoft-Extensions-Logging";
+            List<EventPipeProvider> ExpectedProviders = new()
+            {
+                new() { Name = ExpectedEventProviderName }
+            };
+
+            TraceEventFilter expectedStoppingEvent = new()
+            {
+                EventName = "CustomEvent",
+                ProviderName = ExpectedEventProviderName
+            };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, (options) =>
+                        {
+                            options.StoppingEvent = expectedStoppingEvent;
+                        });
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                },
+                ruleOptions =>
+                {
+                    ruleOptions.VerifyCollectTraceAction(0, ExpectedProviders, ExpectedEgressProvider, expectedStoppingEvent);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CollectTraceAction_StopOnEvent_MissingProviderConfig()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+            const string ExpectedMissingEventProviderName = "Non-Existent-Provider";
+
+            List<EventPipeProvider> ExpectedProviders = new()
+            {
+                new() { Name = "Microsoft-Extensions-Logging" }
+            };
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectTraceAction(ExpectedProviders, ExpectedEgressProvider, (options) =>
+                        {
+                            options.StoppingEvent = new TraceEventFilter()
+                            {
+                                EventName = "CustomEvent",
+                                ProviderName = ExpectedMissingEventProviderName
+                            };
+                        });
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyMissingStoppingEventProviderMessage(
+                        failures,
+                        0,
+                        nameof(CollectTraceOptions.StoppingEvent),
+                        ExpectedMissingEventProviderName,
+                        nameof(CollectTraceOptions.Providers));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CollectTraceAction_BothProfileAndStoppingEvent()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectTraceAction(TraceProfile.Metrics, ExpectedEgressProvider, options =>
+                        {
+                            options.StoppingEvent = new TraceEventFilter()
+                            {
+                                EventName = "CustomEvent",
+                                ProviderName = "CustomProvider"
+                            };
+                        });
+
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.NotEmpty(failures);
+                    VerifyBothCannotBeSpecifiedMessage(
+                        failures,
+                        0,
+                        nameof(CollectTraceOptions.Profile),
+                        nameof(CollectTraceOptions.StoppingEvent));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CollectLiveMetricsAction_RoundTrip()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+            const bool ExpectedIncludeDefaultProviders = false;
+
+            TimeSpan ExpectedDuration = TimeSpan.FromSeconds(45);
+
+            const string providerName = EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName;
+            var counterNames = new[] { "cpu-usage", "working-set" };
+
+            EventMetricsProvider[] ExpectedProviders = new[]
+            {
+                new EventMetricsProvider
+                {
+                    ProviderName = providerName,
+                    CounterNames = counterNames,
+                }
+            };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectLiveMetricsAction(ExpectedEgressProvider, options =>
+                        {
+                            options.Duration = ExpectedDuration;
+                            options.IncludeDefaultProviders = ExpectedIncludeDefaultProviders;
+                            options.Providers = ExpectedProviders;
+                        });
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+                },
+                ruleOptions =>
+                {
+                    CollectLiveMetricsOptions collectLiveMetricsOptions = ruleOptions.VerifyCollectLiveMetricsAction(0, ExpectedEgressProvider);
+
+                    Assert.Equal(ExpectedDuration, collectLiveMetricsOptions.Duration);
+                    Assert.Equal(ExpectedIncludeDefaultProviders, collectLiveMetricsOptions.IncludeDefaultProviders);
+                    Assert.Equal(ExpectedProviders.Select(x => x.CounterNames.ToHashSet()), collectLiveMetricsOptions.Providers.Select(x => x.CounterNames.ToHashSet()));
+                    Assert.Equal(ExpectedProviders.Select(x => x.ProviderName), collectLiveMetricsOptions.Providers.Select(x => x.ProviderName));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CollectLiveMetricsAction_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectLiveMetricsAction(UnknownEgressName, options =>
+                        {
+                            options.Duration = TimeSpan.FromDays(3);
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Equal(2, failures.Length);
+                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(CollectTraceOptions.Duration),
+                        ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
+                    VerifyEgressNotExistMessage(failures, 1, UnknownEgressName);
+                });
+        }
+
+        [Fact]
         public Task CollectionRuleOptions_ExecuteAction_MinimumOptions()
         {
             const string ExpectedExePath = "cmd.exe";
@@ -1450,6 +1622,79 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+        [Fact]
+        public async Task CollectionRuleOptions_CollectStacksAction_FeatureDisabled()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectStacksAction(fileEgress);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFeatureDisabled(failures, 0);
+                },
+                servicesCallback =>
+                {
+                    // Set the experimental flags, but we did not set InProcessFeatures to be enabled
+                    servicesCallback.AddSingleton<Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags, TestExperimentalFlags>((_) => new TestExperimentalFlags { IsCallStacksEnabled = true });
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectStacksAction_FeatureDisabledByFlag()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .EnableInProcessFeatures() //Enable inproc features but don't set the flag
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectStacksAction(fileEgress);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFeatureDisabled(failures, 0);
+                },
+                servicesCallback =>
+                {
+                    servicesCallback.AddSingleton<Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags, Tools.Monitor.ExperimentalFlags>();
+                });
+
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectStacksAction_FeatureEnabled()
+        {
+            await ValidateSuccess(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .EnableInProcessFeatures()
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetCPUUsageTrigger(usageOptions => { usageOptions.GreaterThan = 100; })
+                        .AddCollectStacksAction(fileEgress);
+                },
+                ruleOptions =>
+                {
+                },
+                servicesCallback =>
+                {
+                    servicesCallback.AddSingleton<Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags, TestExperimentalFlags>((_) => new TestExperimentalFlags { IsCallStacksEnabled = true });
+                });
+        }
+
         public static IEnumerable<object[]> GetIEventCounterShortcutsAndNames()
         {
             yield return new object[] { typeof(CPUUsageOptions), KnownCollectionRuleTriggers.CPUUsage };
@@ -1459,26 +1704,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private Task Validate(
             Action<RootOptions> setup,
-            Action<IOptionsMonitor<CollectionRuleOptions>> validate)
+            Action<IOptionsMonitor<CollectionRuleOptions>> validate,
+            Action<IServiceCollection> servicesCallback = null)
         {
             return TestHostHelper.CreateCollectionRulesHost(
                 _outputHelper,
                 setup,
-                host => validate(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>()));
+                servicesCallback: servicesCallback,
+                hostCallback: host => validate(host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>()));
         }
 
         private Task ValidateSuccess(
             Action<RootOptions> setup,
-            Action<CollectionRuleOptions> validate)
+            Action<CollectionRuleOptions> validate,
+            Action<IServiceCollection> servicesCallback = null)
         {
             return Validate(
                 setup,
-                monitor => validate(monitor.Get(DefaultRuleName)));
+                monitor => validate(monitor.Get(DefaultRuleName)),
+                servicesCallback);
         }
 
         private Task ValidateFailure(
             Action<RootOptions> setup,
-            Action<OptionsValidationException> validate)
+            Action<OptionsValidationException> validate,
+            Action<IServiceCollection> servicesCallback = null)
         {
             return Validate(
                 setup,
@@ -1487,7 +1737,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     OptionsValidationException ex = Assert.Throws<OptionsValidationException>(() => monitor.Get(DefaultRuleName));
                     _outputHelper.WriteLine("Exception: {0}", ex.Message);
                     validate(ex);
-                });
+                },
+                servicesCallback);
         }
 
         private static void VerifyUnknownActionTypeMessage(string[] failures, int index, string actionType)
@@ -1592,6 +1843,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CultureInfo.InvariantCulture,
                 Strings.ErrorMessage_EgressProviderDoesNotExist,
                 egressProvider);
+
+            Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyFeatureDisabled(string[] failures, int index)
+        {
+            string expectedMessage = string.Format(
+                CultureInfo.InvariantCulture,
+                Strings.ErrorMessage_DisabledFeature,
+                nameof(Tools.Monitor.CollectionRules.Actions.CollectStacksAction));
+
+            Assert.Equal(expectedMessage, failures[index]);
+        }
+
+        private static void VerifyMissingStoppingEventProviderMessage(string[] failures, int index, string fieldName, string providerName, string providerFieldName)
+        {
+            string message = string.Format(
+                CultureInfo.InvariantCulture,
+                Strings.ErrorMessage_MissingStoppingEventProvider,
+                fieldName,
+                providerName,
+                providerFieldName);
 
             Assert.Equal(message, failures[index]);
         }

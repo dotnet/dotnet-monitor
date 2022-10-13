@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Tracing;
+
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public static class TestAppScenarios
@@ -13,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public const string PrintEnvironmentVariables = nameof(PrintEnvironmentVariables);
         }
 
-        public enum SenarioState
+        public enum ScenarioState
         {
             Waiting,
             Ready,
@@ -24,6 +26,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static class AsyncWait
         {
             public const string Name = nameof(AsyncWait);
+
+            public static class Commands
+            {
+                public const string Continue = nameof(Continue);
+            }
+        }
+
+        public static class Stacks
+        {
+            public const string Name = nameof(Stacks);
 
             public static class Commands
             {
@@ -69,6 +81,23 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string StartSpin = nameof(StartSpin);
 
                 public const string StopSpin = nameof(StopSpin);
+            }
+        }
+
+        public static class TraceEvents
+        {
+            public const string Name = nameof(TraceEvents);
+            public const string UniqueEventName = "UniqueEvent";
+            public const string EventProviderName = "TestScenario";
+            public const string UniqueEventMessage = "FooBar";
+            public const string UniqueEventPayloadField = "message";
+
+            public const TraceEventOpcode UniqueEventOpcode = TraceEventOpcode.Reply;
+
+            public static class Commands
+            {
+                public const string EmitUniqueEvent = nameof(EmitUniqueEvent);
+                public const string ShutdownScenario = nameof(ShutdownScenario);
             }
         }
     }

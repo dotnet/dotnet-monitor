@@ -9,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -82,9 +84,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             if (_portOptions.ConnectionMode == DiagnosticPortConnectionMode.Listen)
             {
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    if (_portOptions.GetDeleteEndpointOnStartup() &&
+                        File.Exists(_portOptions.EndpointName))
+                    {
+                        // In some circumstances stale files from previous instances of dotnet-monitor cause
+                        // the new instance to fail binding. We need to delete the file in this situation.
+                        try
+                        {
+                            _logger.DiagnosticPortDeleteAttempt(_portOptions.EndpointName);
+                            File.Delete(_portOptions.EndpointName);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.DiagnosticPortDeleteFailed(_portOptions.EndpointName, ex);
+                        }
+                    }
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(_portOptions.EndpointName));
+                }
+
                 await using ReversedDiagnosticsServer server = new(_portOptions.EndpointName);
 
                 server.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));
+
+                using var _ = SetupDiagnosticPortWatcher();
 
                 await Task.WhenAll(
                     ListenAsync(server, stoppingToken),
@@ -282,6 +307,48 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             return true;
+        }
+
+        private IDisposable SetupDiagnosticPortWatcher()
+        {
+            // If running on Windows, a named pipe is used so there is no need to watch it.
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return null;
+            }
+
+            FileSystemWatcher watcher = null;
+            try
+            {
+                watcher = new(Path.GetDirectoryName(_portOptions.EndpointName));
+                void onDiagnosticPortAltered()
+                {
+                    _logger.DiagnosticPortAlteredWhileInUse(_portOptions.EndpointName);
+                    try
+                    {
+                        watcher.EnableRaisingEvents = false;
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                watcher.Filter = Path.GetFileName(_portOptions.EndpointName);
+                watcher.NotifyFilter = NotifyFilters.FileName;
+                watcher.Deleted += (_, _) => onDiagnosticPortAltered();
+                watcher.Renamed += (_, _) => onDiagnosticPortAltered();
+                watcher.Error += (object _, ErrorEventArgs e) => _logger.DiagnosticPortWatchingFailed(_portOptions.EndpointName, e.GetException());
+                watcher.EnableRaisingEvents = true;
+
+                return watcher;
+            }
+            catch (Exception ex)
+            {
+                _logger.DiagnosticPortWatchingFailed(_portOptions.EndpointName, ex);
+                watcher?.Dispose();
+            }
+
+            return null;
         }
     }
 }

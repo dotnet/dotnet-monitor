@@ -61,6 +61,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Thread: (0x{0:X}).
+        /// </summary>
+        internal static string CallstackThreadHeader {
+            get {
+                return ResourceManager.GetString("CallstackThreadHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to get process environment..
         /// </summary>
         internal static string ErrorMessage_CanNotGetEnvironment {
@@ -160,6 +169,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to process stack in timely manner..
+        /// </summary>
+        internal static string ErrorMessage_StacksTimeout {
+            get {
+                return ResourceManager.GetString("ErrorMessage_StacksTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rate limit reached..
         /// </summary>
         internal static string ErrorMessage_TooManyRequests {
@@ -223,6 +241,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to determine the default process..
+        /// </summary>
+        internal static string LogFormatString_DefaultProcessUnexpectedFailure {
+            get {
+                return ResourceManager.GetString("LogFormatString_DefaultProcessUnexpectedFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Egressed artifact to {location}.
         /// </summary>
         internal static string LogFormatString_EgressedArtifact {
@@ -259,6 +286,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hit stopping trace event &apos;{providerName}/{eventName}&apos;.
+        /// </summary>
+        internal static string LogFormatString_StoppingTraceEventHit {
+            get {
+                return ResourceManager.GetString("LogFormatString_StoppingTraceEventHit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One or more field names specified in the payload filter for event &apos;{providerName}/{eventName}&apos; do not match any of the known field names: &apos;{payloadFieldNames}&apos;. As a result the requested stopping event is unreachable; will continue to collect the trace for the remaining specified duration..
+        /// </summary>
+        internal static string LogFormatString_StoppingTraceEventPayloadFilterMismatch {
+            get {
+                return ResourceManager.GetString("LogFormatString_StoppingTraceEventPayloadFilterMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Request limit for endpoint reached. Limit: {limit}, oustanding requests: {requests}.
         /// </summary>
         internal static string LogFormatString_ThrottledEndpoint {
@@ -273,6 +318,69 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string LogFormatString_WrittenToHttpStream {
             get {
                 return ResourceManager.GetString("LogFormatString_WrittenToHttpStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection rule has had its triggering conditions satisfied and is currently executing its action list..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_ExecutingActions {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_ExecutingActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The collection rule will no longer trigger because the ActionCount was reached..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Finished_ActionCount {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_ActionCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The collection rule will no longer trigger because a failure occurred with message: {0}..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Finished_Failure {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_Failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The collection rule will no longer trigger because the RuleDuration limit was reached..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Finished_RuleDuration {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_RuleDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The collection rule will no longer trigger because the Startup trigger only executes once..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Finished_Startup {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Finished_Startup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection rule is active and waiting for its triggering conditions to be satisfied..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Running {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration..
+        /// </summary>
+        internal static string Message_CollectionRuleStateReason_Throttled {
+            get {
+                return ResourceManager.GetString("Message_CollectionRuleStateReason_Throttled", resourceCulture);
             }
         }
     }

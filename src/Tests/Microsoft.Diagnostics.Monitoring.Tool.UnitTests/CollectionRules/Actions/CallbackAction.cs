@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions
 {
-    internal sealed class CallbackActionFactory : ICollectionRuleActionFactory<object>
+    internal sealed class CallbackActionFactory : ICollectionRuleActionFactory<BaseRecordOptions>
     {
         private readonly CallbackActionService _service;
 
@@ -23,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, object options)
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, BaseRecordOptions options)
         {
             return new CallbackAction(_service);
         }
@@ -40,6 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             _service = service;
         }
 
+        public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        {
+            return StartAsync(token); // We don't care about collectionRuleMetadata for testing (yet)
+        }
+
         public Task StartAsync(CancellationToken token)
         {
             return _service.NotifyListeners(token);
@@ -51,9 +57,58 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         }
     }
 
+    internal sealed class DelayedCallbackActionFactory : ICollectionRuleActionFactory<BaseRecordOptions>
+    {
+        private readonly CallbackActionService _service;
+
+        public DelayedCallbackActionFactory(CallbackActionService service)
+        {
+            _service = service;
+        }
+
+        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, BaseRecordOptions options)
+        {
+            return new DelayedCallbackAction(_service);
+        }
+    }
+
+    internal sealed class DelayedCallbackAction : ICollectionRuleAction
+    {
+        public static readonly string ActionName = nameof(DelayedCallbackAction);
+
+        private readonly CallbackActionService _service;
+
+        public DelayedCallbackAction(CallbackActionService service)
+        {
+            _service = service;
+        }
+
+        public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        {
+            return StartAsync(token); // We don't care about collectionRuleMetadata for testing (yet)
+        }
+
+        public Task StartAsync(CancellationToken token)
+        {
+            return _service.NotifyListeners(token);
+        }
+
+        public Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
+        {
+            var currentTime = _service.Clock.UtcNow;
+            while (_service.Clock.UtcNow == currentTime)
+            {
+                // waiting for clock to be ticked (simulated time)
+                token.ThrowIfCancellationRequested();
+            }
+
+            return Task.FromResult(new CollectionRuleActionResult());
+        }
+    }
+
     internal sealed class CallbackActionService
     {
-        private readonly ISystemClock _clock;
+        public ISystemClock Clock { get; }
         private readonly List<CompletionEntry> _entries = new();
         private readonly SemaphoreSlim _entriesSemaphore = new(1);
         private readonly List<DateTime> _executionTimestamps = new();
@@ -64,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         public CallbackActionService(ITestOutputHelper outputHelper, ISystemClock clock = null)
         {
             _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
-            _clock = clock ?? RealSystemClock.Instance;
+            Clock = clock ?? RealSystemClock.Instance;
         }
 
         public async Task NotifyListeners(CancellationToken token)
@@ -74,9 +129,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
             {
                 lock (_executionTimestamps)
                 {
-                    _executionTimestamps.Add(_clock.UtcNow.UtcDateTime);
+                    _executionTimestamps.Add(Clock.UtcNow.UtcDateTime);
                 }
-                
+
                 _outputHelper.WriteLine("[Callback] Completing {0} source(s).", _entries.Count);
 
                 foreach (var entry in _entries)

@@ -121,6 +121,10 @@
     <value>API key authentication not configured.</value>
     <comment>Gets a string similar to "API key authentication not configured.".</comment>
   </data>
+  <data name="ErrorMessage_CollectionRuleNotFound" xml:space="preserve">
+    <value>Unable to find a collection rule with name {0}.</value>
+    <comment>Gets the format string for an unexpected collection rule name.</comment>
+  </data>
   <data name="ErrorMessage_CouldNotMapToAction" xml:space="preserve">
     <value>The '{0}' action was not registered correctly.</value>
     <comment>Gets the format string for invalid mapping from a string to an ICollectionRuleActionProxy.</comment>
@@ -132,6 +136,9 @@
   <data name="ErrorMessage_DiagnosticPortMissingInListenMode" xml:space="preserve">
     <value>In 'Listen' mode, the diagnostic port endpoint name must be specified.</value>
     <comment>Gets a string similar to "In 'Listen' mode, the diagnostic port endpoint name must be specified.".</comment>
+  </data>
+  <data name="ErrorMessage_DisabledFeature" xml:space="preserve">
+    <value>Feature '{0}' is not enabled.</value>
   </data>
   <data name="ErrorMessage_DuplicateActionName" xml:space="preserve">
     <value>Duplicate action name '{0}'.</value>
@@ -150,7 +157,7 @@
     <value>Extension egress failed.</value>
   </data>
   <data name="ErrorMessage_EgressFileFailedDetailed" xml:space="preserve">
-    <value>File system egress failed" {0}</value>
+    <value>File system egress failed: {0}</value>
     <comment>Gets the format string for egress failure to File (with an inner message).
 1 Format Parameter:
 0. innerMessage: The detailed inner message with additional error context.</comment>
@@ -189,6 +196,9 @@
   <data name="ErrorMessage_ExtensionNotFound" xml:space="preserve">
     <value>Failed to locate extension '{0}'.</value>
     <comment>Gets the error message string for ExtensionNotFoundException. 1 Format parameter: extensionMoniker</comment>
+  </data>
+  <data name="ErrorMessage_ExpectedToFindSharedLibrariesAtPath" xml:space="preserve">
+    <value>Expected to find shared libraries at '{0}'.</value>
   </data>
   <data name="ErrorMessage_FieldMustBeLessThanOtherField" xml:space="preserve">
     <value>The value of field {0} must be less than the value of field {1}.</value>
@@ -246,6 +256,14 @@
   </data>
   <data name="ErrorMessage_MaxConnections" xml:space="preserve">
     <value>Value must be between 1 and 254, or -1 (to obtain the maximum number allowed by system resources).</value>
+  </data>
+  <data name="ErrorMessage_MissingStoppingEventProvider" xml:space="preserve">
+    <value>The {0} field specified the provider '{1}' but it was not found in the {2} field.</value>
+    <comment>Gets the format string for CollectTraceOptions type failure due to missing the needed provider for StoppingEventOptions.
+3 Format Parameter:
+1. stoppingEventField: The field that specified the StoppingEventOptions that contains the failure.
+2. missingProviderName: The specified provider that is missing.
+3. providersField: the field that the provider should be defined in.</comment>
   </data>
   <data name="ErrorMessage_NoEnvironmentVariable" xml:space="preserve">
     <value>The environment block does not contain the '{0}' variable.</value>
@@ -312,6 +330,12 @@
     <value>Unable to bind any urls.</value>
     <comment>Gets a string similar to "Unable to bind any urls.".</comment>
   </data>
+  <data name="ErrorMessage_UnableToDetermineTargetPlatform" xml:space="preserve">
+    <value>Unable to determine platform of the target process.</value>
+  </data>
+  <data name="ErrorMessage_UnableToFindProfilerAssembly" xml:space="preserve">
+    <value>Unable to find profiler assembly at determined path.</value>
+  </data>
   <data name="ErrorMessage_UnableToStartProcess" xml:space="preserve">
     <value>Unable to start: {0} {1}</value>
     <comment>{0} = FileName, {1} = Process's Arguments</comment>
@@ -336,6 +360,9 @@
     <value>'{0}' is not a known trigger type.</value>
     <comment>{0} = The type of trigger that is unknown.</comment>
   </data>
+  <data name="FeatureName_CallStacks" xml:space="preserve">
+    <value>Call Stacks</value>
+  </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
     <comment>Gets the string to display in help that explains what the 'collect' command does.</comment>
@@ -351,6 +378,10 @@
   <data name="HelpDescription_CommandShow" xml:space="preserve">
     <value>Shows configuration, as if dotnet-monitor collect was executed with these parameters.</value>
     <comment>Gets the string to display in help that explains what the 'show' command does.</comment>
+  </data>
+  <data name="HelpDescription_OptionConfigurationFilePath" xml:space="preserve">
+    <value>The fully qualified path and filename of the json configuration file you'd like to add to the list of configuration sources.</value>
+    <comment>Gets the string to display in help that explains what the '--configuration-file-path' option does.</comment>
   </data>
   <data name="HelpDescription_OptionDiagnosticPort" xml:space="preserve">
     <value>The fully qualified path and filename of the diagnostic port to which runtime instances can connect.</value>
@@ -486,8 +517,26 @@
   <data name="LogFormatString_CollectionRuleUnmatchedFilters" xml:space="preserve">
     <value>Collection rule '{ruleName}' filters do not match the process.</value>
   </data>
+  <data name="LogFormatString_ConnectionModeConnect" xml:space="preserve">
+    <value>Connection mode: Connect</value>
+  </data>
+  <data name="LogFormatString_ConnectionModeListen" xml:space="preserve">
+    <value>Connection mode: Listen at '{path}'</value>
+  </data>
+  <data name="LogFormatString_DiagnosticPortAlteredWhileInUse" xml:space="preserve">
+    <value>Diagnostic port file at '{0}' was either deleted or moved while it was still being used.</value>
+  </data>
+  <data name="LogFormatString_DiagnosticPortDeleteAttempt" xml:space="preserve">
+    <value>Attemping to delete diagnostic port file at '{0}'.</value>
+  </data>
+  <data name="LogFormatString_DiagnosticPortDeleteFailed" xml:space="preserve">
+    <value>Failed to delete diagnostic port file at '{0}'.</value>
+  </data>
   <data name="LogFormatString_DiagnosticPortNotInListenModeForCollectionRules" xml:space="preserve">
     <value>When using collection rules, the diagnostic port must be in 'Listen' mode. Please correct the configuration and restart dotnet monitor.</value>
+  </data>
+  <data name="LogFormatString_DiagnosticPortWatchingFailed" xml:space="preserve">
+    <value>Failed to watch diagnostic port file at '{0}'.</value>
   </data>
   <data name="LogFormatString_DiagnosticRequestCancelled" xml:space="preserve">
     <value>Cancelled waiting for diagnostic response from runtime in process {processId}.</value>
@@ -519,6 +568,10 @@
 1. providerName: Name of the provider that was already registered
 2. providerType: The type of provider that the new provider was attempting to be registered.
 3. existingProviderType: The type of provider that the new provider name was already registered.</comment>
+  </data>
+  <data name="LogFormatString_DuplicateKeyInMetadata" xml:space="preserve">
+    <value>Metadata cannot include duplicate keys; please change or remove the key '{key}'</value>
+    <comment>Gets a string similar to "Metadata cannot include duplicate keys; please change or remove the key '{key}'".</comment>
   </data>
   <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
     <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
@@ -561,6 +614,13 @@
   </data>
   <data name="LogFormatString_EndpointTimeout" xml:space="preserve">
     <value>Unexpected timeout from process {processId}. Process will no longer be monitored.</value>
+  </data>
+  <data name="LogFormatString_EnvironmentBlockNotSupported" xml:space="preserve">
+    <value>Target framework does not support custom egress metadata.</value>
+  </data>
+  <data name="LogFormatString_EnvironmentVariableNotFound" xml:space="preserve">
+    <value>The environment variable '{name}' could not be found on the target process.</value>
+    <comment>Gets a string similar to "The environment variable '{name}' could not be found on the target process.".</comment>
   </data>
   <data name="LogFormatString_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {link}</value>
@@ -663,6 +723,12 @@
 1. extensionPath: Path to the executable extension
 2. cmdArgs: the commandline arguments being passed to the executable</comment>
   </data>
+  <data name="LogFormatString_ExperimentalFeatureEnabled" xml:space="preserve">
+    <value>Experimental feature '{name}' is enabled.</value>
+  </data>
+  <data name="LogFormatString_FailedInitializeSharedLibraryStorage" xml:space="preserve">
+    <value>Failed to initialize shared library storage.</value>
+  </data>
   <data name="LogFormatString_GetEnvironmentVariable" xml:space="preserve">
     <value>Getting the environment variable {variableName} from process {processId}.</value>
     <comment>Gets the format string that is printed in the 55:GetEnvironmentVariable event.
@@ -670,16 +736,23 @@
 1. variableName: The name of the environment variable being read
 2. processId: The id of the process to which the variable is being read</comment>
   </data>
-  <data name="LogFormatString_InsecureAutheticationConfiguration" xml:space="preserve">
+  <data name="LogFormatString_InsecureAuthenticationConfiguration" xml:space="preserve">
     <value>WARNING: Authentication is enabled over insecure http transport. This can pose a security risk and is not intended for production environments.</value>
-    <comment>Gets the format string that is printed in the 14:InsecureAutheticationConfiguration event.
+    <comment>Gets the format string that is printed in the 14:InsecureAuthenticationConfiguration event.
 0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_IntermediateFileDeletionFailed" xml:space="preserve">
+    <value>The intermediate file at the following path could not be deleted: {path}</value>
   </data>
   <data name="LogFormatString_InvalidActionReference" xml:space="preserve">
     <value>Invalid action reference '{actionReference}'.</value>
   </data>
   <data name="LogFormatString_InvalidActionResultReference" xml:space="preserve">
     <value>Invalid result refrence '{actionToken}'.</value>
+  </data>
+  <data name="LogFormatString_InvalidMetadata" xml:space="preserve">
+    <value>Invalid metadata; custom metadata keys must be valid C# identifiers.</value>
+    <comment>Gets a string similar to "Invalid metadata; custom metadata keys must be valid C# identifiers.".</comment>
   </data>
   <data name="LogFormatString_InvalidToken" xml:space="preserve">
     <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>
@@ -715,6 +788,9 @@
 1 Format Parameter:
 1. failure: The failure message from validation</comment>
   </data>
+  <data name="LogFormatString_ParsingUrlFailed" xml:space="preserve">
+    <value>The provided url could not be parsed: {url}</value>
+  </data>
   <data name="LogFormatString_QueueDoesNotExist" xml:space="preserve">
     <value>The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly.</value>
     <comment>Gets the format string that is printed in the 57:QueueDoesNotExist event.
@@ -735,12 +811,21 @@
     <comment>Gets the format string that is printed in the 19:RunningElevated event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_RuntimeInstanceCookieFailedToFilterSelf" xml:space="preserve">
+    <value>Unable to get the runtime instance cookie of the current process.</value>
+  </data>
   <data name="LogFormatString_SetEnvironmentVariable" xml:space="preserve">
     <value>Setting the environment variable {variableName} in process {processId}.</value>
     <comment>Gets the format string that is printed in the 54:SetEnvironmentVariable event.
 2 Format parameterts:
 1. variableName: The name of the environment variable being set
 2. processId: The id of the process to which the variable is being set</comment>
+  </data>
+  <data name="LogFormatString_SharedLibraryPath" xml:space="preserve">
+    <value>Shared library path: {path}</value>
+  </data>
+  <data name="LogFormatString_UnableToApplyProfiler" xml:space="preserve">
+    <value>Unable to apply profiler.</value>
   </data>
   <data name="LogFormatString_UnableToListenToAddress" xml:space="preserve">
     <value>Unable to listen to {url}. Dotnet-monitor functionality will be limited.</value>
@@ -753,6 +838,14 @@
     <comment>Gets the format string that is printed in the 59:WritingMessageToQueueFailed event.
 1 Format Parameter:
 1. queueName: The name of the Azure Queue where messages are egressed</comment>
+  </data>
+  <data name="Message_ConfigurationFileDoesNotExist" xml:space="preserve">
+    <value>The provided configuration file '{0}' could not be found.</value>
+    <comment>Gets a string similar to "The provided configuration file '{0}' could not be found."</comment>
+  </data>
+  <data name="Message_ConfigurationFileNotJson" xml:space="preserve">
+    <value>The provided configuration file '{0}' must have the .json extension.</value>
+    <comment>Gets a string similar to "The provided configuration file '{0}' must have the .json extension."</comment>
   </data>
   <data name="Message_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {0}</value>

@@ -131,6 +131,10 @@
     <value>SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified.</value>
     <comment>Gets a string similar to "SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified.".</comment>
   </data>
+  <data name="LogFormatString_DuplicateKeyInMetadata" xml:space="preserve">
+    <value>Metadata cannot include duplicate keys; please change or remove the key '{key}'</value>
+    <comment>Gets a string similar to "Metadata cannot include duplicate keys; please change or remove the key '{key}'".</comment>
+  </data>
   <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
     <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
     <comment>Gets the format string that is printed in the 5:EgressCopyActionStreamToEgressStream event.
@@ -149,6 +153,17 @@
 2 Format Parameters:
 1. providerType: Type of the provider
 2. path: path where provider saved the stream</comment>
+  </data>
+  <data name="LogFormatString_EnvironmentBlockNotSupported" xml:space="preserve">
+    <value>Target framework does not support custom egress metadata.</value>
+  </data>
+  <data name="LogFormatString_EnvironmentVariableNotFound" xml:space="preserve">
+    <value>The environment variable '{name}' could not be found on the target process.</value>
+    <comment>Gets a string similar to "The environment variable '{name}' could not be found on the target process.".</comment>
+  </data>
+  <data name="LogFormatString_InvalidMetadata" xml:space="preserve">
+    <value>Invalid metadata; custom metadata keys must be valid C# identifiers.</value>
+    <comment>Gets a string similar to "Invalid metadata; custom metadata keys must be valid C# identifiers.".</comment>
   </data>
   <data name="LogFormatString_QueueDoesNotExist" xml:space="preserve">
     <value>The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly.</value>

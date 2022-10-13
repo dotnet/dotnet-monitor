@@ -4,7 +4,6 @@
 
 using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using System.CommandLine;
-using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 
@@ -19,7 +18,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 AsyncWaitScenario.Command(),
                 LoggerScenario.Command(),
                 SpinWaitScenario.Command(),
-                EnvironmentVariablesScenario.Command()
+                EnvironmentVariablesScenario.Command(),
+                StacksScenario.Command(),
+                TraceEventsScenario.Command()
             })
             .UseDefaults()
             .Build()

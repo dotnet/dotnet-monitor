@@ -251,7 +251,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The URI of the Azure queue account..
+        ///   Looks up a localized string similar to A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The URI of the Azure queue storage account..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri {
             get {
@@ -269,7 +278,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the azure blob storage account..
+        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the Azure queue storage account..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignature {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSigna" +
+                        "ture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignatureName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSigna" +
+                        "tureName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts..
         /// </summary>
         public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature {
             get {
@@ -525,6 +554,42 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The duration of time in which live metrics are collected..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Duration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the live metrics are egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines if the default counter providers should be used..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The array of providers for metrics to collect..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Providers {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Providers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLogsOptions_DefaultLevel {
@@ -579,6 +644,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the call stacks are egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectStacksOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectStacksOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format used to display the callstacks..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectStacksOptions_Format {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectStacksOptions_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The size of the event pipe buffer to use in the target process. If the event pipe buffer fills with too many events, newer events will be dropped until the buffer is drained to fit new events..
         /// </summary>
         public static string DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes {
@@ -629,6 +712,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectTraceOptions_RequestRundown {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_RequestRundown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The event to watch for while collecting the trace, and once observed the trace will be stopped..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectTraceOptions_StoppingEvent {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_StoppingEvent", resourceCulture);
             }
         }
         
@@ -764,6 +856,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In &apos;Listen&apos; connection mode, deletes the domain socket file used for diagnostic port communication..
+        /// </summary>
+        public static string DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup", resourceCulture);
             }
         }
         
@@ -927,6 +1028,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_Enabled {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_Enabled", resourceCulture);
             }
         }
         
@@ -1246,11 +1356,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The default path where assets will be shared between dotnet-monitor and target processes. Dumps are temporarily stored under this path or in a sub folder unless DumpTempFolder is specified. Shared libraries are stored under this path or in a sub folder unless SharedLibraryPath is specified. On non-Windows platforms, a server diagnostic port is created with the name of &apos;dotnet-monitor.sock&apos; immediately under this path if running in listen mode unless the diagnostic port is specified on the command line or th [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string DisplayAttributeDescription_StorageOptions_DefaultSharedPath {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_DefaultSharedPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The location for temporary dump files. Defaults to the temp folder..
         /// </summary>
         public static string DisplayAttributeDescription_StorageOptions_DumpTempFolder {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_DumpTempFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The location to which libraries shared with target processes will be copied at startup..
+        /// </summary>
+        public static string DisplayAttributeDescription_StorageOptions_SharedLibraryPath {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_SharedLibraryPath", resourceCulture);
             }
         }
         
@@ -1272,6 +1400,34 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are separated by a &apos;/&apos;. If the event has no opcode, then the event name is just the task name..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventFilter_EventName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_EventName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A mapping of event payload field names to their expected value. A subset of the payload fields may be specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventFilter_PayloadFilter {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_PayloadFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The event provider that will produce the specified event..
+        /// </summary>
+        public static string DisplayAttributeDescription_TraceEventFilter_ProviderName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_ProviderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
         /// </summary>
         public static string ErrorMessage_CredentialsMissing {

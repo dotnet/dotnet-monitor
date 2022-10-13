@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions
@@ -14,7 +15,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         public static IServiceCollection RegisterTestAction(this IServiceCollection services, CallbackActionService callback)
         {
             services.AddSingleton(callback);
-            services.RegisterCollectionRuleAction<CallbackActionFactory, object>(CallbackAction.ActionName);
+            services.RegisterCollectionRuleAction<CallbackActionFactory, BaseRecordOptions>(CallbackAction.ActionName);
+
+            return services;
+        }
+
+        public static IServiceCollection RegisterDelayedTestAction(this IServiceCollection services, CallbackActionService callback)
+        {
+            services.AddSingleton(callback);
+            services.RegisterCollectionRuleAction<DelayedCallbackActionFactory, BaseRecordOptions>(DelayedCallbackAction.ActionName);
+
             return services;
         }
 

@@ -1,10 +1,15 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration)
+
 # Configuration
 
 `dotnet monitor` has extensive configuration to control various aspects of its behavior. Ordinarily, you are not required to specify most of this configuration and only exists if you wish to change the default behavior in `dotnet monitor`.
 
+>**NOTE:** Some features are [experimental](./experimental.md) and are denoted as `**[Experimental]**` in this document.
+
 ## Configuration Sources
 
-`dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (Environment variables are highest precedence) :
+`dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (User-specified json file is highest precedence) :
 
 - Command line parameters
 - User settings path
@@ -16,6 +21,8 @@
     - On \*nix, `/etc/dotnet-monitor`
 
 - Environment variables
+- User-Specified json file
+  - (6.3+) Use the `--configuration-file-path` flag from the command line to specify your own configuration file (using its full path).
 
 ### Translating configuration between providers
 
@@ -312,7 +319,49 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 
 ## Storage Configuration
 
+Some diagnostic features (e.g. memory dumps, stack traces) require that a directory is shared between the `dotnet monitor` tool and the target applications. The `Storage` configuration section allows specifying these directories to facilitate this sharing.
+
+### Default Shared Path (7.0+)
+
+The default shared path option (`DefaultSharedPath`) can be set, which allows artifacts to be shared automatically without requiring additional configuration for each artifact type. By setting this property with an appropriate value, the following become available:
+- dumps are temporarily stored in this directory or in a subdirectory.
+- **[Experimental]** shared libraries are shared from `dotnet monitor` to target applications in this directory or in a subdirectory.
+- **[Experimental]** in-process diagnostics share files back to `dotnet monitor` in this directory or in a subdirectory.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Storage": {
+      "DefaultSharedPath": "/diag"
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  Storage__DefaultSharedPath: "/diag"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_Storage__DefaultSharedPath
+    value: "/diag"
+  ```
+</details>
+
+### Dumps Path
+
 Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't streamed back from the target process to `dotnet monitor`. Instead, they are written directly to disk by the runtime. After successful collection of a process dump, `dotnet monitor` will read the process dump directly from disk. In the default configuration, the directory that the runtime writes its process dump to is the temp directory (`%TMP%` on Windows, `/tmp` on \*nix). It is possible to change to the ephemeral directory that these dump files get written to via the following configuration:
+
+>**Note:** This option is optional if `dotnet monitor` is running in the same process namespace as the target processes or if `DefaultSharedPath` is specified.
 
 <details>
   <summary>JSON</summary>
@@ -340,6 +389,41 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
   ```yaml
   - name: DotnetMonitor_Storage__DumpTempFolder
     value: "/diag/dumps/"
+  ```
+</details>
+
+### **[Experimental]** Shared Library Path (7.0+)
+
+The shared library path option (`SharedLibraryPath`) allows specifying the path to where shared libraries are copied from the `dotnet monitor` installation to make them available to target applications for in-process diagnostics scenarios, such as call stack collection.
+
+>**Note:** This option is not required if `DefaultSharedPath` is specified. This option provides an alternative directory path compared to the behavior of specifying `DefaultSharedPath`.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Storage": {
+      "SharedLibraryPath": "/diag/libs/"
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  Storage__SharedLibraryPath: "/diag/libs/"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_Storage__SharedLibraryPath
+    value: "/diag/libs/"
   ```
 </details>
 
@@ -620,7 +704,7 @@ You can customize the number of data points stored per metric via the following 
   ```
 </details>
 
-See [Global Counter Interval](#Global-Counter-Interval) to change the metrics frequency.
+See [Global Counter Interval](#global-counter-interval) to change the metrics frequency.
 
 ### Custom Metrics
 
@@ -717,12 +801,17 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | blobPrefix | string | false | Optional path prefix for the artifacts to egress.|
 | copyBufferSize | string | false | The buffer size to use when copying data from the original artifact to the blob stream.|
 | accountKey | string | false | The account key used to access the Azure blob storage account; must be specified if `accountKeyName` is not specified.|
-| sharedAccessSignature | string | false | The shared access signature (SAS) used to access the azure blob storage account; if using SAS, must be specified if `sharedAccessSignatureName` is not specified.|
+| sharedAccessSignature | string | false | The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts; if using SAS, must be specified if `sharedAccessSignatureName` is not specified.|
 | accountKeyName | string | false | Name of the property in the Properties section that will contain the account key; must be specified if `accountKey` is not specified.|
 | managedIdentityClientId | string | false | The ClientId of the ManagedIdentity that can be used to authorize egress. Note this identity must be used by the hosting environment (such as Kubernetes) and must also have a Storage role with appropriate permissions. |
 | sharedAccessSignatureName | string | false | Name of the property in the Properties section that will contain the SAS token; if using SAS, must be specified if `sharedAccessSignature` is not specified.|
 | queueName | string | false | The name of the queue to which a message will be dispatched upon writing to a blob.|
-| queueAccountUri | string | false | The URI of the Azure queue account.|
+| queueAccountUri | string | false | The URI of the Azure queue storage account.|
+| queueSharedAccessSignature | string | false | (6.3+) The shared access signature (SAS) used to access the Azure queue storage account; if using SAS, must be specified if `queueSharedAccessSignatureName` is not specified.|
+| queueSharedAccessSignatureName | string | false | (6.3+) Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
+| metadata | Dictionary<string, string> | false | A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.|
+
+***Note:*** Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.
 
 ### Example azureBlobStorage provider
 
@@ -993,7 +1082,7 @@ The following is a collection rule that collects a 1 minute CPU trace and egress
 
 ### Filters
 
-Each collection rule can specify a set of process filters to select which processes the rule should be applied. The filter criteria are the same as those used for the [default process](#Default-Process-Configuration) configuration.
+Each collection rule can specify a set of process filters to select which processes the rule should be applied. The filter criteria are the same as those used for the [default process](#default-process-configuration) configuration.
 
 #### Example
 
@@ -1309,7 +1398,7 @@ An action that collects a dump of the process that the collection rule is target
 
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
-| `Type` | [DumpType](api/definitions.md#DumpType) | false | The type of dump to collect | `WithHeap` |
+| `Type` | [DumpType](api/definitions.md#dumptype) | false | The type of dump to collect | `WithHeap` |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected dump. | |
 
 ##### Outputs
@@ -1408,12 +1497,13 @@ An action that collects a trace of the process that the collection rule is targe
 
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
-| `Profile` | [TraceProfile](api/definitions.md#TraceProfile)? | false | The name of the profile(s) used to collect events. See [TraceProfile](api/definitions.md#TraceProfile) for details on the list of event providers, levels, and keywords each profile represents. Multiple profiles may be specified by separating them with commas. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
-| `Providers` | [EventProvider](api/definitions.md#EventProvider)[] | false | List of event providers from which to capture events. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
+| `Profile` | [TraceProfile](api/definitions.md#traceprofile)? | false | The name of the profile(s) used to collect events. See [TraceProfile](api/definitions.md#traceprofile) for details on the list of event providers, levels, and keywords each profile represents. Multiple profiles may be specified by separating them with commas. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
+| `Providers` | [EventProvider](api/definitions.md#eventprovider)[] | false | List of event providers from which to capture events. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
 | `RequestRundown` | bool | false | The runtime may provide additional type information for certain types of events after the trace session is ended. This additional information is known as rundown events. Without this information, some events may not be parsable into useful information. Only applies when `Providers` is specified. | `true` | | |
 | `BufferSizeMegabytes` | int | false | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Only applies when `Providers` is specified. | `256` | `1` | `1024` |
 | `Duration` | TimeSpan? | false | The duration of the trace operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected trace. | | | |
+| `StoppingEvent` | [TraceEventFilter](api/definitions.md#traceeventfilter)? | false | The event to watch for while collecting the trace, and once either the event is hit or the `Duration` is reached the trace will be stopped. This can only be specified if `Providers` is set. | `null` | | |
 
 ##### Outputs
 
@@ -1456,6 +1546,103 @@ Usage that collects a CPU trace for 30 seconds and egresses it to a provider nam
   ```
 </details>
 
+#### `CollectLiveMetrics` Action
+
+An action that collects live metrics for the process that the collection rule is targeting.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `IncludeDefaultProviders` | bool | false | Determines if the default counter providers should be used. | `true` | | |
+| `Providers` | [EventMetricsProvider](api/definitions.md#eventmetricsprovider)[] | false | The array of providers for metrics to collect. | | | |
+| `Duration` | TimeSpan? | false | The duration of the live metrics operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected live metrics. | | | |
+
+##### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
+
+##### Example
+
+Usage that collects live metrics with the default providers for 30 seconds and egresses it to a provider named "TmpDir".
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Egress": "TmpDir"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
+    value: "TmpDir"
+  ```
+</details>
+
+##### Example
+
+Usage that collects live metrics for the `cpu-usage` counter on `System.Runtime` for 20 seconds and egresses it to a provider named "TmpDir".
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "UseDefaultProviders": false,
+    "Providers": [
+      {
+        "ProviderName": "System.Runtime",
+        "CounterNames": [ "cpu-usage" ]
+      }
+    ],
+    "Egress": "TmpDir"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  CollectionRules__RuleName__Actions__0__Settings__UseDefaultProviders: "false"
+  CollectionRules__RuleName__Actions__0__Settings__Providers__0__ProviderName: "System.Runtime"
+  CollectionRules__RuleName__Actions__0__Settings__Providers__0__CounterNames__0: "cpu-usage"
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "TmpDir"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__UseDefaultProviders
+    value: "false"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Providers__0__ProviderName
+    value: "System.Runtime"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Providers__0__CounterNames__0
+    value: "cpu-usage"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
+    value: "TmpDir"
+  ```
+</details>
+
 #### `CollectLogs` Action
 
 An action that collects logs for the process that the collection rule is targeting.
@@ -1464,10 +1651,10 @@ An action that collects logs for the process that the collection rule is targeti
 
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
-| `DefaultLevel` | [LogLevel](api/definitions.md#LogLevel)? | false | The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value. | `LogLevel.Warning` | | |
-| `FilterSpecs` | Dictionary<string, [LogLevel](api/definitions.md#LogLevel)?> | false | A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured. | `null` | | |
+| `DefaultLevel` | [LogLevel](api/definitions.md#loglevel)? | false | The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value. | `LogLevel.Warning` | | |
+| `FilterSpecs` | Dictionary<string, [LogLevel](api/definitions.md#loglevel)?> | false | A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured. | `null` | | |
 | `UseAppFilters` | bool | false | Specifies whether to capture log statements at the levels as specified in the application-defined filters. | `true` | | |
-| `Format` | [LogFormat](api/definitions.md#LogFormat)? | false | The format of the logs artifact. | `PlainText` | | |
+| `Format` | [LogFormat](api/definitions.md#logformat)? | false | The format of the logs artifact. | `PlainText` | | |
 | `Duration` | TimeSpan? | false | The duration of the logs operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected logs. | | | |
 
@@ -1568,6 +1755,19 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
     value: "C:\\Program Files\\MyApp\\myapp.dll"
   ```
 </details>
+
+#### **[Experimental]** `CollectStacks` Action (7.0+)
+
+Collect call stacks from the target process.
+
+>**NOTE:** This feature is [experimental](./experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+
+##### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Format` | [CallStackFormat](api/definitions.md#experimental-callstackformat-70) | false | The format of the collected call stack. | `Json` |
+| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected stacks. | |
 
 #### `LoadProfiler` Action
 
@@ -1819,7 +2019,7 @@ Collection rule defaults are specified in configuration as a named item under th
 
 | Name | Section | Type | Applies To |
 |---|---|---|---|
-| `Egress` | `Actions` | string | [CollectDump](#collectdump-action), [CollectGCDump](#collectgcdump-action), [CollectTrace](#collecttrace-action), [CollectLogs](#collectlogs-action) |
+| `Egress` | `Actions` | string | [CollectDump](#collectdump-action), [CollectGCDump](#collectgcdump-action), [CollectTrace](#collecttrace-action), [CollectLiveMetrics](#collectlivemetrics-action), [CollectLogs](#collectlogs-action) |
 | `SlidingWindowDuration` | `Triggers` | TimeSpan? | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger), [AspNetResponseStatus](#aspnetresponsestatus-trigger), [EventCounter](#eventcounter-trigger) |
 | `RequestCount` | `Triggers` | int | [AspNetRequestCount](#aspnetrequestcount-trigger), [AspNetRequestDuration](#aspnetrequestduration-trigger) |
 | `ResponseCount` | `Triggers` | int | [AspNetResponseStatus](#aspnetresponsestatus-trigger) |
@@ -1936,5 +2136,46 @@ The following example includes a default egress provider that corresponds to the
     value: "CollectGCDump"
   - name: DotnetMonitor_CollectionRules__HighRequestCount__Actions__1__Settings__Egress
     value: "monitorBlob"
+  ```
+</details>
+
+## **[Experimental]** In-Process Features Configuration (7.0+)
+
+Some features of `dotnet monitor` require loading libraries into target applications. These libraries ship with `dotnet monitor` and are provisioned to be available to target applications using the `DefaultSharedPath` option in the [storage configuration](#storage-configuration) section. The following features require these in-process libraries to be used:
+
+- Call stack collection
+
+Because these libraries are loaded into the target application (they are not loaded into `dotnet monitor`), they may have performance impact on memory and CPU utilization in the target application. These features are off by default and may be enabled via the `InProcessFeatures` configuration section.
+
+### Example
+
+To enable in-process features, such as call stack collection, use the following configuration:
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "InProcessFeatures": {
+      "Enabled": true
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  InProcessFeatures__Enabled: "true"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_InProcessFeatures__Enabled
+    value: "true"
   ```
 </details>

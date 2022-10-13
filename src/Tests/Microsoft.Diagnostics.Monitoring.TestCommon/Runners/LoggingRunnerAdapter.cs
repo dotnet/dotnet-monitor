@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -120,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             if (!_runner.HasStarted)
             {
                 _outputHelper.WriteLine("Runner Never Started.");
-                throw new InvalidOperationException("The has runner has never been started, call StartAsync first.");
+                throw new InvalidOperationException("The runner has never been started, call StartAsync first.");
             }
             else if (_runner.HasExited)
             {
