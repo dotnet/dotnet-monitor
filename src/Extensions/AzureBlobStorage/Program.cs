@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Text.Json;
 
@@ -125,9 +126,30 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
         {
             if (configDict.ContainsKey(propKey))
             {
+                configDict[propKey].GetType();
+
+                Console.WriteLine("Type: " + configDict[propKey].GetType());
+                Console.WriteLine("Value: " + configDict[propKey]);
+
+                // THIS IS WORKING -> NORMAL METADATA ISN'T SHOWING UP THOUGH
                 if (configDict[propKey] is JsonElement element)
                 {
-                    return JsonSerializer.Deserialize<Dictionary<string, string>>(element);
+                    var dict =  JsonSerializer.Deserialize<Dictionary<string, string>>(element);
+
+                    var dictTrimmed = (from kv in dict
+                                       where kv.Value != null
+                                           select kv).ToDictionary(kv => kv.Key, kv => kv.Value); // Doesn't have keys that correspond to null
+
+                    var dictToReturn = new Dictionary<string, string>();
+
+                    foreach (string key in dictTrimmed.Keys)
+                    {
+                        string updatedKey = key.Split(":").Last();
+                        dictToReturn.Add(updatedKey, dictTrimmed[key]);
+                    }
+
+                    return dictToReturn;
+
                 }
             }
             return null;

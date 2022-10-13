@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         /// <summary>
         /// The metadata of the blob to be created.
         /// </summary>
-        public Dictionary<string, string> Metadata { get; }
+        public Dictionary<string, string> Metadata { get; set; }
             = new Dictionary<string, string>(StringComparer.Ordinal);
 
         /// <summary>
