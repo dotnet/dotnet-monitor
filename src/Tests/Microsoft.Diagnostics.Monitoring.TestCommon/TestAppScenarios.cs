@@ -62,6 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string LoggerCategory1 = nameof(LoggerCategory1);
                 public const string LoggerCategory2 = nameof(LoggerCategory2);
                 public const string LoggerCategory3 = nameof(LoggerCategory3);
+                public const string SentinelCategory = nameof(SentinelCategory);
             }
 
             public static class Commands

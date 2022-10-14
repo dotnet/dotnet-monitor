@@ -4,8 +4,8 @@
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>7.0.0</VersionPrefix>
-    <PreReleaseVersionLabel>rc</PreReleaseVersionLabel>
-    <PreReleaseVersionIteration>1</PreReleaseVersionIteration>
+    <PreReleaseVersionLabel>rtm</PreReleaseVersionLabel>
+    <DotnetFinalVersionKind>release</DotnetFinalVersionKind>
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
     <!--
       Build quality notion for blob group naming, similar to aka.ms channel build quality in Arcade:
@@ -46,7 +46,7 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22471.1</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>7.0.0-beta.22513.4</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-rtm.22513.7</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>

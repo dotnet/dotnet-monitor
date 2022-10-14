@@ -208,6 +208,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                     case "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.CollectionRuleService":
                         HandleCollectionRuleEvent(logEvent);
                         break;
+                    case "Microsoft.Diagnostics.Tools.Monitor.LogsOperation":
+                        HandleArtifactEvent(logEvent);
+                        break;
                     default:
                         HandleGenericLogEvent(logEvent);
                         break;

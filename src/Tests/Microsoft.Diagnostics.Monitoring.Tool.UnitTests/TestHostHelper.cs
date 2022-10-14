@@ -108,6 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.ConfigureStorage(context.Configuration);
                     services.ConfigureInProcessFeatures(context.Configuration);
                     services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
+                    services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                     servicesCallback?.Invoke(services);
                 })
                 .Build();
