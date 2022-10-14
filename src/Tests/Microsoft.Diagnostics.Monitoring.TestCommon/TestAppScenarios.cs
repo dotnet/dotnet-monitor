@@ -55,6 +55,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
+        public static class Execute
+        {
+            public const string Name = nameof(Execute);
+        }
+
         public static class Logger
         {
             public const string Name = nameof(Logger);
