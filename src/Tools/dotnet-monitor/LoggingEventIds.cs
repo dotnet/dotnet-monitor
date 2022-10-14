@@ -88,7 +88,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         SharedLibraryPath = 75,
         ConnectionModeConnect = 76,
         ConnectionModeListen = 77,
-        ExperimentalFeatureEnabled = 78
+        ExperimentalFeatureEnabled = 78,
+        StartCollectArtifact = 79
     }
 
     internal static class LoggingEventIdsExtensions

@@ -135,7 +135,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     {
                         { TestAppScenarios.Logger.Categories.LoggerCategory1, LogLevel.Error },
                         { TestAppScenarios.Logger.Categories.LoggerCategory2, null },
-                        { TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning }
+                        { TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning },
+                        { TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical }
                     },
                     LogLevel = LogLevel.Information,
                     UseAppFilters = false
@@ -420,6 +421,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Func<ChannelReader<LogEntry>, Task> callback,
             LogFormat logFormat)
         {
+            Task startCollectLogsTask = null;
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -429,11 +431,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     Task<ResponseStreamHolder> holderTask = captureLogs(client, await runner.ProcessIdTask);
 
-                    // CONSIDER: Give dotnet-monitor some time to start the logs pipeline before having the target
-                    // application start logging. It would be best if dotnet-monitor could write a console event
-                    // (at Debug or Trace level) for when the pipeline has started. This would require dotnet-monitor
-                    // to know when the pipeline started and is waiting for logging data.
-                    await Task.Delay(TimeSpan.FromSeconds(3));
+                    await startCollectLogsTask;
 
                     // Start logging in the target application
                     await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
@@ -447,6 +445,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.NotNull(holder);
 
                     await LogsTestUtilities.ValidateLogsEquality(holder.Stream, callback, logFormat, _outputHelper);
+                },
+                configureTool: runner =>
+                {
+                    startCollectLogsTask = runner.WaitForStartCollectLogsAsync();
                 });
         }
 

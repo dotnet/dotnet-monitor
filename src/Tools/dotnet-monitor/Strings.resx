@@ -706,6 +706,9 @@
   <data name="LogFormatString_SharedLibraryPath" xml:space="preserve">
     <value>Shared library path: {path}</value>
   </data>
+  <data name="LogFormatString_StartCollectArtifact" xml:space="preserve">
+    <value>Started capturing {artifactType} artifact.</value>
+  </data>
   <data name="LogFormatString_UnableToApplyProfiler" xml:space="preserve">
     <value>Unable to apply profiler.</value>
   </data>
