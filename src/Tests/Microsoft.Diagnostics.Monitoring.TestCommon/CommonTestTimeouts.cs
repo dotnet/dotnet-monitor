@@ -82,5 +82,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// Default timeout for waiting for Azurite to fully stop.
         /// </summary>
         public static readonly TimeSpan AzuriteTeardownTimeout = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// Amount of time to wait before sending batches of event source events in order to
+        /// avoid real-time buffering issues in the runtime eventing infrastructure and the
+        /// trace event library event processor.
+        /// </summary>
+        public static readonly TimeSpan EventSourceBufferAvoidanceTimeout = TimeSpan.FromMilliseconds(200);
     }
 }
