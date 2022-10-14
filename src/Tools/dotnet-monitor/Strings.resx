@@ -676,6 +676,9 @@
 1. variableName: The name of the environment variable being set
 2. processId: The id of the process to which the variable is being set</comment>
   </data>
+  <data name="LogFormatString_StartCollectArtifact" xml:space="preserve">
+    <value>Started capturing {artifactType} artifact.</value>
+  </data>
   <data name="LogFormatString_UnableToListenToAddress" xml:space="preserve">
     <value>Unable to listen to {url}. Dotnet-monitor functionality will be limited.</value>
     <comment>Gets the format string that is printed in the 15:UnableToListenToAddress event.
