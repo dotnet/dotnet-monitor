@@ -16,6 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             return new CommandLineBuilder(new RootCommand()
             {
                 AsyncWaitScenario.Command(),
+                ExecuteScenario.Command(),
                 LoggerScenario.Command(),
                 SpinWaitScenario.Command(),
                 EnvironmentVariablesScenario.Command()

@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.HostExePath;
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonzeroExitCode });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonZeroExitCode });
                 },
                 async (action, token) =>
                 {
@@ -147,7 +147,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.HostExePath;
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonzeroExitCode });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonZeroExitCode });
                     options.IgnoreExitCode = true;
                 },
                 async (action, token) =>

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor;
@@ -82,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonzeroExitCode })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonZeroExitCode })
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -127,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonzeroExitCode })
+                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonZeroExitCode })
                     .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
                     .SetStartupTrigger();
             }, async host =>
