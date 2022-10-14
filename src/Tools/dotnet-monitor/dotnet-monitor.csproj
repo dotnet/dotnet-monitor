@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelTokensJwtVersion)" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
