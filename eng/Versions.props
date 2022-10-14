@@ -22,7 +22,7 @@
     <ToolTargetFrameworks>net6.0</ToolTargetFrameworks>
     <ToolTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(ToolTargetFrameworks);net7.0</ToolTargetFrameworks>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
-    <TestTargetFrameworks>netcoreapp3.1;net6.0</TestTargetFrameworks>
+    <TestTargetFrameworks>net6.0</TestTargetFrameworks>
     <TestTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(TestTargetFrameworks);net7.0</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
     <SchemaTargetFramework>net6.0</SchemaTargetFramework>
