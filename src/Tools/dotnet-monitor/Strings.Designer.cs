@@ -1141,6 +1141,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Started capturing {artifactType} artifact..
+        /// </summary>
+        internal static string LogFormatString_StartCollectArtifact {
+            get {
+                return ResourceManager.GetString("LogFormatString_StartCollectArtifact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to listen to {url}. Dotnet-monitor functionality will be limited..
         /// </summary>
         internal static string LogFormatString_UnableToListenToAddress {

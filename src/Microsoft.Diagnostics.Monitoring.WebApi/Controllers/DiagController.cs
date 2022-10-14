@@ -49,6 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IDumpService _dumpService;
         private readonly OperationTrackerService _operationTrackerService;
         private readonly ICollectionRuleService _collectionRuleService;
+        private readonly ILogsOperationFactory _logsOperationFactory;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -61,6 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
+            _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
         }
 
         /// <summary>
@@ -646,15 +648,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return Task.FromResult<ActionResult>(this.NotAcceptable());
             }
 
-            string fileName = LogsUtilities.GenerateLogsFileName(processInfo.EndpointInfo);
-            string contentType = LogsUtilities.GetLogsContentType(format.Value);
+            IArtifactOperation logsOperation = _logsOperationFactory.Create(
+                processInfo.EndpointInfo,
+                settings,
+                format.Value);
 
             return Result(
                 Utilities.ArtifactType_Logs,
                 egressProvider,
-                (outputStream, token) => LogsUtilities.CaptureLogsAsync(null, format.Value, processInfo.EndpointInfo, settings, outputStream, token),
-                fileName,
-                contentType,
+                logsOperation.ExecuteAsync,
+                logsOperation.GenerateFileName(),
+                logsOperation.ContentType,
                 processInfo,
                 format != LogFormat.PlainText);
         }

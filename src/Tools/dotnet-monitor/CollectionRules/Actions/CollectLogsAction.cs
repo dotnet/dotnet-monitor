@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -71,17 +72,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     FilterSpecs = filterSpecs
                 };
 
-                string fileName = LogsUtilities.GenerateLogsFileName(EndpointInfo);
-                string contentType = LogsUtilities.GetLogsContentType(logFormat);
-
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, EndpointInfo);
 
-                EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => LogsUtilities.CaptureLogsAsync(startCompletionSource, logFormat, EndpointInfo, settings, outputStream, token),
-                    egressProvider,
-                    fileName,
+                ILogsOperationFactory operationFactory = _serviceProvider.GetRequiredService<ILogsOperationFactory>();
+
+                IArtifactOperation operation = operationFactory.Create(
                     EndpointInfo,
-                    contentType,
+                    settings,
+                    logFormat);
+
+                EgressOperation egressOperation = new EgressOperation(
+                    (outputStream, token) => operation.ExecuteAsync(outputStream, startCompletionSource, token),
+                    egressProvider,
+                    operation.GenerateFileName(),
+                    EndpointInfo,
+                    operation.ContentType,
                     scope,
                     collectionRuleMetadata);
 

@@ -405,6 +405,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
 
+        private static readonly Action<ILogger, string, Exception> _startCollectArtifact =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.StartCollectArtifact.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_StartCollectArtifact);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -742,6 +748,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EnvironmentBlockNotSupported(this ILogger logger)
         {
             _environmentBlockNotSupported(logger, null);
+        }
+
+        public static void StartCollectArtifact(this ILogger logger, string artifactType)
+        {
+            _startCollectArtifact(logger, artifactType, null);
         }
     }
 }

@@ -115,7 +115,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 outputHelper.WriteLine("Log entry: {0}", line);
                 try
                 {
-                    await channel.Writer.WriteAsync(JsonSerializer.Deserialize<LogEntry>(line, options));
+                    LogEntry entry = JsonSerializer.Deserialize<LogEntry>(line, options);
+                    if (null != entry)
+                    {
+                        // If the sentinel entry is encountered, stop processing more entries as
+                        // any remaining entries are meant to mitigate event buffering in the runtime
+                        // and trace event library.
+                        if (entry.Category == TestAppScenarios.Logger.Categories.SentinelCategory)
+                        {
+                            break;
+                        }
+                        await channel.Writer.WriteAsync(entry);
+                    }
                 }
                 catch (JsonException ex)
                 {
