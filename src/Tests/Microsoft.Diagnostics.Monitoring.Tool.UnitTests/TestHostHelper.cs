@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
             finally
             {
-                await DisposeHost(host);
+                await DisposableHelper.DisposeAsync(host);
             }
         }
 
@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
             finally
             {
-                await DisposeHost(host);
+                await DisposableHelper.DisposeAsync(host);
             }
         }
 
@@ -108,21 +108,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.ConfigureStorage(context.Configuration);
                     services.ConfigureInProcessFeatures(context.Configuration);
                     services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
+                    services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                     servicesCallback?.Invoke(services);
                 })
                 .Build();
-        }
-
-        public static async Task DisposeHost(IHost host)
-        {
-            if (host is IAsyncDisposable asyncDisposable)
-            {
-                await asyncDisposable.DisposeAsync();
-            }
-            else
-            {
-                host.Dispose();
-            }
         }
     }
 }

@@ -10,11 +10,6 @@
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <ServerGarbageCollection>false</ServerGarbageCollection>
-    <!--
-      Workaround for https://github.com/dotnet/aspnetcore/issues/42200
-      Required as of 7.0 Preview 5 SDK
-      -->
-    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,7 +19,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelTokensJwtVersion)" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">

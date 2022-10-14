@@ -125,6 +125,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appRunners[i] = runner;
             }
 
+            await using IAsyncDisposable _ = appRunners.CreateItemDisposer();
+
             IList<ProcessIdentifier> identifiers;
             await appRunners.ExecuteAsync(async () =>
             {

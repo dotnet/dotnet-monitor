@@ -17,8 +17,6 @@ parameters:
   testGroup: Default
   # TFMs for which test results are uploaded
   testResultTfms:
-  - key: netcoreapp3.1
-    value: Core 3.1
   - key: net6.0
     value: .NET 6
   - key: net7.0
