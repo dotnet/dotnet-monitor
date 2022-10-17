@@ -125,7 +125,7 @@ async function getPRs(octokit, branchName, additionalBranch, repoOwner, repoName
 }
 
 async function resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName, minMergeDate, maxRecursion) {
-    const backportRegex=/backport of #(?<prNumber>\d+)/mi
+    const backportRegex=/backport (of )? #(?<prNumber>\d+)/mi
     const backportOriginPrNumber = pr.body?.match(backportRegex)?.groups?.prNumber;
     if (backportOriginPrNumber === undefined) {
         console.log(`Unable to determine origin PR for backport: ${pr.html_url}`)
